@@ -87,7 +87,7 @@ CSound::~CSound()
 HRESULT CSound::Init(HWND hWnd)
 {
 	// 変数を宣言
-	HRESULT hr;		// 終了確認用
+	HRESULT hr;	// 終了確認用
 
 	// メンバ変数を初期化
 	m_pXAudio2			= nullptr;	// XAudio2オブジェクトへのインターフェイス
@@ -139,104 +139,6 @@ HRESULT CSound::Init(HWND hWnd)
 		return E_FAIL;
 	}
 
-	// サウンドデータの初期化
-	for (int nCntSound = 0; nCntSound < LABEL_MAX; nCntSound++)
-	{
-		HANDLE hFile;
-		DWORD dwChunkSize = 0;
-		DWORD dwChunkPosition = 0;
-		DWORD dwFiletype;
-		WAVEFORMATEXTENSIBLE wfx;
-		XAUDIO2_BUFFER buffer;
-
-		// バッファのクリア
-		memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
-		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-
-		// サウンドデータファイルの生成
-		hFile = CreateFile(SOUND_FILE[nCntSound].pFilename, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
-		{
-			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(1)", "警告！", MB_ICONWARNING);
-			return HRESULT_FROM_WIN32(GetLastError());
-		}
-		if (SetFilePointer(hFile, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
-		{ // ファイルポインタを先頭に移動
-
-			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(2)", "警告！", MB_ICONWARNING);
-			return HRESULT_FROM_WIN32(GetLastError());
-		}
-	
-		// WAVEファイルのチェック
-		hr = CheckChunk(hFile, 'FFIR', &dwChunkSize, &dwChunkPosition);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		hr = ReadChunkData(hFile, &dwFiletype, sizeof(DWORD), dwChunkPosition);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		if (dwFiletype != 'EVAW')
-		{
-			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(3)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-	
-		// フォーマットチェック
-		hr = CheckChunk(hFile, ' tmf', &dwChunkSize, &dwChunkPosition);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "フォーマットチェックに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		hr = ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
-		if(FAILED(hr))
-		{
-			MessageBox(hWnd, "フォーマットチェックに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-
-		// オーディオデータ読み込み
-		hr = CheckChunk(hFile, 'atad', &m_aSizeAudio[nCntSound], &dwChunkPosition);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(1)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-		m_apDataAudio[nCntSound] = (BYTE*)malloc(m_aSizeAudio[nCntSound]);
-		hr = ReadChunkData(hFile, m_apDataAudio[nCntSound], m_aSizeAudio[nCntSound], dwChunkPosition);
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(2)", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-	
-		// ソースボイスの生成
-		hr = m_pXAudio2->CreateSourceVoice(&m_apSourceVoice[nCntSound], &(wfx.Format));
-		if (FAILED(hr))
-		{
-			MessageBox(hWnd, "ソースボイスの生成に失敗！", "警告！", MB_ICONWARNING);
-			return S_FALSE;
-		}
-
-		// バッファの値設定
-		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-		buffer.AudioBytes	= m_aSizeAudio[nCntSound];
-		buffer.pAudioData	= m_apDataAudio[nCntSound];
-		buffer.Flags		= XAUDIO2_END_OF_STREAM;
-		buffer.LoopCount	= SOUND_FILE[nCntSound].nCntLoop;
-
-		// オーディオバッファの登録
-		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
-
-		// ファイルをクローズ
-		CloseHandle(hFile);
-	}
-
 	return S_OK;
 }
 
@@ -270,6 +172,114 @@ void CSound::Uninit(void)
 
 	// COMライブラリの終了処理
 	CoUninitialize();
+}
+
+//============================================================
+//	全読込処理
+//============================================================
+HRESULT CSound::LoadAll(HWND hWnd)
+{
+	// サウンドデータの初期化
+	for (int nCntSound = 0; nCntSound < LABEL_MAX; nCntSound++)
+	{
+		HRESULT hr;
+		HANDLE hFile;
+		DWORD dwChunkSize = 0;
+		DWORD dwChunkPosition = 0;
+		DWORD dwFiletype;
+		WAVEFORMATEXTENSIBLE wfx;
+		XAUDIO2_BUFFER buffer;
+
+		// バッファのクリア
+		memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
+		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
+
+		// サウンドデータファイルの生成
+		hFile = CreateFile(SOUND_FILE[nCntSound].pFilename, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(1)", "警告！", MB_ICONWARNING);
+			return HRESULT_FROM_WIN32(GetLastError());
+		}
+		if (SetFilePointer(hFile, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+		{ // ファイルポインタを先頭に移動
+
+			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(2)", "警告！", MB_ICONWARNING);
+			return HRESULT_FROM_WIN32(GetLastError());
+		}
+
+		// WAVEファイルのチェック
+		hr = CheckChunk(hFile, 'FFIR', &dwChunkSize, &dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(1)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+		hr = ReadChunkData(hFile, &dwFiletype, sizeof(DWORD), dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(2)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+		if (dwFiletype != 'EVAW')
+		{
+			MessageBox(hWnd, "WAVEファイルのチェックに失敗！(3)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+
+		// フォーマットチェック
+		hr = CheckChunk(hFile, ' tmf', &dwChunkSize, &dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "フォーマットチェックに失敗！(1)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+		hr = ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "フォーマットチェックに失敗！(2)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+
+		// オーディオデータ読み込み
+		hr = CheckChunk(hFile, 'atad', &m_aSizeAudio[nCntSound], &dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(1)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+		m_apDataAudio[nCntSound] = (BYTE*)malloc(m_aSizeAudio[nCntSound]);
+		hr = ReadChunkData(hFile, m_apDataAudio[nCntSound], m_aSizeAudio[nCntSound], dwChunkPosition);
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "オーディオデータ読み込みに失敗！(2)", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+
+		// ソースボイスの生成
+		hr = m_pXAudio2->CreateSourceVoice(&m_apSourceVoice[nCntSound], &(wfx.Format));
+		if (FAILED(hr))
+		{
+			MessageBox(hWnd, "ソースボイスの生成に失敗！", "警告！", MB_ICONWARNING);
+			return S_FALSE;
+		}
+
+		// バッファの値設定
+		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
+		buffer.AudioBytes = m_aSizeAudio[nCntSound];
+		buffer.pAudioData = m_apDataAudio[nCntSound];
+		buffer.Flags = XAUDIO2_END_OF_STREAM;
+		buffer.LoopCount = SOUND_FILE[nCntSound].nCntLoop;
+
+		// オーディオバッファの登録
+		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
+
+		// ファイルをクローズ
+		CloseHandle(hFile);
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

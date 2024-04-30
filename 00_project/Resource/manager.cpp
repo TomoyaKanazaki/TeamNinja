@@ -291,6 +291,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 //============================================================
 HRESULT CManager::Load(void)
 {
+#if NDEBUG	// Release版以外では全読込を行わない
+
 	// テクスチャの全読込
 	assert(m_pTexture != nullptr);
 	if (FAILED(m_pTexture->LoadAll()))
@@ -314,6 +316,18 @@ HRESULT CManager::Load(void)
 	// フォントの全読込
 	assert(m_pFont != nullptr);
 	if (FAILED(m_pFont->LoadAll()))
+	{ // 全読込に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+#endif	// NDEBUG
+
+	// サウンドの全読込
+	assert(m_pSound != nullptr);
+	if (FAILED(m_pSound->LoadAll(m_hWnd)))
 	{ // 全読込に失敗した場合
 
 		// 失敗を返す

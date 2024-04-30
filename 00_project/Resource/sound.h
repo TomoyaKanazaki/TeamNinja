@@ -72,6 +72,7 @@ public:
 	// メンバ関数
 	HRESULT Init(HWND hWnd);	// 初期化
 	void Uninit(void);			// 終了
+	HRESULT LoadAll(HWND hWnd);	// 全読込
 	HRESULT Play(ELabel label);	// 再生
 	void Stop(ELabel label);	// 停止
 	void Stop(void);			// 全停止
