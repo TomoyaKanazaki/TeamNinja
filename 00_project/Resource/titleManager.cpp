@@ -15,8 +15,6 @@
 #include "texture.h"
 #include "model.h"
 #include "object2D.h"
-#include "player.h"
-#include "playerTitle.h"
 
 //************************************************************
 //	定数宣言
@@ -25,19 +23,18 @@ namespace
 {
 	const char *TEX_LOGO_FILE[] =	// ロゴテクスチャファイル
 	{
-		"data\\TEXTURE\\title000.png",	// LASTテクスチャ
-		"data\\TEXTURE\\title001.png",	// BATTLEテクスチャ
+		"data\\TEXTURE\\title000.png",	// NEVERテクスチャ
+		"data\\TEXTURE\\title001.png",	// GIVEテクスチャ
+		"data\\TEXTURE\\title002.png",	// UP!テクスチャ
 	};
 
 	const char *TEX_SELECT_FILE[] =	// 選択項目テクスチャファイル
 	{
-		"data\\TEXTURE\\title002.png",	// STARTテクスチャ
-		"data\\TEXTURE\\title003.png",	// MANUALテクスチャ
+		"data\\TEXTURE\\title003.png",	// STARTテクスチャ
+		"data\\TEXTURE\\title004.png",	// MANUALテクスチャ
 	};
 
-	const int PRIORITY = 5;		// タイトルの優先順位
-	const int TRANS_FRAM = 20;
-	// 遷移余韻フレーム
+	const int PRIORITY = 5;	// タイトルの優先順位
 
 	namespace fade
 	{
@@ -48,16 +45,18 @@ namespace
 
 	namespace logo
 	{
-		const D3DXVECTOR3 POS_LAST	 = D3DXVECTOR3(410.0f, 180.0f, 0.0f);	// タイトルロゴの位置 (LAST)
-		const D3DXVECTOR3 POS_BATTLE = D3DXVECTOR3(760.0f, 340.0f, 0.0f);	// タイトルロゴの位置 (BATTLE)
+		const D3DXVECTOR3 POS_NEVER	= D3DXVECTOR3(340.0f,  140.0f, 0.0f);	// タイトルロゴの位置 (NEVER)
+		const D3DXVECTOR3 POS_GIVE	= D3DXVECTOR3(710.0f,  310.0f, 0.0f);	// タイトルロゴの位置 (GIVE)
+		const D3DXVECTOR3 POS_UP	= D3DXVECTOR3(1050.0f, 320.0f, 0.0f);	// タイトルロゴの位置 (UP!)
 
 		const D3DXVECTOR3 POS[] =	// 位置配列
 		{
-			POS_LAST,	// LASTの位置
-			POS_BATTLE,	// BATTLEの位置
+			POS_NEVER,	// NEVERの位置
+			POS_GIVE,	// GIVEの位置
+			POS_UP,		// UP!の位置
 		};
 
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(628.6f, 196.6f, 0.0f) * 1.1f;	// タイトルロゴの大きさ
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(666.0f, 290.0f, 0.0f) * 0.8f;	// タイトルロゴの大きさ
 		const float	INIT_SCALE	= 15.0f;	// タイトルロゴの初期拡大率
 		const float	SUB_SCALE	= 0.65f;	// タイトルロゴ拡大率の減算量
 	}
@@ -94,13 +93,12 @@ static_assert(NUM_ARRAY(TEX_SELECT_FILE) == CTitleManager::SELECT_MAX, "ERROR : 
 //	コンストラクタ
 //============================================================
 CTitleManager::CTitleManager() :
-	m_pFade			(nullptr),				// フェードの情報
-	m_pSelectBG		(nullptr),				// 選択背景の情報
-	m_state			(STATE_NONE),			// 状態
-	m_nextMode		(CScene::MODE_TITLE),	// 次のモード
-	m_fScale		(0.0f),					// タイトル拡大率
-	m_nSelect		(0),					// 現在の選択
-	m_nOldSelect	(0)						// 前回の選択
+	m_pFade			(nullptr),		// フェードの情報
+	m_pSelectBG		(nullptr),		// 選択背景の情報
+	m_state			(STATE_NONE),	// 状態
+	m_fScale		(0.0f),			// タイトル拡大率
+	m_nSelect		(0),			// 現在の選択
+	m_nOldSelect	(0)				// 前回の選択
 {
 	// メンバ変数をクリア
 	memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
@@ -126,13 +124,12 @@ HRESULT CTitleManager::Init(void)
 	// メンバ変数を初期化
 	memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
 	memset(&m_apSelect[0],	0, sizeof(m_apSelect));	// 選択表示の情報
-	m_pFade			= nullptr;				// フェードの情報
-	m_pSelectBG		= nullptr;				// 選択背景の情報
-	m_state			= STATE_FADEOUT;		// 状態
-	m_nextMode		= CScene::MODE_TITLE;	// 次のモード
-	m_fScale		= logo::INIT_SCALE;		// タイトル拡大率
-	m_nSelect		= 0;					// 現在の選択
-	m_nOldSelect	= 0;					// 前回の選択
+	m_pFade			= nullptr;			// フェードの情報
+	m_pSelectBG		= nullptr;			// 選択背景の情報
+	m_state			= STATE_FADEOUT;	// 状態
+	m_fScale		= logo::INIT_SCALE;	// タイトル拡大率
+	m_nSelect		= 0;				// 現在の選択
+	m_nOldSelect	= 0;				// 前回の選択
 
 	//--------------------------------------------------------
 	//	選択背景の生成・設定
@@ -284,27 +281,30 @@ void CTitleManager::Update(void)
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:	// 何もしない状態
+
+		// 無し
+
 		break;
 
 	case STATE_FADEOUT:	// フェードアウト状態
 
 		// フェードアウトの更新
 		UpdateFade();
+
 		break;
 
 	case STATE_MOVE:	// タイトル縮小状態
 
 		// タイトル移動の更新
 		UpdateMove();
+
 		break;
 
 	case STATE_WAIT:	// 遷移待機状態
 
 		// 選択操作
 		ActSelect();
-		break;
 
-	case STATE_TRANSITION:	// 遷移状態
 		break;
 
 	default:	// 例外処理
@@ -331,15 +331,6 @@ void CTitleManager::Update(void)
 
 	// 選択背景の更新
 	m_pSelectBG->Update();
-}
-
-//============================================================
-//	遷移処理
-//============================================================
-void CTitleManager::Transition(void)
-{
-	// 次のシーンに遷移
-	GET_MANAGER->SetScene(m_nextMode, TRANS_FRAM);
 }
 
 //============================================================
@@ -467,7 +458,7 @@ void CTitleManager::UpdateMove(void)
 		GET_MANAGER->GetCamera()->SetEnableUpdate(true);
 
 		// サウンドの再生
-		PLAY_SOUND(CSound::LABEL_SE_DECISION_001);	// 決定音01
+		GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_001);	// 決定音01
 	}
 }
 
@@ -488,34 +479,35 @@ void CTitleManager::UpdateStart(void)
 	||  pPad->IsTrigger(CInputPad::KEY_Y)
 	||  pPad->IsTrigger(CInputPad::KEY_START))
 	{
-		if (m_state != STATE_WAIT
-		&&  m_state != STATE_TRANSITION)
-		{ // 遷移待機・遷移状態ではない場合
+		if (m_state != STATE_WAIT)
+		{ // 遷移待機状態ではない場合
 
 			// 演出スキップ
 			SkipStaging();
 
 			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);	// 決定音01
+			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_001);	// 決定音01
 		}
 		else
-		{ // 遷移待機・遷移状態の場合
+		{ // 遷移待機状態の場合
 
-			if (m_state != STATE_TRANSITION)
-			{ // 遷移状態ではない場合
+			if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
+			{ // フェード中ではない場合
 
 				switch (m_nSelect)
 				{ // 選択ごとの処理
 				case SELECT_GAME:
 
-					// ゲーム画面を次シーンに設定
-					m_nextMode = CScene::MODE_GAME;
+					// シーンの設定
+					GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
+
 					break;
 
 				case SELECT_TUTORIAL:
 
-					// チュートリアル画面を次シーンに設定
-					m_nextMode = CScene::MODE_TUTORIAL;
+					// シーンの設定
+					GET_MANAGER->SetScene(CScene::MODE_TUTORIAL);	// チュートリアル画面
+
 					break;
 
 				default:
@@ -524,16 +516,7 @@ void CTitleManager::UpdateStart(void)
 				}
 
 				// サウンドの再生
-				PLAY_SOUND(CSound::LABEL_SE_SWORD_SWING_000);
-				PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
-
-				// プレイヤーを攻撃演出にする
-				CCamera *pCamera = GET_MANAGER->GetCamera();	// カメラ情報
-				pCamera->SetState(CCamera::STATE_TITLE_ATK);	// タイトル攻撃カメラにする
-				pCamera->SetDestTitleAtk();						// 目標位置を設定
-
-				// 状態を変更
-				m_state = STATE_TRANSITION;	// 遷移状態
+				GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_000);	// 決定音00
 			}
 		}
 	}
@@ -560,7 +543,7 @@ void CTitleManager::ActSelect(void)
 			m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX;
 
 			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 		}
 		if (pKeyboard->IsTrigger(DIK_D)
 		||  pKeyboard->IsTrigger(DIK_RIGHT)
@@ -571,7 +554,7 @@ void CTitleManager::ActSelect(void)
 			m_nSelect = (m_nSelect + 1) % SELECT_MAX;
 
 			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 		}
 
 		// 前回の選択要素の色を黒に設定
@@ -616,10 +599,6 @@ void CTitleManager::SkipStaging(void)
 
 	// カメラの更新を再開
 	GET_MANAGER->GetCamera()->SetEnableUpdate(true);
-
-	// プレイヤーを強制着地させる
-	CPlayer *pPlayer = CScene::GetPlayer();
-	pPlayer->SetLanding(pPlayer->GetVec3Position());
 
 	// 状態を変更
 	m_state = STATE_WAIT;	// 遷移待機状態

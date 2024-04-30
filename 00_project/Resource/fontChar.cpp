@@ -252,20 +252,26 @@ HRESULT CFontChar::CreateTexture(SChar *pChar, BYTE *pBitMap)
 	offsetOrigin.x = pChar->glyph.gmptGlyphOrigin.x + nAbsOffset + 1;			// 原点オフセットX
 	offsetOrigin.y = pChar->text.tmAscent - pChar->glyph.gmptGlyphOrigin.y + 1;	// 原点オフセットY
 
+	POSGRID2 sizeTexture;	// テクスチャの大きさ
+	sizeTexture.x = sizeBlackBox.x + nPlusSize + 2;	// テクスチャ横幅
+	sizeTexture.y = (int)pChar->text.tmHeight + 2;	// テクスチャ縦幅
+
 	// 空のテクスチャを生成・テクスチャインデックスを保存
 	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャ情報
 	pChar->nTexID = pTexture->Regist(CTexture::SInfo
 	( // 引数
-		sizeBlackBox.x + nPlusSize + 2,	// テクスチャ横幅
-		(int)pChar->text.tmHeight + 2,	// テクスチャ縦幅
+		sizeTexture.x,		// テクスチャ横幅
+		sizeTexture.y,		// テクスチャ縦幅
 		1,					// ミップマップレベル
 		0,					// 性質・確保オプション
 		D3DFMT_A8R8G8B8,	// ピクセルフォーマット
 		D3DPOOL_MANAGED		// 格納メモリ
 	));
 
-	// ブラックボックスの左上オフセットを保存
-	pChar->offsetBlackBox = offsetOrigin;
+	// ブラックボックスの中心からのオフセットを保存
+	POSGRID2 centerTexture = sizeTexture / 2;	// テクスチャの中心座標
+	pChar->offsetBlackBox.lu = offsetOrigin - centerTexture;				// 左上オフセット
+	pChar->offsetBlackBox.rd = offsetOrigin + sizeBlackBox - centerTexture;	// 右下オフセット
 
 	// ブラックボックスが小さすぎる場合書き込みを行わない
 	if (sizeBlackBox.x <= MIN_BLACKBOX) { return S_OK; }

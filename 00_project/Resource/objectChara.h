@@ -74,9 +74,7 @@ public:
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
 	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
-
 	CMultiModel *GetMultiModel(const int nPartsID) const;	// マルチモデル取得
-	CCollSphere *GetCollision(const int nPartsID) const;	// 当たり判定取得
 	CMotion *GetMotion(void) const;							// モーション取得
 
 	void SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID);	// マテリアル設定

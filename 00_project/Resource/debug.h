@@ -54,7 +54,6 @@ private:
 	void ChangeDisp2D(void);		// 2Dオブジェクト表示変更
 	void ChangeEditMode(void);		// エディターモード変更
 	void ChangeDispPause(void);		// ポーズ表示変更
-	void ChangeDispColl(void);		// 判定表示変更
 
 	// メンバ変数
 	int  m_nFps;	// FPSカウンタ

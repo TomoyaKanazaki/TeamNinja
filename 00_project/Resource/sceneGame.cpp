@@ -20,8 +20,6 @@
 #include "flash.h"
 #include "stage.h"
 #include "player.h"
-#include "enemy.h"
-#include "sword.h"
 
 //************************************************************
 //	定数宣言
@@ -79,12 +77,6 @@ HRESULT CSceneGame::Init(void)
 	//--------------------------------------------------------
 	//	初期生成
 	//--------------------------------------------------------
-	// 敵の全セットアップ読込
-	CEnemy::LoadAllSetup();
-
-	// 剣のセットアップ読込
-	CSword::LoadSetup();
-
 	// シーンの初期化
 	CScene::Init();	// ステージ・プレイヤーの生成
 
@@ -174,9 +166,6 @@ HRESULT CSceneGame::Init(void)
 //============================================================
 void CSceneGame::Uninit(void)
 {
-	// 敵のセットアップ破棄
-	CEnemy::ReleaseSetup();
-
 	// ゲームマネージャーの破棄
 	SAFE_REF_RELEASE(m_pGameManager);
 

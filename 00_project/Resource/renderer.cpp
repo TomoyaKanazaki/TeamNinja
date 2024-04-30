@@ -19,9 +19,6 @@
 #include "debug.h"
 #include "debugproc.h"
 
-#include "enemy.h"
-#include "magicCircle.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -43,11 +40,9 @@ CRenderer::CRenderer() :
 	m_pD3D			(nullptr),	// Direct3Dオブジェクト
 	m_pD3DDevice	(nullptr),	// Direct3Dデバイス
 	m_nScreenTexID	(0),		// スクリーンテクスチャのインデックス
-	m_nCropTexID	(0),		// 切り抜きテクスチャのインデックス
 	m_pDrawScreen	(nullptr),	// スクリーン描画ポリゴン
 	m_pDefSurScreen	(nullptr),	// 元のスクリーン描画サーフェイス保存用
-	m_pSurScreen	(nullptr),	// スクリーン描画サーフェイスへのポインタ
-	m_pSurCrop		(nullptr)	// 切り抜きサーフェイスへのポインタ
+	m_pSurScreen	(nullptr)	// スクリーン描画サーフェイスへのポインタ
 {
 
 }
@@ -73,11 +68,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3D			= nullptr;	// Direct3Dオブジェクト
 	m_pD3DDevice	= nullptr;	// Direct3Dデバイス
 	m_nScreenTexID	= NONE_IDX;	// スクリーンテクスチャのインデックス
-	m_nCropTexID	= NONE_IDX;	// 切り抜きテクスチャのインデックス
 	m_pDrawScreen	= nullptr;	// スクリーン描画ポリゴン
 	m_pDefSurScreen	= nullptr;	// 元のスクリーン描画サーフェイス保存用
 	m_pSurScreen	= nullptr;	// スクリーン描画サーフェイスへのポインタ
-	m_pSurCrop		= nullptr;	// 切り抜きサーフェイスへのポインタ
 
 	// Direct3Dオブジェクトの生成
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -165,9 +158,6 @@ void CRenderer::Uninit(void)
 	// スクリーン描画サーフェイスの破棄
 	SAFE_RELEASE(m_pSurScreen);
 
-	// 切り抜きサーフェイスの破棄
-	SAFE_RELEASE(m_pSurCrop);
-
 	// Direct3Dデバイスの破棄
 	SAFE_RELEASE(m_pD3DDevice);
 
@@ -199,42 +189,6 @@ void CRenderer::Draw(void)
 	// 変数を宣言
 	D3DVIEWPORT9 viewportDef;	// カメラのビューポート保存用
 	HRESULT hr;	// 異常終了の確認用
-
-	//--------------------------------------------------------
-	//	ボス切り抜き用の描画
-	//--------------------------------------------------------
-	// 塗りつぶしモードを設定
-	GET_DEVICE->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// ポリゴンを塗りつぶす
-
-	// 描画サーフェイスを切り抜きサーフェイスに変更
-	hr = m_pD3DDevice->SetRenderTarget(0, m_pSurCrop);
-	assert(SUCCEEDED(hr));
-
-	// バックバッファとZバッファのクリア
-	hr = m_pD3DDevice->Clear(0, nullptr, FLAG_CLEAR, COL_CLEAR, 1.0f, 0);
-	assert(SUCCEEDED(hr));
-
-	// テクスチャ作成用の描画
-	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
-	{ // 描画開始が成功した場合
-
-		// 現在のビューポートを取得
-		m_pD3DDevice->GetViewport(&viewportDef);
-
-		// カメラの設定
-		assert(pCamera != nullptr);
-		pCamera->SetCamera(CCamera::TYPE_MAIN);
-
-		// 切り抜きの描画
-		DrawCrop();
-
-		// ビューポートを元に戻す
-		m_pD3DDevice->SetViewport(&viewportDef);
-
-		// 描画終了
-		hr = m_pD3DDevice->EndScene();
-		assert(SUCCEEDED(hr));
-	}
 
 	//--------------------------------------------------------
 	//	テクスチャ作成用の描画
@@ -349,17 +303,6 @@ HRESULT CRenderer::CreateRenderTexture(void)
 		D3DPOOL_DEFAULT			// 格納メモリ
 	));
 
-	// 空の切り抜きテクスチャを生成
-	m_nCropTexID = pTexture->Regist(CTexture::SInfo
-	( // 引数
-		SCREEN_WIDTH,			// テクスチャ横幅
-		SCREEN_HEIGHT,			// テクスチャ縦幅
-		0,						// ミップマップレベル
-		D3DUSAGE_RENDERTARGET,	// 性質・確保オプション
-		D3DFMT_X8R8G8B8,		// ピクセルフォーマット
-		D3DPOOL_DEFAULT			// 格納メモリ
-	));
-
 	// 元のスクリーン描画サーフェイスを保存
 	hr = m_pD3DDevice->GetRenderTarget(0, &m_pDefSurScreen);
 	if (FAILED(hr))
@@ -375,20 +318,6 @@ HRESULT CRenderer::CreateRenderTexture(void)
 	( // 引数
 		0,				// ミップマップレベル
 		&m_pSurScreen	// スクリーン描画サーフェイスへのポインタ
-	);
-	if (FAILED(hr))
-	{ // サーフェイス取得に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// 切り抜きサーフェイスの取得
-	hr = pTexture->GetPtr(m_nCropTexID)->GetSurfaceLevel
-	( // 引数
-		0,			// ミップマップレベル
-		&m_pSurCrop	// 切り抜きサーフェイスへのポインタ
 	);
 	if (FAILED(hr))
 	{ // サーフェイス取得に失敗した場合
@@ -533,33 +462,4 @@ HRESULT CRenderer::CreateDevice(HWND hWnd, D3DPRESENT_PARAMETERS d3dpp)
 	// CPUとハードウェアの性能が使い物にならなかった場合
 	// デバイス生成の失敗を返す
 	return E_FAIL;
-}
-
-//============================================================
-//	切り抜き描画処理
-//============================================================
-void CRenderer::DrawCrop(void)
-{
-	// ボスの描画
-	CEnemy *pBoss = CScene::GetBoss();	// ボスの情報
-	if (pBoss != nullptr)
-	{ // ボスが使用中の場合
-
-		// ボスの切り抜き描画
-		pBoss->DrawCrop();
-	}
-
-	// 魔法陣の描画
-	CListManager<CMagicCircle>* pListManager = CMagicCircle::GetList();	// 魔法陣リストマネージャー
-	if (pListManager != nullptr)
-	{ // 魔法陣リストマネージャーが使用中の場合
-
-		std::list<CMagicCircle*> list = pListManager->GetList();	// 魔法陣リストの情報
-		for (const auto& prMagicCircle : list)
-		{ // 要素数分繰り返す
-
-			// 魔法陣の切り抜き描画
-			prMagicCircle->DrawCrop();
-		}
-	}
 }

@@ -33,16 +33,11 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,		// なにもしない状態
-		STATE_CONTROL,		// 操作状態
-		STATE_TITLE_WAIT,	// タイトル待機状態
-		STATE_TITLE_ATK,	// タイトル攻撃状態
-		STATE_ROTATE,		// 回転状態
-		STATE_FOLLOW,		// 追従状態
-		STATE_RIDE,			// 騎乗状態
-		STATE_LOOK_PLAYER,	// プレイヤー注目状態
-		STATE_LOOK_BOSS,	// ボス注目状態
-		STATE_MAX			// この列挙型の総数
+		STATE_NONE = 0,	// なにもしない状態
+		STATE_CONTROL,	// 操作状態
+		STATE_ROTATE,	// 回転状態
+		STATE_FOLLOW,	// 追従状態
+		STATE_MAX		// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -95,16 +90,6 @@ public:
 		D3DXMATRIX		mtxView;		// ビューマトリックス
 	};
 
-	// 視認情報の構造体
-	struct SLook
-	{
-		int nCounterForce;	// カメラ強制操作カウンター
-		float fDiffRotY;	// 差分Y軸向き
-		float fOldRotY;		// 過去Y軸向き
-		float fDiffDis;		// 差分距離
-		float fOldDis;		// 過去距離
-	};
-
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -114,19 +99,11 @@ public:
 	SCamera GetCamera(const EType type);	// カメラ取得
 	void SetState(const EState state);		// カメラ状態設定
 	EState GetState(void) const;			// カメラ状態取得
-	SLook GetLook(void) const { return m_look; }			// 視認情報取得
-	void SetFollowLook(const D3DXVECTOR3 &rLookPos);		// 追従カメラの位置視認
 	void SetSwing(const EType type, const SSwing swing);	// カメラ揺れ設定
 	void SetEnableUpdate(const bool bUpdate);				// 更新状況設定
 
-	void SetDestTitleWait(void);	// カメラ目標位置設定 (タイトル待機)
-	void SetDestTitleAtk(void);		// カメラ目標位置設定 (タイトル攻撃)
-	void SetDestRotate(void);		// カメラ目標位置設定 (回転)
-	void SetDestFollow(void);		// カメラ目標位置設定 (追従)
-	void SetDestRide(void);			// カメラ目標位置設定 (騎乗)
-	void SetDestLookPlayer(void);	// カメラ目標位置設定 (プレイヤー注目)
-	void SetDestLookBoss(void);		// カメラ目標位置設定 (ボス注目)
-
+	void SetDestRotate(void);	// カメラ目標位置設定 (回転)
+	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -146,13 +123,8 @@ public:
 
 private:
 	// メンバ関数
-	void TitleWait(void);	// カメラの更新 (タイトル待機)
-	void TitleAtk(void);	// カメラの更新 (タイトル攻撃)
 	void Rotate(void);		// カメラの更新 (回転)
 	void Follow(void);		// カメラの更新 (追従)
-	void Ride(void);		// カメラの更新 (騎乗)
-	void LookPlayer(void);	// カメラの更新 (プレイヤー注目)
-	void LookBoss(void);	// カメラの更新 (ボス注目)
 	void Control(void);		// カメラの更新 (操作)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
@@ -161,7 +133,6 @@ private:
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
-	SLook	m_look;		// 視認の情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 };

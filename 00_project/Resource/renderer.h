@@ -38,8 +38,6 @@ public:
 	LPDIRECT3DDEVICE9 GetDevice(void) const;	// デバイス取得
 	D3DXCOLOR GetClearColor(void) const;		// 画面クリア色取得
 
-	int GetCropTextureID(void) const { return m_nCropTexID; }	// 切り抜きテクスチャ取得
-
 	// 静的メンバ関数
 	static CRenderer *Create(HWND hWnd, BOOL bWindow);	// 生成
 	static void Release(CRenderer *&prRenderer);		// 破棄
@@ -47,18 +45,15 @@ public:
 private:
 	// メンバ関数
 	HRESULT CreateDevice(HWND hWnd, D3DPRESENT_PARAMETERS d3dpp);	// デバイス生成
-	void DrawCrop(void);	// 切り抜き描画
 
 	// メンバ変数
 	LPDIRECT3D9			m_pD3D;			// Direct3Dオブジェクト
 	LPDIRECT3DDEVICE9	m_pD3DDevice;	// Direct3Dデバイス
 
 	int m_nScreenTexID;		// スクリーンテクスチャのインデックス
-	int m_nCropTexID;		// 切り抜きテクスチャのインデックス
 	CScreen *m_pDrawScreen;	// スクリーン描画ポリゴン
 	LPDIRECT3DSURFACE9 m_pDefSurScreen;	// 元のスクリーン描画サーフェイス保存用
 	LPDIRECT3DSURFACE9 m_pSurScreen;	// スクリーン描画サーフェイスへのポインタ
-	LPDIRECT3DSURFACE9 m_pSurCrop;		// 切り抜きサーフェイスへのポインタ
 };
 
 #endif	// _RENDERER_H_

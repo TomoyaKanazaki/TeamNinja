@@ -16,7 +16,6 @@
 #include "shader.h"
 #include "shaderToon.h"
 #include "shaderMono.h"
-#include "shaderDrawBoss.h"
 
 //************************************************************
 //	’è”éŒ¾

@@ -98,12 +98,11 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(void);	// 更新
-
 	void SetStageLimit(const SStageLimit& rLimit);	// ステージ範囲設定
 	SStageLimit GetStageLimit(void) const;			// ステージ範囲取得
 
-	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);		// 位置補正
 	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);	// 範囲外の着地判定
+	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);		// 位置補正
 	bool CollisionKillY(const D3DXVECTOR3& rPos);					// キルY座標との当たり判定
 	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove);	// 地面着地 (回転考慮)
 	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);				// メッシュの範囲内取得 (回転考慮)
@@ -122,7 +121,6 @@ private:
 	static HRESULT LoadScenery(const char* pString, FILE *pFile, CStage *pStage);		// 景色情報の読込
 	static HRESULT LoadSky(const char* pString, FILE *pFile, CStage *pStage);			// 空情報の読込
 	static HRESULT LoadLiquid(const char* pString, FILE *pFile, CStage *pStage);		// 液体情報の読込
-	static HRESULT LoadMap(const char* pString, FILE *pFile, CStage *pStage);			// マップ情報の読込
 
 	// メンバ変数
 	SStageLimit	m_stageLimit;	// 範囲情報

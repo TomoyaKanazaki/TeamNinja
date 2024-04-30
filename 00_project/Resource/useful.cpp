@@ -577,8 +577,68 @@ bool POSGRID2::operator!=(const POSGRID2& grid) const
 	return false;
 }
 
+//============================================================
+//	演算子のオーバーロード (加算演算子 +)
+//============================================================
+POSGRID2 POSGRID2::operator+(const POSGRID2& grid) const
+{
+	POSGRID2 tempGrid = *this;	// 加算結果の代入用
+
+	// 引数の整数座標を加算
+	tempGrid.x += grid.x;
+	tempGrid.y += grid.y;
+
+	// 加算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (減算演算子 -)
+//============================================================
+POSGRID2 POSGRID2::operator-(const POSGRID2& grid) const
+{
+	POSGRID2 tempGrid = *this;	// 減算結果の代入用
+
+	// 引数の整数座標を減算
+	tempGrid.x -= grid.x;
+	tempGrid.y -= grid.y;
+
+	// 減算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (乗算演算子 *)
+//============================================================
+POSGRID2 POSGRID2::operator*(const int nVal) const
+{
+	POSGRID2 tempGrid = *this;	// 乗算結果の代入用
+
+	// 引数の整数座標を乗算
+	tempGrid.x *= nVal;
+	tempGrid.y *= nVal;
+
+	// 乗算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (除算演算子 /)
+//============================================================
+POSGRID2 POSGRID2::operator/(const int nVal) const
+{
+	POSGRID2 tempGrid = *this;	// 除算結果の代入用
+
+	// 引数の整数座標を除算
+	tempGrid.x /= nVal;
+	tempGrid.y /= nVal;
+
+	// 除算結果を返す
+	return tempGrid;
+}
+
 //************************************************************
-//	2整数座標の構造体メンバ関数
+//	3整数座標の構造体メンバ関数
 //************************************************************
 //============================================================
 //	演算子のオーバーロード (比較演算子 ==)
@@ -610,4 +670,68 @@ bool POSGRID3::operator!=(const POSGRID3& grid) const
 
 	// 偽を返す
 	return false;
+}
+
+//============================================================
+//	演算子のオーバーロード (加算演算子 +)
+//============================================================
+POSGRID3 POSGRID3::operator+(const POSGRID3& grid) const
+{
+	POSGRID3 tempGrid = *this;	// 加算結果の代入用
+
+	// 引数の整数座標を加算
+	tempGrid.x += grid.x;
+	tempGrid.y += grid.y;
+	tempGrid.z += grid.z;
+
+	// 加算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (減算演算子 -)
+//============================================================
+POSGRID3 POSGRID3::operator-(const POSGRID3& grid) const
+{
+	POSGRID3 tempGrid = *this;	// 減算結果の代入用
+
+	// 引数の整数座標を減算
+	tempGrid.x -= grid.x;
+	tempGrid.y -= grid.y;
+	tempGrid.z -= grid.z;
+
+	// 減算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (乗算演算子 *)
+//============================================================
+POSGRID3 POSGRID3::operator*(const int nVal) const
+{
+	POSGRID3 tempGrid = *this;	// 乗算結果の代入用
+
+	// 引数の整数座標を乗算
+	tempGrid.x *= nVal;
+	tempGrid.y *= nVal;
+	tempGrid.z *= nVal;
+
+	// 乗算結果を返す
+	return tempGrid;
+}
+
+//============================================================
+//	演算子のオーバーロード (除算演算子 /)
+//============================================================
+POSGRID3 POSGRID3::operator/(const int nVal) const
+{
+	POSGRID3 tempGrid = *this;	// 除算結果の代入用
+
+	// 引数の整数座標を除算
+	tempGrid.x /= nVal;
+	tempGrid.y /= nVal;
+	tempGrid.z /= nVal;
+
+	// 除算結果を返す
+	return tempGrid;
 }

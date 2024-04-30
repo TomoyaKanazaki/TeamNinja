@@ -106,9 +106,13 @@ struct POSGRID2
 	// デストラクタ
 	~POSGRID2() {}
 
-	// メンバ関数
+	// 演算子オーバーロード
 	bool operator==(const POSGRID2& grid) const;
 	bool operator!=(const POSGRID2& grid) const;
+	POSGRID2 operator+(const POSGRID2& grid) const;
+	POSGRID2 operator-(const POSGRID2& grid) const;
+	POSGRID2 operator*(const int nVal) const;
+	POSGRID2 operator/(const int nVal) const;
 
 	// メンバ変数
 	int x;	// 方眼座標 (x)
@@ -128,6 +132,10 @@ struct POSGRID3
 	// メンバ関数
 	bool operator==(const POSGRID3& grid) const;
 	bool operator!=(const POSGRID3& grid) const;
+	POSGRID3 operator+(const POSGRID3& grid) const;
+	POSGRID3 operator-(const POSGRID3& grid) const;
+	POSGRID3 operator*(const int nVal) const;
+	POSGRID3 operator/(const int nVal) const;
 
 	// メンバ変数
 	int x;	// 方眼座標 (x)
