@@ -45,9 +45,6 @@
     <ClInclude Include="Resource\objectModel.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\objectSkinMesh3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\objectMeshTube.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -414,9 +411,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\objectModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectSkinMesh3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\objectMeshTube.cpp">

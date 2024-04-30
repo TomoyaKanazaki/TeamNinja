@@ -40,6 +40,8 @@ namespace
 #define NAME_EDITMODE		("F5")		// エディターモードON/OFF表示
 #define KEY_PAUSE_DISP		(DIK_F6)	// ポーズ表示ON/OFFキー
 #define NAME_PAUSE_DISP		("F6")		// ポーズ表示ON/OFF表示
+#define KEY_RESULT_TRANS	(DIK_F7)	// リザルト遷移キー
+#define NAME_RESULT_TRANS	("F7")		// リザルト遷移表示
 
 //************************************************************
 //	親クラス [CDebug] のメンバ関数
@@ -241,6 +243,9 @@ void CDebug::UpdateDebugControl(void)
 		// ポーズ表示変更
 		ChangeDispPause();
 
+		// リザルト遷移
+		ResultTrans();
+
 		break;
 
 	case CScene::MODE_RESULT:
@@ -291,6 +296,7 @@ void CDebug::DrawDebugControl(void)
 
 		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
 		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
+		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：リザルト遷移\n", NAME_RESULT_TRANS);
 
 		break;
 
@@ -470,6 +476,18 @@ void CDebug::ChangeDispPause(void)
 	{
 		// ポーズの表示状況を設定
 		CSceneGame::GetPause()->SetEnableDebugDisp(!CSceneGame::GetPause()->IsDebugDisp());
+	}
+}
+
+//============================================================
+//	リザルト遷移処理
+//============================================================
+void CDebug::ResultTrans(void)
+{
+	if (GET_INPUTKEY->IsTrigger(KEY_RESULT_TRANS))
+	{
+		// リザルト画面に遷移
+		GET_MANAGER->SetScene(CScene::MODE_RESULT);
 	}
 }
 
