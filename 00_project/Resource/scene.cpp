@@ -83,7 +83,7 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-#if 1
+#if 0
 	CMultiValue *p = CMultiValue::Create(CValue::TYPE_NORMAL, 12345, 8, SCREEN_CENT + D3DXVECTOR3(0.0f, 0.0f, 0.0f), VEC3_ONE * 60.0f, D3DXVECTOR3(70.0f, 0.0f, 0.0f), CMultiValue::XALIGN_LEFT);
 
 	//CObject2D *pp = CObject2D::Create(SCREEN_CENT - D3DXVECTOR3(150.0f, 0.0f, 0.0f), p->GetValueSize());
