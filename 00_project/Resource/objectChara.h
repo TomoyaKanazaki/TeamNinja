@@ -44,8 +44,8 @@ public:
 	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
 
 	// 静的メンバ関数
 	static CObjectChara *Create(const D3DXVECTOR3 &rPos, const D3DXVECTOR3 &rRot = VEC3_ZERO);	// 生成

@@ -46,8 +46,8 @@ public:
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Position(void) const override { return m_meshCircle.pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_meshCircle.rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCircle.pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCircle.rot; }	// 向き取得
 
 	// 静的メンバ関数
 	static CObjectMeshCircle *Create	// 生成
