@@ -48,14 +48,12 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void SetVec3Position(const D3DXVECTOR3 &rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
-	void SetVec3Rotation(const D3DXVECTOR3 &rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetAllMaterial(const D3DXMATERIAL &rMat) override;	// マテリアル全設定
-	void ResetMaterial(void) override;						// マテリアル再設定
 	void SetEnableUpdate(const bool bUpdate) override;		// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
+	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
+	D3DXVECTOR3 GetVec3Position(void) const override { return m_apBody[BODY_LOWER]->GetVec3Position(); }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_apBody[BODY_LOWER]->GetVec3Rotation(); }	// 向き取得
 
 	// 静的メンバ関数
 	static CObjectDivChara *Create	// 生成
@@ -109,14 +107,16 @@ public:
 	bool IsMotionCancel(const EBody bodyID) const;			// モーションキャンセル取得
 	bool IsMotionCombo(const EBody bodyID) const;			// モーションコンボ取得
 	bool IsWeaponDisp(const EBody bodyID) const;			// モーション武器表示取得
-	bool IsLeftWeaponCollision(const EBody bodyID);			// 左の攻撃判定フラグ取得
-	bool IsRightWeaponCollision(const EBody bodyID);		// 右の攻撃判定フラグ取得
+	bool IsLeftWeaponCollision(const EBody bodyID) const;	// 左の攻撃判定フラグ取得
+	bool IsRightWeaponCollision(const EBody bodyID) const;	// 右の攻撃判定フラグ取得
 
 	void SetPartsPosition(const EBody bodyID, const int nPartsID, const D3DXVECTOR3 &rPos);	// パーツ位置設定
-	D3DXVECTOR3 GetPartsPosition(const EBody bodyID, const int nPartsID) const;				// パーツ位置取得
 	void SetPartsRotation(const EBody bodyID, const int nPartsID, const D3DXVECTOR3 &rRot);	// パーツ向き設定
+	D3DXVECTOR3 GetPartsPosition(const EBody bodyID, const int nPartsID) const;				// パーツ位置取得
 	D3DXVECTOR3 GetPartsRotation(const EBody bodyID, const int nPartsID) const;				// パーツ向き取得
 
+	void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定
+	void ResetMaterial(void);			// マテリアル再設定
 	void SetAlpha(const float fAlpha);	// 透明度設定
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
@@ -126,7 +126,7 @@ public:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	CObjectChara *m_apBody[BODY_MAX];	// 身体の情報

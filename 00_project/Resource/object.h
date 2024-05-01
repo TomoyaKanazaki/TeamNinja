@@ -114,44 +114,44 @@ public:
 	virtual void Release(void)	= 0;	// 破棄
 
 	// 仮想関数
-	virtual void SetVec2Position(const D3DXVECTOR2& rPos);	// 二軸の位置設定
-	virtual D3DXVECTOR2 GetVec2Position(void) const;		// 二軸の位置取得
-	virtual void SetVec3Position(const D3DXVECTOR3& rPos);	// 三軸の位置設定
-	virtual D3DXVECTOR3 GetVec3Position(void) const;		// 三軸の位置取得
-	virtual void SetVec3Rotation(const D3DXVECTOR3& rRot);	// 向き設定
-	virtual D3DXVECTOR3 GetVec3Rotation(void) const;		// 向き取得
-	virtual void SetVec2Sizing(const D3DXVECTOR2& rSize);	// 二軸の大きさ設定
-	virtual D3DXVECTOR2 GetVec2Sizing(void) const;			// 二軸の大きさ取得
-	virtual void SetVec3Sizing(const D3DXVECTOR3& rSize);	// 三軸の大きさ設定
-	virtual D3DXVECTOR3 GetVec3Sizing(void) const;			// 三軸の大きさ取得
-	virtual void SetVec3Scaling(const D3DXVECTOR3& rSacle);	// 拡大率設定
-	virtual D3DXVECTOR3 GetVec3Scaling(void) const;			// 拡大率取得
 	virtual void SetLabel(const ELabel label);				// ラベル設定
 	virtual void SetDimension(const EDim dimension);		// 次元設定
 	virtual void SetPriority(const int nPriority);			// 優先順位設定
 	virtual void SetEnableUpdate(const bool bUpdate);		// 更新状況設定
 	virtual void SetEnableDraw(const bool bDraw);			// 描画状況設定
+	virtual void SetVec2Position(const D3DXVECTOR2& rPos);	// 二軸の位置設定
+	virtual void SetVec3Position(const D3DXVECTOR3& rPos);	// 三軸の位置設定
+	virtual void SetVec3Rotation(const D3DXVECTOR3& rRot);	// 向き設定
+	virtual void SetVec2Sizing(const D3DXVECTOR2& rSize);	// 二軸の大きさ設定
+	virtual void SetVec3Sizing(const D3DXVECTOR3& rSize);	// 三軸の大きさ設定
+	virtual void SetVec3Scaling(const D3DXVECTOR3& rSacle);	// 拡大率設定
+	virtual D3DXVECTOR2 GetVec2Position(void) const;		// 二軸の位置取得
+	virtual D3DXVECTOR3 GetVec3Position(void) const;		// 三軸の位置取得
+	virtual D3DXVECTOR3 GetVec3Rotation(void) const;		// 向き取得
+	virtual D3DXVECTOR2 GetVec2Sizing(void) const;			// 二軸の大きさ取得
+	virtual D3DXVECTOR3 GetVec3Sizing(void) const;			// 三軸の大きさ取得
+	virtual D3DXVECTOR3 GetVec3Scaling(void) const;			// 拡大率取得
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)
 	static void	ReleaseAll(void);	// 全破棄
 	static void	UpdateAll(void);	// 全更新
 	static void	DrawAll(void);		// 全描画
-	static int	GetNumAll(void);	// 総数取得
-	static CObject *GetTop(const EDim dimension, const int nPriority);	// 先頭オブジェクト取得
-	static CObject *GetCur(const EDim dimension, const int nPriority);	// 最後尾オブジェクト取得
+	static int	GetNumAll(void) { return m_nNumAll; }	// 総数取得
+	static CObject *GetTop(const EDim dimension, const int nPriority) { return m_apTop[dimension][nPriority]; }	// 先頭オブジェクト取得
+	static CObject *GetCur(const EDim dimension, const int nPriority) { return m_apCur[dimension][nPriority]; }	// 最後尾オブジェクト取得
 
 	// メンバ関数
-	ELabel	GetLabel(void) const;		// ラベル取得
-	EDim	GetDimension(void) const;	// 次元取得
-	int		GetPriority(void) const;	// 優先順位取得
-	DWORD	GetUniqueID(void) const;	// ユニークID取得
-	bool	IsUpdate(void) const;		// 更新状況取得
-	bool	IsDraw(void) const;			// 描画状況取得
-	bool	IsDeath(void) const;		// 死亡フラグ取得
-	CObject	*GetObject(void);			// オブジェクト取得
-	CObject	*GetPrev(void) const;		// 前オブジェクト取得
-	CObject	*GetNext(void) const;		// 次オブジェクト取得
+	ELabel	GetLabel(void) const		{ return m_label; }		// ラベル取得
+	EDim	GetDimension(void) const	{ return m_dimension; }	// 次元取得
+	int		GetPriority(void) const		{ return m_nPriority; }	// 優先順位取得
+	DWORD	GetUniqueID(void) const		{ return m_dwID; }		// ユニークID取得
+	bool	IsUpdate(void) const		{ return m_bUpdate; }	// 更新状況取得
+	bool	IsDraw(void) const			{ return m_bDraw; }		// 描画状況取得
+	bool	IsDeath(void) const			{ return m_bDeath; }	// 死亡フラグ取得
+	CObject	*GetObject(void)			{ return this; }		// オブジェクト取得
+	CObject	*GetPrev(void) const		{ return m_pPrev; }		// 前オブジェクト取得
+	CObject	*GetNext(void) const		{ return m_pNext; }		// 次オブジェクト取得
 
 #ifdef _DEBUG
 

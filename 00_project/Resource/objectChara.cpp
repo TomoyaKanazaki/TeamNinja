@@ -133,6 +133,34 @@ void CObjectChara::Draw(CShader *pShader)
 }
 
 //============================================================
+//	更新状況の設定処理
+//============================================================
+void CObjectChara::SetEnableUpdate(const bool bUpdate)
+{
+	// 引数の更新状況を設定
+	CObject::SetEnableUpdate(bUpdate);	// 自身
+	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
+	{ // パーツの総数分繰り返す
+
+		m_apMultiModel[nCntChara]->SetEnableUpdate(bUpdate);
+	}
+}
+
+//============================================================
+//	描画状況の設定処理
+//============================================================
+void CObjectChara::SetEnableDraw(const bool bDraw)
+{
+	// 引数の描画状況を設定
+	CObject::SetEnableDraw(bDraw);	// 自身
+	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
+	{ // パーツの総数分繰り返す
+
+		m_apMultiModel[nCntChara]->SetEnableDraw(bDraw);
+	}
+}
+
+//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectChara::SetVec3Position(const D3DXVECTOR3& rPos)
