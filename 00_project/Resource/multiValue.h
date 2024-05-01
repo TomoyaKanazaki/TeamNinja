@@ -23,6 +23,24 @@
 class CMultiValue : public CObject
 {
 public:
+	// 横配置列挙
+	enum EAlignX
+	{
+		XALIGN_LEFT = 0,	// 左揃え
+		XALIGN_CENTER,		// 中央揃え
+		XALIGN_RIGHT,		// 右揃え
+		XALIGN_MAX,			// この列挙型の総数
+	};
+
+	// 縦配置列挙
+	enum EAlignY
+	{
+		YALIGN_TOP = 0,		// 上揃え
+		YALIGN_CENTER,		// 中央揃え
+		YALIGN_BOTTOM,		// 下揃え
+		YALIGN_MAX,			// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CMultiValue();
 
@@ -52,23 +70,32 @@ public:
 		const int nDigit,			// 桁数
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rSize,	// 大きさ
-		const D3DXVECTOR3& rSpace,	// 列間
+		const D3DXVECTOR3& rSpace,	// 空白
+		const EAlignX alignX = XALIGN_CENTER,	// 横配置
+		const EAlignY alignY = YALIGN_CENTER,	// 縦配置
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
 
 	// メンバ関数
-	void AddNum(const int nNum);		// 数値加算
-	void SetNum(const int nNum);		// 数値設定
-	HRESULT SetDigit(const int nDigit);	// 桁数設定
-	void SetMin(const int nMin);		// 最小値設定
-	void SetMax(const int nMax);		// 最大値設定
-	int GetNum(void) const;				// 数値取得
-	int GetDigit(void) const;			// 桁数取得
-	int GetMin(void) const;				// 最小値取得
-	int GetMax(void) const;				// 最大値取得
-	void SetSpace(const D3DXVECTOR3& rSpace);	// 列間設定
-	D3DXVECTOR3 GetSpace(void) const;			// 列間取得
+	void AddNum(const int nNum);				// 数値加算
+	void SetNum(const int nNum);				// 数値設定
+	HRESULT SetDigit(const int nDigit);			// 桁数設定
+	void SetMin(const int nMin);				// 最小値設定
+	void SetMax(const int nMax);				// 最大値設定
+	int GetNum(void) const;						// 数値取得
+	int GetDigit(void) const;					// 桁数取得
+	int GetMin(void) const;						// 最小値取得
+	int GetMax(void) const;						// 最大値取得
+	void SetAlignX(const EAlignX align);		// 横配置設定
+	EAlignX GetAlignX(void) const;				// 横配置取得
+	void SetAlignY(const EAlignY align);		// 縦配置設定
+	EAlignY GetAlignY(void) const;				// 縦配置取得
+	float GetValueWidth(void) const;			// 数字全体の横幅取得
+	float GetValueHeight(void) const;			// 数字全体の縦幅取得
+	D3DXVECTOR3 GetValueSize(void) const;		// 数字全体の大きさ取得
+	void SetSpace(const D3DXVECTOR3& rSpace);	// 空白設定
+	D3DXVECTOR3 GetSpace(void) const;			// 空白取得
 	void SetType(const CValue::EType type);		// 種類設定
 
 private:
@@ -84,8 +111,10 @@ private:
 	D3DXVECTOR3 m_pos;		// 原点位置
 	D3DXVECTOR3 m_rot;		// 原点向き
 	D3DXVECTOR3 m_size;		// 大きさ
-	D3DXVECTOR3 m_space;	// 列間
+	D3DXVECTOR3 m_space;	// 空白
 	D3DXCOLOR m_col;		// 色
+	EAlignX m_alignX;		// 横配置
+	EAlignY m_alignY;		// 縦配置
 	int m_nNum;	// 数字
 	int m_nMin;	// 最小値
 	int m_nMax;	// 最大値

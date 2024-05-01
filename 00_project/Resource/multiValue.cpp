@@ -26,14 +26,16 @@ namespace
 //	コンストラクタ
 //============================================================
 CMultiValue::CMultiValue() : CObject(CObject::LABEL_UI, CObject::DIM_2D, object::DEFAULT_PRIO),
-	m_pos	(VEC3_ZERO),	// 原点位置
-	m_rot	(VEC3_ZERO),	// 原点向き
-	m_size	(VEC3_ZERO),	// 大きさ
-	m_space	(VEC3_ZERO),	// 列間
-	m_col	(XCOL_WHITE),	// 色
-	m_nNum	(0),			// 数字
-	m_nMin	(0),			// 最小値
-	m_nMax	(0)				// 最大値
+	m_pos		(VEC3_ZERO),		// 原点位置
+	m_rot		(VEC3_ZERO),		// 原点向き
+	m_size		(VEC3_ZERO),		// 大きさ
+	m_space		(VEC3_ZERO),		// 空白
+	m_col		(XCOL_WHITE),		// 色
+	m_alignX	(XALIGN_CENTER),	// 横配置
+	m_alignY	(YALIGN_CENTER),	// 縦配置
+	m_nNum		(0),				// 数字
+	m_nMin		(0),				// 最小値
+	m_nMax		(0)					// 最大値
 {
 	// 数字リストをクリア
 	m_listValue.clear();
@@ -53,14 +55,16 @@ CMultiValue::~CMultiValue()
 HRESULT CMultiValue::Init(void)
 {
 	// メンバ変数を初期化
-	m_pos	= VEC3_ZERO;	// 原点位置
-	m_rot	= VEC3_ZERO;	// 原点向き
-	m_size	= VEC3_ZERO;	// 大きさ
-	m_space	= VEC3_ZERO;	// 列間
-	m_col	= XCOL_WHITE;	// 色
-	m_nNum	= 0;			// 数字
-	m_nMin	= 0;			// 最小値
-	m_nMax	= 0;			// 最大値
+	m_pos		= VEC3_ZERO;		// 原点位置
+	m_rot		= VEC3_ZERO;		// 原点向き
+	m_size		= VEC3_ZERO;		// 大きさ
+	m_space		= VEC3_ZERO;		// 空白
+	m_col		= XCOL_WHITE;		// 色
+	m_alignX	= XALIGN_CENTER;	// 横配置
+	m_alignY	= YALIGN_CENTER;	// 縦配置
+	m_nNum		= 0;				// 数字
+	m_nMin		= 0;				// 最小値
+	m_nMax		= 0;				// 最大値
 
 	// 数字リストを初期化
 	m_listValue.clear();
@@ -97,9 +101,27 @@ void CMultiValue::Uninit(void)
 void CMultiValue::Update(void)
 {
 	// TODO
-	D3DXVECTOR3 rot = GetVec3Rotation();
-	rot.z += 0.01f;
-	SetVec3Rotation(rot);
+	if (GET_INPUTKEY->IsPress(DIK_W))
+	{
+		m_pos.y -= 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_S))
+	{
+		m_pos.y += 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_A))
+	{
+		m_pos.x -= 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_D))
+	{
+		m_pos.x += 1.0f;
+	}
+
+	// TODO
+	//D3DXVECTOR3 rot = GetVec3Rotation();
+	//rot.z += 0.01f;
+	//SetVec3Rotation(rot);
 
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
@@ -258,7 +280,9 @@ CMultiValue *CMultiValue::Create
 	const int nDigit,			// 桁数
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rSize,	// 大きさ
-	const D3DXVECTOR3& rSpace,	// 列間
+	const D3DXVECTOR3& rSpace,	// 空白
+	const EAlignX alignX,		// 横配置
+	const EAlignY alignY,		// 縦配置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXCOLOR& rCol		// 色
 )
@@ -283,7 +307,13 @@ CMultiValue *CMultiValue::Create
 		}
 
 		// 桁数を設定
-		pMultiValue->SetDigit(nDigit);
+		if (FAILED(pMultiValue->SetDigit(nDigit)))
+		{ // 設定に失敗した場合
+
+			// マルチ数字の破棄
+			SAFE_DELETE(pMultiValue);
+			return nullptr;
+		}
 
 		// 数字を設定
 		pMultiValue->SetNum(nNum);
@@ -303,8 +333,14 @@ CMultiValue *CMultiValue::Create
 		// 色を設定
 		pMultiValue->SetColor(rCol);
 
-		// 列間を設定
+		// 空白を設定
 		pMultiValue->SetSpace(rSpace);
+
+		// 横配置を設定
+		pMultiValue->SetAlignX(alignX);
+
+		// 縦配置を設定
+		pMultiValue->SetAlignY(alignY);
 
 		// 確保したアドレスを返す
 		return pMultiValue;
@@ -495,11 +531,115 @@ int CMultiValue::GetMax(void) const
 }
 
 //============================================================
-//	列間の設定処理
+//	横配置の設定処理
+//============================================================
+void CMultiValue::SetAlignX(const EAlignX align)
+{
+	// 引数の横配置を設定
+	m_alignX = align;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	横配置の取得処理
+//============================================================
+CMultiValue::EAlignX CMultiValue::GetAlignX(void) const
+{
+	// 横配置を返す
+	return m_alignX;
+}
+
+//============================================================
+//	縦配置の設定処理
+//============================================================
+void CMultiValue::SetAlignY(const EAlignY align)
+{
+	// 引数の縦配置を設定
+	m_alignY = align;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	縦配置の取得処理
+//============================================================
+CMultiValue::EAlignY CMultiValue::GetAlignY(void) const
+{
+	// 縦配置を返す
+	return m_alignY;
+}
+
+//============================================================
+//	数字全体の横幅取得処理
+//============================================================
+float CMultiValue::GetValueWidth(void) const
+{
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+
+	float fValueWidth = 0.0f;	// 数字全体の縦幅
+	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
+	for (int i = 0; i < nEndNumID; i++)
+	{ // 終端数字を抜いた桁数分繰り返す
+
+		// 次の数字までの列間を加算
+		fValueWidth += m_space.x;
+	}
+
+	// 先頭と終端の数字の無視されたサイズを加算
+	fValueWidth += m_listValue.front()->GetVec3Sizing().x * 0.5f;	// 先頭数字の原点左サイズ
+	fValueWidth += m_listValue.back()->GetVec3Sizing().x * 0.5f;	// 終端数字の原点右サイズ
+
+	// 数字全体の縦幅を返す
+	return fValueWidth;
+}
+
+//============================================================
+//	数字全体の縦幅取得処理
+//============================================================
+float CMultiValue::GetValueHeight(void) const
+{
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+
+	float fValueHeight = 0.0f;	// 数字全体の縦幅
+	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
+	for (int i = 0; i < nEndNumID; i++)
+	{ // 終端数字を抜いた桁数分繰り返す
+
+		// 次の数字までの行間を加算
+		fValueHeight += m_space.y;
+	}
+
+	// 先頭と終端の数字の無視されたサイズを加算
+	fValueHeight += m_listValue.front()->GetVec3Sizing().y * 0.5f;	// 先頭数字の原点上サイズ
+	fValueHeight += m_listValue.back()->GetVec3Sizing().y * 0.5f;	// 終端数字の原点下サイズ
+
+	// 数字全体の縦幅を返す
+	return fValueHeight;
+}
+
+//============================================================
+//	数字全体の大きさ取得処理
+//============================================================
+D3DXVECTOR3 CMultiValue::GetValueSize(void) const
+{
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { assert(false); return VEC3_ZERO; }
+
+	// 数字全体の大きさを返す
+	return D3DXVECTOR3(GetValueWidth(), GetValueHeight(), 0.0f);
+}
+
+//============================================================
+//	空白の設定処理
 //============================================================
 void CMultiValue::SetSpace(const D3DXVECTOR3& rSpace)
 {
-	// 引数の列間を設定
+	// 引数の空白を設定
 	m_space = rSpace;
 
 	// 相対位置の設定
@@ -507,11 +647,11 @@ void CMultiValue::SetSpace(const D3DXVECTOR3& rSpace)
 }
 
 //============================================================
-//	列間取得処理
+//	空白取得処理
 //============================================================
 D3DXVECTOR3 CMultiValue::GetSpace(void) const
 {
-	// 列間を返す
+	// 空白を返す
 	return m_space;
 }
 
@@ -543,33 +683,16 @@ void CMultiValue::Release(void)
 //============================================================
 void CMultiValue::SetPositionRelative(void)
 {
-	// TODO：相対位置の設定
-#if 0
-	int nCntDigit = 0;	// 桁数インデックス
-	for (auto& rList : m_listValue)
-	{ // 数字の桁数分繰り返す
-
-		// 原点の位置から数字の位置を設定
-		rList->SetVec3Position(m_pos + (m_space * (float)nCntDigit));
-
-		// 桁数を加算
-		nCntDigit++;
-	}
-#else
 	// 数字がない場合抜ける
 	if ((int)m_listValue.size() <= 0) { return; }
 
-	//float fTextHeight	= GetTextHeight() * 0.5f;	// テキスト全体の縦幅
-	//float fFrontHeight	= m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の縦幅
-	//float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
+	D3DXVECTOR3 sizeValue	= GetValueSize() * 0.5f;	// 数字全体の大きさ
+	D3DXVECTOR3 sizeHead	= m_listValue.front()->GetVec3Sizing() * 0.5f;		// 先頭数字の大きさ
+	D3DXVECTOR3 rotStart	= D3DXVECTOR3(m_rot.z + HALF_PI, m_rot.z, 0.0f);	// 文字の開始向き
 
 	D3DXVECTOR3 posOffset = VEC3_ZERO;	// 文字の開始オフセット
-	//posOffset.x = ;
-	//posOffset.y = ;
-
-	D3DXVECTOR3 rotStart = VEC3_ZERO;	// 文字の開始向き
-	rotStart.x = m_rot.z + HALF_PI;		// 横方向の向き
-	rotStart.y = m_rot.z;				// 縦方向の向き
+	posOffset.x = -sizeValue.x + sizeHead.x - (sizeValue.x * (m_alignX - 1));
+	posOffset.y = -sizeValue.y + sizeHead.y - (sizeValue.y * (m_alignY - 1));
 
 	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(rotStart.x) * posOffset.x + sinf(rotStart.y) * posOffset.y;	// 開始位置X
@@ -586,7 +709,6 @@ void CMultiValue::SetPositionRelative(void)
 		posStart.x += sinf(rotStart.x) * m_space.x + sinf(rotStart.y) * m_space.y;
 		posStart.y += cosf(rotStart.x) * m_space.x + cosf(rotStart.y) * m_space.y;
 	}
-#endif
 }
 
 //============================================================

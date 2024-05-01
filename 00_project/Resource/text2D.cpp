@@ -397,17 +397,17 @@ float CText2D::GetLineHeight(void) const
 //============================================================
 //	横配置の設定処理
 //============================================================
-void CText2D::SetAlignX(const CString2D::EAlignX alignX)
+void CText2D::SetAlignX(const CString2D::EAlignX align)
 {
 	// 引数の横配置を設定
-	m_alignX = alignX;
+	m_alignX = align;
 
 	for (auto& rList : m_listString)
 	{ // 文字列の格納数分繰り返す
 
 		// 文字列横幅の設定
 		assert(rList != nullptr);
-		rList->SetAlignX(alignX);
+		rList->SetAlignX(align);
 	}
 
 	// 相対位置の設定
@@ -426,10 +426,10 @@ CString2D::EAlignX CText2D::GetAlignX(void) const
 //============================================================
 //	縦配置の設定処理
 //============================================================
-void CText2D::SetAlignY(const EAlignY alignY)
+void CText2D::SetAlignY(const EAlignY align)
 {
 	// 引数の縦配置を設定
-	m_alignY = alignY;
+	m_alignY = align;
 
 	// 相対位置の設定
 	SetPositionRelative();
