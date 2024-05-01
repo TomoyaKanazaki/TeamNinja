@@ -328,16 +328,17 @@ float CText2D::GetTextHeight(void) const
 	if ((int)m_listString.size() <= 0) { assert(false); return 0.0f; }
 
 	float fTextHeight = 0.0f;	// テキストの縦幅
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
+	int nEndStrID = (int)m_listString.size() - 1;	// 終端文字列のインデックス
+	for (int i = 0; i < nEndStrID; i++)
+	{ // 終端文字列を抜いた文字列数分繰り返す
 
-		// 文字列縦幅を加算
-		assert(rList != nullptr);
-		fTextHeight += rList->GetHeight();
+		// 次の文字列までの行間を加算
+		fTextHeight += m_fLineHeight;
 	}
 
-	// テキスト内の全行間分を加算
-	fTextHeight += m_fLineHeight * ((int)m_listString.size() - 1);
+	// 先頭と終端の文字列の無視されたサイズを加算
+	fTextHeight += m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の原点上サイズ
+	fTextHeight += m_listString.back()->GetHeight() * 0.5f;		// 終端文字列の原点下サイズ
 
 	// テキストの縦幅を返す
 	return fTextHeight;
@@ -476,8 +477,7 @@ void CText2D::SetPositionRelative(void)
 		rList->SetVec3Position(posStart);
 
 		// 次の設定座標の開始点を保存
-		float fNextStart = m_fLineHeight + rList->GetHeight();	// 次の開始点
-		posStart.x += sinf(m_rot.z) * fNextStart;
-		posStart.y += cosf(m_rot.z) * fNextStart;
+		posStart.x += sinf(m_rot.z) * m_fLineHeight;
+		posStart.y += cosf(m_rot.z) * m_fLineHeight;
 	}
 }

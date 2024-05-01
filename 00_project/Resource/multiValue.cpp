@@ -528,7 +528,7 @@ void CMultiValue::SetTexture(const CValue::ETexture texture)
 		rList->SetTexture(texture);
 
 		// TODO
-		rList->BindTexture(-1);
+		//rList->BindTexture(-1);
 	}
 }
 
@@ -566,14 +566,17 @@ void CMultiValue::SetPositionRelative(void)
 	//float fFrontHeight	= m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の縦幅
 	//float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
 
-	float fRotX = m_rot.z + D3DX_PI * 0.5f;
-	float fRotY = m_rot.z;
-
 	D3DXVECTOR3 posOffset = VEC3_ZERO;	// 文字の開始オフセット
+	//posOffset.x = ;
+	//posOffset.y = ;
+
+	D3DXVECTOR3 rotStart = VEC3_ZERO;	// 文字の開始向き
+	rotStart.x = m_rot.z + HALF_PI;		// 横方向の向き
+	rotStart.y = m_rot.z;				// 縦方向の向き
 
 	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
-	posStart.x = m_pos.x + sinf(fRotX) * posOffset.x + sinf(fRotY) * posOffset.y;
-	posStart.y = m_pos.y + cosf(fRotX) * posOffset.x + cosf(fRotY) * posOffset.y;
+	posStart.x = m_pos.x + sinf(rotStart.x) * posOffset.x + sinf(rotStart.y) * posOffset.y;	// 開始位置X
+	posStart.y = m_pos.y + cosf(rotStart.x) * posOffset.x + cosf(rotStart.y) * posOffset.y;	// 開始位置Y
 
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
@@ -582,14 +585,9 @@ void CMultiValue::SetPositionRelative(void)
 		assert(rList != nullptr);
 		rList->SetVec3Position(posStart);
 
-		// 
-		D3DXVECTOR3 offsetStart = VEC3_ZERO;	// 文字の開始オフセット
-		offsetStart.x = m_space.x + m_size.x;
-		offsetStart.y = 0.0f;
-
 		// 次の設定座標の開始点を保存
-		posStart.x += sinf(fRotX) * offsetStart.x + sinf(fRotY) * offsetStart.y;
-		posStart.y += cosf(fRotX) * offsetStart.x + cosf(fRotY) * offsetStart.y;
+		posStart.x += sinf(rotStart.x) * m_space.x + sinf(rotStart.y) * m_space.y;
+		posStart.y += cosf(rotStart.x) * m_space.x + cosf(rotStart.y) * m_space.y;
 	}
 #endif
 }

@@ -83,18 +83,26 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-#if 0
-	CMultiValue::Create(CValue::TEXTURE_NORMAL, 12345, 8, SCREEN_CENT, VEC3_ONE * 60.0f, D3DXVECTOR3(5.0f, 0.0f, 0.0f));
+#if 1
+	CMultiValue::Create(CValue::TEXTURE_NORMAL, 12345, 8, SCREEN_CENT, VEC3_ONE * 60.0f, D3DXVECTOR3(0.0f, 70.0f, 0.0f));
+
+	//CObject2D *pp = CObject2D::Create(SCREEN_CENT - D3DXVECTOR3(150.0f, 0.0f, 0.0f), D3DXVECTOR3(150.0f, p->GetTextHeight(), 0.0f));
+	//pp->SetPriority(6);
+	//pp->SetLabel(CObject::LABEL_EFFECT);
 #endif
 
-#if 1
-	CText2D *p = CText2D::Create(GET_MANAGER->GetFont()->Regist("わんぱくルイカ").pFontChar, SCREEN_CENT, 100.0f, 0.0f);
+#if 0
+	CText2D *p = CText2D::Create(GET_MANAGER->GetFont()->Regist("わんぱくルイカ").pFontChar, SCREEN_CENT + D3DXVECTOR3(150.0f, 0.0f, 0.0f), 100.0f, 100.0f);
 	p->AddString(L"aaa");
 	p->AddString(L"iii");
 	p->AddString(L"uuu");
 	p->AddString(L"aaa");
 	p->AddString(L"iii");
 	p->AddString(L"uuu");
+
+	CObject2D *pp = CObject2D::Create(SCREEN_CENT - D3DXVECTOR3(150.0f, 0.0f, 0.0f), D3DXVECTOR3(150.0f, p->GetTextHeight(), 0.0f));
+	pp->SetPriority(6);
+	pp->SetLabel(CObject::LABEL_EFFECT);
 #endif
 
 	// 成功を返す
