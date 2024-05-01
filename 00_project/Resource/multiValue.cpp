@@ -100,29 +100,6 @@ void CMultiValue::Uninit(void)
 //============================================================
 void CMultiValue::Update(void)
 {
-	// TODO
-	if (GET_INPUTKEY->IsPress(DIK_W))
-	{
-		m_pos.y -= 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_S))
-	{
-		m_pos.y += 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_A))
-	{
-		m_pos.x -= 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_D))
-	{
-		m_pos.x += 1.0f;
-	}
-
-	// TODO
-	//D3DXVECTOR3 rot = GetVec3Rotation();
-	//rot.z += 0.01f;
-	//SetVec3Rotation(rot);
-
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
 
@@ -378,6 +355,49 @@ void CMultiValue::SetNum(const int nNum)
 }
 
 //============================================================
+//	最小値の設定処理
+//============================================================
+void CMultiValue::SetMin(const int nMin)
+{
+	// 例外処理
+	assert(nMin >= 0 && nMin <= m_nMax);
+
+	// 引数の最小値を設定
+	m_nMin = nMin;
+
+	// 数字の補正
+	useful::LimitNum(m_nNum, m_nMin, m_nMax);
+}
+
+//============================================================
+//	最大値の設定処理
+//============================================================
+void CMultiValue::SetMax(const int nMax)
+{
+#if _DEBUG	// 最大値が正規かチェック
+
+	int nLimit = 1;	// 最大値の計算用
+	int nDigit = (int)m_listValue.size();	// 桁数
+	for (int i = 0; i < nDigit; i++)
+	{ // 数字の桁数分繰り返す
+
+		// 桁数を増やす
+		nLimit *= 10;
+	}
+
+	// 例外処理
+	assert(nMax <= nLimit - 1 && nMax >= m_nMin);
+
+#endif	// _DEBUG
+
+	// 引数の最大値を設定
+	m_nMax = nMax;
+
+	// 数字の補正
+	useful::LimitNum(m_nNum, m_nMin, m_nMax);
+}
+
+//============================================================
 //	桁数の設定処理
 //============================================================
 HRESULT CMultiValue::SetDigit(const int nDigit)
@@ -452,85 +472,6 @@ HRESULT CMultiValue::SetDigit(const int nDigit)
 }
 
 //============================================================
-//	最小値の設定処理
-//============================================================
-void CMultiValue::SetMin(const int nMin)
-{
-	// 例外処理
-	assert(nMin >= 0 && nMin <= m_nMax);
-
-	// 引数の最小値を設定
-	m_nMin = nMin;
-
-	// 数字の補正
-	useful::LimitNum(m_nNum, m_nMin, m_nMax);
-}
-
-//============================================================
-//	最大値の設定処理
-//============================================================
-void CMultiValue::SetMax(const int nMax)
-{
-#if _DEBUG	// 最大値が正規かチェック
-
-	int nLimit = 1;	// 最大値の計算用
-	int nDigit = (int)m_listValue.size();	// 桁数
-	for (int i = 0; i < nDigit; i++)
-	{ // 数字の桁数分繰り返す
-
-		// 桁数を増やす
-		nLimit *= 10;
-	}
-
-	// 例外処理
-	assert(nMax <= nLimit - 1 && nMax >= m_nMin);
-
-#endif	// _DEBUG
-
-	// 引数の最大値を設定
-	m_nMax = nMax;
-
-	// 数字の補正
-	useful::LimitNum(m_nNum, m_nMin, m_nMax);
-}
-
-//============================================================
-//	数値取得処理
-//============================================================
-int CMultiValue::GetNum(void) const
-{
-	// 数字の値を返す
-	return m_nNum;
-}
-
-//============================================================
-//	桁数取得処理
-//============================================================
-int CMultiValue::GetDigit(void) const
-{
-	// 桁数を返す
-	return (int)m_listValue.size();
-}
-
-//============================================================
-//	最小値取得処理
-//============================================================
-int CMultiValue::GetMin(void) const
-{
-	// 最小値を返す
-	return m_nMin;
-}
-
-//============================================================
-//	最大値取得処理
-//============================================================
-int CMultiValue::GetMax(void) const
-{
-	// 最大値を返す
-	return m_nMax;
-}
-
-//============================================================
 //	横配置の設定処理
 //============================================================
 void CMultiValue::SetAlignX(const EAlignX align)
@@ -540,15 +481,6 @@ void CMultiValue::SetAlignX(const EAlignX align)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	横配置の取得処理
-//============================================================
-CMultiValue::EAlignX CMultiValue::GetAlignX(void) const
-{
-	// 横配置を返す
-	return m_alignX;
 }
 
 //============================================================
@@ -564,12 +496,29 @@ void CMultiValue::SetAlignY(const EAlignY align)
 }
 
 //============================================================
-//	縦配置の取得処理
+//	種類の設定処理
 //============================================================
-CMultiValue::EAlignY CMultiValue::GetAlignY(void) const
+void CMultiValue::SetType(const CValue::EType type)
 {
-	// 縦配置を返す
-	return m_alignY;
+	for (auto& rList : m_listValue)
+	{ // 数字の桁数分繰り返す
+
+		// 数字種類の設定
+		assert(rList != nullptr);
+		rList->SetType(type);
+	}
+}
+
+//============================================================
+//	空白の設定処理
+//============================================================
+void CMultiValue::SetSpace(const D3DXVECTOR3& rSpace)
+{
+	// 引数の空白を設定
+	m_space = rSpace;
+
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -632,41 +581,6 @@ D3DXVECTOR3 CMultiValue::GetValueSize(void) const
 
 	// 数字全体の大きさを返す
 	return D3DXVECTOR3(GetValueWidth(), GetValueHeight(), 0.0f);
-}
-
-//============================================================
-//	空白の設定処理
-//============================================================
-void CMultiValue::SetSpace(const D3DXVECTOR3& rSpace)
-{
-	// 引数の空白を設定
-	m_space = rSpace;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	空白取得処理
-//============================================================
-D3DXVECTOR3 CMultiValue::GetSpace(void) const
-{
-	// 空白を返す
-	return m_space;
-}
-
-//============================================================
-//	種類の設定処理
-//============================================================
-void CMultiValue::SetType(const CValue::EType type)
-{
-	for (auto& rList : m_listValue)
-	{ // 数字の桁数分繰り返す
-
-		// 数字種類の設定
-		assert(rList != nullptr);
-		rList->SetType(type);
-	}
 }
 
 //============================================================

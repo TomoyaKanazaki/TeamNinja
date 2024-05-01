@@ -80,23 +80,24 @@ public:
 	// メンバ関数
 	void AddNum(const int nNum);				// 数値加算
 	void SetNum(const int nNum);				// 数値設定
-	HRESULT SetDigit(const int nDigit);			// 桁数設定
 	void SetMin(const int nMin);				// 最小値設定
 	void SetMax(const int nMax);				// 最大値設定
-	int GetNum(void) const;						// 数値取得
-	int GetDigit(void) const;					// 桁数取得
-	int GetMin(void) const;						// 最小値取得
-	int GetMax(void) const;						// 最大値取得
+	HRESULT SetDigit(const int nDigit);			// 桁数設定
 	void SetAlignX(const EAlignX align);		// 横配置設定
-	EAlignX GetAlignX(void) const;				// 横配置取得
 	void SetAlignY(const EAlignY align);		// 縦配置設定
-	EAlignY GetAlignY(void) const;				// 縦配置取得
+	void SetType(const CValue::EType type);		// 種類設定
+	void SetSpace(const D3DXVECTOR3& rSpace);	// 空白設定
 	float GetValueWidth(void) const;			// 数字全体の横幅取得
 	float GetValueHeight(void) const;			// 数字全体の縦幅取得
 	D3DXVECTOR3 GetValueSize(void) const;		// 数字全体の大きさ取得
-	void SetSpace(const D3DXVECTOR3& rSpace);	// 空白設定
-	D3DXVECTOR3 GetSpace(void) const;			// 空白取得
-	void SetType(const CValue::EType type);		// 種類設定
+
+	int GetNum(void) const		{ return m_nNum; }	// 数値取得
+	int GetMin(void) const		{ return m_nMin; }	// 最小値取得
+	int GetMax(void) const		{ return m_nMax; }	// 最大値取得
+	int GetDigit(void) const	{ return (int)m_listValue.size(); }	// 桁数取得
+	EAlignX GetAlignX(void) const		{ return m_alignX; }		// 横配置取得
+	EAlignY GetAlignY(void) const		{ return m_alignY; }		// 縦配置取得
+	D3DXVECTOR3 GetSpace(void) const	{ return m_space; }			// 空白取得
 
 private:
 	// オーバーライド関数
@@ -104,7 +105,7 @@ private:
 
 	// メンバ関数
 	void SetPositionRelative(void);	// 相対位置設定
-	void SetTexNum(void);	// 数字のテクスチャ座標設定
+	void SetTexNum(void);			// 数字のテクスチャ座標設定
 
 	// メンバ変数
 	std::list<CValue*> m_listValue;	// 数字リスト
@@ -115,9 +116,9 @@ private:
 	D3DXCOLOR m_col;		// 色
 	EAlignX m_alignX;		// 横配置
 	EAlignY m_alignY;		// 縦配置
-	int m_nNum;	// 数字
-	int m_nMin;	// 最小値
-	int m_nMax;	// 最大値
+	int m_nNum;				// 数字
+	int m_nMin;				// 最小値
+	int m_nMax;				// 最大値
 };
 
 #endif	// _MULTIVALUE_H_
