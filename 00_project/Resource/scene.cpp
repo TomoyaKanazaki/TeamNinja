@@ -20,6 +20,7 @@
 
 #include "stage.h"
 #include "player.h"
+#include "multiValue.h"
 
 //************************************************************
 //	定数宣言
@@ -75,6 +76,8 @@ HRESULT CScene::Init(void)
 
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
+
+	CMultiValue::Create(CValue::TEXTURE_NORMAL, 12345, 8, VEC3_ONE * 100.0f, VEC3_ONE * 60.0f, D3DXVECTOR3(40.0f, 0.0f, 0.0f));
 
 	// 成功を返す
 	return S_OK;

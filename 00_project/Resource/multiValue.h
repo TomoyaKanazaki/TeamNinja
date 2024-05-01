@@ -17,14 +17,6 @@
 #include "value.h"
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace multivalue
-{
-	const int MAX_DIGIT = 8;	// 桁数の最大数
-}
-
-//************************************************************
 //	前方宣言
 //************************************************************
 class CValue;	// 数字クラス
@@ -65,7 +57,7 @@ public:
 		const int nDigit,				// 桁数
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rSize,		// 大きさ
-		const D3DXVECTOR3& rSpace,		// 行間
+		const D3DXVECTOR3& rSpace,		// 列間
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
@@ -80,28 +72,28 @@ public:
 	int GetDigit(void) const;			// 桁数取得
 	int GetMin(void) const;				// 最小値取得
 	int GetMax(void) const;				// 最大値取得
-
-	void SetSpace(const D3DXVECTOR3& rSpace);			// 行間設定
-	D3DXVECTOR3 GetSpace(void) const;					// 行間取得
+	void SetSpace(const D3DXVECTOR3& rSpace);			// 列間設定
+	D3DXVECTOR3 GetSpace(void) const;					// 列間取得
 	void SetTexture(const CValue::ETexture texture);	// テクスチャ設定
-
 
 private:
 	// オーバーライド関数
 	void Release(void) override;	// 破棄
 
 	// メンバ関数
-	void SetNumPosition(void);	// 数字の位置設定
-	void SetTexNum(void);		// 数字のテクスチャ座標設定
+	void SetPositionRelative(void);	// 相対位置設定
+	void SetTexNum(void);	// 数字のテクスチャ座標設定
 
 	// メンバ変数
-	CValue *m_apValue[multivalue::MAX_DIGIT];	// 数値の情報
-	D3DXVECTOR3 m_pos;		// 位置
-	D3DXVECTOR3 m_space;	// 数値の行間
-	int m_nNum;		// 数字
-	int m_nDigit;	// 桁数
-	int m_nMin;		// 最小値
-	int m_nMax;		// 最大値
+	std::list<CValue*> m_listValue;	// 数字リスト
+	D3DXVECTOR3 m_pos;		// 原点位置
+	D3DXVECTOR3 m_rot;		// 原点向き
+	D3DXVECTOR3 m_size;		// 大きさ
+	D3DXVECTOR3 m_space;	// 列間
+	D3DXCOLOR m_col;		// 色
+	int m_nNum;	// 数字
+	int m_nMin;	// 最小値
+	int m_nMax;	// 最大値
 };
 
 #endif	// _MULTIVALUE_H_
