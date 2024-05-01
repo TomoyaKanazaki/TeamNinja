@@ -50,18 +50,12 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void BindTexture(const int nTextureID) override;		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass) override;	// テクスチャ割当 (パス)
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
-	D3DXMATRIX *GetPtrMtxWorld(void) override;				// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const override;			// マトリックス取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }	// 大きさ取得
 
 	// 静的メンバ関数
 	static CObjectBillboard *Create	// 生成
@@ -75,11 +69,18 @@ public:
 	);
 
 	// メンバ関数
-	void SetOrigin(const EOrigin origin);	// 原点設定
-	EOrigin GetOrigin(void) const;			// 原点取得
-	void SetRotate(const ERotate rotate);	// 回転設定
-	ERotate GetRotate(void) const;			// 回転取得
-	CRenderState *GetRenderState(void);		// レンダーステート情報取得
+	CRenderState *GetRenderState(void);			// レンダーステート情報取得
+	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	void SetOrigin(const EOrigin origin);		// 原点設定
+	void SetRotate(const ERotate rotate);		// 回転設定
+	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_col; }			// 色取得
+	EOrigin GetOrigin(void) const		{ return m_origin; }		// 原点取得
+	ERotate GetRotate(void) const		{ return m_rotate; }		// 回転取得
+	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_mtxWorld; }		// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const	{ return m_mtxWorld; }		// マトリックス取得
 
 protected:
 	// メンバ関数
@@ -87,7 +88,7 @@ protected:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画

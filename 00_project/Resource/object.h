@@ -114,29 +114,6 @@ public:
 	virtual void Release(void)	= 0;	// 破棄
 
 	// 仮想関数
-	virtual void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
-	virtual void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
-	virtual int GetTextureIndex(void) const;			// テクスチャインデックス取得
-	virtual void BindModel(const int nModelID);			// モデル割当 (インデックス)
-	virtual void BindModel(const char *pModelPass);		// モデル割当 (パス)
-	virtual int GetModelIndex(void) const;				// モデルインデックス取得
-	virtual void SetIndex(const int nIndex);			// インデックス設定
-	virtual int GetIndex(void) const;					// インデックス取得
-	virtual void SetState(const int nState);			// 状態設定
-	virtual int GetState(void) const;					// 状態取得
-	virtual void SetType(const int nType);				// 種類設定
-	virtual int GetType(void) const;					// 種類取得
-	virtual void SetAngle(const float fAngle);			// 角度設定
-	virtual float GetAngle(void) const;					// 角度取得
-	virtual void SetLength(const float fLength);		// 長さ設定
-	virtual float GetLength(void) const;				// 長さ取得
-	virtual void SetRadius(const float fRadius);		// 半径設定
-	virtual float GetRadius(void) const;				// 半径取得
-	virtual void SetHeight(const float fHeight);		// 縦幅設定
-	virtual float GetHeight(void) const;				// 縦幅取得
-	virtual void SetScale(const float fScale);			// 拡大率設定
-	virtual float GetScale(void) const;					// 拡大率取得
-
 	virtual void SetVec2Position(const D3DXVECTOR2& rPos);	// 二軸の位置設定
 	virtual D3DXVECTOR2 GetVec2Position(void) const;		// 二軸の位置取得
 	virtual void SetVec3Position(const D3DXVECTOR3& rPos);	// 三軸の位置設定
@@ -149,17 +126,11 @@ public:
 	virtual D3DXVECTOR3 GetVec3Sizing(void) const;			// 三軸の大きさ取得
 	virtual void SetVec3Scaling(const D3DXVECTOR3& rSacle);	// 拡大率設定
 	virtual D3DXVECTOR3 GetVec3Scaling(void) const;			// 拡大率取得
-	virtual void SetColor(const D3DXCOLOR& rCol);			// 色設定
-	virtual D3DXCOLOR GetColor(void) const;					// 色取得
-	virtual void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定
-	virtual void ResetMaterial(void);						// マテリアル再設定
-
-	virtual D3DXMATRIX *GetPtrMtxWorld(void);			// マトリックスポインタ取得
-	virtual D3DXMATRIX GetMtxWorld(void) const;			// マトリックス取得
-	virtual D3DXMATRIX CalcMtxWorld(void) const;		// マトリックス計算結果取得
-	virtual void SetPriority(const int nPriority);		// 優先順位設定
-	virtual void SetEnableUpdate(const bool bUpdate);	// 更新状況設定
-	virtual void SetEnableDraw(const bool bDraw);		// 描画状況設定
+	virtual void SetLabel(const ELabel label);				// ラベル設定
+	virtual void SetDimension(const EDim dimension);		// 次元設定
+	virtual void SetPriority(const int nPriority);			// 優先順位設定
+	virtual void SetEnableUpdate(const bool bUpdate);		// 更新状況設定
+	virtual void SetEnableDraw(const bool bDraw);			// 描画状況設定
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)
@@ -171,12 +142,9 @@ public:
 	static CObject *GetCur(const EDim dimension, const int nPriority);	// 最後尾オブジェクト取得
 
 	// メンバ関数
-	void	SetLabel(const ELabel label);		// ラベル設定
-	ELabel	GetLabel(void) const;				// ラベル取得
-	void	SetDimension(const EDim dimension);	// 次元設定
-	EDim	GetDimension(void) const;			// 次元取得
-	int		GetPriority(void) const;			// 優先順位取得
-
+	ELabel	GetLabel(void) const;		// ラベル取得
+	EDim	GetDimension(void) const;	// 次元取得
+	int		GetPriority(void) const;	// 優先順位取得
 	DWORD	GetUniqueID(void) const;	// ユニークID取得
 	bool	IsUpdate(void) const;		// 更新状況取得
 	bool	IsDraw(void) const;			// 描画状況取得

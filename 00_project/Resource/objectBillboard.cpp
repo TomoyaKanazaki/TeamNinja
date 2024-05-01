@@ -271,42 +271,6 @@ CObjectBillboard *CObjectBillboard::Create
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectBillboard::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectBillboard::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectBillboard::SetVec3Position(const D3DXVECTOR3& rPos)
@@ -316,15 +280,6 @@ void CObjectBillboard::SetVec3Position(const D3DXVECTOR3& rPos)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectBillboard::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
 }
 
 //============================================================
@@ -340,15 +295,6 @@ void CObjectBillboard::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectBillboard::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_rot;
 }
 
 //============================================================
@@ -391,12 +337,51 @@ void CObjectBillboard::SetVec3Sizing(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	大きさ取得処理
+//	レンダーステート情報の取得処理
 //============================================================
-D3DXVECTOR3 CObjectBillboard::GetVec3Sizing(void) const
+CRenderState *CObjectBillboard::GetRenderState(void)
 {
-	// 大きさを返す
-	return m_size;
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectBillboard::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectBillboard::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
 }
 
 //============================================================
@@ -409,33 +394,6 @@ void CObjectBillboard::SetColor(const D3DXCOLOR& rCol)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectBillboard::GetColor(void) const
-{
-	// 色を返す
-	return m_col;
-}
-
-//============================================================
-//	マトリックスポインタ取得処理
-//============================================================
-D3DXMATRIX *CObjectBillboard::GetPtrMtxWorld(void)
-{
-	// ワールドマトリックスのポインタを返す
-	return &m_mtxWorld;
-}
-
-//============================================================
-//	マトリックス取得処理
-//============================================================
-D3DXMATRIX CObjectBillboard::GetMtxWorld(void) const
-{
-	// ワールドマトリックスを返す
-	return m_mtxWorld;
 }
 
 //============================================================
@@ -478,42 +436,12 @@ void CObjectBillboard::SetOrigin(const EOrigin origin)
 }
 
 //============================================================
-//	原点取得処理
-//============================================================
-CObjectBillboard::EOrigin CObjectBillboard::GetOrigin(void) const
-{
-	// 原点を返す
-	return m_origin;
-}
-
-//============================================================
 //	回転の設定処理
 //============================================================
 void CObjectBillboard::SetRotate(const ERotate rotate)
 {
 	// 引数の回転を設定
 	m_rotate = rotate;
-}
-
-//============================================================
-//	回転取得処理
-//============================================================
-CObjectBillboard::ERotate CObjectBillboard::GetRotate(void) const
-{
-	// 回転を返す
-	return m_rotate;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectBillboard::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -596,15 +524,6 @@ void CObjectBillboard::SetVtx(void)
 
 	// 頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectBillboard::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

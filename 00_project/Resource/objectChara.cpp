@@ -142,15 +142,6 @@ void CObjectChara::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectChara::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CObjectChara::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -160,59 +151,6 @@ void CObjectChara::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_rot);
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectChara::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_rot;
-}
-
-//============================================================
-//	マテリアル全設定処理
-//============================================================
-void CObjectChara::SetAllMaterial(const D3DXMATERIAL& rMat)
-{
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
-
-		// 引数のマテリアルを全マテリアルに設定
-		m_apMultiModel[nCntChara]->SetAllMaterial(rMat);
-	}
-}
-
-//============================================================
-//	マテリアルの再設定処理
-//============================================================
-void CObjectChara::ResetMaterial(void)
-{
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
-
-		// 全マテリアルに初期マテリアルを再設定
-		m_apMultiModel[nCntChara]->ResetMaterial();
-	}
-}
-
-//============================================================
-//	マトリックス取得処理
-//============================================================
-D3DXMATRIX CObjectChara::GetMtxWorld(void) const
-{
-	// マトリックスを返す
-	return m_mtxWorld;
-}
-
-//============================================================
-//	マトリックスポインタ取得処理
-//============================================================
-D3DXMATRIX *CObjectChara::GetPtrMtxWorld(void)
-{
-	// マトリックスのポインタを返す
-	return &m_mtxWorld;
 }
 
 //============================================================
@@ -304,39 +242,12 @@ void CObjectChara::SetPartsInfo
 }
 
 //============================================================
-//	モデル情報の設定処理
-//============================================================
-void CObjectChara::SetModelInfo(void)
-{
-	// モデル情報の設定
-	m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel);
-}
-
-//============================================================
-//	モーション情報の設定処理
-//============================================================
-void CObjectChara::SetMotionInfo(CMotion::SMotionInfo info)
-{
-	// モーション情報の設定
-	m_pMotion->SetInfo(info);
-}
-
-//============================================================
 //	マトリックスの設定処理
 //============================================================
 void CObjectChara::SetMtxWorld(const D3DXMATRIX &rMtxWorld)
 {
 	// 引数のマトリックスを設定
 	m_mtxWorld = rMtxWorld;
-}
-
-//============================================================
-//	モーションの更新状況の設定処理
-//============================================================
-void CObjectChara::SetEnableMotionUpdate(const bool bUpdate)
-{
-	// 引数の更新状況をモーションの更新状況に設定
-	m_pMotion->SetEnableUpdate(bUpdate);
 }
 
 //============================================================
@@ -349,6 +260,20 @@ void CObjectChara::SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos)
 
 		// 引数のインデックスの位置を設定
 		m_apMultiModel[nPartsID]->SetVec3Position(rPos);
+	}
+	else { assert(false); }
+}
+
+//============================================================
+//	パーツ向きの設定処理
+//============================================================
+void CObjectChara::SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot)
+{
+	if (nPartsID < m_nNumModel)
+	{ // 使用可能なインデックスの場合
+
+		// 引数のインデックスの向きを設定
+		m_apMultiModel[nPartsID]->SetVec3Rotation(rRot);
 	}
 	else { assert(false); }
 }
@@ -368,20 +293,6 @@ D3DXVECTOR3 CObjectChara::GetPartsPosition(const int nPartsID) const
 	// インデックスエラー
 	assert(false);
 	return VEC3_ZERO;
-}
-
-//============================================================
-//	パーツ向きの設定処理
-//============================================================
-void CObjectChara::SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot)
-{
-	if (nPartsID < m_nNumModel)
-	{ // 使用可能なインデックスの場合
-
-		// 引数のインデックスの向きを設定
-		m_apMultiModel[nPartsID]->SetVec3Rotation(rRot);
-	}
-	else { assert(false); }
 }
 
 //============================================================
@@ -439,6 +350,32 @@ void CObjectChara::SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, con
 		m_apMultiModel[nPartsID]->SetMaterial(rMat, nMatID);
 	}
 	else { assert(false); }
+}
+
+//============================================================
+//	マテリアル全設定処理
+//============================================================
+void CObjectChara::SetAllMaterial(const D3DXMATERIAL& rMat)
+{
+	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
+	{ // パーツの総数分繰り返す
+
+		// 引数のマテリアルを全マテリアルに設定
+		m_apMultiModel[nCntChara]->SetAllMaterial(rMat);
+	}
+}
+
+//============================================================
+//	マテリアル再設定処理
+//============================================================
+void CObjectChara::ResetMaterial(void)
+{
+	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
+	{ // パーツの総数分繰り返す
+
+		// 全マテリアルに初期マテリアルを再設定
+		m_apMultiModel[nCntChara]->ResetMaterial();
+	}
 }
 
 //============================================================
@@ -501,166 +438,4 @@ float CObjectChara::GetMaxAlpha(void) const
 
 	// 全パーツ内で最も不透明だったマテリアルの透明度を返す
 	return fAlpha;
-}
-
-//============================================================
-//	パーツ総数取得処理
-//============================================================
-int CObjectChara::GetNumModel(void) const
-{
-	// パーツの総数を返す
-	return m_nNumModel;
-}
-
-//============================================================
-//	モーション種類取得処理
-//============================================================
-int CObjectChara::GetMotionType(void) const
-{
-	// モーションの種類を返す
-	return m_pMotion->GetType();
-}
-
-//============================================================
-//	モーション種類の総数取得処理
-//============================================================
-int CObjectChara::GetMotionNumType(void) const
-{
-	// モーションの種類の総数を返す
-	return m_pMotion->GetNumType();
-}
-
-//============================================================
-//	モーションキー番号取得処理
-//============================================================
-int CObjectChara::GetMotionKey(void) const
-{
-	// モーションのキー番号を返す
-	return m_pMotion->GetKey();
-}
-
-//============================================================
-//	モーションキーの総数取得処理
-//============================================================
-int CObjectChara::GetMotionNumKey(void) const
-{
-	// 現在モーションのキーの総数を返す
-	return m_pMotion->GetNumKey(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーションキーカウンター取得処理
-//============================================================
-int CObjectChara::GetMotionKeyCounter(void) const
-{
-	// モーションのキーカウンターを返す
-	return m_pMotion->GetKeyCounter();
-}
-
-//============================================================
-//	モーション全体カウンター取得処理
-//============================================================
-int CObjectChara::GetMotionWholeCounter(void) const
-{
-	// モーションの全体カウンターを返す
-	return m_pMotion->GetWholeCounter();
-}
-
-//============================================================
-//	モーション全体フレーム数取得処理
-//============================================================
-int CObjectChara::GetMotionWholeFrame(void) const
-{
-	// 現在モーションの全体フレーム数を返す
-	return m_pMotion->GetWholeFrame(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーションキャンセルフレーム取得処理
-//============================================================
-int CObjectChara::GetMotionCancelFrame(void) const
-{
-	// 現在モーションのキャンセルフレームを返す
-	return m_pMotion->GetCancelFrame(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーションコンボフレーム取得処理
-//============================================================
-int CObjectChara::GetMotionComboFrame(void) const
-{
-	// 現在モーションのコンボフレームを返す
-	return m_pMotion->GetComboFrame(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーション終了取得処理
-//============================================================
-bool CObjectChara::IsMotionFinish(void) const
-{
-	// モーションの終了状況を返す
-	return m_pMotion->IsFinish();
-}
-
-//============================================================
-//	モーションループ取得処理
-//============================================================
-bool CObjectChara::IsMotionLoop(void) const
-{
-	// 現在モーションのループ状況を返す
-	return m_pMotion->IsLoop(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーションキャンセル取得処理
-//============================================================
-bool CObjectChara::IsMotionCancel(void) const
-{
-	// 現在モーションのキャンセル状況を返す
-	return m_pMotion->IsCancel(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーションコンボ取得処理
-//============================================================
-bool CObjectChara::IsMotionCombo(void) const
-{
-	// 現在モーションのコンボ状況を返す
-	return m_pMotion->IsCombo(m_pMotion->GetType());
-}
-
-//============================================================
-//	モーション武器表示の取得処理
-//============================================================
-bool CObjectChara::IsWeaponDisp(void) const
-{
-	// 現在モーションの武器表示状況を返す
-	return m_pMotion->IsWeaponDisp(m_pMotion->GetType());
-}
-
-//============================================================
-//	左の攻撃判定フラグの取得処理
-//============================================================
-bool CObjectChara::IsLeftWeaponCollision(void)
-{
-	// モーションの左の攻撃判定状況を返す
-	return m_pMotion->IsLeftWeaponCollision();
-}
-
-//============================================================
-//	右の攻撃判定フラグの取得処理
-//============================================================
-bool CObjectChara::IsRightWeaponCollision(void)
-{
-	// モーションの右の攻撃判定状況を返す
-	return m_pMotion->IsRightWeaponCollision();
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectChara::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
