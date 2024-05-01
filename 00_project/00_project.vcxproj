@@ -158,6 +158,7 @@
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
     <ClInclude Include="Resource\camera.h" />
+    <ClInclude Include="Resource\char2D.h" />
     <ClInclude Include="Resource\cinemaScope.h" />
     <ClInclude Include="Resource\collision.h" />
     <ClInclude Include="Resource\debug.h" />
@@ -235,6 +236,8 @@
     <ClInclude Include="Resource\sky.h" />
     <ClInclude Include="Resource\sound.h" />
     <ClInclude Include="Resource\stage.h" />
+    <ClInclude Include="Resource\string2D.h" />
+    <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
     <ClInclude Include="Resource\timerManager.h" />
     <ClInclude Include="Resource\timerUI.h" />
@@ -250,6 +253,7 @@
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
     <ClCompile Include="Resource\camera.cpp" />
+    <ClCompile Include="Resource\char2D.cpp" />
     <ClCompile Include="Resource\cinemaScope.cpp" />
     <ClCompile Include="Resource\collision.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
@@ -331,6 +335,8 @@
     <ClCompile Include="Resource\sky.cpp" />
     <ClCompile Include="Resource\sound.cpp" />
     <ClCompile Include="Resource\stage.cpp" />
+    <ClCompile Include="Resource\string2D.cpp" />
+    <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />
     <ClCompile Include="Resource\timerManager.cpp" />
     <ClCompile Include="Resource\timerUI.cpp" />

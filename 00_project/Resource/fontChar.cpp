@@ -36,7 +36,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CFontChar::CFontChar(const HFONT pFont) : m_pFont(pFont)
+CFontChar::CFontChar(const HFONT hFont) : m_hFont(hFont)
 {
 	// フォント文字連想配列をクリア
 	m_mapChar.clear();
@@ -89,8 +89,8 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 	SChar tempChar = ZERO_CHAR;
 
 	// デバイスコンテキストを取得
-	HDC pDC = GetDC(nullptr);
-	if (pDC == nullptr)
+	HDC hDC = GetDC(nullptr);
+	if (hDC == nullptr)
 	{ // 取得に失敗した場合
 
 		// 初期値を返す
@@ -99,10 +99,10 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 	}
 
 	// 使用するフォントを選択し、過去のフォントを保存
-	HFONT pOldFont = (HFONT)SelectObject(pDC, m_pFont);
+	HFONT hOldFont = (HFONT)SelectObject(hDC, m_hFont);
 
 	// ビットマップの生成・文字情報の保存
-	BYTE *pBitMap = CreateBitMap(&tempChar, pDC, wcChar);
+	BYTE *pBitMap = CreateBitMap(&tempChar, hDC, wcChar);
 	if (pBitMap == nullptr)
 	{ // 生成に失敗した場合
 
@@ -121,13 +121,13 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 	}
 
 	// 保存したフォントに戻す
-	SelectObject(pDC, pOldFont);
+	SelectObject(hDC, hOldFont);
 
 	// ビットマップを破棄
 	SAFE_DEL_ARRAY(pBitMap);
 
 	// デバイスコンテキストを破棄
-	SAFE_DEL_DC(pDC);
+	SAFE_DEL_DC(hDC);
 
 	// フォント文字情報を保存
 	m_mapChar.insert(std::make_pair(wcChar, tempChar));
@@ -139,10 +139,10 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 //============================================================
 //	生成処理
 //============================================================
-CFontChar *CFontChar::Create(const HFONT pFont)
+CFontChar *CFontChar::Create(const HFONT hFont)
 {
 	// フォント文字の生成
-	CFontChar *pFontChar = new CFontChar(pFont);
+	CFontChar *pFontChar = new CFontChar(hFont);
 	if (pFontChar == nullptr)
 	{ // 生成に失敗した場合
 
@@ -181,10 +181,10 @@ void CFontChar::Release(CFontChar *&prFontChar)
 //============================================================
 //	ビットマップの生成・文字情報の保存
 //============================================================
-BYTE *CFontChar::CreateBitMap(SChar *pChar, HDC pDC, const wchar_t wcChar)
+BYTE *CFontChar::CreateBitMap(SChar *pChar, HDC hDC, const wchar_t wcChar)
 {
 	// ビットマップのサイズを取得
-	DWORD dwGlyphSize = GetGlyphOutlineW(pDC, wcChar, FORMAT_BITMAP, &pChar->glyph, 0, nullptr, &INIT_MATRIX);
+	DWORD dwGlyphSize = GetGlyphOutlineW(hDC, wcChar, FORMAT_BITMAP, &pChar->glyph, 0, nullptr, &INIT_MATRIX);
 	if (dwGlyphSize == GDI_ERROR)
 	{ // 取得に失敗した場合
 
@@ -204,7 +204,7 @@ BYTE *CFontChar::CreateBitMap(SChar *pChar, HDC pDC, const wchar_t wcChar)
 	}
 
 	// ビットマップ内の情報を取得
-	dwGlyphSize = GetGlyphOutlineW(pDC, wcChar, FORMAT_BITMAP, &pChar->glyph, dwGlyphSize, pBitMap, &INIT_MATRIX);
+	dwGlyphSize = GetGlyphOutlineW(hDC, wcChar, FORMAT_BITMAP, &pChar->glyph, dwGlyphSize, pBitMap, &INIT_MATRIX);
 	if (dwGlyphSize == GDI_ERROR)
 	{ // 取得に失敗した場合
 
@@ -214,7 +214,7 @@ BYTE *CFontChar::CreateBitMap(SChar *pChar, HDC pDC, const wchar_t wcChar)
 	}
 
 	// フォントアウトラインの情報を取得
-	DWORD dwOutLineSize = GetOutlineTextMetrics(pDC, sizeof(OUTLINETEXTMETRIC), &pChar->outline);
+	DWORD dwOutLineSize = GetOutlineTextMetrics(hDC, sizeof(OUTLINETEXTMETRIC), &pChar->outline);
 	if (dwOutLineSize == GDI_ERROR)
 	{ // 取得に失敗した場合
 
@@ -224,7 +224,7 @@ BYTE *CFontChar::CreateBitMap(SChar *pChar, HDC pDC, const wchar_t wcChar)
 	}
 
 	// フォントテキストの情報を取得
-	if (!GetTextMetrics(pDC, &pChar->text))
+	if (!GetTextMetrics(hDC, &pChar->text))
 	{ // 取得に失敗した場合
 
 		// 失敗を返す
