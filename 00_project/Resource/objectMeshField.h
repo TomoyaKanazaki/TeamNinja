@@ -44,16 +44,12 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void BindTexture(const int nTextureID) override;		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass) override;	// テクスチャ割当 (パス)
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
 	void SetVec2Sizing(const D3DXVECTOR2& rSize) override;	// 大きさ設定
-	D3DXVECTOR2 GetVec2Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshField.pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshField.rot; }		// 向き取得
+	D3DXVECTOR2 GetVec2Sizing(void) const override		{ return m_meshField.size; }	// 大きさ取得
 
 	// 静的メンバ関数
 	static CObjectMeshField *Create	// 生成
@@ -66,9 +62,17 @@ public:
 	);
 
 	// メンバ関数
-	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	POSGRID2 GetPattern(void) const;			// 分割数取得
 	CRenderState *GetRenderState(void);			// レンダーステート情報取得
+	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
+	int GetTextureIndex(void) const		{ return m_nTextureID; }			// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_meshField.col; }			// 色取得
+	POSGRID2 GetPattern(void) const		{ return m_part; }					// 分割数取得
+	int GetNumVertex(void) const		{ return m_nNumVtx; }				// 頂点数取得
+	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_meshField.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const	{ return m_meshField.mtxWorld; }	// マトリックス取得
 
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);		// 座標のずれ設定
 	D3DXVECTOR3 GetGapPosition(const int nID);							// 座標のずれ取得
@@ -77,7 +81,6 @@ public:
 	void SetMeshVertexPosition(const int nID, const D3DXVECTOR3& rPos);	// メッシュの頂点位置設定
 	void SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap);		// 地形設定
 
-	int GetNumVertex(void) const;							// 頂点数取得
 	D3DXVECTOR3 GetMeshVertexPosition(const int nID);		// メッシュの頂点位置取得
 	bool IsPositionRange(const D3DXVECTOR3& rPos);			// メッシュの範囲内取得
 	float GetPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得 (回転非考慮)
@@ -95,7 +98,7 @@ protected:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画

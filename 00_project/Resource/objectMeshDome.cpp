@@ -179,57 +179,12 @@ void CObjectMeshDome::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshDome::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshDome::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshDome::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshDome.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshDome::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshDome.pos;
 }
 
 //============================================================
@@ -242,57 +197,6 @@ void CObjectMeshDome::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshDome.rot);
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshDome::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshDome.rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshDome::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshDome.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshDome::GetColor(void) const
-{
-	// 色を返す
-	return m_meshDome.col;
-}
-
-//============================================================
-//	半径の設定処理
-//============================================================
-void CObjectMeshDome::SetRadius(const float fRadius)
-{
-	// 引数の半径を設定
-	m_meshDome.fRadius = fRadius;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectMeshDome::GetRadius(void) const
-{
-	// 半径を返す
-	return m_meshDome.fRadius;
 }
 
 //============================================================
@@ -357,6 +261,78 @@ CObjectMeshDome *CObjectMeshDome::Create
 }
 
 //============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshDome::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshDome::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshDome::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshDome::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshDome.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
+//	半径の設定処理
+//============================================================
+void CObjectMeshDome::SetRadius(const float fRadius)
+{
+	// 引数の半径を設定
+	m_meshDome.fRadius = fRadius;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
 //	テクスチャ方向の設定処理
 //============================================================
 void CObjectMeshDome::SetTexDir(const ETexDir texDir)
@@ -366,15 +342,6 @@ void CObjectMeshDome::SetTexDir(const ETexDir texDir)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	テクスチャ方向取得処理
-//============================================================
-CObjectMeshDome::ETexDir CObjectMeshDome::GetTexDir(void) const
-{
-	// テクスチャ方向を返す
-	return m_meshDome.texDir;
 }
 
 //============================================================
@@ -447,15 +414,6 @@ HRESULT CObjectMeshDome::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshDome::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
 //	テクスチャ分割数の設定処理
 //============================================================
 void CObjectMeshDome::SetTexPattern(const POSGRID2& rTexPart)
@@ -471,27 +429,6 @@ void CObjectMeshDome::SetTexPattern(const POSGRID2& rTexPart)
 		SetVtx();
 	}
 	else { assert(false); }	// 最低値未満
-}
-
-//============================================================
-//	テクスチャ分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshDome::GetTexPattern(void) const
-{
-	// テクスチャ分割数を返す
-	return m_texPart;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshDome::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -668,15 +605,6 @@ void CObjectMeshDome::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshDome::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

@@ -181,57 +181,12 @@ void CObjectMeshRing::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshRing::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshRing::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshRing::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshRing.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshRing::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshRing.pos;
 }
 
 //============================================================
@@ -244,36 +199,6 @@ void CObjectMeshRing::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshRing.rot);
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshRing::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshRing.rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshRing::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshRing.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshRing::GetColor(void) const
-{
-	// 色を返す
-	return m_meshRing.col;
 }
 
 //============================================================
@@ -346,6 +271,66 @@ CObjectMeshRing *CObjectMeshRing::Create
 }
 
 //============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshRing::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshRing::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshRing::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshRing::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshRing.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
 //	テクスチャ方向の設定処理
 //============================================================
 void CObjectMeshRing::SetTexDir(const ETexDir texDir)
@@ -355,15 +340,6 @@ void CObjectMeshRing::SetTexDir(const ETexDir texDir)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	テクスチャ方向取得処理
-//============================================================
-CObjectMeshRing::ETexDir CObjectMeshRing::GetTexDir(void) const
-{
-	// テクスチャ方向を返す
-	return m_meshRing.texDir;
 }
 
 //============================================================
@@ -379,15 +355,6 @@ void CObjectMeshRing::SetHoleRadius(const float fHoleRadius)
 }
 
 //============================================================
-//	穴の半径取得処理
-//============================================================
-float CObjectMeshRing::GetHoleRadius(void) const
-{
-	// 穴の半径を返す
-	return m_meshRing.fHoleRadius;
-}
-
-//============================================================
 //	太さの設定処理
 //============================================================
 void CObjectMeshRing::SetThickness(const float fThickness)
@@ -400,15 +367,6 @@ void CObjectMeshRing::SetThickness(const float fThickness)
 }
 
 //============================================================
-//	太さ取得処理
-//============================================================
-float CObjectMeshRing::GetThickness(void) const
-{
-	// 太さを返す
-	return m_meshRing.fThickness;
-}
-
-//============================================================
 //	ポリゴン外周のY座標加算量の設定処理
 //============================================================
 void CObjectMeshRing::SetOuterPlusY(const float fOuterPlusY)
@@ -418,15 +376,6 @@ void CObjectMeshRing::SetOuterPlusY(const float fOuterPlusY)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	ポリゴン外周のY座標加算量の取得処理
-//============================================================
-float CObjectMeshRing::GetOuterPlusY(void) const
-{
-	// 外周のY座標加算量を返す
-	return m_meshRing.fOuterPlusY;
 }
 
 //============================================================
@@ -499,15 +448,6 @@ HRESULT CObjectMeshRing::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshRing::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
 //	テクスチャ分割数の設定処理
 //============================================================
 void CObjectMeshRing::SetTexPattern(const POSGRID2& rTexPart)
@@ -523,27 +463,6 @@ void CObjectMeshRing::SetTexPattern(const POSGRID2& rTexPart)
 		SetVtx();
 	}
 	else { assert(false); }	// 最低値未満
-}
-
-//============================================================
-//	テクスチャ分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshRing::GetTexPattern(void) const
-{
-	// テクスチャ分割数を返す
-	return m_texPart;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshRing::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -688,15 +607,6 @@ void CObjectMeshRing::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshRing::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================
