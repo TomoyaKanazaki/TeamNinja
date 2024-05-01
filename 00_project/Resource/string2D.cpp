@@ -444,7 +444,7 @@ void CString2D::SetPositionRelative(void)
 	fStartOffset += fHeadWidth + fHeadOffsetLU;		// 先頭文字のブラックボックス分ずらす
 	fStartOffset += (fStrWidth * (m_alignX - 1));	// 指定された横配置にする
 
-	D3DXVECTOR3 posStart;	// 文字の開始位置
+	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(fHeadRot) * fStartOffset;	// 開始位置X
 	posStart.y = m_pos.y + cosf(fHeadRot) * fStartOffset;	// 開始位置Y
 
@@ -463,7 +463,8 @@ void CString2D::SetPositionRelative(void)
 		m_ppChar[i]->SetVec3Position(posStart);
 
 		// 次の設定座標の開始点を保存
-		posStart.x += sinf(fHeadRot) * (fOffset - fNext);
-		posStart.y += cosf(fHeadRot) * (fOffset - fNext);
+		float fNextStart = fOffset - fNext;	// 次の開始点
+		posStart.x += sinf(fHeadRot) * fNextStart;
+		posStart.y += cosf(fHeadRot) * fNextStart;
 	}
 }

@@ -20,7 +20,13 @@
 
 #include "stage.h"
 #include "player.h"
+
 #include "multiValue.h"
+
+#include "manager.h"
+#include "font.h"
+#include "fontChar.h"
+#include "text2D.h"
 
 //************************************************************
 //	定数宣言
@@ -77,7 +83,19 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-	CMultiValue::Create(CValue::TEXTURE_NORMAL, 12345, 8, VEC3_ONE * 100.0f, VEC3_ONE * 60.0f, D3DXVECTOR3(40.0f, 0.0f, 0.0f));
+#if 0
+	CMultiValue::Create(CValue::TEXTURE_NORMAL, 12345, 8, SCREEN_CENT, VEC3_ONE * 60.0f, D3DXVECTOR3(5.0f, 0.0f, 0.0f));
+#endif
+
+#if 1
+	CText2D *p = CText2D::Create(GET_MANAGER->GetFont()->Regist("わんぱくルイカ").pFontChar, SCREEN_CENT, 100.0f, 0.0f);
+	p->AddString(L"aaa");
+	p->AddString(L"iii");
+	p->AddString(L"uuu");
+	p->AddString(L"aaa");
+	p->AddString(L"iii");
+	p->AddString(L"uuu");
+#endif
 
 	// 成功を返す
 	return S_OK;

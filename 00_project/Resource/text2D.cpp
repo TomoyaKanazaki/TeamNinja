@@ -464,7 +464,7 @@ void CText2D::SetPositionRelative(void)
 	float fFrontHeight	= m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の縦幅
 	float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
 
-	D3DXVECTOR3 posStart;	// 文字の開始位置
+	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(m_rot.z) * fStartOffset;	// 開始位置X
 	posStart.y = m_pos.y + cosf(m_rot.z) * fStartOffset;	// 開始位置Y
 
@@ -475,8 +475,9 @@ void CText2D::SetPositionRelative(void)
 		assert(rList != nullptr);
 		rList->SetVec3Position(posStart);
 
-		// 設定座標にを与える
-		posStart.x += sinf(m_rot.z) * (m_fLineHeight + (rList->GetHeight()));
-		posStart.y += cosf(m_rot.z) * (m_fLineHeight + (rList->GetHeight()));
+		// 次の設定座標の開始点を保存
+		float fNextStart = m_fLineHeight + rList->GetHeight();	// 次の開始点
+		posStart.x += sinf(m_rot.z) * fNextStart;
+		posStart.y += cosf(m_rot.z) * fNextStart;
 	}
 }

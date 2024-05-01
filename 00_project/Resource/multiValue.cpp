@@ -96,6 +96,11 @@ void CMultiValue::Uninit(void)
 //============================================================
 void CMultiValue::Update(void)
 {
+	// TODO
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.z += 0.01f;
+	SetVec3Rotation(rot);
+
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
 
@@ -103,6 +108,9 @@ void CMultiValue::Update(void)
 		assert(rList != nullptr);
 		rList->Update();
 	}
+
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -518,6 +526,9 @@ void CMultiValue::SetTexture(const CValue::ETexture texture)
 		// 数字テクスチャの設定
 		assert(rList != nullptr);
 		rList->SetTexture(texture);
+
+		// TODO
+		rList->BindTexture(-1);
 	}
 }
 
@@ -536,7 +547,7 @@ void CMultiValue::Release(void)
 void CMultiValue::SetPositionRelative(void)
 {
 	// TODO：相対位置の設定
-#if 1
+#if 0
 	int nCntDigit = 0;	// 桁数インデックス
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
@@ -548,7 +559,38 @@ void CMultiValue::SetPositionRelative(void)
 		nCntDigit++;
 	}
 #else
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { return; }
 
+	//float fTextHeight	= GetTextHeight() * 0.5f;	// テキスト全体の縦幅
+	//float fFrontHeight	= m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の縦幅
+	//float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
+
+	float fRotX = m_rot.z + D3DX_PI * 0.5f;
+	float fRotY = m_rot.z;
+
+	D3DXVECTOR3 posOffset = VEC3_ZERO;	// 文字の開始オフセット
+
+	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
+	posStart.x = m_pos.x + sinf(fRotX) * posOffset.x + sinf(fRotY) * posOffset.y;
+	posStart.y = m_pos.y + cosf(fRotX) * posOffset.x + cosf(fRotY) * posOffset.y;
+
+	for (auto& rList : m_listValue)
+	{ // 数字の桁数分繰り返す
+
+		// 位置を反映
+		assert(rList != nullptr);
+		rList->SetVec3Position(posStart);
+
+		// 
+		D3DXVECTOR3 offsetStart = VEC3_ZERO;	// 文字の開始オフセット
+		offsetStart.x = m_space.x + m_size.x;
+		offsetStart.y = 0.0f;
+
+		// 次の設定座標の開始点を保存
+		posStart.x += sinf(fRotX) * offsetStart.x + sinf(fRotY) * offsetStart.y;
+		posStart.y += cosf(fRotX) * offsetStart.x + cosf(fRotY) * offsetStart.y;
+	}
 #endif
 }
 
