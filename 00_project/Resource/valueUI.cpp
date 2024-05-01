@@ -19,7 +19,7 @@
 //************************************************************
 namespace
 {
-	const int PRIORITY = 5;	// 数字UI表示の優先順位
+	const int PRIORITY = 6;	// 数字UI表示の優先順位
 }
 
 //************************************************************
@@ -70,7 +70,15 @@ HRESULT CValueUI::Init(void)
 	m_pTitle->SetPriority(PRIORITY);
 
 	// 数字情報の生成
-	m_pValue = CMultiValue::Create(CValue::TEXTURE_NORMAL, 0, 1, VEC3_ZERO, VEC3_ONE, VEC3_ZERO);
+	m_pValue = CMultiValue::Create
+	( // 引数
+		CValue::TYPE_NORMAL,	// 数字種類
+		0,			// 数字
+		1,			// 桁数
+		VEC3_ZERO,	// 位置
+		VEC3_ONE,	// 大きさ
+		VEC3_ZERO	// 列間
+	);
 	if (m_pValue == nullptr)
 	{ // 非使用中の場合
 
@@ -167,7 +175,7 @@ void CValueUI::SetPriority(const int nPriority)
 CValueUI *CValueUI::Create
 (
 	const char *pPassTex,			// タイトルテクスチャパス
-	const CValue::ETexture texture,	// 数字テクスチャ
+	const CValue::EType type,		// 数字種類
 	const int nDigit,				// 桁数
 	const D3DXVECTOR3& rPos,		// 位置
 	const D3DXVECTOR3& rSpace,		// 行間
@@ -206,7 +214,7 @@ CValueUI *CValueUI::Create
 		pValueUI->SetTextureTitle(pPassTex);
 
 		// 数字テクスチャを設定
-		pValueUI->GetMultiValue()->SetTexture(texture);
+		pValueUI->GetMultiValue()->SetType(type);
 
 		// タイトル向きを設定
 		pValueUI->SetRotationTitle(rRotTitle);

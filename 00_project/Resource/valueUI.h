@@ -49,7 +49,7 @@ public:
 	static CValueUI *Create	// 生成
 	( // 引数
 		const char *pPassTex,			// タイトルテクスチャパス
-		const CValue::ETexture texture,	// 数字テクスチャ
+		const CValue::EType type,		// 数字種類
 		const int nDigit,				// 桁数
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rSpace,		// 行間

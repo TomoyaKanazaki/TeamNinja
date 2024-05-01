@@ -17,11 +17,6 @@
 #include "value.h"
 
 //************************************************************
-//	前方宣言
-//************************************************************
-class CValue;	// 数字クラス
-
-//************************************************************
 //	クラス定義
 //************************************************************
 // マルチ数字クラス
@@ -52,12 +47,12 @@ public:
 	// 静的メンバ関数
 	static CMultiValue *Create	// 生成
 	( // 引数
-		const CValue::ETexture texture,	// テクスチャ
-		const int nNum,					// 数字
-		const int nDigit,				// 桁数
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rSize,		// 大きさ
-		const D3DXVECTOR3& rSpace,		// 列間
+		const CValue::EType type,	// 数字種類
+		const int nNum,				// 数字
+		const int nDigit,			// 桁数
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rSize,	// 大きさ
+		const D3DXVECTOR3& rSpace,	// 列間
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
@@ -72,9 +67,9 @@ public:
 	int GetDigit(void) const;			// 桁数取得
 	int GetMin(void) const;				// 最小値取得
 	int GetMax(void) const;				// 最大値取得
-	void SetSpace(const D3DXVECTOR3& rSpace);			// 列間設定
-	D3DXVECTOR3 GetSpace(void) const;					// 列間取得
-	void SetTexture(const CValue::ETexture texture);	// テクスチャ設定
+	void SetSpace(const D3DXVECTOR3& rSpace);	// 列間設定
+	D3DXVECTOR3 GetSpace(void) const;			// 列間取得
+	void SetType(const CValue::EType type);		// 種類設定
 
 private:
 	// オーバーライド関数

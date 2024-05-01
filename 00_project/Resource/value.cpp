@@ -30,7 +30,7 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CValue] のメンバ関数
@@ -113,7 +113,7 @@ void CValue::Draw(CShader *pShader)
 //============================================================
 CValue *CValue::Create
 (
-	const ETexture texture,		// テクスチャ
+	const EType type,			// 数字種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rSize,	// 大きさ
 	const D3DXVECTOR3& rRot,	// 向き
@@ -139,8 +139,8 @@ CValue *CValue::Create
 			return nullptr;
 		}
 
-		// テクスチャを設定
-		pValue->SetTexture(texture);
+		// 数字種類を設定
+		pValue->SetType(type);
 
 		// 位置を設定
 		pValue->SetVec3Position(rPos);
@@ -160,12 +160,12 @@ CValue *CValue::Create
 }
 
 //============================================================
-//	テクスチャの設定処理
+//	種類の設定処理
 //============================================================
-void CValue::SetTexture(const ETexture texture)
+void CValue::SetType(const EType type)
 {
 	// テクスチャを登録・割当
-	BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[texture]));
+	BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 }
 
 //============================================================

@@ -97,7 +97,7 @@ HRESULT CTimerManager::Init(void)
 	{ // タイマーの桁数分繰り返す
 
 		// 数字の生成
-		m_apValue[nCntTimer] = CValue::Create(CValue::TEXTURE_NORMAL);
+		m_apValue[nCntTimer] = CValue::Create();
 		if (m_apValue[nCntTimer] == nullptr)
 		{ // 生成に失敗した場合
 

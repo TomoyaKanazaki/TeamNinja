@@ -22,11 +22,11 @@
 class CValue : public CAnim2D
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
+	// 種類列挙
+	enum EType
 	{
-		TEXTURE_NORMAL = 0,	// 通常テクスチャ
-		TEXTURE_MAX			// この列挙型の総数
+		TYPE_NORMAL = 0,	// 通常テクスチャ
+		TYPE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -44,15 +44,15 @@ public:
 	// 静的メンバ関数
 	static CValue *Create	// 生成
 	( // 引数
-		const ETexture texture = TEXTURE_NORMAL,	// テクスチャ
-		const D3DXVECTOR3& rPos = VEC3_ZERO,		// 位置
-		const D3DXVECTOR3& rSize = VEC3_ONE,		// 大きさ
-		const D3DXVECTOR3& rRot = VEC3_ZERO,		// 向き
-		const D3DXCOLOR& rCol = XCOL_WHITE			// 色
+		const EType type = TYPE_NORMAL,			// 数字種類
+		const D3DXVECTOR3& rPos = VEC3_ZERO,	// 位置
+		const D3DXVECTOR3& rSize = VEC3_ONE,	// 大きさ
+		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
+		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
 
 	// メイン関数
-	void SetTexture(const ETexture texture);	// テクスチャ設定
+	void SetType(const EType type);	// 種類設定
 	void SetNumber(const int nNum);	// 値設定
 
 private:

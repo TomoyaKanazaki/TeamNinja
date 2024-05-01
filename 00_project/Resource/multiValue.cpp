@@ -26,14 +26,14 @@ namespace
 //	コンストラクタ
 //============================================================
 CMultiValue::CMultiValue() : CObject(CObject::LABEL_UI, CObject::DIM_2D, object::DEFAULT_PRIO),
-	m_pos		(VEC3_ZERO),	// 原点位置
-	m_rot		(VEC3_ZERO),	// 原点向き
-	m_size		(VEC3_ZERO),	// 大きさ
-	m_space		(VEC3_ZERO),	// 列間
-	m_col		(XCOL_WHITE),	// 色
-	m_nNum		(0),			// 数字
-	m_nMin		(0),			// 最小値
-	m_nMax		(0)				// 最大値
+	m_pos	(VEC3_ZERO),	// 原点位置
+	m_rot	(VEC3_ZERO),	// 原点向き
+	m_size	(VEC3_ZERO),	// 大きさ
+	m_space	(VEC3_ZERO),	// 列間
+	m_col	(XCOL_WHITE),	// 色
+	m_nNum	(0),			// 数字
+	m_nMin	(0),			// 最小値
+	m_nMax	(0)				// 最大値
 {
 	// 数字リストをクリア
 	m_listValue.clear();
@@ -253,14 +253,14 @@ void CMultiValue::SetPriority(const int nPriority)
 //============================================================
 CMultiValue *CMultiValue::Create
 (
-	const CValue::ETexture texture,	// テクスチャ
-	const int nNum,					// 数字
-	const int nDigit,				// 桁数
-	const D3DXVECTOR3& rPos,		// 位置
-	const D3DXVECTOR3& rSize,		// 大きさ
-	const D3DXVECTOR3& rSpace,		// 列間
-	const D3DXVECTOR3& rRot,		// 向き
-	const D3DXCOLOR& rCol			// 色
+	const CValue::EType type,	// 数字種類
+	const int nNum,				// 数字
+	const int nDigit,			// 桁数
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rSize,	// 大きさ
+	const D3DXVECTOR3& rSpace,	// 列間
+	const D3DXVECTOR3& rRot,	// 向き
+	const D3DXCOLOR& rCol		// 色
 )
 {
 	// マルチ数字の生成
@@ -288,8 +288,8 @@ CMultiValue *CMultiValue::Create
 		// 数字を設定
 		pMultiValue->SetNum(nNum);
 
-		// テクスチャを設定
-		pMultiValue->SetTexture(texture);
+		// 数字種類を設定
+		pMultiValue->SetType(type);
 
 		// 位置を設定
 		pMultiValue->SetVec3Position(rPos);
@@ -365,7 +365,7 @@ HRESULT CMultiValue::SetDigit(const int nDigit)
 	{ // 桁数分繰り返す
 
 		// 数字の生成
-		CValue *pValue = CValue::Create(CValue::TEXTURE_NORMAL);
+		CValue *pValue = CValue::Create(CValue::TYPE_NORMAL);
 		if (pValue == nullptr)
 		{ // 生成に失敗した場合
 
@@ -516,19 +516,16 @@ D3DXVECTOR3 CMultiValue::GetSpace(void) const
 }
 
 //============================================================
-//	テクスチャの設定処理
+//	種類の設定処理
 //============================================================
-void CMultiValue::SetTexture(const CValue::ETexture texture)
+void CMultiValue::SetType(const CValue::EType type)
 {
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
 
-		// 数字テクスチャの設定
+		// 数字種類の設定
 		assert(rList != nullptr);
-		rList->SetTexture(texture);
-
-		// TODO
-		//rList->BindTexture(-1);
+		rList->SetType(type);
 	}
 }
 
