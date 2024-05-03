@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;.\lib\Effekseer\Include\Effekseer;.\lib\Effekseer\Include\EffekseerRendererDX9;.\lib\Effekseer\Include\EffekseerRendererDX11;.\lib\Effekseer\Include\EffekseerRendererGL;$(IncludePath)</IncludePath>
+    <LibraryPath>.\lib\Effekseer\Lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;.\lib\Effekseer\Include\Effekseer;.\lib\Effekseer\Include\EffekseerRendererDX9;.\lib\Effekseer\Include\EffekseerRendererDX11;.\lib\Effekseer\Include\EffekseerRendererGL;$(IncludePath)</IncludePath>
+    <LibraryPath>.\lib\Effekseer\Lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,6 +97,8 @@
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>precompile.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>Resource</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +118,7 @@
       <ForcedIncludeFiles>precompile.h</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>Resource</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +169,7 @@
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\effect2D.h" />
     <ClInclude Include="Resource\effect3D.h" />
+    <ClInclude Include="Resource\effekseerControl.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
     <ClInclude Include="Resource\flash.h" />
@@ -261,6 +265,7 @@
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
     <ClCompile Include="Resource\effect3D.cpp" />
+    <ClCompile Include="Resource\effekseerControl.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />
     <ClCompile Include="Resource\flash.cpp" />

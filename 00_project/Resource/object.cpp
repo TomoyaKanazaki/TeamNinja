@@ -10,7 +10,7 @@
 #include "object.h"
 #include "manager.h"
 #include "loading.h"
-
+#include "effekseerControl.h"
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -759,7 +759,8 @@ void CObject::UpdateAll(void)
 {
 	// オブジェクト数表示
 	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
-
+	//エフェクシア処理
+	CEffekseer::GetInstance()->Update();
 	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
 	{ // 次元の総数分繰り返す
 
@@ -817,6 +818,8 @@ void CObject::DrawAll(void)
 	assert(pLoading != nullptr);
 	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
 
+	
+
 	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
 	{ // 次元の総数分繰り返す
 
@@ -825,7 +828,12 @@ void CObject::DrawAll(void)
 
 			// オブジェクトの先頭を代入
 			CObject *pObject = m_apTop[nCntDim][nCntPri];
-
+			if (nCntDim == 1 && nCntPri == 4)
+			{
+				//エフェクシア処理
+				CEffekseer::GetInstance()->Draw();
+			}
+			
 			while (pObject != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 
@@ -861,6 +869,7 @@ void CObject::DrawAll(void)
 			}
 		}
 	}
+	
 }
 
 //============================================================
