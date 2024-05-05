@@ -46,17 +46,11 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void BindTexture(const int nTextureID) override;		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass) override;	// テクスチャ割当 (パス)
+	void SetPriority(const int nPrio) override;				// 優先順位設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetColor(const D3DXCOLOR& rCol) override;	// 色設定
-	D3DXCOLOR GetColor(void) const override;		// 色取得
-	void SetRadius(const float fRadius) override;	// 半径設定
-	float GetRadius(void) const override;			// 半径取得
-	void SetPriority(const int nPrio) override;		// 優先順位設定
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_apDome[DOME_TOP]->GetVec3Position(); }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_apDome[DOME_TOP]->GetVec3Rotation(); }	// 向き取得
 
 	// 静的メンバ関数
 	static CObjectMeshSphere *Create	// 生成
@@ -70,14 +64,24 @@ public:
 	);
 
 	// メンバ関数
+	void SetRenderState(CRenderState renderState);	// レンダーステート情報設定
+	void BindTexture(const int nTextureID);			// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);		// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	void SetRadius(const float fRadius);			// 半径設定
 	HRESULT SetPattern(const POSGRID2& rPart);		// 分割数設定
-	POSGRID2 GetPattern(void) const;				// 分割数取得
 	void SetTexPattern(const POSGRID2& rTexPart);	// テクスチャ分割数設定
-	POSGRID2 GetTexPattern(void) const;				// テクスチャ分割数取得
+	int GetTextureIndex(void) const		{ return m_apDome[DOME_TOP]->GetTextureIndex(); }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_apDome[DOME_TOP]->GetColor(); }			// 色取得
+	float GetRadius(void) const			{ return m_apDome[DOME_TOP]->GetRadius(); }			// 半径取得
+	POSGRID2 GetPattern(void) const		{ return m_apDome[DOME_TOP]->GetPattern(); }		// 分割数取得
+	POSGRID2 GetTexPattern(void) const	{ return m_apDome[DOME_TOP]->GetTexPattern(); }		// テクスチャ分割数取得
+	D3DXMATRIX *GetPtrMtxWorld(void)	{ return m_apDome[DOME_TOP]->GetPtrMtxWorld(); }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const	{ return m_apDome[DOME_TOP]->GetMtxWorld(); }		// マトリックス取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	CObjectMeshDome *m_apDome[DOME_MAX];	// 半球の情報

@@ -128,50 +128,16 @@ void CObjectMeshSphere::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
+//	優先順位の設定処理
 //============================================================
-void CObjectMeshSphere::BindTexture(const int nTextureID)
+void CObjectMeshSphere::SetPriority(const int nPrio)
 {
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
+	// 引数の優先順位を設定
+	CObject::SetPriority(nPrio);	// 自身
+	for (int i = 0; i < DOME_MAX; i++)
+	{ // 半球の総数分繰り返す
 
-		for (int i = 0; i < DOME_MAX; i++)
-		{ // 半球の総数分繰り返す
-
-			// テクスチャインデックスを割当
-			m_apDome[i]->BindTexture(nTextureID);
-		}
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshSphere::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		for (int i = 0; i < DOME_MAX; i++)
-		{ // 半球の総数分繰り返す
-
-			// テクスチャインデックスを割当
-			m_apDome[i]->BindTexture(pTexture->Regist(pTexturePass));
-		}
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		for (int i = 0; i < DOME_MAX; i++)
-		{ // 半球の総数分繰り返す
-
-			// テクスチャなしインデックスを割当
-			m_apDome[i]->BindTexture(NONE_IDX);
-		}
+		m_apDome[i]->SetPriority(nPrio);	// 半球
 	}
 }
 
@@ -189,15 +155,6 @@ void CObjectMeshSphere::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshSphere::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_apDome[DOME_TOP]->GetVec3Position();
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CObjectMeshSphere::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -209,73 +166,6 @@ void CObjectMeshSphere::SetVec3Rotation(const D3DXVECTOR3& rRot)
 		D3DXVECTOR3 rot = rRot;
 		rot.x += ((float)i * D3DX_PI);
 		m_apDome[i]->SetVec3Rotation(rot);
-	}
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshSphere::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_apDome[DOME_TOP]->GetVec3Rotation();
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshSphere::SetColor(const D3DXCOLOR& rCol)
-{
-	for (int i = 0; i < DOME_MAX; i++)
-	{ // 半球の総数分繰り返す
-
-		// 引数の色を設定
-		m_apDome[i]->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshSphere::GetColor(void) const
-{
-	// 色を返す
-	return m_apDome[DOME_TOP]->GetColor();
-}
-
-//============================================================
-//	半径の設定処理
-//============================================================
-void CObjectMeshSphere::SetRadius(const float fRadius)
-{
-	for (int i = 0; i < DOME_MAX; i++)
-	{ // 半球の総数分繰り返す
-
-		// 引数の半径を設定
-		m_apDome[i]->SetRadius(fRadius);
-	}
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectMeshSphere::GetRadius(void) const
-{
-	// 半径を返す
-	return m_apDome[DOME_TOP]->GetRadius();
-}
-
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CObjectMeshSphere::SetPriority(const int nPrio)
-{
-	// 引数の優先順位を設定
-	CObject::SetPriority(nPrio);	// 自身
-	for (int i = 0; i < DOME_MAX; i++)
-	{ // 半球の総数分繰り返す
-
-		m_apDome[i]->SetPriority(nPrio);	// 半球
 	}
 }
 
@@ -341,6 +231,93 @@ CObjectMeshSphere *CObjectMeshSphere::Create
 }
 
 //============================================================
+//	レンダーステート情報の設定処理
+//============================================================
+void CObjectMeshSphere::SetRenderState(CRenderState renderState)
+{
+	CRenderState *pTempRenderState = nullptr;	// レンダーステート情報
+	for (int i = 0; i < DOME_MAX; i++)
+	{ // 半球の総数分繰り返す
+
+		// 引数のレンダーステートを設定
+		pTempRenderState = m_apDome[i]->GetRenderState();
+		*pTempRenderState = renderState;
+	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshSphere::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		for (int i = 0; i < DOME_MAX; i++)
+		{ // 半球の総数分繰り返す
+
+			// テクスチャインデックスを割当
+			m_apDome[i]->BindTexture(nTextureID);
+		}
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshSphere::BindTexture(const char *pTexturePass)
+{
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+		for (int i = 0; i < DOME_MAX; i++)
+		{ // 半球の総数分繰り返す
+
+			// テクスチャインデックスを割当
+			m_apDome[i]->BindTexture(pTexture->Regist(pTexturePass));
+		}
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		for (int i = 0; i < DOME_MAX; i++)
+		{ // 半球の総数分繰り返す
+
+			// テクスチャなしインデックスを割当
+			m_apDome[i]->BindTexture(NONE_IDX);
+		}
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshSphere::SetColor(const D3DXCOLOR& rCol)
+{
+	for (int i = 0; i < DOME_MAX; i++)
+	{ // 半球の総数分繰り返す
+
+		// 引数の色を設定
+		m_apDome[i]->SetColor(rCol);
+	}
+}
+
+//============================================================
+//	半径の設定処理
+//============================================================
+void CObjectMeshSphere::SetRadius(const float fRadius)
+{
+	for (int i = 0; i < DOME_MAX; i++)
+	{ // 半球の総数分繰り返す
+
+		// 引数の半径を設定
+		m_apDome[i]->SetRadius(fRadius);
+	}
+}
+
+//============================================================
 //	分割数の設定処理
 //============================================================
 HRESULT CObjectMeshSphere::SetPattern(const POSGRID2& rPart)
@@ -363,15 +340,6 @@ HRESULT CObjectMeshSphere::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshSphere::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_apDome[DOME_TOP]->GetPattern();
-}
-
-//============================================================
 //	テクスチャ分割数の設定処理
 //============================================================
 void CObjectMeshSphere::SetTexPattern(const POSGRID2& rTexPart)
@@ -388,22 +356,4 @@ void CObjectMeshSphere::SetTexPattern(const POSGRID2& rTexPart)
 		}
 	}
 	else { assert(false); }	// 最低値未満
-}
-
-//============================================================
-//	テクスチャ分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshSphere::GetTexPattern(void) const
-{
-	// テクスチャ分割数を返す
-	return m_apDome[DOME_TOP]->GetTexPattern();
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshSphere::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
