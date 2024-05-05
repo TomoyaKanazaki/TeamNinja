@@ -22,6 +22,7 @@
 #include "shader.h"
 #include "retentionManager.h"
 #include "debug.h"
+#include "effekseerControl.h"
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -259,6 +260,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	//エフェクシア初期化
+	CEffekseer::GetInstance()->Init();
 	//--------------------------------------------------------
 	//	デバッグ用
 	//--------------------------------------------------------
@@ -410,6 +413,8 @@ void CManager::Uninit(void)
 	// デルタタイムの破棄
 	SAFE_REF_RELEASE(m_pDeltaTime);
 
+	//エフェクシア破棄
+	CEffekseer::GetInstance()->Uninit();
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
 
