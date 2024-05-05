@@ -173,32 +173,6 @@ void CParticle2D::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
-//	種類の設定処理
-//============================================================
-void CParticle2D::SetType(const int nType)
-{
-	if (nType > NONE_IDX && nType < TYPE_MAX)
-	{ // 種類が正規の場合
-
-		// 種類を設定
-		m_type = (EType)nType;
-
-		// 寿命を設定
-		m_nLife = SET_LIFE[nType];
-	}
-	else { assert(false); }
-}
-
-//============================================================
-//	種類取得処理
-//============================================================
-int CParticle2D::GetType(void) const
-{
-	// 種類を返す
-	return (int)m_type;
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CParticle2D::SetVec3Position(const D3DXVECTOR3& rPos)
@@ -208,12 +182,41 @@ void CParticle2D::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
+//	生成処理
 //============================================================
-D3DXVECTOR3 CParticle2D::GetVec3Position(void) const
+CParticle2D *CParticle2D::Create(const EType type, const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
 {
-	// 位置を返す
-	return m_pos;
+	// パーティクル2Dの生成
+	CParticle2D *pParticle2D = new CParticle2D;
+	if (pParticle2D == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// パーティクル2Dの初期化
+		if (FAILED(pParticle2D->Init()))
+		{ // 初期化に失敗した場合
+
+			// パーティクル2Dの破棄
+			SAFE_DELETE(pParticle2D);
+			return nullptr;
+		}
+
+		// 種類を設定
+		pParticle2D->SetType(type);
+
+		// 位置を設定
+		pParticle2D->SetVec3Position(rPos);
+
+		// 色を設定
+		pParticle2D->SetColor(rCol);
+
+		// 確保したアドレスを返す
+		return pParticle2D;
+	}
 }
 
 //============================================================
@@ -226,21 +229,20 @@ void CParticle2D::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	色取得処理
+//	種類の設定処理
 //============================================================
-D3DXCOLOR CParticle2D::GetColor(void) const
+void CParticle2D::SetType(const EType type)
 {
-	// 色を返す
-	return m_col;
-}
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // 種類が正規の場合
 
-//============================================================
-//	破棄処理
-//============================================================
-void CParticle2D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
+		// 種類を設定
+		m_type = type;
+
+		// 寿命を設定
+		m_nLife = SET_LIFE[(int)type];
+	}
+	else { assert(false); }
 }
 
 //============================================================
@@ -250,7 +252,7 @@ void CParticle2D::Damage(const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
 {
 	// 変数を宣言
 	D3DXVECTOR3 move = VEC3_ZERO;	// 移動量の代入用
-	D3DXVECTOR3 rot  = VEC3_ZERO;	// 向きの代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
 	if ((m_nLife + 1) % 9 == 0)
 	{ // 寿命が9の倍数の場合
@@ -299,7 +301,7 @@ void CParticle2D::Item(const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
 {
 	// 変数を宣言
 	D3DXVECTOR3 move = VEC3_ZERO;	// 移動量の代入用
-	D3DXVECTOR3 rot  = VEC3_ZERO;	// 向きの代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
 	for (int nCntPart = 0; nCntPart < item::SPAWN; nCntPart++)
 	{ // 生成されるエフェクト数分繰り返す
@@ -344,7 +346,7 @@ void CParticle2D::GetItem(const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
 {
 	// 変数を宣言
 	D3DXVECTOR3 move = VEC3_ZERO;	// 移動量の代入用
-	D3DXVECTOR3 rot  = VEC3_ZERO;	// 向きの代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
 	for (int nCntPart = 0; nCntPart < itemGet::SPAWN; nCntPart++)
 	{ // 生成されるエフェクト数分繰り返す
@@ -379,43 +381,5 @@ void CParticle2D::GetItem(const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
 			itemGet::BLEND,			// 加算合成状況
 			LABEL_PARTICLE			// オブジェクトラベル
 		);
-	}
-}
-
-//============================================================
-//	生成処理
-//============================================================
-CParticle2D *CParticle2D::Create(const EType type, const D3DXVECTOR3& rPos, const D3DXCOLOR& rCol)
-{
-	// パーティクル2Dの生成
-	CParticle2D *pParticle2D = new CParticle2D;
-	if (pParticle2D == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// パーティクル2Dの初期化
-		if (FAILED(pParticle2D->Init()))
-		{ // 初期化に失敗した場合
-
-			// パーティクル2Dの破棄
-			SAFE_DELETE(pParticle2D);
-			return nullptr;
-		}
-
-		// 種類を設定
-		pParticle2D->SetType(type);
-
-		// 位置を設定
-		pParticle2D->SetVec3Position(rPos);
-
-		// 色を設定
-		pParticle2D->SetColor(rCol);
-
-		// 確保したアドレスを返す
-		return pParticle2D;
 	}
 }

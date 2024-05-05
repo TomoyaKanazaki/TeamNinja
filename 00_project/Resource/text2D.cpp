@@ -120,15 +120,6 @@ void CText2D::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置の取得処理
-//============================================================
-D3DXVECTOR3 CText2D::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CText2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -146,41 +137,6 @@ void CText2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CText2D::GetVec3Rotation(void) const
-{
-	// 保存された向きを返す
-	return m_rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CText2D::SetColor(const D3DXCOLOR& rCol)
-{
-	// 設定する色を保存
-	m_col = rCol;
-
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
-
-		// 文字列色の設定
-		assert(rList != nullptr);
-		rList->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CText2D::GetColor(void) const
-{
-	// 保存された色を返す
-	return m_col;
 }
 
 //============================================================
@@ -247,6 +203,23 @@ CText2D *CText2D::Create
 }
 
 //============================================================
+//	色の設定処理
+//============================================================
+void CText2D::SetColor(const D3DXCOLOR& rCol)
+{
+	// 設定する色を保存
+	m_col = rCol;
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列色の設定
+		assert(rList != nullptr);
+		rList->SetColor(rCol);
+	}
+}
+
+//============================================================
 //	フォントの設定処理
 //============================================================
 void CText2D::SetFont(CFontChar *pFontChar)
@@ -262,6 +235,70 @@ void CText2D::SetFont(CFontChar *pFontChar)
 		assert(rList != nullptr);
 		rList->SetFont(pFontChar);
 	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	文字縦幅の設定処理
+//============================================================
+void CText2D::SetCharHeight(const float fHeight)
+{
+	// 設定する文字の縦幅を保存
+	m_fCharHeight = fHeight;
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列縦幅の設定
+		assert(rList != nullptr);
+		rList->SetHeight(fHeight);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	行間縦幅の設定処理
+//============================================================
+void CText2D::SetLineHeight(const float fHeight)
+{
+	// 引数の行間を設定
+	m_fLineHeight = fHeight;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	横配置の設定処理
+//============================================================
+void CText2D::SetAlignX(const CString2D::EAlignX align)
+{
+	// 引数の横配置を設定
+	m_alignX = align;
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列横幅の設定
+		assert(rList != nullptr);
+		rList->SetAlignX(align);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	縦配置の設定処理
+//============================================================
+void CText2D::SetAlignY(const EAlignY align)
+{
+	// 引数の縦配置を設定
+	m_alignY = align;
 
 	// 相対位置の設定
 	SetPositionRelative();
@@ -342,115 +379,6 @@ float CText2D::GetTextHeight(void) const
 
 	// テキストの縦幅を返す
 	return fTextHeight;
-}
-
-//============================================================
-//	文字縦幅の設定処理
-//============================================================
-void CText2D::SetCharHeight(const float fHeight)
-{
-	// 設定する文字の縦幅を保存
-	m_fCharHeight = fHeight;
-
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
-
-		// 文字列縦幅の設定
-		assert(rList != nullptr);
-		rList->SetHeight(fHeight);
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	文字縦幅の取得処理
-//============================================================
-float CText2D::GetCharHeight(void) const
-{
-	// 保存された文字の縦幅を返す
-	return m_fCharHeight;
-}
-
-//============================================================
-//	行間縦幅の設定処理
-//============================================================
-void CText2D::SetLineHeight(const float fHeight)
-{
-	// 引数の行間を設定
-	m_fLineHeight = fHeight;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	行間縦幅の取得処理
-//============================================================
-float CText2D::GetLineHeight(void) const
-{
-	// 行間を返す
-	return m_fLineHeight;
-}
-
-//============================================================
-//	横配置の設定処理
-//============================================================
-void CText2D::SetAlignX(const CString2D::EAlignX align)
-{
-	// 引数の横配置を設定
-	m_alignX = align;
-
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
-
-		// 文字列横幅の設定
-		assert(rList != nullptr);
-		rList->SetAlignX(align);
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	横配置の取得処理
-//============================================================
-CString2D::EAlignX CText2D::GetAlignX(void) const
-{
-	// 横配置を返す
-	return m_alignX;
-}
-
-//============================================================
-//	縦配置の設定処理
-//============================================================
-void CText2D::SetAlignY(const EAlignY align)
-{
-	// 引数の縦配置を設定
-	m_alignY = align;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	縦配置の取得処理
-//============================================================
-CText2D::EAlignY CText2D::GetAlignY(void) const
-{
-	// 縦配置を返す
-	return m_alignY;
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CText2D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

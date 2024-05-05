@@ -127,24 +127,14 @@ void CValueUI::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
-//	位置の設定処理
+//	優先順位の設定処理
 //============================================================
-void CValueUI::SetVec3Position(const D3DXVECTOR3& rPos)
+void CValueUI::SetPriority(const int nPriority)
 {
-	// 引数の位置を設定
-	m_pos = rPos;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CValueUI::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
+	// 引数の優先順位を設定
+	CObject::SetPriority(nPriority);	// 自身
+	m_pTitle->SetPriority(nPriority);	// タイトル情報
+	m_pValue->SetPriority(nPriority);	// 数字情報
 }
 
 //============================================================
@@ -159,22 +149,22 @@ void CValueUI::SetEnableDraw(const bool bDraw)
 }
 
 //============================================================
-//	優先順位の設定処理
+//	位置の設定処理
 //============================================================
-void CValueUI::SetPriority(const int nPriority)
+void CValueUI::SetVec3Position(const D3DXVECTOR3& rPos)
 {
-	// 引数の優先順位を設定
-	CObject::SetPriority(nPriority);	// 自身
-	m_pTitle->SetPriority(nPriority);	// タイトル情報
-	m_pValue->SetPriority(nPriority);	// 数字情報
+	// 引数の位置を設定
+	m_pos = rPos;
+
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
-//	生成処理
+//	生成処理 (テクスチャ指定なし)
 //============================================================
 CValueUI *CValueUI::Create
 (
-	const char *pPassTex,			// タイトルテクスチャパス
 	const CValue::EType type,		// 数字種類
 	const int nDigit,				// 桁数
 	const D3DXVECTOR3& rPos,		// 位置
@@ -198,6 +188,8 @@ CValueUI *CValueUI::Create
 	else
 	{ // 生成に成功した場合
 
+		CMultiValue *pMultiModel = pValueUI->GetMultiValue();	// 数字オブジェクト
+
 		// 数字UIの初期化
 		if (FAILED(pValueUI->Init()))
 		{ // 初期化に失敗した場合
@@ -208,40 +200,137 @@ CValueUI *CValueUI::Create
 		}
 
 		// 数字の桁数を設定
-		pValueUI->GetMultiValue()->SetDigit(nDigit);
-
-		// タイトルテクスチャを設定
-		pValueUI->SetTextureTitle(pPassTex);
+		pMultiModel->SetDigit(nDigit);
 
 		// 数字テクスチャを設定
-		pValueUI->GetMultiValue()->SetType(type);
+		pMultiModel->SetType(type);
 
 		// タイトル向きを設定
 		pValueUI->SetRotationTitle(rRotTitle);
 
 		// 数字向きを設定
-		pValueUI->GetMultiValue()->SetVec3Rotation(rRotValue);
+		pMultiModel->SetVec3Rotation(rRotValue);
 
 		// タイトル大きさを設定
 		pValueUI->SetSizingTitle(rSizeTitle);
 
 		// 数字大きさを設定
-		pValueUI->GetMultiValue()->SetVec3Sizing(rSizeValue);
+		pMultiModel->SetVec3Sizing(rSizeValue);
 
 		// タイトル色を設定
 		pValueUI->SetColorTitle(rColTitle);
 
 		// 数字色を設定
-		pValueUI->GetMultiValue()->SetColor(rColValue);
+		pMultiModel->SetColor(rColValue);
 
 		// 数字の行間を設定
-		pValueUI->GetMultiValue()->SetSpace(rSpaceValue);
+		pMultiModel->SetSpace(rSpaceValue);
 
 		// 行間を設定
 		pValueUI->SetSpace(rSpace);
 
 		// 位置を設定
 		pValueUI->SetVec3Position(rPos);
+
+		// 確保したアドレスを返す
+		return pValueUI;
+	}
+}
+
+//============================================================
+//	生成処理 (テクスチャインデックス指定)
+//============================================================
+CValueUI *CValueUI::Create
+(
+	const int nTextureID,			// タイトルテクスチャインデックス
+	const CValue::EType type,		// 数字種類
+	const int nDigit,				// 桁数
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rSpace,		// 行間
+	const D3DXVECTOR3& rSpaceValue,	// 数字行間
+	const D3DXVECTOR3& rSizeTitle,	// タイトル大きさ
+	const D3DXVECTOR3& rSizeValue,	// 数字大きさ
+	const D3DXVECTOR3& rRotTitle,	// タイトル向き
+	const D3DXVECTOR3& rRotValue,	// 数字向き
+	const D3DXCOLOR& rColTitle,		// タイトル色
+	const D3DXCOLOR& rColValue		// 数字色
+)
+{
+	// 数字UIの生成
+	CValueUI *pValueUI = CValueUI::Create
+	( // 引数
+		type,			// 数字種類
+		nDigit,			// 桁数
+		rPos,			// 位置
+		rSpace,			// 行間
+		rSpaceValue,	// 数字行間
+		rSizeTitle,		// タイトル大きさ
+		rSizeValue,		// 数字大きさ
+		rRotTitle,		// タイトル向き
+		rRotValue,		// 数字向き
+		rColTitle,		// タイトル色
+		rColValue		// 数字色
+	);
+	if (pValueUI == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// テクスチャを割当
+		pValueUI->BindTextureTitle(nTextureID);
+
+		// 確保したアドレスを返す
+		return pValueUI;
+	}
+}
+
+//============================================================
+//	生成処理 (テクスチャパス指定)
+//============================================================
+CValueUI *CValueUI::Create
+(
+	const char *pTexturePass,		// タイトルテクスチャパス
+	const CValue::EType type,		// 数字種類
+	const int nDigit,				// 桁数
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rSpace,		// 行間
+	const D3DXVECTOR3& rSpaceValue,	// 数字行間
+	const D3DXVECTOR3& rSizeTitle,	// タイトル大きさ
+	const D3DXVECTOR3& rSizeValue,	// 数字大きさ
+	const D3DXVECTOR3& rRotTitle,	// タイトル向き
+	const D3DXVECTOR3& rRotValue,	// 数字向き
+	const D3DXCOLOR& rColTitle,		// タイトル色
+	const D3DXCOLOR& rColValue		// 数字色
+)
+{
+	// 数字UIの生成
+	CValueUI *pValueUI = CValueUI::Create
+	( // 引数
+		type,			// 数字種類
+		nDigit,			// 桁数
+		rPos,			// 位置
+		rSpace,			// 行間
+		rSpaceValue,	// 数字行間
+		rSizeTitle,		// タイトル大きさ
+		rSizeValue,		// 数字大きさ
+		rRotTitle,		// タイトル向き
+		rRotValue,		// 数字向き
+		rColTitle,		// タイトル色
+		rColValue		// 数字色
+	);
+	if (pValueUI == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// テクスチャを割当
+		pValueUI->BindTextureTitle(pTexturePass);
 
 		// 確保したアドレスを返す
 		return pValueUI;
@@ -261,12 +350,39 @@ void CValueUI::SetSpace(const D3DXVECTOR3& rSpace)
 }
 
 //============================================================
-//	行間取得処理
+//	タイトルのテクスチャ割当処理 (インデックス)
 //============================================================
-D3DXVECTOR3 CValueUI::GetSpace(void) const
+void CValueUI::BindTextureTitle(const int nTextureID)
 {
-	// 行間を返す
-	return m_space;
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_pTitle->BindTexture(nTextureID);
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	タイトルのテクスチャ割当処理 (パス)
+//============================================================
+void CValueUI::BindTextureTitle(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_pTitle->BindTexture(pTexture->Regist(pTexturePass));
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_pTitle->BindTexture(NONE_IDX);
+	}
 }
 
 //============================================================
@@ -279,15 +395,6 @@ void CValueUI::SetRotationTitle(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	タイトル向き取得処理
-//============================================================
-D3DXVECTOR3 CValueUI::GetRotationTitle(void) const
-{
-	// タイトル向きを返す
-	return m_pTitle->GetVec3Rotation();
-}
-
-//============================================================
 //	タイトル大きさの設定処理
 //============================================================
 void CValueUI::SetSizingTitle(const D3DXVECTOR3& rSize)
@@ -297,60 +404,12 @@ void CValueUI::SetSizingTitle(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	タイトル大きさ取得処理
-//============================================================
-D3DXVECTOR3 CValueUI::GetSizingTitle(void) const
-{
-	// タイトル大きさを返す
-	return m_pTitle->GetVec3Sizing();
-}
-
-//============================================================
 //	タイトル色の設定処理
 //============================================================
 void CValueUI::SetColorTitle(const D3DXCOLOR& rCol)
 {
 	// 引数の色を設定
 	m_pTitle->SetColor(rCol);
-}
-
-//============================================================
-//	タイトル色取得処理
-//============================================================
-D3DXCOLOR CValueUI::GetColorTitle(void) const
-{
-	// タイトル色を返す
-	return m_pTitle->GetColor();
-}
-
-//============================================================
-//	タイトルテクスチャの設定処理
-//============================================================
-void CValueUI::SetTextureTitle(const char *pPassTex)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	// 引数のテクスチャを割当
-	m_pTitle->BindTexture(pTexture->Regist(pPassTex));
-}
-
-//============================================================
-//	数字情報取得処理
-//============================================================
-CMultiValue *CValueUI::GetMultiValue(void) const
-{
-	// 数字情報を返す
-	return m_pValue;
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CValueUI::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================
