@@ -158,15 +158,15 @@ void CObjectMeshTube::Draw(CShader *pShader)
 //============================================================
 //	—Dæ‡ˆÊ‚ÌÝ’èˆ—
 //============================================================
-void CObjectMeshTube::SetPriority(const int nPrio)
+void CObjectMeshTube::SetPriority(const int nPriority)
 {
 	// ˆø”‚Ì—Dæ‡ˆÊ‚ðÝ’è
-	CObject::SetPriority(nPrio);		// Ž©g
-	m_pCylinder->SetPriority(nPrio);	// “›
+	CObject::SetPriority(nPriority);		// Ž©g
+	m_pCylinder->SetPriority(nPriority);	// “›
 	for (int i = 0; i < COVER_MAX; i++)
 	{ // ŠW‚Ì‘”•ªŒJ‚è•Ô‚·
 
-		m_apCover[i]->SetPriority(nPrio);	// ŠW
+		m_apCover[i]->SetPriority(nPriority);	// ŠW
 	}
 }
 

@@ -130,14 +130,14 @@ void CObjectMeshSphere::Draw(CShader *pShader)
 //============================================================
 //	—Dæ‡ˆÊ‚Ìİ’èˆ—
 //============================================================
-void CObjectMeshSphere::SetPriority(const int nPrio)
+void CObjectMeshSphere::SetPriority(const int nPriority)
 {
 	// ˆø”‚Ì—Dæ‡ˆÊ‚ğİ’è
-	CObject::SetPriority(nPrio);	// ©g
+	CObject::SetPriority(nPriority);	// ©g
 	for (int i = 0; i < DOME_MAX; i++)
 	{ // ”¼‹…‚Ì‘”•ªŒJ‚è•Ô‚·
 
-		m_apDome[i]->SetPriority(nPrio);	// ”¼‹…
+		m_apDome[i]->SetPriority(nPriority);	// ”¼‹…
 	}
 }
 
