@@ -323,51 +323,6 @@ void COrbit::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void COrbit::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void COrbit::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
-//	状態取得処理
-//============================================================
-int COrbit::GetState(void) const
-{
-	// 状態を返す
-	return m_state;
-}
-
-//============================================================
 //	生成処理
 //============================================================
 COrbit *COrbit::Create
@@ -412,7 +367,7 @@ COrbit *COrbit::Create
 		pOrbit->SetEnableAlpha(bAlpha);
 
 		// αブレンドを設定
-		pOrbit->SetAlphaBlend(blend);
+		pOrbit->m_pRenderState->SetAlphaBlend(blend);
 
 		// 長さを設定
 		if (FAILED(pOrbit->SetLength(nPart)))
@@ -425,6 +380,54 @@ COrbit *COrbit::Create
 
 		// 確保したアドレスを返す
 		return pOrbit;
+	}
+}
+
+//============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *COrbit::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void COrbit::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void COrbit::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
 	}
 }
 
@@ -518,18 +521,6 @@ void COrbit::SetTexPart(const int nTexPart)
 
 	// 引数のテクスチャ分割数を設定
 	m_orbit.nTexPart = nTexPart;
-}
-
-//============================================================
-//	αブレンドの設定処理
-//============================================================
-void COrbit::SetAlphaBlend(const CRenderState::EBlend blend)
-{
-	// 引数のαブレンドを設定
-	m_orbit.blend = blend;
-
-	// αブレンドを変更
-	GetRenderState()->SetAlphaBlend(blend);
 }
 
 //============================================================
@@ -639,18 +630,6 @@ HRESULT COrbit::SetLength(const int nPart)
 }
 
 //============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *COrbit::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
-}
-
-//============================================================
 //	頂点情報の設定処理
 //============================================================
 void COrbit::SetVtx(void)
@@ -706,15 +685,6 @@ void COrbit::SetVtx(void)
 		m_pVtxBuff->Unlock();
 	}
 	else { assert(false); }	// 非使用中
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void COrbit::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

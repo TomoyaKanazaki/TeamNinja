@@ -148,69 +148,12 @@ void CObjectModel::Draw(CShader *pShader)
 }
 
 //============================================================
-//	モデル割当処理 (インデックス)
-//============================================================
-void CObjectModel::BindModel(const int nModelID)
-{
-	// ポインタを宣言
-	CModel *pModel = GET_MANAGER->GetModel();	// モデルへのポインタ
-
-	if (nModelID > NONE_IDX)
-	{ // モデルインデックスが使用可能な場合
-
-		// モデルインデックスを代入
-		m_nModelID = nModelID;
-
-		// モデルを割り当て
-		m_modelData = *pModel->GetInfo(nModelID);
-
-		// 元マテリアルの設定
-		if (FAILED(SetOriginMaterial(m_modelData.pBuffMat, (int)m_modelData.dwNumMat)))
-		{ assert(false); }	// 設定失敗
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	モデル割当処理 (パス)
-//============================================================
-void CObjectModel::BindModel(const char *pModelPass)
-{
-	// ポインタを宣言
-	CModel *pModel = GET_MANAGER->GetModel();	// モデルへのポインタ
-
-	if (pModelPass != nullptr)
-	{ // 割り当てるモデルパスが存在する場合
-
-		// モデルインデックスを代入
-		m_nModelID = pModel->Regist(pModelPass);
-
-		// モデルを割り当て
-		m_modelData = *pModel->GetInfo(m_nModelID);
-
-		// 元マテリアルの設定
-		if (FAILED(SetOriginMaterial(m_modelData.pBuffMat, (int)m_modelData.dwNumMat)))
-		{ assert(false); }	// 設定失敗
-	}
-	else { assert(false); }	// モデルパス無し
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectModel::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectModel::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
 }
 
 //============================================================
@@ -226,100 +169,12 @@ void CObjectModel::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectModel::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_rot;
-}
-
-//============================================================
 //	拡大率の設定処理
 //============================================================
 void CObjectModel::SetVec3Scaling(const D3DXVECTOR3& rScale)
 {
 	// 引数の拡大率を代入
 	m_scale = rScale;
-}
-
-//============================================================
-//	拡大率取得処理
-//============================================================
-D3DXVECTOR3 CObjectModel::GetVec3Scaling(void) const
-{
-	// 拡大率を返す
-	return m_scale;
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectModel::GetRadius(void) const
-{
-	// モデルの半径を返す
-	return m_modelData.fRadius;
-}
-
-//============================================================
-//	マテリアルの全設定処理
-//============================================================
-void CObjectModel::SetAllMaterial(const D3DXMATERIAL& rMat)
-{
-	// 引数のマテリアルを全マテリアルに設定
-	for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
-	{ // マテリアルの数分繰り返す
-
-		m_pMat[nCntMat] = rMat;
-	}
-}
-
-//============================================================
-//	マテリアルの再設定処理
-//============================================================
-void CObjectModel::ResetMaterial(void)
-{
-	if (IsDeath())
-	{ // 死んでいる場合
-
-		return;
-	}
-
-	// ポインタを宣言
-	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
-
-	// マテリアルデータへのポインタを取得
-	pOriginMat = (D3DXMATERIAL*)m_modelData.pBuffMat->GetBufferPointer();
-
-	// 全マテリアルに初期マテリアルを再設定
-	if (m_pMat != nullptr)
-	{ // 使用されている場合
-
-		for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
-		{ // マテリアルの数分繰り返す
-
-			m_pMat[nCntMat] = pOriginMat[nCntMat];
-		}
-	}
-	else { assert(false); }	// 非使用中
-}
-
-//============================================================
-//	マトリックスポインタ取得処理
-//============================================================
-D3DXMATRIX *CObjectModel::GetPtrMtxWorld(void)
-{
-	// ワールドマトリックスのポインタを返す
-	return &m_mtxWorld;
-}
-
-//============================================================
-//	マトリックス取得処理
-//============================================================
-D3DXMATRIX CObjectModel::GetMtxWorld(void) const
-{
-	// ワールドマトリックスを返す
-	return m_mtxWorld;
 }
 
 //============================================================
@@ -407,10 +262,8 @@ D3DXMATERIAL CObjectModel::GetMaterial(const int nMatID) const
 //============================================================
 void CObjectModel::SetAlpha(const float fAlpha)
 {
-	// ポインタを宣言
-	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
-
 	// マテリアルデータへのポインタを取得
+	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
 	pOriginMat = (D3DXMATERIAL*)m_modelData.pBuffMat->GetBufferPointer();
 
 	for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
@@ -432,10 +285,8 @@ void CObjectModel::SetAlpha(const float fAlpha)
 //============================================================
 float CObjectModel::GetAlpha(void) const
 {
-	// 変数を宣言
-	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
-
 	// 最も不透明な透明度を探す
+	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
 	for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
 	{ // マテリアルの数分繰り返す
 
@@ -456,15 +307,11 @@ float CObjectModel::GetAlpha(void) const
 //============================================================
 float CObjectModel::GetMaxAlpha(void) const
 {
-	// 変数を宣言
-	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
-
-	// ポインタを宣言
-	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
-
 	// マテリアルデータへのポインタを取得
+	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
 	pOriginMat = (D3DXMATERIAL*)m_modelData.pBuffMat->GetBufferPointer();
 
+	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
 	for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
 	{ // マテリアルの数分繰り返す
 
@@ -481,42 +328,6 @@ float CObjectModel::GetMaxAlpha(void) const
 }
 
 //============================================================
-//	モデル情報の設定処理
-//============================================================
-void CObjectModel::SetModelData(const CModel::SModel& rModel)
-{
-	// 引数のモデル情報を代入
-	m_modelData = rModel;
-}
-
-//============================================================
-//	モデル情報取得処理
-//============================================================
-CModel::SModel CObjectModel::GetModelData(void) const
-{
-	// モデル情報を返す
-	return m_modelData;
-}
-
-//============================================================
-//	マトリックスの設定処理
-//============================================================
-void CObjectModel::SetMtxWorld(const D3DXMATRIX& rMtxWorld)
-{
-	// 引数のマトリックスを設定
-	m_mtxWorld = rMtxWorld;
-}
-
-//============================================================
-//	モデルインデックス取得処理
-//============================================================
-int CObjectModel::GetModelID(void) const
-{
-	// モデルインデックスを返す
-	return m_nModelID;
-}
-
-//============================================================
 //	レンダーステート情報の取得処理
 //============================================================
 CRenderState *CObjectModel::GetRenderState(void)
@@ -526,6 +337,110 @@ CRenderState *CObjectModel::GetRenderState(void)
 
 	// レンダーステートの情報を返す
 	return m_pRenderState;
+}
+
+//============================================================
+//	モデル割当処理 (インデックス)
+//============================================================
+void CObjectModel::BindModel(const int nModelID)
+{
+	// ポインタを宣言
+	CModel *pModel = GET_MANAGER->GetModel();	// モデルへのポインタ
+
+	if (nModelID > NONE_IDX)
+	{ // モデルインデックスが使用可能な場合
+
+		// モデルインデックスを代入
+		m_nModelID = nModelID;
+
+		// モデルを割り当て
+		m_modelData = *pModel->GetInfo(nModelID);
+
+		// 元マテリアルの設定
+		if (FAILED(SetOriginMaterial(m_modelData.pBuffMat, (int)m_modelData.dwNumMat)))
+		{ assert(false); }	// 設定失敗
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	モデル割当処理 (パス)
+//============================================================
+void CObjectModel::BindModel(const char *pModelPass)
+{
+	// ポインタを宣言
+	CModel *pModel = GET_MANAGER->GetModel();	// モデルへのポインタ
+
+	if (pModelPass != nullptr)
+	{ // 割り当てるモデルパスが存在する場合
+
+		// モデルインデックスを代入
+		m_nModelID = pModel->Regist(pModelPass);
+
+		// モデルを割り当て
+		m_modelData = *pModel->GetInfo(m_nModelID);
+
+		// 元マテリアルの設定
+		if (FAILED(SetOriginMaterial(m_modelData.pBuffMat, (int)m_modelData.dwNumMat)))
+		{ assert(false); }	// 設定失敗
+	}
+	else { assert(false); }	// モデルパス無し
+}
+
+//============================================================
+//	マテリアルの全設定処理
+//============================================================
+void CObjectModel::SetAllMaterial(const D3DXMATERIAL& rMat)
+{
+	// 引数のマテリアルを全マテリアルに設定
+	for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
+	{ // マテリアルの数分繰り返す
+
+		m_pMat[nCntMat] = rMat;
+	}
+}
+
+//============================================================
+//	マテリアルの再設定処理
+//============================================================
+void CObjectModel::ResetMaterial(void)
+{
+	// 死んでいる場合抜ける
+	if (IsDeath()) { return; }
+
+	// マテリアルデータへのポインタを取得
+	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
+	pOriginMat = (D3DXMATERIAL*)m_modelData.pBuffMat->GetBufferPointer();
+
+	// 全マテリアルに初期マテリアルを再設定
+	if (m_pMat != nullptr)
+	{ // 使用されている場合
+
+		for (int nCntMat = 0; nCntMat < (int)m_modelData.dwNumMat; nCntMat++)
+		{ // マテリアルの数分繰り返す
+
+			m_pMat[nCntMat] = pOriginMat[nCntMat];
+		}
+	}
+	else { assert(false); }	// 非使用中
+}
+
+//============================================================
+//	モデル情報の設定処理
+//============================================================
+void CObjectModel::SetModelData(const CModel::SModel& rModel)
+{
+	// 引数のモデル情報を代入
+	m_modelData = rModel;
+}
+
+//============================================================
+//	マトリックスの設定処理
+//============================================================
+void CObjectModel::SetMtxWorld(const D3DXMATRIX& rMtxWorld)
+{
+	// 引数のマトリックスを設定
+	m_mtxWorld = rMtxWorld;
 }
 
 //============================================================
@@ -548,12 +463,48 @@ D3DXMATERIAL *CObjectModel::GetPtrMaterial(const int nID) const
 }
 
 //============================================================
-//	破棄処理
+//	元マテリアルの設定処理
 //============================================================
-void CObjectModel::Release(void)
+HRESULT CObjectModel::SetOriginMaterial(const LPD3DXBUFFER pBuffMat, const int nNumMat)
 {
-	// オブジェクトの破棄
-	CObject::Release();
+	//--------------------------------------------------------
+	//	メモリ開放・確保
+	//--------------------------------------------------------
+	// マテリアルの破棄
+	SAFE_DEL_ARRAY(m_pMat);
+
+	if (m_pMat == nullptr)
+	{ // ポインタが使用されていない場合
+
+		// マテリアル数分のメモリ確保
+		m_pMat = new D3DXMATERIAL[nNumMat];
+
+		if (m_pMat != nullptr)
+		{ // 確保に成功した場合
+
+			// メモリクリア
+			memset(m_pMat, 0, sizeof(D3DXMATERIAL) * nNumMat);
+		}
+		else { assert(false); return E_FAIL; }	// 確保失敗
+	}
+	else { assert(false); return E_FAIL; }	// 使用中
+
+	//--------------------------------------------------------
+	//	マテリアル情報を設定
+	//--------------------------------------------------------
+	// マテリアルデータへのポインタを取得
+	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
+	pOriginMat = (D3DXMATERIAL*)pBuffMat->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < nNumMat; nCntMat++)
+	{ // マテリアルの数分繰り返す
+
+		// マテリアルデータをコピー
+		m_pMat[nCntMat] = pOriginMat[nCntMat];
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================
@@ -641,51 +592,4 @@ void CObjectModel::DrawShader(CShader *pShader)
 	// 描画終了
 	pShader->EndPass();
 	pShader->End();
-}
-
-//============================================================
-//	元マテリアルの設定処理
-//============================================================
-HRESULT CObjectModel::SetOriginMaterial(const LPD3DXBUFFER pBuffMat, const int nNumMat)
-{
-	// ポインタを宣言
-	D3DXMATERIAL *pOriginMat;	// マテリアルデータへのポインタ
-
-	//--------------------------------------------------------
-	//	メモリ開放・確保
-	//--------------------------------------------------------
-	// マテリアルの破棄
-	SAFE_DEL_ARRAY(m_pMat);
-
-	if (m_pMat == nullptr)
-	{ // ポインタが使用されていない場合
-
-		// マテリアル数分のメモリ確保
-		m_pMat = new D3DXMATERIAL[nNumMat];
-
-		if (m_pMat != nullptr)
-		{ // 確保に成功した場合
-
-			// メモリクリア
-			memset(m_pMat, 0, sizeof(D3DXMATERIAL) * nNumMat);
-		}
-		else { assert(false); return E_FAIL; }	// 確保失敗
-	}
-	else { assert(false); return E_FAIL; }	// 使用中
-
-	//--------------------------------------------------------
-	//	マテリアル情報を設定
-	//--------------------------------------------------------
-	// マテリアルデータへのポインタを取得
-	pOriginMat = (D3DXMATERIAL*)pBuffMat->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < nNumMat; nCntMat++)
-	{ // マテリアルの数分繰り返す
-
-		// マテリアルデータをコピー
-		m_pMat[nCntMat] = pOriginMat[nCntMat];
-	}
-
-	// 成功を返す
-	return S_OK;
 }

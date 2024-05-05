@@ -161,56 +161,12 @@ void CObjectMeshWall::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshWall::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshWall::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshWall::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshWall.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshWall::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshWall.pos;
 }
 
 //============================================================
@@ -226,15 +182,6 @@ void CObjectMeshWall::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshWall::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshWall.rot;
-}
-
-//============================================================
 //	大きさの設定処理
 //============================================================
 void CObjectMeshWall::SetVec2Sizing(const D3DXVECTOR2& rSize)
@@ -244,36 +191,6 @@ void CObjectMeshWall::SetVec2Sizing(const D3DXVECTOR2& rSize)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR2 CObjectMeshWall::GetVec2Sizing(void) const
-{
-	// 大きさを返す
-	return m_meshWall.size;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshWall::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshWall.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshWall::GetColor(void) const
-{
-	// 色を返す
-	return m_meshWall.col;
 }
 
 //============================================================
@@ -331,6 +248,66 @@ CObjectMeshWall *CObjectMeshWall::Create
 		// 確保したアドレスを返す
 		return pMeshWall;
 	}
+}
+
+//============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshWall::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshWall::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshWall::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshWall::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshWall.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -396,27 +373,6 @@ HRESULT CObjectMeshWall::SetPattern(const POSGRID2& rPart)
 
 	// 成功を返す
 	return S_OK;
-}
-
-//============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshWall::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshWall::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -540,15 +496,6 @@ void CObjectMeshWall::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshWall::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================
