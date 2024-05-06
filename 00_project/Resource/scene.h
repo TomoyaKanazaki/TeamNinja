@@ -52,7 +52,6 @@ public:
 
 	static CStage  *GetStage(void);		// ステージ取得
 	static CPlayer *GetPlayer(void);	// プレイヤー取得
-	static CEnemy  *GetBoss(void);		// ボス取得
 
 	// メンバ関数
 	void SetMode(const EMode mode);	// モード設定

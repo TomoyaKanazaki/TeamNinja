@@ -433,7 +433,7 @@ void CManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CManager::Update(const float fDeltaTime)
+void CManager::Update(void)
 {
 	// デバッグ情報の更新・描画
 	assert(m_pDebug != nullptr);
@@ -444,6 +444,9 @@ void CManager::Update(const float fDeltaTime)
 	// デルタタイムの更新
 	assert(m_pDeltaTime != nullptr);
 	m_pDeltaTime->Update();
+
+	// デルタタイムを取得
+	const float fDeltaTime = m_pDeltaTime->GetTime();
 
 	// パッドの更新
 	assert(m_pPad != nullptr);
