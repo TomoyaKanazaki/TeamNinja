@@ -96,10 +96,10 @@ void CField::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CField::Update(void)
+void CField::Update(const float fDeltaTime)
 {
 	// オブジェクトメッシュフィールドの更新
-	CObjectMeshField::Update();
+	CObjectMeshField::Update(fDeltaTime);
 }
 
 //============================================================

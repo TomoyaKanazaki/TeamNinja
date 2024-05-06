@@ -89,22 +89,14 @@ void CSceneTutorial::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSceneTutorial::Update(void)
+void CSceneTutorial::Update(const float fDeltaTime)
 {
 	// チュートリアルマネージャーの更新
 	assert(m_pTutorialManager != nullptr);
-	m_pTutorialManager->Update();
+	m_pTutorialManager->Update(fDeltaTime);
 
 	// シーンの更新
-	CScene::Update();
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CSceneTutorial::Draw(void)
-{
-
+	CScene::Update(fDeltaTime);
 }
 
 //============================================================

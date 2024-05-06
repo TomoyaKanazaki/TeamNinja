@@ -74,7 +74,7 @@ void CGameManager::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CGameManager::Update(void)
+void CGameManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // ó‘Ô‚²‚Æ‚Ìˆ—

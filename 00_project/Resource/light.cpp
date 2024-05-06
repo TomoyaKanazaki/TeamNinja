@@ -109,7 +109,7 @@ void CLight::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CLight::Update(void)
+void CLight::Update(const float fDeltaTime)
 {
 
 }

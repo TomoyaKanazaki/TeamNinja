@@ -187,7 +187,7 @@ void CCamera::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CCamera::Update(void)
+void CCamera::Update(const float fDeltaTime)
 {
 	// デバッグ表示
 	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "[ 視点 ]：%f %f %f\n", m_aCamera[TYPE_MAIN].posV.x, m_aCamera[TYPE_MAIN].posV.y, m_aCamera[TYPE_MAIN].posV.z);

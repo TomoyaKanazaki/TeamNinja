@@ -164,7 +164,7 @@ void CObjectMeshCube::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObjectMeshCube::Update(void)
+void CObjectMeshCube::Update(const float fDeltaTime)
 {
 
 }

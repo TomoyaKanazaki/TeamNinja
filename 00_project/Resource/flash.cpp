@@ -85,7 +85,7 @@ void CFlash::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CFlash::Update(void)
+void CFlash::Update(const float fDeltaTime)
 {
 	if (m_flash != FLASH_NONE)
 	{ // 何もしない状態ではない場合
@@ -121,7 +121,7 @@ void CFlash::Update(void)
 		m_pObject2D->SetColor(colFlash);
 
 		// オブジェクト2Dの更新
-		m_pObject2D->Update();
+		m_pObject2D->Update(fDeltaTime);
 	}
 }
 

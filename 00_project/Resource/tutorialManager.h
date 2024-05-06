@@ -66,7 +66,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void AddLessonCounter(void);	// レッスンカウンター加算
 	int GetLesson(void) const;		// レッスン取得
 	EState GetState(void) const;	// 状態取得

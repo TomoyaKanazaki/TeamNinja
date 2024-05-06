@@ -124,7 +124,7 @@ void CLiquid::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CLiquid::Update(void)
+void CLiquid::Update(const float fDeltaTime)
 {
 	// •Ï”‚ðéŒ¾
 	POSGRID2 part = GetPattern();	// •ªŠ„”
@@ -164,7 +164,7 @@ void CLiquid::Update(void)
 	{ // ‰t‘Ì‚ÌÅ‘å”•ªŒJ‚è•Ô‚·
 
 		// ‰t‘Ì‚ÌXV
-		m_apLiquid[nCntLiquid]->Update();
+		m_apLiquid[nCntLiquid]->Update(fDeltaTime);
 	}
 }
 

@@ -356,7 +356,7 @@ void CResultManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CResultManager::Update(void)
+void CResultManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // 状態ごとの処理
@@ -457,27 +457,27 @@ void CResultManager::Update(void)
 	{ // リザルト表示の総数分繰り返す
 
 		// リザルト表示の更新
-		m_apResult[nCntResult]->Update();
+		m_apResult[nCntResult]->Update(fDeltaTime);
 	}
 
 	for (int nCntResult = 0; nCntResult < SELECT_MAX; nCntResult++)
 	{ // 選択肢の総数分繰り返す
 
 		// コンテニュー表示の更新
-		m_apContinue[nCntResult]->Update();
+		m_apContinue[nCntResult]->Update(fDeltaTime);
 	}
 
 	// コンテニューロゴ表示の更新
-	m_pContLogo->Update();
+	m_pContLogo->Update(fDeltaTime);
 
 	// タイムロゴ表示の更新
-	m_pTimeLogo->Update();
+	m_pTimeLogo->Update(fDeltaTime);
 
 	// タイムの更新
-	m_pTime->Update();
+	m_pTime->Update(fDeltaTime);
 
 	// フェードの更新
-	m_pFade->Update();
+	m_pFade->Update(fDeltaTime);
 }
 
 //============================================================

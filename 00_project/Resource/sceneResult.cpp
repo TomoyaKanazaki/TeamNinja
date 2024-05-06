@@ -88,22 +88,14 @@ void CSceneResult::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSceneResult::Update(void)
+void CSceneResult::Update(const float fDeltaTime)
 {
 	// リザルトマネージャーの更新
 	assert(m_pResultManager != nullptr);
-	m_pResultManager->Update();
+	m_pResultManager->Update(fDeltaTime);
 
 	// シーンの更新
-	CScene::Update();
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CSceneResult::Draw(void)
-{
-
+	CScene::Update(fDeltaTime);
 }
 
 //============================================================

@@ -71,7 +71,7 @@ void CScrollMeshField::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScrollMeshField::Update(void)
+void CScrollMeshField::Update(const float fDeltaTime)
 {
 	// スクロールを加算
 	m_fTexU += m_fMoveU;
@@ -92,7 +92,7 @@ void CScrollMeshField::Update(void)
 	}
 
 	// メッシュフィールドの更新
-	CObjectMeshField::Update();
+	CObjectMeshField::Update(fDeltaTime);
 
 	// スクロールのテクスチャ座標の設定
 	CObjectMeshField::SetScrollTex(m_fTexU, m_fTexV);

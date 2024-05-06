@@ -128,7 +128,7 @@ void CGauge2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CGauge2D::Update(void)
+void CGauge2D::Update(const float fDeltaTime)
 {
 	// ゲージの設定
 	if (m_state == STATE_CHANGE)

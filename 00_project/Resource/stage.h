@@ -97,7 +97,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);			// 更新
 	void SetStageLimit(const SStageLimit& rLimit);	// ステージ範囲設定
 	SStageLimit GetStageLimit(void) const;			// ステージ範囲取得
 

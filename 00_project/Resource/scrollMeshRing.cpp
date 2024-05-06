@@ -71,7 +71,7 @@ void CScrollMeshRing::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScrollMeshRing::Update(void)
+void CScrollMeshRing::Update(const float fDeltaTime)
 {
 	// スクロールを加算
 	m_fTexU += m_fMoveU;
@@ -92,7 +92,7 @@ void CScrollMeshRing::Update(void)
 	}
 
 	// メッシュリングの更新
-	CObjectMeshRing::Update();
+	CObjectMeshRing::Update(fDeltaTime);
 
 	// スクロールのテクスチャ座標の設定
 	CObjectMeshRing::SetScrollTex(m_fTexU, m_fTexV);

@@ -93,10 +93,10 @@ void CValue::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CValue::Update(void)
+void CValue::Update(const float fDeltaTime)
 {
 	// アニメーション2Dの更新
-	CAnim2D::Update();
+	CAnim2D::Update(fDeltaTime);
 }
 
 //============================================================

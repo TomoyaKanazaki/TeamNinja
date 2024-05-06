@@ -109,7 +109,7 @@ void CObjectMeshCircle::Uninit(void)
 //============================================================
 //	çXêVèàóù
 //============================================================
-void CObjectMeshCircle::Update(void)
+void CObjectMeshCircle::Update(const float fDeltaTime)
 {
 
 }

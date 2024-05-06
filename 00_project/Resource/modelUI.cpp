@@ -70,10 +70,10 @@ void CModelUI::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CModelUI::Update(void)
+void CModelUI::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
-	CObjectModel::Update();
+	CObjectModel::Update(fDeltaTime);
 }
 
 //============================================================

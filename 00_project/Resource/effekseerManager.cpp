@@ -66,7 +66,7 @@ void CEffekseerManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEffekseerManager::Update(void)
+void CEffekseerManager::Update(const float fDeltaTime)
 {
 	// エフェクシアの更新
 	GET_EFFECT->Update();

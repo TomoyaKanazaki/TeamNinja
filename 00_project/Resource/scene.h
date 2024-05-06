@@ -41,13 +41,10 @@ public:
 	// デストラクタ
 	virtual ~CScene();
 
-	// 純粋仮想関数
-	virtual void Draw(void)	= 0;	// 描画
-
 	// 仮想関数
 	virtual HRESULT Init(void);	// 初期化
 	virtual void Uninit(void);	// 終了
-	virtual void Update(void);	// 更新
+	virtual void Update(const float fDeltaTime);	// 更新
 
 	// 静的メンバ関数
 	static CScene *Create(EMode mode);		// 生成

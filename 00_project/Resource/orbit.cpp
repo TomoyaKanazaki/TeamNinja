@@ -135,7 +135,7 @@ void COrbit::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void COrbit::Update(void)
+void COrbit::Update(const float fDeltaTime)
 {
 
 }

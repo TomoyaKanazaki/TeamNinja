@@ -79,10 +79,10 @@ void CWall::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CWall::Update(void)
+void CWall::Update(const float fDeltaTime)
 {
 	// オブジェクトメッシュウォールの更新
-	CObjectMeshWall::Update();
+	CObjectMeshWall::Update(fDeltaTime);
 }
 
 //============================================================

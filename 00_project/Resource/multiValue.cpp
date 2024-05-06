@@ -98,14 +98,14 @@ void CMultiValue::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CMultiValue::Update(void)
+void CMultiValue::Update(const float fDeltaTime)
 {
 	for (auto& rList : m_listValue)
 	{ // 数字の桁数分繰り返す
 
 		// 数字の更新
 		assert(rList != nullptr);
-		rList->Update();
+		rList->Update(fDeltaTime);
 	}
 
 	// 相対位置の設定

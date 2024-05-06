@@ -527,7 +527,7 @@ void CObject::ReleaseAll(void)
 //============================================================
 //	全更新処理
 //============================================================
-void CObject::UpdateAll(void)
+void CObject::UpdateAll(const float fDeltaTime)
 {
 	// オブジェクト数表示
 	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
@@ -563,7 +563,7 @@ void CObject::UpdateAll(void)
 				}
 
 				// オブジェクトの更新
-				pObject->Update();
+				pObject->Update(fDeltaTime);
 
 				// 次のオブジェクトへのポインタを代入
 				pObject = pObjectNext;

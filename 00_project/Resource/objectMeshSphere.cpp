@@ -104,13 +104,13 @@ void CObjectMeshSphere::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshSphere::Update(void)
+void CObjectMeshSphere::Update(const float fDeltaTime)
 {
 	for (int i = 0; i < DOME_MAX; i++)
 	{ // 半球の総数分繰り返す
 
 		// メッシュドームの更新
-		m_apDome[i]->Update();
+		m_apDome[i]->Update(fDeltaTime);
 	}
 }
 

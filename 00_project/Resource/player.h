@@ -78,7 +78,7 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;		// 描画
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
@@ -107,12 +107,12 @@ private:
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
 
-	bool UpdateLanding(D3DXVECTOR3& rPos);	// 着地状況の更新
-	void UpdatePosition(D3DXVECTOR3& rPos);	// 位置の更新
-	void UpdateRotation(D3DXVECTOR3& rRot);	// 向きの更新
-	void UpdateMotion(int nMotion);			// モーション・オブジェクトキャラクターの更新
-	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
-	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos);				// 着地状況の更新
+	void UpdatePosition(D3DXVECTOR3& rPos);				// 位置の更新
+	void UpdateRotation(D3DXVECTOR3& rRot);				// 向きの更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
+	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
+	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト

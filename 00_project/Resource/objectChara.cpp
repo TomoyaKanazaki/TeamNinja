@@ -89,13 +89,13 @@ void CObjectChara::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectChara::Update(void)
+void CObjectChara::Update(const float fDeltaTime)
 {
 	if (m_pMotion != nullptr)
 	{ // モーションが存在する場合
 
 		// モーションの更新
-		m_pMotion->Update();
+		m_pMotion->Update(fDeltaTime);
 	}
 }
 

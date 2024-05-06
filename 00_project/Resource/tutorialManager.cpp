@@ -276,7 +276,7 @@ void CTutorialManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CTutorialManager::Update(void)
+void CTutorialManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // 状態ごとの処理
@@ -318,16 +318,16 @@ void CTutorialManager::Update(void)
 	}
 
 	// 小説明表示の背景更新
-	m_pGuideBG->Update();
+	m_pGuideBG->Update(fDeltaTime);
 
 	// 小説明表示の更新
-	m_pGuide->Update();
+	m_pGuide->Update(fDeltaTime);
 
 	// 操作方法表示の背景更新
-	m_pControlBG->Update();
+	m_pControlBG->Update(fDeltaTime);
 
 	// 操作方法表示の更新
-	m_pControl->Update();
+	m_pControl->Update(fDeltaTime);
 }
 
 //============================================================

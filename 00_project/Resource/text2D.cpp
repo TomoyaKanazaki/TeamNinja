@@ -93,7 +93,7 @@ void CText2D::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CText2D::Update(void)
+void CText2D::Update(const float fDeltaTime)
 {
 	// ‘Š‘ÎˆÊ’u‚Ìİ’è
 	SetPositionRelative();

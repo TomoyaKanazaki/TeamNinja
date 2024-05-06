@@ -141,7 +141,7 @@ void CObject3D::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObject3D::Update(void)
+void CObject3D::Update(const float fDeltaTime)
 {
 
 }

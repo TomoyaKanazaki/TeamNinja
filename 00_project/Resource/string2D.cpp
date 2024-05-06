@@ -87,7 +87,7 @@ void CString2D::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CString2D::Update(void)
+void CString2D::Update(const float fDeltaTime)
 {
 	// ‘Š‘ÎˆÊ’u‚Ìİ’è
 	SetPositionRelative();

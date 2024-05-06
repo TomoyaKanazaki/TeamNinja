@@ -82,13 +82,13 @@ void CObjectDivChara::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectDivChara::Update(void)
+void CObjectDivChara::Update(const float fDeltaTime)
 {
 	for (int i = 0; i < BODY_MAX; i++)
 	{ // 分割した身体の数分繰り返す
 
 		// オブジェクトキャラクターの更新
-		m_apBody[i]->Update();
+		m_apBody[i]->Update(fDeltaTime);
 	}
 }
 

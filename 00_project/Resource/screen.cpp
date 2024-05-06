@@ -70,10 +70,10 @@ void CScreen::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScreen::Update(void)
+void CScreen::Update(const float fDeltaTime)
 {
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================

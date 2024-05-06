@@ -22,8 +22,6 @@
 #include "stage.h"
 #include "player.h"
 
-#include "effekseerControl.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -95,7 +93,7 @@ void CScene::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScene::Update(void)
+void CScene::Update(const float fDeltaTime)
 {
 	// ポインタを宣言
 	CManager			*pManager	= GET_MANAGER;				// マネージャー
@@ -106,23 +104,23 @@ void CScene::Update(void)
 
 	// ステージの更新
 	assert(m_pStage != nullptr);
-	m_pStage->Update();
+	m_pStage->Update(fDeltaTime);
 
 	// ライトの更新
 	assert(pLight != nullptr);
-	pLight->Update();
+	pLight->Update(fDeltaTime);
 
 	// カメラの更新
 	assert(pCamera != nullptr);
-	pCamera->Update();
+	pCamera->Update(fDeltaTime);
 
 	// レンダラーの更新
 	assert(pRenderer != nullptr);
-	pRenderer->Update();
+	pRenderer->Update(fDeltaTime);
 
 	// エフェクシアの更新
 	assert(pEffekseer != nullptr);
-	pEffekseer->Update();
+	pEffekseer->Update(fDeltaTime);
 }
 
 //============================================================

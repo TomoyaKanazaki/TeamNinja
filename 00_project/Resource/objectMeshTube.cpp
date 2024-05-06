@@ -126,17 +126,17 @@ void CObjectMeshTube::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshTube::Update(void)
+void CObjectMeshTube::Update(const float fDeltaTime)
 {
 	for (int i = 0; i < COVER_MAX; i++)
 	{ // 蓋の総数分繰り返す
 
 		// メッシュサークルの更新
-		m_apCover[i]->Update();
+		m_apCover[i]->Update(fDeltaTime);
 	}
 
 	// メッシュシリンダーの更新
-	m_pCylinder->Update();
+	m_pCylinder->Update(fDeltaTime);
 }
 
 //============================================================

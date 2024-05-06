@@ -53,7 +53,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);		// 初期化
 	void Uninit(void);		// 終了
-	void Update(void);		// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void Draw(void);		// 描画
 	void SetScopeIn(void);	// スコープイン設定
 	void SetScopeOut(void);	// スコープアウト設定

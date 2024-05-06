@@ -109,9 +109,9 @@ public:
 	// 純粋仮想関数
 	virtual HRESULT Init(void)	= 0;	// 初期化
 	virtual void Uninit(void)	= 0;	// 終了
-	virtual void Update(void)	= 0;	// 更新
-	virtual void Draw(CShader *pShader = nullptr)	= 0;	// 描画
 	virtual void Release(void)	= 0;	// 破棄
+	virtual void Update(const float fDeltaTime)		= 0;	// 更新
+	virtual void Draw(CShader *pShader = nullptr)	= 0;	// 描画
 
 	// 仮想関数
 	virtual void SetLabel(const ELabel label);				// ラベル設定
@@ -136,9 +136,9 @@ public:
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)
-	static void	ReleaseAll(void);	// 全破棄
-	static void	UpdateAll(void);	// 全更新
-	static void	DrawAll(void);		// 全描画
+	static void	ReleaseAll(void);						// 全破棄
+	static void	UpdateAll(const float fDeltaTime);		// 全更新
+	static void	DrawAll(void);							// 全描画
 	static int	GetNumAll(void) { return m_nNumAll; }	// 総数取得
 	static CObject *GetTop(const EDim dimension, const int nPriority) { return m_apTop[dimension][nPriority]; }	// 先頭オブジェクト取得
 	static CObject *GetCur(const EDim dimension, const int nPriority) { return m_apCur[dimension][nPriority]; }	// 最後尾オブジェクト取得

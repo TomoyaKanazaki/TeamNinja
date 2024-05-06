@@ -120,7 +120,7 @@ void CObjectMeshCylinder::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObjectMeshCylinder::Update(void)
+void CObjectMeshCylinder::Update(const float fDeltaTime)
 {
 
 }

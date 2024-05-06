@@ -92,7 +92,7 @@ void CSky::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSky::Update(void)
+void CSky::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXVECTOR3 rot = GetVec3Rotation();	// 向き
@@ -104,7 +104,7 @@ void CSky::Update(void)
 	SetVec3Rotation(rot);
 
 	// オブジェクトメッシュドームの更新
-	CObjectMeshDome::Update();
+	CObjectMeshDome::Update(fDeltaTime);
 }
 
 //============================================================

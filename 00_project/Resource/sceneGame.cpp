@@ -191,30 +191,30 @@ void CSceneGame::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSceneGame::Update(void)
+void CSceneGame::Update(const float fDeltaTime)
 {
 	// ゲームマネージャーの更新
 	assert(m_pGameManager != nullptr);
-	m_pGameManager->Update();
+	m_pGameManager->Update(fDeltaTime);
 
 	// タイマーUIの更新
 	assert(m_pTimerUI != nullptr);
-	m_pTimerUI->Update();
+	m_pTimerUI->Update(fDeltaTime);
 
 	// ヒットストップの更新
 	assert(m_pHitStop != nullptr);
-	m_pHitStop->Update();
+	m_pHitStop->Update(fDeltaTime);
 
 	// フラッシュの更新
 	assert(m_pFlash != nullptr);
-	m_pFlash->Update();
+	m_pFlash->Update(fDeltaTime);
 
 	if (m_pGameManager->GetState() == CGameManager::STATE_NORMAL && !m_pHitStop->IsStop())
 	{ // ゲームが通常状態の場合
 
 		// ポーズの更新
 		assert(m_pPause != nullptr);
-		m_pPause->Update();
+		m_pPause->Update(fDeltaTime);
 	}
 
 	if (!m_pPause->IsPause()
@@ -223,20 +223,20 @@ void CSceneGame::Update(void)
 
 		// シネマスコープの更新
 		assert(m_pCinemaScope != nullptr);
-		m_pCinemaScope->Update();
+		m_pCinemaScope->Update(fDeltaTime);
 
 		// シーンの更新
-		CScene::Update();
+		CScene::Update(fDeltaTime);
 	}
 	else if (m_pHitStop->IsStop())
 	{ // ヒットストップ中の場合
 
 		// シネマスコープの更新
 		assert(m_pCinemaScope != nullptr);
-		m_pCinemaScope->Update();
+		m_pCinemaScope->Update(fDeltaTime);
 
 		// カメラの更新
-		GET_MANAGER->GetCamera()->Update();
+		GET_MANAGER->GetCamera()->Update(fDeltaTime);
 	}
 
 #ifdef _DEBUG
@@ -248,19 +248,11 @@ void CSceneGame::Update(void)
 		{ // カメラが操作状態の場合
 
 			// カメラの更新
-			GET_MANAGER->GetCamera()->Update();
+			GET_MANAGER->GetCamera()->Update(fDeltaTime);
 		}
 	}
 
 #endif	// _DEBUG
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CSceneGame::Draw(void)
-{
-
 }
 
 //============================================================

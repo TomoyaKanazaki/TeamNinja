@@ -9,6 +9,7 @@
 //************************************************************
 #include "main.h"
 #include "manager.h"
+#include "deltaTime.h"
 #include "loading.h"
 #include "resource.h"
 #include "debug.h"
@@ -160,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hInstancePrev*/, LPSTR /*lpC
 				assert(pManager != nullptr);
 
 				// マネージャーの更新
-				pManager->Update();
+				pManager->Update(GET_MANAGER->GetDeltaTime()->GetTime());
 
 				// マネージャーの描画
 				pManager->Draw();

@@ -54,7 +54,7 @@ void CHitStop::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CHitStop::Update(void)
+void CHitStop::Update(const float fDeltaTime)
 {
 	if (m_bStop)
 	{ // ヒットストップ中の場合

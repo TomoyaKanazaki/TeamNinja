@@ -109,13 +109,13 @@ void CShadow::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CShadow::Update(void)
+void CShadow::Update(const float fDeltaTime)
 {
 	// 描画情報を設定
 	SetDrawInfo();
 
 	// オブジェクト3Dの更新
-	CObject3D::Update();
+	CObject3D::Update(fDeltaTime);
 }
 
 //============================================================

@@ -105,10 +105,10 @@ void CImpact::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CImpact::Update(void)
+void CImpact::Update(const float fDeltaTime)
 {
 	// 波動の更新
-	CWave::Update();
+	CWave::Update(fDeltaTime);
 
 	// プレイヤーとの当たり判定
 	CollisionPlayer();

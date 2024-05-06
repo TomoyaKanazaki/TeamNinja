@@ -71,7 +71,7 @@ void CScroll2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScroll2D::Update(void)
+void CScroll2D::Update(const float fDeltaTime)
 {
 	// スクロールを加算
 	m_fTexU += m_fMoveU;
@@ -92,7 +92,7 @@ void CScroll2D::Update(void)
 	}
 
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 
 	// スクロールのテクスチャ座標の設定
 	CObject2D::SetScrollTex(m_fTexU, m_fTexV);

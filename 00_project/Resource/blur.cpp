@@ -93,7 +93,7 @@ void CBlur::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CBlur::Update(void)
+void CBlur::Update(const float fDeltaTime)
 {
 	// c‘œ‚Ì¶¬
 	if (m_state == STATE_NORMAL)

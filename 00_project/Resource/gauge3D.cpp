@@ -131,7 +131,7 @@ void CGauge3D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CGauge3D::Update(void)
+void CGauge3D::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXMATRIX mtxGauge;	// ゲージ表示オブジェクトのマトリックス

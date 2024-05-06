@@ -129,7 +129,7 @@ void CObjectBillboard::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObjectBillboard::Update(void)
+void CObjectBillboard::Update(const float fDeltaTime)
 {
 	// ’¸“_î•ñ‚Ìİ’è
 	SetVtx();

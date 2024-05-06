@@ -50,7 +50,7 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetPriority(const int nPriority) override;			// 優先順位設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定

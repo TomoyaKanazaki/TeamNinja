@@ -193,7 +193,7 @@ void CPlayer::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CPlayer::Update(void)
+void CPlayer::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
@@ -226,13 +226,13 @@ void CPlayer::Update(void)
 	}
 
 	// 影の更新
-	m_pShadow->Update();
+	m_pShadow->Update(fDeltaTime);
 
 	// 軌跡の更新
-	m_pOrbit->Update();
+	m_pOrbit->Update(fDeltaTime);
 
 	// モーション・オブジェクトキャラクターの更新
-	UpdateMotion(currentMotion);
+	UpdateMotion(currentMotion, fDeltaTime);
 }
 
 //============================================================
@@ -608,7 +608,7 @@ void CPlayer::UpdateRotation(D3DXVECTOR3& rRot)
 //============================================================
 //	モーション・オブジェクトキャラクターの更新処理
 //============================================================
-void CPlayer::UpdateMotion(int nMotion)
+void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 {
 	// 死んでたら抜ける
 	if (IsDeath()) { return; }
@@ -632,7 +632,7 @@ void CPlayer::UpdateMotion(int nMotion)
 	}
 
 	// オブジェクトキャラクターの更新
-	CObjectChara::Update();
+	CObjectChara::Update(fDeltaTime);
 }
 
 //============================================================

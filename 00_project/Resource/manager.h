@@ -53,7 +53,7 @@ public:
 	HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);	// 初期化
 	HRESULT Load(void);	// 読込
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void Draw(void);	// 描画
 
 	// 静的メンバ関数

@@ -30,9 +30,9 @@ public:
 
 	// メンバ関数
 	HRESULT Init(HWND hWnd, BOOL bWindow);	// 初期化
-	void Uninit(void);	// 終了
-	void Update(void);	// 更新
-	void Draw(void);	// 描画
+	void Uninit(void);						// 終了
+	void Update(const float fDeltaTime);	// 更新
+	void Draw(void);						// 描画
 
 	HRESULT CreateRenderTexture(void);			// レンダーテクスチャー生成
 	LPDIRECT3DDEVICE9 GetDevice(void) const;	// デバイス取得

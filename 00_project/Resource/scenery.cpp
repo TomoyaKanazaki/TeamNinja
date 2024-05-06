@@ -99,10 +99,10 @@ void CScenery::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScenery::Update(void)
+void CScenery::Update(const float fDeltaTime)
 {
 	// オブジェクトメッシュシリンダーの更新
-	CObjectMeshCylinder::Update();
+	CObjectMeshCylinder::Update(fDeltaTime);
 }
 
 //============================================================

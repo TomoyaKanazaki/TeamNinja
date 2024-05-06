@@ -109,13 +109,13 @@ void CValueUI::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CValueUI::Update(void)
+void CValueUI::Update(const float fDeltaTime)
 {
 	// タイトル情報の更新
-	m_pTitle->Update();
+	m_pTitle->Update(fDeltaTime);
 
 	// 数字情報の更新
-	m_pValue->Update();
+	m_pValue->Update(fDeltaTime);
 }
 
 //============================================================

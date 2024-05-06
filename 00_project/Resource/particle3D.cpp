@@ -209,7 +209,7 @@ void CParticle3D::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CParticle3D::Update(void)
+void CParticle3D::Update(const float fDeltaTime)
 {
 	if (m_nLife > 0)
 	{ // Žõ–½‚ª‚ ‚éê‡

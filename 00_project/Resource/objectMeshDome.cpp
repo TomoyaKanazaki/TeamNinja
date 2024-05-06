@@ -119,7 +119,7 @@ void CObjectMeshDome::Uninit(void)
 //============================================================
 //	çXêVèàóù
 //============================================================
-void CObjectMeshDome::Update(void)
+void CObjectMeshDome::Update(const float fDeltaTime)
 {
 
 }

@@ -126,7 +126,7 @@ void CObjectMeshField::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObjectMeshField::Update(void)
+void CObjectMeshField::Update(const float fDeltaTime)
 {
 
 }

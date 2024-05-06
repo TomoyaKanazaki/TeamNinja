@@ -137,7 +137,7 @@ void CLoading::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CLoading::Update(void)
+void CLoading::Update(const float fDeltaTime)
 {
 	if (m_state != LOAD_NONE)
 	{ // 何もしない状態ではない場合
@@ -240,7 +240,7 @@ void CLoading::Update(void)
 		m_pLoad->SetColor(colLoad);
 
 		// ロード画面の更新
-		m_pLoad->Update();
+		m_pLoad->Update(fDeltaTime);
 	}
 }
 

@@ -117,7 +117,7 @@ void CParticle2D::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CParticle2D::Update(void)
+void CParticle2D::Update(const float fDeltaTime)
 {
 	if (m_nLife > 0)
 	{ // Žõ–½‚ª‚ ‚éê‡

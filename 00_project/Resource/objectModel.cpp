@@ -86,7 +86,7 @@ void CObjectModel::Uninit(void)
 //============================================================
 //	çXêVèàóù
 //============================================================
-void CObjectModel::Update(void)
+void CObjectModel::Update(const float fDeltaTime)
 {
 
 }

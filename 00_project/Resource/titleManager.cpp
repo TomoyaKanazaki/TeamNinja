@@ -273,7 +273,7 @@ void CTitleManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CTitleManager::Update(void)
+void CTitleManager::Update(const float fDeltaTime)
 {
 	// 遷移決定の更新
 	UpdateStart();
@@ -316,21 +316,21 @@ void CTitleManager::Update(void)
 	{ // タイトルロゴの総数分繰り返す
 
 		// タイトルロゴの更新
-		m_apLogo[nCntTitle]->Update();
+		m_apLogo[nCntTitle]->Update(fDeltaTime);
 	}
 
 	for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
 	{ // 選択項目の総数分繰り返す
 
 		// 選択表示の更新
-		m_apSelect[nCntTitle]->Update();
+		m_apSelect[nCntTitle]->Update(fDeltaTime);
 	}
 
 	// フェードの更新
-	m_pFade->Update();
+	m_pFade->Update(fDeltaTime);
 
 	// 選択背景の更新
-	m_pSelectBG->Update();
+	m_pSelectBG->Update(fDeltaTime);
 }
 
 //============================================================

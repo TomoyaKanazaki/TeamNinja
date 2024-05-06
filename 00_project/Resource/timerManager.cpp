@@ -159,7 +159,7 @@ void CTimerManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CTimerManager::Update(void)
+void CTimerManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // 計測状態ごとの処理
@@ -230,14 +230,14 @@ void CTimerManager::Update(void)
 	{ // タイマーの桁数分繰り返す
 
 		// 数字の更新
-		m_apValue[nCntTimer]->Update();
+		m_apValue[nCntTimer]->Update(fDeltaTime);
 	}
 
 	for (int nCntTimer = 0; nCntTimer < timer::MAX_PART; nCntTimer++)
 	{ // 区切りの数分繰り返す
 
 		// 区切りの更新
-		m_apPart[nCntTimer]->Update();
+		m_apPart[nCntTimer]->Update(fDeltaTime);
 	}
 
 	// デバッグ表示

@@ -433,7 +433,7 @@ void CManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CManager::Update(void)
+void CManager::Update(const float fDeltaTime)
 {
 	// デバッグ情報の更新・描画
 	assert(m_pDebug != nullptr);
@@ -459,18 +459,18 @@ void CManager::Update(void)
 
 	// ローディングの更新
 	assert(m_pLoading != nullptr);
-	m_pLoading->Update();
+	m_pLoading->Update(fDeltaTime);
 
 	// フェードの更新
 	assert(m_pFade != nullptr);
-	m_pFade->Update();
+	m_pFade->Update(fDeltaTime);
 
 	if (m_pLoading->GetState() == CLoading::LOAD_NONE)
 	{ // ロードしていない場合
 
 		// シーンの更新
 		assert(m_pScene != nullptr);
-		m_pScene->Update();
+		m_pScene->Update(fDeltaTime);
 	}
 
 	// デバッグ表示の更新

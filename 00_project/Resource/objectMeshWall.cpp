@@ -101,7 +101,7 @@ void CObjectMeshWall::Uninit(void)
 //============================================================
 //	çXêVèàóù
 //============================================================
-void CObjectMeshWall::Update(void)
+void CObjectMeshWall::Update(const float fDeltaTime)
 {
 
 }

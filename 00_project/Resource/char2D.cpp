@@ -78,10 +78,10 @@ void CChar2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CChar2D::Update(void)
+void CChar2D::Update(const float fDeltaTime)
 {
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================

@@ -42,7 +42,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void Draw(void);	// 描画
 	HRESULT Set(std::function<HRESULT(bool*)> func);	// ロード開始設定
 	ELoading GetState(void) const { return m_state; }	// ロード状態取得

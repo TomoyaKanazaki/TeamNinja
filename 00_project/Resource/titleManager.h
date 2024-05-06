@@ -58,7 +58,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 
 	// 静的メンバ関数
 	static CTitleManager *Create(void);	// 生成

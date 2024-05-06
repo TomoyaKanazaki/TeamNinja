@@ -130,7 +130,7 @@ void CObjectTornado::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CObjectTornado::Update(void)
+void CObjectTornado::Update(const float fDeltaTime)
 {
 	// —³Šª‚ÌŒü‚«‚ğ•ÏX
 	m_tornado.rot.y -= m_tornado.fMoveRot;

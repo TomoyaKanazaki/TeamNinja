@@ -113,7 +113,7 @@ void CFade::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CFade::Update(void)
+void CFade::Update(const float fDeltaTime)
 {
 	if (m_fade != FADE_NONE)
 	{ // 何もしない状態ではない場合
@@ -191,7 +191,7 @@ void CFade::Update(void)
 		m_pObject2D->SetColor(colFade);
 
 		// オブジェクト2Dの更新
-		m_pObject2D->Update();
+		m_pObject2D->Update(fDeltaTime);
 	}
 }
 

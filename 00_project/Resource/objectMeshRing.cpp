@@ -121,7 +121,7 @@ void CObjectMeshRing::Uninit(void)
 //============================================================
 //	çXêVèàóù
 //============================================================
-void CObjectMeshRing::Update(void)
+void CObjectMeshRing::Update(const float fDeltaTime)
 {
 
 }

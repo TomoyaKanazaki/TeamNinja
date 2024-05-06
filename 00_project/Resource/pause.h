@@ -45,7 +45,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void Draw(void);	// 描画
 	bool IsPause(void);	// ポーズ状況取得
 	void SetEnableDraw(const bool bDraw);	// 描画状況設定
