@@ -12,15 +12,17 @@
 #include "renderer.h"
 #include "light.h"
 #include "camera.h"
+#include "effekseerManager.h"
 #include "sceneTitle.h"
 #include "sceneTutorial.h"
 #include "sceneGame.h"
 #include "sceneResult.h"
 #include "sceneRanking.h"
 
-#include "effekseerManager.h"
 #include "stage.h"
 #include "player.h"
+
+#include "effekseerControl.h"
 
 //************************************************************
 //	定数宣言
@@ -64,15 +66,6 @@ CScene::~CScene()
 //============================================================
 HRESULT CScene::Init(void)
 {
-	// エフェクシアマネージャーの生成
-	if (CEffekseerManager::Create() == nullptr)
-	{ // 生成に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
 	// ステージの生成
 	m_pStage = CStage::Create(m_mode);
 	if (m_pStage == nullptr)
@@ -105,10 +98,11 @@ void CScene::Uninit(void)
 void CScene::Update(void)
 {
 	// ポインタを宣言
-	CManager	*pManager	= GET_MANAGER;				// マネージャー
-	CLight		*pLight		= pManager->GetLight();		// ライト
-	CCamera		*pCamera	= pManager->GetCamera();	// カメラ
-	CRenderer	*pRenderer	= pManager->GetRenderer();	// レンダラー
+	CManager			*pManager	= GET_MANAGER;				// マネージャー
+	CLight				*pLight		= pManager->GetLight();		// ライト
+	CCamera				*pCamera	= pManager->GetCamera();	// カメラ
+	CRenderer			*pRenderer	= pManager->GetRenderer();	// レンダラー
+	CEffekseerManager	*pEffekseer	= pManager->GetEffekseer();	// エフェクシア
 
 	// ステージの更新
 	assert(m_pStage != nullptr);
@@ -125,6 +119,10 @@ void CScene::Update(void)
 	// レンダラーの更新
 	assert(pRenderer != nullptr);
 	pRenderer->Update();
+
+	// エフェクシアの更新
+	assert(pEffekseer != nullptr);
+	pEffekseer->Update();
 }
 
 //============================================================

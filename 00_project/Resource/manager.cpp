@@ -20,6 +20,7 @@
 #include "model.h"
 #include "font.h"
 #include "shader.h"
+#include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
 
@@ -54,7 +55,6 @@ CManager::CManager() :
 	m_pRetention	(nullptr),	// データ保存マネージャー
 	m_pDebugProc	(nullptr),	// デバッグ表示
 	m_pDebug		(nullptr)	// デバッグ
-
 {
 
 }
@@ -172,6 +172,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pLight = CLight::Create();
 	if (m_pLight == nullptr)
 	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// エフェクシアマネージャーの生成
+	m_pEffekseer = CEffekseerManager::Create();
+	if (m_pEffekseer == nullptr)
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -379,6 +389,9 @@ void CManager::Uninit(void)
 	//--------------------------------------------------------
 	// データ保存マネージャーの破棄
 	SAFE_REF_RELEASE(m_pRetention);
+
+	// エフェクシアの破棄
+	SAFE_UNINIT(m_pEffekseer);
 
 	// シーンの破棄
 	SAFE_REF_RELEASE(m_pScene);
@@ -848,6 +861,18 @@ CScene *CManager::GetScene(void)
 
 	// シーンのポインタを返す
 	return m_pScene;
+}
+
+//============================================================
+//	エフェクシアマネージャー取得処理
+//============================================================
+CEffekseerManager *CManager::GetEffekseer(void)
+{
+	// インスタンス未使用
+	assert(m_pEffekseer != nullptr);
+
+	// エフェクシアマネージャーを返す
+	return m_pEffekseer;
 }
 
 //============================================================
