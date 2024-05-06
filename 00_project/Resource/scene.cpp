@@ -18,15 +18,9 @@
 #include "sceneResult.h"
 #include "sceneRanking.h"
 
+#include "effekseerManager.h"
 #include "stage.h"
 #include "player.h"
-
-#include "multiValue.h"
-
-#include "manager.h"
-#include "font.h"
-#include "fontChar.h"
-#include "text2D.h"
 
 //************************************************************
 //	定数宣言
@@ -70,6 +64,15 @@ CScene::~CScene()
 //============================================================
 HRESULT CScene::Init(void)
 {
+	// エフェクシアマネージャーの生成
+	if (CEffekseerManager::Create() == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// ステージの生成
 	m_pStage = CStage::Create(m_mode);
 	if (m_pStage == nullptr)
