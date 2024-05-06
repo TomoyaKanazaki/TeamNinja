@@ -56,8 +56,10 @@ public:
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCylinder.pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCylinder.rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCylinder.pos; }			// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCylinder.rot; }			// 向き取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshCylinder.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCylinder.mtxWorld; }		// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshCylinder *Create	// 生成
@@ -81,15 +83,13 @@ public:
 	void SetTexDir(const ETexDir texDir);			// テクスチャ方向設定
 	HRESULT SetPattern(const POSGRID2& rPart);		// 分割数設定
 	void SetTexPattern(const POSGRID2& rTexPart);	// テクスチャ分割数設定
-	int GetTextureIndex(void) const		{ return m_nTextureID; }				// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const		{ return m_meshCylinder.col; }			// 色取得
-	float GetRadius(void) const			{ return m_meshCylinder.fRadius; }		// 半径取得
-	float GetHeight(void) const			{ return m_meshCylinder.fHeight; }		// 縦幅取得
-	ETexDir GetTexDir(void) const		{ return m_meshCylinder.texDir; }		// テクスチャ方向取得
-	POSGRID2 GetPattern(void) const		{ return m_part; }						// 分割数取得
-	POSGRID2 GetTexPattern(void) const	{ return m_texPart; }					// テクスチャ分割数取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_meshCylinder.mtxWorld; }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_meshCylinder.mtxWorld; }		// マトリックス取得
+	int GetTextureIndex(void) const		{ return m_nTextureID; }			// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_meshCylinder.col; }		// 色取得
+	float GetRadius(void) const			{ return m_meshCylinder.fRadius; }	// 半径取得
+	float GetHeight(void) const			{ return m_meshCylinder.fHeight; }	// 縦幅取得
+	ETexDir GetTexDir(void) const		{ return m_meshCylinder.texDir; }	// テクスチャ方向取得
+	POSGRID2 GetPattern(void) const		{ return m_part; }					// 分割数取得
+	POSGRID2 GetTexPattern(void) const	{ return m_texPart; }				// テクスチャ分割数取得
 
 protected:
 	// メンバ関数

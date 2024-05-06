@@ -53,6 +53,8 @@ public:
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pCylinder->GetVec3Position(); }	// 位置取得
 	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_pCylinder->GetVec3Rotation(); }	// 向き取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return m_pCylinder->GetPtrMtxWorld(); }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_pCylinder->GetMtxWorld(); }		// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshTube *Create	// 生成
@@ -81,8 +83,6 @@ public:
 	float GetHeight(void) const			{ return m_pCylinder->GetHeight(); }		// 縦幅取得
 	POSGRID2 GetPattern(void) const		{ return m_pCylinder->GetPattern(); }		// 分割数取得
 	POSGRID2 GetTexPattern(void) const	{ return m_pCylinder->GetTexPattern(); }	// テクスチャ分割数取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return m_pCylinder->GetPtrMtxWorld(); }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_pCylinder->GetMtxWorld(); }		// マトリックス取得
 
 private:
 	// オーバーライド関数

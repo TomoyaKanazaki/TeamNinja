@@ -259,47 +259,6 @@ void CPlayer::Draw(CShader *pShader)
 }
 
 //============================================================
-//	状態の設定処理
-//============================================================
-void CPlayer::SetState(const int nState)
-{
-	if (nState > NONE_IDX && nState < STATE_MAX)
-	{ // 範囲内の場合
-
-		// 引数の状態を設定
-		m_state = (EState)nState;
-	}
-	else { assert(false); }
-}
-
-//============================================================
-//	状態取得処理
-//============================================================
-int CPlayer::GetState(void) const
-{
-	// 状態を返す
-	return m_state;
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CPlayer::GetRadius(void) const
-{
-	// 半径を返す
-	return RADIUS;
-}
-
-//============================================================
-//	縦幅取得処理
-//============================================================
-float CPlayer::GetHeight(void) const
-{
-	// 縦幅を返す
-	return HEIGHT;
-}
-
-//============================================================
 //	更新状況の設定処理
 //============================================================
 void CPlayer::SetEnableUpdate(const bool bUpdate)
@@ -317,31 +276,6 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
 	m_pShadow->SetEnableDraw(bDraw);	// 影
-}
-
-//============================================================
-//	マトリックス計算結果の取得処理
-//============================================================
-D3DXMATRIX CPlayer::CalcMtxWorld(void) const
-{
-	// 変数を宣言
-	D3DXMATRIX  mtxRot, mtxTrans, mtxWorld;		// 計算用マトリックス
-	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
-	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxWorld);
-
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rotPlayer.y, rotPlayer.x, rotPlayer.z);
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, posPlayer.x, posPlayer.y, posPlayer.z);
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスを返す
-	return mtxWorld;
 }
 
 //============================================================
@@ -459,6 +393,47 @@ void CPlayer::SetSpawn(void)
 
 	// 追従カメラの目標位置の設定
 	GET_MANAGER->GetCamera()->SetDestFollow();
+}
+
+//============================================================
+//	状態の設定処理
+//============================================================
+void CPlayer::SetState(const EState state)
+{
+	if (state > NONE_IDX && state < STATE_MAX)
+	{ // 範囲内の場合
+
+		// 引数の状態を設定
+		m_state = state;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	状態取得処理
+//============================================================
+CPlayer::EState CPlayer::GetState(void) const
+{
+	// 状態を返す
+	return m_state;
+}
+
+//============================================================
+//	半径取得処理
+//============================================================
+float CPlayer::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
+}
+
+//============================================================
+//	縦幅取得処理
+//============================================================
+float CPlayer::GetHeight(void) const
+{
+	// 縦幅を返す
+	return HEIGHT;
 }
 
 //============================================================

@@ -37,7 +37,6 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
 
 	// 静的メンバ関数
 	static CScroll2D *Create	// 生成
@@ -51,10 +50,11 @@ public:
 	);
 
 	// メンバ関数
-	void SetTexU(const float fTexU);	// 横座標の開始位置設定
-	void SetTexV(const float fTexV);	// 縦座標の開始位置設定
-	void SetMoveU(const float fMoveU);	// 横座標の移動量設定
-	void SetMoveV(const float fMoveV);	// 縦座標の移動量設定
+	void SetColor(const D3DXCOLOR& rCol);	// 色設定
+	void SetTexU(const float fTexU);		// 横座標の開始位置設定
+	void SetTexV(const float fTexV);		// 縦座標の開始位置設定
+	void SetMoveU(const float fMoveU);		// 横座標の移動量設定
+	void SetMoveV(const float fMoveV);		// 縦座標の移動量設定
 
 private:
 	// メンバ変数

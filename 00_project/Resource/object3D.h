@@ -45,9 +45,11 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
-	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }	// 大きさ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }		// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }		// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObject3D *Create	// 生成
@@ -68,8 +70,6 @@ public:
 	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
 	D3DXCOLOR GetColor(void) const		{ return m_col; }			// 色取得
 	EOrigin GetOrigin(void) const		{ return m_origin; }		// 原点取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_mtxWorld; }		// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_mtxWorld; }		// マトリックス取得
 	void SetVertexPosition(const int nID, const D3DXVECTOR3& rPos);	// 頂点位置設定
 	D3DXVECTOR3 GetVertexPosition(const int nID);					// 頂点位置取得
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);	// 座標のずれ設定

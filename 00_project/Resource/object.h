@@ -131,6 +131,8 @@ public:
 	virtual D3DXVECTOR2 GetVec2Sizing(void) const;			// 二軸の大きさ取得
 	virtual D3DXVECTOR3 GetVec3Sizing(void) const;			// 三軸の大きさ取得
 	virtual D3DXVECTOR3 GetVec3Scaling(void) const;			// 拡大率取得
+	virtual D3DXMATRIX *GetPtrMtxWorld(void);				// マトリックスポインタ取得
+	virtual D3DXMATRIX GetMtxWorld(void) const;				// マトリックス取得
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)

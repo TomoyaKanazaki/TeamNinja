@@ -144,18 +144,6 @@ void CScrollMeshField::SetVec2Sizing(const D3DXVECTOR2& rSize)
 }
 
 //============================================================
-//	色の設定処理
-//============================================================
-void CScrollMeshField::SetColor(const D3DXCOLOR& rCol)
-{
-	// 色の設定
-	CObjectMeshField::SetColor(rCol);
-
-	// スクロールのテクスチャ座標の設定
-	CObjectMeshField::SetScrollTex(m_fTexU, m_fTexV);
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CScrollMeshField *CScrollMeshField::Create
@@ -221,6 +209,30 @@ CScrollMeshField *CScrollMeshField::Create
 }
 
 //============================================================
+//	地形の設定処理
+//============================================================
+void CScrollMeshField::SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap)
+{
+	// 地形の設定
+	CObjectMeshField::SetTerrain(rPart, pPosGap);
+
+	// スクロールのテクスチャ座標の設定
+	CObjectMeshField::SetScrollTex(m_fTexU, m_fTexV);
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CScrollMeshField::SetColor(const D3DXCOLOR& rCol)
+{
+	// 色の設定
+	CObjectMeshField::SetColor(rCol);
+
+	// スクロールのテクスチャ座標の設定
+	CObjectMeshField::SetScrollTex(m_fTexU, m_fTexV);
+}
+
+//============================================================
 //	分割数の設定処理
 //============================================================
 HRESULT CScrollMeshField::SetPattern(const POSGRID2& rPart)
@@ -238,18 +250,6 @@ HRESULT CScrollMeshField::SetPattern(const POSGRID2& rPart)
 
 	// 成功を返す
 	return S_OK;
-}
-
-//============================================================
-//	地形の設定処理
-//============================================================
-void CScrollMeshField::SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap)
-{
-	// 地形の設定
-	CObjectMeshField::SetTerrain(rPart, pPosGap);
-
-	// スクロールのテクスチャ座標の設定
-	CObjectMeshField::SetScrollTex(m_fTexU, m_fTexV);
 }
 
 //============================================================

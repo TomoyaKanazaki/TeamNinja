@@ -253,7 +253,7 @@ void CText2D::SetCharHeight(const float fHeight)
 
 		// 文字列縦幅の設定
 		assert(rList != nullptr);
-		rList->SetHeight(fHeight);
+		rList->SetCharHeight(fHeight);
 	}
 
 	// 相対位置の設定
@@ -374,8 +374,8 @@ float CText2D::GetTextHeight(void) const
 	}
 
 	// 先頭と終端の文字列の無視されたサイズを加算
-	fTextHeight += m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の原点上サイズ
-	fTextHeight += m_listString.back()->GetHeight() * 0.5f;		// 終端文字列の原点下サイズ
+	fTextHeight += m_listString.front()->GetCharHeight() * 0.5f;	// 先頭文字列の原点上サイズ
+	fTextHeight += m_listString.back()->GetCharHeight() * 0.5f;		// 終端文字列の原点下サイズ
 
 	// テキストの縦幅を返す
 	return fTextHeight;
@@ -390,7 +390,7 @@ void CText2D::SetPositionRelative(void)
 	if ((int)m_listString.size() <= 0) { return; }
 
 	float fTextHeight	= GetTextHeight() * 0.5f;	// テキスト全体の縦幅
-	float fFrontHeight	= m_listString.front()->GetHeight() * 0.5f;	// 先頭文字列の縦幅
+	float fFrontHeight	= m_listString.front()->GetCharHeight() * 0.5f;	// 先頭文字列の縦幅
 	float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
 
 	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置

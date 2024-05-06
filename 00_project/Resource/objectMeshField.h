@@ -47,9 +47,11 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec2Sizing(const D3DXVECTOR2& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshField.pos; }		// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshField.rot; }		// 向き取得
-	D3DXVECTOR2 GetVec2Sizing(void) const override		{ return m_meshField.size; }	// 大きさ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshField.pos; }			// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshField.rot; }			// 向き取得
+	D3DXVECTOR2 GetVec2Sizing(void) const override		{ return m_meshField.size; }		// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshField.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshField.mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshField *Create	// 生成
@@ -67,12 +69,10 @@ public:
 	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	int GetTextureIndex(void) const		{ return m_nTextureID; }			// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const		{ return m_meshField.col; }			// 色取得
-	POSGRID2 GetPattern(void) const		{ return m_part; }					// 分割数取得
-	int GetNumVertex(void) const		{ return m_nNumVtx; }				// 頂点数取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_meshField.mtxWorld; }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_meshField.mtxWorld; }	// マトリックス取得
+	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const	{ return m_meshField.col; }	// 色取得
+	POSGRID2 GetPattern(void) const	{ return m_part; }			// 分割数取得
+	int GetNumVertex(void) const	{ return m_nNumVtx; }		// 頂点数取得
 
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);		// 座標のずれ設定
 	D3DXVECTOR3 GetGapPosition(const int nID);							// 座標のずれ取得

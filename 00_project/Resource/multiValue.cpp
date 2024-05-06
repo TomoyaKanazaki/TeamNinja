@@ -127,6 +127,22 @@ void CMultiValue::Draw(CShader *pShader)
 }
 
 //============================================================
+//	優先順位の設定処理
+//============================================================
+void CMultiValue::SetPriority(const int nPriority)
+{
+	// 引数の優先順位を設定
+	CObject::SetPriority(nPriority);	// 自身
+	for (auto& rList : m_listValue)
+	{ // 数字の桁数分繰り返す
+
+		// 数字の優先順位の設定
+		assert(rList != nullptr);
+		rList->SetPriority(nPriority);
+	}
+}
+
+//============================================================
 //	位置の設定処理
 //============================================================
 void CMultiValue::SetVec3Position(const D3DXVECTOR3& rPos)
@@ -136,15 +152,6 @@ void CMultiValue::SetVec3Position(const D3DXVECTOR3& rPos)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CMultiValue::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
 }
 
 //============================================================
@@ -168,15 +175,6 @@ void CMultiValue::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CMultiValue::GetVec3Rotation(void) const
-{
-	// 保存された向きを返す
-	return m_rot;
-}
-
-//============================================================
 //	大きさの設定処理
 //============================================================
 void CMultiValue::SetVec3Sizing(const D3DXVECTOR3& rSize)
@@ -194,57 +192,6 @@ void CMultiValue::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR3 CMultiValue::GetVec3Sizing(void) const
-{
-	// 保存された大きさを返す
-	return m_size;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CMultiValue::SetColor(const D3DXCOLOR& rCol)
-{
-	// 設定する色を保存
-	m_col = rCol;
-
-	for (auto& rList : m_listValue)
-	{ // 数字の桁数分繰り返す
-
-		// 数字色の設定
-		assert(rList != nullptr);
-		rList->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CMultiValue::GetColor(void) const
-{
-	// 保存された色を返す
-	return m_col;
-}
-
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CMultiValue::SetPriority(const int nPriority)
-{
-	// 引数の優先順位を設定
-	CObject::SetPriority(nPriority);	// 自身
-	for (auto& rList : m_listValue)
-	{ // 数字の桁数分繰り返す
-
-		// 数字の優先順位の設定
-		assert(rList != nullptr);
-		rList->SetPriority(nPriority);
-	}
 }
 
 //============================================================
@@ -510,6 +457,23 @@ void CMultiValue::SetType(const CValue::EType type)
 }
 
 //============================================================
+//	色の設定処理
+//============================================================
+void CMultiValue::SetColor(const D3DXCOLOR& rCol)
+{
+	// 設定する色を保存
+	m_col = rCol;
+
+	for (auto& rList : m_listValue)
+	{ // 数字の桁数分繰り返す
+
+		// 数字色の設定
+		assert(rList != nullptr);
+		rList->SetColor(rCol);
+	}
+}
+
+//============================================================
 //	空白の設定処理
 //============================================================
 void CMultiValue::SetSpace(const D3DXVECTOR3& rSpace)
@@ -581,15 +545,6 @@ D3DXVECTOR3 CMultiValue::GetValueSize(void) const
 
 	// 数字全体の大きさを返す
 	return D3DXVECTOR3(GetValueWidth(), GetValueHeight(), 0.0f);
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CMultiValue::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

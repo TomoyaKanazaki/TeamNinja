@@ -123,9 +123,11 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCube.pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCube.rot; }	// 向き取得
-	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_meshCube.size; }	// 大きさ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCube.pos; }			// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCube.rot; }			// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_meshCube.size; }			// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshCube.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCube.mtxWorld; }		// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshCube *Create		// 生成
@@ -167,8 +169,6 @@ public:
 	D3DXVECTOR2 GetTexturePatternY(void) const	{ return m_meshCube.aTexPart[CUBEPART_Y]; }	// テクスチャ分割数Y取得
 	D3DXVECTOR2 GetTexturePatternZ(void) const	{ return m_meshCube.aTexPart[CUBEPART_Z]; }	// テクスチャ分割数Z取得
 	EOrigin GetOrigin(void) const				{ return m_origin; }						// 原点取得
-	D3DXMATRIX *GetPtrMtxWorld(void)			{ return &m_meshCube.mtxWorld; }			// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const			{ return m_meshCube.mtxWorld; }				// マトリックス取得
 
 protected:
 	// メンバ関数

@@ -37,7 +37,6 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec2Sizing(const D3DXVECTOR2& rSize) override;	// 大きさ設定
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
 
 	// 静的メンバ関数
 	static CScrollMeshField *Create	// 生成
@@ -52,8 +51,9 @@ public:
 	);
 
 	// メンバ関数
-	HRESULT SetPattern(const POSGRID2& rPart);						// 分割数設定
 	void SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap);	// 地形設定
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
 
 	void SetTexU(const float fTexU);	// 横座標の開始位置設定
 	void SetTexV(const float fTexV);	// 縦座標の開始位置設定

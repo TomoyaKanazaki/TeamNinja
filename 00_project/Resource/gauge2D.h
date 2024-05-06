@@ -49,9 +49,9 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
-	void Draw(CShader *pShader = nullptr) override;			// 描画
+	void Draw(CShader *pShader = nullptr) override;	// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
+	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
 
 	// 静的メンバ関数
 	static CGauge2D *Create	// 生成
@@ -69,30 +69,32 @@ public:
 	);
 
 	// メンバ関数
-	void AddNum(const int nAdd);	// ゲージ加算
-	void SetNum(const int nNum);	// ゲージ設定
-	int  GetNum(void) const;		// ゲージ取得
-	void SetMaxNum(const int nMax);	// ゲージ最大値設定
-	int  GetMaxNum(void) const;		// ゲージ最大値取得
-
 	void BindTexture(const int nPolygonID, const int nTextureID);		// テクスチャ割当 (インデックス)
 	void BindTexture(const int nPolygonID, const char *pTexturePass);	// テクスチャ割当 (パス)
+	int GetTextureIndex(const int nPolygonID) const;					// テクスチャインデックス取得
+
+	void AddNum(const int nAdd);						// ゲージ加算
+	void SetNum(const int nNum);						// ゲージ設定
+	void SetMaxNum(const int nMax);						// ゲージ最大値設定
 	void SetOffsetFrame(const D3DXVECTOR3& rOffset);	// 枠オフセット設定
-	D3DXVECTOR3 GetOffsetFrame(void) const;				// 枠オフセット取得
 	void SetSizingGauge(const D3DXVECTOR3& rSize);		// ゲージ大きさ設定
-	D3DXVECTOR3 GetSizingGauge(void) const;				// ゲージ大きさ取得
-	void SetSizingFrame(const D3DXVECTOR3& rSize);		// 枠大きさ設定
-	D3DXVECTOR3 GetSizingFrame(void) const;				// 枠大きさ取得
+	void SetSizingFrame(const D3DXVECTOR3& rSize);		// 背景大きさ設定
 	void SetColorFront(const D3DXCOLOR& rCol);			// 表ゲージ色設定
-	D3DXCOLOR GetColorFront(void) const;				// 表ゲージ色取得
 	void SetColorBack(const D3DXCOLOR& rCol);			// 裏ゲージ色設定
-	D3DXCOLOR GetColorBack(void) const;					// 裏ゲージ色取得
 	void SetEnableDrawFrame(const bool bDraw);			// 枠表示状況設定
-	bool IsEnableDrawFrame(void) const;					// 枠表示状況取得
+
+	int GetNum(void) const					{ return m_nNumGauge; }		// ゲージ取得
+	int GetMaxNum(void) const				{ return m_nMaxNumGauge; }	// ゲージ最大値取得
+	D3DXVECTOR3 GetOffsetFrame(void) const	{ return m_offsetFrame; }	// 枠オフセット取得
+	D3DXVECTOR3 GetSizingGauge(void) const	{ return m_sizeGauge; }		// ゲージ大きさ取得
+	D3DXVECTOR3 GetSizingFrame(void) const	{ return m_sizeFrame; }		// 背景大きさ取得
+	D3DXCOLOR GetColorFront(void) const		{ return m_colFront; }		// 表ゲージ色取得
+	D3DXCOLOR GetColorBack(void) const		{ return m_colBack; }		// 裏ゲージ色取得
+	bool IsEnableDrawFrame(void) const		{ return m_bDrawFrame; }	// 枠表示状況取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void SetVtx(void);	// 頂点情報の設定

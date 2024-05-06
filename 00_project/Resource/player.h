@@ -80,24 +80,23 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;		// 描画
-	void SetState(const int nState) override;			// 状態設定
-	int GetState(void) const override;					// 状態取得
-	float GetRadius(void) const override;				// 半径取得
-	float GetHeight(void) const override;				// 縦幅取得
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
-	D3DXMATRIX CalcMtxWorld(void) const override;		// マトリックス計算結果取得
 
 	// 静的メンバ関数
 	static CPlayer *Create(CScene::EMode mode);		// 生成
 	static CListManager<CPlayer> *GetList(void);	// リスト取得
 
 	// メンバ関数
-	void SetDestRotation(const D3DXVECTOR3& rRot) { m_destRot = rRot; }	// 目標向き設定
-	D3DXVECTOR3 GetDestRotation(void) const		  { return m_destRot; }	// 目標向き取得
-	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);	// ノックバックヒット
-	bool Hit(const int nDamage);	// ヒット
-	void SetSpawn(void);			// 出現設定
+	void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }	// 目標向き設定
+	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
+	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
+	bool Hit(const int nDamage);		// ヒット
+	void SetSpawn(void);				// 出現設定
+	void SetState(const EState state);	// 状態設定
+	EState GetState(void) const;		// 状態取得
+	float GetRadius(void) const;		// 半径取得
+	float GetHeight(void) const;		// 縦幅取得
 
 private:
 	// メンバ関数

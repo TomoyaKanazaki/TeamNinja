@@ -38,9 +38,11 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;		// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;		// 向き設定
 	void SetVec3Scaling(const D3DXVECTOR3& rScale) override;	// 拡大率設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
-	D3DXVECTOR3 GetVec3Scaling(void) const override		{ return m_scale; }	// 拡大率取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }		// 向き取得
+	D3DXVECTOR3 GetVec3Scaling(void) const override		{ return m_scale; }		// 拡大率取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectModel *Create	// 生成
@@ -66,8 +68,6 @@ public:
 	void SetMtxWorld(const D3DXMATRIX& rMtxWorld);		// マトリックス設定
 	int GetModelID(void) const				{ return m_nModelID; }	// モデルインデックス取得
 	CModel::SModel GetModelData(void) const	{ return m_modelData; }	// モデル情報取得
-	D3DXMATRIX *GetPtrMtxWorld(void)		{ return &m_mtxWorld; }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const		{ return m_mtxWorld; }	// マトリックス取得
 
 protected:
 	// メンバ関数

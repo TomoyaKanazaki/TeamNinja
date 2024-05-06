@@ -14,11 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
-
-//************************************************************
-//	前方宣言
-//************************************************************
-class CScrollMeshField;	// スクロールメッシュフィールドクラス
+#include "scrollMeshField.h"
 
 //************************************************************
 //	クラス定義
@@ -70,15 +66,13 @@ public:
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
 	void SetVec2Sizing(const D3DXVECTOR2& rSize) override;	// 大きさ設定
-	D3DXVECTOR2 GetVec2Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
-	void SetType(const int nType) override;					// 種類設定
-	int GetType(void) const override;						// 種類取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_apLiquid[LIQUID_LOW]->GetVec3Position(); }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_apLiquid[LIQUID_LOW]->GetVec3Rotation(); }	// 向き取得
+	D3DXVECTOR2 GetVec2Sizing(void) const override		{ return m_apLiquid[LIQUID_LOW]->GetVec2Sizing(); }		// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return m_apLiquid[LIQUID_LOW]->GetPtrMtxWorld(); }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_apLiquid[LIQUID_LOW]->GetMtxWorld(); }		// マトリックス取得
 
 	// 静的メンバ関数
 	static CLiquid *Create	// 生成
@@ -96,23 +90,26 @@ public:
 	);
 
 	// メンバ関数
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	POSGRID2 GetPattern(void) const;			// 分割数取得
+	void SetType(const EType type);				// 種類設定
 	void SetTexMove(const STexMove texMove);	// テクスチャ移動量設定
-	STexMove GetTexMove(void) const;			// テクスチャ移動量取得
-
 	void SetMaxUp(const float fMaxUp);			// 波の最高上昇量設定
-	float GetMaxUp(void) const;					// 波の最高上昇量取得
 	void SetAddSinRot(const float fAddSinRot);	// 波打ち向き加算量設定
-	float GetAddSinRot(void) const;				// 波打ち向き加算量取得
 	void SetAddVtxRot(const float fAddVtxRot);	// 隣波の向き加算量設定
-	float GetAddVtxRot(void) const;				// 隣波の向き加算量取得
+	D3DXCOLOR GetColor(void) const	{ return m_apLiquid[LIQUID_LOW]->GetColor(); }		// 色取得
+	POSGRID2 GetPattern(void) const	{ return m_apLiquid[LIQUID_LOW]->GetPattern(); }	// 分割数取得
+	EType GetType(void) const		{ return m_type; }			// 種類取得
+	float GetMaxUp(void) const		{ return m_fMaxUp; }		// 波の最高上昇量取得
+	float GetAddSinRot(void) const	{ return m_fAddSinRot; }	// 波打ち向き加算量取得
+	float GetAddVtxRot(void) const	{ return m_fAddVtxRot; }	// 隣波の向き加算量取得
 
-	CScrollMeshField *GetScrollMeshField(const int nID) const;	// 波のメッシュフィールド取得
+	STexMove GetTexMove(void) const;	// テクスチャ移動量取得
+	CScrollMeshField *GetMeshField(const int nID) const;	// メッシュフィールド取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	CScrollMeshField *m_apLiquid[LIQUID_MAX];	// 液体の情報

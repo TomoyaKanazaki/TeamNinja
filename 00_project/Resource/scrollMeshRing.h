@@ -37,7 +37,6 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec2Sizing(const D3DXVECTOR2& rSize) override;	// 大きさ設定
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
 
 	// 静的メンバ関数
 	static CScrollMeshRing *Create	// 生成
@@ -52,6 +51,7 @@ public:
 	);
 
 	// メンバ関数
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
 	void SetTexDir(const ETexDir texDir);			// テクスチャ方向設定
 	void SetHoleRadius(const float fHoleRadius);	// 穴の半径設定
 	void SetThickness(const float fThickness);		// 太さ設定

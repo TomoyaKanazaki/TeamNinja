@@ -35,10 +35,10 @@ public:
 	// 縦配置列挙
 	enum EAlignY
 	{
-		YALIGN_TOP = 0,		// 上揃え
-		YALIGN_CENTER,		// 中央揃え
-		YALIGN_BOTTOM,		// 下揃え
-		YALIGN_MAX,			// この列挙型の総数
+		YALIGN_TOP = 0,	// 上揃え
+		YALIGN_CENTER,	// 中央揃え
+		YALIGN_BOTTOM,	// 下揃え
+		YALIGN_MAX,		// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -52,15 +52,13 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
-	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
 	void SetPriority(const int nPriority) override;			// 優先順位設定
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
+	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
+	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }	// 大きさ取得
 
 	// 静的メンバ関数
 	static CMultiValue *Create	// 生成
@@ -86,6 +84,7 @@ public:
 	void SetAlignX(const EAlignX align);		// 横配置設定
 	void SetAlignY(const EAlignY align);		// 縦配置設定
 	void SetType(const CValue::EType type);		// 種類設定
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	void SetSpace(const D3DXVECTOR3& rSpace);	// 空白設定
 	float GetValueWidth(void) const;			// 数字全体の横幅取得
 	float GetValueHeight(void) const;			// 数字全体の縦幅取得
@@ -97,11 +96,12 @@ public:
 	int GetDigit(void) const	{ return (int)m_listValue.size(); }	// 桁数取得
 	EAlignX GetAlignX(void) const		{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const		{ return m_alignY; }		// 縦配置取得
+	D3DXCOLOR GetColor(void) const		{ return m_col; }			// 色取得
 	D3DXVECTOR3 GetSpace(void) const	{ return m_space; }			// 空白取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void SetPositionRelative(void);	// 相対位置設定

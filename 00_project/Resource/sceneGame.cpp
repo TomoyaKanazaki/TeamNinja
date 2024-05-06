@@ -20,6 +20,7 @@
 #include "flash.h"
 #include "stage.h"
 #include "player.h"
+#include "effekseerControl.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -253,6 +254,12 @@ void CSceneGame::Update(void)
 	}
 
 #endif	// _DEBUG
+
+	// TODOFŒã‚ÅÁ‚·
+	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	{
+		CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\Laser01.efkefc", VEC3_ZERO, VEC3_ZERO, VEC3_ZERO, 30.0f);
+	}
 }
 
 //============================================================

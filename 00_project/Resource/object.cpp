@@ -402,6 +402,26 @@ D3DXVECTOR3 CObject::GetVec3Scaling(void) const
 }
 
 //============================================================
+//	マトリックスポインタ取得処理
+//============================================================
+D3DXMATRIX *CObject::GetPtrMtxWorld(void)
+{
+	assert(false);
+	return nullptr;
+}
+
+//============================================================
+//	マトリックス取得処理
+//============================================================
+D3DXMATRIX CObject::GetMtxWorld(void) const
+{
+	assert(false);
+	D3DXMATRIX mtxIden;
+	D3DXMatrixIdentity(&mtxIden);
+	return mtxIden;
+}
+
+//============================================================
 //	全破棄処理 (ラベル指定)
 //============================================================
 void CObject::ReleaseAll(const std::vector<ELabel> label)
@@ -515,6 +535,7 @@ void CObject::UpdateAll(void)
 	// オブジェクト数表示
 	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
 
+	// TODO：後で消す
 	// エフェクシアの更新
 	CEffekseer::GetInstance()->Update();
 
@@ -584,12 +605,13 @@ void CObject::DrawAll(void)
 			// オブジェクトの先頭を代入
 			CObject *pObject = m_apTop[nCntDim][nCntPri];
 
+			// TODO：後で消す
 			if (nCntDim == 1 && nCntPri == 4)
 			{
 				// エフェクシアの描画
 				CEffekseer::GetInstance()->Draw();
 			}
-			
+
 			while (pObject != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 

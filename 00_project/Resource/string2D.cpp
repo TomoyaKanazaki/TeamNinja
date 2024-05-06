@@ -241,7 +241,7 @@ void CString2D::SetCharHeight(const float fHeight)
 
 		// •¶šc•‚Ìİ’è
 		assert(m_ppChar[i] != nullptr);
-		m_ppChar[i]->SetHeight(fHeight);
+		m_ppChar[i]->SetCharHeight(fHeight);
 	}
 
 	// ‘Š‘ÎˆÊ’u‚Ìİ’è

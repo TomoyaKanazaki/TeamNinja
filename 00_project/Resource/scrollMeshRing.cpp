@@ -144,18 +144,6 @@ void CScrollMeshRing::SetVec2Sizing(const D3DXVECTOR2& rSize)
 }
 
 //============================================================
-//	色の設定処理
-//============================================================
-void CScrollMeshRing::SetColor(const D3DXCOLOR& rCol)
-{
-	// 色の設定
-	CObjectMeshRing::SetColor(rCol);
-
-	// スクロールのテクスチャ座標の設定
-	CObjectMeshRing::SetScrollTex(m_fTexU, m_fTexV);
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CScrollMeshRing *CScrollMeshRing::Create
@@ -218,6 +206,18 @@ CScrollMeshRing *CScrollMeshRing::Create
 		// 確保したアドレスを返す
 		return pScrollMeshRing;
 	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CScrollMeshRing::SetColor(const D3DXCOLOR& rCol)
+{
+	// 色の設定
+	CObjectMeshRing::SetColor(rCol);
+
+	// スクロールのテクスチャ座標の設定
+	CObjectMeshRing::SetScrollTex(m_fTexU, m_fTexV);
 }
 
 //============================================================

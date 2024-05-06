@@ -144,18 +144,6 @@ void CScroll2D::SetVec3Sizing(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	色の設定処理
-//============================================================
-void CScroll2D::SetColor(const D3DXCOLOR& rCol)
-{
-	// 色の設定
-	CObject2D::SetColor(rCol);
-
-	// スクロールのテクスチャ座標の設定
-	CObject2D::SetScrollTex(m_fTexU, m_fTexV);
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CScroll2D *CScroll2D::Create
@@ -208,6 +196,18 @@ CScroll2D *CScroll2D::Create
 		// 確保したアドレスを返す
 		return pScroll2D;
 	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CScroll2D::SetColor(const D3DXCOLOR& rCol)
+{
+	// 色の設定
+	CObject2D::SetColor(rCol);
+
+	// スクロールのテクスチャ座標の設定
+	CObject2D::SetScrollTex(m_fTexU, m_fTexV);
 }
 
 //============================================================

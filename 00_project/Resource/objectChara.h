@@ -44,8 +44,10 @@ public:
 	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }		// 向き取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectChara *Create(const D3DXVECTOR3 &rPos, const D3DXVECTOR3 &rRot = VEC3_ZERO);	// 生成
@@ -69,9 +71,7 @@ public:
 	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;		// パーツ向き取得
 	CMultiModel *GetMultiModel(const int nPartsID) const;		// マルチモデル取得
 	CMotion *GetMotion(void) const;								// モーション取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_mtxWorld; }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_mtxWorld; }	// マトリックス取得
-	int GetNumModel(void) const			{ return m_nNumModel; }	// パーツ総数取得
+	int GetNumModel(void) const { return m_nNumModel; }			// パーツ総数取得
 
 	void SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID);	// マテリアル設定
 	void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定

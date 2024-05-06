@@ -77,7 +77,9 @@ public:
 	void Update(void) override;		// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override { return m_tornado.pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_tornado.pos; }		// 位置取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_tornado.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_tornado.mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectTornado *Create	// 生成
@@ -139,8 +141,6 @@ public:
 	float GetAddWidth(void) const			{ return m_tornado.fAddWidth; }		// 横ずれの加算量取得
 	float GetAddHeight(void) const			{ return m_tornado.fAddHeight; }	// 縦ずれの加算量取得
 	float GetSubAlpha(void) const			{ return m_tornado.fSubAlpha; }		// 透明度の減算量取得
-	D3DXMATRIX *GetPtrMtxWorld(void)		{ return &m_tornado.mtxWorld; }		// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const		{ return m_tornado.mtxWorld; }		// マトリックス取得
 
 protected:
 	// メンバ関数

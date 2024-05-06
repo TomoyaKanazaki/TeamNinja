@@ -53,9 +53,11 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
-	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }	// 大きさ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }		// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }		// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectBillboard *Create	// 生成
@@ -75,12 +77,10 @@ public:
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	void SetOrigin(const EOrigin origin);		// 原点設定
 	void SetRotate(const ERotate rotate);		// 回転設定
-	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const		{ return m_col; }			// 色取得
-	EOrigin GetOrigin(void) const		{ return m_origin; }		// 原点取得
-	ERotate GetRotate(void) const		{ return m_rotate; }		// 回転取得
-	D3DXMATRIX *GetPtrMtxWorld(void)	{ return &m_mtxWorld; }		// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const	{ return m_mtxWorld; }		// マトリックス取得
+	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const	{ return m_col; }			// 色取得
+	EOrigin GetOrigin(void) const	{ return m_origin; }		// 原点取得
+	ERotate GetRotate(void) const	{ return m_rotate; }		// 回転取得
 
 protected:
 	// メンバ関数
