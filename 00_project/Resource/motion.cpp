@@ -84,7 +84,7 @@ void CMotion::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CMotion::Update(void)
+void CMotion::Update(const float fDeltaTime)
 {
 	if (!m_bUpdate) { return; }	// 更新しない
 	if (m_info.aMotionInfo[m_info.nType].nNumKey <= 0) { return; }	// キー数未設定

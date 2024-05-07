@@ -46,16 +46,12 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
-	void SetHeight(const float fHeight) override;			// 縦幅設定
-	float GetHeight(void) const override;					// 縦幅取得
+	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_rot; }	// 向き取得
 
 	// 静的メンバ関数
 	static CString2D *Create	// 生成
@@ -70,16 +66,20 @@ public:
 	);
 
 	// メンバ関数
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
 	void SetFont(CFontChar *pFontChar);				// フォントの設定
-	HRESULT SetString(const std::wstring& rStr);	// 文字列の設定
-	CChar2D *GetChar2D(const int nCharID) const;	// 文字の取得
-	float GetStrWidth(void) const;					// 文字列の横幅取得
+	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
-	EAlignX GetAlignX(void) const;					// 横配置取得
+	HRESULT SetString(const std::wstring& rStr);	// 文字列の設定
+	float GetStrWidth(void) const;					// 文字列の横幅取得
+	CChar2D *GetChar2D(const int nCharID) const;	// 文字の取得
+	D3DXCOLOR GetColor(void) const	{ return m_col; }			// 色取得
+	float GetCharHeight(void) const	{ return m_fCharHeight; }	// 文字の縦幅取得
+	EAlignX GetAlignX(void) const	{ return m_alignX; }		// 横配置取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void SetPositionRelative(void);	// 相対位置設定

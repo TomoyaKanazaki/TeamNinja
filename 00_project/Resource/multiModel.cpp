@@ -68,10 +68,10 @@ void CMultiModel::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CMultiModel::Update(void)
+void CMultiModel::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
-	CObjectModel::Update();
+	CObjectModel::Update(fDeltaTime);
 }
 
 //============================================================

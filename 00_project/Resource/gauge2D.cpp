@@ -128,7 +128,7 @@ void CGauge2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CGauge2D::Update(void)
+void CGauge2D::Update(const float fDeltaTime)
 {
 	// ゲージの設定
 	if (m_state == STATE_CHANGE)
@@ -213,15 +213,6 @@ void CGauge2D::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CGauge2D::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CGauge2D *CGauge2D::Create
@@ -257,11 +248,8 @@ CGauge2D *CGauge2D::Create
 			return nullptr;
 		}
 
-		if (pPassTex != nullptr)
-		{
-			// テクスチャを登録・割当
-			pGauge2D->BindTexture(POLYGON_FRAME, GET_MANAGER->GetTexture()->Regist(pPassTex));
-		}
+		// テクスチャを登録・割当
+		pGauge2D->BindTexture(POLYGON_FRAME, pPassTex);
 
 		// ゲージ最大値を設定
 		pGauge2D->SetMaxNum(nMax);
@@ -286,6 +274,62 @@ CGauge2D *CGauge2D::Create
 		// 確保したアドレスを返す
 		return pGauge2D;
 	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CGauge2D::BindTexture(const int nPolygonID, const int nTextureID)
+{
+	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
+	{ // 正規インデックスの場合
+
+		if (nTextureID >= NONE_IDX)
+		{ // テクスチャインデックスが使用可能な場合
+
+			// テクスチャインデックスを代入
+			m_aTextureID[nPolygonID] = nTextureID;
+		}
+		else { assert(false); }	// 範囲外
+	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CGauge2D::BindTexture(const int nPolygonID, const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
+	{ // 正規インデックスの場合
+
+		if (pTexturePass != nullptr)
+		{ // 割り当てるテクスチャパスがある場合
+	
+			// テクスチャインデックスを設定
+			m_aTextureID[nPolygonID] = pTexture->Regist(pTexturePass);
+		}
+		else
+		{ // 割り当てるテクスチャパスがない場合
+
+			// テクスチャなしインデックスを設定
+			m_aTextureID[nPolygonID] = NONE_IDX;
+		}
+	}
+}
+
+//============================================================
+//	テクスチャインデックス取得処理
+//============================================================
+int CGauge2D::GetTextureIndex(const int nPolygonID) const
+{
+	// 非正規なポリゴンのインデックスの場合抜ける
+	if (nPolygonID <= NONE_IDX || nPolygonID >= POLYGON_MAX) { assert(false); return NONE_IDX; }
+
+	// テクスチャインデックスを返す
+	return m_aTextureID[nPolygonID];
 }
 
 //============================================================
@@ -335,15 +379,6 @@ void CGauge2D::SetNum(const int nNum)
 }
 
 //============================================================
-//	ゲージ取得処理
-//============================================================
-int CGauge2D::GetNum(void) const
-{
-	// 表示値を返す
-	return m_nNumGauge;
-}
-
-//============================================================
 //	ゲージ最大値の設定処理
 //============================================================
 void CGauge2D::SetMaxNum(const int nMax)
@@ -356,59 +391,6 @@ void CGauge2D::SetMaxNum(const int nMax)
 }
 
 //============================================================
-//	ゲージ最大値取得処理
-//============================================================
-int CGauge2D::GetMaxNum(void) const
-{
-	// 表示最大値を返す
-	return m_nMaxNumGauge;
-}
-
-//============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CGauge2D::BindTexture(const int nPolygonID, const int nTextureID)
-{
-	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
-	{ // 正規インデックスの場合
-
-		if (nTextureID >= NONE_IDX)
-		{ // テクスチャインデックスが使用可能な場合
-
-			// テクスチャインデックスを代入
-			m_aTextureID[nPolygonID] = nTextureID;
-		}
-		else { assert(false); }	// 範囲外
-	}
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CGauge2D::BindTexture(const int nPolygonID, const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
-	{ // 正規インデックスの場合
-
-		if (pTexturePass != nullptr)
-		{ // 割り当てるテクスチャパスがある場合
-	
-			// テクスチャインデックスを設定
-			m_aTextureID[nPolygonID] = pTexture->Regist(pTexturePass);
-		}
-		else
-		{ // 割り当てるテクスチャパスがない場合
-
-			// テクスチャなしインデックスを設定
-			m_aTextureID[nPolygonID] = NONE_IDX;
-		}
-	}
-}
-
-//============================================================
 //	枠オフセットの設定処理
 //============================================================
 void CGauge2D::SetOffsetFrame(const D3DXVECTOR3& rOffset)
@@ -418,15 +400,6 @@ void CGauge2D::SetOffsetFrame(const D3DXVECTOR3& rOffset)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	枠オフセット取得処理
-//============================================================
-D3DXVECTOR3 CGauge2D::GetOffsetFrame(void) const
-{
-	// 枠オフセットを返す
-	return m_offsetFrame;
 }
 
 //============================================================
@@ -445,15 +418,6 @@ void CGauge2D::SetSizingGauge(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	ゲージ大きさ取得処理
-//============================================================
-D3DXVECTOR3 CGauge2D::GetSizingGauge(void) const
-{
-	// ゲージ大きさを返す
-	return m_sizeGauge;
-}
-
-//============================================================
 //	背景大きさの設定処理
 //============================================================
 void CGauge2D::SetSizingFrame(const D3DXVECTOR3& rSize)
@@ -463,15 +427,6 @@ void CGauge2D::SetSizingFrame(const D3DXVECTOR3& rSize)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	背景大きさ取得処理
-//============================================================
-D3DXVECTOR3 CGauge2D::GetSizingFrame(void) const
-{
-	// 背景大きさを返す
-	return m_sizeFrame;
 }
 
 //============================================================
@@ -487,15 +442,6 @@ void CGauge2D::SetColorFront(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	表ゲージ色取得処理
-//============================================================
-D3DXCOLOR CGauge2D::GetColorFront(void) const
-{
-	// 表ゲージ色を返す
-	return m_colFront;
-}
-
-//============================================================
 //	裏ゲージ色の設定処理
 //============================================================
 void CGauge2D::SetColorBack(const D3DXCOLOR& rCol)
@@ -508,39 +454,12 @@ void CGauge2D::SetColorBack(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	裏ゲージ色取得処理
-//============================================================
-D3DXCOLOR CGauge2D::GetColorBack(void) const
-{
-	// 裏ゲージ色を返す
-	return m_colBack;
-}
-
-//============================================================
 //	枠表示状況設定処理
 //============================================================
 void CGauge2D::SetEnableDrawFrame(const bool bDraw)
 {
 	// 引数の枠の表示状況を設定
 	m_bDrawFrame = bDraw;
-}
-
-//============================================================
-//	枠表示状況取得処理
-//============================================================
-bool CGauge2D::IsEnableDrawFrame(void) const
-{
-	// 枠表示状況を返す
-	return m_bDrawFrame;
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CGauge2D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

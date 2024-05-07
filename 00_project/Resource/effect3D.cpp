@@ -110,7 +110,7 @@ void CEffect3D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEffect3D::Update(void)
+void CEffect3D::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos  = GetVec3Position();	// 位置
@@ -162,7 +162,7 @@ void CEffect3D::Update(void)
 	CObjectBillboard::SetColor(col);
 
 	// オブジェクトビルボードの更新
-	CObjectBillboard::Update();
+	CObjectBillboard::Update(fDeltaTime);
 }
 
 //============================================================

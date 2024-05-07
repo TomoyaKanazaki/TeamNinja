@@ -42,18 +42,14 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void BindTexture(const int nTextureID) override;		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass) override;	// テクスチャ割当 (パス)
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetColor(const D3DXCOLOR& rCol) override;	// 色設定
-	D3DXCOLOR GetColor(void) const override;		// 色取得
-	void SetRadius(const float fRadius) override;	// 半径設定
-	float GetRadius(void) const override;			// 半径取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCircle.pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCircle.rot; }		// 向き取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshCircle.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCircle.mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshCircle *Create	// 生成
@@ -66,9 +62,16 @@ public:
 	);
 
 	// メンバ関数
-	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	POSGRID2 GetPattern(void) const;			// 分割数取得
 	CRenderState *GetRenderState(void);			// レンダーステート情報取得
+	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	void SetRadius(const float fRadius);		// 半径設定
+	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
+	int GetTextureIndex(void) const		{ return m_nTextureID; }			// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_meshCircle.col; }		// 色取得
+	float GetRadius(void) const			{ return m_meshCircle.fRadius; }	// 半径取得
+	POSGRID2 GetPattern(void) const		{ return m_part; }					// 分割数取得
 
 protected:
 	// メンバ関数
@@ -77,7 +80,7 @@ protected:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画

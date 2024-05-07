@@ -87,7 +87,7 @@ void CString2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CString2D::Update(void)
+void CString2D::Update(const float fDeltaTime)
 {
 	// 相対位置の設定
 	SetPositionRelative();
@@ -114,15 +114,6 @@ void CString2D::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置の取得処理
-//============================================================
-D3DXVECTOR3 CString2D::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CString2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -140,70 +131,6 @@ void CString2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CString2D::GetVec3Rotation(void) const
-{
-	// 保存された向きを返す
-	return m_rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CString2D::SetColor(const D3DXCOLOR& rCol)
-{
-	// 設定する色を保存
-	m_col = rCol;
-
-	for (int i = 0; i < (int)m_wsStr.size(); i++)
-	{ // 文字数分繰り返す
-
-		// 文字色の設定
-		assert(m_ppChar[i] != nullptr);
-		m_ppChar[i]->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CString2D::GetColor(void) const
-{
-	// 保存された色を返す
-	return m_col;
-}
-
-//============================================================
-//	文字縦幅の設定処理
-//============================================================
-void CString2D::SetHeight(const float fHeight)
-{
-	// 設定する文字の縦幅を保存
-	m_fCharHeight = fHeight;
-
-	for (int i = 0; i < (int)m_wsStr.size(); i++)
-	{ // 文字数分繰り返す
-
-		// 文字縦幅の設定
-		assert(m_ppChar[i] != nullptr);
-		m_ppChar[i]->SetHeight(fHeight);
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	文字縦幅の取得処理
-//============================================================
-float CString2D::GetHeight(void) const
-{
-	// 保存された文字の縦幅を返す
-	return m_fCharHeight;
 }
 
 //============================================================
@@ -261,13 +188,30 @@ CString2D *CString2D::Create
 		pString2D->SetColor(rCol);
 
 		// 文字縦幅を設定
-		pString2D->SetHeight(fHeight);
+		pString2D->SetCharHeight(fHeight);
 
 		// 横配置を設定
 		pString2D->SetAlignX(alignX);
 
 		// 確保したアドレスを返す
 		return pString2D;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CString2D::SetColor(const D3DXCOLOR& rCol)
+{
+	// 設定する色を保存
+	m_col = rCol;
+
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字色の設定
+		assert(m_ppChar[i] != nullptr);
+		m_ppChar[i]->SetColor(rCol);
 	}
 }
 
@@ -282,6 +226,38 @@ void CString2D::SetFont(CFontChar *pFontChar)
 
 	// 文字列の再設定
 	SetString(m_wsStr);
+}
+
+//============================================================
+//	文字縦幅の設定処理
+//============================================================
+void CString2D::SetCharHeight(const float fHeight)
+{
+	// 設定する文字の縦幅を保存
+	m_fCharHeight = fHeight;
+
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字縦幅の設定
+		assert(m_ppChar[i] != nullptr);
+		m_ppChar[i]->SetCharHeight(fHeight);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	横配置の設定処理
+//============================================================
+void CString2D::SetAlignX(const CString2D::EAlignX alignX)
+{
+	// 引数の横配置を設定
+	m_alignX = alignX;
+
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -344,22 +320,6 @@ HRESULT CString2D::SetString(const std::wstring& rStr)
 }
 
 //============================================================
-//	文字の取得処理
-//============================================================
-CChar2D *CString2D::GetChar2D(const int nCharID) const
-{
-	// 文字列がない場合抜ける
-	int nStrLen = (int)m_wsStr.size();
-	if (nStrLen <= 0) { assert(false); return nullptr; }
-
-	// インデックスが範囲外の場合抜ける
-	if (nCharID <= NONE_IDX || nCharID >= nStrLen) { assert(false); return nullptr; }
-
-	// 引数インデックスの文字を返す
-	return m_ppChar[nCharID];
-}
-
-//============================================================
 //	文字列の横幅取得処理
 //============================================================
 float CString2D::GetStrWidth(void) const
@@ -395,33 +355,19 @@ float CString2D::GetStrWidth(void) const
 }
 
 //============================================================
-//	横配置の設定処理
+//	文字の取得処理
 //============================================================
-void CString2D::SetAlignX(const CString2D::EAlignX alignX)
+CChar2D *CString2D::GetChar2D(const int nCharID) const
 {
-	// 引数の横配置を設定
-	m_alignX = alignX;
+	// 文字列がない場合抜ける
+	int nStrLen = (int)m_wsStr.size();
+	if (nStrLen <= 0) { assert(false); return nullptr; }
 
-	// 相対位置の設定
-	SetPositionRelative();
-}
+	// インデックスが範囲外の場合抜ける
+	if (nCharID <= NONE_IDX || nCharID >= nStrLen) { assert(false); return nullptr; }
 
-//============================================================
-//	横配置の取得処理
-//============================================================
-CString2D::EAlignX CString2D::GetAlignX(void) const
-{
-	// 横配置を返す
-	return m_alignX;
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CString2D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
+	// 引数インデックスの文字を返す
+	return m_ppChar[nCharID];
 }
 
 //============================================================

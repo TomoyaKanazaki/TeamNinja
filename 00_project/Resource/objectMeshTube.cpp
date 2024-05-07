@@ -126,17 +126,17 @@ void CObjectMeshTube::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshTube::Update(void)
+void CObjectMeshTube::Update(const float fDeltaTime)
 {
 	for (int i = 0; i < COVER_MAX; i++)
 	{ // 蓋の総数分繰り返す
 
 		// メッシュサークルの更新
-		m_apCover[i]->Update();
+		m_apCover[i]->Update(fDeltaTime);
 	}
 
 	// メッシュシリンダーの更新
-	m_pCylinder->Update();
+	m_pCylinder->Update(fDeltaTime);
 }
 
 //============================================================
@@ -156,59 +156,17 @@ void CObjectMeshTube::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
+//	優先順位の設定処理
 //============================================================
-void CObjectMeshTube::BindTexture(const int nTextureID)
+void CObjectMeshTube::SetPriority(const int nPriority)
 {
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
+	// 引数の優先順位を設定
+	CObject::SetPriority(nPriority);		// 自身
+	m_pCylinder->SetPriority(nPriority);	// 筒
+	for (int i = 0; i < COVER_MAX; i++)
+	{ // 蓋の総数分繰り返す
 
-		for (int i = 0; i < COVER_MAX; i++)
-		{ // 蓋の総数分繰り返す
-
-			// テクスチャインデックスを割当
-			m_apCover[i]->BindTexture(nTextureID);
-		}
-
-		// テクスチャインデックスを割当
-		m_pCylinder->BindTexture(nTextureID);
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshTube::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		for (int i = 0; i < COVER_MAX; i++)
-		{ // 蓋の総数分繰り返す
-
-			// テクスチャインデックスを割当
-			m_apCover[i]->BindTexture(pTexture->Regist(pTexturePass));
-		}
-
-		// テクスチャインデックスを割当
-		m_pCylinder->BindTexture(pTexture->Regist(pTexturePass));
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		for (int i = 0; i < COVER_MAX; i++)
-		{ // 蓋の総数分繰り返す
-
-			// テクスチャなしインデックスを割当
-			m_apCover[i]->BindTexture(NONE_IDX);
-		}
-
-		// テクスチャなしインデックスを割当
-		m_pCylinder->BindTexture(NONE_IDX);
+		m_apCover[i]->SetPriority(nPriority);	// 蓋
 	}
 }
 
@@ -225,15 +183,6 @@ void CObjectMeshTube::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshTube::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pCylinder->GetVec3Position();
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CObjectMeshTube::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -243,102 +192,6 @@ void CObjectMeshTube::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 相対位置を設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshTube::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_pCylinder->GetVec3Rotation();
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshTube::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_pCylinder->SetColor(rCol);
-
-	for (int i = 0; i < COVER_MAX; i++)
-	{ // 蓋の総数分繰り返す
-
-		// 引数の色を設定
-		m_apCover[i]->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshTube::GetColor(void) const
-{
-	// 色を返す
-	return m_pCylinder->GetColor();
-}
-
-//============================================================
-//	半径の設定処理
-//============================================================
-void CObjectMeshTube::SetRadius(const float fRadius)
-{
-	// 引数の半径を設定
-	m_pCylinder->SetRadius(fRadius);
-
-	for (int i = 0; i < COVER_MAX; i++)
-	{ // 蓋の総数分繰り返す
-
-		// 引数の半径を設定
-		m_apCover[i]->SetRadius(fRadius);
-	}
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectMeshTube::GetRadius(void) const
-{
-	// 半径を返す
-	return m_pCylinder->GetRadius();
-}
-
-//============================================================
-//	縦幅の設定処理
-//============================================================
-void CObjectMeshTube::SetHeight(const float fHeight)
-{
-	// 引数の縦幅を設定
-	m_pCylinder->SetHeight(fHeight);
-
-	// 相対位置を設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	縦幅取得処理
-//============================================================
-float CObjectMeshTube::GetHeight(void) const
-{
-	// 縦幅を返す
-	return m_pCylinder->GetHeight();
-}
-
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CObjectMeshTube::SetPriority(const int nPrio)
-{
-	// 引数の優先順位を設定
-	CObject::SetPriority(nPrio);		// 自身
-	m_pCylinder->SetPriority(nPrio);	// 筒
-
-	for (int i = 0; i < COVER_MAX; i++)
-	{ // 蓋の総数分繰り返す
-
-		m_apCover[i]->SetPriority(nPrio);	// 蓋
-	}
 }
 
 //============================================================
@@ -407,6 +260,125 @@ CObjectMeshTube *CObjectMeshTube::Create
 }
 
 //============================================================
+//	レンダーステート情報の設定処理
+//============================================================
+void CObjectMeshTube::SetRenderState(CRenderState renderState)
+{
+	CRenderState *pTempRenderState = nullptr;	// レンダーステート情報
+
+	// 引数のレンダーステートを設定
+	pTempRenderState = m_pCylinder->GetRenderState();
+	*pTempRenderState = renderState;
+
+	for (int i = 0; i < COVER_MAX; i++)
+	{ // 蓋の総数分繰り返す
+
+		// 引数のレンダーステートを設定
+		pTempRenderState = m_apCover[i]->GetRenderState();
+		*pTempRenderState = renderState;
+	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshTube::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		for (int i = 0; i < COVER_MAX; i++)
+		{ // 蓋の総数分繰り返す
+
+			// テクスチャインデックスを割当
+			m_apCover[i]->BindTexture(nTextureID);
+		}
+
+		// テクスチャインデックスを割当
+		m_pCylinder->BindTexture(nTextureID);
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshTube::BindTexture(const char *pTexturePass)
+{
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+		for (int i = 0; i < COVER_MAX; i++)
+		{ // 蓋の総数分繰り返す
+
+			// テクスチャインデックスを割当
+			m_apCover[i]->BindTexture(pTexture->Regist(pTexturePass));
+		}
+
+		// テクスチャインデックスを割当
+		m_pCylinder->BindTexture(pTexture->Regist(pTexturePass));
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		for (int i = 0; i < COVER_MAX; i++)
+		{ // 蓋の総数分繰り返す
+
+			// テクスチャなしインデックスを割当
+			m_apCover[i]->BindTexture(NONE_IDX);
+		}
+
+		// テクスチャなしインデックスを割当
+		m_pCylinder->BindTexture(NONE_IDX);
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshTube::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_pCylinder->SetColor(rCol);
+
+	for (int i = 0; i < COVER_MAX; i++)
+	{ // 蓋の総数分繰り返す
+
+		// 引数の色を設定
+		m_apCover[i]->SetColor(rCol);
+	}
+}
+
+//============================================================
+//	半径の設定処理
+//============================================================
+void CObjectMeshTube::SetRadius(const float fRadius)
+{
+	// 引数の半径を設定
+	m_pCylinder->SetRadius(fRadius);
+
+	for (int i = 0; i < COVER_MAX; i++)
+	{ // 蓋の総数分繰り返す
+
+		// 引数の半径を設定
+		m_apCover[i]->SetRadius(fRadius);
+	}
+}
+
+//============================================================
+//	縦幅の設定処理
+//============================================================
+void CObjectMeshTube::SetHeight(const float fHeight)
+{
+	// 引数の縦幅を設定
+	m_pCylinder->SetHeight(fHeight);
+
+	// 相対位置を設定
+	SetPositionRelative();
+}
+
+//============================================================
 //	分割数の設定処理
 //============================================================
 HRESULT CObjectMeshTube::SetPattern(const POSGRID2& rPart)
@@ -438,15 +410,6 @@ HRESULT CObjectMeshTube::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshTube::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_pCylinder->GetPattern();
-}
-
-//============================================================
 //	テクスチャ分割数の設定処理
 //============================================================
 void CObjectMeshTube::SetTexPattern(const POSGRID2& rTexPart)
@@ -459,44 +422,6 @@ void CObjectMeshTube::SetTexPattern(const POSGRID2& rTexPart)
 		m_pCylinder->SetTexPattern(rTexPart);
 	}
 	else { assert(false); }	// 最低値未満
-}
-
-//============================================================
-//	テクスチャ分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshTube::GetTexPattern(void) const
-{
-	// テクスチャ分割数を返す
-	return m_pCylinder->GetTexPattern();
-}
-
-//============================================================
-//	レンダーステート情報の設定処理
-//============================================================
-void CObjectMeshTube::SetRenderState(CRenderState renderState)
-{
-	CRenderState *pTempRenderState = nullptr;	// レンダーステート情報
-
-	// 引数のレンダーステートを設定
-	pTempRenderState  = m_pCylinder->GetRenderState();
-	*pTempRenderState = renderState;
-
-	for (int i = 0; i < COVER_MAX; i++)
-	{ // 蓋の総数分繰り返す
-
-		// 引数のレンダーステートを設定
-		pTempRenderState  = m_apCover[i]->GetRenderState();
-		*pTempRenderState = renderState;
-	}
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState CObjectMeshTube::GetRenderState(void)
-{
-	// レンダーステート情報を返す
-	return *m_pCylinder->GetRenderState();
 }
 
 //============================================================
@@ -525,15 +450,6 @@ void CObjectMeshTube::SetPositionRelative(void)
 	// 上蓋の位置・向きを設定
 	m_apCover[COVER_TOP]->SetVec3Position(useful::GetMatrixPosition(mtxTop));
 	m_apCover[COVER_TOP]->SetVec3Rotation(rotCylinder);
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshTube::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

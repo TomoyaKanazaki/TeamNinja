@@ -93,7 +93,7 @@ void CEffect2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEffect2D::Update(void)
+void CEffect2D::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos  = GetVec3Position();	// 位置
@@ -145,7 +145,7 @@ void CEffect2D::Update(void)
 	CObject2D::SetColor(col);
 
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================

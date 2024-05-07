@@ -75,7 +75,7 @@ public:
 	// 仮想関数
 	virtual HRESULT Init(void);	// 初期化
 	virtual void Uninit(void);	// 終了
-	virtual void Update(void);	// 更新
+	virtual void Update(const float fDeltaTime);		// 更新
 	virtual void SetPosition(const D3DXVECTOR3& rPos);	// 位置設定
 	virtual D3DXVECTOR3 GetPosition(void) const;		// 位置取得
 	virtual void SetPriority(const int nPriority);		// 優先順位設定

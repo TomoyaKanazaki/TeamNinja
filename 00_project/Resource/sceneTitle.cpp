@@ -90,22 +90,14 @@ void CSceneTitle::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSceneTitle::Update(void)
+void CSceneTitle::Update(const float fDeltaTime)
 {
 	// タイトルマネージャーの更新
 	assert(m_pTitleManager != nullptr);
-	m_pTitleManager->Update();
+	m_pTitleManager->Update(fDeltaTime);
 
 	// シーンの更新
-	CScene::Update();
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CSceneTitle::Draw(void)
-{
-
+	CScene::Update(fDeltaTime);
 }
 
 //============================================================

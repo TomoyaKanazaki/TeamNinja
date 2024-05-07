@@ -105,13 +105,13 @@ void CTimerUI::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CTimerUI::Update(void)
+void CTimerUI::Update(const float fDeltaTime)
 {
 	// 背景の更新
-	m_pBG->Update();
+	m_pBG->Update(fDeltaTime);
 
 	// タイマーマネージャーの更新
-	CTimerManager::Update();
+	CTimerManager::Update(fDeltaTime);
 }
 
 //============================================================

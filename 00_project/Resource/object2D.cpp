@@ -119,7 +119,7 @@ void CObject2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObject2D::Update(void)
+void CObject2D::Update(const float fDeltaTime)
 {
 	// 頂点情報の設定
 	SetVtx();
@@ -155,7 +155,13 @@ void CObject2D::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CObject2D *CObject2D::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const D3DXVECTOR3& rRot, const D3DXCOLOR& rCol)
+CObject2D *CObject2D::Create
+(
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rSize,	// 大きさ
+	const D3DXVECTOR3& rRot,	// 向き
+	const D3DXCOLOR& rCol		// 色
+)
 {
 	// オブジェクト2Dの生成
 	CObject2D *pObject2D = new CObject2D;
@@ -191,51 +197,6 @@ CObject2D *CObject2D::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, 
 		// 確保したアドレスを返す
 		return pObject2D;
 	}
-}
-
-//============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObject2D::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObject2D::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
-//	テクスチャインデックス取得処理
-//============================================================
-int CObject2D::GetTextureIndex(void) const
-{
-	// テクスチャインデックスを返す
-	return m_nTextureID;
 }
 
 //============================================================
@@ -284,54 +245,6 @@ void CObject2D::SetVec3Sizing(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	色の設定処理
-//============================================================
-void CObject2D::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を代入
-	m_col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObject2D::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObject2D::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_rot;
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR3 CObject2D::GetVec3Sizing(void) const
-{
-	// 大きさを返す
-	return m_size;
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObject2D::GetColor(void) const
-{
-	// 色を返す
-	return m_col;
-}
-
-//============================================================
 //	レンダーステート情報の取得処理
 //============================================================
 CRenderState *CObject2D::GetRenderState(void)
@@ -341,6 +254,54 @@ CRenderState *CObject2D::GetRenderState(void)
 
 	// レンダーステートの情報を返す
 	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObject2D::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObject2D::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObject2D::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を代入
+	m_col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -451,13 +412,4 @@ void CObject2D::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObject2D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }

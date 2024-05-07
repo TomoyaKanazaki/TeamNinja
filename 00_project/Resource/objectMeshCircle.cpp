@@ -53,18 +53,18 @@ CObjectMeshCircle::~CObjectMeshCircle()
 HRESULT CObjectMeshCircle::Init(void)
 {
 	// メンバ変数を初期化
-	m_pVtxBuff		= nullptr;		// 頂点バッファ
-	m_pIdxBuff		= nullptr;		// インデックスバッファ
-	m_pRenderState	= nullptr;		// レンダーステートの情報
-	m_part			= MIN_PART;		// 分割数
-	m_nNumVtx		= 0;			// 必要頂点数
-	m_nNumIdx		= 0;			// 必要インデックス数
-	m_nTextureID	= NONE_IDX;		// テクスチャインデックス
+	m_pVtxBuff		= nullptr;	// 頂点バッファ
+	m_pIdxBuff		= nullptr;	// インデックスバッファ
+	m_pRenderState	= nullptr;	// レンダーステートの情報
+	m_part			= MIN_PART;	// 分割数
+	m_nNumVtx		= 0;		// 必要頂点数
+	m_nNumIdx		= 0;		// 必要インデックス数
+	m_nTextureID	= NONE_IDX;	// テクスチャインデックス
 
-	m_meshCircle.pos		= VEC3_ZERO;		// 位置
-	m_meshCircle.rot		= VEC3_ZERO;		// 向き
-	m_meshCircle.col		= XCOL_WHITE;		// 色
-	m_meshCircle.fRadius	= 0.0f;				// 半径
+	m_meshCircle.pos		= VEC3_ZERO;	// 位置
+	m_meshCircle.rot		= VEC3_ZERO;	// 向き
+	m_meshCircle.col		= XCOL_WHITE;	// 色
+	m_meshCircle.fRadius	= 0.0f;			// 半径
 
 	// 分割数を設定
 	if (FAILED(SetPattern(MIN_PART)))
@@ -109,7 +109,7 @@ void CObjectMeshCircle::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshCircle::Update(void)
+void CObjectMeshCircle::Update(const float fDeltaTime)
 {
 
 }
@@ -169,57 +169,12 @@ void CObjectMeshCircle::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshCircle::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshCircle::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshCircle::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshCircle.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCircle::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshCircle.pos;
 }
 
 //============================================================
@@ -232,57 +187,6 @@ void CObjectMeshCircle::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshCircle.rot);
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCircle::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshCircle.rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshCircle::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshCircle.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshCircle::GetColor(void) const
-{
-	// 色を返す
-	return m_meshCircle.col;
-}
-
-//============================================================
-//	半径の設定処理
-//============================================================
-void CObjectMeshCircle::SetRadius(const float fRadius)
-{
-	// 引数の半径を設定
-	m_meshCircle.fRadius = fRadius;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectMeshCircle::GetRadius(void) const
-{
-	// 半径を返す
-	return m_meshCircle.fRadius;
 }
 
 //============================================================
@@ -340,6 +244,78 @@ CObjectMeshCircle *CObjectMeshCircle::Create
 		// 確保したアドレスを返す
 		return pMeshCircle;
 	}
+}
+
+//============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshCircle::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshCircle::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshCircle::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshCircle::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshCircle.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
+//	半径の設定処理
+//============================================================
+void CObjectMeshCircle::SetRadius(const float fRadius)
+{
+	// 引数の半径を設定
+	m_meshCircle.fRadius = fRadius;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -409,27 +385,6 @@ HRESULT CObjectMeshCircle::SetPattern(const POSGRID2& rPart)
 
 	// 成功を返す
 	return S_OK;
-}
-
-//============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshCircle::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshCircle::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -547,15 +502,6 @@ void CObjectMeshCircle::SetIdx(void)
 		// インデックスバッファをアンロックする
 		m_pIdxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshCircle::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

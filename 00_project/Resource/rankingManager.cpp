@@ -300,7 +300,7 @@ void CRankingManager::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CRankingManager::Update(void)
+void CRankingManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // 状態ごとの処理
@@ -368,17 +368,17 @@ void CRankingManager::Update(void)
 	{ // ランキングの上位表示数分繰り返す
 
 		// クリアタイムの更新
-		m_apTime[nCntRank]->Update();
+		m_apTime[nCntRank]->Update(fDeltaTime);
 
 		// 順位表示の更新
-		m_apRank[nCntRank]->Update();
+		m_apRank[nCntRank]->Update(fDeltaTime);
 	}
 
 	// ランキングロゴの更新
-	m_pLogo->Update();
+	m_pLogo->Update(fDeltaTime);
 
 	// フェードの更新
-	m_pFade->Update();
+	m_pFade->Update(fDeltaTime);
 }
 
 //============================================================

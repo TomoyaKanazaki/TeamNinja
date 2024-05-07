@@ -27,6 +27,7 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(void);	// 更新
+	float GetTime(void) { return m_fTime; }	// 経過時間取得
 
 	// 静的メンバ関数
 	static CDeltaTime *Create(void);				// 生成

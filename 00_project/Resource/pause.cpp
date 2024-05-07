@@ -155,7 +155,7 @@ void CPause::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CPause::Update(void)
+void CPause::Update(const float fDeltaTime)
 {
 	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
 	{ // フェードしていない場合
@@ -197,13 +197,13 @@ void CPause::Update(void)
 	}
 
 	// 背景情報の更新
-	m_pBG->Update();
+	m_pBG->Update(fDeltaTime);
 
 	for (int nCntPause = 0; nCntPause < SELECT_MAX; nCntPause++)
 	{ // 選択肢の項目数分繰り返す
 
 		// 選択情報の更新
-		m_apSelect[nCntPause]->Update();
+		m_apSelect[nCntPause]->Update(fDeltaTime);
 	}
 }
 

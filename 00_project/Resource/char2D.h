@@ -32,10 +32,9 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	void SetHeight(const float fHeight) override;			// 縦幅設定
 
 	// 静的メンバ関数
 	static CChar2D *Create	// 生成
@@ -54,10 +53,11 @@ public:
 		CFontChar *pFontChar,	// フォント文字情報
 		const wchar_t wcChar	// 指定文字
 	);
-	D3DXVECTOR2 GetOffsetBlackBoxLU(void);	// ブラックボックスの左上オフセット取得
-	D3DXVECTOR2 GetOffsetBlackBoxRD(void);	// ブラックボックスの右下オフセット取得
-	float GetOffsetOrigin(void);			// 原点のオフセット取得
-	float GetNext(void);					// 次の文字までの距離取得
+	void SetCharHeight(const float fHeight);	// 文字の縦幅設定
+	D3DXVECTOR2 GetOffsetBlackBoxLU(void);		// ブラックボックスの左上オフセット取得
+	D3DXVECTOR2 GetOffsetBlackBoxRD(void);		// ブラックボックスの右下オフセット取得
+	float GetOffsetOrigin(void);				// 原点のオフセット取得
+	float GetNext(void);						// 次の文字までの距離取得
 
 private:
 	// メンバ変数

@@ -78,10 +78,10 @@ void CChar2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CChar2D::Update(void)
+void CChar2D::Update(const float fDeltaTime)
 {
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================
@@ -106,22 +106,6 @@ void CChar2D::SetVec3Sizing(const D3DXVECTOR3& /*rSize*/)
 	*/
 
 	assert(false);
-}
-
-//============================================================
-//	縦幅の設定処理
-//============================================================
-void CChar2D::SetHeight(const float fHeight)
-{
-	int nTexID = GetTextureIndex();	// フォントのテクスチャインデックス
-	float fTexWidth = useful::GetTexWidthFromAspect(fHeight, nTexID);			// テクスチャ横幅
-	D3DXIMAGE_INFO status = GET_MANAGER->GetTexture()->GetInfo(nTexID).status;	// テクスチャステータス
-
-	// 縦幅の増減割合を保存
-	m_fSizeRate = fHeight / (float)status.Height;
-
-	// 大きさを設定
-	CObject2D::SetVec3Sizing(D3DXVECTOR3(fTexWidth, fHeight, 0.0f));
 }
 
 //============================================================
@@ -165,8 +149,8 @@ CChar2D *CChar2D::Create
 		// 向きを設定
 		pChar2D->SetVec3Rotation(rRot);
 
-		// 縦幅を設定
-		pChar2D->SetHeight(fHeight);
+		// 文字縦幅を設定
+		pChar2D->SetCharHeight(fHeight);
 
 		// 色を設定
 		pChar2D->SetColor(rCol);
@@ -196,6 +180,22 @@ void CChar2D::SetFontChar
 
 	// テクスチャを作成・割当
 	BindTexture(m_infoChar.nTexID);
+}
+
+//============================================================
+//	文字縦幅の設定処理
+//============================================================
+void CChar2D::SetCharHeight(const float fHeight)
+{
+	int nTexID = GetTextureIndex();	// フォントのテクスチャインデックス
+	float fTexWidth = useful::GetTexWidthFromAspect(fHeight, nTexID);			// テクスチャ横幅
+	D3DXIMAGE_INFO status = GET_MANAGER->GetTexture()->GetInfo(nTexID).status;	// テクスチャステータス
+
+	// 縦幅の増減割合を保存
+	m_fSizeRate = fHeight / (float)status.Height;
+
+	// 大きさを設定
+	CObject2D::SetVec3Sizing(D3DXVECTOR3(fTexWidth, fHeight, 0.0f));
 }
 
 //============================================================

@@ -124,7 +124,7 @@ void CLiquid::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CLiquid::Update(void)
+void CLiquid::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	POSGRID2 part = GetPattern();	// 分割数
@@ -164,7 +164,7 @@ void CLiquid::Update(void)
 	{ // 液体の最大数分繰り返す
 
 		// 液体の更新
-		m_apLiquid[nCntLiquid]->Update();
+		m_apLiquid[nCntLiquid]->Update(fDeltaTime);
 	}
 }
 
@@ -196,15 +196,6 @@ void CLiquid::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CLiquid::GetVec3Position(void) const
-{
-	// 下の液体の位置を返す
-	return m_apLiquid[LIQUID_LOW]->GetVec3Position();
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CLiquid::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -219,15 +210,6 @@ void CLiquid::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CLiquid::GetVec3Rotation(void) const
-{
-	// 下の液体の向きを返す
-	return m_apLiquid[LIQUID_LOW]->GetVec3Rotation();
-}
-
-//============================================================
 //	大きさの設定処理
 //============================================================
 void CLiquid::SetVec2Sizing(const D3DXVECTOR2& rSize)
@@ -239,68 +221,6 @@ void CLiquid::SetVec2Sizing(const D3DXVECTOR2& rSize)
 		// 引数の大きさを設定
 		m_apLiquid[nCntLiquid]->SetVec2Sizing(rSize);
 	}
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR2 CLiquid::GetVec2Sizing(void) const
-{
-	// 下の液体の大きさを返す
-	return m_apLiquid[LIQUID_LOW]->GetVec2Sizing();
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CLiquid::SetColor(const D3DXCOLOR& rCol)
-{
-	// 液体の色を設定
-	for (int nCntLiquid = 0; nCntLiquid < LIQUID_MAX; nCntLiquid++)
-	{ // 液体の最大数分繰り返す
-
-		// 引数の色を設定
-		m_apLiquid[nCntLiquid]->SetColor(rCol);
-	}
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CLiquid::GetColor(void) const
-{
-	// 下の液体の色を返す
-	return m_apLiquid[LIQUID_LOW]->GetColor();
-}
-
-//============================================================
-//	種類の設定処理
-//============================================================
-void CLiquid::SetType(const int nType)
-{
-	if (nType > NONE_IDX && nType < TYPE_MAX)
-	{ // 種類が範囲内の場合
-
-		// 引数の種類を設定
-		m_type = (EType)nType;
-
-		for (int nCntLiquid = 0; nCntLiquid < LIQUID_MAX; nCntLiquid++)
-		{ // 液体の最大数分繰り返す
-
-			// テクスチャを登録・割当
-			m_apLiquid[nCntLiquid]->BindTexture(TEXTURE_FILE[m_type][nCntLiquid]);
-		}
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	種類取得処理
-//============================================================
-int CLiquid::GetType(void) const
-{
-	// 種類を返す
-	return m_type;
 }
 
 //============================================================
@@ -381,6 +301,20 @@ CLiquid *CLiquid::Create
 }
 
 //============================================================
+//	色の設定処理
+//============================================================
+void CLiquid::SetColor(const D3DXCOLOR& rCol)
+{
+	// 液体の色を設定
+	for (int nCntLiquid = 0; nCntLiquid < LIQUID_MAX; nCntLiquid++)
+	{ // 液体の最大数分繰り返す
+
+		// 引数の色を設定
+		m_apLiquid[nCntLiquid]->SetColor(rCol);
+	}
+}
+
+//============================================================
 //	分割数の設定処理
 //============================================================
 HRESULT CLiquid::SetPattern(const POSGRID2& rPart)
@@ -404,12 +338,24 @@ HRESULT CLiquid::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
+//	種類の設定処理
 //============================================================
-POSGRID2 CLiquid::GetPattern(void) const
+void CLiquid::SetType(const EType type)
 {
-	// 下の液体の分割数を返す
-	return m_apLiquid[LIQUID_LOW]->GetPattern();
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // 種類が範囲内の場合
+
+		// 引数の種類を設定
+		m_type = type;
+
+		for (int nCntLiquid = 0; nCntLiquid < LIQUID_MAX; nCntLiquid++)
+		{ // 液体の最大数分繰り返す
+
+			// テクスチャを登録・割当
+			m_apLiquid[nCntLiquid]->BindTexture(TEXTURE_FILE[(int)m_type][nCntLiquid]);
+		}
+	}
+	else { assert(false); }	// 範囲外
 }
 
 //============================================================
@@ -424,6 +370,33 @@ void CLiquid::SetTexMove(const STexMove texMove)
 	// 上液体のテクスチャ移動量を設定
 	m_apLiquid[LIQUID_HIGH]->SetMoveU(texMove.texMoveHigh.x);
 	m_apLiquid[LIQUID_HIGH]->SetMoveV(texMove.texMoveHigh.y);
+}
+
+//============================================================
+//	波の最高上昇量の設定処理
+//============================================================
+void CLiquid::SetMaxUp(const float fMaxUp)
+{
+	// 引数の波の最高上昇量を設定
+	m_fMaxUp = fMaxUp;
+}
+
+//============================================================
+//	波打ち向き加算量の設定処理
+//============================================================
+void CLiquid::SetAddSinRot(const float fAddSinRot)
+{
+	// 引数の波打ち向き加算量を設定
+	m_fAddSinRot = fAddSinRot;
+}
+
+//============================================================
+//	隣波の向き加算量の設定処理
+//============================================================
+void CLiquid::SetAddVtxRot(const float fAddVtxRot)
+{
+	// 引数の隣波の向き加算量を設定
+	m_fAddVtxRot = fAddVtxRot;
 }
 
 //============================================================
@@ -447,73 +420,15 @@ CLiquid::STexMove CLiquid::GetTexMove(void) const
 }
 
 //============================================================
-//	波の最高上昇量の設定処理
+//	メッシュフィールド取得処理
 //============================================================
-void CLiquid::SetMaxUp(const float fMaxUp)
+CScrollMeshField *CLiquid::GetMeshField(const int nID) const
 {
-	// 引数の波の最高上昇量を設定
-	m_fMaxUp = fMaxUp;
-}
+	if (nID > NONE_IDX && nID < LIQUID_MAX)
+	{ // インデックスが範囲内の場合
 
-//============================================================
-//	波の最高上昇量の取得処理
-//============================================================
-float CLiquid::GetMaxUp(void) const
-{
-	// 波の最高上昇量を返す
-	return m_fMaxUp;
-}
-
-//============================================================
-//	波打ち向き加算量の設定処理
-//============================================================
-void CLiquid::SetAddSinRot(const float fAddSinRot)
-{
-	// 引数の波打ち向き加算量を設定
-	m_fAddSinRot = fAddSinRot;
-}
-
-//============================================================
-//	波打ち向き加算量の取得処理
-//============================================================
-float CLiquid::GetAddSinRot(void) const
-{
-	// 波打ち向き加算量を返す
-	return m_fAddSinRot;
-}
-
-//============================================================
-//	隣波の向き加算量の設定処理
-//============================================================
-void CLiquid::SetAddVtxRot(const float fAddVtxRot)
-{
-	// 引数の隣波の向き加算量を設定
-	m_fAddVtxRot = fAddVtxRot;
-}
-
-//============================================================
-//	隣波の向き加算量の取得処理
-//============================================================
-float CLiquid::GetAddVtxRot(void) const
-{
-	// 隣波の向き加算量を返す
-	return m_fAddVtxRot;
-}
-
-//============================================================
-//	波のメッシュフィールド取得処理
-//============================================================
-CScrollMeshField *CLiquid::GetScrollMeshField(const int nID) const
-{
-	// 波のメッシュフィールドを返す
-	return m_apLiquid[nID];
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CLiquid::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
+		// メッシュフィールドを返す
+		return m_apLiquid[nID];
+	}
+	else { assert(false); return nullptr; }	// 範囲外
 }

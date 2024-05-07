@@ -32,22 +32,22 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
-	void BindTexture(const int nTextureID) override;		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass) override;	// テクスチャ割当 (パス)
-	int GetTextureIndex(void) const override;				// テクスチャインデックス取得
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_size; }	// 大きさ取得
 
 	// メンバ関数
-	CRenderState *GetRenderState(void);	// レンダーステート情報取得
+	CRenderState *GetRenderState(void);			// レンダーステート情報取得
+	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const	{ return m_col; }			// 色取得
 
 	// 静的メンバ関数
 	static CObject2D *Create	// 生成
@@ -75,7 +75,7 @@ protected:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ

@@ -116,7 +116,7 @@ void CCinemaScope::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CCinemaScope::Update(void)
+void CCinemaScope::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // ó‘Ô‚²‚Æ‚Ìˆ—
@@ -146,7 +146,7 @@ void CCinemaScope::Update(void)
 	{ // ƒ|ƒŠƒSƒ“”•ªŒJ‚è•Ô‚·
 
 		// •ƒ|ƒŠƒSƒ“‚ÌXV
-		m_apBrack[nCntScope]->Update();
+		m_apBrack[nCntScope]->Update(fDeltaTime);
 	}
 }
 

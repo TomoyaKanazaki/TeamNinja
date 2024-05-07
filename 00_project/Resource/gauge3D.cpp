@@ -131,7 +131,7 @@ void CGauge3D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CGauge3D::Update(void)
+void CGauge3D::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXMATRIX mtxGauge;	// ゲージ表示オブジェクトのマトリックス
@@ -271,15 +271,6 @@ void CGauge3D::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CGauge3D::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_pos;
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CGauge3D *CGauge3D::Create
@@ -315,24 +306,21 @@ CGauge3D *CGauge3D::Create
 			return nullptr;
 		}
 
-		if (pPassTex != nullptr)
-		{
-			// テクスチャを登録・割当
-			pGauge3D->BindTexture(POLYGON_FRAME, GET_MANAGER->GetTexture()->Regist(pPassTex));
-		}
+		// テクスチャを登録・割当
+		pGauge3D->BindTexture(POLYGON_FRAME, pPassTex);
 
 		// ゲージ表示オブジェクトを設定
 		pGauge3D->SetGaugeObject(pObject);
 
 		// Y位置加算量を設定
-		pGauge3D->SetVec3PositionUp(fPosUp);
+		pGauge3D->SetPositionUp(fPosUp);
 
 		// ゲージ最大値を設定
 		pGauge3D->SetMaxNum(nMax);
 
 		// 大きさを設定
-		pGauge3D->SetScalingGauge(rSizeGauge);	// ゲージ大きさ
-		pGauge3D->SetScalingFrame(rSizeFrame);	// 枠大きさ
+		pGauge3D->SetSizingGauge(rSizeGauge);	// ゲージ大きさ
+		pGauge3D->SetSizingFrame(rSizeFrame);	// 枠大きさ
 
 		// 色を設定
 		pGauge3D->SetColorFront(rColFront);	// 表ゲージ色
@@ -344,6 +332,62 @@ CGauge3D *CGauge3D::Create
 		// 確保したアドレスを返す
 		return pGauge3D;
 	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CGauge3D::BindTexture(const int nPolygonID, const int nTextureID)
+{
+	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
+	{ // 正規インデックスの場合
+
+		if (nTextureID >= NONE_IDX)
+		{ // テクスチャインデックスが使用可能な場合
+
+			// テクスチャインデックスを代入
+			m_aTextureID[nPolygonID] = nTextureID;
+		}
+		else { assert(false); }	// 範囲外
+	}
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CGauge3D::BindTexture(const int nPolygonID, const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
+	{ // 正規インデックスの場合
+
+		if (pTexturePass != nullptr)
+		{ // 割り当てるテクスチャパスがある場合
+	
+			// テクスチャインデックスを設定
+			m_aTextureID[nPolygonID] = pTexture->Regist(pTexturePass);
+		}
+		else
+		{ // 割り当てるテクスチャパスがない場合
+
+			// テクスチャなしインデックスを設定
+			m_aTextureID[nPolygonID] = NONE_IDX;
+		}
+	}
+}
+
+//============================================================
+//	テクスチャインデックス取得処理
+//============================================================
+int CGauge3D::GetTextureIndex(const int nPolygonID) const
+{
+	// 非正規なポリゴンのインデックスの場合抜ける
+	if (nPolygonID <= NONE_IDX || nPolygonID >= POLYGON_MAX) { assert(false); return NONE_IDX; }
+
+	// テクスチャインデックスを返す
+	return m_aTextureID[nPolygonID];
 }
 
 //============================================================
@@ -393,15 +437,6 @@ void CGauge3D::SetNum(const int nNum)
 }
 
 //============================================================
-//	ゲージ取得処理
-//============================================================
-int CGauge3D::GetNum(void) const
-{
-	// 表示値を返す
-	return m_nNumGauge;
-}
-
-//============================================================
 //	ゲージ最大値の設定処理
 //============================================================
 void CGauge3D::SetMaxNum(const int nMax)
@@ -414,12 +449,12 @@ void CGauge3D::SetMaxNum(const int nMax)
 }
 
 //============================================================
-//	ゲージ最大値取得処理
+//	ゲージ表示オブジェクトの設定処理
 //============================================================
-int CGauge3D::GetMaxNum(void) const
+void CGauge3D::SetGaugeObject(CObject *pObject)
 {
-	// 表示最大値を返す
-	return m_nMaxNumGauge;
+	// 引数のオブジェクトを設定
+	m_pGauge = pObject;
 }
 
 //============================================================
@@ -432,89 +467,9 @@ void CGauge3D::DeleteGauge(void)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CGauge3D::BindTexture(const int nPolygonID, const int nTextureID)
-{
-	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
-	{ // 正規インデックスの場合
-
-		if (nTextureID >= NONE_IDX)
-		{ // テクスチャインデックスが使用可能な場合
-
-			// テクスチャインデックスを代入
-			m_aTextureID[nPolygonID] = nTextureID;
-		}
-		else { assert(false); }	// 範囲外
-	}
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CGauge3D::BindTexture(const int nPolygonID, const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (nPolygonID > NONE_IDX && nPolygonID < POLYGON_MAX)
-	{ // 正規インデックスの場合
-
-		if (pTexturePass != nullptr)
-		{ // 割り当てるテクスチャパスがある場合
-	
-			// テクスチャインデックスを設定
-			m_aTextureID[nPolygonID] = pTexture->Regist(pTexturePass);
-		}
-		else
-		{ // 割り当てるテクスチャパスがない場合
-
-			// テクスチャなしインデックスを設定
-			m_aTextureID[nPolygonID] = NONE_IDX;
-		}
-	}
-}
-
-//============================================================
-//	ゲージ表示オブジェクトの設定処理
-//============================================================
-void CGauge3D::SetGaugeObject(CObject *pObject)
-{
-	// 引数のオブジェクトを設定
-	m_pGauge = pObject;
-}
-
-//============================================================
-//	ゲージ表示オブジェクト取得処理
-//============================================================
-const CObject *CGauge3D::GetGaugeObject(void) const
-{
-	// ゲージ表示中のオブジェクトを返す
-	return m_pGauge;
-}
-
-//============================================================
-//	Y位置加算量の設定処理
-//============================================================
-void CGauge3D::SetVec3PositionUp(const float fUp)
-{
-	// 引数のY位置加算量を設定
-	m_fPosUp = fUp;
-}
-
-//============================================================
-//	Y位置加算量取得処理
-//============================================================
-float CGauge3D::GetVec3PositionUp(void) const
-{
-	// Y位置加算量を返す
-	return m_fPosUp;
-}
-
-//============================================================
 //	ゲージ大きさの設定処理
 //============================================================
-void CGauge3D::SetScalingGauge(const D3DXVECTOR3& rSize)
+void CGauge3D::SetSizingGauge(const D3DXVECTOR3& rSize)
 {
 	// 引数のゲージ大きさを代入
 	m_sizeGauge = rSize;
@@ -527,33 +482,15 @@ void CGauge3D::SetScalingGauge(const D3DXVECTOR3& rSize)
 }
 
 //============================================================
-//	ゲージ大きさ取得処理
+//	枠大きさの設定処理
 //============================================================
-D3DXVECTOR3 CGauge3D::GetScalingGauge(void) const
-{
-	// ゲージ大きさを返す
-	return m_sizeGauge;
-}
-
-//============================================================
-//	背景大きさの設定処理
-//============================================================
-void CGauge3D::SetScalingFrame(const D3DXVECTOR3& rSize)
+void CGauge3D::SetSizingFrame(const D3DXVECTOR3& rSize)
 {
 	// 引数の背景大きさを代入
 	m_sizeFrame = rSize;
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	背景大きさ取得処理
-//============================================================
-D3DXVECTOR3 CGauge3D::GetScalingFrame(void) const
-{
-	// 背景大きさを返す
-	return m_sizeFrame;
 }
 
 //============================================================
@@ -569,15 +506,6 @@ void CGauge3D::SetColorFront(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	表ゲージ色取得処理
-//============================================================
-D3DXCOLOR CGauge3D::GetColorFront(void) const
-{
-	// 表ゲージ色を返す
-	return m_colFront;
-}
-
-//============================================================
 //	裏ゲージ色の設定処理
 //============================================================
 void CGauge3D::SetColorBack(const D3DXCOLOR& rCol)
@@ -590,12 +518,12 @@ void CGauge3D::SetColorBack(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	裏ゲージ色取得処理
+//	Y位置加算量の設定処理
 //============================================================
-D3DXCOLOR CGauge3D::GetColorBack(void) const
+void CGauge3D::SetPositionUp(const float fUp)
 {
-	// 裏ゲージ色を返す
-	return m_colBack;
+	// 引数のY位置加算量を設定
+	m_fPosUp = fUp;
 }
 
 //============================================================
@@ -608,21 +536,96 @@ void CGauge3D::SetEnableDrawFrame(const bool bDraw)
 }
 
 //============================================================
-//	枠表示状況取得処理
+//	頂点情報の設定処理
 //============================================================
-bool CGauge3D::GetEnableDrawFrame(void) const
+void CGauge3D::SetVtx(void)
 {
-	// 枠表示状況を返す
-	return m_bDrawFrame;
-}
+	// ポインタを宣言
+	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
 
-//============================================================
-//	破棄処理
-//============================================================
-void CGauge3D::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
+	if (m_pVtxBuff != nullptr)
+	{ // 使用中の場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntGauge = 0; nCntGauge < POLYGON_MAX; nCntGauge++)
+		{ // 使用する四角形ポリゴン数分繰り返す
+
+			switch (nCntGauge)
+			{ // 四角形ポリゴンごとの処理
+			case POLYGON_BACK:	// 背景
+
+				// 頂点座標を設定
+				pVtx[0].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[1].pos = D3DXVECTOR3( m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[2].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3( m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
+
+				// 頂点カラーの設定
+				pVtx[0].col = m_colBack;
+				pVtx[1].col = m_colBack;
+				pVtx[2].col = m_colBack;
+				pVtx[3].col = m_colBack;
+
+				break;
+
+			case POLYGON_FRONT:	// ゲージ
+
+				// 頂点座標を設定
+				pVtx[0].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[1].pos = D3DXVECTOR3( m_fAddRight   * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[2].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3( m_fAddRight   * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
+
+				// 頂点カラーの設定
+				pVtx[0].col = m_colFront;
+				pVtx[1].col = m_colFront;
+				pVtx[2].col = m_colFront;
+				pVtx[3].col = m_colFront;
+
+				break;
+
+			case POLYGON_FRAME:	// 枠
+
+				// 頂点座標を設定
+				pVtx[0].pos = D3DXVECTOR3(-m_sizeFrame.x * 0.5f,  m_sizeFrame.y * 0.5f, 0.0f);
+				pVtx[1].pos = D3DXVECTOR3( m_sizeFrame.x * 0.5f,  m_sizeFrame.y * 0.5f, 0.0f);
+				pVtx[2].pos = D3DXVECTOR3(-m_sizeFrame.x * 0.5f, -m_sizeFrame.y * 0.5f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3( m_sizeFrame.x * 0.5f, -m_sizeFrame.y * 0.5f, 0.0f);
+
+				// 頂点カラーの設定
+				pVtx[0].col = XCOL_WHITE;
+				pVtx[1].col = XCOL_WHITE;
+				pVtx[2].col = XCOL_WHITE;
+				pVtx[3].col = XCOL_WHITE;
+
+				break;
+
+			default:	// 例外処理
+				assert(false);
+				break;
+			}
+
+			// 法線ベクトルの設定
+			pVtx[0].nor = VEC3_ZERO;
+			pVtx[1].nor = VEC3_ZERO;
+			pVtx[2].nor = VEC3_ZERO;
+			pVtx[3].nor = VEC3_ZERO;
+
+			// テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
+			// 頂点データのポインタを 4つ分進める
+			pVtx += 4;
+		}
+
+		// 頂点バッファをアンロックする
+		m_pVtxBuff->Unlock();
+	}
 }
 
 //============================================================
@@ -726,97 +729,4 @@ void CGauge3D::DrawShader(CShader *pShader)
 	// 描画終了
 	pShader->EndPass();
 	pShader->End();
-}
-
-//============================================================
-//	頂点情報の設定処理
-//============================================================
-void CGauge3D::SetVtx(void)
-{
-	// ポインタを宣言
-	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
-
-	if (m_pVtxBuff != nullptr)
-	{ // 使用中の場合
-
-		// 頂点バッファをロックし、頂点情報へのポインタを取得
-		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-		for (int nCntGauge = 0; nCntGauge < POLYGON_MAX; nCntGauge++)
-		{ // 使用する四角形ポリゴン数分繰り返す
-
-			switch (nCntGauge)
-			{ // 四角形ポリゴンごとの処理
-			case POLYGON_BACK:	// 背景
-
-				// 頂点座標を設定
-				pVtx[0].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[1].pos = D3DXVECTOR3( m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[2].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3( m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
-
-				// 頂点カラーの設定
-				pVtx[0].col = m_colBack;
-				pVtx[1].col = m_colBack;
-				pVtx[2].col = m_colBack;
-				pVtx[3].col = m_colBack;
-
-				break;
-
-			case POLYGON_FRONT:	// ゲージ
-
-				// 頂点座標を設定
-				pVtx[0].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[1].pos = D3DXVECTOR3( m_fAddRight   * 0.5f,  m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[2].pos = D3DXVECTOR3(-m_sizeGauge.x * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3( m_fAddRight   * 0.5f, -m_sizeGauge.y * 0.5f, 0.0f);
-
-				// 頂点カラーの設定
-				pVtx[0].col = m_colFront;
-				pVtx[1].col = m_colFront;
-				pVtx[2].col = m_colFront;
-				pVtx[3].col = m_colFront;
-
-				break;
-
-			case POLYGON_FRAME:	// 枠
-
-				// 頂点座標を設定
-				pVtx[0].pos = D3DXVECTOR3(-m_sizeFrame.x * 0.5f,  m_sizeFrame.y * 0.5f, 0.0f);
-				pVtx[1].pos = D3DXVECTOR3( m_sizeFrame.x * 0.5f,  m_sizeFrame.y * 0.5f, 0.0f);
-				pVtx[2].pos = D3DXVECTOR3(-m_sizeFrame.x * 0.5f, -m_sizeFrame.y * 0.5f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3( m_sizeFrame.x * 0.5f, -m_sizeFrame.y * 0.5f, 0.0f);
-
-				// 頂点カラーの設定
-				pVtx[0].col = XCOL_WHITE;
-				pVtx[1].col = XCOL_WHITE;
-				pVtx[2].col = XCOL_WHITE;
-				pVtx[3].col = XCOL_WHITE;
-
-				break;
-
-			default:	// 例外処理
-				assert(false);
-				break;
-			}
-
-			// 法線ベクトルの設定
-			pVtx[0].nor = VEC3_ZERO;
-			pVtx[1].nor = VEC3_ZERO;
-			pVtx[2].nor = VEC3_ZERO;
-			pVtx[3].nor = VEC3_ZERO;
-
-			// テクスチャ座標の設定
-			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-
-			// 頂点データのポインタを 4つ分進める
-			pVtx += 4;
-		}
-
-		// 頂点バッファをアンロックする
-		m_pVtxBuff->Unlock();
-	}
 }

@@ -38,16 +38,16 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
+	void SetEnableUpdate(const bool bUpdate) override;		// 更新状況設定
+	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetAllMaterial(const D3DXMATERIAL& rMat) override;	// マテリアル全設定
-	void ResetMaterial(void) override;						// マテリアル再設定
-	D3DXMATRIX GetMtxWorld(void) const override;			// マトリックス取得
-	D3DXMATRIX *GetPtrMtxWorld(void) override;				// マトリックスポインタ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_rot; }		// 向き取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectChara *Create(const D3DXVECTOR3 &rPos, const D3DXVECTOR3 &rRot = VEC3_ZERO);	// 生成
@@ -64,44 +64,45 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const char *pFileName		// ファイル名
 	);
-
-	void SetModelInfo(void);						// モデル情報設定
-	void SetMotionInfo(CMotion::SMotionInfo info);	// モーション情報設定
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
-	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
-
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
-	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
-	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
-	CMultiModel *GetMultiModel(const int nPartsID) const;	// マルチモデル取得
-	CMotion *GetMotion(void) const;							// モーション取得
+	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;		// パーツ位置取得
+	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;		// パーツ向き取得
+	CMultiModel *GetMultiModel(const int nPartsID) const;		// マルチモデル取得
+	CMotion *GetMotion(void) const;								// モーション取得
+	int GetNumModel(void) const { return m_nNumModel; }			// パーツ総数取得
 
 	void SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID);	// マテリアル設定
-	void SetAlpha(const float fAlpha);		// 透明度設定
-	float GetAlpha(void) const;				// 透明度取得
-	float GetMaxAlpha(void) const;			// 最大透明度取得
-	int GetNumModel(void) const;			// パーツ総数取得
-	int GetMotionType(void) const;			// モーション種類取得
-	int GetMotionNumType(void) const;		// モーション種類総数取得
-	int GetMotionKey(void) const;			// モーションキー番号取得
-	int GetMotionNumKey(void) const;		// モーションキー総数取得
-	int GetMotionKeyCounter(void) const;	// モーションキーカウンター取得
-	int GetMotionWholeCounter(void) const;	// モーション全体カウンター取得
-	int GetMotionWholeFrame(void) const;	// モーション全体フレーム数取得
-	int GetMotionCancelFrame(void) const;	// モーションキャンセルフレーム取得
-	int GetMotionComboFrame(void) const;	// モーションコンボフレーム取得
-	bool IsMotionFinish(void) const;		// モーション終了取得
-	bool IsMotionLoop(void) const;			// モーションループ取得
-	bool IsMotionCancel(void) const;		// モーションキャンセル取得
-	bool IsMotionCombo(void) const;			// モーションコンボ取得
-	bool IsWeaponDisp(void) const;			// モーション武器表示取得
-	bool IsLeftWeaponCollision(void);		// 左の攻撃判定フラグ取得
-	bool IsRightWeaponCollision(void);		// 右の攻撃判定フラグ取得
+	void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定
+	void ResetMaterial(void);			// マテリアル再設定
+	void SetAlpha(const float fAlpha);	// 透明度設定
+	float GetAlpha(void) const;			// 透明度取得
+	float GetMaxAlpha(void) const;		// 最大透明度取得
+
+	void SetModelInfo(void)							{ return m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel); }	// モデル情報設定
+	void SetMotionInfo(CMotion::SMotionInfo info)	{ return m_pMotion->SetInfo(info); }				// モーション情報設定
+	void SetEnableMotionUpdate(const bool bUpdate)	{ return m_pMotion->SetEnableUpdate(bUpdate); }		// 更新状況設定
+	int GetMotionType(void) const			{ return m_pMotion->GetType(); }							// モーション種類取得
+	int GetMotionNumType(void) const		{ return m_pMotion->GetNumType(); }							// モーション種類総数取得
+	int GetMotionKey(void) const			{ return m_pMotion->GetKey();}								// モーションキー番号取得
+	int GetMotionNumKey(void) const			{ return m_pMotion->GetNumKey(m_pMotion->GetType()); }		// モーションキー総数取得
+	int GetMotionKeyCounter(void) const		{ return m_pMotion->GetKeyCounter(); }						// モーションキーカウンター取得
+	int GetMotionWholeCounter(void) const	{ return m_pMotion->GetWholeCounter(); }					// モーション全体カウンター取得
+	int GetMotionWholeFrame(void) const		{ return m_pMotion->GetWholeFrame(m_pMotion->GetType()); }	// モーション全体フレーム数取得
+	int GetMotionCancelFrame(void) const	{ return m_pMotion->GetCancelFrame(m_pMotion->GetType()); }	// モーションキャンセルフレーム取得
+	int GetMotionComboFrame(void) const		{ return m_pMotion->GetComboFrame(m_pMotion->GetType()); }	// モーションコンボフレーム取得
+	bool IsMotionFinish(void) const			{ return m_pMotion->IsFinish(); }							// モーション終了取得
+	bool IsMotionLoop(void) const			{ return m_pMotion->IsLoop(m_pMotion->GetType()); }			// モーションループ取得
+	bool IsMotionCancel(void) const			{ return m_pMotion->IsCancel(m_pMotion->GetType()); }		// モーションキャンセル取得
+	bool IsMotionCombo(void) const			{ return m_pMotion->IsCombo(m_pMotion->GetType()); }		// モーションコンボ取得
+	bool IsWeaponDisp(void) const			{ return m_pMotion->IsWeaponDisp(m_pMotion->GetType()); }	// モーション武器表示取得
+	bool IsLeftWeaponCollision(void)		{ return m_pMotion->IsLeftWeaponCollision(); }				// 左の攻撃判定フラグ取得
+	bool IsRightWeaponCollision(void)		{ return m_pMotion->IsRightWeaponCollision(); }				// 右の攻撃判定フラグ取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	CMultiModel	*m_apMultiModel[motion::MAX_PARTS];	// モデルの情報

@@ -82,13 +82,13 @@ void CObjectDivChara::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectDivChara::Update(void)
+void CObjectDivChara::Update(const float fDeltaTime)
 {
 	for (int i = 0; i < BODY_MAX; i++)
 	{ // 分割した身体の数分繰り返す
 
 		// オブジェクトキャラクターの更新
-		m_apBody[i]->Update();
+		m_apBody[i]->Update(fDeltaTime);
 	}
 }
 
@@ -148,15 +148,6 @@ void CObjectDivChara::SetVec3Position(const D3DXVECTOR3 &rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectDivChara::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_apBody[BODY_LOWER]->GetVec3Position();
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CObjectDivChara::SetVec3Rotation(const D3DXVECTOR3 &rRot)
@@ -166,48 +157,12 @@ void CObjectDivChara::SetVec3Rotation(const D3DXVECTOR3 &rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectDivChara::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_apBody[BODY_LOWER]->GetVec3Rotation();
-}
-
-//============================================================
-//	マテリアル全設定処理
-//============================================================
-void CObjectDivChara::SetAllMaterial(const D3DXMATERIAL &rMat)
-{
-	for (int i = 0; i < BODY_MAX; i++)
-	{ // 分割した身体の数分繰り返す
-
-		// 引数のマテリアルを全マテリアルに設定
-		m_apBody[i]->SetAllMaterial(rMat);
-	}
-}
-
-//============================================================
-//	マテリアル再設定処理
-//============================================================
-void CObjectDivChara::ResetMaterial(void)
-{
-	for (int i = 0; i < BODY_MAX; i++)
-	{ // 分割した身体の数分繰り返す
-
-		// 全マテリアルに初期マテリアルを再設定
-		m_apBody[i]->ResetMaterial();
-	}
-}
-
-//============================================================
 //	更新状況の設定処理
 //============================================================
 void CObjectDivChara::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);	// 自身
-
 	for (int i = 0; i < BODY_MAX; i++)
 	{ // 分割した身体の数分繰り返す
 
@@ -222,7 +177,6 @@ void CObjectDivChara::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);	// 自身
-
 	for (int i = 0; i < BODY_MAX; i++)
 	{ // 分割した身体の数分繰り返す
 
@@ -622,7 +576,7 @@ bool CObjectDivChara::IsWeaponDisp(const EBody bodyID) const
 //============================================================
 //	左の攻撃判定フラグの取得処理
 //============================================================
-bool CObjectDivChara::IsLeftWeaponCollision(const EBody bodyID)
+bool CObjectDivChara::IsLeftWeaponCollision(const EBody bodyID) const
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
@@ -639,7 +593,7 @@ bool CObjectDivChara::IsLeftWeaponCollision(const EBody bodyID)
 //============================================================
 //	右の攻撃判定フラグの取得処理
 //============================================================
-bool CObjectDivChara::IsRightWeaponCollision(const EBody bodyID)
+bool CObjectDivChara::IsRightWeaponCollision(const EBody bodyID) const
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
@@ -668,6 +622,20 @@ void CObjectDivChara::SetPartsPosition(const EBody bodyID, const int nPartsID, c
 }
 
 //============================================================
+//	パーツ向きの設定処理
+//============================================================
+void CObjectDivChara::SetPartsRotation(const EBody bodyID, const int nPartsID, const D3DXVECTOR3 &rRot)
+{
+	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
+	{ // 正規インデックスの場合
+
+		// 引数インデックスのパーツ向きを設定
+		m_apBody[bodyID]->SetPartsRotation(nPartsID, rRot);
+	}
+	else { assert(false); }	// インデックスエラー
+}
+
+//============================================================
 //	パーツ位置取得処理
 //============================================================
 D3DXVECTOR3 CObjectDivChara::GetPartsPosition(const EBody bodyID, const int nPartsID) const
@@ -685,20 +653,6 @@ D3DXVECTOR3 CObjectDivChara::GetPartsPosition(const EBody bodyID, const int nPar
 }
 
 //============================================================
-//	パーツ向きの設定処理
-//============================================================
-void CObjectDivChara::SetPartsRotation(const EBody bodyID, const int nPartsID, const D3DXVECTOR3 &rRot)
-{
-	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
-	{ // 正規インデックスの場合
-
-		// 引数インデックスのパーツ向きを設定
-		m_apBody[bodyID]->SetPartsRotation(nPartsID, rRot);
-	}
-	else { assert(false); }	// インデックスエラー
-}
-
-//============================================================
 //	パーツ向き取得処理
 //============================================================
 D3DXVECTOR3 CObjectDivChara::GetPartsRotation(const EBody bodyID, const int nPartsID) const
@@ -713,6 +667,32 @@ D3DXVECTOR3 CObjectDivChara::GetPartsRotation(const EBody bodyID, const int nPar
 	// インデックスエラー
 	assert(false);
 	return VEC3_ZERO;
+}
+
+//============================================================
+//	マテリアル全設定処理
+//============================================================
+void CObjectDivChara::SetAllMaterial(const D3DXMATERIAL &rMat)
+{
+	for (int i = 0; i < BODY_MAX; i++)
+	{ // 分割した身体の数分繰り返す
+
+		// 引数のマテリアルを全マテリアルに設定
+		m_apBody[i]->SetAllMaterial(rMat);
+	}
+}
+
+//============================================================
+//	マテリアル再設定処理
+//============================================================
+void CObjectDivChara::ResetMaterial(void)
+{
+	for (int i = 0; i < BODY_MAX; i++)
+	{ // 分割した身体の数分繰り返す
+
+		// 全マテリアルに初期マテリアルを再設定
+		m_apBody[i]->ResetMaterial();
+	}
 }
 
 //============================================================
@@ -827,13 +807,4 @@ CMultiModel *CObjectDivChara::GetMultiModel(const EBody bodyID, const int nModel
 	// インデックスエラー
 	assert(false);
 	return nullptr;
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectDivChara::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }

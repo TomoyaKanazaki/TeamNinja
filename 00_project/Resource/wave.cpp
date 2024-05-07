@@ -99,7 +99,7 @@ void CWave::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CWave::Update(void)
+void CWave::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	D3DXCOLOR colRing = GetColor();			// メッシュリングの色
@@ -142,7 +142,7 @@ void CWave::Update(void)
 	SetThickness(fThickRing);
 
 	// スクロールメッシュリングの更新
-	CScrollMeshRing::Update();
+	CScrollMeshRing::Update(fDeltaTime);
 }
 
 //============================================================

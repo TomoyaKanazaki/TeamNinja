@@ -46,7 +46,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 	void Draw(void);	// 描画
 	void Set(const CScene::EMode mode, const int nWait);	// 次シーンへのフェード設定
 	EFade GetState(void) const;	// フェード状態取得

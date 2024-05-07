@@ -39,7 +39,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
+	void Update(const float fDeltaTime);	// 更新
 
 	void Set(const float fStartAlpha, const float fSubAlpha);	// フラッシュ設定
 	EFlash GetState(void) const { return m_flash; }				// フラッシュ状態取得

@@ -120,7 +120,7 @@ void CObjectMeshCylinder::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshCylinder::Update(void)
+void CObjectMeshCylinder::Update(const float fDeltaTime)
 {
 
 }
@@ -180,57 +180,12 @@ void CObjectMeshCylinder::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshCylinder::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshCylinder::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshCylinder::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshCylinder.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCylinder::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshCylinder.pos;
 }
 
 //============================================================
@@ -243,78 +198,6 @@ void CObjectMeshCylinder::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshCylinder.rot);
-}
-
-//============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCylinder::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshCylinder.rot;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshCylinder::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshCylinder.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshCylinder::GetColor(void) const
-{
-	// 色を返す
-	return m_meshCylinder.col;
-}
-
-//============================================================
-//	半径の設定処理
-//============================================================
-void CObjectMeshCylinder::SetRadius(const float fRadius)
-{
-	// 引数の半径を設定
-	m_meshCylinder.fRadius = fRadius;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	半径取得処理
-//============================================================
-float CObjectMeshCylinder::GetRadius(void) const
-{
-	// 半径を返す
-	return m_meshCylinder.fRadius;
-}
-
-//============================================================
-//	縦幅の設定処理
-//============================================================
-void CObjectMeshCylinder::SetHeight(const float fHeight)
-{
-	// 引数の縦幅を設定
-	m_meshCylinder.fHeight = fHeight;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	縦幅取得処理
-//============================================================
-float CObjectMeshCylinder::GetHeight(void) const
-{
-	// 縦幅を返す
-	return m_meshCylinder.fHeight;
 }
 
 //============================================================
@@ -383,6 +266,90 @@ CObjectMeshCylinder *CObjectMeshCylinder::Create
 }
 
 //============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshCylinder::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshCylinder::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshCylinder::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshCylinder::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshCylinder.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
+//	半径の設定処理
+//============================================================
+void CObjectMeshCylinder::SetRadius(const float fRadius)
+{
+	// 引数の半径を設定
+	m_meshCylinder.fRadius = fRadius;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
+//	縦幅の設定処理
+//============================================================
+void CObjectMeshCylinder::SetHeight(const float fHeight)
+{
+	// 引数の縦幅を設定
+	m_meshCylinder.fHeight = fHeight;
+
+	// 頂点情報の設定
+	SetVtx();
+}
+
+//============================================================
 //	テクスチャ方向の設定処理
 //============================================================
 void CObjectMeshCylinder::SetTexDir(const ETexDir texDir)
@@ -392,15 +359,6 @@ void CObjectMeshCylinder::SetTexDir(const ETexDir texDir)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	テクスチャ方向取得処理
-//============================================================
-CObjectMeshCylinder::ETexDir CObjectMeshCylinder::GetTexDir(void) const
-{
-	// テクスチャ方向を返す
-	return m_meshCylinder.texDir;
 }
 
 //============================================================
@@ -473,15 +431,6 @@ HRESULT CObjectMeshCylinder::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshCylinder::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
 //	テクスチャ分割数の設定処理
 //============================================================
 void CObjectMeshCylinder::SetTexPattern(const POSGRID2& rTexPart)
@@ -497,27 +446,6 @@ void CObjectMeshCylinder::SetTexPattern(const POSGRID2& rTexPart)
 		SetVtx();
 	}
 	else { assert(false); }	// 最低値未満
-}
-
-//============================================================
-//	テクスチャ分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshCylinder::GetTexPattern(void) const
-{
-	// テクスチャ分割数を返す
-	return m_texPart;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshCylinder::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -668,15 +596,6 @@ void CObjectMeshCylinder::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshCylinder::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

@@ -53,9 +53,8 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
-	int GetState(void) const override;				// 状態取得
 
 	// 静的メンバ関数
 	static CBlur *Create	// 生成
@@ -68,6 +67,7 @@ public:
 
 	// メンバ関数
 	void SetState(const EState state);	// 状態設定
+	EState GetState(void) const					{ return m_state; }	// 状態取得
 	void SetMaterial(const D3DXMATERIAL& rMat)	{ m_mat = rMat; }	// ブラーマテリアル設定
 	D3DXMATERIAL GetMaterial(void) const		{ return m_mat; }	// ブラーマテリアル取得
 	void SetStartAlpha(const float fStartAlpha)	{ m_fStartAlpha = fStartAlpha; }	// ブラーの開始透明度設定
@@ -77,7 +77,7 @@ public:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
 	std::vector<SInfo*> m_oldObject;	// 過去オブジェクト情報

@@ -118,17 +118,16 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
-	D3DXVECTOR3 GetVec3Sizing(void) const override;			// 大きさ取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// キューブ色設定
-	D3DXCOLOR GetColor(void) const override;				// キューブ色取得
-	D3DXMATRIX *GetPtrMtxWorld(void) override;				// マトリックスポインタ取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCube.pos; }			// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCube.rot; }			// 向き取得
+	D3DXVECTOR3 GetVec3Sizing(void) const override		{ return m_meshCube.size; }			// 大きさ取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshCube.mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCube.mtxWorld; }		// マトリックス取得
 
 	// 静的メンバ関数
 	static CObjectMeshCube *Create		// 生成
@@ -149,26 +148,27 @@ public:
 	);
 
 	// メンバ関数
-	void BindTexture(const SFaceTex textureID);			// テクスチャ割当
-	void SetBorderColor(const D3DXCOLOR& rCol);			// 縁取り色設定
-	D3DXCOLOR GetBorderColor(void) const;				// 縁取り色取得
-	HRESULT SetBorderState(const EBorder bordState);	// 縁取り状態設定
-	EBorder GetBorderState(void) const;					// 縁取り状態取得
-	void SetBorderThick(const float fBordThick);		// 縁取り太さ設定
-	float GetBorderThick(void) const;					// 縁取り太さ取得
-	void SetTextureState(const ETexState texState);		// テクスチャ状態設定
-	ETexState GetTextureState(void) const;				// テクスチャ状態取得
-
+	CRenderState *GetRenderState(void);						// レンダーステート情報取得
+	void BindTexture(const SFaceTex textureID);				// テクスチャ割当
+	void SetCubeColor(const D3DXCOLOR& rCol);				// キューブ色設定
+	void SetBorderColor(const D3DXCOLOR& rCol);				// 縁取り色設定
+	HRESULT SetBorderState(const EBorder bordState);		// 縁取り状態設定
+	void SetBorderThick(const float fBordThick);			// 縁取り太さ設定
+	void SetTextureState(const ETexState texState);			// テクスチャ状態設定
 	void SetTexturePatternX(const D3DXVECTOR2& rTexPart);	// テクスチャ分割数X設定
-	D3DXVECTOR2 GetTexturePatternX(void) const;				// テクスチャ分割数X取得
 	void SetTexturePatternY(const D3DXVECTOR2& rTexPart);	// テクスチャ分割数Y設定
-	D3DXVECTOR2 GetTexturePatternY(void) const;				// テクスチャ分割数Y取得
 	void SetTexturePatternZ(const D3DXVECTOR2& rTexPart);	// テクスチャ分割数Z設定
-	D3DXVECTOR2 GetTexturePatternZ(void) const;				// テクスチャ分割数Z取得
-
-	void SetOrigin(const EOrigin origin);	// 原点設定
-	EOrigin GetOrigin(void) const;			// 原点取得
-	CRenderState *GetRenderState(void);		// レンダーステート情報取得
+	void SetOrigin(const EOrigin origin);					// 原点設定
+	SFaceTex GetTextureIndex(void) const		{ return m_meshCube.texID; }				// テクスチャインデックス取得
+	D3DXCOLOR GetCubeColor(void) const			{ return m_meshCube.aCol[CUBECOL_CUBE]; }	// キューブ色取得
+	D3DXCOLOR GetBorderColor(void) const		{ return m_meshCube.aCol[CUBECOL_BORDER]; }	// 縁取り色取得
+	EBorder GetBorderState(void) const			{ return m_meshCube.bordState; }			// 縁取り状態取得
+	float GetBorderThick(void) const			{ return m_meshCube.fBordThick; }			// 縁取り太さ取得
+	ETexState GetTextureState(void) const		{ return m_meshCube.texState; }				// テクスチャ状態取得
+	D3DXVECTOR2 GetTexturePatternX(void) const	{ return m_meshCube.aTexPart[CUBEPART_X]; }	// テクスチャ分割数X取得
+	D3DXVECTOR2 GetTexturePatternY(void) const	{ return m_meshCube.aTexPart[CUBEPART_Y]; }	// テクスチャ分割数Y取得
+	D3DXVECTOR2 GetTexturePatternZ(void) const	{ return m_meshCube.aTexPart[CUBEPART_Z]; }	// テクスチャ分割数Z取得
+	EOrigin GetOrigin(void) const				{ return m_origin; }						// 原点取得
 
 protected:
 	// メンバ関数
@@ -177,7 +177,7 @@ protected:
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画

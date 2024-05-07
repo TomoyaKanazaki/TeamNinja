@@ -93,8 +93,8 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
-	void Reset(void);	// 再設定
+	void Update(const float fDeltaTime);	// 更新
+	void Reset(void);						// 再設定
 	void SetCamera(const EType type);		// カメラ設定
 	SCamera GetCamera(const EType type);	// カメラ取得
 	void SetState(const EState state);		// カメラ状態設定

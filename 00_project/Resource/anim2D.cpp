@@ -81,7 +81,7 @@ void CAnim2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CAnim2D::Update(void)
+void CAnim2D::Update(const float fDeltaTime)
 {
 	// 停止中の場合抜ける
 	if (m_bStop) { return; }
@@ -121,7 +121,7 @@ void CAnim2D::Update(void)
 	}
 
 	// オブジェクト2Dの更新
-	CObject2D::Update();
+	CObject2D::Update(fDeltaTime);
 
 	// アニメーションのテクスチャ座標の設定
 	CObject2D::SetAnimTex(m_nPattern, m_nWidthPtrn, m_nHeightPtrn);

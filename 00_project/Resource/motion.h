@@ -97,12 +97,12 @@ public:
 	};
 
 	// メンバ関数
-	HRESULT Init(void);			// 初期化
-	void Uninit(void);			// 終了
-	void Update(void);			// 更新
-	void UpdateMove(void);		// 移動更新
-	void UpdateMotion(void);	// モーション更新
-	void UpdateBlend(void);		// ブレンド更新
+	HRESULT Init(void);	// 初期化
+	void Uninit(void);	// 終了
+	void Update(const float fDeltaTime);	// 更新
+	void UpdateMove(void);					// 移動更新
+	void UpdateMotion(void);				// モーション更新
+	void UpdateBlend(void);					// ブレンド更新
 	void Set(const int nType, const int nBlendFrame = 0);	// 設定
 	void SetInfo(const SMotionInfo info);					// モーション情報設定
 	void SetEnableUpdate(const bool bUpdate);				// 更新状況設定

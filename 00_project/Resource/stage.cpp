@@ -108,7 +108,7 @@ void CStage::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-void CStage::Update(void)
+void CStage::Update(const float fDeltaTime)
 {
 
 }

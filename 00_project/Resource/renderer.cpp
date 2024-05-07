@@ -168,10 +168,10 @@ void CRenderer::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CRenderer::Update(void)
+void CRenderer::Update(const float fDeltaTime)
 {
 	// オブジェクトの全更新
-	CObject::UpdateAll();
+	CObject::UpdateAll(fDeltaTime);
 }
 
 //============================================================

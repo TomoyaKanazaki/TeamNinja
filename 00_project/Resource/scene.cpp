@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "light.h"
 #include "camera.h"
+#include "effekseerManager.h"
 #include "sceneTitle.h"
 #include "sceneTutorial.h"
 #include "sceneGame.h"
@@ -20,13 +21,6 @@
 
 #include "stage.h"
 #include "player.h"
-
-#include "multiValue.h"
-
-#include "manager.h"
-#include "font.h"
-#include "fontChar.h"
-#include "text2D.h"
 
 //************************************************************
 //	定数宣言
@@ -83,32 +77,6 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-#if 0
-	CMultiValue *p = CMultiValue::Create(CValue::TYPE_NORMAL, 12345, 8, SCREEN_CENT + D3DXVECTOR3(0.0f, 0.0f, 0.0f), VEC3_ONE * 60.0f, D3DXVECTOR3(70.0f, 0.0f, 0.0f), CMultiValue::XALIGN_LEFT);
-
-	//CObject2D *pp = CObject2D::Create(SCREEN_CENT - D3DXVECTOR3(150.0f, 0.0f, 0.0f), p->GetValueSize());
-	//pp->SetPriority(6);
-	//pp->SetLabel(CObject::LABEL_EFFECT);
-
-	CObject2D *ppp = CObject2D::Create(SCREEN_CENT + D3DXVECTOR3(0.0f, 0.0f, 0.0f), VEC3_ONE * 5.0f);
-	ppp->SetPriority(6);
-	ppp->SetLabel(CObject::LABEL_EFFECT);
-#endif
-
-#if 0
-	CText2D *p = CText2D::Create(GET_MANAGER->GetFont()->Regist("わんぱくルイカ").pFontChar, SCREEN_CENT + D3DXVECTOR3(150.0f, 0.0f, 0.0f), 100.0f, 100.0f);
-	p->AddString(L"aaa");
-	p->AddString(L"iii");
-	p->AddString(L"uuu");
-	p->AddString(L"aaa");
-	p->AddString(L"iii");
-	p->AddString(L"uuu");
-
-	CObject2D *pp = CObject2D::Create(SCREEN_CENT - D3DXVECTOR3(150.0f, 0.0f, 0.0f), D3DXVECTOR3(150.0f, p->GetTextHeight(), 0.0f));
-	pp->SetPriority(6);
-	pp->SetLabel(CObject::LABEL_EFFECT);
-#endif
-
 	// 成功を返す
 	return S_OK;
 }
@@ -125,29 +93,34 @@ void CScene::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CScene::Update(void)
+void CScene::Update(const float fDeltaTime)
 {
 	// ポインタを宣言
-	CManager	*pManager	= GET_MANAGER;				// マネージャー
-	CLight		*pLight		= pManager->GetLight();		// ライト
-	CCamera		*pCamera	= pManager->GetCamera();	// カメラ
-	CRenderer	*pRenderer	= pManager->GetRenderer();	// レンダラー
+	CManager			*pManager	= GET_MANAGER;				// マネージャー
+	CLight				*pLight		= pManager->GetLight();		// ライト
+	CCamera				*pCamera	= pManager->GetCamera();	// カメラ
+	CRenderer			*pRenderer	= pManager->GetRenderer();	// レンダラー
+	CEffekseerManager	*pEffekseer	= pManager->GetEffekseer();	// エフェクシア
 
 	// ステージの更新
 	assert(m_pStage != nullptr);
-	m_pStage->Update();
+	m_pStage->Update(fDeltaTime);
 
 	// ライトの更新
 	assert(pLight != nullptr);
-	pLight->Update();
+	pLight->Update(fDeltaTime);
 
 	// カメラの更新
 	assert(pCamera != nullptr);
-	pCamera->Update();
+	pCamera->Update(fDeltaTime);
 
 	// レンダラーの更新
 	assert(pRenderer != nullptr);
-	pRenderer->Update();
+	pRenderer->Update(fDeltaTime);
+
+	// エフェクシアの更新
+	assert(pEffekseer != nullptr);
+	pEffekseer->Update(fDeltaTime);
 }
 
 //============================================================

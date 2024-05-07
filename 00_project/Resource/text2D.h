@@ -46,14 +46,12 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const override;		// 向き取得
-	void SetColor(const D3DXCOLOR& rCol) override;			// 色設定
-	D3DXCOLOR GetColor(void) const override;				// 色取得
+	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_rot; }	// 向き取得
 
 	// 静的メンバ関数
 	static CText2D *Create	// 生成
@@ -69,22 +67,24 @@ public:
 	);
 
 	// メンバ関数
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
 	void SetFont(CFontChar *pFontChar);				// フォントの設定
-	HRESULT AddString(const std::wstring& rStr);	// 文字列の追加
-	CString2D *GetString2D(const int nStrID) const;	// 文字列の取得
-	float GetTextHeight(void) const;				// テキストの縦幅取得
 	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
-	float GetCharHeight(void) const;				// 文字の縦幅取得
 	void SetLineHeight(const float fHeight);		// 行間の縦幅設定
-	float GetLineHeight(void) const;				// 行間の縦幅取得
 	void SetAlignX(const CString2D::EAlignX align);	// 横配置設定
-	CString2D::EAlignX GetAlignX(void) const;		// 横配置取得
 	void SetAlignY(const EAlignY align);			// 縦配置設定
-	EAlignY GetAlignY(void) const;					// 縦配置取得
+	HRESULT AddString(const std::wstring& rStr);	// 文字列の追加
+	float GetTextHeight(void) const;				// テキストの縦幅取得
+	CString2D *GetString2D(const int nStrID) const;	// 文字列の取得
+	D3DXCOLOR GetColor(void) const				{ return m_col; }			// 色取得
+	float GetCharHeight(void) const				{ return m_fCharHeight; }	// 文字の縦幅取得
+	float GetLineHeight(void) const				{ return m_fLineHeight; }	// 行間の縦幅取得
+	CString2D::EAlignX GetAlignX(void) const	{ return m_alignX; }		// 横配置取得
+	EAlignY GetAlignY(void) const				{ return m_alignY; }		// 縦配置取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
 	void SetPositionRelative(void);	// 相対位置設定

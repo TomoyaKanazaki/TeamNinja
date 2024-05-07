@@ -62,7 +62,7 @@ HRESULT CObjectTornado::Init(void)
 	// 竜巻の情報を初期化
 	m_tornado.pos			= VEC3_ZERO;	// 位置
 	m_tornado.rot			= VEC3_ZERO;	// 向き
-	m_tornado.direRot		= VEC3_ZERO;	// 成長向き
+	m_tornado.growRot		= VEC3_ZERO;	// 成長向き
 	m_tornado.col			= XCOL_WHITE;	// 色
 	m_tornado.pMtxParent	= nullptr;		// 親のマトリックス
 	m_tornado.fMoveRot		= 0.0f;			// 向きの変更量
@@ -130,7 +130,7 @@ void CObjectTornado::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectTornado::Update(void)
+void CObjectTornado::Update(const float fDeltaTime)
 {
 	// 竜巻の向きを変更
 	m_tornado.rot.y -= m_tornado.fMoveRot;
@@ -180,7 +180,7 @@ void CObjectTornado::Draw(CShader *pShader)
 	D3DXMatrixIdentity(&mtxOrigin);
 
 	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_tornado.direRot.y, m_tornado.direRot.x, m_tornado.direRot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_tornado.growRot.y, m_tornado.growRot.x, m_tornado.growRot.z);
 	D3DXMatrixMultiply(&mtxOrigin, &mtxOrigin, &mtxRot);	// 成長向き
 
 	// 位置を反映
@@ -249,42 +249,12 @@ void CObjectTornado::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectTornado::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_tornado.pos;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectTornado::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_tornado.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectTornado::GetColor(void) const
-{
-	// 色を返す
-	return m_tornado.col;
-}
-
-//============================================================
 //	生成処理
 //============================================================
 CObjectTornado *CObjectTornado::Create
 (
 	const D3DXVECTOR3& rPos,		// 位置
-	const D3DXVECTOR3& rDireRot,	// 成長向き
+	const D3DXVECTOR3& rGrowRot,	// 成長向き
 	const D3DXCOLOR& rCol,			// 色
 	D3DXMATRIX *pMtxParent,			// 親のマトリックス
 	const int   nNumAround,			// 渦の周回数
@@ -325,7 +295,7 @@ CObjectTornado *CObjectTornado::Create
 		pTornado->SetVec3Position(rPos);
 
 		// 向きを設定
-		pTornado->SetDirectionRotation(rDireRot);
+		pTornado->SetRotationGrow(rGrowRot);
 
 		// 色を設定
 		pTornado->SetColor(rCol);
@@ -374,7 +344,13 @@ CObjectTornado *CObjectTornado::Create
 //============================================================
 //	成長の設定処理
 //============================================================
-void CObjectTornado::SetGrow(float fMoveRot, float fGrowWidth, float fGrowHeight, float fGrowAlpha)
+void CObjectTornado::SetGrow
+(
+	const float fMoveRot,		// 向きの変更量
+	const float fGrowWidth,		// 横ずれの成長量
+	const float fGrowHeight,	// 縦ずれの成長量
+	const float fGrowAlpha		// 透明度の成長量
+)
 {
 	// 引数の情報を設定
 	m_tornado.fMoveRot		= fMoveRot;		// 向きの変更量
@@ -388,9 +364,6 @@ void CObjectTornado::SetGrow(float fMoveRot, float fGrowWidth, float fGrowHeight
 //============================================================
 HRESULT CObjectTornado::SetVortex(const int nNumAround, const int nPattern)
 {
-	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
-
 	// 引数の渦を設定
 	m_nNumAround = nNumAround;
 	m_nPattern = nPattern;
@@ -403,7 +376,7 @@ HRESULT CObjectTornado::SetVortex(const int nNumAround, const int nPattern)
 	assert(m_pVtxBuff == nullptr);
 
 	// 頂点バッファの生成
-	if (FAILED(pDevice->CreateVertexBuffer
+	if (FAILED(GET_DEVICE->CreateVertexBuffer
 	( // 引数
 		sizeof(VERTEX_3D) * m_nNumVtx,	// 必要頂点数
 		D3DUSAGE_WRITEONLY,		// 使用方法
@@ -427,6 +400,54 @@ HRESULT CObjectTornado::SetVortex(const int nNumAround, const int nPattern)
 }
 
 //============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectTornado::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectTornado::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectTornado::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
 //	親マトリックス削除処理
 //============================================================
 void CObjectTornado::DeleteMatrixParent(void)
@@ -445,24 +466,27 @@ void CObjectTornado::SetMatrixParent(D3DXMATRIX *pMtxParent)
 }
 
 //============================================================
-//	成長向きの設定処理
+//	色の設定処理
 //============================================================
-void CObjectTornado::SetDirectionRotation(const D3DXVECTOR3& rRot)
+void CObjectTornado::SetColor(const D3DXCOLOR& rCol)
 {
-	// 引数の成長向きを設定
-	m_tornado.direRot = rRot;
+	// 引数の色を設定
+	m_tornado.col = rCol;
 
-	// 成長向きの正規化
-	useful::NormalizeRot(m_tornado.direRot);
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
-//	成長向き取得処理
+//	成長向きの設定処理
 //============================================================
-D3DXVECTOR3 CObjectTornado::GetDirectionRotation(void) const
+void CObjectTornado::SetRotationGrow(const D3DXVECTOR3& rRot)
 {
-	// 成長向きを返す
-	return m_tornado.direRot;
+	// 引数の成長向きを設定
+	m_tornado.growRot = rRot;
+
+	// 成長向きの正規化
+	useful::NormalizeRot(m_tornado.growRot);
 }
 
 //============================================================
@@ -478,15 +502,6 @@ void CObjectTornado::SetThickness(const float fThickness)
 }
 
 //============================================================
-//	ポリゴンの太さ取得処理
-//============================================================
-float CObjectTornado::GetThickness(void) const
-{
-	// ポリゴンの太さを返す
-	return m_tornado.fThickness;
-}
-
-//============================================================
 //	ポリゴン外周のY座標加算量の設定処理
 //============================================================
 void CObjectTornado::SetOuterPlusY(const float fOuterPlusY)
@@ -496,15 +511,6 @@ void CObjectTornado::SetOuterPlusY(const float fOuterPlusY)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	ポリゴン外周のY座標加算量の取得処理
-//============================================================
-float CObjectTornado::GetOuterPlusY(void) const
-{
-	// ポリゴン外周のY座標加算量を返す
-	return m_tornado.fOuterPlusY;
 }
 
 //============================================================
@@ -520,15 +526,6 @@ void CObjectTornado::SetWidth(const float fSetWidth)
 }
 
 //============================================================
-//	生成時の横ずれ量取得処理
-//============================================================
-float CObjectTornado::GetWidth(void) const
-{
-	// 生成時の横ずれ量を返す
-	return m_tornado.fSetWidth;
-}
-
-//============================================================
 //	生成時の透明度の設定処理
 //============================================================
 void CObjectTornado::SetAlpha(const float fSetAlpha)
@@ -538,15 +535,6 @@ void CObjectTornado::SetAlpha(const float fSetAlpha)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	生成時の透明度取得処理
-//============================================================
-float CObjectTornado::GetAlpha(void) const
-{
-	// 生成時の透明度を返す
-	return m_tornado.fSetAlpha;
 }
 
 //============================================================
@@ -562,15 +550,6 @@ void CObjectTornado::SetAddWidth(const float fAddWidth)
 }
 
 //============================================================
-//	横ずれの加算量取得処理
-//============================================================
-float CObjectTornado::GetAddWidth(void) const
-{
-	// 横ずれの加算量を返す
-	return m_tornado.fAddWidth;
-}
-
-//============================================================
 //	縦ずれの加算量の設定処理
 //============================================================
 void CObjectTornado::SetAddHeight(const float fAddHeight)
@@ -583,15 +562,6 @@ void CObjectTornado::SetAddHeight(const float fAddHeight)
 }
 
 //============================================================
-//	縦ずれの加算量取得処理
-//============================================================
-float CObjectTornado::GetAddHeight(void) const
-{
-	// 縦ずれの加算量を返す
-	return m_tornado.fAddHeight;
-}
-
-//============================================================
 //	透明度の減算量の設定処理
 //============================================================
 void CObjectTornado::SetSubAlpha(const float fSubAlpha)
@@ -601,27 +571,6 @@ void CObjectTornado::SetSubAlpha(const float fSubAlpha)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	透明度の減算量取得処理
-//============================================================
-float CObjectTornado::GetSubAlpha(void) const
-{
-	// 透明度の減算量を返す
-	return m_tornado.fSubAlpha;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectTornado::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -700,15 +649,6 @@ void CObjectTornado::SetVtx(void)
 		m_pVtxBuff->Unlock();
 	}
 	else { assert(false); }	// 非使用中
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectTornado::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

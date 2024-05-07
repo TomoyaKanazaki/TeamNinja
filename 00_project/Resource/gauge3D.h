@@ -48,18 +48,20 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(void) override;		// 更新
+	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const override;		// 位置取得
+	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_pos; }		// 位置取得
+	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_mtxWorld; }	// マトリックスポインタ取得
+	D3DXMATRIX GetMtxWorld(void) const override			{ return m_mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
 	static CGauge3D *Create	// 生成
 	( // 引数
-		CObject *pObject,			// ゲージ表示オブジェクト
-		const int nMax,				// 最大表示値
-		const int nFrame,			// 表示値変動フレーム
-		const float fPosUp,			// 表示Y位置の加算量
+		CObject *pObject,	// ゲージ表示オブジェクト
+		const int nMax,		// 最大表示値
+		const int nFrame,	// 表示値変動フレーム
+		const float fPosUp,	// 表示Y位置の加算量
 		const D3DXVECTOR3& rSizeGauge = VEC3_ONE,	// ゲージ大きさ
 		const D3DXCOLOR& rColFront = XCOL_WHITE,	// 表ゲージ色
 		const D3DXCOLOR& rColBack = XCOL_BLACK,		// 裏ゲージ色
@@ -69,38 +71,40 @@ public:
 	);
 
 	// メンバ関数
-	void AddNum(const int nAdd);	// ゲージ加算
-	void SetNum(const int nNum);	// ゲージ設定
-	int  GetNum(void) const;		// ゲージ取得
-	void SetMaxNum(const int nMax);	// ゲージ最大値設定
-	int  GetMaxNum(void) const;		// ゲージ最大値取得
-	void DeleteGauge(void);			// ゲージ表示オブジェクト削除
-
 	void BindTexture(const int nPolygonID, const int nTextureID);		// テクスチャ割当 (インデックス)
 	void BindTexture(const int nPolygonID, const char *pTexturePass);	// テクスチャ割当 (パス)
+	int GetTextureIndex(const int nPolygonID) const;					// テクスチャインデックス取得
+
+	void AddNum(const int nAdd);					// ゲージ加算
+	void SetNum(const int nNum);					// ゲージ設定
+	void SetMaxNum(const int nMax);					// ゲージ最大値設定
 	void SetGaugeObject(CObject *pObject);			// ゲージ表示オブジェクト設定
-	const CObject *GetGaugeObject(void) const;		// ゲージ表示オブジェクト取得
-	void SetVec3PositionUp(const float fUp);		// Y位置加算量設定
-	float GetVec3PositionUp(void) const;			// Y位置加算量取得
-	void SetScalingGauge(const D3DXVECTOR3& rSize);	// ゲージ大きさ設定
-	D3DXVECTOR3 GetScalingGauge(void) const;		// ゲージ大きさ取得
-	void SetScalingFrame(const D3DXVECTOR3& rSize);	// 背景大きさ設定
-	D3DXVECTOR3 GetScalingFrame(void) const;		// 背景大きさ取得
+	void DeleteGauge(void);							// ゲージ表示オブジェクト削除
+	void SetSizingGauge(const D3DXVECTOR3& rSize);	// ゲージ大きさ設定
+	void SetSizingFrame(const D3DXVECTOR3& rSize);	// 枠大きさ設定
 	void SetColorFront(const D3DXCOLOR& rCol);		// 表ゲージ色設定
-	D3DXCOLOR GetColorFront(void) const;			// 表ゲージ色取得
 	void SetColorBack(const D3DXCOLOR& rCol);		// 裏ゲージ色設定
-	D3DXCOLOR GetColorBack(void) const;				// 裏ゲージ色取得
+	void SetPositionUp(const float fUp);			// Y位置加算量設定
 	void SetEnableDrawFrame(const bool bDraw);		// 枠表示状況設定
-	bool GetEnableDrawFrame(void) const;			// 枠表示状況取得
+
+	int GetNum(void) const						{ return m_nNumGauge; }		// ゲージ取得
+	int GetMaxNum(void) const					{ return m_nMaxNumGauge; }	// ゲージ最大値取得
+	const CObject *GetGaugeObject(void) const	{ return m_pGauge; }		// ゲージ表示オブジェクト取得
+	D3DXVECTOR3 GetSizingGauge(void) const		{ return m_sizeGauge; }		// ゲージ大きさ取得
+	D3DXVECTOR3 GetSizingFrame(void) const		{ return m_sizeFrame; }		// 枠大きさ取得
+	D3DXCOLOR GetColorFront(void) const			{ return m_colFront; }		// 表ゲージ色取得
+	D3DXCOLOR GetColorBack(void) const			{ return m_colBack; }		// 裏ゲージ色取得
+	float GetPositionUp(void) const				{ return m_fPosUp; }		// Y位置加算量取得
+	bool IsEnableDrawFrame(void) const			{ return m_bDrawFrame; }	// 枠表示状況取得
 
 private:
 	// オーバーライド関数
-	void Release(void) override;	// 破棄
+	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
+	void SetVtx(void);					// 頂点情報の設定
 	void DrawNormal(void);				// 通常描画
 	void DrawShader(CShader *pShader);	// シェーダー描画
-	void SetVtx(void);					// 頂点情報の設定
 
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ

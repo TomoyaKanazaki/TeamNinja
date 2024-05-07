@@ -88,22 +88,14 @@ void CSceneRanking::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CSceneRanking::Update(void)
+void CSceneRanking::Update(const float fDeltaTime)
 {
 	// ランキングマネージャーの更新
 	assert(m_pRankingManager != nullptr);
-	m_pRankingManager->Update();
+	m_pRankingManager->Update(fDeltaTime);
 
 	// シーンの更新
-	CScene::Update();
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CSceneRanking::Draw(void)
-{
-
+	CScene::Update(fDeltaTime);
 }
 
 //============================================================

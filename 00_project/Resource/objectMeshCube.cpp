@@ -164,7 +164,7 @@ void CObjectMeshCube::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshCube::Update(void)
+void CObjectMeshCube::Update(const float fDeltaTime)
 {
 
 }
@@ -227,15 +227,6 @@ void CObjectMeshCube::SetVec3Position(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCube::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshCube.pos;
-}
-
-//============================================================
 //	向きの設定処理
 //============================================================
 void CObjectMeshCube::SetVec3Rotation(const D3DXVECTOR3& rRot)
@@ -248,15 +239,6 @@ void CObjectMeshCube::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCube::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshCube.rot;
-}
-
-//============================================================
 //	大きさの設定処理
 //============================================================
 void CObjectMeshCube::SetVec3Sizing(const D3DXVECTOR3& rSize)
@@ -266,45 +248,6 @@ void CObjectMeshCube::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshCube::GetVec3Sizing(void) const
-{
-	// 大きさを返す
-	return m_meshCube.size;
-}
-
-//============================================================
-//	キューブ色の設定処理
-//============================================================
-void CObjectMeshCube::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数のキューブ色を設定
-	m_meshCube.aCol[CUBECOL_CUBE] = rCol;
-
-	// 頂点情報の設定
-	SetVtx();
-}
-
-//============================================================
-//	キューブ色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshCube::GetColor(void) const
-{
-	// キューブ色を返す
-	return m_meshCube.aCol[CUBECOL_CUBE];
-}
-
-//============================================================
-//	マトリックスポインタ取得処理
-//============================================================
-D3DXMATRIX *CObjectMeshCube::GetPtrMtxWorld(void)
-{
-	// ワールドマトリックスのポインタを返す
-	return &m_meshCube.mtxWorld;
 }
 
 //============================================================
@@ -362,7 +305,7 @@ CObjectMeshCube *CObjectMeshCube::Create
 		pMeshCube->SetVec3Sizing(rSize);
 
 		// キューブ色を設定
-		pMeshCube->SetColor(rCubeCol);
+		pMeshCube->SetCubeColor(rCubeCol);
 
 		// 縁取り色を設定
 		pMeshCube->SetBorderColor(rBorderCol);
@@ -397,12 +340,36 @@ CObjectMeshCube *CObjectMeshCube::Create
 }
 
 //============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshCube::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
 //	テクスチャ割当処理
 //============================================================
 void CObjectMeshCube::BindTexture(const SFaceTex textureID)
 {
 	// テクスチャインデックスを代入
 	m_meshCube.texID = textureID;
+}
+
+//============================================================
+//	キューブ色の設定処理
+//============================================================
+void CObjectMeshCube::SetCubeColor(const D3DXCOLOR& rCol)
+{
+	// 引数のキューブ色を設定
+	m_meshCube.aCol[CUBECOL_CUBE] = rCol;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -415,15 +382,6 @@ void CObjectMeshCube::SetBorderColor(const D3DXCOLOR& rCol)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	縁取り色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshCube::GetBorderColor(void) const
-{
-	// 縁取り色を返す
-	return m_meshCube.aCol[CUBECOL_BORDER];
 }
 
 //============================================================
@@ -488,15 +446,6 @@ HRESULT CObjectMeshCube::SetBorderState(const EBorder bordState)
 }
 
 //============================================================
-//	縁取り状態取得処理
-//============================================================
-CObjectMeshCube::EBorder CObjectMeshCube::GetBorderState(void) const
-{
-	// 縁取りの状態を返す
-	return m_meshCube.bordState;
-}
-
-//============================================================
 //	縁取りの太さの設定処理
 //============================================================
 void CObjectMeshCube::SetBorderThick(const float fBordThick)
@@ -509,30 +458,12 @@ void CObjectMeshCube::SetBorderThick(const float fBordThick)
 }
 
 //============================================================
-//	縁取り太さ取得処理
-//============================================================
-float CObjectMeshCube::GetBorderThick(void) const
-{
-	// 縁取りの太さを返す
-	return m_meshCube.fBordThick;
-}
-
-//============================================================
 //	テクスチャの状態の設定処理
 //============================================================
 void CObjectMeshCube::SetTextureState(const ETexState texState)
 {
 	// 引数のテクスチャの状態を設定
 	m_meshCube.texState = texState;
-}
-
-//============================================================
-//	テクスチャ状態取得処理
-//============================================================
-CObjectMeshCube::ETexState CObjectMeshCube::GetTextureState(void) const
-{
-	// テクスチャの状態を返す
-	return m_meshCube.texState;
 }
 
 //============================================================
@@ -548,15 +479,6 @@ void CObjectMeshCube::SetTexturePatternX(const D3DXVECTOR2& rTexPart)
 }
 
 //============================================================
-//	テクスチャ分割数X取得処理
-//============================================================
-D3DXVECTOR2 CObjectMeshCube::GetTexturePatternX(void) const
-{
-	// テクスチャの分割数Xを返す
-	return m_meshCube.aTexPart[CUBEPART_X];
-}
-
-//============================================================
 //	テクスチャの分割数Yの設定処理
 //============================================================
 void CObjectMeshCube::SetTexturePatternY(const D3DXVECTOR2& rTexPart)
@@ -566,15 +488,6 @@ void CObjectMeshCube::SetTexturePatternY(const D3DXVECTOR2& rTexPart)
 
 	// 頂点情報の設定
 	SetVtx();
-}
-
-//============================================================
-//	テクスチャ分割数Y取得処理
-//============================================================
-D3DXVECTOR2 CObjectMeshCube::GetTexturePatternY(void) const
-{
-	// テクスチャの分割数Yを返す
-	return m_meshCube.aTexPart[CUBEPART_Y];
 }
 
 //============================================================
@@ -590,42 +503,12 @@ void CObjectMeshCube::SetTexturePatternZ(const D3DXVECTOR2& rTexPart)
 }
 
 //============================================================
-//	テクスチャ分割数Z取得処理
-//============================================================
-D3DXVECTOR2 CObjectMeshCube::GetTexturePatternZ(void) const
-{
-	// テクスチャの分割数Zを返す
-	return m_meshCube.aTexPart[CUBEPART_Z];
-}
-
-//============================================================
 //	原点設定処理
 //============================================================
 void CObjectMeshCube::SetOrigin(const EOrigin origin)
 {
 	// 引数の原点を設定
 	m_origin = origin;
-}
-
-//============================================================
-//	原点取得処理
-//============================================================
-CObjectMeshCube::EOrigin CObjectMeshCube::GetOrigin(void) const
-{
-	// 原点を返す
-	return m_origin;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshCube::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -770,15 +653,6 @@ void CObjectMeshCube::SetIdx(void)
 		// インデックスバッファをアンロックする
 		m_pIdxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshCube::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

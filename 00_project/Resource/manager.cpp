@@ -20,9 +20,9 @@
 #include "model.h"
 #include "font.h"
 #include "shader.h"
+#include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
-#include "effekseerControl.h"
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -55,7 +55,6 @@ CManager::CManager() :
 	m_pRetention	(nullptr),	// データ保存マネージャー
 	m_pDebugProc	(nullptr),	// デバッグ表示
 	m_pDebug		(nullptr)	// デバッグ
-
 {
 
 }
@@ -179,6 +178,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	// エフェクシアマネージャーの生成
+	m_pEffekseer = CEffekseerManager::Create();
+	if (m_pEffekseer == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// データ保存マネージャーの生成
 	m_pRetention = CRetentionManager::Create();
 	if (m_pRetention == nullptr)
@@ -260,8 +269,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	//エフェクシア初期化
-	CEffekseer::GetInstance()->Init();
 	//--------------------------------------------------------
 	//	デバッグ用
 	//--------------------------------------------------------
@@ -383,6 +390,9 @@ void CManager::Uninit(void)
 	// データ保存マネージャーの破棄
 	SAFE_REF_RELEASE(m_pRetention);
 
+	// エフェクシアの破棄
+	SAFE_UNINIT(m_pEffekseer);
+
 	// シーンの破棄
 	SAFE_REF_RELEASE(m_pScene);
 
@@ -413,8 +423,6 @@ void CManager::Uninit(void)
 	// デルタタイムの破棄
 	SAFE_REF_RELEASE(m_pDeltaTime);
 
-	//エフェクシア破棄
-	CEffekseer::GetInstance()->Uninit();
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
 
@@ -437,6 +445,9 @@ void CManager::Update(void)
 	assert(m_pDeltaTime != nullptr);
 	m_pDeltaTime->Update();
 
+	// デルタタイムを取得
+	const float fDeltaTime = m_pDeltaTime->GetTime();
+
 	// パッドの更新
 	assert(m_pPad != nullptr);
 	m_pPad->Update();
@@ -451,18 +462,18 @@ void CManager::Update(void)
 
 	// ローディングの更新
 	assert(m_pLoading != nullptr);
-	m_pLoading->Update();
+	m_pLoading->Update(fDeltaTime);
 
 	// フェードの更新
 	assert(m_pFade != nullptr);
-	m_pFade->Update();
+	m_pFade->Update(fDeltaTime);
 
 	if (m_pLoading->GetState() == CLoading::LOAD_NONE)
 	{ // ロードしていない場合
 
 		// シーンの更新
 		assert(m_pScene != nullptr);
-		m_pScene->Update();
+		m_pScene->Update(fDeltaTime);
 	}
 
 	// デバッグ表示の更新
@@ -853,6 +864,18 @@ CScene *CManager::GetScene(void)
 
 	// シーンのポインタを返す
 	return m_pScene;
+}
+
+//============================================================
+//	エフェクシアマネージャー取得処理
+//============================================================
+CEffekseerManager *CManager::GetEffekseer(void)
+{
+	// インスタンス未使用
+	assert(m_pEffekseer != nullptr);
+
+	// エフェクシアマネージャーを返す
+	return m_pEffekseer;
 }
 
 //============================================================

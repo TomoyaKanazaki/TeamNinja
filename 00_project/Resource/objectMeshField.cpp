@@ -126,7 +126,7 @@ void CObjectMeshField::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshField::Update(void)
+void CObjectMeshField::Update(const float fDeltaTime)
 {
 
 }
@@ -186,57 +186,12 @@ void CObjectMeshField::Draw(CShader *pShader)
 }
 
 //============================================================
-//	テクスチャ割当処理 (インデックス)
-//============================================================
-void CObjectMeshField::BindTexture(const int nTextureID)
-{
-	if (nTextureID >= NONE_IDX)
-	{ // テクスチャインデックスが使用可能な場合
-
-		// テクスチャインデックスを代入
-		m_nTextureID = nTextureID;
-	}
-	else { assert(false); }	// 範囲外
-}
-
-//============================================================
-//	テクスチャ割当処理 (パス)
-//============================================================
-void CObjectMeshField::BindTexture(const char *pTexturePass)
-{
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-
-	if (pTexturePass != nullptr)
-	{ // 割り当てるテクスチャパスがある場合
-
-		// テクスチャインデックスを設定
-		m_nTextureID = pTexture->Regist(pTexturePass);
-	}
-	else
-	{ // 割り当てるテクスチャパスがない場合
-
-		// テクスチャなしインデックスを設定
-		m_nTextureID = NONE_IDX;
-	}
-}
-
-//============================================================
 //	位置の設定処理
 //============================================================
 void CObjectMeshField::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshField.pos = rPos;
-}
-
-//============================================================
-//	位置取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshField::GetVec3Position(void) const
-{
-	// 位置を返す
-	return m_meshField.pos;
 }
 
 //============================================================
@@ -252,15 +207,6 @@ void CObjectMeshField::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	向き取得処理
-//============================================================
-D3DXVECTOR3 CObjectMeshField::GetVec3Rotation(void) const
-{
-	// 向きを返す
-	return m_meshField.rot;
-}
-
-//============================================================
 //	大きさの設定処理
 //============================================================
 void CObjectMeshField::SetVec2Sizing(const D3DXVECTOR2& rSize)
@@ -270,36 +216,6 @@ void CObjectMeshField::SetVec2Sizing(const D3DXVECTOR2& rSize)
 
 	// 頂点情報の設定
 	SetVtx(false);
-}
-
-//============================================================
-//	大きさ取得処理
-//============================================================
-D3DXVECTOR2 CObjectMeshField::GetVec2Sizing(void) const
-{
-	// 大きさを返す
-	return m_meshField.size;
-}
-
-//============================================================
-//	色の設定処理
-//============================================================
-void CObjectMeshField::SetColor(const D3DXCOLOR& rCol)
-{
-	// 引数の色を設定
-	m_meshField.col = rCol;
-
-	// 頂点情報の設定
-	SetVtx(false);
-}
-
-//============================================================
-//	色取得処理
-//============================================================
-D3DXCOLOR CObjectMeshField::GetColor(void) const
-{
-	// 色を返す
-	return m_meshField.col;
 }
 
 //============================================================
@@ -357,6 +273,66 @@ CObjectMeshField *CObjectMeshField::Create
 		// 確保したアドレスを返す
 		return pMeshField;
 	}
+}
+
+//============================================================
+//	レンダーステート情報の取得処理
+//============================================================
+CRenderState *CObjectMeshField::GetRenderState(void)
+{
+	// インスタンス未使用
+	assert(m_pRenderState != nullptr);
+
+	// レンダーステートの情報を返す
+	return m_pRenderState;
+}
+
+//============================================================
+//	テクスチャ割当処理 (インデックス)
+//============================================================
+void CObjectMeshField::BindTexture(const int nTextureID)
+{
+	if (nTextureID >= NONE_IDX)
+	{ // テクスチャインデックスが使用可能な場合
+
+		// テクスチャインデックスを代入
+		m_nTextureID = nTextureID;
+	}
+	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	テクスチャ割当処理 (パス)
+//============================================================
+void CObjectMeshField::BindTexture(const char *pTexturePass)
+{
+	// ポインタを宣言
+	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+
+	if (pTexturePass != nullptr)
+	{ // 割り当てるテクスチャパスがある場合
+
+		// テクスチャインデックスを設定
+		m_nTextureID = pTexture->Regist(pTexturePass);
+	}
+	else
+	{ // 割り当てるテクスチャパスがない場合
+
+		// テクスチャなしインデックスを設定
+		m_nTextureID = NONE_IDX;
+	}
+}
+
+//============================================================
+//	色の設定処理
+//============================================================
+void CObjectMeshField::SetColor(const D3DXCOLOR& rCol)
+{
+	// 引数の色を設定
+	m_meshField.col = rCol;
+
+	// 頂点情報の設定
+	SetVtx(false);
 }
 
 //============================================================
@@ -509,27 +485,6 @@ HRESULT CObjectMeshField::SetPattern(const POSGRID2& rPart)
 
 	// 成功を返す
 	return S_OK;
-}
-
-//============================================================
-//	分割数取得処理
-//============================================================
-POSGRID2 CObjectMeshField::GetPattern(void) const
-{
-	// 分割数を返す
-	return m_part;
-}
-
-//============================================================
-//	レンダーステート情報の取得処理
-//============================================================
-CRenderState *CObjectMeshField::GetRenderState(void)
-{
-	// インスタンス未使用
-	assert(m_pRenderState != nullptr);
-
-	// レンダーステートの情報を返す
-	return m_pRenderState;
 }
 
 //============================================================
@@ -862,15 +817,6 @@ void CObjectMeshField::SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap)
 	// 頂点・インデックス情報の設定
 	SetVtx(true);
 	SetIdx();
-}
-
-//============================================================
-//	頂点数取得処理
-//============================================================
-int CObjectMeshField::GetNumVertex(void) const
-{
-	// 頂点数を返す
-	return m_nNumVtx;
 }
 
 //============================================================
@@ -1251,15 +1197,6 @@ void CObjectMeshField::SetScrollTex(const float fTexU, const float fTexV)
 		// 頂点バッファをアンロックする
 		m_pVtxBuff->Unlock();
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CObjectMeshField::Release(void)
-{
-	// オブジェクトの破棄
-	CObject::Release();
 }
 
 //============================================================

@@ -35,7 +35,7 @@ void CEffekseer::Init()
 {
 	//エフェクシア系
 	m_vEffect.clear();
-// エフェクトのマネージャーの作成
+	// エフェクトのマネージャーの作成
 	m_EfkManager = ::Effekseer::Manager::Create(8000);
 
 	// 描画デバイスの作成
