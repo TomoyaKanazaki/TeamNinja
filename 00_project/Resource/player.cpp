@@ -2,6 +2,7 @@
 //
 //	プレイヤー処理 [player.cpp]
 //	Author：藤田勇一
+//  Adder : 金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -30,6 +31,8 @@
 
 #include "effect3D.h"
 #include "particle3D.h"
+
+#include "input.h"
 
 //************************************************************
 //	定数宣言
@@ -102,7 +105,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_destRot		(VEC3_ZERO),	// 目標向き
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
-	m_nCounterState	(0)				// 状態管理カウンター
+	m_nCounterState	(0),			// 状態管理カウンター
+	m_nTension(0), // 士気力
+	m_fEndurance(0.0f) // 耐久力
 {
 
 }
@@ -233,6 +238,33 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+#ifdef _DEBUG
+
+	// 入力情報を受け取るポインタ
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;
+
+	// 士気力、耐久力の変更
+	if (pKeyboard->IsTrigger(DIK_UP))
+	{
+		++m_nTension;
+	}
+	if (pKeyboard->IsTrigger(DIK_DOWN))
+	{
+		--m_nTension;
+	}
+	if (pKeyboard->IsTrigger(DIK_RIGHT))
+	{
+		++m_fEndurance;
+	}
+	if (pKeyboard->IsTrigger(DIK_LEFT))
+	{
+		--m_fEndurance;
+	}
+
+	// 
+
+#endif
 }
 
 //============================================================
