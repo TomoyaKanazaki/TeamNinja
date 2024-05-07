@@ -24,6 +24,8 @@
 #include "retentionManager.h"
 #include "debug.h"
 
+#include "debugproc.h"
+
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -53,7 +55,6 @@ CManager::CManager() :
 	m_pLoading		(nullptr),	// ローディングインスタンス
 	m_pScene		(nullptr),	// シーンインスタンス
 	m_pRetention	(nullptr),	// データ保存マネージャー
-	m_pDebugProc	(nullptr),	// デバッグ表示
 	m_pDebug		(nullptr)	// デバッグ
 {
 
@@ -92,12 +93,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pLoading		= nullptr;		// ローディングインスタンス
 	m_pScene		= nullptr;		// シーンインスタンス
 	m_pRetention	= nullptr;		// データ保存マネージャー
-	m_pDebugProc	= nullptr;		// デバッグ表示
 	m_pDebug		= nullptr;		// デバッグ
 
 	//--------------------------------------------------------
 	//	システムの生成
 	//--------------------------------------------------------
+
 	// デルタタイムの生成
 	m_pDeltaTime = CDeltaTime::Create();
 	if (m_pDeltaTime == nullptr)
@@ -273,14 +274,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//	デバッグ用
 	//--------------------------------------------------------
 	// デバッグ表示の生成
-	m_pDebugProc = CDebugProc::Create();
-	if (m_pDebugProc == nullptr)
-	{ // 非使用中の場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	DebugProc::Init();
 
 	// デバッグの生成
 	m_pDebug = CDebug::Create();
@@ -358,7 +352,7 @@ void CManager::Uninit(void)
 	//	デバッグ用
 	//--------------------------------------------------------
 	// デバッグ表示の破棄
-	SAFE_REF_RELEASE(m_pDebugProc);
+	DebugProc::Uninit();
 
 	// デバッグの破棄
 	SAFE_REF_RELEASE(m_pDebug);
@@ -477,8 +471,7 @@ void CManager::Update(void)
 	}
 
 	// デバッグ表示の更新
-	assert(m_pDebugProc != nullptr);
-	m_pDebugProc->Update();
+	DebugProc::Update();
 }
 
 //============================================================
@@ -888,18 +881,6 @@ CRetentionManager *CManager::GetRetention(void)
 
 	// データ保存マネージャーを返す
 	return m_pRetention;
-}
-
-//============================================================
-//	デバッグ表示取得処理
-//============================================================
-CDebugProc *CManager::GetDebugProc(void)
-{
-	// インスタンス未使用
-	assert(m_pDebugProc != nullptr);
-
-	// デバッグ表示のポインタを返す
-	return m_pDebugProc;
 }
 
 //============================================================

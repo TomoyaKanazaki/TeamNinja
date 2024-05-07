@@ -33,7 +33,6 @@ class CFade;				// フェードクラス
 class CLoading;				// ローディングクラス
 class CEffekseerManager;	// エフェクシアマネージャークラス
 class CRetentionManager;	// データ保存マネージャークラス
-class CDebugProc;			// デバッグ表示クラス
 class CDebug;				// デバッグクラス
 
 //************************************************************
@@ -84,7 +83,6 @@ public:
 	CScene				*GetScene(void);		// シーン取得
 	CEffekseerManager	*GetEffekseer(void);	// エフェクシアマネージャー取得
 	CRetentionManager	*GetRetention(void);	// データ保存マネージャー取得
-	CDebugProc			*GetDebugProc(void);	// デバッグ表示取得
 	CDebug				*GetDebug(void);		// デバッグ取得
 
 private:
@@ -110,7 +108,6 @@ private:
 	CScene				*m_pScene;		// シーンインスタンス
 	CEffekseerManager	*m_pEffekseer;	// エフェクシアマネージャー
 	CRetentionManager	*m_pRetention;	// データ保存マネージャー
-	CDebugProc			*m_pDebugProc;	// デバッグ表示
 	CDebug				*m_pDebug;		// デバッグ
 };
 

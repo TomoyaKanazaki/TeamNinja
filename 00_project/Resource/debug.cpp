@@ -273,16 +273,13 @@ void CDebug::UpdateDebugControl(void) {}
 
 void CDebug::DrawDebugControl(void)
 {
-	// ポインタを宣言
-	CDebugProc *pDebugProc = GET_MANAGER->GetDebugProc();	// デバッグプロックの情報
-
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "======================================\n");
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "　[デバッグ操作]\n");
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "======================================\n");
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：デバッグ表示のON/OFF\n", NAME_DEBUG_DISP);
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：カメラ操作のON/OFF\n", NAME_CAMERA_CONTROL);
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：塗りつぶしモードの変更\n", NAME_FILLMODE);
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：2Dオブジェクト表示のON/OFF\n", NAME_2D_DISP);
+	DebugProc::Print(DebugProc::POINT_LEFT, "======================================\n");
+	DebugProc::Print(DebugProc::POINT_LEFT, "　[デバッグ操作]\n");
+	DebugProc::Print(DebugProc::POINT_LEFT, "======================================\n");
+	DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：デバッグ表示のON/OFF\n", NAME_DEBUG_DISP);
+	DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：カメラ操作のON/OFF\n", NAME_CAMERA_CONTROL);
+	DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：塗りつぶしモードの変更\n", NAME_FILLMODE);
+	DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：2Dオブジェクト表示のON/OFF\n", NAME_2D_DISP);
 
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
@@ -294,9 +291,9 @@ void CDebug::DrawDebugControl(void)
 
 	case CScene::MODE_GAME:
 
-		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
-		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
-		pDebugProc->Print(CDebugProc::POINT_LEFT, "[%s]：リザルト遷移\n", NAME_RESULT_TRANS);
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：リザルト遷移\n", NAME_RESULT_TRANS);
 
 		break;
 
@@ -325,14 +322,11 @@ void CDebug::DrawDebugControl(void) {}
 
 void CDebug::DrawDebugData(void)
 {
-	// ポインタを宣言
-	CDebugProc *pDebugProc = GET_MANAGER->GetDebugProc();	// デバッグプロックの情報
+	DebugProc::Print(DebugProc::POINT_LEFT, "======================================\n");
+	DebugProc::Print(DebugProc::POINT_LEFT, "　[デバッグ情報]\n");
+	DebugProc::Print(DebugProc::POINT_LEFT, "======================================\n");
 
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "======================================\n");
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "　[デバッグ情報]\n");
-	pDebugProc->Print(CDebugProc::POINT_LEFT, "======================================\n");
-
-	pDebugProc->Print(CDebugProc::POINT_CENTER, "[FPS]：%d\n", m_nFps);
+	DebugProc::Print(DebugProc::POINT_CENTER, "[FPS]：%d\n", m_nFps);
 }
 
 #else	// NDEBUG
@@ -393,11 +387,6 @@ void CDebug::Release(CDebug *&prDebug)
 //============================================================
 void CDebug::ChangeDispDebug(void)
 {
-	if (GET_INPUTKEY->IsTrigger(KEY_DEBUG_DISP))
-	{
-		// デバッグの表示フラグを反転
-		GET_MANAGER->GetDebugProc()->SetDisp(!GET_MANAGER->GetDebugProc()->IsDisp());
-	}
 }
 
 //============================================================

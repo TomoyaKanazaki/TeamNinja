@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#pragma warning(disable : 4100)
 #include "Effekseer.h"
 #include "Effekseer.SIMD.h"
 

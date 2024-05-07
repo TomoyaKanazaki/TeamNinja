@@ -106,8 +106,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
-	m_nTension(0), // 士気力
-	m_fEndurance(0.0f) // 耐久力
+	m_nTension		(0),			// 士気力
+	m_fEndurance	(0.0f)			// 耐久力
 {
 
 }
@@ -134,6 +134,8 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
+	m_nTension		= 0;			// 士気力
+	m_fEndurance	= 0.0f;			// 耐久力
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -175,6 +177,23 @@ HRESULT CPlayer::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CPlayer>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -190,6 +209,16 @@ void CPlayer::Uninit(void)
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
 
 	// オブジェクトキャラクターの終了
 	CObjectChara::Uninit();
