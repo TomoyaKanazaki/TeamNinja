@@ -216,6 +216,7 @@
     <ClInclude Include="Resource\particle3D.h" />
     <ClInclude Include="Resource\pause.h" />
     <ClInclude Include="Resource\player.h" />
+    <ClInclude Include="Resource\player_avatar.h" />
     <ClInclude Include="Resource\precompile.h" />
     <ClInclude Include="Resource\random.h" />
     <ClInclude Include="Resource\rankingManager.h" />
@@ -315,6 +316,7 @@
     <ClCompile Include="Resource\particle3D.cpp" />
     <ClCompile Include="Resource\pause.cpp" />
     <ClCompile Include="Resource\player.cpp" />
+    <ClCompile Include="Resource\player_avatar.cpp" />
     <ClCompile Include="Resource\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
