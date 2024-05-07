@@ -108,7 +108,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
 	m_nTension		(0),			// 士気力
-	m_fEndurance	(0.0f)			// 耐久力
+	m_fEndurance	(0.0f),			// 耐久力
+	m_pTensionGauge(nullptr), // 士気力ゲージのポインタ
+	m_pEnduranceGauge(nullptr) // 耐久力ゲージのポインタ
 {
 
 }
@@ -137,6 +139,8 @@ HRESULT CPlayer::Init(void)
 	m_nCounterState	= 0;			// 状態管理カウンター
 	m_nTension		= 0;			// 士気力
 	m_fEndurance	= 0.0f;			// 耐久力
+	m_pTensionGauge = nullptr; // 士気力ゲージのポインタ
+	m_pEnduranceGauge = nullptr; // 耐久力ゲージのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -306,7 +310,9 @@ void CPlayer::Update(const float fDeltaTime)
 		--m_fEndurance;
 	}
 
-	// 
+	// デバッグ表示
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_nTension);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %f\n", m_fEndurance);
 
 #endif
 }
