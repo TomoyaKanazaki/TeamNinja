@@ -159,7 +159,7 @@ HRESULT CDepthShadow::EndPass()
 	return S_OK;
 }
 
-
+#pragma warning(disable : 4189)
 // 登録されているパラメータ情報をエフェクトにセット
 bool CDepthShadow::SetParamToEffect()
 {
