@@ -167,6 +167,7 @@
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
+    <ClInclude Include="Resource\DepthShadow.h" />
     <ClInclude Include="Resource\effect2D.h" />
     <ClInclude Include="Resource\effect3D.h" />
     <ClInclude Include="Resource\effekseerControl.h" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Resource\valueUI.h" />
     <ClInclude Include="Resource\wall.h" />
     <ClInclude Include="Resource\wave.h" />
+    <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\anim2D.cpp" />
@@ -263,6 +265,7 @@
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
+    <ClCompile Include="Resource\DepthShadow.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
     <ClCompile Include="Resource\effect3D.cpp" />
     <ClCompile Include="Resource\effekseerControl.cpp" />
@@ -352,9 +355,24 @@
     <ClCompile Include="Resource\valueUI.cpp" />
     <ClCompile Include="Resource\wall.cpp" />
     <ClCompile Include="Resource\wave.cpp" />
+    <ClCompile Include="Resource\ZTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="data\SHADER\BrightCheck.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\Gauss.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\ZTexCreator.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
