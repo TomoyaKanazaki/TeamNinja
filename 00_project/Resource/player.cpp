@@ -33,6 +33,7 @@
 #include "particle3D.h"
 
 #include "input.h"
+#include "player_avatar.h"
 
 //************************************************************
 //	定数宣言
@@ -264,6 +265,20 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
+
+	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	{ // 0キーを押した場合
+
+		// プレイヤーの分身を生成
+		CPlayerAvatar::Create();
+	}
+
+	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
+	{ // 右SHIFTキーを押した場合
+
+		// プレイヤーの分身を消去
+		CPlayerAvatar::Delete(0);
+	}
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
