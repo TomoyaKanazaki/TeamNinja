@@ -184,7 +184,6 @@ void CRenderer::Draw(void)
 	CCamera		*pCamera	= pManager->GetCamera();	// カメラ
 	CFade		*pFade		= pManager->GetFade();		// フェード
 	CLoading	*pLoading	= pManager->GetLoading();	// ローディング
-	CDebugProc	*pDebugProc	= pManager->GetDebugProc();	// デバッグプロック
 
 	// 変数を宣言
 	D3DVIEWPORT9 viewportDef;	// カメラのビューポート保存用
@@ -264,8 +263,7 @@ void CRenderer::Draw(void)
 		pLoading->Draw();
 
 		// デバッグ表示の描画
-		assert(pDebugProc != nullptr);
-		pDebugProc->Draw();
+		DebugProc::Draw();
 
 		// ビューポートを元に戻す
 		m_pD3DDevice->SetViewport(&viewportDef);
