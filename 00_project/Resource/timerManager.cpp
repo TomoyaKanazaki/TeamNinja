@@ -241,8 +241,8 @@ void CTimerManager::Update(const float fDeltaTime)
 	}
 
 	// デバッグ表示
-	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "タイマー：[%d:%d:%d]\n", m_dwTime / 60000, (m_dwTime / 1000) % 60, m_dwTime % 1000);
-	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "停止タイマー：[%d:%d:%d]\n", m_dwStopTime / 60000, (m_dwStopTime / 1000) % 60, m_dwStopTime % 1000);
+	DebugProc::Print(DebugProc::POINT_LEFT, "タイマー：[%d:%d:%d]\n", m_dwTime / 60000, (m_dwTime / 1000) % 60, m_dwTime % 1000);
+	DebugProc::Print(DebugProc::POINT_LEFT, "停止タイマー：[%d:%d:%d]\n", m_dwStopTime / 60000, (m_dwStopTime / 1000) % 60, m_dwStopTime % 1000);
 }
 
 //============================================================

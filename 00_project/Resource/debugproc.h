@@ -2,25 +2,17 @@
 //
 //デバッグ表示処理 [debugproc.h]
 //Author Ibuki Okusada
+// Added by Tomoya Kanazaki
 //
 //==========================================================
 #ifndef _DEBUGPROC_H_		//このマクロが定義されていない場合
 #define _DEBUGPROC_H_
 
 //**********************************************************
-//	定数宣言
+//ネームスペースの定義
 //**********************************************************
-namespace debugproc
+namespace DebugProc
 {
-	const int MAX_DEBUGSTRING = 2048;	// デバッグ表示の最大文字数
-}
-
-//**********************************************************
-//クラスの定義
-//**********************************************************
-class CDebugProc
-{
-public:
 	// デバッグ位置列挙
 	enum EPoint
 	{
@@ -30,30 +22,15 @@ public:
 		POINT_MAX			// この列挙型の総数
 	};
 
-	// コンストラクタ
-	CDebugProc();
-
-	// デストラクタ
-	~CDebugProc();
-
-	// メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-	void Print(const EPoint point, const char *fmt, ...);
-	
-	void SetDisp(const bool bDisp)	{ m_bDisp = bDisp; }	// 表示設定
-	bool IsDisp(void) const			{ return m_bDisp; }		// 表示取得
-
-	// 静的メンバ関数
-	static CDebugProc *Create(void);				// 生成
-	static void Release(CDebugProc *&pDebugProc);	// 破棄
-
-private:
+	// 変数宣言
 	static LPD3DXFONT m_pFont;	// フォントへのポインタ
-	bool m_bDisp;				// デバッグ表示のON/OFF
-	char m_aStr[POINT_MAX][debugproc::MAX_DEBUGSTRING];	// デバッグ表示用の文字列
+
+	// 関数宣言
+	void Init(void); // 初期化処理
+	void Uninit(void); // 終了処理
+	void Update(void); // 更新処理
+	void Draw(void); // 描画処理
+	void Print(const EPoint point, const char *fmt, ...); // 文字列入力
 };
 
-#endif	// _DEBUGPROC_H_
+#endif

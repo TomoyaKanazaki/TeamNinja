@@ -530,7 +530,7 @@ void CObject::ReleaseAll(void)
 void CObject::UpdateAll(const float fDeltaTime)
 {
 	// オブジェクト数表示
-	GET_MANAGER->GetDebugProc()->Print(CDebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
+	DebugProc::Print(DebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
 
 	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
 	{ // 次元の総数分繰り返す
