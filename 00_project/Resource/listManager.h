@@ -29,8 +29,11 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	AIterator AddList(T *pObject);				// リスト追加
-	void DeleteList(const AIterator iterator);	// リスト削除
+	T* GetBegin(void);	// リスト先頭取得
+	T* GetEnd(void);	// リスト最後尾取得
+	T* GetIndex(const int nID);	// リストインデックス取得
+	AIterator AddList(T *pObject);			// リスト追加
+	void DelList(const AIterator iterator);	// リスト削除
 	int GetNumAll(void);			// リスト内の要素数取得
 	std::list<T*> GetList(void);	// リスト取得
 
@@ -85,6 +88,43 @@ template<class T> void CListManager<T>::Uninit(void)
 }
 
 //============================================================
+//	リスト先頭取得処理
+//============================================================
+template<class T> T* CListManager<T>::GetBegin(void)
+{
+	T* pBegin = m_list.begin();	// リスト先頭
+	assert(pBegin != nullptr);
+	return pBegin;	// リスト先頭を返す
+}
+
+//============================================================
+//	リスト最後尾取得処理
+//============================================================
+template<class T> T* CListManager<T>::GetEnd(void)
+{
+	T* pEnd = m_list.end();	// リスト最後尾
+	assert(pEnd != nullptr);
+	return pEnd;	// リスト最後尾を返す
+}
+
+//============================================================
+//	リストインデックス取得処理
+//============================================================
+template<class T> T* CListManager<T>::GetIndex(const int nID)
+{
+	AIterator itr = m_list.begin();	// リスト先頭
+
+	// インデックスが範囲外の場合抜ける
+	if (nID > NONE_IDX && nID < (int)m_list.size()) { assert(false); return nullptr; }
+
+	// 引数のインデックス分進める
+	std::advance(itr, nID);
+
+	// 進めたイテレーターの中身を返す
+	return *itr;
+}
+
+//============================================================
 //	リスト追加処理
 //============================================================
 template<class T>
@@ -97,7 +137,7 @@ std::_List_iterator<std::_List_val<std::_List_simple_types<T*>>> CListManager<T>
 //============================================================
 //	リスト削除処理
 //============================================================
-template<class T> void CListManager<T>::DeleteList(const AIterator iterator)
+template<class T> void CListManager<T>::DelList(const AIterator iterator)
 {
 	// 引数イテレーターの要素をリストから削除
 	m_list.erase(iterator);
