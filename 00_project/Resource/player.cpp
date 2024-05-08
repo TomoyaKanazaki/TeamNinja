@@ -202,8 +202,8 @@ HRESULT CPlayer::Init(void)
 	(
 		100, 60, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f),
-		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
+		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
+		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
 	m_pTensionGauge->SetNum(50);
 
@@ -212,8 +212,8 @@ HRESULT CPlayer::Init(void)
 	(
 		100, 60, D3DXVECTOR3(300.0f, 90.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f),
-		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
+		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f),
+		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f)
 	);
 	m_pEnduranceGauge->SetNum(50);
 
