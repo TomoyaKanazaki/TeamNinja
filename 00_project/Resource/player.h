@@ -23,6 +23,7 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
+class CGauge2D; // ゲージクラス
 
 //************************************************************
 //	クラス定義
@@ -99,8 +100,6 @@ public:
 	float GetRadius(void) const;		// 半径取得
 	float GetHeight(void) const;		// 縦幅取得
 
-	// メンバ関数 (金崎追加)
-
 private:
 	// メンバ関数
 	void LoadSetup(void);			// セットアップ
@@ -132,10 +131,8 @@ private:
 	bool		m_bJump;			// ジャンプ状況
 
 	// メンバ変数 (金崎追加)
-	unsigned int m_nTension; // 士気力
-	float m_fEndurance; // 耐久力
-	// 分身それぞれの耐久力になる？？
-	// プレイヤー管理で本当に大丈夫？？
+	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
+	CGauge2D* m_pEnduranceGauge; // 耐久力ゲージのポインタ
 
 };
 

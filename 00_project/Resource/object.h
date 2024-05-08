@@ -97,6 +97,7 @@ public:
 		LABEL_SKY,			// 空
 		LABEL_LIQUID,		// 液体
 		LABEL_DEBUG,		// デバッグ
+		LABEL_AVATAR,		// 分身
 		LABEL_MAX			// この列挙型の総数
 	};
 

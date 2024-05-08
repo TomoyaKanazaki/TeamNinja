@@ -115,7 +115,7 @@ template<class T> T* CListManager<T>::GetIndex(const int nID)
 	AIterator itr = m_list.begin();	// リスト先頭
 
 	// インデックスが範囲外の場合抜ける
-	if (nID > NONE_IDX && nID < (int)m_list.size()) { assert(false); return nullptr; }
+	if (nID <= NONE_IDX || nID >= (int)m_list.size()) { assert(false); return nullptr; }
 
 	// 引数のインデックス分進める
 	std::advance(itr, nID);
