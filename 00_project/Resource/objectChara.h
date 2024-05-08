@@ -79,6 +79,7 @@ public:
 	void SetAlpha(const float fAlpha);	// 透明度設定
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
+	void LoadSetup(const char *pTextPass, const char **ppModelPass);	// セットアップ
 
 	void SetModelInfo(void)							{ return m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel); }	// モデル情報設定
 	void SetMotionInfo(CMotion::SMotionInfo info)	{ return m_pMotion->SetInfo(info); }				// モーション情報設定

@@ -102,7 +102,6 @@ public:
 
 private:
 	// メンバ関数
-	void LoadSetup(void);			// セットアップ
 	EMotion UpdateSpawn(void);		// スポーン状態時の更新
 	EMotion UpdateNormal(void);		// 通常状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
