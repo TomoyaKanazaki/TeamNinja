@@ -35,6 +35,8 @@
 #include "input.h"
 #include "player_avatar.h"
 
+#include "gauge2D.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -107,8 +109,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
-	m_nTension		(0),			// 士気力
-	m_fEndurance	(0.0f),			// 耐久力
 	m_pTensionGauge(nullptr), // 士気力ゲージのポインタ
 	m_pEnduranceGauge(nullptr) // 耐久力ゲージのポインタ
 {
@@ -137,8 +137,6 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
-	m_nTension		= 0;			// 士気力
-	m_fEndurance	= 0.0f;			// 耐久力
 	m_pTensionGauge = nullptr; // 士気力ゲージのポインタ
 	m_pEnduranceGauge = nullptr; // 耐久力ゲージのポインタ
 
@@ -199,6 +197,24 @@ HRESULT CPlayer::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// 士気力ゲージを生成
+	m_pTensionGauge = CGauge2D::Create
+	(
+		100, 60, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f),
+		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
+	);
+
+	// 耐久力ゲージを生成
+	m_pEnduranceGauge = CGauge2D::Create
+	(
+		100, 60, D3DXVECTOR3(300.0f, 90.0f, 0.0f),
+		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f),
+		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
+	);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -208,6 +224,12 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
+	// 士気力ゲージの終了
+	SAFE_UNINIT(m_pTensionGauge);
+	
+	// 耐久力ゲージの終了
+	SAFE_UNINIT(m_pEnduranceGauge);
+
 	// 影の終了
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
 	SAFE_UNINIT(m_pShadow);
@@ -295,24 +317,23 @@ void CPlayer::Update(const float fDeltaTime)
 	// 士気力、耐久力の変更
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
-		++m_nTension;
+		m_pTensionGauge->AddNum(10);
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		--m_nTension;
+		m_pTensionGauge->AddNum(-10);
 	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
-		++m_fEndurance;
+		m_pEnduranceGauge->AddNum(10);
 	}
 	if (pKeyboard->IsTrigger(DIK_LEFT))
 	{
-		--m_fEndurance;
+		m_pEnduranceGauge->AddNum(-10);
 	}
 
-	// デバッグ表示
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_nTension);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %f\n", m_fEndurance);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %d\n", m_pEnduranceGauge->GetNum());
 
 #endif
 }

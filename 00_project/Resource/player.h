@@ -131,13 +131,8 @@ private:
 	bool		m_bJump;			// ジャンプ状況
 
 	// メンバ変数 (金崎追加)
-	unsigned int m_nTension; // 士気力
-	float m_fEndurance; // 耐久力
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
 	CGauge2D* m_pEnduranceGauge; // 耐久力ゲージのポインタ
-
-	// 分身それぞれの耐久力になる？？
-	// プレイヤー管理で本当に大丈夫？？
 
 };
 
