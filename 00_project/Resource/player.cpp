@@ -205,6 +205,7 @@ HRESULT CPlayer::Init(void)
 		D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f),
 		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
 	);
+	m_pTensionGauge->SetNum(50);
 
 	// ‘Ï‹v—ÍƒQ[ƒW‚ğ¶¬
 	m_pEnduranceGauge = CGauge2D::Create
@@ -214,6 +215,7 @@ HRESULT CPlayer::Init(void)
 		D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f),
 		D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f)
 	);
+	m_pEnduranceGauge->SetNum(50);
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
