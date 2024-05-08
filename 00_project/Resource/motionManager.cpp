@@ -75,10 +75,11 @@ CMotionManager::SCharaData CMotionManager::Regist(const char *pTextPass)
 
 	// キャラクター情報を読込
 	SCharaData tempCharaData;	// キャラクター情報
-	//if (FAILED(LoadSetup(&tempCharaData, pTextPass)))
+	if (FAILED(LoadSetup(&tempCharaData, pTextPass)))
 	{ // 読込に失敗した場合
 
 		// 初期化されたキャラクター情報を返す
+		assert(false);
 		return tempCharaData;
 	}
 
