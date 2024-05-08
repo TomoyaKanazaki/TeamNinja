@@ -20,7 +20,6 @@
 //	前方宣言
 //************************************************************
 class CMultiModel;	// マルチモデルクラス
-class CCollSphere;	// 円判定クラス
 
 //************************************************************
 //	クラス定義
@@ -56,6 +55,11 @@ public:
 	virtual void SetMotion(const int nType, const int nBlendFrame = 0);	// モーション設定
 
 	// メンバ関数
+	void BindCharaData	// キャラクター情報割当
+	( // 引数
+		const char *pTextPass,			// テキストパス
+		const char **ppModelPassArray	// モデルパス配列
+	);
 	void SetPartsInfo	// パーツ情報設定
 	( // 引数
 		const int nID,				// パーツインデックス
@@ -79,10 +83,9 @@ public:
 	void SetAlpha(const float fAlpha);	// 透明度設定
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
-	void LoadSetup(const char *pTextPass, const char **ppModelPass);	// セットアップ
 
 	void SetModelInfo(void)							{ return m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel); }	// モデル情報設定
-	void SetMotionInfo(CMotion::SMotionInfo info)	{ return m_pMotion->SetInfo(info); }				// モーション情報設定
+	void AddMotionInfo(CMotion::SMotionInfo info)	{ return m_pMotion->AddInfo(info); }				// モーション情報追加
 	void SetEnableMotionUpdate(const bool bUpdate)	{ return m_pMotion->SetEnableUpdate(bUpdate); }		// 更新状況設定
 	int GetMotionType(void) const			{ return m_pMotion->GetType(); }							// モーション種類取得
 	int GetMotionNumType(void) const		{ return m_pMotion->GetNumType(); }							// モーション種類総数取得
@@ -107,7 +110,6 @@ private:
 
 	// メンバ変数
 	CMultiModel	*m_apMultiModel[motion::MAX_PARTS];	// モデルの情報
-	CCollSphere	*m_apCollision[motion::MAX_PARTS];	// 円判定クラス
 	CMotion		*m_pMotion;		// モーションの情報
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
 	D3DXVECTOR3	m_pos;			// 位置

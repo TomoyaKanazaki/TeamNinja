@@ -322,15 +322,15 @@ void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)
 }
 
 //============================================================
-//	モーション情報の設定処理
+//	モーション情報の追加処理
 //============================================================
-void CObjectDivChara::SetMotionInfo(const EBody bodyID, CMotion::SMotionInfo info)
+void CObjectDivChara::AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info)
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
 
-		// 引数インデックスのモーション情報を設定
-		m_apBody[bodyID]->SetMotionInfo(info);
+		// 引数インデックスのモーション情報を追加
+		m_apBody[bodyID]->AddMotionInfo(info);
 	}
 	else { assert(false); }	// インデックスエラー
 }

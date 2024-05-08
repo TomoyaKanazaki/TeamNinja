@@ -150,8 +150,8 @@ HRESULT CPlayer::Init(void)
 		return E_FAIL;
 	}
 
-	// セットアップの読込
-	LoadSetup(SETUP_TXT, &MODEL_FILE[0]);
+	// キャラクター情報の割当
+	BindCharaData(SETUP_TXT, &MODEL_FILE[0]);
 
 	// モデル情報の設定
 	SetModelInfo();

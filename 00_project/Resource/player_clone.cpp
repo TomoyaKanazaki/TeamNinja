@@ -627,7 +627,7 @@ void CPlayerClone::LoadSetup(void)
 				} while (strcmp(&aString[0], "END_MOTIONSET") != 0);	// 読み込んだ文字列が END_MOTIONSET ではない場合ループ
 
 				// モーション情報の設定
-				CObjectChara::SetMotionInfo(info);
+				CObjectChara::AddMotionInfo(info);
 			}
 		} while (nEnd != EOF);	// 読み込んだ文字列が EOF ではない場合ループ
 

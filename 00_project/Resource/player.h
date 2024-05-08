@@ -59,6 +59,7 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
+		MOTION_MOVE,		// 移動モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 

@@ -93,7 +93,7 @@ public:
 
 	void SetModelInfo(void);	// モデル情報設定
 	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
-	void SetMotionInfo(const EBody bodyID, CMotion::SMotionInfo info);	// モーション情報設定
+	void AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info);	// モーション情報追加
 
 	int  GetMotionType(const EBody bodyID) const;			// モーション種類取得
 	int  GetMotionNumType(const EBody bodyID) const;		// モーション種類総数取得

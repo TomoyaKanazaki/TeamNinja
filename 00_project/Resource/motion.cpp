@@ -302,9 +302,21 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 }
 
 //============================================================
-//	モーション情報の設定処理
+//	モーション情報全設定処理
 //============================================================
-void CMotion::SetInfo(const SMotionInfo info)
+void CMotion::SetAllInfo(const SInfo info)
+{
+	// TODO
+	for (int i = 0; i < info.nNumType; i++)
+	{
+		AddInfo(info.aMotionInfo[i]);
+	}
+}
+
+//============================================================
+//	モーション情報の追加処理
+//============================================================
+void CMotion::AddInfo(const SMotionInfo info)
 {
 	// 引数のモーション情報を設定
 	m_info.aMotionInfo[m_info.nNumType] = info;
