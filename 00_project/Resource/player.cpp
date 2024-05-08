@@ -18,6 +18,7 @@
 #include "texture.h"
 #include "collision.h"
 #include "fade.h"
+#include "deltaTime.h"
 
 #include "multiModel.h"
 #include "orbit.h"
@@ -66,7 +67,7 @@ namespace
 	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 2.8f;		// 移動量
+	const float	MOVE		= 150.0f;		// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
@@ -293,6 +294,9 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
+
+	// 操作
+	Move();
 
 	if (GET_INPUTKEY->IsTrigger(DIK_0))
 	{ // 0キーを押した場合
@@ -802,6 +806,54 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
+}
+
+//==========================================
+//  操作処理
+//==========================================
+void CPlayer::Move()
+{
+	// 運動の第一法則
+	Inertial();
+
+	// 入力情報の取得
+	CInputKeyboard* pKey = GET_INPUTKEY;
+
+	// 一次保存の変数
+	D3DXVECTOR3 move = VEC3_ZERO;
+
+	// 入力を受け取る
+	if (pKey->IsPress(DIK_W)) { move.z += 1.0f; }
+	if (pKey->IsPress(DIK_S)) { move.z -= 1.0f; }
+	if (pKey->IsPress(DIK_D)) { move.x += 1.0f; }
+	if (pKey->IsPress(DIK_A)) { move.x -= 1.0f; }
+
+	// 値の正規化
+	D3DXVec3Normalize(&move, &move);
+
+	// 現在の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 移動量を加算
+	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
+	// 移動量を適用
+	pos += m_move;
+	
+	// 座標を適用
+	SetVec3Position(pos);
+}
+
+//==========================================
+//  慣性の法則
+//==========================================
+void CPlayer::Inertial()
+{
+	// x軸方向の慣性
+	m_move.x += (0.0f - m_move.x) * 0.1f;
+
+	// z軸方向の慣性
+	m_move.z += (0.0f - m_move.z) * 0.1f;
 }
 
 //============================================================

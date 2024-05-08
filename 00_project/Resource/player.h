@@ -116,6 +116,10 @@ private:
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
+	// メンバ関数 (金崎追加)
+	void Move(); // 操作処理
+	void Inertial(); // 運動の第一法則
+
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
 
