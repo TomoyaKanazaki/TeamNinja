@@ -286,7 +286,7 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 	{ // 読み込んだパーツ数分繰り返す
 
 		// パーツ情報の設定
-		CMotionManager::SParts *pParts = &data.infoParts.aInfo[nCntChara];	// パーツ情報
+		CMotionManager::SParts *pParts = &data.infoParts.pInfo[nCntChara];	// パーツ情報
 		CObjectChara::SetPartsInfo(nCntChara, pParts->nParentID, pParts->pos, pParts->rot, pParts->strPass.c_str());
 	}
 }

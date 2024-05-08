@@ -40,7 +40,7 @@ public:
 	// パーツ構造体
 	struct SPartsInfo
 	{
-		SParts aInfo[motion::MAX_PARTS];	// パーツ情報
+		SParts *pInfo;	// パーツ情報
 		int nNumParts;	// パーツ数
 	};
 
@@ -48,19 +48,7 @@ public:
 	struct SCharaData
 	{
 		// コンストラクタ
-		SCharaData()
-		{
-			memset(&infoMotion, 0, sizeof(infoMotion));
-
-			infoParts.nNumParts = 0;
-
-			for (int i = 0; i < motion::MAX_PARTS; i++)
-			{
-				infoParts.aInfo[i].nParentID = NONE_IDX;
-				infoParts.aInfo[i].pos = VEC3_ZERO;
-				infoParts.aInfo[i].rot = VEC3_ZERO;
-			}
-		}
+		SCharaData() { memset(this, 0, sizeof(*this)); }
 
 		// メンバ変数
 		CMotion::SInfo infoMotion;	// モーション情報
@@ -78,7 +66,7 @@ public:
 
 private:
 	// 静的メンバ関数
-	static void LoadSetup(SCharaData *pInfoChara, const char *pTextPass);	// セットアップ
+	static HRESULT LoadSetup(SCharaData *pInfoChara, const char *pTextPass);	// セットアップ
 
 	// メンバ変数
 	std::map<std::string, SCharaData> m_mapMotion;	// モーション連想配列

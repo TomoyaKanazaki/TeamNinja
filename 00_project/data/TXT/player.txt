@@ -5,27 +5,6 @@
 #
 #==============================================================================
 #------------------------------------------------------------------------------
-#	モデルファイル名
-#------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/player/00_waist.x
-MODEL_FILENAME = data/MODEL/player/01_body.x
-MODEL_FILENAME = data/MODEL/player/02_head.x
-MODEL_FILENAME = data/MODEL/player/03_armUL.x
-MODEL_FILENAME = data/MODEL/player/04_armUR.x
-MODEL_FILENAME = data/MODEL/player/05_armDL.x
-MODEL_FILENAME = data/MODEL/player/06_armDR.x
-MODEL_FILENAME = data/MODEL/player/07_handL.x
-MODEL_FILENAME = data/MODEL/player/08_handR.x
-MODEL_FILENAME = data/MODEL/player/09_legUL.x
-MODEL_FILENAME = data/MODEL/player/10_legUR.x
-MODEL_FILENAME = data/MODEL/player/11_legDL.x
-MODEL_FILENAME = data/MODEL/player/12_legDR.x
-MODEL_FILENAME = data/MODEL/player/13_footL.x
-MODEL_FILENAME = data/MODEL/player/14_footR.x
-MODEL_FILENAME = data/MODEL/player/15_sword.x
-MODEL_FILENAME = data/MODEL/player/15_sword.x
-
-#------------------------------------------------------------------------------
 #	キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
@@ -37,6 +16,7 @@ CHARACTERSET
 		PARENT = -1
 		POS = 0.0 32.4 0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/00_waist.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -44,6 +24,7 @@ CHARACTERSET
 		PARENT = 0
 		POS = -0.2 6.6 -0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/01_body.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -51,6 +32,7 @@ CHARACTERSET
 		PARENT = 1
 		POS = -0.1 19.8 -0.4
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/02_head.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -58,6 +40,7 @@ CHARACTERSET
 		PARENT = 1
 		POS = -10.1 12.6 0.2
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/03_armUL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -65,6 +48,7 @@ CHARACTERSET
 		PARENT = 1
 		POS = 10.1 12.6 0.2
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/04_armUR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -72,6 +56,7 @@ CHARACTERSET
 		PARENT = 3
 		POS = -7.3 -0.2 0.1
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/05_armDL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -79,6 +64,7 @@ CHARACTERSET
 		PARENT = 4
 		POS = 7.3 -0.2 0.1
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/06_armDR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -86,6 +72,7 @@ CHARACTERSET
 		PARENT = 5
 		POS = -11.7 -0.1 -0.2
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/07_handL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -93,6 +80,7 @@ CHARACTERSET
 		PARENT = 6
 		POS = 11.7 -0.1 -0.2
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/08_handR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -100,6 +88,7 @@ CHARACTERSET
 		PARENT = 0
 		POS = -5.8 -5.3 0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/09_legUL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -107,6 +96,7 @@ CHARACTERSET
 		PARENT = 0
 		POS = 5.8 -5.3 0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/10_legUR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -114,6 +104,7 @@ CHARACTERSET
 		PARENT = 9
 		POS = -0.2 -8.8 0.4
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/11_legDL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -121,6 +112,7 @@ CHARACTERSET
 		PARENT = 10
 		POS = 0.2 -8.8 0.4
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/12_legDR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -128,6 +120,7 @@ CHARACTERSET
 		PARENT = 11
 		POS = 0.4 -7.7 -0.5
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/13_footL.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -135,6 +128,7 @@ CHARACTERSET
 		PARENT = 12
 		POS = -0.4 -7.7 -0.5
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/14_footR.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -142,6 +136,7 @@ CHARACTERSET
 		PARENT = 7
 		POS = -5.8 0.0 0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/15_sword.x
 	END_PARTSSET
 	
 	PARTSSET
@@ -149,6 +144,7 @@ CHARACTERSET
 		PARENT = 8
 		POS = 5.8 0.0 0.0
 		ROT = 0.0 0.0 0.0
+		FILEPASS = data/MODEL/player/15_sword.x
 	END_PARTSSET
 	
 END_CHARACTERSET
