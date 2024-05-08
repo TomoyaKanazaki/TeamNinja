@@ -1,13 +1,13 @@
 //============================================================
 //
-//	プレイヤーの分身処理 [player_avatar.cpp]
+//	プレイヤーの分身処理 [player_clone.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "player_avatar.h"
+#include "player_clone.h"
 #include "shadow.h"
 #include "input.h"
 #include "manager.h"
@@ -62,20 +62,20 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(MODEL_FILE) == CPlayerAvatar::MODEL_MAX, "ERROR : Model Count Mismatch");
+static_assert(NUM_ARRAY(MODEL_FILE) == CPlayerClone::MODEL_MAX, "ERROR : Model Count Mismatch");
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
-CListManager<CPlayerAvatar>* CPlayerAvatar::m_pList = nullptr;	// オブジェクトリスト
+CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
-//	子クラス [CPlayerAvatar] のメンバ関数
+//	子クラス [CPlayerClone] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayerAvatar::CPlayerAvatar() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
+CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
 m_pShadow(nullptr)		// 影の情報
 {
 
@@ -84,7 +84,7 @@ m_pShadow(nullptr)		// 影の情報
 //============================================================
 //	デストラクタ
 //============================================================
-CPlayerAvatar::~CPlayerAvatar()
+CPlayerClone::~CPlayerClone()
 {
 
 }
@@ -92,7 +92,7 @@ CPlayerAvatar::~CPlayerAvatar()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CPlayerAvatar::Init(void)
+HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
 	m_pShadow = nullptr;		// 影の情報
@@ -126,7 +126,7 @@ HRESULT CPlayerAvatar::Init(void)
 	{ // リストマネージャーが存在しない場合
 
 		// リストマネージャーの生成
-		m_pList = CListManager<CPlayerAvatar>::Create();
+		m_pList = CListManager<CPlayerClone>::Create();
 		if (m_pList == nullptr)
 		{ // 生成に失敗した場合
 
@@ -146,7 +146,7 @@ HRESULT CPlayerAvatar::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CPlayerAvatar::Uninit(void)
+void CPlayerClone::Uninit(void)
 {
 	// 影の終了
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
@@ -169,7 +169,7 @@ void CPlayerAvatar::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CPlayerAvatar::Update(const float fDeltaTime)
+void CPlayerClone::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
@@ -187,7 +187,7 @@ void CPlayerAvatar::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CPlayerAvatar::Draw(CShader* pShader)
+void CPlayerClone::Draw(CShader* pShader)
 {
 	CToonShader* pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
 	if (pToonShader->IsEffectOK())
@@ -210,7 +210,7 @@ void CPlayerAvatar::Draw(CShader* pShader)
 //============================================================
 //	更新状況の設定処理
 //============================================================
-void CPlayerAvatar::SetEnableUpdate(const bool bUpdate)
+void CPlayerClone::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
@@ -220,7 +220,7 @@ void CPlayerAvatar::SetEnableUpdate(const bool bUpdate)
 //============================================================
 //	描画状況の設定処理
 //============================================================
-void CPlayerAvatar::SetEnableDraw(const bool bDraw)
+void CPlayerClone::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
@@ -230,11 +230,11 @@ void CPlayerAvatar::SetEnableDraw(const bool bDraw)
 //============================================================
 //	生成処理
 //============================================================
-CPlayerAvatar* CPlayerAvatar::Create(void)
+CPlayerClone* CPlayerClone::Create(void)
 {
 	// ポインタを宣言
-	CPlayerAvatar* pPlayer = nullptr;	// プレイヤー情報
-	pPlayer = new CPlayerAvatar;
+	CPlayerClone* pPlayer = nullptr;	// プレイヤー情報
+	pPlayer = new CPlayerClone;
 
 	if (pPlayer == nullptr)
 	{ // 生成に失敗した場合
@@ -261,7 +261,7 @@ CPlayerAvatar* CPlayerAvatar::Create(void)
 //============================================================
 // 消去処理
 //============================================================
-void CPlayerAvatar::Delete(const int nNum)
+void CPlayerClone::Delete(const int nNum)
 {
 	if (m_pList != nullptr)
 	{ // リスト情報がある場合
@@ -276,7 +276,7 @@ void CPlayerAvatar::Delete(const int nNum)
 		{ // 上記以外
 
 			// 分身を取得
-			CPlayerAvatar* pAvatar = m_pList->GetIndex(nNum);
+			CPlayerClone* pAvatar = m_pList->GetIndex(nNum);
 
 			// 分身の終了
 			pAvatar->Uninit();
@@ -287,7 +287,7 @@ void CPlayerAvatar::Delete(const int nNum)
 //============================================================
 //	リスト取得処理
 //============================================================
-CListManager<CPlayerAvatar>* CPlayerAvatar::GetList(void)
+CListManager<CPlayerClone>* CPlayerClone::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
@@ -296,7 +296,7 @@ CListManager<CPlayerAvatar>* CPlayerAvatar::GetList(void)
 //============================================================
 //	通常状態時の更新処理
 //============================================================
-CPlayerAvatar::EMotion CPlayerAvatar::UpdateNormal(void)
+CPlayerClone::EMotion CPlayerClone::UpdateNormal(void)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
@@ -316,7 +316,7 @@ CPlayerAvatar::EMotion CPlayerAvatar::UpdateNormal(void)
 //============================================================
 // 操作処理
 //============================================================
-void CPlayerAvatar::UpdateControl(void)
+void CPlayerClone::UpdateControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	D3DXVECTOR3 pos = GetVec3Position();
@@ -348,7 +348,7 @@ void CPlayerAvatar::UpdateControl(void)
 //============================================================
 //	モーション・オブジェクトキャラクターの更新処理
 //============================================================
-void CPlayerAvatar::UpdateMotion(int nMotion, const float fDeltaTime)
+void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 {
 	// 死んでたら抜ける
 	if (IsDeath()) { return; }
@@ -378,7 +378,7 @@ void CPlayerAvatar::UpdateMotion(int nMotion, const float fDeltaTime)
 //============================================================
 //	フェードアウト状態時の更新処理
 //============================================================
-bool CPlayerAvatar::UpdateFadeOut(const float fAdd)
+bool CPlayerClone::UpdateFadeOut(const float fAdd)
 {
 	// 変数を宣言
 	bool bAlpha = false;		// 透明状況
@@ -410,7 +410,7 @@ bool CPlayerAvatar::UpdateFadeOut(const float fAdd)
 //============================================================
 //	フェードイン状態時の更新処理
 //============================================================
-bool CPlayerAvatar::UpdateFadeIn(const float fSub)
+bool CPlayerClone::UpdateFadeIn(const float fSub)
 {
 	// 変数を宣言
 	bool bAlpha = false;		// 透明状況
@@ -442,7 +442,7 @@ bool CPlayerAvatar::UpdateFadeIn(const float fSub)
 //============================================================
 //	セットアップ処理
 //============================================================
-void CPlayerAvatar::LoadSetup(void)
+void CPlayerClone::LoadSetup(void)
 {
 	// 変数を宣言
 	CMotion::SMotionInfo info;		// ポーズの代入用

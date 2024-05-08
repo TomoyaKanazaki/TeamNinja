@@ -1,14 +1,14 @@
 //============================================================
 //
-//	プレイヤーの分身ヘッダー [player_avatar.h]
+//	プレイヤーの分身ヘッダー [player_clone.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _PLAYER_AVATAR_H_
-#define _PLAYER_AVATAR_H_
+#ifndef _PLAYER_CLONE_H_
+#define _PLAYER_CLONE_H_
 
 //************************************************************
 //	インクルードファイル
@@ -24,7 +24,7 @@ class CShadow;	// 影クラス
 //	クラス定義
 //************************************************************
 // プレイヤーの分身クラス
-class CPlayerAvatar : public CObjectChara
+class CPlayerClone : public CObjectChara
 {
 public:
 	// モデル列挙
@@ -58,10 +58,10 @@ public:
 	};
 
 	// コンストラクタ
-	CPlayerAvatar();
+	CPlayerClone();
 
 	// デストラクタ
-	~CPlayerAvatar() override;
+	~CPlayerClone() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -72,9 +72,9 @@ public:
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 
 	// 静的メンバ関数
-	static CPlayerAvatar* Create(void);					// 生成
+	static CPlayerClone* Create(void);					// 生成
 	static void Delete(const int nNum);					// 消去処理
-	static CListManager<CPlayerAvatar>* GetList(void);	// リスト取得
+	static CListManager<CPlayerClone>* GetList(void);	// リスト取得
 
 private:
 	// メンバ関数
@@ -87,10 +87,10 @@ private:
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
 	// 静的メンバ変数
-	static CListManager<CPlayerAvatar>* m_pList;		// オブジェクトリスト
+	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト
 
 	// メンバ変数
-	CListManager<CPlayerAvatar>::AIterator m_iterator;	// イテレーター
+	CListManager<CPlayerClone>::AIterator m_iterator;	// イテレーター
 	CShadow* m_pShadow;			// 影の情報
 };
 

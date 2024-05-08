@@ -33,7 +33,7 @@
 #include "particle3D.h"
 
 #include "input.h"
-#include "player_avatar.h"
+#include "player_clone.h"
 
 #include "gauge2D.h"
 
@@ -298,14 +298,14 @@ void CPlayer::Update(const float fDeltaTime)
 	{ // 0キーを押した場合
 
 		// プレイヤーの分身を生成
-		CPlayerAvatar::Create();
+		CPlayerClone::Create();
 	}
 
 	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
 	{ // 右SHIFTキーを押した場合
 
 		// プレイヤーの分身を消去
-		CPlayerAvatar::Delete(0);
+		CPlayerClone::Delete(0);
 	}
 
 	// モーション・オブジェクトキャラクターの更新
