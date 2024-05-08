@@ -21,6 +21,7 @@
 #include <time.h>
 #include <assert.h>
 #include <d3dx9.h>
+#include "iostream"
 
 // ビルド時の警告対処用マクロ
 #define  DIRECTINPUT_VERSION	(0x0800)
