@@ -28,31 +28,13 @@ public:
 	// デストラクタ
 	~CMotionManager();
 
-	// キー構造体
-	struct SKey
-	{
-		// コンストラクタ
-		SKey(const char *pTextPass, const char **ppModelPassArray) :
-		pTextPass(pTextPass), ppModelPassArray(ppModelPassArray) {}
-
-		// 比較演算子オーバーロード
-		bool operator<(const SKey& rKey) const
-		{
-			// 情報をまとめて比較
-			return std::tie(pTextPass, ppModelPassArray) < std::tie(rKey.pTextPass, rKey.ppModelPassArray);
-		}
-
-		// メンバ変数
-		const char *pTextPass;			// テキストパス
-		const char **ppModelPassArray;	// モデル配列ポインタ
-	};
-
 	// パーツ情報構造体
 	struct SParts
 	{
-		D3DXVECTOR3 pos;	// 位置
-		D3DXVECTOR3 rot;	// 向き
-		int nParentID;		// 親インデックス
+		std::string strPass;	// モデルパス
+		D3DXVECTOR3 pos;		// 位置
+		D3DXVECTOR3 rot;		// 向き
+		int nParentID;			// 親インデックス
 	};
 
 	// パーツ構造体
@@ -65,6 +47,22 @@ public:
 	// キャラクター情報構造体
 	struct SCharaData
 	{
+		// コンストラクタ
+		SCharaData()
+		{
+			memset(&infoMotion, 0, sizeof(infoMotion));
+
+			infoParts.nNumParts = 0;
+
+			for (int i = 0; i < motion::MAX_PARTS; i++)
+			{
+				infoParts.aInfo[i].nParentID = NONE_IDX;
+				infoParts.aInfo[i].pos = VEC3_ZERO;
+				infoParts.aInfo[i].rot = VEC3_ZERO;
+			}
+		}
+
+		// メンバ変数
 		CMotion::SInfo infoMotion;	// モーション情報
 		SPartsInfo infoParts;		// パーツ情報
 	};
@@ -72,11 +70,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// モーションマネージャー初期化
 	void Uninit(void);	// モーションマネージャー終了
-	SCharaData Regist	// キャラクター情報登録
-	( // 引数
-		const char *pTextPass,			// テキストパス
-		const char **ppModelPassArray	// モデルパス配列
-	);
+	SCharaData Regist(const char *pTextPass);	// キャラクター情報登録
 
 	// 静的メンバ関数
 	static CMotionManager *Create(void);	// 生成
@@ -84,10 +78,10 @@ public:
 
 private:
 	// 静的メンバ関数
-	static void LoadSetup(SCharaData *pInfoChara, const char *pTextPass, const char **ppModelPassArray);	// セットアップ
+	static void LoadSetup(SCharaData *pInfoChara, const char *pTextPass);	// セットアップ
 
 	// メンバ変数
-	std::map<SKey, SCharaData> m_mapMotion;	// モーション連想配列
+	std::map<std::string, SCharaData> m_mapMotion;	// モーション連想配列
 };
 
 #endif	// _MOTION_MANAGER_H_

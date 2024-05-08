@@ -55,11 +55,6 @@ public:
 	virtual void SetMotion(const int nType, const int nBlendFrame = 0);	// モーション設定
 
 	// メンバ関数
-	void BindCharaData	// キャラクター情報割当
-	( // 引数
-		const char *pTextPass,			// テキストパス
-		const char **ppModelPassArray	// モデルパス配列
-	);
 	void SetPartsInfo	// パーツ情報設定
 	( // 引数
 		const int nID,				// パーツインデックス
@@ -68,6 +63,7 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const char *pFileName		// ファイル名
 	);
+	void BindCharaData(const char *pTextPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定

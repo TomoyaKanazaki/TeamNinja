@@ -225,30 +225,6 @@ void CObjectChara::SetMotion(const int nType, const int nBlendFrame)
 }
 
 //============================================================
-//	キャラクター情報割当
-//============================================================
-void CObjectChara::BindCharaData
-(
-	const char *pTextPass,			// テキストパス
-	const char **ppModelPassArray	// モデルパス配列
-)
-{
-	// TODO
-	CMotionManager *pMotion = GET_MANAGER->GetMotion();
-	CMotionManager::SCharaData data = pMotion->Regist(pTextPass, ppModelPassArray);
-
-	for (int i = 0; i < data.infoParts.nNumParts; i++)
-	{
-		CMotionManager::SParts *pParts = &data.infoParts.aInfo[i];
-
-		// パーツ情報の設定
-		CObjectChara::SetPartsInfo(i, pParts->nParentID, pParts->pos, pParts->rot, ppModelPassArray[i]);
-	}
-
-	m_pMotion->SetAllInfo(data.infoMotion);
-}
-
-//============================================================
 //	パーツ情報の設定処理
 //============================================================
 void CObjectChara::SetPartsInfo
@@ -289,6 +265,29 @@ void CObjectChara::SetPartsInfo
 
 		// パーツの総数を加算
 		m_nNumModel++;
+	}
+}
+
+//============================================================
+//	キャラクター情報割当
+//============================================================
+void CObjectChara::BindCharaData(const char *pMotionPass)
+{
+	// 割り当てるモーションパスが存在しない場合抜ける
+	if (pMotionPass == nullptr) { assert(false); return; }
+
+	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
+	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
+
+	// モーション情報の設定
+	m_pMotion->SetAllInfo(data.infoMotion);
+
+	for (int nCntChara = 0; nCntChara < data.infoParts.nNumParts; nCntChara++)
+	{ // 読み込んだパーツ数分繰り返す
+
+		// パーツ情報の設定
+		CMotionManager::SParts *pParts = &data.infoParts.aInfo[nCntChara];	// パーツ情報
+		CObjectChara::SetPartsInfo(nCntChara, pParts->nParentID, pParts->pos, pParts->rot, pParts->strPass.c_str());
 	}
 }
 

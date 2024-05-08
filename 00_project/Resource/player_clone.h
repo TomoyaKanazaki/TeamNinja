@@ -78,7 +78,6 @@ public:
 
 private:
 	// メンバ関数
-	void LoadSetup(void);			// セットアップ
 	EMotion UpdateNormal(void);		// 通常状態時の更新
 
 	void UpdateControl(void);		// 操作処理

@@ -43,31 +43,10 @@
 //************************************************************
 namespace
 {
-	const char *MODEL_FILE[] =	// モデルファイル
-	{
-		"data\\MODEL\\PLAYER\\00_waist.x",	// 腰
-		"data\\MODEL\\PLAYER\\01_body.x",	// 体
-		"data\\MODEL\\PLAYER\\02_head.x",	// 頭
-		"data\\MODEL\\PLAYER\\03_armUL.x",	// 左上腕
-		"data\\MODEL\\PLAYER\\04_armUR.x",	// 右上腕
-		"data\\MODEL\\PLAYER\\05_armDL.x",	// 左下腕
-		"data\\MODEL\\PLAYER\\06_armDR.x",	// 右下腕
-		"data\\MODEL\\PLAYER\\07_handL.x",	// 左手
-		"data\\MODEL\\PLAYER\\08_handR.x",	// 右手
-		"data\\MODEL\\PLAYER\\09_legUL.x",	// 左太もも
-		"data\\MODEL\\PLAYER\\10_legUR.x",	// 右太もも
-		"data\\MODEL\\PLAYER\\11_legDL.x",	// 左脛
-		"data\\MODEL\\PLAYER\\12_legDR.x",	// 右脛
-		"data\\MODEL\\PLAYER\\13_footL.x",	// 左足
-		"data\\MODEL\\PLAYER\\14_footR.x",	// 右足
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 左剣
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 右剣
-	};
-
 	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 150.0f;		// 移動量
+	const float	MOVE		= 150.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
@@ -84,11 +63,6 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
 }
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(MODEL_FILE) == CPlayer::MODEL_MAX, "ERROR : Model Count Mismatch");
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -151,7 +125,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// キャラクター情報の割当
-	BindCharaData(SETUP_TXT, &MODEL_FILE[0]);
+	BindCharaData(SETUP_TXT);
 
 	// モデル情報の設定
 	SetModelInfo();

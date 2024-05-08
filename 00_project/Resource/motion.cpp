@@ -306,10 +306,11 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 //============================================================
 void CMotion::SetAllInfo(const SInfo info)
 {
-	// TODO
-	for (int i = 0; i < info.nNumType; i++)
-	{
-		AddInfo(info.aMotionInfo[i]);
+	for (int nCntMotion = 0; nCntMotion < info.nNumType; nCntMotion++)
+	{ // 読み込んだモーション数分繰り返す
+
+		// モーション情報の追加
+		AddInfo(info.aMotionInfo[nCntMotion]);
 	}
 }
 

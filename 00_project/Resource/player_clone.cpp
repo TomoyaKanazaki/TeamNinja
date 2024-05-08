@@ -18,51 +18,23 @@
 //************************************************************
 namespace
 {
-	const char* MODEL_FILE[] =	// モデルファイル
-	{
-		"data\\MODEL\\PLAYER\\00_waist.x",	// 腰
-		"data\\MODEL\\PLAYER\\01_body.x",	// 体
-		"data\\MODEL\\PLAYER\\02_head.x",	// 頭
-		"data\\MODEL\\PLAYER\\03_armUL.x",	// 左上腕
-		"data\\MODEL\\PLAYER\\04_armUR.x",	// 右上腕
-		"data\\MODEL\\PLAYER\\05_armDL.x",	// 左下腕
-		"data\\MODEL\\PLAYER\\06_armDR.x",	// 右下腕
-		"data\\MODEL\\PLAYER\\07_handL.x",	// 左手
-		"data\\MODEL\\PLAYER\\08_handR.x",	// 右手
-		"data\\MODEL\\PLAYER\\09_legUL.x",	// 左太もも
-		"data\\MODEL\\PLAYER\\10_legUR.x",	// 右太もも
-		"data\\MODEL\\PLAYER\\11_legDL.x",	// 左脛
-		"data\\MODEL\\PLAYER\\12_legDR.x",	// 右脛
-		"data\\MODEL\\PLAYER\\13_footL.x",	// 左足
-		"data\\MODEL\\PLAYER\\14_footR.x",	// 右足
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 左剣
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 右剣
-	};
+	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
 
-	const char* SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const int	PRIORITY	= 3;		// プレイヤーの優先順位
+	const float	MOVE		= 150.0f;	// 移動量
+	const float	JUMP		= 21.0f;	// ジャンプ上昇量
+	const float	GRAVITY		= 1.0f;		// 重力
+	const float	RADIUS		= 20.0f;	// 半径
+	const float	HEIGHT		= 100.0f;	// 縦幅
+	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
+	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
+	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
+	const float	LAND_REV	= 0.16f;	// 通常状態時の地上の移動量の減衰係数
+	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
 
-	const int	PRIORITY = 3;		// プレイヤーの優先順位
-	const float	MOVE = 2.8f;		// 移動量
-	const float	JUMP = 21.0f;	// ジャンプ上昇量
-	const float	GRAVITY = 1.0f;		// 重力
-	const float	RADIUS = 20.0f;	// 半径
-	const float	HEIGHT = 100.0f;	// 縦幅
-	const float	REV_ROTA = 0.15f;	// 向き変更の補正係数
-	const float	ADD_MOVE = 0.08f;	// 非アクション時の速度加算量
-	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
-	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
-	const float	SPAWN_ADD_ALPHA = 0.03f;	// スポーン状態時の透明度の加算量
-
-	const D3DXVECTOR3 DMG_ADDROT = D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
-	const D3DXVECTOR3 SHADOW_SIZE = D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
-
-	const int ORBIT_PART = 20;	// 分割数
+	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
+	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 }
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(MODEL_FILE) == CPlayerClone::MODEL_MAX, "ERROR : Model Count Mismatch");
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -106,8 +78,8 @@ HRESULT CPlayerClone::Init(void)
 		return E_FAIL;
 	}
 
-	// セットアップの読み込み
-	LoadSetup();
+	// キャラクター情報の割当
+	BindCharaData(SETUP_TXT);
 
 	// モデル情報の設定
 	SetModelInfo();
@@ -437,207 +409,4 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
-}
-
-//============================================================
-//	セットアップ処理
-//============================================================
-void CPlayerClone::LoadSetup(void)
-{
-	// 変数を宣言
-	CMotion::SMotionInfo info;		// ポーズの代入用
-	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
-	int nID = 0;	// インデックスの代入用
-	int nParentID = 0;	// 親インデックスの代入用
-	int nNowPose = 0;	// 現在のポーズ番号
-	int nNowKey = 0;	// 現在のキー番号
-	int nLoop = 0;	// ループのON/OFFの変換用
-	int nEnd = 0;	// テキスト読み込み終了の確認用
-
-	// 変数配列を宣言
-	char aString[MAX_STRING];	// テキストの文字列の代入用
-
-	// ポインタを宣言
-	FILE* pFile;	// ファイルポインタ
-
-	// ポーズ代入用の変数を初期化
-	memset(&info, 0, sizeof(info));
-
-	// ファイルを読み込み形式で開く
-	pFile = fopen(SETUP_TXT, "r");
-
-	if (pFile != nullptr)
-	{ // ファイルが開けた場合
-
-		do
-		{ // 読み込んだ文字列が EOF ではない場合ループ
-
-			// ファイルから文字列を読み込む
-			nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
-
-			// キャラクターの設定
-			if (strcmp(&aString[0], "CHARACTERSET") == 0)
-			{ // 読み込んだ文字列が CHARACTERSET の場合
-
-				do
-				{ // 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
-
-					// ファイルから文字列を読み込む
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (strcmp(&aString[0], "PARTSSET") == 0)
-					{ // 読み込んだ文字列が PARTSSET の場合
-
-						do
-						{ // 読み込んだ文字列が END_PARTSSET ではない場合ループ
-
-							// ファイルから文字列を読み込む
-							fscanf(pFile, "%s", &aString[0]);
-
-							if (strcmp(&aString[0], "INDEX") == 0)
-							{ // 読み込んだ文字列が INDEX の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%d", &nID);			// モデルのインデックスを読み込む
-							}
-							else if (strcmp(&aString[0], "PARENT") == 0)
-							{ // 読み込んだ文字列が PARENT の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%d", &nParentID);	// モデルの親のインデックスを読み込む
-							}
-							else if (strcmp(&aString[0], "POS") == 0)
-							{ // 読み込んだ文字列が POS の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%f", &pos.x);		// X座標を読み込む
-								fscanf(pFile, "%f", &pos.y);		// Y座標を読み込む
-								fscanf(pFile, "%f", &pos.z);		// Z座標を読み込む
-							}
-							else if (strcmp(&aString[0], "ROT") == 0)
-							{ // 読み込んだ文字列が ROT の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%f", &rot.x);		// X向きを読み込む
-								fscanf(pFile, "%f", &rot.y);		// Y向きを読み込む
-								fscanf(pFile, "%f", &rot.z);		// Z向きを読み込む
-							}
-						} while (strcmp(&aString[0], "END_PARTSSET") != 0);	// 読み込んだ文字列が END_PARTSSET ではない場合ループ
-
-						// パーツ情報の設定
-						CObjectChara::SetPartsInfo(nID, nParentID, pos, rot, MODEL_FILE[nID]);
-					}
-				} while (strcmp(&aString[0], "END_CHARACTERSET") != 0);		// 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
-			}
-
-			// モーションの設定
-			else if (strcmp(&aString[0], "MOTIONSET") == 0)
-			{ // 読み込んだ文字列が MOTIONSET の場合
-
-				// 現在のポーズ番号を初期化
-				nNowPose = 0;
-
-				do
-				{ // 読み込んだ文字列が END_MOTIONSET ではない場合ループ
-
-					// ファイルから文字列を読み込む
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (strcmp(&aString[0], "LOOP") == 0)
-					{ // 読み込んだ文字列が LOOP の場合
-
-						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nLoop);		// ループのON/OFFを読み込む
-
-						// 読み込んだ値をbool型に変換
-						info.bLoop = (nLoop == 0) ? false : true;
-					}
-					else if (strcmp(&aString[0], "NUM_KEY") == 0)
-					{ // 読み込んだ文字列が NUM_KEY の場合
-
-						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &info.nNumKey);	// キーの総数を読み込む
-					}
-					else if (strcmp(&aString[0], "KEYSET") == 0)
-					{ // 読み込んだ文字列が KEYSET の場合
-
-						// 現在のキー番号を初期化
-						nNowKey = 0;
-
-						do
-						{ // 読み込んだ文字列が END_KEYSET ではない場合ループ
-
-							// ファイルから文字列を読み込む
-							fscanf(pFile, "%s", &aString[0]);
-
-							if (strcmp(&aString[0], "FRAME") == 0)
-							{ // 読み込んだ文字列が FRAME の場合
-
-								fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-								fscanf(pFile, "%d", &info.aKeyInfo[nNowPose].nFrame);	// キーが切り替わるまでのフレーム数を読み込む
-							}
-							else if (strcmp(&aString[0], "KEY") == 0)
-							{ // 読み込んだ文字列が KEY の場合
-
-								do
-								{ // 読み込んだ文字列が END_KEY ではない場合ループ
-
-									// ファイルから文字列を読み込む
-									fscanf(pFile, "%s", &aString[0]);
-
-									if (strcmp(&aString[0], "POS") == 0)
-									{ // 読み込んだ文字列が POS の場合
-
-										fscanf(pFile, "%s", &aString[0]);									// = を読み込む (不要)
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.x);	// X位置を読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.y);	// Y位置を読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.z);	// Z位置を読み込む
-
-										// 読み込んだ位置にパーツの初期位置を加算
-										info.aKeyInfo[nNowPose].aKey[nNowKey].pos += GetPartsPosition(nNowKey);
-									}
-									else if (strcmp(&aString[0], "ROT") == 0)
-									{ // 読み込んだ文字列が ROT の場合
-
-										fscanf(pFile, "%s", &aString[0]);									// = を読み込む (不要)
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.x);	// X向きを読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.y);	// Y向きを読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.z);	// Z向きを読み込む
-
-										// 読み込んだ向きにパーツの初期向きを加算
-										info.aKeyInfo[nNowPose].aKey[nNowKey].rot += GetPartsRotation(nNowKey);
-
-										// 初期向きを正規化
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.x);
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.y);
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.z);
-									}
-
-								} while (strcmp(&aString[0], "END_KEY") != 0);	// 読み込んだ文字列が END_KEY ではない場合ループ
-
-								// 現在のキー番号を加算
-								nNowKey++;
-							}
-						} while (strcmp(&aString[0], "END_KEYSET") != 0);	// 読み込んだ文字列が END_KEYSET ではない場合ループ
-
-						// 現在のポーズ番号を加算
-						nNowPose++;
-					}
-				} while (strcmp(&aString[0], "END_MOTIONSET") != 0);	// 読み込んだ文字列が END_MOTIONSET ではない場合ループ
-
-				// モーション情報の設定
-				CObjectChara::AddMotionInfo(info);
-			}
-		} while (nEnd != EOF);	// 読み込んだ文字列が EOF ではない場合ループ
-
-		// ファイルを閉じる
-		fclose(pFile);
-	}
-	else
-	{ // ファイルが開けなかった場合
-
-		// エラーメッセージボックス
-		MessageBox(nullptr, "プレイヤーセットアップファイルの読み込みに失敗！", "警告！", MB_ICONWARNING);
-	}
 }

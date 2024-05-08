@@ -5,6 +5,27 @@
 #
 #==============================================================================
 #------------------------------------------------------------------------------
+#	モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/player/00_waist.x
+MODEL_FILENAME = data/MODEL/player/01_body.x
+MODEL_FILENAME = data/MODEL/player/02_head.x
+MODEL_FILENAME = data/MODEL/player/03_armUL.x
+MODEL_FILENAME = data/MODEL/player/04_armUR.x
+MODEL_FILENAME = data/MODEL/player/05_armDL.x
+MODEL_FILENAME = data/MODEL/player/06_armDR.x
+MODEL_FILENAME = data/MODEL/player/07_handL.x
+MODEL_FILENAME = data/MODEL/player/08_handR.x
+MODEL_FILENAME = data/MODEL/player/09_legUL.x
+MODEL_FILENAME = data/MODEL/player/10_legUR.x
+MODEL_FILENAME = data/MODEL/player/11_legDL.x
+MODEL_FILENAME = data/MODEL/player/12_legDR.x
+MODEL_FILENAME = data/MODEL/player/13_footL.x
+MODEL_FILENAME = data/MODEL/player/14_footR.x
+MODEL_FILENAME = data/MODEL/player/15_sword.x
+MODEL_FILENAME = data/MODEL/player/15_sword.x
+
+#------------------------------------------------------------------------------
 #	キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
