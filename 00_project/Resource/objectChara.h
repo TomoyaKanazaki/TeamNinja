@@ -67,11 +67,11 @@ public:
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
-	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;		// パーツ位置取得
-	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;		// パーツ向き取得
-	CMultiModel *GetMultiModel(const int nPartsID) const;		// マルチモデル取得
-	CMotion *GetMotion(void) const;								// モーション取得
-	int GetNumModel(void) const { return m_nNumModel; }			// パーツ総数取得
+	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
+	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
+	CMultiModel *GetMultiModel(const int nPartsID) const;				// マルチモデル取得
+	CMotion *GetMotion(void) const;										// モーション取得
+	int GetNumModel(void) const { return (int)m_vecMultiModel.size(); }	// パーツ総数取得
 
 	void SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID);	// マテリアル設定
 	void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定
@@ -104,12 +104,11 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	CMultiModel	*m_apMultiModel[motion::MAX_PARTS];	// モデルの情報
+	std::vector<CMultiModel*> m_vecMultiModel;	// モデルの情報
 	CMotion		*m_pMotion;		// モーションの情報
 	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
 	D3DXVECTOR3	m_pos;			// 位置
 	D3DXVECTOR3	m_rot;			// 向き
-	int			m_nNumModel;	// パーツの総数
 };
 
 #endif	// _OBJECTCHARA_H_
