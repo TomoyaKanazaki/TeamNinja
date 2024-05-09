@@ -123,6 +123,9 @@ private:
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
 
+	// 静的メンバ関数 (金崎追加)
+	static void LoadParameter(); // 定数値の読み込み
+
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 	CShadow		*m_pShadow;			// 影の情報
@@ -136,7 +139,11 @@ private:
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
-	CGauge2D* m_pEnduranceGauge; // 耐久力ゲージのポインタ
+	
+	// 静的メンバ変数
+	static unsigned int m_nMaxTension; // 士気力の最大値
+	static unsigned int m_nInitTension; // 士気力の初期値
+	static unsigned int m_nSpeesTension; // 士気力ゲージの増減速度
 
 };
 

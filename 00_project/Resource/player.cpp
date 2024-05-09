@@ -62,12 +62,17 @@ namespace
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
+
+	const char* PARAM_FILE = "data/TXT/PlayerParameter.txt";
 }
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
+unsigned int CPlayer::m_nMaxTension = 0; // 士気力の最大値
+unsigned int CPlayer::m_nInitTension = 0; // 士気力の初期値
+unsigned int CPlayer::m_nSpeesTension = 0; // 士気力ゲージの増減速度
 
 //************************************************************
 //	子クラス [CPlayer] のメンバ関数
@@ -84,8 +89,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state				(STATE_NONE),	// 状態
 	m_bJump				(false),		// ジャンプ状況
 	m_nCounterState		(0),			// 状態管理カウンター
-	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
-	m_pEnduranceGauge	(nullptr)		// 耐久力ゲージのポインタ
+	m_pTensionGauge		(nullptr)		// 士気力ゲージのポインタ
 {
 
 }
@@ -113,7 +117,6 @@ HRESULT CPlayer::Init(void)
 	m_bJump				= true;			// ジャンプ状況
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
-	m_pEnduranceGauge	= nullptr;		// 耐久力ゲージのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -123,6 +126,9 @@ HRESULT CPlayer::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// 定数値の読み込み
+	LoadParameter();
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
@@ -175,22 +181,12 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		100, 60, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		m_nMaxTension, m_nSpeesTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
-	m_pTensionGauge->SetNum(50);
-
-	// 耐久力ゲージを生成
-	m_pEnduranceGauge = CGauge2D::Create
-	(
-		100, 60, D3DXVECTOR3(300.0f, 90.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f)
-	);
-	m_pEnduranceGauge->SetNum(50);
+	m_pTensionGauge->SetNum(m_nInitTension);
 
 	// 成功を返す
 	return S_OK;
@@ -204,9 +200,6 @@ void CPlayer::Uninit(void)
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
 	
-	// 耐久力ゲージの終了
-	SAFE_UNINIT(m_pEnduranceGauge);
-
 	// 影の終了
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
 	SAFE_UNINIT(m_pShadow);
@@ -294,26 +287,17 @@ void CPlayer::Update(const float fDeltaTime)
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
-	// 士気力、耐久力の変更
+	// 士気力の変更
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
-		m_pTensionGauge->AddNum(10);
+		m_pTensionGauge->AddNum(100);
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		m_pTensionGauge->AddNum(-10);
-	}
-	if (pKeyboard->IsTrigger(DIK_RIGHT))
-	{
-		m_pEnduranceGauge->AddNum(10);
-	}
-	if (pKeyboard->IsTrigger(DIK_LEFT))
-	{
-		m_pEnduranceGauge->AddNum(-10);
+		m_pTensionGauge->AddNum(-100);
 	}
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %d\n", m_pEnduranceGauge->GetNum());
 
 #endif
 }
@@ -828,4 +812,52 @@ void CPlayer::Inertial()
 
 	// z軸方向の慣性
 	m_move.z += (0.0f - m_move.z) * 0.1f;
+}
+
+//==========================================
+//  定数読み込み
+//==========================================
+void CPlayer::LoadParameter()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
+
+	//ファイルを読み取り専用で開く
+	pFile = fopen(PARAM_FILE, "r");
+
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return; }
+
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
+
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
+
+		// 条件分岐処理
+		if (strcmp(&aStr[0], "TENSION_MAX") == 0)
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxTension);
+		}
+		if (strcmp(&aStr[0], "TENSION_INIT") == 0)
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nInitTension);
+		}
+		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0)
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nSpeesTension);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
+	}
+
+	return;
 }
