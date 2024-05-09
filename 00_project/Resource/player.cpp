@@ -70,9 +70,6 @@ namespace
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
-unsigned int CPlayer::m_nMaxTension = 0; // 士気力の最大値
-unsigned int CPlayer::m_nInitTension = 0; // 士気力の初期値
-unsigned int CPlayer::m_nSpeesTension = 0; // 士気力ゲージの増減速度
 
 //************************************************************
 //	子クラス [CPlayer] のメンバ関数
@@ -89,7 +86,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state				(STATE_NONE),	// 状態
 	m_bJump				(false),		// ジャンプ状況
 	m_nCounterState		(0),			// 状態管理カウンター
-	m_pTensionGauge		(nullptr)		// 士気力ゲージのポインタ
+	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
+	m_nMaxTension		(0),			// 最大士気力
+	m_nInitTension		(0),			// 初期士気力
+	m_nSpeedTension		(0)				// 士気力ゲージの増減速度
 {
 
 }
@@ -118,6 +118,9 @@ HRESULT CPlayer::Init(void)
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 
+	// 定数パラメータの読み込み
+	LoadParameter();
+
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
 	{ // 初期化に失敗した場合
@@ -126,9 +129,6 @@ HRESULT CPlayer::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 定数値の読み込み
-	LoadParameter();
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
@@ -181,12 +181,13 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		m_nMaxTension, m_nSpeesTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
 	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetLabel(LABEL_UI);
 
 	// 成功を返す
 	return S_OK;
@@ -265,7 +266,7 @@ void CPlayer::Update(const float fDeltaTime)
 	// 操作
 	Move();
 
-	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{ // 0キーを押した場合
 
 		// プレイヤーの分身を生成
@@ -501,6 +502,18 @@ float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
 	return HEIGHT;
+}
+
+//==========================================
+//  士気力の値を取得
+//==========================================
+int CPlayer::GetTension() const
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return -1; }
+
+	// 士気力の値を返す
+	return m_pTensionGauge->GetNum();
 }
 
 //============================================================
@@ -838,20 +851,20 @@ void CPlayer::LoadParameter()
 		fscanf(pFile, "%s", &aStr[0]);
 
 		// 条件分岐処理
-		if (strcmp(&aStr[0], "TENSION_MAX") == 0)
+		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
 		{
 			// データを格納
 			fscanf(pFile, "%d", &m_nMaxTension);
 		}
-		if (strcmp(&aStr[0], "TENSION_INIT") == 0)
+		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
 		{
 			// データを格納
 			fscanf(pFile, "%d", &m_nInitTension);
 		}
-		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0)
+		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
 		{
 			// データを格納
-			fscanf(pFile, "%d", &m_nSpeesTension);
+			fscanf(pFile, "%d", &m_nSpeedTension);
 		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{

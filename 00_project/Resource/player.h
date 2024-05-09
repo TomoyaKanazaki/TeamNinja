@@ -101,6 +101,9 @@ public:
 	float GetRadius(void) const;		// 半径取得
 	float GetHeight(void) const;		// 縦幅取得
 
+	// メンバ関数 (金崎朋弥)
+	int GetTension() const; // 士気力の値を取得
+
 private:
 	// メンバ関数
 	EMotion UpdateSpawn(void);		// スポーン状態時の更新
@@ -119,12 +122,10 @@ private:
 	// メンバ関数 (金崎追加)
 	void Move(); // 操作処理
 	void Inertial(); // 運動の第一法則
+	void LoadParameter(); // 定数値の読み込み
 
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
-
-	// 静的メンバ関数 (金崎追加)
-	static void LoadParameter(); // 定数値の読み込み
 
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
@@ -139,11 +140,9 @@ private:
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
-	
-	// 静的メンバ変数
-	static unsigned int m_nMaxTension; // 士気力の最大値
-	static unsigned int m_nInitTension; // 士気力の初期値
-	static unsigned int m_nSpeesTension; // 士気力ゲージの増減速度
+	unsigned int m_nMaxTension; // 士気力の最大値
+	unsigned int m_nInitTension; // 士気力の初期値
+	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
 
 };
 
