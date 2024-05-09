@@ -56,7 +56,7 @@ public:
 	// キー管理構造体
 	struct SKeyInfo
 	{
-		SKey		aKey[motion::MAX_PARTS];	// キーモデル情報
+		SKey		aKey[motion::MAX_PARTS];	// キーパーツ情報
 		D3DXVECTOR3	move;	// キー移動量
 		int			nFrame;	// キー再生フレーム数
 	};
@@ -64,22 +64,22 @@ public:
 	// モーション管理構造体
 	struct SMotionInfo
 	{
-		SKeyInfo  aKeyInfo[motion::MAX_KEY];	// キー情報
+		SKeyInfo *pKeyInfo;		// キー情報
 		SCollTime collLeft;		// 左攻撃判定のカウント
 		SCollTime collRight;	// 右攻撃判定のカウント
+		int  nNumKey;			// キー総数
 		int  nWholeFrame;		// モーション全体フレーム数
 		int  nCancelFrame;		// キャンセル可能フレーム
 		int  nComboFrame;		// コンボ可能フレーム
-		int  nNumKey;			// キー総数
-		bool bLoop;				// ループ ON/OFF
-		bool bWeaponDisp;		// 武器表示 ON/OFF
+		bool bLoop;				// ループON/OFF
+		bool bWeaponDisp;		// 武器表示ON/OFF
 	};
 
 	// モーション情報構造体
 	struct SInfo
 	{
 		SMotionInfo aMotionInfo[motion::MAX_MOTION];	// モーション情報
-		SKey aOriginKey[motion::MAX_PARTS];	// キーモデル原点情報
+		SKey aOriginKey[motion::MAX_PARTS];	// キーパーツ原点情報
 		int  nNumType;		// モーション種類総数
 		int  nType;			// モーション種類
 		int  nKey;			// モーションキー番号
@@ -97,6 +97,11 @@ public:
 	};
 
 	// メンバ関数
+	HRESULT CreateMotionInfo(SInfo *pInfo, const int nNumType);			// モーション情報生成
+	HRESULT CreateKeyInfo(SMotionInfo *pMotionInfo, const int nNumKey);	// キー情報生成
+	HRESULT CreateKey(SKeyInfo *pKeyInfo, const int nNumParts);			// キーパーツ情報生成
+
+
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(const float fDeltaTime);	// 更新
