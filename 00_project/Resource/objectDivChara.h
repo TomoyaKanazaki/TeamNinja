@@ -91,7 +91,6 @@ public:
 		const int nMatID			// マテリアルインデックス
 	);
 
-	void SetModelInfo(void);	// モデル情報設定
 	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
 	void AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info);	// モーション情報追加
 

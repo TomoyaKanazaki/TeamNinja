@@ -279,8 +279,8 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
 	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
 
-	// モーション情報の設定
-	m_pMotion->SetAllInfo(data.infoMotion);
+	// パーツ数の設定
+	m_pMotion->SetNumParts(data.infoParts.nNumParts);
 
 	for (int nCntChara = 0; nCntChara < data.infoParts.nNumParts; nCntChara++)
 	{ // 読み込んだパーツ数分繰り返す
@@ -289,6 +289,12 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 		CMotionManager::SParts *pParts = &data.infoParts.pInfo[nCntChara];	// パーツ情報
 		CObjectChara::SetPartsInfo(nCntChara, pParts->nParentID, pParts->pos, pParts->rot, pParts->strPass.c_str());
 	}
+
+	// モデル情報の設定
+	m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel);
+
+	// モーション情報の設定
+	m_pMotion->SetAllInfo(data.infoMotion);
 }
 
 //============================================================

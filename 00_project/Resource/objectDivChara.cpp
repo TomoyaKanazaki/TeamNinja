@@ -296,19 +296,6 @@ void CObjectDivChara::SetMaterial
 }
 
 //============================================================
-//	モデル情報の設定処理
-//============================================================
-void CObjectDivChara::SetModelInfo(void)
-{
-	for (int i = 0; i < BODY_MAX; i++)
-	{ // 分割した身体の数分繰り返す
-
-		// モデル情報の設定
-		m_apBody[i]->SetModelInfo();
-	}
-}
-
-//============================================================
 //	モーションの更新状況の設定処理
 //============================================================
 void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)

@@ -81,9 +81,6 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// モデル情報の設定
-	SetModelInfo();
-
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
 	if (m_pShadow == nullptr)

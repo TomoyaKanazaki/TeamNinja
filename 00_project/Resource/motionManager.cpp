@@ -51,6 +51,29 @@ void CMotionManager::Uninit(void)
 	for (auto& rMap : m_mapMotion)
 	{ // モーションの要素数分繰り返す
 
+		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotionInfo)
+		{ // モーション情報の要素数分繰り返す
+
+			for (auto& rKeyInfo : rMotionInfo.vecKeyInfo)
+			{ // キー情報の要素数分繰り返す
+
+				for (auto& rKey : rKeyInfo.vecKey)
+				{ // キー情報の要素数分繰り返す
+
+
+				}
+
+				// をクリア
+				rKeyInfo.vecKey.clear();
+			}
+
+			// をクリア
+			rMotionInfo.vecKeyInfo.clear();
+		}
+
+		// をクリア
+		rMap.second.infoMotion.vecMotionInfo.clear();
+
 		// パーツ情報の破棄
 		SAFE_DEL_ARRAY(rMap.second.infoParts.pInfo);
 	}
@@ -260,14 +283,12 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 			else if (strcmp(&aString[0], "MOTIONSET") == 0)
 			{ // 読み込んだ文字列が MOTIONSET の場合
 
-				int nType = pInfoChara->infoMotion.nNumType;	// 現在の種類の数
-				CMotion::SMotionInfo *pMotionInfo = &pInfoChara->infoMotion.aMotionInfo[nType];	// 現在のモーション情報
+				int nType = pInfoChara->infoMotion.nNumType;			// 現在の種類の数
+				pInfoChara->infoMotion.vecMotionInfo.emplace_back();	// 空の要素を最後尾に追加
+				CMotion::SMotionInfo *pMotionInfo = &pInfoChara->infoMotion.vecMotionInfo[nType];	// 現在のモーション情報
 
 				// 現在のモーション番号を初期化
 				nCurMotion = 0;
-
-				// モーション代入用の変数を初期化
-				memset(pMotionInfo, 0, sizeof(*pMotionInfo));
 
 				// キャンセル・コンボフレームをなしにする
 				pMotionInfo->nCancelFrame = NONE_IDX;
@@ -341,7 +362,8 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 					else if (strcmp(&aString[0], "KEYSET") == 0)
 					{ // 読み込んだ文字列が KEYSET の場合
 
-						CMotion::SKeyInfo *pKeyInfo = &pMotionInfo->aKeyInfo[nCurMotion];	// 現在のキー情報
+						pMotionInfo->vecKeyInfo.emplace_back();	// 空の要素を最後尾に追加
+						CMotion::SKeyInfo *pKeyInfo = &pMotionInfo->vecKeyInfo[nCurMotion];	// 現在のキー情報
 
 						// 現在のキー番号を初期化
 						nCurKey = 0;
@@ -369,7 +391,8 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 							else if (strcmp(&aString[0], "KEY") == 0)
 							{ // 読み込んだ文字列が KEY の場合
 
-								CMotion::SKey *pKey = &pKeyInfo->aKey[nCurKey];	// 現在のキー
+								pKeyInfo->vecKey.emplace_back();	// 空の要素を最後尾に追加
+								CMotion::SKey *pKey = &pKeyInfo->vecKey[nCurKey];	// 現在のキー
 
 								do
 								{ // 読み込んだ文字列が END_KEY ではない場合ループ
@@ -398,9 +421,7 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 
 										// 読み込んだ向きにパーツの初期向きを加算
 										pKey->rot += pPartsInfo->pInfo[nCurKey].rot;
-
-										// 初期向きを正規化
-										useful::NormalizeRot(pKey->rot);
+										useful::NormalizeRot(pKey->rot);	// 向き正規化
 									}
 
 								} while (strcmp(&aString[0], "END_KEY") != 0);	// 読み込んだ文字列が END_KEY ではない場合ループ

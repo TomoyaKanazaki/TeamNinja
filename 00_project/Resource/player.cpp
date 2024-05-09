@@ -126,9 +126,11 @@ HRESULT CPlayer::Init(void)
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
-
-	// モデル情報の設定
-	SetModelInfo();
+	//BindCharaData(SETUP_TXT);
+	//BindCharaData(SETUP_TXT);
+	//BindCharaData(SETUP_TXT);
+	//BindCharaData(SETUP_TXT);
+	//BindCharaData(SETUP_TXT);
 
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
