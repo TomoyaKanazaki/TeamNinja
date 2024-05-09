@@ -103,6 +103,8 @@ public:
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const; // 士気力の値を取得
+	void RecoverCheckPoint(); // チェックポイントでの回復処理
+	void RecoverJust(); // ジャストアクションでの回復処理
 
 private:
 	// メンバ関数

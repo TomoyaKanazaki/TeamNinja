@@ -295,6 +295,10 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		m_pTensionGauge->AddNum(-100);
 	}
+	if (pKeyboard->IsTrigger(DIK_RIGHT))
+	{
+		RecoverCheckPoint();
+	}
 
 #endif
 }
@@ -510,6 +514,31 @@ int CPlayer::GetTension() const
 
 	// 士気力の値を返す
 	return m_pTensionGauge->GetNum();
+}
+
+//==========================================
+//  チェックポイントでの回復処理
+//==========================================
+void CPlayer::RecoverCheckPoint()
+{
+	// 現在の士気力を取得する
+	unsigned int nTension = GetTension();
+
+	// 士気力ゲージが存在しなかった場合関数を抜ける
+	if (nTension == -1) { return; }
+
+	// 最大値と現在値の差を求める
+	float fDiff = (float)(m_nMaxTension - nTension);
+
+	// 差分の半分の値で士気力を回復する
+	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
+}
+
+//==========================================
+//  ジャストアクションでの回復処理
+//==========================================
+void CPlayer::RecoverJust()
+{
 }
 
 //============================================================
