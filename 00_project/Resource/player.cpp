@@ -89,7 +89,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
 	m_nMaxTension		(0),			// 最大士気力
 	m_nInitTension		(0),			// 初期士気力
-	m_nSpeedTension		(0)				// 士気力ゲージの増減速度
+	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
+	m_bCreateClone		(false),		// 分身生成モードフラグ
+	m_nNumClone			(0),			// 生成する分身の数
+	m_nMaxClone			(0)				// 一度に分身できる上限
 {
 
 }
@@ -117,6 +120,8 @@ HRESULT CPlayer::Init(void)
 	m_bJump				= true;			// ジャンプ状況
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
+	m_bCreateClone		= false;		// 分身生成モードフラグ
+	m_nNumClone			= 0;			// 生成する分身の数
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -273,7 +278,7 @@ void CPlayer::Update(const float fDeltaTime)
 		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
 
 		// 分身を削除する
-		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
 		{
 			// プレイヤーの分身を消去
 			CPlayerClone::Delete();
@@ -281,17 +286,45 @@ void CPlayer::Update(const float fDeltaTime)
 	}
 	else
 	{
-		// 分身を生成する
+		// 分身の数を設定する
 		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
 		{
+			// 分身の数を加算
+			++m_nNumClone;
 
+			// 分身可能フラグをオン
+			m_bCreateClone = true;
+
+			// 上限を超えた場合0に戻す
+			if (m_nNumClone > m_nMaxClone)
+			{
+				m_nNumClone = 0;
+
+				// 0の時はフラグをオフ
+				m_bCreateClone = false;
+			}
+		}
+
+		// 分身を生成する
+		if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
+		{
 			// プレイヤーの分身を生成
-			CPlayerClone::Create();
+			for (int i = 0; i < m_nNumClone; ++i)
+			{
+				CPlayerClone::Create();
+			}
+
+			// 生成したら0に戻す
+			m_nNumClone = 0;
 		}
 	}
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// デバッグ表示
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_RIGHT, "生成する分身 : %d", m_nNumClone);
 
 #ifdef _DEBUG
 
@@ -307,8 +340,6 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		m_pTensionGauge->AddNum(-100);
 	}
-
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
 
 #endif
 }
@@ -875,6 +906,11 @@ void CPlayer::LoadParameter()
 		{
 			// データを格納
 			fscanf(pFile, "%d", &m_nSpeedTension);
+		}
+		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxClone);
 		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{

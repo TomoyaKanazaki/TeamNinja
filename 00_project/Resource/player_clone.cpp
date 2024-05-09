@@ -271,7 +271,7 @@ void CPlayerClone::Delete(void)
 		for (int i = 0; i < nNum; ++i)
 		{
 			// •ªg‚ðŽæ“¾
-			CPlayerClone* pAvatar = m_pList->GetIndex(i);
+			CPlayerClone* pAvatar = m_pList->GetIndex(0);
 
 			// •ªg‚ÌI—¹
 			pAvatar->Uninit();

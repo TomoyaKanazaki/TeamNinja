@@ -143,6 +143,9 @@ private:
 	unsigned int m_nMaxTension; // 士気力の最大値
 	unsigned int m_nInitTension; // 士気力の初期値
 	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
+	bool m_bCreateClone; // 分身生成モードフラグ
+	unsigned int m_nNumClone; // 生成する分身の数
+	unsigned int m_nMaxClone; // 一度に分身できる上限
 
 };
 
