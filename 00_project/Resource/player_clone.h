@@ -74,6 +74,7 @@ public:
 	// 静的メンバ関数
 	static CPlayerClone* Create(void);					// 生成
 	static void Delete(const int nNum);					// 消去処理
+	static void Delete();								// 全消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);	// リスト取得
 
 private:
