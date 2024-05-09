@@ -123,6 +123,7 @@ private:
 	void Move(); // 操作処理
 	void Inertial(); // 運動の第一法則
 	void LoadParameter(); // 定数値の読み込み
+	void ControlClone(); // 分身の処理
 
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
