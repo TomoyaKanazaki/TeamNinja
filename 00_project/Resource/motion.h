@@ -64,15 +64,15 @@ public:
 	// モーション管理構造体
 	struct SMotionInfo
 	{
-		SKeyInfo *pKeyInfo;		// キー情報
+		SKeyInfo  aKeyInfo[motion::MAX_KEY];	// キー情報
 		SCollTime collLeft;		// 左攻撃判定のカウント
 		SCollTime collRight;	// 右攻撃判定のカウント
 		int  nNumKey;			// キー総数
 		int  nWholeFrame;		// モーション全体フレーム数
 		int  nCancelFrame;		// キャンセル可能フレーム
 		int  nComboFrame;		// コンボ可能フレーム
-		bool bLoop;				// ループON/OFF
-		bool bWeaponDisp;		// 武器表示ON/OFF
+		bool bLoop;				// ループ ON/OFF
+		bool bWeaponDisp;		// 武器表示 ON/OFF
 	};
 
 	// モーション情報構造体
@@ -97,11 +97,6 @@ public:
 	};
 
 	// メンバ関数
-	HRESULT CreateMotionInfo(SInfo *pInfo, const int nNumType);			// モーション情報生成
-	HRESULT CreateKeyInfo(SMotionInfo *pMotionInfo, const int nNumKey);	// キー情報生成
-	HRESULT CreateKey(SKeyInfo *pKeyInfo, const int nNumParts);			// キーパーツ情報生成
-
-
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(const float fDeltaTime);	// 更新

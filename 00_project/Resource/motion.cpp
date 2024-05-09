@@ -37,51 +37,6 @@ CMotion::~CMotion()
 }
 
 //============================================================
-//	モーション情報の生成処理
-//============================================================
-HRESULT CMotion::CreateMotionInfo(SInfo *pInfo, const int nNumType)
-{
-	return E_NOTIMPL;
-}
-
-//============================================================
-//	キー情報の生成処理
-//============================================================
-HRESULT CMotion::CreateKeyInfo(SMotionInfo *pMotionInfo, const int nNumKey)
-{
-	// モーション情報が指定されていない場合抜ける
-	if (pMotionInfo == nullptr) { assert(false); return E_FAIL; }
-
-	// 生成済みのキー情報を破棄
-	SAFE_DEL_ARRAY(pMotionInfo->pKeyInfo);
-	assert(pMotionInfo->pKeyInfo == nullptr);
-
-	// キー情報を生成
-	pMotionInfo->pKeyInfo = new SKeyInfo[nNumKey];
-	if (pMotionInfo->pKeyInfo == nullptr)
-	{ // 生成に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// キー情報のメモリクリア
-	memset(&pMotionInfo->pKeyInfo, 0, sizeof(pMotionInfo->pKeyInfo));
-
-	// 成功を返す
-	return S_OK;
-}
-
-//============================================================
-//	キーパーツ情報の生成処理
-//============================================================
-HRESULT CMotion::CreateKey(SKeyInfo *pKeyInfo, const int nNumParts)
-{
-	return E_NOTIMPL;
-}
-
-//============================================================
 //	初期化処理
 //============================================================
 HRESULT CMotion::Init(void)
@@ -165,10 +120,10 @@ void CMotion::UpdateMove(void)
 	D3DXVECTOR3 posCurChara = VEC3_ZERO;							// キャラ現在位置
 
 	// 移動量を求める
-	float fRate = 1.0f / (float)m_info.aMotionInfo[m_info.nType].pKeyInfo[m_info.nKey].nFrame;	// キーフレーム割合
-	D3DXVECTOR3 moveRate = m_info.aMotionInfo[m_info.nType].pKeyInfo[m_info.nKey].move * fRate;	// フレーム移動量
+	float fRate = 1.0f / (float)m_info.aMotionInfo[m_info.nType].aKeyInfo[m_info.nKey].nFrame;	// キーフレーム割合
+	D3DXVECTOR3 moveRate = m_info.aMotionInfo[m_info.nType].aKeyInfo[m_info.nKey].move * fRate;	// フレーム移動量
 
-	if (m_info.aMotionInfo[m_info.nType].pKeyInfo[m_info.nKey].nFrame > 0)
+	if (m_info.aMotionInfo[m_info.nType].aKeyInfo[m_info.nKey].nFrame > 0)
 	{ // フレームが設定されている場合
 
 		// 移動量をマトリックスに反映
@@ -203,18 +158,18 @@ void CMotion::UpdateMotion(void)
 	{ // モデルのパーツ数分繰り返す
 
 		// 位置・向きの差分を求める
-		D3DXVECTOR3 diffPos = m_info.aMotionInfo[nType].pKeyInfo[nNextKey].aKey[nCntKey].pos - m_info.aMotionInfo[nType].pKeyInfo[nKey].aKey[nCntKey].pos;
-		D3DXVECTOR3 diffRot = m_info.aMotionInfo[nType].pKeyInfo[nNextKey].aKey[nCntKey].rot - m_info.aMotionInfo[nType].pKeyInfo[nKey].aKey[nCntKey].rot;
+		D3DXVECTOR3 diffPos = m_info.aMotionInfo[nType].aKeyInfo[nNextKey].aKey[nCntKey].pos - m_info.aMotionInfo[nType].aKeyInfo[nKey].aKey[nCntKey].pos;
+		D3DXVECTOR3 diffRot = m_info.aMotionInfo[nType].aKeyInfo[nNextKey].aKey[nCntKey].rot - m_info.aMotionInfo[nType].aKeyInfo[nKey].aKey[nCntKey].rot;
 		useful::NormalizeRot(diffRot);	// 差分向きの正規化
 
 		// 現在のパーツの位置・向きを更新
-		float fRate = (float)m_info.nKeyCounter / (float)m_info.aMotionInfo[nType].pKeyInfo[nKey].nFrame;	// キーフレーム割合
-		m_ppModel[nCntKey]->SetVec3Position(m_info.aMotionInfo[nType].pKeyInfo[nKey].aKey[nCntKey].pos + diffPos * fRate);
-		m_ppModel[nCntKey]->SetVec3Rotation(m_info.aMotionInfo[nType].pKeyInfo[nKey].aKey[nCntKey].rot + diffRot * fRate);
+		float fRate = (float)m_info.nKeyCounter / (float)m_info.aMotionInfo[nType].aKeyInfo[nKey].nFrame;	// キーフレーム割合
+		m_ppModel[nCntKey]->SetVec3Position(m_info.aMotionInfo[nType].aKeyInfo[nKey].aKey[nCntKey].pos + diffPos * fRate);
+		m_ppModel[nCntKey]->SetVec3Rotation(m_info.aMotionInfo[nType].aKeyInfo[nKey].aKey[nCntKey].rot + diffRot * fRate);
 	}
 
 	// モーションの遷移の更新
-	if (m_info.nKeyCounter < m_info.aMotionInfo[nType].pKeyInfo[nKey].nFrame)
+	if (m_info.nKeyCounter < m_info.aMotionInfo[nType].aKeyInfo[nKey].nFrame)
 	{ // 現在のキーの再生が終了していない場合
 
 		// カウンターを加算
@@ -273,8 +228,8 @@ void CMotion::UpdateBlend(void)
 	{ // モデルのパーツ数分繰り返す
 
 		// 位置・向きの差分を求める
-		D3DXVECTOR3 diffPos = m_info.aMotionInfo[m_info.nType].pKeyInfo[0].aKey[nCntKey].pos - m_blend.aKey[nCntKey].pos;
-		D3DXVECTOR3 diffRot = m_info.aMotionInfo[m_info.nType].pKeyInfo[0].aKey[nCntKey].rot - m_blend.aKey[nCntKey].rot;
+		D3DXVECTOR3 diffPos = m_info.aMotionInfo[m_info.nType].aKeyInfo[0].aKey[nCntKey].pos - m_blend.aKey[nCntKey].pos;
+		D3DXVECTOR3 diffRot = m_info.aMotionInfo[m_info.nType].aKeyInfo[0].aKey[nCntKey].rot - m_blend.aKey[nCntKey].rot;
 		useful::NormalizeRot(diffRot);	// 差分向きの正規化
 
 		// 現在のパーツの位置・向きを更新
@@ -340,8 +295,8 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 		{ // モデルのパーツ数分繰り返す
 
 			// 初期位置と初期向きを設定
-			m_ppModel[nCntKey]->SetVec3Position(m_info.aMotionInfo[nType].pKeyInfo[m_info.nKey].aKey[nCntKey].pos);
-			m_ppModel[nCntKey]->SetVec3Rotation(m_info.aMotionInfo[nType].pKeyInfo[m_info.nKey].aKey[nCntKey].rot);
+			m_ppModel[nCntKey]->SetVec3Position(m_info.aMotionInfo[nType].aKeyInfo[m_info.nKey].aKey[nCntKey].pos);
+			m_ppModel[nCntKey]->SetVec3Rotation(m_info.aMotionInfo[nType].aKeyInfo[m_info.nKey].aKey[nCntKey].rot);
 		}
 	}
 }
@@ -374,7 +329,7 @@ void CMotion::AddInfo(const SMotionInfo info)
 	{ // キーの総数分繰り返す
 
 		// キーのフレーム数を加算
-		m_info.aMotionInfo[m_info.nNumType].nWholeFrame += m_info.aMotionInfo[m_info.nNumType].pKeyInfo[nCntKey].nFrame;
+		m_info.aMotionInfo[m_info.nNumType].nWholeFrame += m_info.aMotionInfo[m_info.nNumType].aKeyInfo[nCntKey].nFrame;
 	}
 
 	// モーションの情報数を加算

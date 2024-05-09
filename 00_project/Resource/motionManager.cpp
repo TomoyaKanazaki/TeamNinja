@@ -341,7 +341,7 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 					else if (strcmp(&aString[0], "KEYSET") == 0)
 					{ // 読み込んだ文字列が KEYSET の場合
 
-						CMotion::SKeyInfo *pKeyInfo = &pMotionInfo->pKeyInfo[nCurMotion];	// 現在のキー情報
+						CMotion::SKeyInfo *pKeyInfo = &pMotionInfo->aKeyInfo[nCurMotion];	// 現在のキー情報
 
 						// 現在のキー番号を初期化
 						nCurKey = 0;
