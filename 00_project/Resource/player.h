@@ -149,6 +149,7 @@ private:
 	bool m_bCreateClone; // 分身生成モードフラグ
 	unsigned int m_nNumClone; // 生成する分身の数
 	unsigned int m_nMaxClone; // 一度に分身できる上限
+	unsigned int m_nRecover; // ジャストアクションでの回復量
 
 };
 

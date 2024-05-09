@@ -92,7 +92,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
 	m_bCreateClone		(false),		// 分身生成モードフラグ
 	m_nNumClone			(0),			// 生成する分身の数
-	m_nMaxClone			(0)				// 一度に分身できる上限
+	m_nMaxClone			(0),			// 一度に分身できる上限
+	m_nRecover			(0)				// ジャストアクションでの回復量
 {
 
 }
@@ -298,6 +299,10 @@ void CPlayer::Update(const float fDeltaTime)
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
 		RecoverCheckPoint();
+	}
+	if (pKeyboard->IsTrigger(DIK_LEFT))
+	{
+		RecoverJust();
 	}
 
 #endif
@@ -539,6 +544,11 @@ void CPlayer::RecoverCheckPoint()
 //==========================================
 void CPlayer::RecoverJust()
 {
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return; }
+
+	// 固定値で士気力を回復する
+	m_pTensionGauge->AddNum(m_nRecover);
 }
 
 //============================================================
@@ -896,6 +906,11 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%d", &m_nMaxClone);
 		}
+		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nRecover);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
@@ -950,7 +965,7 @@ void CPlayer::ControlClone()
 	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
 	{
 		// プレイヤーの分身を生成
-		for (int i = 0; i < m_nNumClone; ++i)
+		for (unsigned int i = 0; i < m_nNumClone; ++i)
 		{
 			CPlayerClone::Create();
 		}
