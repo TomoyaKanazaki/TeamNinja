@@ -257,6 +257,29 @@ void CPlayerClone::Delete(const int nNum)
 }
 
 //============================================================
+//  全消去処理 (金崎追加)
+//============================================================
+void CPlayerClone::Delete(void)
+{
+	if (m_pList != nullptr)
+	{ // リスト情報がある場合
+
+		// 総数を取得
+		int nNum = m_pList->GetNumAll();
+
+		// 全ての分身を削除する
+		for (int i = 0; i < nNum; ++i)
+		{
+			// 分身を取得
+			CPlayerClone* pAvatar = m_pList->GetIndex(i);
+
+			// 分身の終了
+			pAvatar->Uninit();
+		}
+	}
+}
+
+//============================================================
 //	リスト取得処理
 //============================================================
 CListManager<CPlayerClone>* CPlayerClone::GetList(void)

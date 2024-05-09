@@ -266,18 +266,28 @@ void CPlayer::Update(const float fDeltaTime)
 	// 操作
 	Move();
 
-	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{ // 0キーを押した場合
+	// 分身が出ていた場合の処理
+	if (CPlayerClone::GetList() != nullptr)
+	{
+		// 士気力ゲージを減少する
+		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
 
-		// プレイヤーの分身を生成
-		CPlayerClone::Create();
+		// 分身を削除する
+		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+		{
+			// プレイヤーの分身を消去
+			CPlayerClone::Delete();
+		}
 	}
+	else
+	{
+		// 分身を生成する
+		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+		{
 
-	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
-	{ // 右SHIFTキーを押した場合
-
-		// プレイヤーの分身を消去
-		CPlayerClone::Delete(0);
+			// プレイヤーの分身を生成
+			CPlayerClone::Create();
+		}
 	}
 
 	// モーション・オブジェクトキャラクターの更新
