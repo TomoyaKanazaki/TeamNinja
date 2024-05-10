@@ -55,22 +55,8 @@ HRESULT CMotion::Init(void)
 //============================================================
 void CMotion::Uninit(void)
 {
-	for (auto& rMotionInfo : m_info.vecMotionInfo)
-	{ // モーション情報の要素数分繰り返す
-
-		for (auto& rKeyInfo : rMotionInfo.vecKeyInfo)
-		{ // キー情報の要素数分繰り返す
-
-			// キーをクリア
-			rKeyInfo.vecKey.clear();
-		}
-
-		// キー情報をクリア
-		rMotionInfo.vecKeyInfo.clear();
-	}
-
-	// モーション情報をクリア
-	m_info.vecMotionInfo.clear();
+	// モーション情報の動的配列のクリア
+	ClearVector();
 }
 
 //============================================================
@@ -172,6 +158,35 @@ void CMotion::SetNumParts(const int nNumParts)
 }
 
 //============================================================
+//	モーション情報の動的配列のクリア処理
+//============================================================
+void CMotion::ClearVector(void)
+{
+	for (auto& rMotionInfo : m_info.vecMotionInfo)
+	{ // モーション情報の要素数分繰り返す
+
+		for (auto& rKeyInfo : rMotionInfo.vecKeyInfo)
+		{ // キー情報の要素数分繰り返す
+
+			// キーをクリア
+			rKeyInfo.vecKey.clear();
+		}
+
+		// キー情報をクリア
+		rMotionInfo.vecKeyInfo.clear();
+	}
+
+	// モーション情報をクリア
+	m_info.vecMotionInfo.clear();
+
+	// キーパーツ原点情報をクリア
+	m_info.vecOriginKey.clear();
+
+	// ブレンド開始パーツ情報をクリア
+	m_blend.vecKey.clear();
+}
+
+//============================================================
 //	設定処理
 //============================================================
 void CMotion::Set(const int nType, const int nBlendFrame)
@@ -245,30 +260,12 @@ void CMotion::SetOriginRotation(const D3DXVECTOR3& rRot, const int nParts)
 }
 
 //============================================================
-//	種類取得処理
-//============================================================
-int CMotion::GetType(void) const
-{
-	// 現在のモーションの種類を返す
-	return m_info.nType;
-}
-
-//============================================================
 //	種類の総数取得処理
 //============================================================
 int CMotion::GetNumType(void)
 {
 	// モーションの種類の総数を返す
 	return m_info.GetNumMotion();
-}
-
-//============================================================
-//	キー番号取得処理
-//============================================================
-int CMotion::GetKey(void) const
-{
-	// 現在のキー番号を返す
-	return m_info.nKey;
 }
 
 //============================================================
@@ -282,69 +279,6 @@ int CMotion::GetNumKey(const int nType)
 }
 
 //============================================================
-//	モーションキーカウンター取得処理
-//============================================================
-int CMotion::GetKeyCounter(void) const
-{
-	// 現在のモーションキーカウンターを返す
-	return m_info.nKeyCounter;
-}
-
-//============================================================
-//	モーション全体カウンター取得処理
-//============================================================
-int CMotion::GetWholeCounter(void) const
-{
-	// 現在のモーション全体カウンターを返す
-	return m_info.nWholeCounter;
-}
-
-//============================================================
-//	モーション全体フレーム数取得処理
-//============================================================
-int CMotion::GetWholeFrame(const int nType) const
-{
-	// 引数モーションの全体フレーム数を返す
-	return m_info.vecMotionInfo[nType].nWholeFrame;
-}
-
-//============================================================
-//	モーションキャンセルフレーム取得処理
-//============================================================
-int CMotion::GetCancelFrame(const int nType) const
-{
-	// 引数モーションのキャンセルフレームを返す
-	return m_info.vecMotionInfo[nType].nCancelFrame;
-}
-
-//============================================================
-//	モーションコンボフレーム取得処理
-//============================================================
-int CMotion::GetComboFrame(const int nType) const
-{
-	// 引数モーションのコンボフレームを返す
-	return m_info.vecMotionInfo[nType].nComboFrame;
-}
-
-//============================================================
-//	終了取得処理
-//============================================================
-bool CMotion::IsFinish(void) const
-{
-	// 現在のモーションの終了状況を返す
-	return m_info.bFinish;
-}
-
-//============================================================
-//	ループ取得処理
-//============================================================
-bool CMotion::IsLoop(const int nType) const
-{
-	// 引数モーションのループのON/OFF状況を返す
-	return m_info.vecMotionInfo[nType].bLoop;
-}
-
-//============================================================
 //	キャンセル取得処理
 //============================================================
 bool CMotion::IsCancel(const int nType) const
@@ -355,12 +289,9 @@ bool CMotion::IsCancel(const int nType) const
 		// 引数モーションのキャンセル状況を返す
 		return (m_info.nWholeCounter >= m_info.vecMotionInfo[nType].nCancelFrame);
 	}
-	else
-	{ // キャンセルフレームが設定されていない場合
 
-		// キャンセル不可を返す
-		return false;
-	}
+	// キャンセル不可を返す
+	return false;
 }
 
 //============================================================
@@ -374,21 +305,9 @@ bool CMotion::IsCombo(const int nType) const
 		// 引数モーションのコンボ状況を返す
 		return (m_info.nWholeCounter >= m_info.vecMotionInfo[nType].nComboFrame);
 	}
-	else
-	{ // コンボフレームが設定されていない場合
 
-		// コンボ不可を返す
-		return false;
-	}
-}
-
-//============================================================
-//	武器表示の取得処理
-//============================================================
-bool CMotion::IsWeaponDisp(const int nType) const
-{
-	// 引数モーションの武器表示のON/OFF状況を返す
-	return m_info.vecMotionInfo[nType].bWeaponDisp;
+	// コンボ不可を返す
+	return false;
 }
 
 //============================================================

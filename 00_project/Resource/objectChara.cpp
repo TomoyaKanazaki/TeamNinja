@@ -285,6 +285,9 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
 	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
 
+	// モーション情報の動的配列のクリア
+	m_pMotion->ClearVector();
+
 	// 自身とモーションのパーツ数を設定
 	SetNumParts(data.infoParts.GetNumParts());
 

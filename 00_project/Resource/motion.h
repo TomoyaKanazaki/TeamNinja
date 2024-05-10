@@ -167,28 +167,30 @@ public:
 	void AddInfo(const SMotionInfo& rInfo);		// モーション情報追加
 	void SetEnableUpdate(const bool bUpdate);	// 更新状況設定
 	void SetNumParts(const int nNumParts);		// パーツ数設定
+	void ClearVector(void);						// モーション情報の動的配列クリア
 	void Set(const int nType, const int nBlendFrame = 0);				// 設定
 	void SetOriginPosition(const D3DXVECTOR3& rPos, const int nParts);	// 原点位置の設定
 	void SetOriginRotation(const D3DXVECTOR3& rRot, const int nParts);	// 原点向きの設定
 
-	int  GetType(void) const;					// 種類取得
-	int  GetNumType(void);						// 種類総数取得
-	int  GetKey(void) const;					// キー番号取得
-	int  GetNumKey(const int nType);			// キー総数取得
-	int  GetKeyCounter(void) const;				// モーションキーカウンター取得
-	int  GetWholeCounter(void) const;			// モーション全体カウンター取得
-	int  GetWholeFrame(const int nType) const;	// モーション全体フレーム数取得
-	int  GetCancelFrame(const int nType) const;	// モーションキャンセルフレーム取得
-	int  GetComboFrame(const int nType) const;	// モーションコンボフレーム取得
-	bool IsFinish(void) const;					// 終了取得
-	bool IsLoop(const int nType) const;			// ループ取得
-	bool IsCancel(const int nType) const;		// キャンセル取得
-	bool IsCombo(const int nType) const;		// コンボ取得
-	bool IsWeaponDisp(const int nType) const;	// 武器表示取得
-	bool IsLeftWeaponCollision(void);			// 左の攻撃判定フラグ取得
-	bool IsRightWeaponCollision(void);			// 右の攻撃判定フラグ取得
+	int GetNumType(void);					// 種類総数取得
+	int GetNumKey(const int nType);			// キー総数取得
+	bool IsCancel(const int nType) const;	// キャンセル取得
+	bool IsCombo(const int nType) const;	// コンボ取得
+	bool IsLeftWeaponCollision(void);		// 左の攻撃判定フラグ取得
+	bool IsRightWeaponCollision(void);		// 右の攻撃判定フラグ取得
 	D3DXVECTOR3 GetOriginPosition(const int nParts) const;	// 原点位置の取得
 	D3DXVECTOR3 GetOriginRotation(const int nParts) const;	// 原点向きの取得
+
+	int GetType(void) const			{ return m_info.nType; }			// 種類取得
+	int GetKey(void) const			{ return m_info.nKey; }				// キー番号取得
+	int GetKeyCounter(void) const	{ return m_info.nKeyCounter; }		// モーションキーカウンター取得
+	int GetWholeCounter(void) const	{ return m_info.nWholeCounter; }	// モーション全体カウンター取得
+	bool IsFinish(void) const		{ return m_info.bFinish; }			// 終了取得
+	bool IsLoop(const int nType) const			{ return m_info.vecMotionInfo[nType].bLoop; }			// ループ取得
+	bool IsWeaponDisp(const int nType) const	{ return m_info.vecMotionInfo[nType].bWeaponDisp; }		// 武器表示取得
+	int GetWholeFrame(const int nType) const	{ return m_info.vecMotionInfo[nType].nWholeFrame; }		// モーション全体フレーム数取得
+	int GetCancelFrame(const int nType) const	{ return m_info.vecMotionInfo[nType].nCancelFrame; }	// モーションキャンセルフレーム取得
+	int GetComboFrame(const int nType) const	{ return m_info.vecMotionInfo[nType].nComboFrame; }		// モーションコンボフレーム取得
 
 	// 静的メンバ関数
 	static CMotion *Create(CObjectChara *pChara);	// 生成
@@ -203,9 +205,9 @@ private:
 	// メンバ変数
 	CMultiModel **m_ppModel;	// モデル情報
 	CObjectChara *m_pChara;		// オブジェクトキャラクター情報
-	SInfo  m_info;		// モーション情報
-	SBlend m_blend; 	// ブレンド情報
-	bool m_bUpdate;		// 更新状況
+	SInfo  m_info;	// モーション情報
+	SBlend m_blend;	// ブレンド情報
+	bool m_bUpdate;	// 更新状況
 };
 
 #endif	// _MOTION_H_
