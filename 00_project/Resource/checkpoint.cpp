@@ -11,6 +11,14 @@
 #include "collision.h"
 
 //==========================================
+//  定数定義
+//==========================================
+namespace
+{
+	const char* PARAM_FILE = "data\\TXT\\CheckPoint.txt"; // パラメータが保存されたパス
+}
+
+//==========================================
 //  静的メンバ変数宣言
 //==========================================
 int CCheckPoint::m_nNumAll = 0;
@@ -21,7 +29,8 @@ int CCheckPoint::m_nNumAll = 0;
 CCheckPoint::CCheckPoint():
 	m_bSave(false),
 	m_fRadius(0.0f),
-	m_nSaveTension(0)
+	m_nSaveTension(0),
+	m_fRotSpeed(0.0f)
 {
 	// 総数を加算
 	++m_nNumAll;
@@ -43,8 +52,9 @@ HRESULT CCheckPoint::Init(void)
 {
 	// 値の初期化
 	m_bSave = false;
-	m_fRadius = 50.0f;
+	m_fRadius = 0.0f;
 	m_nSaveTension = 0;
+	m_fRotSpeed = 0.0f;
 
 	// 親クラスの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -56,10 +66,13 @@ HRESULT CCheckPoint::Init(void)
 	}
 
 	// モデルを割り当て
-	BindModel("data\\MODEL\\PLAYER\\02_head.x");
+	BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
+
+	// 定数パラメータの読み込み
+	Load();
 
 	return S_OK;
 }
@@ -80,6 +93,11 @@ void CCheckPoint::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
 	CollisionPlayer();
+
+	// くるくるしてみる
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y += m_fRotSpeed;
+	SetVec3Rotation(rot);
 
 	// 親クラスの更新
 	CObjectModel::Update(fDeltaTime);
@@ -151,4 +169,45 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// セーブフラグをオンにする
 	m_bSave = true;
+}
+
+//==========================================
+//  外部情報の読み込み
+//==========================================
+void CCheckPoint::Load()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
+
+	//ファイルを読み取り専用で開く
+	pFile = fopen(PARAM_FILE, "r");
+
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return; }
+
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
+
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
+
+		// 条件分岐
+		if (strcmp(&aStr[0], "RADIUS") == 0) // 当たり判定の半径の設定
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fRadius);
+		}
+		if (strcmp(&aStr[0], "ROT_SPEED") == 0) // 回る速度
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fRotSpeed);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
+	}
 }
