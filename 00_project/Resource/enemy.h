@@ -24,8 +24,15 @@ class CEnemy : public CObjectChara
 {
 public:
 
+	// 種類
+	enum EType
+	{
+		TYPE_CHASE = 0,		// 追跡敵
+		TYPE_MAX			// この列挙型の総数
+	};
+
 	// コンストラクタ
-	explicit CEnemy();
+	explicit CEnemy(const EType type);
 
 	// デストラクタ
 	virtual ~CEnemy();
@@ -40,7 +47,8 @@ public:
 	static CEnemy* Create	// 生成
 	( // 引数
 		const D3DXVECTOR3& rPos,	// 位置
-		const D3DXVECTOR3& rRot		// 向き
+		const D3DXVECTOR3& rRot,	// 向き
+		const EType type			// 種類
 	);
 	static CListManager<CEnemy>* GetList(void);			// リスト取得
 
@@ -61,6 +69,7 @@ private:
 	CListManager<CEnemy>::AIterator m_iterator;	// イテレーター
 	D3DXVECTOR3	m_oldPos;			// 過去位置
 	D3DXVECTOR3	m_move;				// 移動量
+	EType m_type;					// 種類
 };
 
 #endif	// _ENEMY_H_

@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "renderer.h"
 
+#include "enemy_chase.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -31,9 +33,10 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
+CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
 m_oldPos(VEC3_ZERO),		// 過去位置
-m_move(VEC3_ZERO)			// 移動量
+m_move(VEC3_ZERO),			// 移動量
+m_type(type)				// 種類
 {
 
 }
@@ -131,13 +134,24 @@ void CEnemy::Draw(CShader* pShader)
 //============================================================
 //	生成処理
 //============================================================
-CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const EType type)
 {
 	// ポインタを宣言
 	CEnemy* pEnemy = nullptr;	// 敵情報
 
-	// 敵を生成
-	pEnemy = new CEnemy();
+	switch (type)
+	{
+	case TYPE_CHASE:
+
+		// 追跡敵を生成
+		pEnemy = new CEnemyChase(type);
+
+		break;
+
+	default:	// 例外処理
+		assert(false);
+		break;
+	}
 
 	if (pEnemy == nullptr)
 	{ // 生成に失敗した場合

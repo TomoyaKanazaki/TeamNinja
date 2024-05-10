@@ -19,6 +19,8 @@
 #include "player.h"
 #include "multiModel.h"
 
+#include "enemy.h"
+
 //************************************************************
 //	’è”éŒ¾
 //************************************************************
@@ -58,6 +60,9 @@ HRESULT CGameManager::Init(void)
 {
 	// ƒƒ“ƒo•Ï”‚ğ‰Šú‰»
 	m_state = STATE_NORMAL;	// ó‘Ô
+
+	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
+
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
