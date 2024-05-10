@@ -68,7 +68,7 @@ public:
 	void BindCharaData(const char *pTextPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetNumParts(const int nNumParts);			// パーツ数設定
-	void SetPartsInfo(const CMotionManager::SPartsInfo& rInfo);			// パーツ情報設定
+	void SetPartsInfo(CMotionManager::SPartsInfo& rInfo);				// パーツ情報設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得

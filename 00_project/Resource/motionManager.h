@@ -31,14 +31,16 @@ public:
 	// パーツ情報構造体
 	struct SParts
 	{
-		SParts()
+		// コンストラクタ
+		SParts() :
+			pos			(VEC3_ZERO),	// 位置
+			rot			(VEC3_ZERO),	// 向き
+			nParentID	(NONE_IDX)		// 親インデックス
 		{
-			strPass.clear();
-			pos = VEC3_ZERO;
-			rot = VEC3_ZERO;
-			nParentID = NONE_IDX;
+			strPass.clear();	// モデルパスをクリア
 		}
 
+		// メンバ変数
 		std::string strPass;	// モデルパス
 		D3DXVECTOR3 pos;		// 位置
 		D3DXVECTOR3 rot;		// 向き
@@ -48,23 +50,24 @@ public:
 	// パーツ構造体
 	struct SPartsInfo
 	{
+		// コンストラクタ
 		SPartsInfo()
 		{
-			pInfo = nullptr;
-			nNumParts = 0;
+			vecParts.clear();	// パーツ情報をクリア
 		}
 
-		SParts *pInfo;	// パーツ情報
-		int nNumParts;	// パーツ数
+		// メンバ関数
+		int GetNumParts(void) { return vecParts.size(); }	// パーツの総数取得
+
+		// メンバ変数
+		std::vector<SParts> vecParts;	// パーツ情報
 	};
 
 	// キャラクター情報構造体
 	struct SCharaData
 	{
-		SCharaData()
-		{
-
-		}
+		// コンストラクタ
+		SCharaData() {}
 
 		// メンバ変数
 		CMotion::SInfo infoMotion;	// モーション情報

@@ -76,6 +76,9 @@ public:
 			vecKey.clear();	// キーパーツ情報をクリア
 		}
 
+		// メンバ関数
+		int GetNumParts(void) { return (int)vecKey.size(); }	// キーの総数取得
+
 		// メンバ変数
 		std::vector<SKey> vecKey;	// キーパーツ情報
 		D3DXVECTOR3 move;	// キー移動量
@@ -87,7 +90,6 @@ public:
 	{
 		// コンストラクタ
 		SMotionInfo() :
-			nNumKey			(0),		// キー総数
 			nWholeFrame		(0),		// モーション全体フレーム数
 			nCancelFrame	(NONE_IDX),	// キャンセル可能フレーム
 			nComboFrame		(NONE_IDX),	// コンボ可能フレーム
@@ -97,11 +99,13 @@ public:
 			vecKeyInfo.clear();	// キー情報をクリア
 		}
 
+		// メンバ関数
+		int GetNumKey(void) { return (int)vecKeyInfo.size(); }	// キー情報の総数取得
+
 		// メンバ変数
 		std::vector<SKeyInfo> vecKeyInfo;	// キー情報
 		SCollTime collLeft;		// 左攻撃判定のカウント
 		SCollTime collRight;	// 右攻撃判定のカウント
-		int  nNumKey;			// キー総数
 		int  nWholeFrame;		// モーション全体フレーム数
 		int  nCancelFrame;		// キャンセル可能フレーム
 		int  nComboFrame;		// コンボ可能フレーム
@@ -114,7 +118,6 @@ public:
 	{
 		// コンストラクタ
 		SInfo() :
-			nNumType		(0),	// モーション種類総数
 			nType			(0),	// モーション種類
 			nKey			(0),	// モーションキー番号
 			nKeyCounter		(0),	// モーションキーカウンター
@@ -125,10 +128,12 @@ public:
 			vecOriginKey.clear();	// キーパーツ原点情報をクリア
 		}
 
+		// メンバ関数
+		int GetNumMotion(void) { return (int)vecMotionInfo.size(); }	// モーション情報の総数取得
+
 		// メンバ変数
 		std::vector<SMotionInfo> vecMotionInfo;	// モーション情報
 		std::vector<SKey> vecOriginKey;			// キーパーツ原点情報
-		int  nNumType;		// モーション種類総数
 		int  nType;			// モーション種類
 		int  nKey;			// モーションキー番号
 		int  nKeyCounter;	// モーションキーカウンター
@@ -167,9 +172,9 @@ public:
 	void SetOriginRotation(const D3DXVECTOR3& rRot, const int nParts);	// 原点向きの設定
 
 	int  GetType(void) const;					// 種類取得
-	int  GetNumType(void) const;				// 種類総数取得
+	int  GetNumType(void);						// 種類総数取得
 	int  GetKey(void) const;					// キー番号取得
-	int  GetNumKey(const int nType) const;		// キー総数取得
+	int  GetNumKey(const int nType);			// キー総数取得
 	int  GetKeyCounter(void) const;				// モーションキーカウンター取得
 	int  GetWholeCounter(void) const;			// モーション全体カウンター取得
 	int  GetWholeFrame(const int nType) const;	// モーション全体フレーム数取得
@@ -200,7 +205,6 @@ private:
 	CObjectChara *m_pChara;		// オブジェクトキャラクター情報
 	SInfo  m_info;		// モーション情報
 	SBlend m_blend; 	// ブレンド情報
-	int  m_nNumParts;	// パーツ数
 	bool m_bUpdate;		// 更新状況
 };
 

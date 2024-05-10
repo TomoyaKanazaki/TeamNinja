@@ -20,7 +20,6 @@
 CMotion::CMotion() :
 	m_ppModel	(nullptr),	// モデル情報
 	m_pChara	(nullptr),	// オブジェクトキャラクター情報
-	m_nNumParts	(0),		// パーツ数
 	m_bUpdate	(true)		// 更新状況
 {
 
@@ -42,7 +41,6 @@ HRESULT CMotion::Init(void)
 	// メンバ変数をクリア
 	m_ppModel	= nullptr;	// モデル情報
 	m_pChara	= nullptr;	// オブジェクトキャラクター情報
-	m_nNumParts	= 0;		// パーツ数
 	m_bUpdate	= true;		// 更新状況
 
 	// モーションを終了状態にする
@@ -81,7 +79,7 @@ void CMotion::Uninit(void)
 void CMotion::Update(const float fDeltaTime)
 {
 	if (!m_bUpdate) { return; }	// 更新しない
-	if (m_info.vecMotionInfo[m_info.nType].nNumKey <= 0) { return; }	// キー数未設定
+	if (m_info.vecMotionInfo[m_info.nType].GetNumKey() <= 0) { return; }	// キー数未設定
 
 	if (m_blend.nFrame > 0)
 	{ // ブレンドフレームが設定されている場合
@@ -114,11 +112,11 @@ void CMotion::BindPartsData(CMultiModel **ppModel)
 //============================================================
 void CMotion::SetAllInfo(const SInfo& rInfo)
 {
-	for (int nCntMotion = 0; nCntMotion < rInfo.nNumType; nCntMotion++)
+	for (auto& rVec : rInfo.vecMotionInfo)
 	{ // 読み込んだモーション数分繰り返す
 
 		// モーション情報の追加
-		AddInfo(rInfo.vecMotionInfo[nCntMotion]);
+		AddInfo(rVec);
 	}
 }
 
@@ -127,24 +125,23 @@ void CMotion::SetAllInfo(const SInfo& rInfo)
 //============================================================
 void CMotion::AddInfo(const SMotionInfo& rInfo)
 {
+	int nSetMotionID = m_info.GetNumMotion();	// モーションを設定する配列番号
+
 	// 空の要素を最後尾に追加
 	m_info.vecMotionInfo.emplace_back();
 
 	// 引数のモーション情報を設定
-	m_info.vecMotionInfo[m_info.nNumType] = rInfo;
+	m_info.vecMotionInfo[nSetMotionID] = rInfo;
 
 	// モーション全体フレーム数を設定
-	int nSubKey = (m_info.vecMotionInfo[m_info.nNumType].bLoop) ? 0 : 1;	// ループしない場合最後のキーは含まない
-	int nLoop = m_info.vecMotionInfo[m_info.nNumType].nNumKey - nSubKey;	// 繰り返し数を求める
+	int nSubKey = (m_info.vecMotionInfo[nSetMotionID].bLoop) ? 0 : 1;		// ループしない場合最後のキーは含まない
+	int nLoop = m_info.vecMotionInfo[nSetMotionID].GetNumKey() - nSubKey;	// 繰り返し数を求める
 	for (int nCntKey = 0; nCntKey < nLoop; nCntKey++)
 	{ // キーの総数分繰り返す
 
 		// キーのフレーム数を加算
-		m_info.vecMotionInfo[m_info.nNumType].nWholeFrame += m_info.vecMotionInfo[m_info.nNumType].vecKeyInfo[nCntKey].nFrame;
+		m_info.vecMotionInfo[nSetMotionID].nWholeFrame += m_info.vecMotionInfo[nSetMotionID].vecKeyInfo[nCntKey].nFrame;
 	}
-
-	// モーションの情報数を加算
-	m_info.nNumType++;
 }
 
 //============================================================
@@ -161,9 +158,6 @@ void CMotion::SetEnableUpdate(const bool bUpdate)
 //============================================================
 void CMotion::SetNumParts(const int nNumParts)
 {
-	// パーツ数を保存
-	m_nNumParts = nNumParts;
-
 	// キーパーツ原点情報をクリア
 	m_info.vecOriginKey.clear();
 
@@ -201,7 +195,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 	if (m_blend.nFrame > 0)
 	{ // ブレンドフレームが設定されている場合
 
-		for (int nCntKey = 0; nCntKey < m_nNumParts; nCntKey++)
+		for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
 		{ // パーツ数分繰り返す
 
 			// 現在位置と現在向きを保存
@@ -212,7 +206,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 	else
 	{ // ブレンドフレームが設定されていない場合
 
-		for (int nCntKey = 0; nCntKey < m_nNumParts; nCntKey++)
+		for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
 		{ // パーツ数分繰り返す
 
 			// 初期位置と初期向きを設定
@@ -262,10 +256,10 @@ int CMotion::GetType(void) const
 //============================================================
 //	種類の総数取得処理
 //============================================================
-int CMotion::GetNumType(void) const
+int CMotion::GetNumType(void)
 {
 	// モーションの種類の総数を返す
-	return m_info.nNumType;
+	return m_info.GetNumMotion();
 }
 
 //============================================================
@@ -280,11 +274,11 @@ int CMotion::GetKey(void) const
 //============================================================
 //	キーの総数取得処理
 //============================================================
-int CMotion::GetNumKey(const int nType) const
+int CMotion::GetNumKey(const int nType)
 {
 	// 引数モーションのキーの総数を返す
-	int nSubKey = (m_info.vecMotionInfo[m_info.nNumType].bLoop) ? 0 : 1;	// ループしない場合最後のキーは含まない
-	return m_info.vecMotionInfo[nType].nNumKey - nSubKey;
+	int nSubKey = (m_info.vecMotionInfo[m_info.GetNumMotion()].bLoop) ? 0 : 1;	// ループしない場合最後のキーは含まない
+	return m_info.vecMotionInfo[nType].GetNumKey() - nSubKey;
 }
 
 //============================================================
@@ -559,10 +553,10 @@ void CMotion::UpdateMotion(void)
 	int nKey  = m_info.nKey;	// モーションキー番号
 
 	// 次のモーションキー番号を求める
-	int nNextKey = (nKey + 1) % m_info.vecMotionInfo[nType].nNumKey;
+	int nNextKey = (nKey + 1) % m_info.vecMotionInfo[nType].GetNumKey();
 
 	// パーツの位置の更新
-	for (int nCntKey = 0; nCntKey < m_nNumParts; nCntKey++)
+	for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
 	{ // パーツ数分繰り返す
 
 		// 位置・向きの差分を求める
@@ -595,7 +589,7 @@ void CMotion::UpdateMotion(void)
 			m_info.nKeyCounter = 0;
 
 			// キーカウントを加算
-			m_info.nKey = (m_info.nKey + 1) % m_info.vecMotionInfo[nType].nNumKey;	// 最大値で0に戻す
+			m_info.nKey = (m_info.nKey + 1) % m_info.vecMotionInfo[nType].GetNumKey();	// 最大値で0に戻す
 
 			if (m_info.nKey == 0)
 			{ // キーが最初に戻った場合
@@ -607,7 +601,7 @@ void CMotion::UpdateMotion(void)
 		else
 		{ // モーションがループしない場合
 
-			if (m_info.nKey < m_info.vecMotionInfo[nType].nNumKey - 2)
+			if (m_info.nKey < m_info.vecMotionInfo[nType].GetNumKey() - 2)
 			{ // 現在のキーが最終のキーではない場合
 
 				// キーカウンターを初期化
@@ -632,7 +626,7 @@ void CMotion::UpdateMotion(void)
 void CMotion::UpdateBlend(void)
 {
 	// パーツの位置の更新
-	for (int nCntKey = 0; nCntKey < m_nNumParts; nCntKey++)
+	for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[m_info.nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
 	{ // パーツ数分繰り返す
 
 		// 位置・向きの差分を求める

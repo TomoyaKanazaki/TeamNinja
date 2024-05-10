@@ -286,7 +286,7 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
 
 	// 自身とモーションのパーツ数を設定
-	SetNumParts(data.infoParts.nNumParts);
+	SetNumParts(data.infoParts.GetNumParts());
 
 	// 自身のパーツ情報を設定
 	SetPartsInfo(data.infoParts);
@@ -338,13 +338,13 @@ void CObjectChara::SetNumParts(const int nNumParts)
 //============================================================
 //	パーツ情報の設定処理
 //============================================================
-void CObjectChara::SetPartsInfo(const CMotionManager::SPartsInfo& rInfo)
+void CObjectChara::SetPartsInfo(CMotionManager::SPartsInfo& rInfo)
 {
-	for (int nCntParts = 0; nCntParts < rInfo.nNumParts; nCntParts++)
+	for (int nCntParts = 0; nCntParts < rInfo.GetNumParts(); nCntParts++)
 	{ // パーツ数分繰り返す
 
 		// パーツ情報の設定
-		CMotionManager::SParts *pParts = &rInfo.pInfo[nCntParts];	// パーツ情報
+		CMotionManager::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
 		CObjectChara::SetPartsInfo
 		( // 引数
 			nCntParts,				// パーツインデックス
