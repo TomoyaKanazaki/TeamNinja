@@ -232,24 +232,38 @@ CPlayerClone* CPlayerClone::Create(void)
 //============================================================
 void CPlayerClone::Delete(const int nNum)
 {
-	if (m_pList != nullptr)
-	{ // リスト情報がある場合
+	// リスト情報がない場合停止する
+	if (m_pList == nullptr) { assert(false); return; }
 
-		if (m_pList->GetNumAll() <= nNum)
-		{ // 現在の総数よりも上の数字が指定されていた場合
+	// 現在の総数よりも上の数字が指定されていた場合停止する
+	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
-			// 停止
-			assert(false);
-		}
-		else
-		{ // 上記以外
+	// 分身を取得
+	CPlayerClone* pAvatar = m_pList->GetIndex(nNum);
 
-			// 分身を取得
-			CPlayerClone* pAvatar = m_pList->GetIndex(nNum);
+	// 分身の終了
+	pAvatar->Uninit();
+}
 
-			// 分身の終了
-			pAvatar->Uninit();
-		}
+//============================================================
+//  全消去処理 (金崎追加)
+//============================================================
+void CPlayerClone::Delete(void)
+{
+	// リスト情報がない場合停止する
+	if (m_pList == nullptr) { assert(false); return; }
+
+	// 総数を取得
+	int nNum = m_pList->GetNumAll();
+
+	// 全ての分身を削除する
+	for (int i = 0; i < nNum; ++i)
+	{
+		// 分身を取得
+		CPlayerClone* pAvatar = m_pList->GetIndex(0);
+
+		// 分身の終了
+		pAvatar->Uninit();
 	}
 }
 

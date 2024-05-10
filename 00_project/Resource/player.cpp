@@ -62,6 +62,8 @@ namespace
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
+
+	const char* PARAM_FILE = "data/TXT/PlayerParameter.txt";
 }
 
 //************************************************************
@@ -85,7 +87,13 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bJump				(false),		// ジャンプ状況
 	m_nCounterState		(0),			// 状態管理カウンター
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
-	m_pEnduranceGauge	(nullptr)		// 耐久力ゲージのポインタ
+	m_nMaxTension		(0),			// 最大士気力
+	m_nInitTension		(0),			// 初期士気力
+	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
+	m_bCreateClone		(false),		// 分身生成モードフラグ
+	m_nNumClone			(0),			// 生成する分身の数
+	m_nMaxClone			(0),			// 一度に分身できる上限
+	m_nRecover			(0)				// ジャストアクションでの回復量
 {
 
 }
@@ -113,7 +121,11 @@ HRESULT CPlayer::Init(void)
 	m_bJump				= true;			// ジャンプ状況
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
-	m_pEnduranceGauge	= nullptr;		// 耐久力ゲージのポインタ
+	m_bCreateClone		= false;		// 分身生成モードフラグ
+	m_nNumClone			= 0;			// 生成する分身の数
+
+	// 定数パラメータの読み込み
+	LoadParameter();
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -172,22 +184,16 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		100, 60, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
-	m_pTensionGauge->SetNum(50);
+	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetLabel(LABEL_UI);
 
-	// 耐久力ゲージを生成
-	m_pEnduranceGauge = CGauge2D::Create
-	(
-		100, 60, D3DXVECTOR3(300.0f, 90.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f)
-	);
-	m_pEnduranceGauge->SetNum(50);
+	// プレイヤーを出現させる
+	SetSpawn();
 
 	// 成功を返す
 	return S_OK;
@@ -201,9 +207,6 @@ void CPlayer::Uninit(void)
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
 	
-	// 耐久力ゲージの終了
-	SAFE_UNINIT(m_pEnduranceGauge);
-
 	// 影の終了
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
 	SAFE_UNINIT(m_pShadow);
@@ -269,48 +272,38 @@ void CPlayer::Update(const float fDeltaTime)
 	// 操作
 	Move();
 
-	if (GET_INPUTKEY->IsTrigger(DIK_0))
-	{ // 0キーを押した場合
-
-		// プレイヤーの分身を生成
-		CPlayerClone::Create();
-	}
-
-	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
-	{ // 右SHIFTキーを押した場合
-
-		// プレイヤーの分身を消去
-		CPlayerClone::Delete(0);
-	}
+	// 分身の処理
+	ControlClone();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// デバッグ表示
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_RIGHT, "生成する分身 : %d", m_nNumClone);
 
 #ifdef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
-	// 士気力、耐久力の変更
+	// 士気力の変更
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
-		m_pTensionGauge->AddNum(10);
+		m_pTensionGauge->AddNum(100);
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		m_pTensionGauge->AddNum(-10);
+		m_pTensionGauge->AddNum(-100);
 	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
-		m_pEnduranceGauge->AddNum(10);
+		RecoverCheckPoint();
 	}
 	if (pKeyboard->IsTrigger(DIK_LEFT))
 	{
-		m_pEnduranceGauge->AddNum(-10);
+		RecoverJust();
 	}
-
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %d\n", m_pEnduranceGauge->GetNum());
 
 #endif
 }
@@ -472,6 +465,7 @@ void CPlayer::SetSpawn(void)
 	SetEnableDraw(true);
 
 	// 追従カメラの目標位置の設定
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_FOLLOW);
 	GET_MANAGER->GetCamera()->SetDestFollow();
 }
 
@@ -514,6 +508,48 @@ float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
 	return HEIGHT;
+}
+
+//==========================================
+//  士気力の値を取得
+//==========================================
+int CPlayer::GetTension() const
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return -1; }
+
+	// 士気力の値を返す
+	return m_pTensionGauge->GetNum();
+}
+
+//==========================================
+//  チェックポイントでの回復処理
+//==========================================
+void CPlayer::RecoverCheckPoint()
+{
+	// 現在の士気力を取得する
+	unsigned int nTension = GetTension();
+
+	// 士気力ゲージが存在しなかった場合関数を抜ける
+	if (nTension == -1) { return; }
+
+	// 最大値と現在値の差を求める
+	float fDiff = (float)(m_nMaxTension - nTension);
+
+	// 差分の半分の値で士気力を回復する
+	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
+}
+
+//==========================================
+//  ジャストアクションでの回復処理
+//==========================================
+void CPlayer::RecoverJust()
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return; }
+
+	// 固定値で士気力を回復する
+	m_pTensionGauge->AddNum(m_nRecover);
 }
 
 //============================================================
@@ -825,4 +861,117 @@ void CPlayer::Inertial()
 
 	// z軸方向の慣性
 	m_move.z += (0.0f - m_move.z) * 0.1f;
+}
+
+//==========================================
+//  定数読み込み
+//==========================================
+void CPlayer::LoadParameter()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
+
+	//ファイルを読み取り専用で開く
+	pFile = fopen(PARAM_FILE, "r");
+
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return; }
+
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
+
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
+
+		// 条件分岐処理
+		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxTension);
+		}
+		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nInitTension);
+		}
+		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nSpeedTension);
+		}
+		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxClone);
+		}
+		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nRecover);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
+	}
+
+	return;
+}
+
+//==========================================
+//  分身の処理
+//==========================================
+void CPlayer::ControlClone()
+{
+	// 分身が出ていた場合の処理
+	if (CPlayerClone::GetList() != nullptr)
+	{
+		// 士気力ゲージを減少する
+		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
+
+		// 分身を削除する
+		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
+		{
+			// プレイヤーの分身を消去
+			CPlayerClone::Delete();
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 分身の数を設定する
+	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 分身の数を加算
+		++m_nNumClone;
+
+		// 分身可能フラグをオン
+		m_bCreateClone = true;
+
+		// 上限を超えた場合0に戻す
+		if (m_nNumClone > m_nMaxClone)
+		{
+			m_nNumClone = 0;
+
+			// 0の時はフラグをオフ
+			m_bCreateClone = false;
+		}
+	}
+
+	// 分身を生成する
+	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
+	{
+		// プレイヤーの分身を生成
+		for (unsigned int i = 0; i < m_nNumClone; ++i)
+		{
+			CPlayerClone::Create();
+		}
+
+		// 生成したら0に戻す
+		m_nNumClone = 0;
+	}
 }

@@ -19,6 +19,8 @@
 #include "player.h"
 #include "multiModel.h"
 
+#include "enemy.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -28,7 +30,7 @@ namespace
 	const D3DXVECTOR3 POS_SKIP	 = D3DXVECTOR3(1092.0f, 673.0f, 0.0f);	// スキップ操作の表示位置
 	const D3DXVECTOR3 SIZE_SKIP	 = D3DXVECTOR3(381.0f, 77.0f, 0.0f);	// スキップ操作の表示大きさ
 	const int CHANGE_UI_PRIORITY = 5;	// シネマスコープ終了時のUI優先順位
-	const int GAMEEND_WAIT_FRAME = 180;	// リザルト画面への遷移余韻フレーム
+	const int GAMEEND_WAIT_FRAME = 0;	// リザルト画面への遷移余韻フレーム
 }
 
 //************************************************************
@@ -59,6 +61,9 @@ HRESULT CGameManager::Init(void)
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
 
+	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
+
+
 	// 成功を返す
 	return S_OK;
 }
@@ -80,6 +85,13 @@ void CGameManager::Update(const float fDeltaTime)
 	{ // 状態ごとの処理
 	case STATE_NONE:
 	case STATE_NORMAL:
+		
+		// 士気力が0の場合リザルトに
+		if (GET_PLAYER->GetTension() == 0) 
+		{
+			TransitionResult(CRetentionManager::EWin::WIN_FAILED);
+		}
+
 		break;
 
 	default:	// 例外処理
