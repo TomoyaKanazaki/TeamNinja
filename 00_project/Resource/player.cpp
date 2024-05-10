@@ -46,7 +46,7 @@ namespace
 	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 150.0f;	// 移動量
+	const float	MOVE		= -400.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
@@ -827,28 +827,50 @@ void CPlayer::Move()
 	CInputKeyboard* pKey = GET_INPUTKEY;
 
 	// 一次保存の変数
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 speed = VEC3_ZERO;
+
+	// カメラの向き
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+
+	// スティックの向き
+	float fStickRot = 0.0f;
 
 	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { move.z += 1.0f; }
-	if (pKey->IsPress(DIK_S)) { move.z -= 1.0f; }
-	if (pKey->IsPress(DIK_D)) { move.x += 1.0f; }
-	if (pKey->IsPress(DIK_A)) { move.x -= 1.0f; }
+	if (pKey->IsPress(DIK_W)) { speed.z += 1.0f; }
+	if (pKey->IsPress(DIK_S)) { speed.z -= 1.0f; }
+	if (pKey->IsPress(DIK_D)) { speed.x += 1.0f; }
+	if (pKey->IsPress(DIK_A)) { speed.x -= 1.0f; }
 
-	// 値の正規化
-	D3DXVec3Normalize(&move, &move);
+	// 入力していないと抜ける
+	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
 
-	// 現在の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
+	// スティックの向きを設定する
+	fStickRot = atan2f(speed.x, speed.z);
 
-	// 移動量を加算
-	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
 
-	// 移動量を適用
-	pos += m_move;
-	
-	// 座標を適用
-	SetVec3Position(pos);
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	// 向きを設定
+	m_destRot.y = fStickRot + D3DX_PI;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 移動量を設定する
+	m_move.x = sinf(fStickRot + D3DX_PI) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.z = cosf(fStickRot + D3DX_PI) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
+	{ // 位置の設定
+		D3DXVECTOR3 pos = GetVec3Position();
+		pos += m_move;
+		SetVec3Position(pos);
+	}
 }
 
 //==========================================

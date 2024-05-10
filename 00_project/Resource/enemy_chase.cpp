@@ -10,6 +10,9 @@
 #include "manager.h"
 #include "enemy_chase.h"
 #include "renderer.h"
+#include "deltaTime.h"
+
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -17,6 +20,8 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const float MOVE = -420.0f;							// 移動量
+	const float ROT_REV = 0.5f;							// 向きの補正係数
 }
 
 //************************************************************
@@ -76,6 +81,12 @@ void CEnemyChase::Uninit(void)
 //============================================================
 void CEnemyChase::Update(const float fDeltaTime)
 {
+	// 過去位置更新
+	UpdateOldPosition();
+
+	// 追跡処理
+	Chase();
+
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
 }
@@ -87,4 +98,45 @@ void CEnemyChase::Draw(CShader* pShader)
 {
 	// 敵の描画
 	CEnemy::Draw(pShader);
+}
+
+//============================================================
+// 追跡処理
+//============================================================
+void CEnemyChase::Chase(void)
+{
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
+	D3DXVECTOR3 rot = GetVec3Rotation();		// 向き
+	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();		// プレイヤーの位置
+	D3DXVECTOR3 move = GetMovePosition();		// 移動量
+	float fDiff;
+
+	// 目的の向きを取得
+	destRot.y = atan2f(pos.x - posPlayer.x, pos.z - posPlayer.z);
+
+	// 向きの差分
+	fDiff = destRot.y - rot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fDiff);
+
+	// 向きを補正
+	rot.y += fDiff * ROT_REV;
+
+	// 向きの正規化
+	useful::NormalizeRot(rot.y);
+
+	// 移動量を設定する
+	move.x = sinf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.z = cosf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
+	// 位置を移動する
+	pos += move;
+
+	// 情報を適用
+	SetVec3Position(pos);
+	SetDestRotation(destRot);
+	SetVec3Rotation(rot);
+	SetMovePosition(move);
 }

@@ -36,6 +36,8 @@ public:
 
 private:
 
+	// ƒƒ“ƒoŠÖ”
+	void Chase(void);
 };
 
 #endif	// _ENEMY_CHASE_H_
