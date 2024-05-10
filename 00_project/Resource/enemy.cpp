@@ -67,12 +67,6 @@ HRESULT CEnemy::Init(void)
 		return E_FAIL;
 	}
 
-	//// キャラクター情報の割当
-	//BindCharaData(SETUP_TXT);
-
-	// モデル情報の設定
-	SetModelInfo();
-
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 

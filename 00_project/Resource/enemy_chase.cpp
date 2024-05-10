@@ -55,9 +55,6 @@ HRESULT CEnemyChase::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// モデル情報の設定(後で消す)
-	SetModelInfo();
-
 	// マテリアルの設定処理
 	SetAllMaterial(material::DamageRed());
 

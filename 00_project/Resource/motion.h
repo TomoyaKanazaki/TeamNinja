@@ -40,12 +40,13 @@ public:
 	// 判定カウント管理構造体
 	struct SCollTime
 	{
-		SCollTime()
-		{
-			nMin = 0;
-			nMax = 0;
-		}
+		// コンストラクタ
+		SCollTime() :
+			nMin(NONE_IDX),	// 攻撃判定の開始カウント
+			nMax(NONE_IDX)	// 攻撃判定の終了カウント
+		{}
 
+		// メンバ変数
 		int nMin;	// 攻撃判定の開始カウント
 		int nMax;	// 攻撃判定の終了カウント
 	};
@@ -53,12 +54,13 @@ public:
 	// キー情報構造体
 	struct SKey
 	{
-		SKey()
-		{
-			pos = VEC3_ZERO;
-			rot = VEC3_ZERO;
-		}
+		// コンストラクタ
+		SKey() :
+			pos(VEC3_ZERO),	// モデル位置
+			rot(VEC3_ZERO)	// モデル向き
+		{}
 
+		// メンバ変数
 		D3DXVECTOR3 pos;	// モデル位置
 		D3DXVECTOR3 rot;	// モデル向き
 	};
@@ -66,13 +68,15 @@ public:
 	// キー管理構造体
 	struct SKeyInfo
 	{
-		SKeyInfo()
+		// コンストラクタ
+		SKeyInfo() :
+			move	(VEC3_ZERO),	// キー移動量
+			nFrame	(0)				// キー再生フレーム数
 		{
-			vecKey.clear();
-			move = VEC3_ZERO;
-			nFrame = 0;
+			vecKey.clear();	// キーパーツ情報をクリア
 		}
 
+		// メンバ変数
 		std::vector<SKey> vecKey;	// キーパーツ情報
 		D3DXVECTOR3 move;	// キー移動量
 		int nFrame;			// キー再生フレーム数
@@ -81,17 +85,19 @@ public:
 	// モーション管理構造体
 	struct SMotionInfo
 	{
-		SMotionInfo()
+		// コンストラクタ
+		SMotionInfo() :
+			nNumKey			(0),		// キー総数
+			nWholeFrame		(0),		// モーション全体フレーム数
+			nCancelFrame	(NONE_IDX),	// キャンセル可能フレーム
+			nComboFrame		(NONE_IDX),	// コンボ可能フレーム
+			bLoop			(false),	// ループON/OFF
+			bWeaponDisp		(false)		// 武器表示ON/OFF
 		{
-			vecKeyInfo.clear();
-			nNumKey = 0;
-			nWholeFrame = 0;
-			nCancelFrame = 0;
-			nComboFrame = 0;
-			bLoop = false;
-			bWeaponDisp = false;
+			vecKeyInfo.clear();	// キー情報をクリア
 		}
 
+		// メンバ変数
 		std::vector<SKeyInfo> vecKeyInfo;	// キー情報
 		SCollTime collLeft;		// 左攻撃判定のカウント
 		SCollTime collRight;	// 右攻撃判定のカウント
@@ -99,25 +105,27 @@ public:
 		int  nWholeFrame;		// モーション全体フレーム数
 		int  nCancelFrame;		// キャンセル可能フレーム
 		int  nComboFrame;		// コンボ可能フレーム
-		bool bLoop;				// ループ ON/OFF
-		bool bWeaponDisp;		// 武器表示 ON/OFF
+		bool bLoop;				// ループON/OFF
+		bool bWeaponDisp;		// 武器表示ON/OFF
 	};
 
 	// モーション情報構造体
 	struct SInfo
 	{
-		SInfo()
+		// コンストラクタ
+		SInfo() :
+			nNumType		(0),	// モーション種類総数
+			nType			(0),	// モーション種類
+			nKey			(0),	// モーションキー番号
+			nKeyCounter		(0),	// モーションキーカウンター
+			nWholeCounter	(0),	// モーション全体カウンター
+			bFinish			(false)	// モーション終了状況
 		{
-			vecMotionInfo.clear();
-			vecOriginKey.clear();
-			nNumType		= 0;
-			nType			= 0;
-			nKey			= 0;
-			nKeyCounter		= 0;
-			nWholeCounter	= 0;
-			bFinish			= false;
+			vecMotionInfo.clear();	// モーション情報をクリア
+			vecOriginKey.clear();	// キーパーツ原点情報をクリア
 		}
 
+		// メンバ変数
 		std::vector<SMotionInfo> vecMotionInfo;	// モーション情報
 		std::vector<SKey> vecOriginKey;			// キーパーツ原点情報
 		int  nNumType;		// モーション種類総数
@@ -131,13 +139,15 @@ public:
 	// ブレンド情報構造体
 	struct SBlend
 	{
-		SBlend()
+		// コンストラクタ
+		SBlend() :
+			nFrame			(0),	// ブレンド再生フレーム数
+			nWholeCounter	(0)		// ブレンド全体カウンター
 		{
-			vecKey.clear();
-			nFrame = 0;
-			nWholeCounter = 0;
+			vecKey.clear();	// ブレンド開始パーツ情報をクリア
 		}
 
+		// メンバ変数
 		std::vector<SKey> vecKey;	// ブレンド開始パーツ情報
 		int nFrame;			// ブレンド再生フレーム数
 		int nWholeCounter;	// ブレンド全体カウンター
