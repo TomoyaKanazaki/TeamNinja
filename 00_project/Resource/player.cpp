@@ -195,6 +195,9 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge->SetNum(m_nInitTension);
 	m_pTensionGauge->SetLabel(LABEL_UI);
 
+	// プレイヤーを出現させる
+	SetSpawn();
+
 	// 成功を返す
 	return S_OK;
 }
@@ -465,6 +468,7 @@ void CPlayer::SetSpawn(void)
 	SetEnableDraw(true);
 
 	// 追従カメラの目標位置の設定
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_FOLLOW);
 	GET_MANAGER->GetCamera()->SetDestFollow();
 }
 
