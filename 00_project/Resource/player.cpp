@@ -18,6 +18,7 @@
 #include "texture.h"
 #include "collision.h"
 #include "fade.h"
+#include "deltaTime.h"
 
 #include "multiModel.h"
 #include "orbit.h"
@@ -42,31 +43,10 @@
 //************************************************************
 namespace
 {
-	const char *MODEL_FILE[] =	// モデルファイル
-	{
-		"data\\MODEL\\PLAYER\\00_waist.x",	// 腰
-		"data\\MODEL\\PLAYER\\01_body.x",	// 体
-		"data\\MODEL\\PLAYER\\02_head.x",	// 頭
-		"data\\MODEL\\PLAYER\\03_armUL.x",	// 左上腕
-		"data\\MODEL\\PLAYER\\04_armUR.x",	// 右上腕
-		"data\\MODEL\\PLAYER\\05_armDL.x",	// 左下腕
-		"data\\MODEL\\PLAYER\\06_armDR.x",	// 右下腕
-		"data\\MODEL\\PLAYER\\07_handL.x",	// 左手
-		"data\\MODEL\\PLAYER\\08_handR.x",	// 右手
-		"data\\MODEL\\PLAYER\\09_legUL.x",	// 左太もも
-		"data\\MODEL\\PLAYER\\10_legUR.x",	// 右太もも
-		"data\\MODEL\\PLAYER\\11_legDL.x",	// 左脛
-		"data\\MODEL\\PLAYER\\12_legDR.x",	// 右脛
-		"data\\MODEL\\PLAYER\\13_footL.x",	// 左足
-		"data\\MODEL\\PLAYER\\14_footR.x",	// 右足
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 左剣
-		"data\\MODEL\\PLAYER\\15_sword.x",	// 右剣
-	};
-
 	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 2.8f;		// 移動量
+	const float	MOVE		= 150.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
@@ -82,12 +62,9 @@ namespace
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
-}
 
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(MODEL_FILE) == CPlayer::MODEL_MAX, "ERROR : Model Count Mismatch");
+	const char* PARAM_FILE = "data/TXT/PlayerParameter.txt";
+}
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -101,16 +78,22 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),		// 影の情報
-	m_pOrbit		(nullptr),		// 軌跡の情報
-	m_oldPos		(VEC3_ZERO),	// 過去位置
-	m_move			(VEC3_ZERO),	// 移動量
-	m_destRot		(VEC3_ZERO),	// 目標向き
-	m_state			(STATE_NONE),	// 状態
-	m_bJump			(false),		// ジャンプ状況
-	m_nCounterState	(0),			// 状態管理カウンター
-	m_pTensionGauge(nullptr), // 士気力ゲージのポインタ
-	m_pEnduranceGauge(nullptr) // 耐久力ゲージのポインタ
+	m_pShadow			(nullptr),		// 影の情報
+	m_pOrbit			(nullptr),		// 軌跡の情報
+	m_oldPos			(VEC3_ZERO),	// 過去位置
+	m_move				(VEC3_ZERO),	// 移動量
+	m_destRot			(VEC3_ZERO),	// 目標向き
+	m_state				(STATE_NONE),	// 状態
+	m_bJump				(false),		// ジャンプ状況
+	m_nCounterState		(0),			// 状態管理カウンター
+	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
+	m_nMaxTension		(0),			// 最大士気力
+	m_nInitTension		(0),			// 初期士気力
+	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
+	m_bCreateClone		(false),		// 分身生成モードフラグ
+	m_nNumClone			(0),			// 生成する分身の数
+	m_nMaxClone			(0),			// 一度に分身できる上限
+	m_nRecover			(0)				// ジャストアクションでの回復量
 {
 
 }
@@ -129,16 +112,20 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;		// 影の情報
-	m_pOrbit		= nullptr;		// 軌跡の情報
-	m_oldPos		= VEC3_ZERO;	// 過去位置
-	m_move			= VEC3_ZERO;	// 移動量
-	m_destRot		= VEC3_ZERO;	// 目標向き
-	m_state			= STATE_NONE;	// 状態
-	m_bJump			= true;			// ジャンプ状況
-	m_nCounterState	= 0;			// 状態管理カウンター
-	m_pTensionGauge = nullptr; // 士気力ゲージのポインタ
-	m_pEnduranceGauge = nullptr; // 耐久力ゲージのポインタ
+	m_pShadow			= nullptr;		// 影の情報
+	m_pOrbit			= nullptr;		// 軌跡の情報
+	m_oldPos			= VEC3_ZERO;	// 過去位置
+	m_move				= VEC3_ZERO;	// 移動量
+	m_destRot			= VEC3_ZERO;	// 目標向き
+	m_state				= STATE_NONE;	// 状態
+	m_bJump				= true;			// ジャンプ状況
+	m_nCounterState		= 0;			// 状態管理カウンター
+	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
+	m_bCreateClone		= false;		// 分身生成モードフラグ
+	m_nNumClone			= 0;			// 生成する分身の数
+
+	// 定数パラメータの読み込み
+	LoadParameter();
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -149,8 +136,8 @@ HRESULT CPlayer::Init(void)
 		return E_FAIL;
 	}
 
-	// セットアップの読み込み
-	LoadSetup();
+	// キャラクター情報の割当
+	BindCharaData(SETUP_TXT);
 
 	// モデル情報の設定
 	SetModelInfo();
@@ -200,22 +187,16 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		100, 60, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
-	m_pTensionGauge->SetNum(50);
+	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetLabel(LABEL_UI);
 
-	// 耐久力ゲージを生成
-	m_pEnduranceGauge = CGauge2D::Create
-	(
-		100, 60, D3DXVECTOR3(300.0f, 90.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f)
-	);
-	m_pEnduranceGauge->SetNum(50);
+	// プレイヤーを出現させる
+	SetSpawn();
 
 	// 成功を返す
 	return S_OK;
@@ -229,9 +210,6 @@ void CPlayer::Uninit(void)
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
 	
-	// 耐久力ゲージの終了
-	SAFE_UNINIT(m_pEnduranceGauge);
-
 	// 影の終了
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
 	SAFE_UNINIT(m_pShadow);
@@ -294,48 +272,41 @@ void CPlayer::Update(const float fDeltaTime)
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
 
-	if (GET_INPUTKEY->IsTrigger(DIK_0))
-	{ // 0キーを押した場合
+	// 操作
+	Move();
 
-		// プレイヤーの分身を生成
-		CPlayerClone::Create();
-	}
-
-	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
-	{ // 右SHIFTキーを押した場合
-
-		// プレイヤーの分身を消去
-		CPlayerClone::Delete(0);
-	}
+	// 分身の処理
+	ControlClone();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// デバッグ表示
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_RIGHT, "生成する分身 : %d", m_nNumClone);
 
 #ifdef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
-	// 士気力、耐久力の変更
+	// 士気力の変更
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
-		m_pTensionGauge->AddNum(10);
+		m_pTensionGauge->AddNum(100);
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		m_pTensionGauge->AddNum(-10);
+		m_pTensionGauge->AddNum(-100);
 	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
-		m_pEnduranceGauge->AddNum(10);
+		RecoverCheckPoint();
 	}
 	if (pKeyboard->IsTrigger(DIK_LEFT))
 	{
-		m_pEnduranceGauge->AddNum(-10);
+		RecoverJust();
 	}
-
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-	DebugProc::Print(DebugProc::POINT_RIGHT, "耐久力 : %d\n", m_pEnduranceGauge->GetNum());
 
 #endif
 }
@@ -497,6 +468,7 @@ void CPlayer::SetSpawn(void)
 	SetEnableDraw(true);
 
 	// 追従カメラの目標位置の設定
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_FOLLOW);
 	GET_MANAGER->GetCamera()->SetDestFollow();
 }
 
@@ -539,6 +511,48 @@ float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
 	return HEIGHT;
+}
+
+//==========================================
+//  士気力の値を取得
+//==========================================
+int CPlayer::GetTension() const
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return -1; }
+
+	// 士気力の値を返す
+	return m_pTensionGauge->GetNum();
+}
+
+//==========================================
+//  チェックポイントでの回復処理
+//==========================================
+void CPlayer::RecoverCheckPoint()
+{
+	// 現在の士気力を取得する
+	unsigned int nTension = GetTension();
+
+	// 士気力ゲージが存在しなかった場合関数を抜ける
+	if (nTension == -1) { return; }
+
+	// 最大値と現在値の差を求める
+	float fDiff = (float)(m_nMaxTension - nTension);
+
+	// 差分の半分の値で士気力を回復する
+	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
+}
+
+//==========================================
+//  ジャストアクションでの回復処理
+//==========================================
+void CPlayer::RecoverJust()
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return; }
+
+	// 固定値で士気力を回復する
+	m_pTensionGauge->AddNum(m_nRecover);
 }
 
 //============================================================
@@ -804,205 +818,163 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 	return bAlpha;
 }
 
-//============================================================
-//	セットアップ処理
-//============================================================
-void CPlayer::LoadSetup(void)
+//==========================================
+//  操作処理
+//==========================================
+void CPlayer::Move()
 {
-	// 変数を宣言
-	CMotion::SMotionInfo info;		// ポーズの代入用
-	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
-	int nID			= 0;	// インデックスの代入用
-	int nParentID	= 0;	// 親インデックスの代入用
-	int nNowPose	= 0;	// 現在のポーズ番号
-	int nNowKey		= 0;	// 現在のキー番号
-	int nLoop		= 0;	// ループのON/OFFの変換用
-	int nEnd		= 0;	// テキスト読み込み終了の確認用
+	// 運動の第一法則
+	Inertial();
 
-	// 変数配列を宣言
-	char aString[MAX_STRING];	// テキストの文字列の代入用
+	// 入力情報の取得
+	CInputKeyboard* pKey = GET_INPUTKEY;
 
-	// ポインタを宣言
-	FILE *pFile;	// ファイルポインタ
+	// 一次保存の変数
+	D3DXVECTOR3 move = VEC3_ZERO;
 
-	// ポーズ代入用の変数を初期化
-	memset(&info, 0, sizeof(info));
+	// 入力を受け取る
+	if (pKey->IsPress(DIK_W)) { move.z += 1.0f; }
+	if (pKey->IsPress(DIK_S)) { move.z -= 1.0f; }
+	if (pKey->IsPress(DIK_D)) { move.x += 1.0f; }
+	if (pKey->IsPress(DIK_A)) { move.x -= 1.0f; }
 
-	// ファイルを読み込み形式で開く
-	pFile = fopen(SETUP_TXT, "r");
+	// 値の正規化
+	D3DXVec3Normalize(&move, &move);
 
-	if (pFile != nullptr)
-	{ // ファイルが開けた場合
+	// 現在の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
 
-		do
-		{ // 読み込んだ文字列が EOF ではない場合ループ
+	// 移動量を加算
+	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 
-			// ファイルから文字列を読み込む
-			nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
+	// 移動量を適用
+	pos += m_move;
+	
+	// 座標を適用
+	SetVec3Position(pos);
+}
 
-			// キャラクターの設定
-			if (strcmp(&aString[0], "CHARACTERSET") == 0)
-			{ // 読み込んだ文字列が CHARACTERSET の場合
+//==========================================
+//  慣性の法則
+//==========================================
+void CPlayer::Inertial()
+{
+	// x軸方向の慣性
+	m_move.x += (0.0f - m_move.x) * 0.1f;
 
-				do
-				{ // 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
+	// z軸方向の慣性
+	m_move.z += (0.0f - m_move.z) * 0.1f;
+}
 
-					// ファイルから文字列を読み込む
-					fscanf(pFile, "%s", &aString[0]);
+//==========================================
+//  定数読み込み
+//==========================================
+void CPlayer::LoadParameter()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
 
-					if (strcmp(&aString[0], "PARTSSET") == 0)
-					{ // 読み込んだ文字列が PARTSSET の場合
+	//ファイルを読み取り専用で開く
+	pFile = fopen(PARAM_FILE, "r");
 
-						do
-						{ // 読み込んだ文字列が END_PARTSSET ではない場合ループ
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return; }
 
-							// ファイルから文字列を読み込む
-							fscanf(pFile, "%s", &aString[0]);
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
 
-							if (strcmp(&aString[0], "INDEX") == 0)
-							{ // 読み込んだ文字列が INDEX の場合
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
 
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%d", &nID);			// モデルのインデックスを読み込む
-							}
-							else if (strcmp(&aString[0], "PARENT") == 0)
-							{ // 読み込んだ文字列が PARENT の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%d", &nParentID);	// モデルの親のインデックスを読み込む
-							}
-							else if (strcmp(&aString[0], "POS") == 0)
-							{ // 読み込んだ文字列が POS の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%f", &pos.x);		// X座標を読み込む
-								fscanf(pFile, "%f", &pos.y);		// Y座標を読み込む
-								fscanf(pFile, "%f", &pos.z);		// Z座標を読み込む
-							}
-							else if (strcmp(&aString[0], "ROT") == 0)
-							{ // 読み込んだ文字列が ROT の場合
-
-								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-								fscanf(pFile, "%f", &rot.x);		// X向きを読み込む
-								fscanf(pFile, "%f", &rot.y);		// Y向きを読み込む
-								fscanf(pFile, "%f", &rot.z);		// Z向きを読み込む
-							}
-						} while (strcmp(&aString[0], "END_PARTSSET") != 0);	// 読み込んだ文字列が END_PARTSSET ではない場合ループ
-
-						// パーツ情報の設定
-						CObjectChara::SetPartsInfo(nID, nParentID, pos, rot, MODEL_FILE[nID]);
-					}
-				} while (strcmp(&aString[0], "END_CHARACTERSET") != 0);		// 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
-			}
-
-			// モーションの設定
-			else if (strcmp(&aString[0], "MOTIONSET") == 0)
-			{ // 読み込んだ文字列が MOTIONSET の場合
-
-				// 現在のポーズ番号を初期化
-				nNowPose = 0;
-
-				do
-				{ // 読み込んだ文字列が END_MOTIONSET ではない場合ループ
-
-					// ファイルから文字列を読み込む
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (strcmp(&aString[0], "LOOP") == 0)
-					{ // 読み込んだ文字列が LOOP の場合
-
-						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nLoop);		// ループのON/OFFを読み込む
-
-						// 読み込んだ値をbool型に変換
-						info.bLoop = (nLoop == 0) ? false : true;
-					}
-					else if (strcmp(&aString[0], "NUM_KEY") == 0)
-					{ // 読み込んだ文字列が NUM_KEY の場合
-
-						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &info.nNumKey);	// キーの総数を読み込む
-					}
-					else if (strcmp(&aString[0], "KEYSET") == 0)
-					{ // 読み込んだ文字列が KEYSET の場合
-
-						// 現在のキー番号を初期化
-						nNowKey = 0;
-
-						do
-						{ // 読み込んだ文字列が END_KEYSET ではない場合ループ
-
-							// ファイルから文字列を読み込む
-							fscanf(pFile, "%s", &aString[0]);
-
-							if (strcmp(&aString[0], "FRAME") == 0)
-							{ // 読み込んだ文字列が FRAME の場合
-
-								fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-								fscanf(pFile, "%d", &info.aKeyInfo[nNowPose].nFrame);	// キーが切り替わるまでのフレーム数を読み込む
-							}
-							else if (strcmp(&aString[0], "KEY") == 0)
-							{ // 読み込んだ文字列が KEY の場合
-
-								do
-								{ // 読み込んだ文字列が END_KEY ではない場合ループ
-
-									// ファイルから文字列を読み込む
-									fscanf(pFile, "%s", &aString[0]);
-
-									if (strcmp(&aString[0], "POS") == 0)
-									{ // 読み込んだ文字列が POS の場合
-
-										fscanf(pFile, "%s", &aString[0]);									// = を読み込む (不要)
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.x);	// X位置を読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.y);	// Y位置を読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].pos.z);	// Z位置を読み込む
-
-										// 読み込んだ位置にパーツの初期位置を加算
-										info.aKeyInfo[nNowPose].aKey[nNowKey].pos += GetPartsPosition(nNowKey);
-									}
-									else if (strcmp(&aString[0], "ROT") == 0)
-									{ // 読み込んだ文字列が ROT の場合
-
-										fscanf(pFile, "%s", &aString[0]);									// = を読み込む (不要)
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.x);	// X向きを読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.y);	// Y向きを読み込む
-										fscanf(pFile, "%f", &info.aKeyInfo[nNowPose].aKey[nNowKey].rot.z);	// Z向きを読み込む
-
-										// 読み込んだ向きにパーツの初期向きを加算
-										info.aKeyInfo[nNowPose].aKey[nNowKey].rot += GetPartsRotation(nNowKey);
-
-										// 初期向きを正規化
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.x);
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.y);
-										useful::NormalizeRot(info.aKeyInfo[nNowPose].aKey[nNowKey].rot.z);
-									}
-
-								} while (strcmp(&aString[0], "END_KEY") != 0);	// 読み込んだ文字列が END_KEY ではない場合ループ
-
-								// 現在のキー番号を加算
-								nNowKey++;
-							}
-						} while (strcmp(&aString[0], "END_KEYSET") != 0);	// 読み込んだ文字列が END_KEYSET ではない場合ループ
-
-						// 現在のポーズ番号を加算
-						nNowPose++;
-					}
-				} while (strcmp(&aString[0], "END_MOTIONSET") != 0);	// 読み込んだ文字列が END_MOTIONSET ではない場合ループ
-
-				// モーション情報の設定
-				CObjectChara::SetMotionInfo(info);
-			}
-		} while (nEnd != EOF);	// 読み込んだ文字列が EOF ではない場合ループ
-		
-		// ファイルを閉じる
-		fclose(pFile);
+		// 条件分岐処理
+		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxTension);
+		}
+		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nInitTension);
+		}
+		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nSpeedTension);
+		}
+		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxClone);
+		}
+		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nRecover);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
 	}
-	else
-	{ // ファイルが開けなかった場合
 
-		// エラーメッセージボックス
-		MessageBox(nullptr, "プレイヤーセットアップファイルの読み込みに失敗！", "警告！", MB_ICONWARNING);
+	return;
+}
+
+//==========================================
+//  分身の処理
+//==========================================
+void CPlayer::ControlClone()
+{
+	// 分身が出ていた場合の処理
+	if (CPlayerClone::GetList() != nullptr)
+	{
+		// 士気力ゲージを減少する
+		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
+
+		// 分身を削除する
+		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
+		{
+			// プレイヤーの分身を消去
+			CPlayerClone::Delete();
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 分身の数を設定する
+	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 分身の数を加算
+		++m_nNumClone;
+
+		// 分身可能フラグをオン
+		m_bCreateClone = true;
+
+		// 上限を超えた場合0に戻す
+		if (m_nNumClone > m_nMaxClone)
+		{
+			m_nNumClone = 0;
+
+			// 0の時はフラグをオフ
+			m_bCreateClone = false;
+		}
+	}
+
+	// 分身を生成する
+	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
+	{
+		// プレイヤーの分身を生成
+		for (unsigned int i = 0; i < m_nNumClone; ++i)
+		{
+			CPlayerClone::Create();
+		}
+
+		// 生成したら0に戻す
+		m_nNumClone = 0;
 	}
 }

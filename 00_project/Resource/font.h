@@ -36,10 +36,10 @@ public:
 		sFontName(FontName), bItalic(Italic) {}
 
 		// 比較演算子オーバーロード
-		bool operator<(const SKey& key) const
+		bool operator<(const SKey& rKey) const
 		{
 			// 情報をまとめて比較
-			return std::tie(sFontName, bItalic) < std::tie(key.sFontName, key.bItalic);
+			return std::tie(sFontName, bItalic) < std::tie(rKey.sFontName, rKey.bItalic);
 		}
 
 		std::string sFontName;	// フォント名
@@ -71,8 +71,8 @@ public:
 	);
 
 	// 静的メンバ関数
-	static CFont *Create(void);			// 生成
-	static void Release(CFont *&pFont);	// 破棄
+	static CFont *Create(void);				// 生成
+	static void Release(CFont *&prFont);	// 破棄
 
 private:
 	// メンバ関数

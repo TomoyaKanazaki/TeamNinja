@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
+#include "motionManager.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -27,7 +28,6 @@ CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dime
 {
 	// メンバ変数をクリア
 	memset(&m_apMultiModel[0], 0, sizeof(m_apMultiModel));	// モデルの情報
-	memset(&m_apCollision[0], 0, sizeof(m_apCollision));	// 当たり判定の情報
 	D3DXMatrixIdentity(&m_mtxWorld);	// ワールドマトリックス
 }
 
@@ -46,7 +46,6 @@ HRESULT CObjectChara::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_apMultiModel[0], 0, sizeof(m_apMultiModel));	// モデルの情報
-	memset(&m_apCollision[0], 0, sizeof(m_apCollision));	// 当たり判定の情報
 	D3DXMatrixIdentity(&m_mtxWorld);	// ワールドマトリックス
 	m_pMotion	= nullptr;		// モーションの情報
 	m_pos		= VEC3_ZERO;	// 位置
@@ -266,6 +265,29 @@ void CObjectChara::SetPartsInfo
 
 		// パーツの総数を加算
 		m_nNumModel++;
+	}
+}
+
+//============================================================
+//	キャラクター情報割当
+//============================================================
+void CObjectChara::BindCharaData(const char *pMotionPass)
+{
+	// 割り当てるモーションパスが存在しない場合抜ける
+	if (pMotionPass == nullptr) { assert(false); return; }
+
+	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
+	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
+
+	// モーション情報の設定
+	m_pMotion->SetAllInfo(data.infoMotion);
+
+	for (int nCntChara = 0; nCntChara < data.infoParts.nNumParts; nCntChara++)
+	{ // 読み込んだパーツ数分繰り返す
+
+		// パーツ情報の設定
+		CMotionManager::SParts *pParts = &data.infoParts.pInfo[nCntChara];	// パーツ情報
+		CObjectChara::SetPartsInfo(nCntChara, pParts->nParentID, pParts->pos, pParts->rot, pParts->strPass.c_str());
 	}
 }
 

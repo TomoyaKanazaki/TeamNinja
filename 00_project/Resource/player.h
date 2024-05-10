@@ -59,6 +59,7 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
+		MOTION_MOVE,		// 移動モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -100,9 +101,13 @@ public:
 	float GetRadius(void) const;		// 半径取得
 	float GetHeight(void) const;		// 縦幅取得
 
+	// メンバ関数 (金崎朋弥)
+	int GetTension() const; // 士気力の値を取得
+	void RecoverCheckPoint(); // チェックポイントでの回復処理
+	void RecoverJust(); // ジャストアクションでの回復処理
+
 private:
 	// メンバ関数
-	void LoadSetup(void);			// セットアップ
 	EMotion UpdateSpawn(void);		// スポーン状態時の更新
 	EMotion UpdateNormal(void);		// 通常状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
@@ -115,6 +120,12 @@ private:
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
+
+	// メンバ関数 (金崎追加)
+	void Move(); // 操作処理
+	void Inertial(); // 運動の第一法則
+	void LoadParameter(); // 定数値の読み込み
+	void ControlClone(); // 分身の処理
 
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
@@ -132,7 +143,13 @@ private:
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
-	CGauge2D* m_pEnduranceGauge; // 耐久力ゲージのポインタ
+	unsigned int m_nMaxTension; // 士気力の最大値
+	unsigned int m_nInitTension; // 士気力の初期値
+	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
+	bool m_bCreateClone; // 分身生成モードフラグ
+	unsigned int m_nNumClone; // 生成する分身の数
+	unsigned int m_nMaxClone; // 一度に分身できる上限
+	unsigned int m_nRecover; // ジャストアクションでの回復量
 
 };
 

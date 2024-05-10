@@ -20,10 +20,10 @@
 #include "model.h"
 #include "font.h"
 #include "shader.h"
+#include "motionManager.h"
 #include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
-
 #include "debugproc.h"
 
 //************************************************************
@@ -54,6 +54,8 @@ CManager::CManager() :
 	m_pFade			(nullptr),	// フェードインスタンス
 	m_pLoading		(nullptr),	// ローディングインスタンス
 	m_pScene		(nullptr),	// シーンインスタンス
+	m_pMotion		(nullptr),	// モーションマネージャー
+	m_pEffekseer	(nullptr),	// エフェクシアマネージャー
 	m_pRetention	(nullptr),	// データ保存マネージャー
 	m_pDebug		(nullptr)	// デバッグ
 {
@@ -92,13 +94,14 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pFade			= nullptr;		// フェードインスタンス
 	m_pLoading		= nullptr;		// ローディングインスタンス
 	m_pScene		= nullptr;		// シーンインスタンス
+	m_pMotion		= nullptr;		// モーションマネージャー
+	m_pEffekseer	= nullptr;		// エフェクシアマネージャー
 	m_pRetention	= nullptr;		// データ保存マネージャー
 	m_pDebug		= nullptr;		// デバッグ
 
 	//--------------------------------------------------------
 	//	システムの生成
 	//--------------------------------------------------------
-
 	// デルタタイムの生成
 	m_pDeltaTime = CDeltaTime::Create();
 	if (m_pDeltaTime == nullptr)
@@ -225,6 +228,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// フォントの生成
 	m_pFont = CFont::Create();
 	if (m_pFont == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// モーションの生成
+	m_pMotion = CMotionManager::Create();
+	if (m_pMotion == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -374,6 +387,9 @@ void CManager::Uninit(void)
 
 	// フォントの破棄
 	SAFE_REF_RELEASE(m_pFont);
+
+	// モーションの破棄
+	SAFE_REF_RELEASE(m_pMotion);
 
 	// シェーダーの破棄
 	CShader::Release();
@@ -857,6 +873,18 @@ CScene *CManager::GetScene(void)
 
 	// シーンのポインタを返す
 	return m_pScene;
+}
+
+//============================================================
+//	モーションマネージャー取得処理
+//============================================================
+CMotionManager *CManager::GetMotion(void)
+{
+	// インスタンス未使用
+	assert(m_pMotion != nullptr);
+
+	// モーションマネージャーを返す
+	return m_pMotion;
 }
 
 //============================================================

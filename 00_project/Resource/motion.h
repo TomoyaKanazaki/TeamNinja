@@ -15,9 +15,9 @@
 //************************************************************
 namespace motion
 {
-	const int MAX_PARTS		= 32;	// パーツの最大数
-	const int MAX_MOTION	= 32;	// モーションの最大数
-	const int MAX_KEY		= 16;	// キーの最大数
+	const int MAX_PARTS		= 18;	// パーツの最大数
+	const int MAX_MOTION	= 18;	// モーションの最大数
+	const int MAX_KEY		= 18;	// キーの最大数
 }
 
 //************************************************************
@@ -104,7 +104,8 @@ public:
 	void UpdateMotion(void);				// モーション更新
 	void UpdateBlend(void);					// ブレンド更新
 	void Set(const int nType, const int nBlendFrame = 0);	// 設定
-	void SetInfo(const SMotionInfo info);					// モーション情報設定
+	void SetAllInfo(const SInfo info);						// モーション情報全設定
+	void AddInfo(const SMotionInfo info);					// モーション情報追加
 	void SetEnableUpdate(const bool bUpdate);				// 更新状況設定
 	void SetModel(CMultiModel **ppModel, const int nNum);	// モデル情報設定
 	void SetOriginPosition(const D3DXVECTOR3& rPos, const int nParts);	// 原点位置の設定

@@ -173,6 +173,8 @@
     <ClInclude Include="Resource\effect3D.h" />
     <ClInclude Include="Resource\effekseerControl.h" />
     <ClInclude Include="Resource\effekseerManager.h" />
+    <ClInclude Include="Resource\enemy.h" />
+    <ClInclude Include="Resource\enemy_chase.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
     <ClInclude Include="Resource\flash.h" />
@@ -193,6 +195,7 @@
     <ClInclude Include="Resource\model.h" />
     <ClInclude Include="Resource\modelUI.h" />
     <ClInclude Include="Resource\motion.h" />
+    <ClInclude Include="Resource\motionManager.h" />
     <ClInclude Include="Resource\multiModel.h" />
     <ClInclude Include="Resource\multiValue.h" />
     <ClInclude Include="Resource\object.h" />
@@ -273,6 +276,8 @@
     <ClCompile Include="Resource\effect3D.cpp" />
     <ClCompile Include="Resource\effekseerControl.cpp" />
     <ClCompile Include="Resource\effekseerManager.cpp" />
+    <ClCompile Include="Resource\enemy.cpp" />
+    <ClCompile Include="Resource\enemy_chase.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />
     <ClCompile Include="Resource\flash.cpp" />
@@ -293,6 +298,7 @@
     <ClCompile Include="Resource\model.cpp" />
     <ClCompile Include="Resource\modelUI.cpp" />
     <ClCompile Include="Resource\motion.cpp" />
+    <ClCompile Include="Resource\motionManager.cpp" />
     <ClCompile Include="Resource\multiModel.cpp" />
     <ClCompile Include="Resource\multiValue.cpp" />
     <ClCompile Include="Resource\object.cpp" />
