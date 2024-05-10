@@ -66,13 +66,19 @@ HRESULT CCheckPoint::Init(void)
 	}
 
 	// モデルを割り当て
-	BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
+	BindModel("data\\MODEL\\FONT\\name_boss000.x");
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
 
 	// 定数パラメータの読み込み
 	Load();
+
+	// サイズを調整
+	SetVec3Scaling(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
+
+	// マテリアルの設定処理
+	SetAllMaterial(material::GlowCyan());
 
 	return S_OK;
 }
