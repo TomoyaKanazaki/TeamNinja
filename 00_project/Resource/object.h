@@ -98,6 +98,7 @@ public:
 		LABEL_LIQUID,		// 液体
 		LABEL_DEBUG,		// デバッグ
 		LABEL_AVATAR,		// 分身
+		LABEL_CHECKPOINT,	// チェックポイント
 		LABEL_MAX			// この列挙型の総数
 	};
 

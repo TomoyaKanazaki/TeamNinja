@@ -33,5 +33,10 @@ private:
 
 	// メンバ変数
 	bool m_bSave; // セーブフラグ
+	float m_fRadius; // 当たり判定半径
+	int m_nSaveTension; // セーブ時の士気力
+
+	// 静的メンバ変数
+	static int m_nNumAll;
 
 };
