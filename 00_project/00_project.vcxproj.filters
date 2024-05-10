@@ -624,5 +624,8 @@
     <FxCompile Include="data\SHADER\ZTexCreator.fx">
       <Filter>シェーダー</Filter>
     </FxCompile>
+    <FxCompile Include="draw.fx">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
