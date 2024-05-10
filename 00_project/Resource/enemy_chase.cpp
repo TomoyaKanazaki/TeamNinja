@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "enemy_chase.h"
 #include "renderer.h"
+#include "deltaTime.h"
 
 #include "player.h"
 
@@ -19,7 +20,7 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
-	const float MOVE = -7.0f;							// 移動量
+	const float MOVE = -420.0f;							// 移動量
 	const float ROT_REV = 0.5f;							// 向きの補正係数
 }
 
@@ -130,8 +131,8 @@ void CEnemyChase::Chase(void)
 	useful::NormalizeRot(rot.y);
 
 	// 移動量を設定する
-	move.x = sinf(rot.y) * MOVE;
-	move.z = cosf(rot.y) * MOVE;
+	move.x = sinf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.z = cosf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 
 	// 位置を移動する
 	pos += move;
