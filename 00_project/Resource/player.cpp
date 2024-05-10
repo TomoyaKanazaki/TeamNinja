@@ -89,7 +89,11 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
 	m_nMaxTension		(0),			// 最大士気力
 	m_nInitTension		(0),			// 初期士気力
-	m_nSpeedTension		(0)				// 士気力ゲージの増減速度
+	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
+	m_bCreateClone		(false),		// 分身生成モードフラグ
+	m_nNumClone			(0),			// 生成する分身の数
+	m_nMaxClone			(0),			// 一度に分身できる上限
+	m_nRecover			(0)				// ジャストアクションでの回復量
 {
 
 }
@@ -117,6 +121,8 @@ HRESULT CPlayer::Init(void)
 	m_bJump				= true;			// ジャンプ状況
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
+	m_bCreateClone		= false;		// 分身生成モードフラグ
+	m_nNumClone			= 0;			// 生成する分身の数
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -266,32 +272,15 @@ void CPlayer::Update(const float fDeltaTime)
 	// 操作
 	Move();
 
-	// 分身が出ていた場合の処理
-	if (CPlayerClone::GetList() != nullptr)
-	{
-		// 士気力ゲージを減少する
-		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
-
-		// 分身を削除する
-		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
-		{
-			// プレイヤーの分身を消去
-			CPlayerClone::Delete();
-		}
-	}
-	else
-	{
-		// 分身を生成する
-		if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
-		{
-
-			// プレイヤーの分身を生成
-			CPlayerClone::Create();
-		}
-	}
+	// 分身の処理
+	ControlClone();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// デバッグ表示
+	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_RIGHT, "生成する分身 : %d", m_nNumClone);
 
 #ifdef _DEBUG
 
@@ -307,8 +296,14 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		m_pTensionGauge->AddNum(-100);
 	}
-
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	if (pKeyboard->IsTrigger(DIK_RIGHT))
+	{
+		RecoverCheckPoint();
+	}
+	if (pKeyboard->IsTrigger(DIK_LEFT))
+	{
+		RecoverJust();
+	}
 
 #endif
 }
@@ -524,6 +519,36 @@ int CPlayer::GetTension() const
 
 	// 士気力の値を返す
 	return m_pTensionGauge->GetNum();
+}
+
+//==========================================
+//  チェックポイントでの回復処理
+//==========================================
+void CPlayer::RecoverCheckPoint()
+{
+	// 現在の士気力を取得する
+	unsigned int nTension = GetTension();
+
+	// 士気力ゲージが存在しなかった場合関数を抜ける
+	if (nTension == -1) { return; }
+
+	// 最大値と現在値の差を求める
+	float fDiff = (float)(m_nMaxTension - nTension);
+
+	// 差分の半分の値で士気力を回復する
+	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
+}
+
+//==========================================
+//  ジャストアクションでの回復処理
+//==========================================
+void CPlayer::RecoverJust()
+{
+	// 士気力ゲージが存在しない場合
+	if (m_pTensionGauge == nullptr) { return; }
+
+	// 固定値で士気力を回復する
+	m_pTensionGauge->AddNum(m_nRecover);
 }
 
 //============================================================
@@ -876,6 +901,16 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%d", &m_nSpeedTension);
 		}
+		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxClone);
+		}
+		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nRecover);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
@@ -883,4 +918,59 @@ void CPlayer::LoadParameter()
 	}
 
 	return;
+}
+
+//==========================================
+//  分身の処理
+//==========================================
+void CPlayer::ControlClone()
+{
+	// 分身が出ていた場合の処理
+	if (CPlayerClone::GetList() != nullptr)
+	{
+		// 士気力ゲージを減少する
+		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
+
+		// 分身を削除する
+		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
+		{
+			// プレイヤーの分身を消去
+			CPlayerClone::Delete();
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 分身の数を設定する
+	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 分身の数を加算
+		++m_nNumClone;
+
+		// 分身可能フラグをオン
+		m_bCreateClone = true;
+
+		// 上限を超えた場合0に戻す
+		if (m_nNumClone > m_nMaxClone)
+		{
+			m_nNumClone = 0;
+
+			// 0の時はフラグをオフ
+			m_bCreateClone = false;
+		}
+	}
+
+	// 分身を生成する
+	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
+	{
+		// プレイヤーの分身を生成
+		for (unsigned int i = 0; i < m_nNumClone; ++i)
+		{
+			CPlayerClone::Create();
+		}
+
+		// 生成したら0に戻す
+		m_nNumClone = 0;
+	}
 }
