@@ -20,7 +20,7 @@
 #include "multiModel.h"
 
 #include "enemy.h"
-#include "checkpoint.h"
+#include "map.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -64,8 +64,8 @@ HRESULT CGameManager::Init(void)
 
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
 
-
-	CCheckPoint::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO);
+	// ƒ}ƒbƒv‚ğ¶¬
+	if (FAILED(map::Create())) { return E_FAIL; }
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;

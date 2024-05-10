@@ -193,6 +193,7 @@
     <ClInclude Include="Resource\loading.h" />
     <ClInclude Include="Resource\main.h" />
     <ClInclude Include="Resource\manager.h" />
+    <ClInclude Include="Resource\map.h" />
     <ClInclude Include="Resource\model.h" />
     <ClInclude Include="Resource\modelUI.h" />
     <ClInclude Include="Resource\motion.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="Resource\loading.cpp" />
     <ClCompile Include="Resource\main.cpp" />
     <ClCompile Include="Resource\manager.cpp" />
+    <ClCompile Include="Resource\map.cpp" />
     <ClCompile Include="Resource\model.cpp" />
     <ClCompile Include="Resource\modelUI.cpp" />
     <ClCompile Include="Resource\motion.cpp" />
