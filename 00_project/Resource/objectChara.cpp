@@ -23,12 +23,13 @@
 CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
 	m_pMotion	(nullptr),		// モーションの情報
 	m_pos		(VEC3_ZERO),	// 位置
-	m_rot		(VEC3_ZERO),	// 向き
-	m_nNumModel	(0)				// パーツの総数
+	m_rot		(VEC3_ZERO)		// 向き
 {
 	// メンバ変数をクリア
-	memset(&m_apMultiModel[0], 0, sizeof(m_apMultiModel));	// モデルの情報
 	D3DXMatrixIdentity(&m_mtxWorld);	// ワールドマトリックス
+
+	// パーツ情報配列をクリア
+	m_vecParts.clear();
 }
 
 //============================================================
@@ -45,12 +46,13 @@ CObjectChara::~CObjectChara()
 HRESULT CObjectChara::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_apMultiModel[0], 0, sizeof(m_apMultiModel));	// モデルの情報
 	D3DXMatrixIdentity(&m_mtxWorld);	// ワールドマトリックス
 	m_pMotion	= nullptr;		// モーションの情報
 	m_pos		= VEC3_ZERO;	// 位置
 	m_rot		= VEC3_ZERO;	// 向き
-	m_nNumModel	= 0;			// パーツの総数
+
+	// パーツ情報配列を初期化
+	m_vecParts.clear();
 
 	// モーションの生成
 	m_pMotion = CMotion::Create(this);
@@ -71,15 +73,18 @@ HRESULT CObjectChara::Init(void)
 //============================================================
 void CObjectChara::Uninit(void)
 {
-	for (int nCntChara = 0; nCntChara < motion::MAX_PARTS; nCntChara++)
-	{ // パーツの最大数分繰り返す
-
-		// マルチモデルの終了
-		SAFE_UNINIT(m_apMultiModel[nCntChara]);
-	}
-
 	// モーションの破棄
 	SAFE_REF_RELEASE(m_pMotion);
+
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
+
+		// パーツの終了
+		SAFE_UNINIT(rVec);
+	}
+
+	// パーツ情報配列をクリア
+	m_vecParts.clear();
 
 	// オブジェクトキャラクターを破棄
 	Release();
@@ -123,11 +128,11 @@ void CObjectChara::Draw(CShader *pShader)
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
 		// パーツの描画
-		m_apMultiModel[nCntChara]->Draw(pShader);
+		rVec->Draw(pShader);
 	}
 }
 
@@ -138,10 +143,10 @@ void CObjectChara::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);	// 自身
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
-		m_apMultiModel[nCntChara]->SetEnableUpdate(bUpdate);
+		rVec->SetEnableUpdate(bUpdate);
 	}
 }
 
@@ -152,10 +157,10 @@ void CObjectChara::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);	// 自身
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
-		m_apMultiModel[nCntChara]->SetEnableDraw(bDraw);
+		rVec->SetEnableDraw(bDraw);
 	}
 }
 
@@ -236,35 +241,36 @@ void CObjectChara::SetPartsInfo
 	const char *pFileName		// ファイル名
 )
 {
-	if (nID < motion::MAX_PARTS && nParentID < motion::MAX_PARTS && pFileName != nullptr)
-	{ // パーツ・親インデックスが配列範囲内且つ、ファイル名が存在する場合
+	// インデックスが非正規の場合抜ける
+	int nNumParts = GetNumParts();	// パーツの総数
+	if (nID <= NONE_IDX || nID >= nNumParts) { assert(false); return; }
+	if (nParentID <= NONE_IDX - 1 || nParentID >= nNumParts) { assert(false); return; }
 
-		// モデルの生成
-		m_apMultiModel[nID] = CMultiModel::Create(rPos, rRot);
+	// ファイル指定がない場合抜ける
+	if (pFileName == nullptr) { assert(false); return; }
 
-		// モデルの原点位置・向きを設定
-		m_pMotion->SetOriginPosition(rPos, nID);
-		m_pMotion->SetOriginRotation(rRot, nID);
+	// モデルの原点位置・向きを設定
+	m_pMotion->SetOriginPosition(rPos, nID);
+	m_pMotion->SetOriginRotation(rRot, nID);
 
-		// モデルを割当
-		m_apMultiModel[nID]->BindModel(pFileName);
+	// モデルの生成
+	m_vecParts[nID] = CMultiModel::Create(rPos, rRot);
 
-		// 親モデルの設定
-		if (nParentID == NONE_IDX)
-		{ // 親がない場合
+	// モデルを割当
+	m_vecParts[nID]->BindModel(pFileName);
 
-			// nullptrを設定
-			m_apMultiModel[nID]->SetParentModel(nullptr);
-		}
-		else
-		{ // 親がいる場合
+	// 親モデルの設定
+	if (nParentID == NONE_IDX)
+	{ // 親がない場合
 
-			// 親のアドレスを設定
-			m_apMultiModel[nID]->SetParentModel(m_apMultiModel[nParentID]);
-		}
+		// nullptrを設定
+		m_vecParts[nID]->SetParentModel(nullptr);
+	}
+	else
+	{ // 親がいる場合
 
-		// パーツの総数を加算
-		m_nNumModel++;
+		// 親のアドレスを設定
+		m_vecParts[nID]->SetParentModel(m_vecParts[nParentID]);
 	}
 }
 
@@ -279,16 +285,17 @@ void CObjectChara::BindCharaData(const char *pMotionPass)
 	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
 	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
 
-	// モーション情報の設定
+	// 自身とモーションのパーツ数を設定
+	SetNumParts(data.infoParts.GetNumParts());
+
+	// 自身のパーツ情報を設定
+	SetPartsInfo(data.infoParts);
+
+	// モーションにパーツ情報を割当
+	m_pMotion->BindPartsData(&m_vecParts[0]);
+
+	// モーションにモーション情報の全設定
 	m_pMotion->SetAllInfo(data.infoMotion);
-
-	for (int nCntChara = 0; nCntChara < data.infoParts.nNumParts; nCntChara++)
-	{ // 読み込んだパーツ数分繰り返す
-
-		// パーツ情報の設定
-		CMotionManager::SParts *pParts = &data.infoParts.pInfo[nCntChara];	// パーツ情報
-		CObjectChara::SetPartsInfo(nCntChara, pParts->nParentID, pParts->pos, pParts->rot, pParts->strPass.c_str());
-	}
 }
 
 //============================================================
@@ -301,17 +308,66 @@ void CObjectChara::SetMtxWorld(const D3DXMATRIX &rMtxWorld)
 }
 
 //============================================================
+//	パーツ数の設定処理
+//============================================================
+void CObjectChara::SetNumParts(const int nNumParts)
+{
+	//--------------------------------------------------------
+	//	現在のパーツを破棄
+	//--------------------------------------------------------
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
+
+		// パーツの終了
+		SAFE_UNINIT(rVec);
+	}
+
+	// パーツ情報配列をクリア
+	m_vecParts.clear();
+
+	//--------------------------------------------------------
+	//	パーツ数を設定
+	//--------------------------------------------------------
+	// モーションのパーツ数の設定
+	m_pMotion->SetNumParts(nNumParts);
+
+	// 自身のパーツ数の設定
+	m_vecParts.resize(nNumParts);
+}
+
+//============================================================
+//	パーツ情報の設定処理
+//============================================================
+void CObjectChara::SetPartsInfo(CMotionManager::SPartsInfo& rInfo)
+{
+	for (int nCntParts = 0; nCntParts < rInfo.GetNumParts(); nCntParts++)
+	{ // パーツ数分繰り返す
+
+		// パーツ情報の設定
+		CMotionManager::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
+		CObjectChara::SetPartsInfo
+		( // 引数
+			nCntParts,				// パーツインデックス
+			pParts->nParentID,		// 親インデックス
+			pParts->pos,			// 位置
+			pParts->rot,			// 向き
+			pParts->strPass.c_str()	// ファイル名
+		);
+	}
+}
+
+//============================================================
 //	パーツ位置の設定処理
 //============================================================
 void CObjectChara::SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos)
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 引数のインデックスの位置を設定
-		m_apMultiModel[nPartsID]->SetVec3Position(rPos);
+		m_vecParts[nPartsID]->SetVec3Position(rPos);
 	}
-	else { assert(false); }
+	else { assert(false); }	// 使用不可
 }
 
 //============================================================
@@ -319,13 +375,13 @@ void CObjectChara::SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos)
 //============================================================
 void CObjectChara::SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot)
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 引数のインデックスの向きを設定
-		m_apMultiModel[nPartsID]->SetVec3Rotation(rRot);
+		m_vecParts[nPartsID]->SetVec3Rotation(rRot);
 	}
-	else { assert(false); }
+	else { assert(false); }	// 使用不可
 }
 
 //============================================================
@@ -333,11 +389,11 @@ void CObjectChara::SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot)
 //============================================================
 D3DXVECTOR3 CObjectChara::GetPartsPosition(const int nPartsID) const
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 引数インデックスのパーツの位置を返す
-		return m_apMultiModel[nPartsID]->GetVec3Position();
+		return m_vecParts[nPartsID]->GetVec3Position();
 	}
 
 	// インデックスエラー
@@ -350,11 +406,11 @@ D3DXVECTOR3 CObjectChara::GetPartsPosition(const int nPartsID) const
 //============================================================
 D3DXVECTOR3 CObjectChara::GetPartsRotation(const int nPartsID) const
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 引数インデックスのパーツの向きを返す
-		return m_apMultiModel[nPartsID]->GetVec3Rotation();
+		return m_vecParts[nPartsID]->GetVec3Rotation();
 	}
 
 	// インデックスエラー
@@ -363,29 +419,20 @@ D3DXVECTOR3 CObjectChara::GetPartsRotation(const int nPartsID) const
 }
 
 //============================================================
-//	マルチモデル取得処理
+//	パーツ取得処理
 //============================================================
-CMultiModel *CObjectChara::GetMultiModel(const int nPartsID) const
+CMultiModel *CObjectChara::GetParts(const int nPartsID) const
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
-		// マルチモデルの情報を返す
-		return m_apMultiModel[nPartsID];
+		// パーツの情報を返す
+		return m_vecParts[nPartsID];
 	}
-	else { assert(false); return m_apMultiModel[0]; }
-}
-
-//============================================================
-//	モーション取得処理
-//============================================================
-CMotion *CObjectChara::GetMotion(void) const
-{
-	// インスタンス未使用
-	assert(m_pMotion != nullptr);
-
-	// モーションの情報を返す
-	return m_pMotion;
+	
+	// インデックスエラー
+	assert(false);
+	return nullptr;
 }
 
 //============================================================
@@ -393,13 +440,13 @@ CMotion *CObjectChara::GetMotion(void) const
 //============================================================
 void CObjectChara::SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID)
 {
-	if (nPartsID < m_nNumModel)
+	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 引数のマテリアルを設定
-		m_apMultiModel[nPartsID]->SetMaterial(rMat, nMatID);
+		m_vecParts[nPartsID]->SetMaterial(rMat, nMatID);
 	}
-	else { assert(false); }
+	else { assert(false); }	// 使用不可
 }
 
 //============================================================
@@ -407,11 +454,11 @@ void CObjectChara::SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, con
 //============================================================
 void CObjectChara::SetAllMaterial(const D3DXMATERIAL& rMat)
 {
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
 		// 引数のマテリアルを全マテリアルに設定
-		m_apMultiModel[nCntChara]->SetAllMaterial(rMat);
+		rVec->SetAllMaterial(rMat);
 	}
 }
 
@@ -420,11 +467,11 @@ void CObjectChara::SetAllMaterial(const D3DXMATERIAL& rMat)
 //============================================================
 void CObjectChara::ResetMaterial(void)
 {
-	for (int nCntChara = 0; nCntChara < m_nNumModel; nCntChara++)
-	{ // パーツの総数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
 		// 全マテリアルに初期マテリアルを再設定
-		m_apMultiModel[nCntChara]->ResetMaterial();
+		rVec->ResetMaterial();
 	}
 }
 
@@ -433,11 +480,11 @@ void CObjectChara::ResetMaterial(void)
 //============================================================
 void CObjectChara::SetAlpha(const float fAlpha)
 {
-	for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
-	{ // パーツの最大数分繰り返す
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
 		// 引数の透明度を設定
-		m_apMultiModel[nCntParts]->SetAlpha(fAlpha);
+		rVec->SetAlpha(fAlpha);
 	}
 }
 
@@ -446,14 +493,12 @@ void CObjectChara::SetAlpha(const float fAlpha)
 //============================================================
 float CObjectChara::GetAlpha(void) const
 {
-	// 変数を宣言
-	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
-
 	// 最も不透明な透明度を探す
-	for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
-	{ // パーツの最大数分繰り返す
+	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
 
-		float fCurAlpha = m_apMultiModel[nCntParts]->GetAlpha();	// 現在のモデルの透明度
+		float fCurAlpha = rVec->GetAlpha();	// 現在のモデルの透明度
 		if (fCurAlpha > fAlpha)
 		{ // マテリアルの透明度がより不透明だった場合
 
@@ -471,18 +516,16 @@ float CObjectChara::GetAlpha(void) const
 //============================================================
 float CObjectChara::GetMaxAlpha(void) const
 {
-	// 変数を宣言
-	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
-
 	// 最も不透明な透明度を探す
-	for (int nCntParts = 0; nCntParts < m_nNumModel; nCntParts++)
+	float fAlpha = 0.0f;	// 最も不透明なマテリアルの透明度
+	for (int nCntParts = 0; nCntParts < GetNumParts(); nCntParts++)
 	{ // パーツの最大数分繰り返す
 
-		if (m_apMultiModel[nCntParts]->GetMaxAlpha() > fAlpha)
+		if (m_vecParts[nCntParts]->GetMaxAlpha() > fAlpha)
 		{ // マテリアルの透明度がより不透明だった場合
 
 			// 現在のマテリアルの透明度を保存
-			fAlpha = m_apMultiModel[nCntParts]->GetMaxAlpha();
+			fAlpha = m_vecParts[nCntParts]->GetMaxAlpha();
 		}
 	}
 

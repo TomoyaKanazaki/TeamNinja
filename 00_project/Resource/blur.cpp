@@ -106,7 +106,7 @@ void CBlur::Update(const float fDeltaTime)
 		memset(pTempBlur, 0, sizeof(*pTempBlur));
 
 		// パーツ数を設定
-		pTempBlur->nNumParts = m_pParent->GetNumModel();
+		pTempBlur->nNumParts = m_pParent->GetNumParts();
 
 		for (int nCntParts = 0; nCntParts < pTempBlur->nNumParts; nCntParts++)
 		{ // パーツ数分繰り返す
@@ -116,9 +116,9 @@ void CBlur::Update(const float fDeltaTime)
 			if (pTempBlur->apCharaParts[nCntParts] != nullptr)
 			{ // パーツの生成に成功した場合
 
-				CObjectModel *pBlurParts = pTempBlur->apCharaParts[nCntParts];		// 残像パーツ
-				CMultiModel *pOriginParts = m_pParent->GetMultiModel(nCntParts);	// 原点パーツ
-				D3DXMATRIX mtxParts = pOriginParts->GetMtxWorld();					// 残像生成元のマトリックス
+				CObjectModel *pBlurParts = pTempBlur->apCharaParts[nCntParts];	// 残像パーツ
+				CMultiModel *pOriginParts = m_pParent->GetParts(nCntParts);		// 原点パーツ
+				D3DXMATRIX mtxParts = pOriginParts->GetMtxWorld();				// 残像生成元のマトリックス
 
 				// 情報を生成元と一致させる
 				pBlurParts->BindModel(pOriginParts->GetModelID());	// 同一モデルを割当

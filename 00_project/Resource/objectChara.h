@@ -15,6 +15,7 @@
 //************************************************************
 #include "object.h"
 #include "motion.h"
+#include "motionManager.h"
 
 //************************************************************
 //	前方宣言
@@ -63,15 +64,18 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const char *pFileName		// ファイル名
 	);
+
 	void BindCharaData(const char *pTextPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
+	void SetNumParts(const int nNumParts);			// パーツ数設定
+	void SetPartsInfo(CMotionManager::SPartsInfo& rInfo);				// パーツ情報設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
-	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;		// パーツ位置取得
-	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;		// パーツ向き取得
-	CMultiModel *GetMultiModel(const int nPartsID) const;		// マルチモデル取得
-	CMotion *GetMotion(void) const;								// モーション取得
-	int GetNumModel(void) const { return m_nNumModel; }			// パーツ総数取得
+	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
+	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
+	CMultiModel *GetParts(const int nPartsID) const;					// パーツ取得
+	CMotion *GetMotion(void) const	{ return m_pMotion; }				// モーション取得
+	int GetNumParts(void) const		{ return (int)m_vecParts.size(); }	// パーツ数取得
 
 	void SetMaterial(const D3DXMATERIAL& rMat, const int nPartsID, const int nMatID);	// マテリアル設定
 	void SetAllMaterial(const D3DXMATERIAL& rMat);	// マテリアル全設定
@@ -80,9 +84,8 @@ public:
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
 
-	void SetModelInfo(void)							{ return m_pMotion->SetModel(&m_apMultiModel[0], m_nNumModel); }	// モデル情報設定
-	void AddMotionInfo(CMotion::SMotionInfo info)	{ return m_pMotion->AddInfo(info); }				// モーション情報追加
-	void SetEnableMotionUpdate(const bool bUpdate)	{ return m_pMotion->SetEnableUpdate(bUpdate); }		// 更新状況設定
+	void AddMotionInfo(CMotion::SMotionInfo info)	{ m_pMotion->AddInfo(info); }						// モーション情報追加
+	void SetEnableMotionUpdate(const bool bUpdate)	{ m_pMotion->SetEnableUpdate(bUpdate); }			// 更新状況設定
 	int GetMotionType(void) const			{ return m_pMotion->GetType(); }							// モーション種類取得
 	int GetMotionNumType(void) const		{ return m_pMotion->GetNumType(); }							// モーション種類総数取得
 	int GetMotionKey(void) const			{ return m_pMotion->GetKey();}								// モーションキー番号取得
@@ -105,12 +108,11 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	CMultiModel	*m_apMultiModel[motion::MAX_PARTS];	// モデルの情報
-	CMotion		*m_pMotion;		// モーションの情報
-	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
-	D3DXVECTOR3	m_pos;			// 位置
-	D3DXVECTOR3	m_rot;			// 向き
-	int			m_nNumModel;	// パーツの総数
+	std::vector<CMultiModel*> m_vecParts;	// パーツ情報
+	CMotion		*m_pMotion;	// モーションの情報
+	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
+	D3DXVECTOR3	m_pos;		// 位置
+	D3DXVECTOR3	m_rot;		// 向き
 };
 
 #endif	// _OBJECTCHARA_H_
