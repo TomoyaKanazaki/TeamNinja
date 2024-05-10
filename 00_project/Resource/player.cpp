@@ -3,6 +3,7 @@
 //	プレイヤー処理 [player.cpp]
 //	Author：藤田勇一
 //  Adder : 金崎朋弥
+//  Adder : 小原立暉
 //
 //============================================================
 //************************************************************
@@ -863,8 +864,14 @@ void CPlayer::Move()
 	useful::NormalizeRot(m_destRot.y);
 
 	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	m_move.z = cosf(fStickRot + D3DX_PI) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.x = sinf(fStickRot + D3DX_PI);
+	m_move.z = cosf(fStickRot + D3DX_PI);
+
+	D3DXVec3Normalize(&m_move, &m_move);
+
+	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
 
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
