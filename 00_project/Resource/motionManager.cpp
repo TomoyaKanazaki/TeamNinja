@@ -51,31 +51,25 @@ void CMotionManager::Uninit(void)
 	for (auto& rMap : m_mapMotion)
 	{ // モーションの要素数分繰り返す
 
+		// パーツ情報の破棄
+		SAFE_DEL_ARRAY(rMap.second.infoParts.pInfo);
+
 		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotionInfo)
 		{ // モーション情報の要素数分繰り返す
 
 			for (auto& rKeyInfo : rMotionInfo.vecKeyInfo)
 			{ // キー情報の要素数分繰り返す
 
-				for (auto& rKey : rKeyInfo.vecKey)
-				{ // キー情報の要素数分繰り返す
-
-
-				}
-
-				// をクリア
+				// キーをクリア
 				rKeyInfo.vecKey.clear();
 			}
 
-			// をクリア
+			// キー情報をクリア
 			rMotionInfo.vecKeyInfo.clear();
 		}
 
-		// をクリア
+		// モーション情報をクリア
 		rMap.second.infoMotion.vecMotionInfo.clear();
-
-		// パーツ情報の破棄
-		SAFE_DEL_ARRAY(rMap.second.infoParts.pInfo);
 	}
 
 	// モーション連想配列をクリア

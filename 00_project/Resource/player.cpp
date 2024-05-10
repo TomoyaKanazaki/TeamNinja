@@ -126,11 +126,6 @@ HRESULT CPlayer::Init(void)
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
-	//BindCharaData(SETUP_TXT);
-	//BindCharaData(SETUP_TXT);
-	//BindCharaData(SETUP_TXT);
-	//BindCharaData(SETUP_TXT);
-	//BindCharaData(SETUP_TXT);
 
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
@@ -145,7 +140,7 @@ HRESULT CPlayer::Init(void)
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
 	( // 引数
-		GetMultiModel(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
 		ORBIT_OFFSET,	// オフセット情報
 		ORBIT_PART		// 分割数
 	);

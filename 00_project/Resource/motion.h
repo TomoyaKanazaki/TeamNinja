@@ -147,15 +147,12 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(const float fDeltaTime);		// 更新
-	void UpdateMove(void);						// 移動更新
-	void UpdateMotion(void);					// モーション更新
-	void UpdateBlend(void);						// ブレンド更新
-	void SetAllInfo(const SInfo info);			// モーション情報全設定
-	void AddInfo(const SMotionInfo info);		// モーション情報追加
+	void BindPartsData(CMultiModel **ppModel);	// パーツ情報設定
+	void SetAllInfo(const SInfo& rInfo);		// モーション情報全設定
+	void AddInfo(const SMotionInfo& rInfo);		// モーション情報追加
 	void SetEnableUpdate(const bool bUpdate);	// 更新状況設定
 	void SetNumParts(const int nNumParts);		// パーツ数設定
-	void Set(const int nType, const int nBlendFrame = 0);		// 設定
-	void SetModel(CMultiModel **ppModel, const int nNumModel);	// モデル情報設定
+	void Set(const int nType, const int nBlendFrame = 0);				// 設定
 	void SetOriginPosition(const D3DXVECTOR3& rPos, const int nParts);	// 原点位置の設定
 	void SetOriginRotation(const D3DXVECTOR3& rRot, const int nParts);	// 原点向きの設定
 
@@ -183,12 +180,17 @@ public:
 	static void Release(CMotion *&prMotion);		// 破棄
 
 private:
+	// メンバ関数
+	void UpdateMove(void);		// 移動更新
+	void UpdateMotion(void);	// モーション更新
+	void UpdateBlend(void);		// ブレンド更新
+
 	// メンバ変数
 	CMultiModel **m_ppModel;	// モデル情報
 	CObjectChara *m_pChara;		// オブジェクトキャラクター情報
-	SInfo m_info;		// モーション情報
+	SInfo  m_info;		// モーション情報
 	SBlend m_blend; 	// ブレンド情報
-	int  m_nNumModel;	// モデルのパーツ数
+	int  m_nNumParts;	// パーツ数
 	bool m_bUpdate;		// 更新状況
 };
 

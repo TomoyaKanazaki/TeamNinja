@@ -129,7 +129,7 @@ void CObjectDivChara::Draw(CShader *pShader)
 		// ワールドマトリックスの設定
 		pDevice->SetTransform(D3DTS_WORLD, apMtxWorld[nCntChara]);
 
-		for (int nCntParts = 0; nCntParts < m_apBody[nCntChara]->GetNumModel(); nCntParts++)
+		for (int nCntParts = 0; nCntParts < m_apBody[nCntChara]->GetNumParts(); nCntParts++)
 		{ // パーツの総数分繰り返す
 
 			// パーツの描画
@@ -750,7 +750,7 @@ float CObjectDivChara::GetMaxAlpha(void) const
 //============================================================
 void CObjectDivChara::SetUpperParentID(const int nUpperParentID)
 {
-	if (nUpperParentID > NONE_IDX && nUpperParentID < m_apBody[BODY_LOWER]->GetNumModel())
+	if (nUpperParentID > NONE_IDX && nUpperParentID < m_apBody[BODY_LOWER]->GetNumParts())
 	{ // 正規インデックスの場合
 
 		// 上半身の親インデックスを設定
@@ -783,11 +783,11 @@ CMultiModel *CObjectDivChara::GetMultiModel(const EBody bodyID, const int nModel
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{
-		if (nModelID > NONE_IDX && nModelID < m_apBody[bodyID]->GetNumModel())
+		if (nModelID > NONE_IDX && nModelID < m_apBody[bodyID]->GetNumParts())
 		{ // 正規インデックスの場合
 
 			// 引数インデックスのパーツを返す
-			return m_apBody[bodyID]->GetMultiModel(nModelID);
+			return m_apBody[bodyID]->GetParts(nModelID);
 		}
 	}
 
