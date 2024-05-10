@@ -77,7 +77,7 @@ HRESULT CCheckPoint::Init(void)
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
 
-	// マテリアルの設定処理
+	// マテリアルを変更
 	SetAllMaterial(material::GlowCyan());
 
 	return S_OK;
@@ -115,7 +115,7 @@ void CCheckPoint::Update(const float fDeltaTime)
 void CCheckPoint::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CObjectModel::Draw();
+	CObjectModel::Draw(pShader);
 }
 
 //==========================================
@@ -172,6 +172,9 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// 士気力を保存する
 	m_nSaveTension = Player->GetTension();
+
+	// マテリアルを変更
+	SetAllMaterial(material::Red());
 
 	// セーブフラグをオンにする
 	m_bSave = true;
