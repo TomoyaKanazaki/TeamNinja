@@ -38,6 +38,7 @@
 #include "player_clone.h"
 
 #include "gauge2D.h"
+#include "blur.h"
 
 //************************************************************
 //	定数宣言
@@ -65,6 +66,13 @@ namespace
 	const int ORBIT_PART = 20;	// 分割数
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
+
+	// ブラーの情報
+	namespace blurInfo
+	{
+		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
+		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
+	}
 }
 
 //************************************************************
@@ -192,6 +200,16 @@ HRESULT CPlayer::Init(void)
 	);
 	m_pTensionGauge->SetNum(m_nInitTension);
 	m_pTensionGauge->SetLabel(LABEL_UI);
+
+	// ブラーの情報
+	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
+	CBlur::Create
+	( // 引数
+		this,	// 親オブジェクト
+		mat,	// ブラーマテリアル
+		blurInfo::START_ALPHA,	// ブラー開始透明度
+		blurInfo::MAX_LENGTH	// 保持オブジェクト最大数
+	);
 
 	// プレイヤーを出現させる
 	SetSpawn();
@@ -828,22 +846,28 @@ void CPlayer::Move()
 	CInputKeyboard* pKey = GET_INPUTKEY;
 
 	// 一次保存の変数
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 speed = VEC3_ZERO;
+
+	// カメラの向き
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+
+	// スティックの向き
+	float fStickRot = 0.0f;
 
 	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { move.z += 1.0f; }
-	if (pKey->IsPress(DIK_S)) { move.z -= 1.0f; }
-	if (pKey->IsPress(DIK_D)) { move.x += 1.0f; }
-	if (pKey->IsPress(DIK_A)) { move.x -= 1.0f; }
+	if (pKey->IsPress(DIK_W)) { speed.z += 1.0f; }
+	if (pKey->IsPress(DIK_S)) { speed.z -= 1.0f; }
+	if (pKey->IsPress(DIK_D)) { speed.x += 1.0f; }
+	if (pKey->IsPress(DIK_A)) { speed.x -= 1.0f; }
 
-	// 値の正規化
-	D3DXVec3Normalize(&move, &move);
+	// 入力していないと抜ける
+	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
 
-	// 現在の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
+	// スティックの向きを設定する
+	fStickRot = atan2f(speed.x, speed.z);
 
-	// 移動量を加算
-	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
 
 	// 向きにカメラの向きを加算する
 	fStickRot += CameraRot.y;

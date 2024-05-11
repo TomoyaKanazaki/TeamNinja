@@ -69,21 +69,21 @@ HRESULT CBlur::Init(void)
 //============================================================
 void CBlur::Uninit(void)
 {
-	for (SInfo *pBlur : m_oldObject)
-	{ // 要素数分繰り返す
+	for (auto& rVecObj : m_oldObject)
+	{ // 保存オブジェクト数分繰り返す
 
-		for (int nCntParts = 0; nCntParts < pBlur->nNumParts; nCntParts++)
+		for (auto& rVecParts : rVecObj)
 		{ // パーツ数分繰り返す
 
 			// パーツの終了
-			SAFE_UNINIT(pBlur->apCharaParts[nCntParts]);
+			SAFE_UNINIT(rVecParts);
 		}
 
-		// パーツ格納情報の破棄
-		SAFE_DELETE(pBlur);
+		// パーツ格納情報をクリア
+		rVecObj.clear();
 	}
 
-	// 要素をクリア
+	// 保存オブジェクト情報をクリア
 	m_oldObject.clear();
 
 	// オブジェクトを破棄
@@ -99,24 +99,20 @@ void CBlur::Update(const float fDeltaTime)
 	if (m_state == STATE_NORMAL)
 	{ // 通常状態の場合
 
-		SInfo *pTempBlur = new SInfo;	// ブラー情報
-		assert(pTempBlur != nullptr);	// 生成失敗エラー
+		// 
+		std::vector<CObjectModel*> tempBlur;
+		tempBlur.resize((size_t)m_pParent->GetNumParts());
 
-		// ブラー情報のメモリクリア
-		memset(pTempBlur, 0, sizeof(*pTempBlur));
-
-		// パーツ数を設定
-		pTempBlur->nNumParts = m_pParent->GetNumParts();
-
-		for (int nCntParts = 0; nCntParts < pTempBlur->nNumParts; nCntParts++)
+		int nCntParts = 0;	// 
+		for (auto& rVecParts : tempBlur)
 		{ // パーツ数分繰り返す
 
 			// パーツの生成
-			pTempBlur->apCharaParts[nCntParts] = CObjectModel::Create(VEC3_ZERO, VEC3_ZERO);
-			if (pTempBlur->apCharaParts[nCntParts] != nullptr)
+			rVecParts = CObjectModel::Create(VEC3_ZERO, VEC3_ZERO);
+			if (rVecParts != nullptr)
 			{ // パーツの生成に成功した場合
 
-				CObjectModel *pBlurParts = pTempBlur->apCharaParts[nCntParts];	// 残像パーツ
+				CObjectModel *pBlurParts = rVecParts;	// 残像パーツ
 				CMultiModel *pOriginParts = m_pParent->GetParts(nCntParts);		// 原点パーツ
 				D3DXMATRIX mtxParts = pOriginParts->GetMtxWorld();				// 残像生成元のマトリックス
 
@@ -129,28 +125,30 @@ void CBlur::Update(const float fDeltaTime)
 				pBlurParts->SetVec3Rotation(useful::GetMatrixRotation(mtxParts));
 				pBlurParts->SetVec3Scaling(useful::GetMatrixScaling(mtxParts));
 			}
+
+			// パーツインデックスを進める
+			nCntParts++;
 		}
 
 		// 配列の最後尾に残像を追加
-		m_oldObject.push_back(pTempBlur);
+		m_oldObject.push_back(tempBlur);
 	}
 
 	// 残像の色反映
 	{
 		int nCntBlur = 0;	// ブラーインデックス
-		for (SInfo *pBlur : m_oldObject)
-		{ // 要素数分繰り返す
-
-			D3DXMATERIAL matSet = m_mat;	// 設定マテリアル
+		for (auto& rVecObj : m_oldObject)
+		{ // 保存オブジェクト数分繰り返す
 
 			// マテリアルの透明度を後ろになるにつれて下げていく
+			D3DXMATERIAL matSet = m_mat;	// 設定マテリアル
 			matSet.MatD3D.Diffuse.a = (m_fStartAlpha / m_nMaxLength) * nCntBlur;
 
-			for (int nCntParts = 0; nCntParts < pBlur->nNumParts; nCntParts++)
+			for (auto& rVecParts : rVecObj)
 			{ // パーツ数分繰り返す
 
 				// パーツの全マテリアルを変更
-				pBlur->apCharaParts[nCntParts]->SetAllMaterial(matSet);
+				rVecParts->SetAllMaterial(matSet);
 			}
 
 			// ブラーインデックスを進める
@@ -196,16 +194,16 @@ void CBlur::Update(const float fDeltaTime)
 				return;
 			}
 
-			SInfo *pDelete = m_oldObject.front();	// 残像配列の先頭
-			for (int nCntParts = 0; nCntParts < pDelete->nNumParts; nCntParts++)
+			std::vector<CObjectModel*> objFront = m_oldObject.front();	// 残像配列の先頭
+			for (auto& rVecParts : objFront)
 			{ // パーツ数分繰り返す
 
 				// パーツの終了
-				SAFE_UNINIT(pDelete->apCharaParts[nCntParts]);
+				SAFE_UNINIT(rVecParts);
 			}
 
-			// パーツ格納情報の破棄
-			SAFE_DELETE(pDelete);
+			// パーツ格納情報をクリア
+			objFront.clear();
 
 			// 残像の最後尾を配列から削除
 			m_oldObject.erase(m_oldObject.begin());
@@ -218,18 +216,17 @@ void CBlur::Update(const float fDeltaTime)
 //============================================================
 void CBlur::Draw(CShader *pShader)
 {
-	if (m_state != STATE_NONE)
-	{ // 何もしない状態以外の場合
+	// 何もしない状態の場合抜ける
+	if (m_state == STATE_NONE) { return; }
 
-		for (SInfo *pBlur : m_oldObject)
-		{ // 要素数分繰り返す
+	for (auto& rVecObj : m_oldObject)
+	{ // 保存オブジェクト数分繰り返す
 
-			for (int nCntParts = 0; nCntParts < pBlur->nNumParts; nCntParts++)
-			{ // パーツ数分繰り返す
+		for (auto& rVecParts : rVecObj)
+		{ // パーツ数分繰り返す
 
-				// パーツの描画
-				pBlur->apCharaParts[nCntParts]->Draw(pShader);
-			}
+			// パーツの描画
+			rVecParts->Draw(pShader);
 		}
 	}
 }
