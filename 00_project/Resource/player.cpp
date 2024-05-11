@@ -3,6 +3,7 @@
 //	プレイヤー処理 [player.cpp]
 //	Author：藤田勇一
 //  Adder : 金崎朋弥
+//  Adder : 小原立暉
 //
 //============================================================
 //************************************************************
@@ -63,7 +64,7 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
 
-	const char* PARAM_FILE = "data/TXT/PlayerParameter.txt";
+	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 }
 
 //************************************************************
@@ -844,11 +845,33 @@ void CPlayer::Move()
 	// 移動量を加算
 	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 
-	// 移動量を適用
-	pos += m_move;
-	
-	// 座標を適用
-	SetVec3Position(pos);
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	// 向きを設定
+	m_destRot.y = fStickRot + D3DX_PI;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 移動量を設定する
+	m_move.x = sinf(fStickRot + D3DX_PI);
+	m_move.z = cosf(fStickRot + D3DX_PI);
+
+	D3DXVec3Normalize(&m_move, &m_move);
+
+	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
+
+	{ // 位置の設定
+		D3DXVECTOR3 pos = GetVec3Position();
+		pos += m_move;
+		SetVec3Position(pos);
+	}
 }
 
 //==========================================
