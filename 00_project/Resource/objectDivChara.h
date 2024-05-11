@@ -91,6 +91,11 @@ public:
 		const int nMatID			// マテリアルインデックス
 	);
 
+	void BindCharaData	// キャラクター情報割当
+	( // 引数
+		const char *pCharaPassLower,	// 下半身キャラ情報パス
+		const char *pCharaPassUpper		// 上半身キャラ情報パス
+	);
 	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
 	void AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo);	// モーション情報追加
 

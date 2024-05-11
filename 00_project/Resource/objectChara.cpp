@@ -277,13 +277,13 @@ void CObjectChara::SetPartsInfo
 //============================================================
 //	キャラクター情報割当
 //============================================================
-void CObjectChara::BindCharaData(const char *pMotionPass)
+void CObjectChara::BindCharaData(const char *pCharaPass)
 {
 	// 割り当てるモーションパスが存在しない場合抜ける
-	if (pMotionPass == nullptr) { assert(false); return; }
+	if (pCharaPass == nullptr) { assert(false); return; }
 
 	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
-	CMotionManager::SCharaData data = pMotion->Regist(pMotionPass);	// キャラクター情報
+	CMotionManager::SCharaData data = pMotion->Regist(pCharaPass);	// キャラクター情報
 
 	// モーション情報の動的配列のクリア
 	m_pMotion->ClearVector();
