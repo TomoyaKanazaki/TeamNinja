@@ -1,55 +1,55 @@
 ﻿//============================================================
 //
-//	モーションマネージャー処理 [motionManager.cpp]
+//	キャラクター処理 [character.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "motionManager.h"
+#include "character.h"
 #include "manager.h"
 #include "renderer.h"
 
 //************************************************************
-//	親クラス [CMotionManager] のメンバ関数
+//	親クラス [CCharacter] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CMotionManager::CMotionManager()
+CCharacter::CCharacter()
 {
-	// モーション連想配列をクリア
-	m_mapMotion.clear();
+	// キャラクター連想配列をクリア
+	m_mapCharacter.clear();
 }
 
 //============================================================
 //	デストラクタ
 //============================================================
-CMotionManager::~CMotionManager()
+CCharacter::~CCharacter()
 {
 
 }
 
 //============================================================
-//	モーションマネージャー初期化処理
+//	キャラクター初期化処理
 //============================================================
-HRESULT CMotionManager::Init(void)
+HRESULT CCharacter::Init(void)
 {
-	// モーション連想配列を初期化
-	m_mapMotion.clear();
+	// キャラクター連想配列を初期化
+	m_mapCharacter.clear();
 
 	// 成功を返す
 	return S_OK;
 }
 
 //============================================================
-//	モーションマネージャー終了処理
+//	キャラクター終了処理
 //============================================================
-void CMotionManager::Uninit(void)
+void CCharacter::Uninit(void)
 {
-	for (auto& rMap : m_mapMotion)
-	{ // モーションの要素数分繰り返す
+	for (auto& rMap : m_mapCharacter)
+	{ // キャラクターの要素数分繰り返す
 
 		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotion)
 		{ // モーション情報の要素数分繰り返す
@@ -72,18 +72,18 @@ void CMotionManager::Uninit(void)
 		rMap.second.infoParts.vecParts.clear();
 	}
 
-	// モーション連想配列をクリア
-	m_mapMotion.clear();
+	// キャラクター連想配列をクリア
+	m_mapCharacter.clear();
 }
 
 //============================================================
 //	キャラクター情報登録
 //============================================================
-CMotionManager::SCharaData CMotionManager::Regist(const char *pTextPass)
+CCharacter::SCharaData CCharacter::Regist(const char *pCharaPass)
 {
 	// 既に生成済みかを検索
-	auto itr = m_mapMotion.find(pTextPass);	// 引数のキャラクター情報を検索
-	if (itr != m_mapMotion.end())
+	auto itr = m_mapCharacter.find(pCharaPass);	// 引数のキャラクター情報を検索
+	if (itr != m_mapCharacter.end())
 	{ // 生成済みの場合
 
 		// 読込済みのキャラクター情報を返す
@@ -92,7 +92,7 @@ CMotionManager::SCharaData CMotionManager::Regist(const char *pTextPass)
 
 	// キャラクター情報を読込
 	SCharaData tempCharaData;	// キャラクター情報
-	if (FAILED(LoadSetup(&tempCharaData, pTextPass)))
+	if (FAILED(LoadSetup(&tempCharaData, pCharaPass)))
 	{ // 読込に失敗した場合
 
 		// 初期化されたキャラクター情報を返す
@@ -101,7 +101,7 @@ CMotionManager::SCharaData CMotionManager::Regist(const char *pTextPass)
 	}
 
 	// キャラクター情報を保存
-	m_mapMotion.insert(std::make_pair(pTextPass, tempCharaData));
+	m_mapCharacter.insert(std::make_pair(pCharaPass, tempCharaData));
 
 	// 生成したキャラクター情報を返す
 	return tempCharaData;
@@ -110,11 +110,11 @@ CMotionManager::SCharaData CMotionManager::Regist(const char *pTextPass)
 //============================================================
 //	生成処理
 //============================================================
-CMotionManager *CMotionManager::Create(void)
+CCharacter *CCharacter::Create(void)
 {
-	// モーションマネージャーの生成
-	CMotionManager *pMotionManager = new CMotionManager;
-	if (pMotionManager == nullptr)
+	// キャラクターの生成
+	CCharacter *pCharacter = new CCharacter;
+	if (pCharacter == nullptr)
 	{ // 生成に失敗した場合
 
 		return nullptr;
@@ -122,37 +122,37 @@ CMotionManager *CMotionManager::Create(void)
 	else
 	{ // 生成に成功した場合
 
-		// モーションマネージャーの初期化
-		if (FAILED(pMotionManager->Init()))
-		{ // モーションマネージャー初期化に失敗した場合
+		// キャラクターの初期化
+		if (FAILED(pCharacter->Init()))
+		{ // キャラクター初期化に失敗した場合
 
-			// モーションマネージャーの破棄
-			SAFE_DELETE(pMotionManager);
+			// キャラクターの破棄
+			SAFE_DELETE(pCharacter);
 			return nullptr;
 		}
 
 		// 確保したアドレスを返す
-		return pMotionManager;
+		return pCharacter;
 	}
 }
 
 //============================================================
 //	破棄処理
 //============================================================
-void CMotionManager::Release(CMotionManager *&prMotionManager)
+void CCharacter::Release(CCharacter *&prCharacter)
 {
-	// モーションマネージャーの終了
-	assert(prMotionManager != nullptr);
-	prMotionManager->Uninit();
+	// キャラクターの終了
+	assert(prCharacter != nullptr);
+	prCharacter->Uninit();
 
 	// メモリ開放
-	SAFE_DELETE(prMotionManager);
+	SAFE_DELETE(prCharacter);
 }
 
 //============================================================
 //	セットアップ処理
 //============================================================
-HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
+HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用

@@ -12,7 +12,6 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
-#include "motionManager.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -282,8 +281,7 @@ void CObjectChara::BindCharaData(const char *pCharaPass)
 	// 割り当てるモーションパスが存在しない場合抜ける
 	if (pCharaPass == nullptr) { assert(false); return; }
 
-	CMotionManager *pMotion = GET_MANAGER->GetMotion();				// モーション情報
-	CMotionManager::SCharaData data = pMotion->Regist(pCharaPass);	// キャラクター情報
+	CCharacter::SCharaData data = GET_MANAGER->GetCharacter()->Regist(pCharaPass);	// キャラクター情報
 
 	// モーション情報の動的配列のクリア
 	m_pMotion->ClearVector();
@@ -341,13 +339,13 @@ void CObjectChara::SetNumParts(const int nNumParts)
 //============================================================
 //	パーツ情報の設定処理
 //============================================================
-void CObjectChara::SetPartsInfo(CMotionManager::SPartsInfo& rInfo)
+void CObjectChara::SetPartsInfo(CCharacter::SPartsInfo& rInfo)
 {
 	for (int nCntParts = 0; nCntParts < rInfo.GetNumParts(); nCntParts++)
 	{ // パーツ数分繰り返す
 
 		// パーツ情報の設定
-		CMotionManager::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
+		CCharacter::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
 		CObjectChara::SetPartsInfo
 		( // 引数
 			nCntParts,				// パーツインデックス
