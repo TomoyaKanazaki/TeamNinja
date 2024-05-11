@@ -340,6 +340,16 @@ HRESULT CManager::Load(void)
 		return E_FAIL;
 	}
 
+	// キャラクターの全読込
+	assert(m_pCharacter != nullptr);
+	if (FAILED(m_pCharacter->LoadAll()))
+	{ // 全読込に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 #endif	// NDEBUG
 
 	// サウンドの全読込

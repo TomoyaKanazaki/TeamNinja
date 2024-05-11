@@ -12,6 +12,14 @@
 #include "renderer.h"
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const char *LOAD_FOLDER = "data\\CHARACTER";	// キャラクターフォルダ相対パス
+}
+
+//************************************************************
 //	親クラス [CCharacter] のメンバ関数
 //************************************************************
 //============================================================
@@ -77,7 +85,25 @@ void CCharacter::Uninit(void)
 }
 
 //============================================================
-//	キャラクター情報登録
+//	キャラクター全読込処理
+//============================================================
+HRESULT CCharacter::LoadAll(void)
+{
+	// キャラクターの全読込
+	if (FAILED(SearchFolderAll(LOAD_FOLDER)))
+	{ // 読込に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	キャラクター登録
 //============================================================
 CCharacter::SCharaData CCharacter::Regist(const char *pCharaPass)
 {
@@ -147,6 +173,60 @@ void CCharacter::Release(CCharacter *&prCharacter)
 
 	// メモリ開放
 	SAFE_DELETE(prCharacter);
+}
+
+//============================================================
+//	フォルダ全検索処理
+//============================================================
+HRESULT CCharacter::SearchFolderAll(std::string sFolderPath)
+{
+	// 変数を宣言
+	HANDLE hFile;	// 検索ハンドル
+	WIN32_FIND_DATA findFileData;	// ファイル情報
+
+	// 引数パスのディレクトリを取得
+	std::string sAllLoadPath = sFolderPath + "\\*.*";	// 全読込パス
+	hFile = FindFirstFile(sAllLoadPath.c_str(), &findFileData);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{ // ハンドルが無効の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	do
+	{ // ファイル内の情報全てを読み込む
+
+		// 現在のディレクトリ、親ディレクトリの場合次のループに移行
+		if (strcmp(findFileData.cFileName, ".") == 0)	{ continue; }
+		if (strcmp(findFileData.cFileName, "..") == 0)	{ continue; }
+
+		// ファイル名を相対パスに変換
+		std::string sFullPath = sFolderPath;	// 現在の相対パスを設定
+		sFullPath += "\\";						// パス区切り文字を追加
+		sFullPath += findFileData.cFileName;	// ファイル名を追加
+
+		if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{ // ディレクトリだった場合
+
+			// 新たなディレクトリを全検索
+			SearchFolderAll(sFullPath);
+		}
+		else
+		{ // ファイルだった場合
+
+			// テクスチャを登録
+			Regist(sFullPath.c_str());
+		}
+
+	} while (FindNextFile(hFile, &findFileData));	// 次のファイルを検索
+
+	// 検索ハンドルを閉じる
+	FindClose(hFile);
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

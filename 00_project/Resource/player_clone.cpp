@@ -18,7 +18,7 @@
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
 	const float	MOVE		= 150.0f;	// 移動量

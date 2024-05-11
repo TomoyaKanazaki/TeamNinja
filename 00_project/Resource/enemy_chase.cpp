@@ -19,9 +19,9 @@
 //************************************************************
 namespace
 {
-	const char* SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
-	const float MOVE = -420.0f;							// 移動量
-	const float ROT_REV = 0.5f;							// 向きの補正係数
+	const char* SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
+	const float MOVE = -420.0f;								// 移動量
+	const float ROT_REV = 0.5f;								// 向きの補正係数
 }
 
 //************************************************************

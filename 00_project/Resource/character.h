@@ -75,15 +75,19 @@ public:
 	};
 
 	// メンバ関数
-	HRESULT Init(void);	// キャラクター初期化
-	void Uninit(void);	// キャラクター終了
-	SCharaData Regist(const char *pCharaPass);	// キャラクター情報登録
+	HRESULT Init(void);		// キャラクター初期化
+	void Uninit(void);		// キャラクター終了
+	HRESULT LoadAll(void);	// キャラクター全読込
+	SCharaData Regist(const char *pCharaPass);	// キャラクター登録
 
 	// 静的メンバ関数
 	static CCharacter *Create(void);	// 生成
 	static void Release(CCharacter *&prCharacter);	// 破棄
 
 private:
+	// メンバ関数
+	HRESULT SearchFolderAll(std::string sFolderPath);	// フォルダ全検索
+
 	// 静的メンバ関数
 	static HRESULT LoadSetup(SCharaData *pInfoChara, const char *pTextPass);	// セットアップ
 
