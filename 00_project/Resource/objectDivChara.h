@@ -92,7 +92,7 @@ public:
 	);
 
 	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
-	void AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info);	// モーション情報追加
+	void AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo);	// モーション情報追加
 
 	int  GetMotionType(const EBody bodyID) const;			// モーション種類取得
 	int  GetMotionNumType(const EBody bodyID) const;		// モーション種類総数取得

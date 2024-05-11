@@ -51,22 +51,22 @@ void CMotionManager::Uninit(void)
 	for (auto& rMap : m_mapMotion)
 	{ // モーションの要素数分繰り返す
 
-		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotionInfo)
+		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotion)
 		{ // モーション情報の要素数分繰り返す
 
-			for (auto& rKeyInfo : rMotionInfo.vecKeyInfo)
+			for (auto& rKeyInfo : rMotionInfo.vecKey)
 			{ // キー情報の要素数分繰り返す
 
-				// キーをクリア
-				rKeyInfo.vecKey.clear();
+				// パーツ情報をクリア
+				rKeyInfo.vecParts.clear();
 			}
 
 			// キー情報をクリア
-			rMotionInfo.vecKeyInfo.clear();
+			rMotionInfo.vecKey.clear();
 		}
 
 		// モーション情報をクリア
-		rMap.second.infoMotion.vecMotionInfo.clear();
+		rMap.second.infoMotion.vecMotion.clear();
 
 		// キー保存情報をクリア
 		rMap.second.infoParts.vecParts.clear();
@@ -158,8 +158,8 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 	int nID			= 0;			// インデックスの代入用
-	int nCurMotion	= 0;			// 現在のモーション番号
 	int nCurKey		= 0;			// 現在のキー番号
+	int nCurParts	= 0;			// 現在のパーツ番号
 	int nWeapon		= 0;			// 武器表示のON/OFFの変換用
 	int nLoop		= 0;			// ループのON/OFFの変換用
 	int nEnd		= 0;			// テキスト読み込み終了の確認用
@@ -252,25 +252,25 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 			else if (strcmp(&aString[0], "MOTIONSET") == 0)
 			{ // 読み込んだ文字列が MOTIONSET の場合
 
-				int nType = pInfoChara->infoMotion.GetNumMotion();		// 現在のモーション数
-				pInfoChara->infoMotion.vecMotionInfo.emplace_back();	// 空の要素を最後尾に追加
-				CMotion::SMotionInfo *pMotionInfo = &pInfoChara->infoMotion.vecMotionInfo[nType];	// 現在のモーション情報
+				int nType = pInfoChara->infoMotion.GetNumMotion();	// 現在のモーション数
+				pInfoChara->infoMotion.vecMotion.emplace_back();	// 空の要素を最後尾に追加
+				CMotion::SMotion *pMotion = &pInfoChara->infoMotion.vecMotion[nType];	// 現在のモーション情報
 
-				// 現在のモーション番号を初期化
-				nCurMotion = 0;
+				// 現在のキー番号を初期化
+				nCurKey = 0;
 
 				// キャンセル・コンボフレームをなしにする
-				pMotionInfo->nCancelFrame = NONE_IDX;
-				pMotionInfo->nComboFrame  = NONE_IDX;
+				pMotion->nCancelFrame = NONE_IDX;
+				pMotion->nComboFrame  = NONE_IDX;
 
 				// 攻撃判定情報を初期化
-				pMotionInfo->collLeft.nMin  = NONE_IDX;
-				pMotionInfo->collLeft.nMax  = NONE_IDX;
-				pMotionInfo->collRight.nMin = NONE_IDX;
-				pMotionInfo->collRight.nMax = NONE_IDX;
+				pMotion->collLeft.nMin  = NONE_IDX;
+				pMotion->collLeft.nMax  = NONE_IDX;
+				pMotion->collRight.nMin = NONE_IDX;
+				pMotion->collRight.nMax = NONE_IDX;
 
 				// 武器表示をOFFにする
-				pMotionInfo->bWeaponDisp = false;
+				pMotion->bWeaponDisp = false;
 
 				do
 				{ // 読み込んだ文字列が END_MOTION ではない場合ループ
@@ -285,7 +285,7 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 						fscanf(pFile, "%d", &nWeapon);		// 武器表示のON/OFFを読み込む
 
 						// 読み込んだ値をbool型に変換
-						pMotionInfo->bWeaponDisp = (nWeapon == 0) ? false : true;
+						pMotion->bWeaponDisp = (nWeapon == 0) ? false : true;
 					}
 					else if (strcmp(&aString[0], "LOOP") == 0)
 					{ // 読み込んだ文字列が LOOP の場合
@@ -294,42 +294,42 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 						fscanf(pFile, "%d", &nLoop);		// ループのON/OFFを読み込む
 
 						// 読み込んだ値をbool型に変換
-						pMotionInfo->bLoop = (nLoop == 0) ? false : true;
+						pMotion->bLoop = (nLoop == 0) ? false : true;
 					}
 					else if (strcmp(&aString[0], "CANCEL") == 0)
 					{ // 読み込んだ文字列が CANCEL の場合
 
-						fscanf(pFile, "%s", &aString[0]);					// = を読み込む (不要)
-						fscanf(pFile, "%d", &pMotionInfo->nCancelFrame);	// キャンセル可能フレームを読み込む
+						fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+						fscanf(pFile, "%d", &pMotion->nCancelFrame);	// キャンセル可能フレームを読み込む
 					}
 					else if (strcmp(&aString[0], "COMBO") == 0)
 					{ // 読み込んだ文字列が COMBO の場合
 
-						fscanf(pFile, "%s", &aString[0]);					// = を読み込む (不要)
-						fscanf(pFile, "%d", &pMotionInfo->nComboFrame);		// コンボ可能フレームを読み込む
+						fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+						fscanf(pFile, "%d", &pMotion->nComboFrame);		// コンボ可能フレームを読み込む
 					}
 					else if (strcmp(&aString[0], "LEFT_COLL") == 0)
 					{ // 読み込んだ文字列が LEFT_COLL の場合
 
-						fscanf(pFile, "%s", &aString[0]);					// = を読み込む (不要)
-						fscanf(pFile, "%d", &pMotionInfo->collLeft.nMin);	// 判定を出す開始フレームを読み込む
-						fscanf(pFile, "%d", &pMotionInfo->collLeft.nMax);	// 判定を消す終了フレームを読み込む
+						fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+						fscanf(pFile, "%d", &pMotion->collLeft.nMin);	// 判定を出す開始フレームを読み込む
+						fscanf(pFile, "%d", &pMotion->collLeft.nMax);	// 判定を消す終了フレームを読み込む
 					}
 					else if (strcmp(&aString[0], "RIGHT_COLL") == 0)
 					{ // 読み込んだ文字列が RIGHT_COLL の場合
 
-						fscanf(pFile, "%s", &aString[0]);					// = を読み込む (不要)
-						fscanf(pFile, "%d", &pMotionInfo->collRight.nMin);	// 判定を出す開始フレームを読み込む
-						fscanf(pFile, "%d", &pMotionInfo->collRight.nMax);	// 判定を消す終了フレームを読み込む
+						fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+						fscanf(pFile, "%d", &pMotion->collRight.nMin);	// 判定を出す開始フレームを読み込む
+						fscanf(pFile, "%d", &pMotion->collRight.nMax);	// 判定を消す終了フレームを読み込む
 					}
 					else if (strcmp(&aString[0], "KEYSET") == 0)
 					{ // 読み込んだ文字列が KEYSET の場合
 
-						pMotionInfo->vecKeyInfo.emplace_back();	// 空の要素を最後尾に追加
-						CMotion::SKeyInfo *pKeyInfo = &pMotionInfo->vecKeyInfo[nCurMotion];	// 現在のキー情報
+						pMotion->vecKey.emplace_back();	// 空の要素を最後尾に追加
+						CMotion::SKey *pKey = &pMotion->vecKey[nCurKey];	// 現在のキー情報
 
-						// 現在のキー番号を初期化
-						nCurKey = 0;
+						// 現在のパーツ番号を初期化
+						nCurParts = 0;
 
 						do
 						{ // 読み込んだ文字列が END_KEYSET ではない場合ループ
@@ -340,22 +340,22 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 							if (strcmp(&aString[0], "FRAME") == 0)
 							{ // 読み込んだ文字列が FRAME の場合
 
-								fscanf(pFile, "%s", &aString[0]);		// = を読み込む (不要)
-								fscanf(pFile, "%d", &pKeyInfo->nFrame);	// キーが切り替わるまでのフレーム数を読み込む
+								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
+								fscanf(pFile, "%d", &pKey->nFrame);	// キーが切り替わるまでのフレーム数を読み込む
 							}
 							else if (strcmp(&aString[0], "MOVE") == 0)
 							{ // 読み込んだ文字列が MOVE の場合
 
-								fscanf(pFile, "%s", &aString[0]);		// = を読み込む (不要)
-								fscanf(pFile, "%f", &pKeyInfo->move.x);	// キーが切り替わるまでの移動量を読み込む
-								fscanf(pFile, "%f", &pKeyInfo->move.y);	// キーが切り替わるまでの移動量を読み込む
-								fscanf(pFile, "%f", &pKeyInfo->move.z);	// キーが切り替わるまでの移動量を読み込む
+								fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
+								fscanf(pFile, "%f", &pKey->move.x);	// キーが切り替わるまでの移動量を読み込む
+								fscanf(pFile, "%f", &pKey->move.y);	// キーが切り替わるまでの移動量を読み込む
+								fscanf(pFile, "%f", &pKey->move.z);	// キーが切り替わるまでの移動量を読み込む
 							}
 							else if (strcmp(&aString[0], "KEY") == 0)
 							{ // 読み込んだ文字列が KEY の場合
 
-								pKeyInfo->vecKey.emplace_back();	// 空の要素を最後尾に追加
-								CMotion::SKey *pKey = &pKeyInfo->vecKey[nCurKey];	// 現在のキー
+								pKey->vecParts.emplace_back();	// 空の要素を最後尾に追加
+								CMotion::SParts *pParts = &pKey->vecParts[nCurParts];	// 現在のパーツ情報
 
 								do
 								{ // 読み込んだ文字列が END_KEY ではない場合ループ
@@ -366,36 +366,36 @@ HRESULT CMotionManager::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 									if (strcmp(&aString[0], "POS") == 0)
 									{ // 読み込んだ文字列が POS の場合
 
-										fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-										fscanf(pFile, "%f", &pKey->pos.x);	// X位置を読み込む
-										fscanf(pFile, "%f", &pKey->pos.y);	// Y位置を読み込む
-										fscanf(pFile, "%f", &pKey->pos.z);	// Z位置を読み込む
+										fscanf(pFile, "%s", &aString[0]);		// = を読み込む (不要)
+										fscanf(pFile, "%f", &pParts->pos.x);	// X位置を読み込む
+										fscanf(pFile, "%f", &pParts->pos.y);	// Y位置を読み込む
+										fscanf(pFile, "%f", &pParts->pos.z);	// Z位置を読み込む
 
 										// 読み込んだ位置にパーツの初期位置を加算
-										pKey->pos += pPartsInfo->vecParts[nCurKey].pos;
+										pParts->pos += pPartsInfo->vecParts[nCurParts].pos;
 									}
 									else if (strcmp(&aString[0], "ROT") == 0)
 									{ // 読み込んだ文字列が ROT の場合
 
-										fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-										fscanf(pFile, "%f", &pKey->rot.x);	// X向きを読み込む
-										fscanf(pFile, "%f", &pKey->rot.y);	// Y向きを読み込む
-										fscanf(pFile, "%f", &pKey->rot.z);	// Z向きを読み込む
+										fscanf(pFile, "%s", &aString[0]);		// = を読み込む (不要)
+										fscanf(pFile, "%f", &pParts->rot.x);	// X向きを読み込む
+										fscanf(pFile, "%f", &pParts->rot.y);	// Y向きを読み込む
+										fscanf(pFile, "%f", &pParts->rot.z);	// Z向きを読み込む
 
 										// 読み込んだ向きにパーツの初期向きを加算
-										pKey->rot += pPartsInfo->vecParts[nCurKey].rot;
-										useful::NormalizeRot(pKey->rot);	// 向き正規化
+										pParts->rot += pPartsInfo->vecParts[nCurParts].rot;
+										useful::NormalizeRot(pParts->rot);	// 向き正規化
 									}
 
 								} while (strcmp(&aString[0], "END_KEY") != 0);	// 読み込んだ文字列が END_KEY ではない場合ループ
 
-								// 現在のキー番号を加算
-								nCurKey++;
+								// 現在のパーツ番号を加算
+								nCurParts++;
 							}
 						} while (strcmp(&aString[0], "END_KEYSET") != 0);	// 読み込んだ文字列が END_KEYSET ではない場合ループ
 
-						// 現在のモーション番号を加算
-						nCurMotion++;
+						// 現在のキー番号を加算
+						nCurKey++;
 					}
 				} while (strcmp(&aString[0], "END_MOTIONSET") != 0);	// 読み込んだ文字列が END_MOTIONSET ではない場合ループ
 			}

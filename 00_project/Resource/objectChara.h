@@ -84,8 +84,8 @@ public:
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
 
-	void AddMotionInfo(CMotion::SMotionInfo info)	{ m_pMotion->AddInfo(info); }						// モーション情報追加
-	void SetEnableMotionUpdate(const bool bUpdate)	{ m_pMotion->SetEnableUpdate(bUpdate); }			// 更新状況設定
+	void AddMotionInfo(const CMotion::SMotion& rInfo)	{ m_pMotion->AddInfo(rInfo); }					// モーション情報追加
+	void SetEnableMotionUpdate(const bool bUpdate)		{ m_pMotion->SetEnableUpdate(bUpdate); }		// 更新状況設定
 	int GetMotionType(void) const			{ return m_pMotion->GetType(); }							// モーション種類取得
 	int GetMotionNumType(void) const		{ return m_pMotion->GetNumType(); }							// モーション種類総数取得
 	int GetMotionKey(void) const			{ return m_pMotion->GetKey();}								// モーションキー番号取得

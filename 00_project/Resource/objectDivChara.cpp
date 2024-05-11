@@ -311,13 +311,13 @@ void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)
 //============================================================
 //	モーション情報の追加処理
 //============================================================
-void CObjectDivChara::AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info)
+void CObjectDivChara::AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo)
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
 
 		// 引数インデックスのモーション情報を追加
-		m_apBody[bodyID]->AddMotionInfo(info);
+		m_apBody[bodyID]->AddMotionInfo(rInfo);
 	}
 	else { assert(false); }	// インデックスエラー
 }
