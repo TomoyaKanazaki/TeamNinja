@@ -99,11 +99,11 @@ void CBlur::Update(const float fDeltaTime)
 	if (m_state == STATE_NORMAL)
 	{ // 通常状態の場合
 
-		// 
+		// オブジェクト保存用の動的配列を生成
 		std::vector<CObjectModel*> tempBlur;
-		tempBlur.resize((size_t)m_pParent->GetNumParts());
+		tempBlur.resize((size_t)m_pParent->GetNumParts());	// パーツ数分配列生成
 
-		int nCntParts = 0;	// 
+		int nCntParts = 0;	// パーツインデックス
 		for (auto& rVecParts : tempBlur)
 		{ // パーツ数分繰り返す
 
