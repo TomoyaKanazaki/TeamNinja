@@ -17,7 +17,8 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CMotion::CMotion() :
+CMotion::CMotion(std::function<int(void)> funcGetNumParts) :
+	m_funcGetNumParts(funcGetNumParts),	// パーツ数取得関数ポインタ
 	m_ppModel	(nullptr),	// モデル情報
 	m_pChara	(nullptr),	// オブジェクトキャラクター情報
 	m_bUpdate	(true)		// 更新状況
@@ -210,7 +211,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 	if (m_blend.nFrame > 0)
 	{ // ブレンドフレームが設定されている場合
 
-		for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
+		for (int nCntKey = 0; nCntKey < m_funcGetNumParts(); nCntKey++)
 		{ // パーツ数分繰り返す
 
 			// 現在位置と現在向きを保存
@@ -221,7 +222,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 	else
 	{ // ブレンドフレームが設定されていない場合
 
-		for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
+		for (int nCntKey = 0; nCntKey < m_funcGetNumParts(); nCntKey++)
 		{ // パーツ数分繰り返す
 
 			// 初期位置と初期向きを設定
@@ -236,7 +237,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 //============================================================
 void CMotion::SetOriginPosition(const D3DXVECTOR3& rPos, const int nParts)
 {
-	if (nParts > NONE_IDX && nParts < motion::MAX_PARTS)
+	if (nParts > NONE_IDX && nParts < m_funcGetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 原点位置を設定
@@ -250,7 +251,7 @@ void CMotion::SetOriginPosition(const D3DXVECTOR3& rPos, const int nParts)
 //============================================================
 void CMotion::SetOriginRotation(const D3DXVECTOR3& rRot, const int nParts)
 {
-	if (nParts > NONE_IDX && nParts < motion::MAX_PARTS)
+	if (nParts > NONE_IDX && nParts < m_funcGetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 原点向きを設定
@@ -351,9 +352,9 @@ bool CMotion::IsRightWeaponCollision(void)
 //============================================================
 //	原点位置の取得処理
 //============================================================
-D3DXVECTOR3 CMotion::GetOriginPosition(const int nParts) const
+D3DXVECTOR3 CMotion::GetOriginPosition(const int nParts)
 {
-	if (nParts > NONE_IDX && nParts < motion::MAX_PARTS)
+	if (nParts > NONE_IDX && nParts < m_funcGetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 原点位置を返す
@@ -368,9 +369,9 @@ D3DXVECTOR3 CMotion::GetOriginPosition(const int nParts) const
 //============================================================
 //	原点向きの取得処理
 //============================================================
-D3DXVECTOR3 CMotion::GetOriginRotation(const int nParts) const
+D3DXVECTOR3 CMotion::GetOriginRotation(const int nParts)
 {
-	if (nParts > NONE_IDX && nParts < motion::MAX_PARTS)
+	if (nParts > NONE_IDX && nParts < m_funcGetNumParts())
 	{ // 使用可能なインデックスの場合
 
 		// 原点向きを返す
@@ -388,7 +389,7 @@ D3DXVECTOR3 CMotion::GetOriginRotation(const int nParts) const
 CMotion *CMotion::Create(CObjectChara *pChara)
 {
 	// モーションの生成
-	CMotion *pMotion = new CMotion;
+	CMotion *pMotion = new CMotion(std::bind(&CObjectChara::GetNumParts, pChara));
 	if (pMotion == nullptr)
 	{ // 生成に失敗した場合
 
@@ -475,7 +476,7 @@ void CMotion::UpdateMotion(void)
 	int nNextKey = (nKey + 1) % m_info.vecMotionInfo[nType].GetNumKey();
 
 	// パーツの位置の更新
-	for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
+	for (int nCntKey = 0; nCntKey < m_funcGetNumParts(); nCntKey++)
 	{ // パーツ数分繰り返す
 
 		// 位置・向きの差分を求める
@@ -545,7 +546,7 @@ void CMotion::UpdateMotion(void)
 void CMotion::UpdateBlend(void)
 {
 	// パーツの位置の更新
-	for (int nCntKey = 0; nCntKey < m_info.vecMotionInfo[m_info.nType].vecKeyInfo[m_info.nKey].GetNumParts(); nCntKey++)
+	for (int nCntKey = 0; nCntKey < m_funcGetNumParts(); nCntKey++)
 	{ // パーツ数分繰り返す
 
 		// 位置・向きの差分を求める

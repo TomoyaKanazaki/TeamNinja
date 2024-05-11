@@ -46,7 +46,7 @@ public:
 	// ブラー情報構造体
 	struct SInfo
 	{
-		CObjectModel *apCharaParts[motion::MAX_PARTS];	// パーツの情報
+		CObjectModel *apCharaParts[32];	// パーツの情報	// TODO：個々の配列をvectorに！
 		int nNumParts;	// パーツ数
 	};
 

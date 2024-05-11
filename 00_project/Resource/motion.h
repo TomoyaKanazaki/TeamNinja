@@ -11,14 +11,6 @@
 #define _MOTION_H_
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace motion
-{
-	const int MAX_PARTS	= 32;	// パーツの最大数
-}
-
-//************************************************************
 //	前方宣言
 //************************************************************
 class CMultiModel;	// マルチモデルクラス
@@ -32,7 +24,7 @@ class CMotion
 {
 public:
 	// コンストラクタ
-	CMotion();
+	CMotion(std::function<int(void)> funcGetNumParts);
 
 	// デストラクタ
 	~CMotion();
@@ -75,9 +67,6 @@ public:
 		{
 			vecKey.clear();	// キーパーツ情報をクリア
 		}
-
-		// メンバ関数
-		int GetNumParts(void) { return (int)vecKey.size(); }	// キーの総数取得
 
 		// メンバ変数
 		std::vector<SKey> vecKey;	// キーパーツ情報
@@ -178,8 +167,8 @@ public:
 	bool IsCombo(const int nType) const;	// コンボ取得
 	bool IsLeftWeaponCollision(void);		// 左の攻撃判定フラグ取得
 	bool IsRightWeaponCollision(void);		// 右の攻撃判定フラグ取得
-	D3DXVECTOR3 GetOriginPosition(const int nParts) const;	// 原点位置の取得
-	D3DXVECTOR3 GetOriginRotation(const int nParts) const;	// 原点向きの取得
+	D3DXVECTOR3 GetOriginPosition(const int nParts);	// 原点位置の取得
+	D3DXVECTOR3 GetOriginRotation(const int nParts);	// 原点向きの取得
 
 	int GetType(void) const			{ return m_info.nType; }			// 種類取得
 	int GetKey(void) const			{ return m_info.nKey; }				// キー番号取得
@@ -203,6 +192,7 @@ private:
 	void UpdateBlend(void);		// ブレンド更新
 
 	// メンバ変数
+	const std::function<int(void)> m_funcGetNumParts;	// パーツ数取得関数ポインタ
 	CMultiModel **m_ppModel;	// モデル情報
 	CObjectChara *m_pChara;		// オブジェクトキャラクター情報
 	SInfo  m_info;	// モーション情報
