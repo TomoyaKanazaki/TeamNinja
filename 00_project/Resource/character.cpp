@@ -234,22 +234,14 @@ HRESULT CCharacter::SearchFolderAll(std::string sFolderPath)
 //============================================================
 HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 {
-	// 変数を宣言
+	SPartsInfo *pInfoParts = &pInfoChara->infoParts;	// パーツ情報
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
-	int nID	 = 0;	// インデックスの代入用
-	int nEnd = 0;	// テキスト読み込み終了の確認用
+	int nID = 0;	// インデックスの代入用
 
-	// 変数配列を宣言
-	char aString[MAX_STRING];	// テキストの文字列の代入用
-
-	// ポインタを宣言
-	SPartsInfo *pInfoParts = &pInfoChara->infoParts;	// パーツ情報
-	FILE *pFile;	// ファイルポインタ
-
-	// ファイルを読み込み形式で開く
-	pFile = fopen(pCharaPass, "r");
-	if (pFile == nullptr)
+	// ファイルを開く
+	std::ifstream file(pCharaPass);	// ファイルストリーム
+	if (file.fail())
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
@@ -259,90 +251,90 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 		return E_FAIL;
 	}
 
-	do
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
 	{ // ファイルの終端ではない場合ループ
 
-		// 文字列を読み込む
-		nEnd = fscanf(pFile, "%s", &aString[0]);	// ファイルの終端ならEOFを返す
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
 
-		// キャラクターの設定
-		if (strcmp(&aString[0], "CHARACTERSET") == 0)
-		{ // 読み込んだ文字列が CHARACTERSET の場合
-
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "CHARACTERSET")
+		{
 			do
-			{ // 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
+			{ // END_CHARACTERSETを読み込むまでループ
 
-				// ファイルから文字列を読み込む
-				fscanf(pFile, "%s", &aString[0]);
+				// 文字列を読み込む
+				file >> str;
 
-				if (strcmp(&aString[0], "PARTSSET") == 0)
-				{ // 読み込んだ文字列が PARTSSET の場合
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
 
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "PARTSSET")
+				{
 					do
-					{ // 読み込んだ文字列が END_PARTSSET ではない場合ループ
+					{ // END_PARTSSETを読み込むまでループ
 
-						// ファイルから文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
+						// 文字列を読み込む
+						file >> str;
 
-						if (strcmp(&aString[0], "INDEX") == 0)
-						{ // 読み込んだ文字列が INDEX の場合
-
-							fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-							fscanf(pFile, "%d", &nID);			// モデルのインデックスを読み込む
+						if (str == "INDEX")
+						{
+							file >> str;	// ＝を読込
+							file >> nID;	// モデルのインデックスを読込
 
 							// 空の要素を最後尾に追加
 							pInfoParts->vecParts.emplace_back();
 						}
-						else if (strcmp(&aString[0], "PARENT") == 0)
-						{ // 読み込んだ文字列が PARENT の場合
-
-							fscanf(pFile, "%s", &aString[0]);							// = を読み込む (不要)
-							fscanf(pFile, "%d", &pInfoParts->vecParts[nID].nParentID);	// モデルの親のインデックスを読み込む
+						else if (str == "PARENT")
+						{
+							file >> str;									// ＝を読込
+							file >> pInfoParts->vecParts[nID].nParentID;	// モデルの親インデックスを読込
 						}
-						else if (strcmp(&aString[0], "POS") == 0)
-						{ // 読み込んだ文字列が POS の場合
-
-							fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.x);	// X位置オフセットを読み込む
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.y);	// Y位置オフセットを読み込む
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.z);	// Z位置オフセットを読み込む
+						else if (str == "POS")
+						{
+							file >> str;								// ＝を読込
+							file >> pInfoParts->vecParts[nID].pos.x;	// X位置オフセットを読込
+							file >> pInfoParts->vecParts[nID].pos.y;	// Y位置オフセットを読込
+							file >> pInfoParts->vecParts[nID].pos.z;	// Z位置オフセットを読込
 						}
-						else if (strcmp(&aString[0], "ROT") == 0)
-						{ // 読み込んだ文字列が ROT の場合
-
-							fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.x);	// X向きオフセットを読み込む
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.y);	// Y向きオフセットを読み込む
-							fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.z);	// Z向きオフセットを読み込む
+						else if (str == "ROT")
+						{
+							file >> str;								// ＝を読込
+							file >> pInfoParts->vecParts[nID].rot.x;	// X向きオフセットを読込
+							file >> pInfoParts->vecParts[nID].rot.y;	// Y向きオフセットを読込
+							file >> pInfoParts->vecParts[nID].rot.z;	// Z向きオフセットを読込
 						}
-						else if (strcmp(&aString[0], "FILEPASS") == 0)
-						{ // 読み込んだ文字列が FILEPASS の場合
+						else if (str == "FILEPASS")
+						{
+							file >> str;								// ＝を読込
+							file >> pInfoParts->vecParts[nID].strPass;	// モデルパスを読込
 
-							fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-							fscanf(pFile, "%s", &aString[0]);	// モデルパスを読み込む
-
-							// モデルのファイルパスを保存
-							pInfoParts->vecParts[nID].strPass = &aString[0];
-							useful::StandardizePathPart(&pInfoParts->vecParts[nID].strPass);	// ファイルパス標準化
+							// モデルパスを標準化
+							useful::StandardizePathPart(&pInfoParts->vecParts[nID].strPass);
 						}
-					} while (strcmp(&aString[0], "END_PARTSSET") != 0);	// 読み込んだ文字列が END_PARTSSET ではない場合ループ
+					} while (str != "END_PARTSSET");	// END_PARTSSETを読み込むまでループ
 				}
-			} while (strcmp(&aString[0], "END_CHARACTERSET") != 0);	// 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
+			} while (str != "END_CHARACTERSET");	// END_CHARACTERSETを読み込むまでループ
 		}
-		else if (strcmp(&aString[0], "MOTIONPASS") == 0)
-		{ // 読み込んだ文字列が MOTIONPASS の場合
+		else if (str == "MOTIONPASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// モーションパスを読込
 
-			fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-			fscanf(pFile, "%s", &aString[0]);	// モーションパスを読み込む
-
-			// 読み込んだパスのモーションを読み込む
-			LoadMotionSetup(&pInfoChara->infoMotion, pInfoParts, &aString[0]);
+			// モーションパスを読み込む
+			LoadMotionSetup(&pInfoChara->infoMotion, pInfoParts, str.c_str());
 		}
-
-	} while (nEnd != EOF);	// ファイルの終端ではない場合ループ
+	}
 
 	// ファイルを閉じる
-	fclose(pFile);
+	file.close();
 
 	// 成功を返す
 	return S_OK;
