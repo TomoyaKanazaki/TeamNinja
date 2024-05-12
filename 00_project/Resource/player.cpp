@@ -38,16 +38,17 @@
 #include "player_clone.h"
 
 #include "gauge2D.h"
+#include "blur.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= -400.0f;	// 移動量
+	const float	MOVE		= 150.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
@@ -65,6 +66,13 @@ namespace
 	const int ORBIT_PART = 20;	// 分割数
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
+
+	// ブラーの情報
+	namespace blurInfo
+	{
+		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
+		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
+	}
 }
 
 //************************************************************
@@ -192,6 +200,16 @@ HRESULT CPlayer::Init(void)
 	);
 	m_pTensionGauge->SetNum(m_nInitTension);
 	m_pTensionGauge->SetLabel(LABEL_UI);
+
+	// ブラーの情報
+	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
+	CBlur::Create
+	( // 引数
+		this,	// 親オブジェクト
+		mat,	// ブラーマテリアル
+		blurInfo::START_ALPHA,	// ブラー開始透明度
+		blurInfo::MAX_LENGTH	// 保持オブジェクト最大数
+	);
 
 	// プレイヤーを出現させる
 	SetSpawn();

@@ -15,7 +15,7 @@
 //************************************************************
 #include "object.h"
 #include "motion.h"
-#include "motionManager.h"
+#include "character.h"
 
 //************************************************************
 //	前方宣言
@@ -65,10 +65,10 @@ public:
 		const char *pFileName		// ファイル名
 	);
 
-	void BindCharaData(const char *pTextPass);		// キャラクター情報割当
+	void BindCharaData(const char *pCharaPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetNumParts(const int nNumParts);			// パーツ数設定
-	void SetPartsInfo(CMotionManager::SPartsInfo& rInfo);				// パーツ情報設定
+	void SetPartsInfo(CCharacter::SPartsInfo& rInfo);					// パーツ情報設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
@@ -84,8 +84,8 @@ public:
 	float GetAlpha(void) const;			// 透明度取得
 	float GetMaxAlpha(void) const;		// 最大透明度取得
 
-	void AddMotionInfo(CMotion::SMotionInfo info)	{ m_pMotion->AddInfo(info); }						// モーション情報追加
-	void SetEnableMotionUpdate(const bool bUpdate)	{ m_pMotion->SetEnableUpdate(bUpdate); }			// 更新状況設定
+	void AddMotionInfo(const CMotion::SMotion& rInfo)	{ m_pMotion->AddInfo(rInfo); }					// モーション情報追加
+	void SetEnableMotionUpdate(const bool bUpdate)		{ m_pMotion->SetEnableUpdate(bUpdate); }		// 更新状況設定
 	int GetMotionType(void) const			{ return m_pMotion->GetType(); }							// モーション種類取得
 	int GetMotionNumType(void) const		{ return m_pMotion->GetNumType(); }							// モーション種類総数取得
 	int GetMotionKey(void) const			{ return m_pMotion->GetKey();}								// モーションキー番号取得

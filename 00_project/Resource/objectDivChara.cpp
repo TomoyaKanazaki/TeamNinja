@@ -296,6 +296,24 @@ void CObjectDivChara::SetMaterial
 }
 
 //============================================================
+//	キャラクター情報割当
+//============================================================
+void CObjectDivChara::BindCharaData
+(
+	const char *pCharaPassLower,	// 下半身キャラ情報パス
+	const char *pCharaPassUpper		// 上半身キャラ情報パス
+)
+{
+	// 下半身のキャラクター情報の割当
+	if (pCharaPassLower == nullptr) { assert(false); return; }	// パス指定なし
+	m_apBody[BODY_LOWER]->BindCharaData(pCharaPassLower);
+
+	// 上半身のキャラクター情報の割当
+	if (pCharaPassUpper == nullptr) { assert(false); return; }	// パス指定なし
+	m_apBody[BODY_UPPER]->BindCharaData(pCharaPassUpper);
+}
+
+//============================================================
 //	モーションの更新状況の設定処理
 //============================================================
 void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)
@@ -311,13 +329,13 @@ void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)
 //============================================================
 //	モーション情報の追加処理
 //============================================================
-void CObjectDivChara::AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info)
+void CObjectDivChara::AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo)
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
 
 		// 引数インデックスのモーション情報を追加
-		m_apBody[bodyID]->AddMotionInfo(info);
+		m_apBody[bodyID]->AddMotionInfo(rInfo);
 	}
 	else { assert(false); }	// インデックスエラー
 }

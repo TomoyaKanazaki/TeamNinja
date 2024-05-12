@@ -312,9 +312,6 @@
     <ClInclude Include="Resource\player_clone.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\motionManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -322,6 +319,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\checkpoint.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\character.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\map.h">
@@ -620,9 +620,6 @@
     <ClCompile Include="Resource\player_clone.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\motionManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -632,9 +629,15 @@
     <ClCompile Include="Resource\checkpoint.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+<<<<<<< .mine
     <ClCompile Include="Resource\map.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="Resource\character.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+>>>>>>> .theirs
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">

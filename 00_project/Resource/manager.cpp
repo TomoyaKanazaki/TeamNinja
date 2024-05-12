@@ -19,8 +19,8 @@
 #include "texture.h"
 #include "model.h"
 #include "font.h"
+#include "character.h"
 #include "shader.h"
-#include "motionManager.h"
 #include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
@@ -51,10 +51,10 @@ CManager::CManager() :
 	m_pTexture		(nullptr),	// テクスチャインスタンス
 	m_pModel		(nullptr),	// モデルインスタンス
 	m_pFont			(nullptr),	// フォントインスタンス
+	m_pCharacter	(nullptr),	// キャラクターインスタンス
 	m_pFade			(nullptr),	// フェードインスタンス
 	m_pLoading		(nullptr),	// ローディングインスタンス
 	m_pScene		(nullptr),	// シーンインスタンス
-	m_pMotion		(nullptr),	// モーションマネージャー
 	m_pEffekseer	(nullptr),	// エフェクシアマネージャー
 	m_pRetention	(nullptr),	// データ保存マネージャー
 	m_pDebug		(nullptr)	// デバッグ
@@ -91,10 +91,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pTexture		= nullptr;		// テクスチャインスタンス
 	m_pModel		= nullptr;		// モデルインスタンス
 	m_pFont			= nullptr;		// フォントインスタンス
+	m_pCharacter	= nullptr;		// キャラクターインスタンス
 	m_pFade			= nullptr;		// フェードインスタンス
 	m_pLoading		= nullptr;		// ローディングインスタンス
 	m_pScene		= nullptr;		// シーンインスタンス
-	m_pMotion		= nullptr;		// モーションマネージャー
 	m_pEffekseer	= nullptr;		// エフェクシアマネージャー
 	m_pRetention	= nullptr;		// データ保存マネージャー
 	m_pDebug		= nullptr;		// デバッグ
@@ -235,9 +235,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	// モーションの生成
-	m_pMotion = CMotionManager::Create();
-	if (m_pMotion == nullptr)
+	// キャラクターの生成
+	m_pCharacter = CCharacter::Create();
+	if (m_pCharacter == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -340,6 +340,16 @@ HRESULT CManager::Load(void)
 		return E_FAIL;
 	}
 
+	// キャラクターの全読込
+	assert(m_pCharacter != nullptr);
+	if (FAILED(m_pCharacter->LoadAll()))
+	{ // 全読込に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 #endif	// NDEBUG
 
 	// サウンドの全読込
@@ -388,8 +398,8 @@ void CManager::Uninit(void)
 	// フォントの破棄
 	SAFE_REF_RELEASE(m_pFont);
 
-	// モーションの破棄
-	SAFE_REF_RELEASE(m_pMotion);
+	// キャラクターの破棄
+	SAFE_REF_RELEASE(m_pCharacter);
 
 	// シェーダーの破棄
 	CShader::Release();
@@ -840,6 +850,18 @@ CFont *CManager::GetFont(void)
 }
 
 //============================================================
+//	キャラクター取得処理
+//============================================================
+CCharacter *CManager::GetCharacter(void)
+{
+	// インスタンス未使用
+	assert(m_pCharacter != nullptr);
+
+	// キャラクターを返す
+	return m_pCharacter;
+}
+
+//============================================================
 //	フェード取得処理
 //============================================================
 CFade *CManager::GetFade(void)
@@ -873,18 +895,6 @@ CScene *CManager::GetScene(void)
 
 	// シーンのポインタを返す
 	return m_pScene;
-}
-
-//============================================================
-//	モーションマネージャー取得処理
-//============================================================
-CMotionManager *CManager::GetMotion(void)
-{
-	// インスタンス未使用
-	assert(m_pMotion != nullptr);
-
-	// モーションマネージャーを返す
-	return m_pMotion;
 }
 
 //============================================================
