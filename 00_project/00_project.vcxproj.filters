@@ -324,6 +324,9 @@
     <ClInclude Include="Resource\character.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\map.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\wall.cpp">
@@ -626,9 +629,15 @@
     <ClCompile Include="Resource\checkpoint.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+<<<<<<< .mine
+    <ClCompile Include="Resource\map.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+=======
     <ClCompile Include="Resource\character.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+>>>>>>> .theirs
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
