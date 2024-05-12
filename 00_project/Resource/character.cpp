@@ -57,7 +57,7 @@ HRESULT CCharacter::Init(void)
 void CCharacter::Uninit(void)
 {
 	for (auto& rMap : m_mapCharacter)
-	{ // キャラクターの要素数分繰り返す
+	{ // キャラクター数分繰り返す
 
 		for (auto& rMotionInfo : rMap.second.infoMotion.vecMotion)
 		{ // モーション情報の要素数分繰り返す
@@ -76,7 +76,7 @@ void CCharacter::Uninit(void)
 		// モーション情報をクリア
 		rMap.second.infoMotion.vecMotion.clear();
 
-		// キー保存情報をクリア
+		// パーツ情報をクリア
 		rMap.second.infoParts.vecParts.clear();
 	}
 
@@ -230,29 +230,25 @@ HRESULT CCharacter::SearchFolderAll(std::string sFolderPath)
 }
 
 //============================================================
-//	セットアップ処理
+//	キャラクター情報セットアップ処理
 //============================================================
-HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
+HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
-	int nID			= 0;			// インデックスの代入用
-	int nCurKey		= 0;			// 現在のキー番号
-	int nCurParts	= 0;			// 現在のパーツ番号
-	int nWeapon		= 0;			// 武器表示のON/OFFの変換用
-	int nLoop		= 0;			// ループのON/OFFの変換用
-	int nEnd		= 0;			// テキスト読み込み終了の確認用
+	int nID	 = 0;	// インデックスの代入用
+	int nEnd = 0;	// テキスト読み込み終了の確認用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
 	// ポインタを宣言
-	SPartsInfo *pPartsInfo = &pInfoChara->infoParts;	// パーツ情報
+	SPartsInfo *pInfoParts = &pInfoChara->infoParts;	// パーツ情報
 	FILE *pFile;	// ファイルポインタ
 
 	// ファイルを読み込み形式で開く
-	pFile = fopen(pTextPass, "r");
+	pFile = fopen(pCharaPass, "r");
 
 	if (pFile != NULL)
 	{ // ファイルが開けた場合
@@ -289,29 +285,29 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 								fscanf(pFile, "%d", &nID);			// モデルのインデックスを読み込む
 
 								// 空の要素を最後尾に追加
-								pPartsInfo->vecParts.emplace_back();
+								pInfoParts->vecParts.emplace_back();
 							}
 							else if (strcmp(&aString[0], "PARENT") == 0)
 							{ // 読み込んだ文字列が PARENT の場合
 
 								fscanf(pFile, "%s", &aString[0]);							// = を読み込む (不要)
-								fscanf(pFile, "%d", &pPartsInfo->vecParts[nID].nParentID);	// モデルの親のインデックスを読み込む
+								fscanf(pFile, "%d", &pInfoParts->vecParts[nID].nParentID);	// モデルの親のインデックスを読み込む
 							}
 							else if (strcmp(&aString[0], "POS") == 0)
 							{ // 読み込んだ文字列が POS の場合
 
 								fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].pos.x);	// X位置オフセットを読み込む
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].pos.y);	// Y位置オフセットを読み込む
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].pos.z);	// Z位置オフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.x);	// X位置オフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.y);	// Y位置オフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].pos.z);	// Z位置オフセットを読み込む
 							}
 							else if (strcmp(&aString[0], "ROT") == 0)
 							{ // 読み込んだ文字列が ROT の場合
 
 								fscanf(pFile, "%s", &aString[0]);						// = を読み込む (不要)
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].rot.x);	// X向きオフセットを読み込む
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].rot.y);	// Y向きオフセットを読み込む
-								fscanf(pFile, "%f", &pPartsInfo->vecParts[nID].rot.z);	// Z向きオフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.x);	// X向きオフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.y);	// Y向きオフセットを読み込む
+								fscanf(pFile, "%f", &pInfoParts->vecParts[nID].rot.z);	// Z向きオフセットを読み込む
 							}
 							else if (strcmp(&aString[0], "FILEPASS") == 0)
 							{ // 読み込んだ文字列が FILEPASS の場合
@@ -320,21 +316,81 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 								fscanf(pFile, "%s", &aString[0]);	// モデルパスを読み込む
 
 								// モデルのファイルパスを保存
-								pPartsInfo->vecParts[nID].strPass = &aString[0];
-								useful::StandardizePathPart(&pPartsInfo->vecParts[nID].strPass);	// ファイルパス標準化
+								pInfoParts->vecParts[nID].strPass = &aString[0];
+								useful::StandardizePathPart(&pInfoParts->vecParts[nID].strPass);	// ファイルパス標準化
 							}
 						} while (strcmp(&aString[0], "END_PARTSSET") != 0);	// 読み込んだ文字列が END_PARTSSET ではない場合ループ
 					}
 				} while (strcmp(&aString[0], "END_CHARACTERSET") != 0);	// 読み込んだ文字列が END_CHARACTERSET ではない場合ループ
 			}
+			else if (strcmp(&aString[0], "MOTIONPASS") == 0)
+			{ // 読み込んだ文字列が MOTIONPASS の場合
+
+				fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
+				fscanf(pFile, "%s", &aString[0]);	// モーションパスを読み込む
+
+				// 読み込んだパスのモーションを読み込む
+				LoadMotionSetup(&pInfoChara->infoMotion, pInfoParts, &aString[0]);
+			}
+
+		} while (nEnd != EOF);	// 読み込んだ文字列が EOF ではない場合ループ
+
+		// ファイルを閉じる
+		fclose(pFile);
+	}
+	else
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(NULL, "キャラクターセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	モーション情報セットアップ処理
+//============================================================
+HRESULT CCharacter::LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInfo *pInfoParts, const char *pMotionPass)
+{
+	// 変数を宣言
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
+	int nCurKey		= 0;			// 現在のキー番号
+	int nCurParts	= 0;			// 現在のパーツ番号
+	int nWeapon		= 0;			// 武器表示のON/OFFの変換用
+	int nLoop		= 0;			// ループのON/OFFの変換用
+	int nEnd		= 0;			// テキスト読み込み終了の確認用
+
+	// 変数配列を宣言
+	char aString[MAX_STRING];	// テキストの文字列の代入用
+
+	// ポインタを宣言
+	FILE *pFile;	// ファイルポインタ
+
+	// ファイルを読み込み形式で開く
+	pFile = fopen(pMotionPass, "r");
+
+	if (pFile != NULL)
+	{ // ファイルが開けた場合
+
+		do
+		{ // 読み込んだ文字列が EOF ではない場合ループ
+
+			// ファイルから文字列を読み込む
+			nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
 
 			// モーションの設定
-			else if (strcmp(&aString[0], "MOTIONSET") == 0)
+			if (strcmp(&aString[0], "MOTIONSET") == 0)
 			{ // 読み込んだ文字列が MOTIONSET の場合
 
-				int nType = pInfoChara->infoMotion.GetNumMotion();	// 現在のモーション数
-				pInfoChara->infoMotion.vecMotion.emplace_back();	// 空の要素を最後尾に追加
-				CMotion::SMotion *pMotion = &pInfoChara->infoMotion.vecMotion[nType];	// 現在のモーション情報
+				int nType = pInfoMotion->GetNumMotion();	// 現在のモーション数
+				pInfoMotion->vecMotion.emplace_back();		// 空の要素を最後尾に追加
+				CMotion::SMotion *pMotion = &pInfoMotion->vecMotion[nType];	// 現在のモーション情報
 
 				// 現在のキー番号を初期化
 				nCurKey = 0;
@@ -452,7 +508,7 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 										fscanf(pFile, "%f", &pParts->pos.z);	// Z位置を読み込む
 
 										// 読み込んだ位置にパーツの初期位置を加算
-										pParts->pos += pPartsInfo->vecParts[nCurParts].pos;
+										pParts->pos += pInfoParts->vecParts[nCurParts].pos;
 									}
 									else if (strcmp(&aString[0], "ROT") == 0)
 									{ // 読み込んだ文字列が ROT の場合
@@ -463,7 +519,7 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 										fscanf(pFile, "%f", &pParts->rot.z);	// Z向きを読み込む
 
 										// 読み込んだ向きにパーツの初期向きを加算
-										pParts->rot += pPartsInfo->vecParts[nCurParts].rot;
+										pParts->rot += pInfoParts->vecParts[nCurParts].rot;
 										useful::NormalizeRot(pParts->rot);	// 向き正規化
 									}
 
@@ -488,7 +544,7 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pTextPass)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(NULL, "キャラクターセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(NULL, "モーションセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
