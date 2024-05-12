@@ -21,7 +21,6 @@
 #include <time.h>
 #include <assert.h>
 #include <d3dx9.h>
-#include "iostream"
 
 // ビルド時の警告対処用マクロ
 #define  DIRECTINPUT_VERSION	(0x0800)
@@ -34,6 +33,8 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>		// メモリリーク検出に必要
 
+#include <iostream>		// 入出力ストリーム
+#include <fstream>		// ファイル入出力ストリーム
 #include <functional>	// 関数ポインタ
 #include <string>		// 文字列
 #include <thread>		// スレッド
