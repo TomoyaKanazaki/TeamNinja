@@ -83,9 +83,9 @@ public:
 	void SetSpaceValue(const D3DXVECTOR3& rSpace);	// 区切りの空白設定
 	void SetSpacePart(const D3DXVECTOR3& rSpace);	// 数字の空白設定
 	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
-	float GetValueWidth(void) const;				// タイム全体の横幅取得
-	float GetValueHeight(void) const;				// タイム全体の縦幅取得
-	D3DXVECTOR3 GetValueSize(void) const;			// タイム全体の大きさ取得
+	float GetTimeWidth(void) const;					// タイム全体の横幅取得
+	float GetTimeHeight(void) const;				// タイム全体の縦幅取得
+	D3DXVECTOR3 GetTimeSize(void) const;			// タイム全体の大きさ取得
 
 	CValue::EType GetValueType(void) const	{ return m_type; }			// 数字の種類取得
 	D3DXVECTOR3 GetSizingValue(void) const	{ return m_sizeValue; }		// 区切りの大きさ取得

@@ -139,6 +139,29 @@ void CTimeUI::Uninit(void)
 //============================================================
 void CTimeUI::Update(const float fDeltaTime)
 {
+	// TODO
+#if 1
+	if (GET_INPUTKEY->IsPress(DIK_W))
+	{
+		m_pos.y -= 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_S))
+	{
+		m_pos.y += 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_A))
+	{
+		m_pos.x -= 1.0f;
+	}
+	if (GET_INPUTKEY->IsPress(DIK_D))
+	{
+		m_pos.x += 1.0f;
+	}
+#endif
+
+	// 相対位置の設定
+	SetPositionRelative();
+
 	// 数字のテクスチャ座標の設定
 	SetTexNum();
 
@@ -325,7 +348,7 @@ void CTimeUI::SetValueType(const CValue::EType type)
 
 		// テクスチャを割当
 		assert(m_apPart[nCntPart] != nullptr);
-		m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);
+		//m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);	// TODO
 	}
 }
 
@@ -405,7 +428,7 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 //============================================================
 //	数字全体の横幅取得処理
 //============================================================
-float CTimeUI::GetValueWidth(void) const
+float CTimeUI::GetTimeWidth(void) const
 {
 #if 0
 	// 数字がない場合抜ける
@@ -427,14 +450,14 @@ float CTimeUI::GetValueWidth(void) const
 	// 数字全体の縦幅を返す
 	return fValueWidth;
 #else
-	return 0.0f;
+	return 100.0f;
 #endif
 }
 
 //============================================================
 //	数字全体の縦幅取得処理
 //============================================================
-float CTimeUI::GetValueHeight(void) const
+float CTimeUI::GetTimeHeight(void) const
 {
 #if 0
 	// 数字がない場合抜ける
@@ -456,17 +479,17 @@ float CTimeUI::GetValueHeight(void) const
 	// 数字全体の縦幅を返す
 	return fValueHeight;
 #else
-	return 0.0f;
+	return 100.0f;
 #endif
 }
 
 //============================================================
 //	数字全体の大きさ取得処理
 //============================================================
-D3DXVECTOR3 CTimeUI::GetValueSize(void) const
+D3DXVECTOR3 CTimeUI::GetTimeSize(void) const
 {
 	// 数字全体の大きさを返す
-	return D3DXVECTOR3(GetValueWidth(), GetValueHeight(), 0.0f);
+	return D3DXVECTOR3(GetTimeWidth(), GetTimeHeight(), 0.0f);
 }
 
 //============================================================

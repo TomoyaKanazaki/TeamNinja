@@ -165,7 +165,7 @@ CValue *CValue::Create
 void CValue::SetType(const EType type)
 {
 	// テクスチャを登録・割当
-	BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	//BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));	// TODO
 }
 
 //============================================================
