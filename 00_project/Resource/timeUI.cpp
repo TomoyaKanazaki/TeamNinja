@@ -403,6 +403,73 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
+//	数字全体の横幅取得処理
+//============================================================
+float CTimeUI::GetValueWidth(void) const
+{
+#if 0
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+
+	float fValueWidth = 0.0f;	// 数字全体の縦幅
+	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
+	for (int i = 0; i < nEndNumID; i++)
+	{ // 終端数字を抜いた桁数分繰り返す
+
+		// 次の数字までの列間を加算
+		fValueWidth += m_space.x;
+	}
+
+	// 先頭と終端の数字の無視されたサイズを加算
+	fValueWidth += m_listValue.front()->GetVec3Sizing().x * 0.5f;	// 先頭数字の原点左サイズ
+	fValueWidth += m_listValue.back()->GetVec3Sizing().x * 0.5f;	// 終端数字の原点右サイズ
+
+	// 数字全体の縦幅を返す
+	return fValueWidth;
+#else
+	return 0.0f;
+#endif
+}
+
+//============================================================
+//	数字全体の縦幅取得処理
+//============================================================
+float CTimeUI::GetValueHeight(void) const
+{
+#if 0
+	// 数字がない場合抜ける
+	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+
+	float fValueHeight = 0.0f;	// 数字全体の縦幅
+	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
+	for (int i = 0; i < nEndNumID; i++)
+	{ // 終端数字を抜いた桁数分繰り返す
+
+		// 次の数字までの行間を加算
+		fValueHeight += m_space.y;
+	}
+
+	// 先頭と終端の数字の無視されたサイズを加算
+	fValueHeight += m_listValue.front()->GetVec3Sizing().y * 0.5f;	// 先頭数字の原点上サイズ
+	fValueHeight += m_listValue.back()->GetVec3Sizing().y * 0.5f;	// 終端数字の原点下サイズ
+
+	// 数字全体の縦幅を返す
+	return fValueHeight;
+#else
+	return 0.0f;
+#endif
+}
+
+//============================================================
+//	数字全体の大きさ取得処理
+//============================================================
+D3DXVECTOR3 CTimeUI::GetValueSize(void) const
+{
+	// 数字全体の大きさを返す
+	return D3DXVECTOR3(GetValueWidth(), GetValueHeight(), 0.0f);
+}
+
+//============================================================
 //	相対位置の設定処理
 //============================================================
 void CTimeUI::SetPositionRelative(void)

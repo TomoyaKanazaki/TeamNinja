@@ -41,6 +41,24 @@ class CObject2D;	// オブジェクト2Dクラス
 class CTimeUI : public CObject
 {
 public:
+	// 横配置列挙
+	enum EAlignX
+	{
+		XALIGN_LEFT = 0,	// 左揃え
+		XALIGN_CENTER,		// 中央揃え
+		XALIGN_RIGHT,		// 右揃え
+		XALIGN_MAX,			// この列挙型の総数
+	};
+
+	// 縦配置列挙
+	enum EAlignY
+	{
+		YALIGN_TOP = 0,	// 上揃え
+		YALIGN_CENTER,	// 中央揃え
+		YALIGN_BOTTOM,	// 下揃え
+		YALIGN_MAX,		// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CTimeUI();
 
@@ -65,6 +83,10 @@ public:
 	void SetSpaceValue(const D3DXVECTOR3& rSpace);	// 区切りの空白設定
 	void SetSpacePart(const D3DXVECTOR3& rSpace);	// 数字の空白設定
 	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
+	float GetValueWidth(void) const;				// タイム全体の横幅取得
+	float GetValueHeight(void) const;				// タイム全体の縦幅取得
+	D3DXVECTOR3 GetValueSize(void) const;			// タイム全体の大きさ取得
+
 	CValue::EType GetValueType(void) const	{ return m_type; }			// 数字の種類取得
 	D3DXVECTOR3 GetSizingValue(void) const	{ return m_sizeValue; }		// 区切りの大きさ取得
 	D3DXVECTOR3 GetSizingPart(void) const	{ return m_sizePart; }		// 数字の大きさ取得
