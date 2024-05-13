@@ -313,7 +313,7 @@ void CPlayer::Update(const float fDeltaTime)
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		m_pTensionGauge->AddNum(-100);
+		Hit(100);
 	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
@@ -441,10 +441,13 @@ bool CPlayer::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVecKnock
 //============================================================
 //	ƒqƒbƒgˆ—
 //============================================================
-bool CPlayer::Hit(const int /*nDamage*/)
+bool CPlayer::Hit(const int nDamage)
 {
 	if (IsDeath())				 { return false; }	// Ž€–SÏ‚Ý
 	if (m_state != STATE_NORMAL) { return false; }	// ’Êíó‘ÔˆÈŠO
+
+	// Žm‹C—Í‚ðŒ¸­
+	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
