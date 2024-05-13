@@ -28,7 +28,7 @@ public:
 	// デストラクタ
 	~CCharacter();
 
-	// パーツ情報構造体
+	// パーツ構造体
 	struct SParts
 	{
 		// コンストラクタ
@@ -47,7 +47,7 @@ public:
 		int nParentID;			// 親インデックス
 	};
 
-	// パーツ構造体
+	// パーツ情報構造体
 	struct SPartsInfo
 	{
 		// コンストラクタ
@@ -57,7 +57,7 @@ public:
 		}
 
 		// メンバ関数
-		int GetNumParts(void) { return vecParts.size(); }	// パーツの総数取得
+		int GetNumParts(void) { return vecParts.size(); }	// パーツ情報の総数取得
 
 		// メンバ変数
 		std::vector<SParts> vecParts;	// パーツ情報
@@ -88,8 +88,9 @@ private:
 	// メンバ関数
 	HRESULT SearchFolderAll(std::string sFolderPath);	// フォルダ全検索
 
-	// 静的メンバ関数
-	static HRESULT LoadSetup(SCharaData *pInfoChara, const char *pTextPass);	// セットアップ
+	// メンバ関数
+	HRESULT LoadSetup(SCharaData *pInfoChara, const char *pCharaPass);	// キャラクター情報セットアップ
+	HRESULT LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInfo *pInfoParts, const char *pMotionPass);	// モーション情報セットアップ
 
 	// メンバ変数
 	std::map<std::string, SCharaData> m_mapCharacter;	// キャラクター連想配列

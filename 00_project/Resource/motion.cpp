@@ -192,6 +192,9 @@ void CMotion::ClearVector(void)
 //============================================================
 void CMotion::Set(const int nType, const int nBlendFrame)
 {
+	// 指定されたモーションが存在しない場合抜ける
+	if (nType <= NONE_IDX || nType >= m_info.GetNumMotion()) { assert(false); return; }
+
 	// 引数のモーションの種類を設定
 	m_info.nType = nType;
 

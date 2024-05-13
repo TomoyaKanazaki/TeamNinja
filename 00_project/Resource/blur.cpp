@@ -124,6 +124,9 @@ void CBlur::Update(const float fDeltaTime)
 				pBlurParts->SetVec3Position(useful::GetMatrixPosition(mtxParts));
 				pBlurParts->SetVec3Rotation(useful::GetMatrixRotation(mtxParts));
 				pBlurParts->SetVec3Scaling(useful::GetMatrixScaling(mtxParts));
+
+				// 加算合成にする
+				pBlurParts->GetRenderState()->SetAlphaBlend(CRenderState::BLEND_ADD);
 			}
 
 			// パーツインデックスを進める
