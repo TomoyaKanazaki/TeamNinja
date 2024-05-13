@@ -78,6 +78,22 @@ public:
 	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
 	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_rot; }	// 向き取得
 
+	// 静的メンバ関数
+	static CTimeUI *Create	// 生成
+	( // 引数
+		const float fTime,				// 表示タイム
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
+		const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
+		const D3DXVECTOR3& rSpaceValue,	// 数字の空白
+		const D3DXVECTOR3& rSpacePart,	// 区切りの空白
+		const CValue::EType type = CValue::TYPE_NORMAL,	// 数字種類
+		const EAlignX alignX = XALIGN_CENTER,			// 横配置
+		const EAlignY alignY = YALIGN_CENTER,			// 縦配置
+		const D3DXVECTOR3& rRot = VEC3_ZERO,			// 向き
+		const D3DXCOLOR& rCol = XCOL_WHITE				// 色
+	);
+
 	// メンバ関数
 	void SetValueType(const CValue::EType type);	// 数字の種類設定
 	void SetSizingValue(const D3DXVECTOR3& rSize);	// 区切りの大きさ設定
@@ -99,20 +115,11 @@ public:
 	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
 
-	// 静的メンバ関数
-	static CTimeUI *Create	// 生成
-	( // 引数
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
-		const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
-		const D3DXVECTOR3& rSpaceValue,	// 数字の空白
-		const D3DXVECTOR3& rSpacePart,	// 区切りの空白
-		const CValue::EType type = CValue::TYPE_NORMAL,	// 数字種類
-		const EAlignX alignX = XALIGN_CENTER,			// 横配置
-		const EAlignY alignY = YALIGN_CENTER,			// 縦配置
-		const D3DXVECTOR3& rRot = VEC3_ZERO,			// 向き
-		const D3DXCOLOR& rCol = XCOL_WHITE				// 色
-	);
+	void SetTime(const float fTime) { m_fTime = fTime; }	// 表示タイム設定
+	float GetTime(void) const		{ return m_fTime; }		// 表示タイム取得
+	int GetMin(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
+	int GetSec(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
+	int GetMSec(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
 
 private:
 	// オーバーライド関数
@@ -135,6 +142,7 @@ private:
 	D3DXCOLOR m_col;			// 色
 	EAlignX m_alignX;			// 横配置
 	EAlignY m_alignY;			// 縦配置
+	float m_fTime;				// 表示タイム
 };
 
 #endif	// _TIME_UI_H_

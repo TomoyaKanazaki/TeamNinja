@@ -86,6 +86,7 @@ HRESULT CScene::Init(void)
 	// TODO
 	CTimeUI *pTime = CTimeUI::Create
 	(
+		80.555f,
 		SCREEN_CENT,			// 位置
 		infoTimeUI::VAL_SIZE,	// 数字の大きさ
 		infoTimeUI::PART_SIZE,	// 区切りの大きさ

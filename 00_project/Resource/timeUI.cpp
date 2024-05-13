@@ -48,7 +48,8 @@ CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI),
 	m_spacePart		(VEC3_ZERO),			// 区切りの空白
 	m_col			(XCOL_WHITE),			// 色
 	m_alignX		(XALIGN_CENTER),		// 横配置
-	m_alignY		(YALIGN_CENTER)			// 縦配置
+	m_alignY		(YALIGN_CENTER),		// 縦配置
+	m_fTime			(0.0f)					// 表示タイム
 {
 	// メンバ変数をクリア
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
@@ -81,6 +82,7 @@ HRESULT CTimeUI::Init(void)
 	m_col			= XCOL_WHITE;		// 色
 	m_alignX		= XALIGN_CENTER;	// 横配置
 	m_alignY		= YALIGN_CENTER;	// 縦配置
+	m_fTime			= 0.0f;				// 表示タイム
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
@@ -177,46 +179,6 @@ void CTimeUI::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
-//	位置の設定処理
-//============================================================
-void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
-{
-	// 引数の位置を設定
-	m_pos = rPos;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	向きの設定処理
-//============================================================
-void CTimeUI::SetVec3Rotation(const D3DXVECTOR3& rRot)
-{
-	// 引数の向きを設定
-	m_rot = rRot;
-
-	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
-	{ // 数字の数分繰り返す
-
-		// 数字の向きを設定
-		assert(m_apValue[nCntValue] != nullptr);
-		m_apValue[nCntValue]->SetVec3Rotation(rRot);
-	}
-
-	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
-	{ // 区切りの数分繰り返す
-
-		// 区切りの向きを設定
-		assert(m_apPart[nCntPart] != nullptr);
-		m_apPart[nCntPart]->SetVec3Rotation(rRot);
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
 //	優先順位の設定処理
 //============================================================
 void CTimeUI::SetPriority(const int nPriority)
@@ -283,10 +245,51 @@ void CTimeUI::SetEnableDraw(const bool bDraw)
 }
 
 //============================================================
+//	位置の設定処理
+//============================================================
+void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
+{
+	// 引数の位置を設定
+	m_pos = rPos;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	向きの設定処理
+//============================================================
+void CTimeUI::SetVec3Rotation(const D3DXVECTOR3& rRot)
+{
+	// 引数の向きを設定
+	m_rot = rRot;
+
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
+
+		// 数字の向きを設定
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->SetVec3Rotation(rRot);
+	}
+
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
+
+		// 区切りの向きを設定
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->SetVec3Rotation(rRot);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CTimeUI *CTimeUI::Create
 (
+	const float fTime,				// 表示タイム
 	const D3DXVECTOR3& rPos,		// 位置
 	const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 	const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
@@ -317,6 +320,9 @@ CTimeUI *CTimeUI::Create
 			SAFE_DELETE(pTimeUI);
 			return nullptr;
 		}
+
+		// 表示タイムを設定
+		pTimeUI->SetTime(fTime);
 
 		// 数字種類を設定
 		pTimeUI->SetValueType(type);
@@ -620,7 +626,6 @@ void CTimeUI::SetTexNum(void)
 {
 	int aNumDivide[timeUI::MAX_DIGIT];	// 数値分解用
 
-#if 0
 	// 分を桁数ごとに分解
 	useful::DivideDigitNum(&aNumDivide[0], GetMin(), timeUI::MAX_MIN);
 
@@ -629,16 +634,6 @@ void CTimeUI::SetTexNum(void)
 
 	// ミリ秒を桁数ごとに分解
 	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN + timeUI::MAX_SEC], GetMSec(), timeUI::MAX_MSEC);
-#else
-	// 分を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[0], 0, timeUI::MAX_MIN);
-
-	// 秒を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN], 0, timeUI::MAX_SEC);
-
-	// ミリ秒を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN + timeUI::MAX_SEC], 0, timeUI::MAX_MSEC);
-#endif
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す

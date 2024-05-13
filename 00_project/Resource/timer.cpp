@@ -225,13 +225,14 @@ void CTimer::EnableStop(const bool bStop)
 void CTimer::SetLimit(const float fLimit)
 {
 	if (fLimit <= 0.0f)
-	{ // §ŒÀŽžŠÔ‚ª–³§ŒÀ‚Ìê‡
+	{ // §ŒÀŽžŠÔ‚ª‚È‚¢ê‡
 
 		// ƒJƒEƒ“ƒgƒAƒbƒvŠÖ”‚ðÝ’è
 		m_funcCount = std::bind(&CTimer::CountUp, this, std::placeholders::_1);
 	}
 	else
-	{
+	{ // ŽžŠÔ§ŒÀ‚ª‚ ‚éê‡
+
 		// §ŒÀŽžŠÔ‚ðÝ’è
 		m_fTime = fLimit;
 
@@ -256,9 +257,8 @@ void CTimer::CountDown(const float fDeltaTime)
 {
 	// ƒfƒ‹ƒ^ƒ^ƒCƒ€‚ðŒ¸ŽZ
 	m_fTime -= fDeltaTime;
-
 	if (m_fTime <= 0.0f)
-	{  // ƒ^ƒCƒ€‚ªŽ©‘R”‚Å‚Í‚È‚¢ê‡
+	{  // ƒJƒEƒ“ƒgI—¹‚µ‚½ê‡
 
 		// ƒ^ƒCƒ€‚ð•â³
 		m_fTime = 0.0f;
@@ -274,7 +274,7 @@ void CTimer::CountDown(const float fDeltaTime)
 void CTimer::CalcTime(void)
 {
 	m_lTime	= (DWORD)(m_fTime * 1000.0f);	// •b‚ðƒ~ƒŠ•b‚É•ÏŠ·
-	m_nMin	= m_lTime / 60000;				// •ª‚ðŒvŽZ
-	m_nSec	= (m_lTime / 1000) % 60;		// •b‚ðŒvŽZ
-	m_nMSec	= m_lTime % 1000;				// ƒ~ƒŠ•b‚ðŒvŽZ
+	m_nMin	= (int)(m_lTime / 60000);		// •ª‚ðŒvŽZ
+	m_nSec	= (int)(m_lTime / 1000) % 60;	// •b‚ðŒvŽZ
+	m_nMSec	= (int)(m_lTime % 1000);		// ƒ~ƒŠ•b‚ðŒvŽZ
 }

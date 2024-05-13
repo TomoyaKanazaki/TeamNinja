@@ -52,7 +52,7 @@ public:
 	void End(void);		// 計測終了
 	void EnableStop(const bool bStop);	// 計測停止設定
 	void SetLimit(const float fLimit);	// 制限時間設定
-	EState GetState(void) const	{ return m_state; }	// 計測状態取得
+	EState GetState(void) const { return m_state; }	// 計測状態取得
 
 private:
 	// オーバーライド関数
