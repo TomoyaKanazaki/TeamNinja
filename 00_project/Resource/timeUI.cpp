@@ -24,7 +24,9 @@ namespace
 		"data\\TEXTURE\\timePart000.png",	// 通常区切り
 	};
 
-	const int PRIORITY = 6;	// タイマーの優先順位
+	const int	PRIORITY	= 6;	// タイムUIの優先順位
+	const float	TIME_NUMMIN	= 0.0f;	// 最少タイム
+	const float	TIME_NUMMAX	= 60.0f * 99.0f + 59.0f + 0.999f;	// 最大タイム
 }
 
 //************************************************************
@@ -495,6 +497,18 @@ void CTimeUI::SetAlignY(const EAlignY align)
 
 	// 相対位置の設定
 	SetPositionRelative();
+}
+
+//============================================================
+//	表示タイムの設定処理
+//============================================================
+void CTimeUI::SetTime(const float fTime)
+{
+	// 引数の表示タイムを設定
+	m_fTime = fTime;
+
+	// 表示タイムの補正
+	useful::LimitNum(m_fTime, TIME_NUMMIN, TIME_NUMMAX);
 }
 
 //============================================================

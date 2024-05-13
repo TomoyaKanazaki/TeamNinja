@@ -103,6 +103,7 @@ public:
 	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
 	void SetAlignY(const EAlignY align);			// 縦配置設定
+	void SetTime(const float fTime);				// 表示タイム設定
 	float GetTimeWidth(void) const;					// タイム全体の横幅取得
 	float GetTimeHeight(void) const;				// タイム全体の縦幅取得
 	D3DXVECTOR3 GetTimeSize(void) const;			// タイム全体の大きさ取得
@@ -114,12 +115,10 @@ public:
 	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色の設定
 	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
-
-	void SetTime(const float fTime) { m_fTime = fTime; }	// 表示タイム設定
-	float GetTime(void) const		{ return m_fTime; }		// 表示タイム取得
-	int GetMin(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
-	int GetSec(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
-	int GetMSec(void) const			{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
+	float GetTime(void) const				{ return m_fTime; }			// 表示タイム取得
+	int GetMin(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
+	int GetSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
+	int GetMSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
 
 private:
 	// オーバーライド関数
