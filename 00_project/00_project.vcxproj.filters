@@ -120,9 +120,6 @@
     <ClCompile Include="Resource\manager.cpp">
       <Filter>sauce</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\map.cpp">
-      <Filter>sauce</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\model.cpp">
       <Filter>sauce</Filter>
     </ClCompile>
@@ -429,9 +426,6 @@
       <Filter>sauce</Filter>
     </ClInclude>
     <ClInclude Include="Resource\manager.h">
-      <Filter>sauce</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\map.h">
       <Filter>sauce</Filter>
     </ClInclude>
     <ClInclude Include="Resource\model.h">
