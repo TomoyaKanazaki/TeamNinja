@@ -979,7 +979,7 @@ void CPlayer::LoadParameter()
 		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
 		{
 			// データを格納
-			fscanf(pFile, "%d", &m_fHeght);
+			fscanf(pFile, "%f", &m_fHeght);
 		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{

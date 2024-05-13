@@ -8,7 +8,11 @@
 //	インクルードファイル
 //************************************************************
 #include "timer.h"
-#include "manager.h"
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CTimer> *CTimer::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CTimer] のメンバ関数
@@ -16,11 +20,15 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimer::CTimer() : CObject(CObject::LABEL_UI),
+CTimer::CTimer() : CObject(CObject::LABEL_TIMER),
+	m_funcCount	(nullptr),		// 計測関数ポインタ
 	m_state		(STATE_NONE),	// 計測状態
 	m_fTime		(0.0f),			// 計測時間
-	m_fLimit	(0.0f),			// 制限時間
-	m_bStop		(false)			// 計測停止状況
+	m_bStop		(false),		// 計測停止状況
+	m_lTime		(0),			// 計測ミリ秒
+	m_nMin		(0),			// 分
+	m_nSec		(0),			// 秒
+	m_nMSec		(0)				// ミリ秒
 {
 
 }
@@ -39,10 +47,31 @@ CTimer::~CTimer()
 HRESULT CTimer::Init(void)
 {
 	// メンバ変数を初期化
+	m_funcCount = nullptr;		// 計測関数ポインタ
 	m_state		= STATE_NONE;	// 計測状態
 	m_fTime		= 0.0f;			// 計測時間
-	m_fLimit	= 0.0f;			// 制限時間
 	m_bStop		= false;		// 計測停止状況
+	m_lTime		= 0;			// 計測ミリ秒
+	m_nMin		= 0;			// 分
+	m_nSec		= 0;			// 秒
+	m_nMSec		= 0;			// ミリ秒
+
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CTimer>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
 
 	// 成功を返す
 	return S_OK;
@@ -53,6 +82,16 @@ HRESULT CTimer::Init(void)
 //============================================================
 void CTimer::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクトを破棄
 	Release();
 }
@@ -67,48 +106,14 @@ void CTimer::Update(const float fDeltaTime)
 	case STATE_NONE:
 		break;
 
-	case STATE_MEASURE:
+	case STATE_COUNT:
 
 		// 停止中の場合抜ける
 		if (m_bStop) { break; }
 
-		if (m_fLimit <= 0)
-		{ // 制限時間が自然数ではない場合
-
-			// デルタタイムを加算
-			m_fTime += fDeltaTime;
-		}
-
-#if 0
-		else
-		{ // 制限時間が 0より大きい場合
-
-			// 変数を宣言
-			long nTime = m_nLimit - (timeGetTime() - m_dwTempTime);	// 現在タイム
-
-			if (nTime > 0)
-			{ // タイムが 0より大きい場合
-
-				// 現在の計測ミリ秒を設定
-				m_dwTime = nTime;
-			}
-			else
-			{  // タイムが 0以下の場合
-
-				// 現在の計測ミリ秒を設定
-				m_dwTime = 0;
-
-				// 計測を終了する
-				End();
-			}
-		}
-		else
-		{ // 計測停止中の場合
-
-			// 現在の停止ミリ秒を設定
-			m_dwStopTime = timeGetTime() - m_dwStopStartTime;
-		}
-#endif
+		// タイムを計測
+		assert(m_funcCount != nullptr);
+		m_funcCount(fDeltaTime);
 
 		break;
 
@@ -120,13 +125,8 @@ void CTimer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// TODO
-	DWORD dwTime = (DWORD)(m_fTime * 1000.0f);
-	DWORD dwMin  = dwTime / 60000;
-	DWORD dwSec  = (dwTime / 1000) % 60;
-	DWORD dwMSec = dwTime % 1000;
-	DebugProc::Print(DebugProc::POINT_LEFT, "計測時間：%d:%d:%d", dwMin, dwSec, dwMSec);
-
+	// 時間の計算
+	CalcTime();
 }
 
 //============================================================
@@ -140,10 +140,7 @@ void CTimer::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CTimer *CTimer::Create
-(
-
-)
+CTimer *CTimer::Create(const float fLimit)
 {
 	// タイマーの生成
 	CTimer *pTimer = new CTimer;
@@ -164,9 +161,21 @@ CTimer *CTimer::Create
 			return nullptr;
 		}
 
+		// 制限時間を設定
+		pTimer->SetLimit(fLimit);
+
 		// 確保したアドレスを返す
 		return pTimer;
 	}
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CTimer> *CTimer::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
 }
 
 //============================================================
@@ -174,14 +183,14 @@ CTimer *CTimer::Create
 //============================================================
 void CTimer::Start(void)
 {
-	if (m_state != STATE_MEASURE)
+	if (m_state != STATE_COUNT)
 	{ // タイムの計測中ではない場合
 
 		// 非停止状態にする
 		EnableStop(false);
 
 		// 計測開始状態にする
-		m_state = STATE_MEASURE;
+		m_state = STATE_COUNT;
 	}
 }
 
@@ -190,7 +199,7 @@ void CTimer::Start(void)
 //============================================================
 void CTimer::End(void)
 {
-	if (m_state == STATE_MEASURE)
+	if (m_state == STATE_COUNT)
 	{ // タイムの計測中の場合
 
 		// 停止状態にする
@@ -208,48 +217,64 @@ void CTimer::EnableStop(const bool bStop)
 {
 	// 引数の停止状況を代入
 	m_bStop = bStop;
-
-	if (bStop)
-	{ // 停止する場合
-
-
-	}
-	else
-	{ // 再開する場合
-
-
-	}
 }
 
 //============================================================
 //	制限時間の設定処理
 //============================================================
-void CTimer::SetLimit(const ETime stateTime, float fTime)
+void CTimer::SetLimit(const float fLimit)
 {
-	switch (stateTime)
-	{ // タイムごとの処理
-	case TIME_MSEC:	// ミリ秒
+	if (fLimit <= 0.0f)
+	{ // 制限時間が無制限の場合
 
-		// 制限時間を設定
-		m_fLimit = fTime;
-		break;
-
-	case TIME_SEC:	// 秒
-
-		// 引数をミリ秒に変換し制限時間を設定
-		fTime *= 1000.0f;
-		m_fLimit = fTime;
-		break;
-
-	case TIME_MIN:	// 分
-
-		// 引数をミリ秒に変換し制限時間を設定
-		fTime *= 60000.0f;
-		m_fLimit = fTime;
-		break;
-
-	default:
-		assert(false);
-		break;
+		// カウントアップ関数を設定
+		m_funcCount = std::bind(&CTimer::CountUp, this, std::placeholders::_1);
 	}
+	else
+	{
+		// 制限時間を設定
+		m_fTime = fLimit;
+
+		// カウントダウン関数を設定
+		m_funcCount = std::bind(&CTimer::CountDown, this, std::placeholders::_1);
+	}
+}
+
+//============================================================
+//	カウントアップ処理
+//============================================================
+void CTimer::CountUp(const float fDeltaTime)
+{
+	// デルタタイムを加算
+	m_fTime += fDeltaTime;
+}
+
+//============================================================
+//	カウントダウン処理
+//============================================================
+void CTimer::CountDown(const float fDeltaTime)
+{
+	// デルタタイムを減算
+	m_fTime -= fDeltaTime;
+
+	if (m_fTime <= 0.0f)
+	{  // タイムが自然数ではない場合
+
+		// タイムを補正
+		m_fTime = 0.0f;
+
+		// 計測を終了
+		End();
+	}
+}
+
+//============================================================
+//	時間の計算処理
+//============================================================
+void CTimer::CalcTime(void)
+{
+	m_lTime	= (DWORD)(m_fTime * 1000.0f);	// 秒をミリ秒に変換
+	m_nMin	= m_lTime / 60000;				// 分を計算
+	m_nSec	= (m_lTime / 1000) % 60;		// 秒を計算
+	m_nMSec	= m_lTime % 1000;				// ミリ秒を計算
 }

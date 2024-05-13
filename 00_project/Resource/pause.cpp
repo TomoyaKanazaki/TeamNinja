@@ -15,7 +15,6 @@
 #include "fade.h"
 #include "texture.h"
 #include "object2D.h"
-#include "timerUI.h"
 #include "timer.h"
 
 //************************************************************
@@ -167,8 +166,8 @@ void CPause::Update(const float fDeltaTime)
 			// ポーズ状況を切り替え
 			m_bPause = !m_bPause;
 
-			// タイムの計測状況を切り替え
-			CSceneGame::GetTimerUI()->EnableStop(m_bPause);
+			// 全タイマーの計測状況の設定
+			EnableTimerStopAll(m_bPause);
 
 			// 現在の選択を初期化
 			m_nSelect = SELECT_RESUME;
@@ -321,77 +320,95 @@ bool CPause::IsDebugDisp(void) const
 //============================================================
 void CPause::Select(void)
 {
-	// ポインタを宣言
 	CInputKeyboard	*pKeyboard	= GET_INPUTKEY;	// キーボード
 	CInputPad		*pPad		= GET_INPUTPAD;	// パッド
 
-	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
-	{ // フェードしていない場合
+	// フェード中なら抜ける
+	if (GET_MANAGER->GetFade()->GetState() != CFade::FADE_NONE) { return; }
 
-		if (pKeyboard->IsTrigger(DIK_W)
-		||  pKeyboard->IsTrigger(DIK_UP)
-		||  pPad->IsTrigger(CInputPad::KEY_UP))
-		{ // 上移動の操作が行われた場合
+	if (pKeyboard->IsTrigger(DIK_W)
+	||  pKeyboard->IsTrigger(DIK_UP)
+	||  pPad->IsTrigger(CInputPad::KEY_UP))
+	{ // 上移動の操作が行われた場合
 
-			// 上に選択をずらす
-			m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX;
+		// 上に選択をずらす
+		m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX;
 
-			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+	}
+	if (pKeyboard->IsTrigger(DIK_S)
+	||  pKeyboard->IsTrigger(DIK_DOWN)
+	||  pPad->IsTrigger(CInputPad::KEY_DOWN))
+	{ // 下移動の操作が行われた場合
+
+		// 下に選択をずらす
+		m_nSelect = (m_nSelect + 1) % SELECT_MAX;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+	}
+
+	if (pKeyboard->IsTrigger(DIK_RETURN)  || pKeyboard->IsTrigger(DIK_SPACE)
+	||  pPad->IsTrigger(CInputPad::KEY_A) || pPad->IsTrigger(CInputPad::KEY_B)
+	||  pPad->IsTrigger(CInputPad::KEY_X) || pPad->IsTrigger(CInputPad::KEY_Y))
+	{ // 決定の操作が行われた場合
+
+		switch (m_nSelect)
+		{ // 選択ごとの処理
+		case SELECT_RESUME:	// 再開
+		{
+			// ポーズを終了する
+			m_bPause = false;
+
+			// 全タイマーの計測状況の設定
+			EnableTimerStopAll(m_bPause);
+
+			// 描画状況の設定
+			SetEnableDraw(m_bPause);
+
+			break;
 		}
-		if (pKeyboard->IsTrigger(DIK_S)
-		||  pKeyboard->IsTrigger(DIK_DOWN)
-		||  pPad->IsTrigger(CInputPad::KEY_DOWN))
-		{ // 下移動の操作が行われた場合
+		case SELECT_RETRY:	// リトライ
+		{
+			// シーンの設定
+			GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
 
-			// 下に選択をずらす
-			m_nSelect = (m_nSelect + 1) % SELECT_MAX;
+			break;
+		}
+		case SELECT_EXIT:	// 終了
+		{
+			// シーンの設定
+			GET_MANAGER->SetScene(CScene::MODE_TITLE);	// タイトル画面
 
-			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+			break;
+		}
+		default:
+			assert(false);
+			break;
 		}
 
-		if (pKeyboard->IsTrigger(DIK_RETURN)  || pKeyboard->IsTrigger(DIK_SPACE)
-		||  pPad->IsTrigger(CInputPad::KEY_A) || pPad->IsTrigger(CInputPad::KEY_B)
-		||  pPad->IsTrigger(CInputPad::KEY_X) || pPad->IsTrigger(CInputPad::KEY_Y))
-		{ // 決定の操作が行われた場合
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
+	}
+}
 
-			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
+//============================================================
+//	全タイマーの計測状況の設定処理
+//============================================================
+void CPause::EnableTimerStopAll(const bool bStop)
+{
+	// タイマーからリストマネージャーを取得
+	CListManager<CTimer> *pList = CTimer::GetList();
+	if (pList == nullptr) { return; }	// タイマーがないなら抜ける
 
-			switch (m_nSelect)
-			{ // 選択ごとの処理
-			case SELECT_RESUME:	// 再開
+	// リストマネージャーからリストを取得
+	std::list<CTimer*> listTimer = pList->GetList();
 
-				// ポーズを終了する
-				m_bPause = false;
+	// 全タイマーオブジェクトの計測状況を設定
+	for (auto& rList : listTimer)
+	{ // リスト内の要素数分繰り返す
 
-				// タイムの計測を再開する
-				CSceneGame::GetTimerUI()->EnableStop(m_bPause);
-				CScene::Get()->EnableStop(m_bPause);
-
-				// 描画状況の設定
-				SetEnableDraw(m_bPause);
-
-				// 処理を抜ける
-				break;
-
-			case SELECT_RETRY:	// リトライ
-
-				// シーンの設定
-				GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
-
-				// 処理を抜ける
-				break;
-
-			case SELECT_EXIT:	// 終了
-
-				// シーンの設定
-				GET_MANAGER->SetScene(CScene::MODE_TITLE);	// タイトル画面
-
-				// 処理を抜ける
-				break;
-			}
-		}
+		rList->EnableStop(m_bPause);
 	}
 }

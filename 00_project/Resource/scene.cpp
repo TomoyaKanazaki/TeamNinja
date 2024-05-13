@@ -22,9 +22,6 @@
 #include "stage.h"
 #include "player.h"
 
-// TODO
-#include "timer.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -42,7 +39,7 @@ namespace
 //	静的メンバ変数宣言
 //************************************************************
 CStage *CScene::m_pStage = nullptr;	// ステージの情報
-CTimer *p = nullptr;
+
 //************************************************************
 //	親クラス [CScene] のメンバ関数
 //************************************************************
@@ -79,10 +76,6 @@ HRESULT CScene::Init(void)
 
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
-
-	// TODO
-	p = CTimer::Create();
-	p->Start();
 
 	// 成功を返す
 	return S_OK;
@@ -135,10 +128,8 @@ void CScene::Update(const float fDeltaTime)
 //============================================================
 CScene *CScene::Create(EMode mode)
 {
-	// ポインタを宣言
-	CScene *pScene = nullptr;	// シーン情報
-
 	// シーンの生成
+	CScene *pScene = nullptr;	// シーン情報
 	switch (mode)
 	{ // モードごとの処理
 	case MODE_TITLE:
@@ -166,17 +157,9 @@ CScene *CScene::Create(EMode mode)
 		break;
 	}
 
-	if (pScene == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 確保したアドレスを返す
-		return pScene;
-	}
+	// 確保したアドレスを返す
+	assert(pScene != nullptr);
+	return pScene;
 }
 
 //============================================================
@@ -216,11 +199,6 @@ CPlayer *CScene::GetPlayer(void)
 
 	// プレイヤーのポインタを返す
 	return pPlayer;
-}
-
-CTimer * CScene::Get()
-{
-	return p;
 }
 
 //============================================================

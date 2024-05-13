@@ -26,18 +26,9 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,	// 処理なし
-		STATE_MEASURE,	// 計測中
+		STATE_COUNT,	// 計測中
 		STATE_END,		// 計測終了 
 		STATE_MAX		// この列挙型の総数
-	};
-
-	// 時間形式列挙
-	enum ETime
-	{
-		TIME_MSEC,	// ミリ秒
-		TIME_SEC,	// 秒
-		TIME_MIN,	// 分
-		TIME_MAX	// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -53,29 +44,38 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CTimer *Create	// 生成
-	( // 引数
-
-	);
+	static CTimer *Create(const float fLimit);	// 生成
+	static CListManager<CTimer> *GetList(void);	// リスト取得
 
 	// メンバ関数
 	void Start(void);	// 計測開始
 	void End(void);		// 計測終了
 	void EnableStop(const bool bStop);	// 計測停止設定
-	void SetLimit(const ETime stateTime, const float fTime);	// 制限時間設定
-
-	EState GetState(void) const	{ return m_state; }		// 計測状態取得
-	float GetLimit(void) const	{ return m_fLimit; }	// 制限時間取得
+	void SetLimit(const float fLimit);	// 制限時間設定
+	EState GetState(void) const	{ return m_state; }	// 計測状態取得
 
 private:
 	// オーバーライド関数
 	void Release(void) override { CObject::Release(); }	// 破棄
 
+	// メンバ関数
+	void CountUp(const float fDeltaTime);	// カウントアップ
+	void CountDown(const float fDeltaTime);	// カウントダウン
+	void CalcTime(void);	// 時間計算
+
+	// 静的メンバ変数
+	static CListManager<CTimer> *m_pList;	// オブジェクトリスト
+
 	// メンバ変数
+	CListManager<CTimer>::AIterator m_iterator;		// イテレーター
+	std::function<void(const float)> m_funcCount;	// 計測関数ポインタ
 	EState	m_state;	// 計測状態
 	float	m_fTime;	// 計測時間
-	float	m_fLimit;	// 制限時間
 	bool	m_bStop;	// 計測停止状況
+	long	m_lTime;	// 計測ミリ秒
+	int		m_nMin;		// 分
+	int		m_nSec;		// 秒
+	int		m_nMSec;	// ミリ秒
 };
 
 #endif	// _TIMER_H_

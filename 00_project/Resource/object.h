@@ -81,6 +81,7 @@ public:
 	{
 		LABEL_NONE = 0,		// なし
 		LABEL_UI,			// UI
+		LABEL_TIMER,		// タイマー
 		LABEL_WAVE,			// 波動
 		LABEL_FIRE,			// 炎
 		LABEL_THUNDER,		// 雷

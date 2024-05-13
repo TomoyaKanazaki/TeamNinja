@@ -15,7 +15,6 @@
 //************************************************************
 class CStage;	// ステージクラス
 class CPlayer;	// プレイヤークラス
-class CTimer;	// 敵クラス
 
 //************************************************************
 //	クラス定義
@@ -52,7 +51,6 @@ public:
 
 	static CStage  *GetStage(void);		// ステージ取得
 	static CPlayer *GetPlayer(void);	// プレイヤー取得
-	static CTimer *Get();
 
 	// メンバ関数
 	void SetMode(const EMode mode);	// モード設定
