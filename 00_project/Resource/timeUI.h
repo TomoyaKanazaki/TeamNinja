@@ -89,8 +89,8 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
-	void SetDrawValue(void);	// 数字の表示設定
-	void SetTexNum(void);		// 数字のテクスチャ座標設定
+	void SetPositionRelative(void);	// 相対位置設定
+	void SetTexNum(void);			// 数字のテクスチャ座標設定
 
 	// メンバ変数
 	CValue *m_apValue[timeUI::MAX_DIGIT];	// 数値の情報

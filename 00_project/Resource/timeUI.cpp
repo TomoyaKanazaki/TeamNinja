@@ -175,8 +175,8 @@ void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 引数の位置を設定
 	m_pos = rPos;
 
-	// 数字の表示設定
-	SetDrawValue();
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -337,8 +337,8 @@ void CTimeUI::SetSizingValue(const D3DXVECTOR3& rSize)
 	// 引数の数字の大きさを設定
 	m_sizeValue = rSize;
 
-	// 数字の表示設定
-	SetDrawValue();
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -349,8 +349,8 @@ void CTimeUI::SetSizingPart(const D3DXVECTOR3& rSize)
 	// 引数の区切りの大きさを設定
 	m_sizePart = rSize;
 
-	// 数字の表示設定
-	SetDrawValue();
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -361,8 +361,8 @@ void CTimeUI::SetSpaceValue(const D3DXVECTOR3& rSpace)
 	// 引数の数字の空白を設定
 	m_spaceValue = rSpace;
 
-	// 数字の表示設定
-	SetDrawValue();
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -373,8 +373,8 @@ void CTimeUI::SetSpacePart(const D3DXVECTOR3& rSpace)
 	// 引数の区切りの空白を設定
 	m_spacePart = rSpace;
 
-	// 数字の表示設定
-	SetDrawValue();
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
 //============================================================
@@ -403,9 +403,9 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	数字の表示設定処理
+//	相対位置の設定処理
 //============================================================
-void CTimeUI::SetDrawValue(void)
+void CTimeUI::SetPositionRelative(void)
 {
 	D3DXVECTOR3 spaceValue = m_spaceValue * 0.5f;	// 数字の空白
 	D3DXVECTOR3 spacePart = m_spacePart * 0.5f;		// 区切りの空白
