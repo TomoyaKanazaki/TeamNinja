@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="data\SHADER\ZTexCreator.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\Gauss.fx">
-      <Filter>Shader</Filter>
+    <FxCompile Include="data\SHADER\BrightCheck.fx">
+      <Filter>シェーダー</Filter>
     </FxCompile>
     <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx">
-      <Filter>Shader</Filter>
+      <Filter>シェーダー</Filter>
     </FxCompile>
-    <FxCompile Include="data\SHADER\BrightCheck.fx">
-      <Filter>Shader</Filter>
+    <FxCompile Include="data\SHADER\Gauss.fx">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\ZTexCreator.fx">
+      <Filter>シェーダー</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +118,12 @@
     <ClCompile Include="Resource\wave.cpp" />
     <ClCompile Include="Resource\ZTexture.cpp" />
     <ClCompile Include="Resource\timer.cpp" />
+    <ClInclude Include="Resource\ZTexture.h">
+      <Filter>sauce</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goal.h">
+      <Filter>sauce</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\anim2D.h" />
@@ -235,7 +241,11 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
+<<<<<<< .mine
       <Filter>Resource</Filter>
+=======
+      <Filter>sauce</Filter>
+>>>>>>> .theirs
     </ResourceCompile>
   </ItemGroup>
 </Project>

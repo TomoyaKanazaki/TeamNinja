@@ -157,6 +157,9 @@ HRESULT CSceneGame::Init(void)
 	// BGM‚ÌÄ¶
 	PLAY_SOUND(CSound::LABEL_BGM_GAME);
 
+	// TODO
+	m_pTimerUI->Start();
+
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
 }

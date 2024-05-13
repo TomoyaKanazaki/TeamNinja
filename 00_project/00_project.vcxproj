@@ -185,6 +185,7 @@
     <ClInclude Include="Resource\gameManager.h" />
     <ClInclude Include="Resource\gauge2D.h" />
     <ClInclude Include="Resource\gauge3D.h" />
+    <ClInclude Include="Resource\goal.h" />
     <ClInclude Include="Resource\hitStop.h" />
     <ClInclude Include="Resource\impact.h" />
     <ClInclude Include="Resource\input.h" />
@@ -194,7 +195,6 @@
     <ClInclude Include="Resource\loading.h" />
     <ClInclude Include="Resource\main.h" />
     <ClInclude Include="Resource\manager.h" />
-    <ClInclude Include="Resource\map.h" />
     <ClInclude Include="Resource\model.h" />
     <ClInclude Include="Resource\modelUI.h" />
     <ClInclude Include="Resource\motion.h" />
@@ -291,6 +291,7 @@
     <ClCompile Include="Resource\gameManager.cpp" />
     <ClCompile Include="Resource\gauge2D.cpp" />
     <ClCompile Include="Resource\gauge3D.cpp" />
+    <ClCompile Include="Resource\goal.cpp" />
     <ClCompile Include="Resource\hitStop.cpp" />
     <ClCompile Include="Resource\impact.cpp" />
     <ClCompile Include="Resource\input.cpp" />
@@ -300,7 +301,6 @@
     <ClCompile Include="Resource\loading.cpp" />
     <ClCompile Include="Resource\main.cpp" />
     <ClCompile Include="Resource\manager.cpp" />
-    <ClCompile Include="Resource\map.cpp" />
     <ClCompile Include="Resource\model.cpp" />
     <ClCompile Include="Resource\modelUI.cpp" />
     <ClCompile Include="Resource\motion.cpp" />

@@ -16,6 +16,7 @@
 #include "texture.h"
 #include "object2D.h"
 #include "timerUI.h"
+#include "timer.h"
 
 //************************************************************
 //	定数宣言
@@ -367,6 +368,7 @@ void CPause::Select(void)
 
 				// タイムの計測を再開する
 				CSceneGame::GetTimerUI()->EnableStop(m_bPause);
+				CScene::Get()->EnableStop(m_bPause);
 
 				// 描画状況の設定
 				SetEnableDraw(m_bPause);

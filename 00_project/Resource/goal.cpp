@@ -4,7 +4,7 @@
 //  Author : Tomoya Kanazaki
 //
 //==========================================
-#include "checkpoint.h"
+#include "goal.h"
 #include "manager.h"
 #include "scene.h"
 #include "player.h"
@@ -15,45 +15,34 @@
 //==========================================
 namespace
 {
-	const char* PARAM_FILE = "data\\TXT\\CheckPoint.txt"; // パラメータが保存されたパス
+	const char* PARAM_FILE = "data\\TXT\\Goal.txt"; // パラメータが保存されたパス
 }
-
-//==========================================
-//  静的メンバ変数宣言
-//==========================================
-int CCheckPoint::m_nNumAll = 0;
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CCheckPoint::CCheckPoint():
-	m_bSave(false),
+CGoal::CGoal():
+	m_bClear(false),
 	m_fRadius(0.0f),
-	m_nSaveTension(0),
 	m_fRotSpeed(0.0f)
 {
-	// 総数を加算
-	++m_nNumAll;
 }
 
 //==========================================
 //  デストラクタ
 //==========================================
-CCheckPoint::~CCheckPoint()
+CGoal::~CGoal()
 {
-	// 総数を減算
-	--m_nNumAll;
 }
 
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CCheckPoint::Init(void)
+HRESULT CGoal::Init(void)
 {
 	// 値の初期化
-	m_bSave = false;
+	m_bClear = false;
 	m_fRadius = 0.0f;
-	m_nSaveTension = 0;
 	m_fRotSpeed = 0.0f;
 
 	// 親クラスの初期化
@@ -66,19 +55,13 @@ HRESULT CCheckPoint::Init(void)
 	}
 
 	// モデルを割り当て
-	BindModel("data\\MODEL\\FONT\\name_boss000.x");
+	BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
 
 	// 自身のラベルを設定
-	SetLabel(LABEL_CHECKPOINT);
+	SetLabel(LABEL_GOAL);
 
 	// 定数パラメータの読み込み
 	Load();
-
-	// サイズを調整
-	SetVec3Scaling(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
-
-	// マテリアルを変更
-	SetAllMaterial(material::GlowCyan());
 
 	return S_OK;
 }
@@ -86,7 +69,7 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CCheckPoint::Uninit(void)
+void CGoal::Uninit(void)
 {
 	// 親クラスの終了
 	CObjectModel::Uninit();
@@ -95,7 +78,7 @@ void CCheckPoint::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CCheckPoint::Update(const float fDeltaTime)
+void CGoal::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
 	CollisionPlayer();
@@ -112,7 +95,7 @@ void CCheckPoint::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CCheckPoint::Draw(CShader* pShader)
+void CGoal::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CObjectModel::Draw(pShader);
@@ -121,10 +104,10 @@ void CCheckPoint::Draw(CShader* pShader)
 //==========================================
 //  生成処理
 //==========================================
-CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CGoal* CGoal::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 {
 	// ポインタを宣言
-	CCheckPoint* pSavePoint = new CCheckPoint;	// セーブポイント生成用
+	CGoal* pSavePoint = new CGoal;	// セーブポイント生成用
 
 	// メモリの確保に失敗していた場合nullを返す
 	if (pSavePoint == nullptr) { assert(false); return nullptr; }
@@ -152,10 +135,10 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRo
 //==========================================
 //  プレイヤーとの当たり判定
 //==========================================
-void CCheckPoint::CollisionPlayer(void)
+void CGoal::CollisionPlayer(void)
 {
-	// セーブフラグがオンなら関数を抜ける
-	if (m_bSave) { return; }
+	// クリアフラグがオンなら関数を抜ける
+	if (m_bClear) { return; }
 
 	//　自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
@@ -167,26 +150,14 @@ void CCheckPoint::CollisionPlayer(void)
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), m_fRadius, Player->GetRadius()))
 	{ return; }
 
-	// プレイヤーを回復する
-	Player->RecoverCheckPoint();
-
-	// プレイヤーに自信の情報を与える
-	Player->SetCheckPoint(this);
-
-	// 士気力を保存する
-	m_nSaveTension = Player->GetTension();
-
-	// マテリアルを変更
-	SetAllMaterial(material::Red());
-
-	// セーブフラグをオンにする
-	m_bSave = true;
+	// クリアフラグをオンにする
+	m_bClear = true;
 }
 
 //==========================================
 //  外部情報の読み込み
 //==========================================
-void CCheckPoint::Load()
+void CGoal::Load()
 {
 	//ローカル変数宣言
 	FILE* pFile; // ファイルポインタ

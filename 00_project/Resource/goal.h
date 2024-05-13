@@ -1,6 +1,6 @@
 //==========================================
 //
-//  チェックポイント(checkpoint.h)
+//  ゴール(goal.h)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
@@ -10,23 +10,23 @@
 //==========================================
 //  クラス定義
 //==========================================
-class CCheckPoint : public CObjectModel
+class CGoal : public CObjectModel
 {
 public:
 
 	// メンバ関数
-	CCheckPoint();
-	~CCheckPoint();
+	CGoal();
+	~CGoal();
 
 	HRESULT Init() override; // 初期化
 	void Uninit() override; // 終了
 	void Update(const float fDeltaTime) override; // 更新
 	void Draw(CShader* pShader = nullptr) override; // 描画
 
-	int GetSaveTension() const { return m_nSaveTension; } // セーブ時の士気力取得
+	bool GetClear() const { return m_bClear; }// クリア状態の取得
 
 	// 静的メンバ関数
-	static CCheckPoint* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // 生成処理
+	static CGoal* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // 生成処理
 
 private:
 
@@ -35,12 +35,8 @@ private:
 	void Load(); // 外部情報の読み込み
 
 	// メンバ変数
-	bool m_bSave; // セーブフラグ
+	bool m_bClear; // クリアフラグ
 	float m_fRadius; // 当たり判定半径
-	int m_nSaveTension; // セーブ時の士気力
-	float m_fRotSpeed; // 回る速度
-
-	// 静的メンバ変数
-	static int m_nNumAll;
+	float m_fRotSpeed; // 回転速度
 
 };

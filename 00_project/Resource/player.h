@@ -21,9 +21,10 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CShadow;	// 影クラス
-class COrbit;	// 軌跡クラス
-class CGauge2D; // ゲージクラス
+class CShadow;		// 影クラス
+class COrbit;		// 軌跡クラス
+class CGauge2D;		// ゲージクラス
+class CCheckPoint;	// チェックポイントクラス
 
 //************************************************************
 //	クラス定義
@@ -105,6 +106,8 @@ public:
 	int GetTension() const; // 士気力の値を取得
 	void RecoverCheckPoint(); // チェックポイントでの回復処理
 	void RecoverJust(); // ジャストアクションでの回復処理
+	void SetCheckPoint(CCheckPoint* checkpoint) { m_pCheckPoint = checkpoint; }// チェックポイントを取得する処理
+	D3DXVECTOR3 GetCenterPos() const { return m_posCenter; } // プレイヤーの中心座標を取得
 
 private:
 	// メンバ関数
@@ -126,6 +129,7 @@ private:
 	void Inertial(); // 運動の第一法則
 	void LoadParameter(); // 定数値の読み込み
 	void ControlClone(); // 分身の処理
+	void SaveReset(); // 直前のチェックポイントに帰る
 
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
@@ -150,6 +154,9 @@ private:
 	unsigned int m_nNumClone; // 生成する分身の数
 	unsigned int m_nMaxClone; // 一度に分身できる上限
 	unsigned int m_nRecover; // ジャストアクションでの回復量
+	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
+	float m_fHeght; // 縦幅
+	D3DXVECTOR3 m_posCenter; // 中心座標
 
 };
 
