@@ -2,6 +2,7 @@
 //
 //	カメラヘッダー [camera.h]
 //	Author：藤田勇一
+//	adder : 金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -116,6 +117,9 @@ public:
 	D3DXVECTOR3 GetDestRotation(void) const		{ return m_aCamera[TYPE_MAIN].destRot; }	// 目標の向き取得
 	float GetDistance(void) const				{ return m_aCamera[TYPE_MAIN].fDis; }		// 現在の距離取得
 	float GetDestDistance(void) const			{ return m_aCamera[TYPE_MAIN].fDestDis; }	// 目標の距離取得
+
+	// 金崎追加
+	D3DXVECTOR3 CalcPlayerPos(); // プレイヤーを二次元座標に変換する処理
 
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成
