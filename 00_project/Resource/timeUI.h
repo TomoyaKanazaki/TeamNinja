@@ -74,7 +74,9 @@ public:
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;				// 位置設定
+	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;				// 向き設定
 	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_rot; }	// 向き取得
 
 	// メンバ関数
 	void SetValueType(const CValue::EType type);	// 数字の種類設定
@@ -106,6 +108,9 @@ public:
 		const D3DXVECTOR3& rSpaceValue,	// 数字の空白
 		const D3DXVECTOR3& rSpacePart,	// 区切りの空白
 		const CValue::EType type = CValue::TYPE_NORMAL,	// 数字種類
+		const EAlignX alignX = XALIGN_CENTER,			// 横配置
+		const EAlignY alignY = YALIGN_CENTER,			// 縦配置
+		const D3DXVECTOR3& rRot = VEC3_ZERO,			// 向き
 		const D3DXCOLOR& rCol = XCOL_WHITE				// 色
 	);
 
@@ -121,7 +126,8 @@ private:
 	CValue *m_apValue[timeUI::MAX_DIGIT];	// 数値の情報
 	CObject2D *m_apPart[timeUI::MAX_PART];	// 区切りの情報
 	CValue::EType m_type;		// 数字種類
-	D3DXVECTOR3 m_pos;			// 位置
+	D3DXVECTOR3 m_pos;			// 原点位置
+	D3DXVECTOR3 m_rot;			// 原点向き
 	D3DXVECTOR3 m_sizeValue;	// 数字の大きさ
 	D3DXVECTOR3 m_sizePart;		// 区切りの大きさ
 	D3DXVECTOR3 m_spaceValue;	// 数字の空白
