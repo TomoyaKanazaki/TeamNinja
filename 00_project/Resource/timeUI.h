@@ -83,16 +83,19 @@ public:
 	void SetSpaceValue(const D3DXVECTOR3& rSpace);	// 区切りの空白設定
 	void SetSpacePart(const D3DXVECTOR3& rSpace);	// 数字の空白設定
 	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
+	void SetAlignX(const EAlignX align);			// 横配置設定
+	void SetAlignY(const EAlignY align);			// 縦配置設定
 	float GetTimeWidth(void) const;					// タイム全体の横幅取得
 	float GetTimeHeight(void) const;				// タイム全体の縦幅取得
 	D3DXVECTOR3 GetTimeSize(void) const;			// タイム全体の大きさ取得
-
 	CValue::EType GetValueType(void) const	{ return m_type; }			// 数字の種類取得
 	D3DXVECTOR3 GetSizingValue(void) const	{ return m_sizeValue; }		// 区切りの大きさ取得
 	D3DXVECTOR3 GetSizingPart(void) const	{ return m_sizePart; }		// 数字の大きさ取得
 	D3DXVECTOR3 GetSpaceValue(void) const	{ return m_spaceValue; }	// 区切りの空白取得
 	D3DXVECTOR3 GetSpacePart(void) const	{ return m_spacePart; }		// 数字の空白取得
 	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色の設定
+	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
+	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
 
 	// 静的メンバ関数
 	static CTimeUI *Create	// 生成
@@ -124,6 +127,8 @@ private:
 	D3DXVECTOR3 m_spaceValue;	// 数字の空白
 	D3DXVECTOR3 m_spacePart;	// 区切りの空白
 	D3DXCOLOR m_col;			// 色
+	EAlignX m_alignX;			// 横配置
+	EAlignY m_alignY;			// 縦配置
 };
 
 #endif	// _TIME_UI_H_

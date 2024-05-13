@@ -45,7 +45,9 @@ CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI),
 	m_sizePart		(VEC3_ZERO),			// 区切りの大きさ
 	m_spaceValue	(VEC3_ZERO),			// 数字の空白
 	m_spacePart		(VEC3_ZERO),			// 区切りの空白
-	m_col			(XCOL_WHITE)			// 色
+	m_col			(XCOL_WHITE),			// 色
+	m_alignX		(XALIGN_CENTER),		// 横配置
+	m_alignY		(YALIGN_CENTER)			// 縦配置
 {
 	// メンバ変数をクリア
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
@@ -68,13 +70,15 @@ HRESULT CTimeUI::Init(void)
 	// メンバ変数を初期化
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
 	memset(&m_apPart[0], 0, sizeof(m_apPart));		// 区切りの情報
-	m_type = CValue::TYPE_NORMAL;	// 数字種類
-	m_pos			= VEC3_ZERO;	// 位置
-	m_sizeValue		= VEC3_ZERO;	// 数字の大きさ
-	m_sizePart		= VEC3_ZERO;	// 区切りの大きさ
-	m_spaceValue	= VEC3_ZERO;	// 数字の空白
-	m_spacePart		= VEC3_ZERO;	// 区切りの空白
-	m_col			= XCOL_WHITE;	// 色
+	m_type			= CValue::TYPE_NORMAL;			// 数字種類
+	m_pos			= VEC3_ZERO;		// 位置
+	m_sizeValue		= VEC3_ZERO;		// 数字の大きさ
+	m_sizePart		= VEC3_ZERO;		// 区切りの大きさ
+	m_spaceValue	= VEC3_ZERO;		// 数字の空白
+	m_spacePart		= VEC3_ZERO;		// 区切りの空白
+	m_col			= XCOL_WHITE;		// 色
+	m_alignX		= XALIGN_CENTER;	// 横配置
+	m_alignY		= YALIGN_CENTER;	// 縦配置
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
@@ -448,6 +452,30 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
+//	横配置の設定処理
+//============================================================
+void CTimeUI::SetAlignX(const EAlignX align)
+{
+	// 引数の横配置を設定
+	m_alignX = align;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	縦配置の設定処理
+//============================================================
+void CTimeUI::SetAlignY(const EAlignY align)
+{
+	// 引数の縦配置を設定
+	m_alignY = align;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
 //	タイム全体の横幅取得処理
 //============================================================
 float CTimeUI::GetTimeWidth(void) const
@@ -511,7 +539,7 @@ void CTimeUI::SetPositionRelative(void)
 {
 	D3DXVECTOR3 spaceValue = m_spaceValue * 0.5f;	// 数字の空白
 	D3DXVECTOR3 spacePart = m_spacePart * 0.5f;		// 区切りの空白
-	D3DXVECTOR3 posPoly = m_pos - spaceValue;		// ポリゴン生成位置
+	D3DXVECTOR3 posStart = m_pos - spaceValue;		// ポリゴン生成位置
 	int nValueID = 0;	// 数字の生成数
 	int nPartID = 0;	// 区切りの生成数
 
@@ -524,15 +552,15 @@ void CTimeUI::SetPositionRelative(void)
 			assert(m_apPart[nValueID] != nullptr);
 
 			// ポリゴン生成位置をずらす
-			posPoly += spacePart;
+			posStart += spacePart;
 
 			// 区切りの位置を設定
-			m_apPart[nValueID]->SetVec3Position(posPoly);
+			m_apPart[nValueID]->SetVec3Position(posStart);
 
 			// ポリゴン生成位置をずらす
-			posPoly += spacePart;
+			posStart += spacePart;
 
-			// 区切り生成数を加算
+			// 区切りの生成数を加算
 			nValueID++;
 		}
 		else
@@ -541,15 +569,15 @@ void CTimeUI::SetPositionRelative(void)
 			assert(m_apValue[nPartID] != nullptr);
 
 			// ポリゴン生成位置をずらす
-			posPoly += spaceValue;
+			posStart += spaceValue;
 
 			// 数字の位置を設定
-			m_apValue[nPartID]->SetVec3Position(posPoly);
+			m_apValue[nPartID]->SetVec3Position(posStart);
 
 			// ポリゴン生成位置をずらす
-			posPoly += spaceValue;
+			posStart += spaceValue;
 
-			// 数字生成数を加算
+			// 数字の生成数を加算
 			nPartID++;
 		}
 	}
