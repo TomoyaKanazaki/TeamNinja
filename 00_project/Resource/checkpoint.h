@@ -23,6 +23,8 @@ public:
 	void Update(const float fDeltaTime) override; // 更新
 	void Draw(CShader* pShader = nullptr) override; // 描画
 
+	int GetSaveTension() const { return m_nSaveTension; } // セーブ時の士気力取得
+
 	// 静的メンバ関数
 	static CCheckPoint* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // 生成処理
 

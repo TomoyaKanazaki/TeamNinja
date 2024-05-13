@@ -36,6 +36,7 @@
 
 #include "input.h"
 #include "player_clone.h"
+#include "checkpoint.h"
 
 #include "gauge2D.h"
 #include "blur.h"
@@ -52,7 +53,6 @@ namespace
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
-	const float	HEIGHT		= 100.0f;	// 縦幅
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
@@ -102,7 +102,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bCreateClone		(false),		// 分身生成モードフラグ
 	m_nNumClone			(0),			// 生成する分身の数
 	m_nMaxClone			(0),			// 一度に分身できる上限
-	m_nRecover			(0)				// ジャストアクションでの回復量
+	m_nRecover			(0),			// ジャストアクションでの回復量
+	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
+	m_fHeght			(0.0f)			// 立幅
 {
 
 }
@@ -132,6 +134,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_bCreateClone		= false;		// 分身生成モードフラグ
 	m_nNumClone			= 0;			// 生成する分身の数
+	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -313,7 +316,7 @@ void CPlayer::Update(const float fDeltaTime)
 	}
 	if (pKeyboard->IsTrigger(DIK_DOWN))
 	{
-		Hit(100);
+		m_pTensionGauge->AddNum(-100);
 	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
@@ -529,7 +532,7 @@ float CPlayer::GetRadius(void) const
 float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
-	return HEIGHT;
+	return m_fHeght;
 }
 
 //==========================================
@@ -638,6 +641,13 @@ CPlayer::EMotion CPlayer::UpdateNormal(void)
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
 
+	// チェックポイントに帰る
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	if (pKey->IsTrigger(DIK_Q))
+	{
+		SaveReset();
+	}
+
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -717,6 +727,10 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
 		m_move.x += (0.0f - m_move.x) * LAND_REV;
 		m_move.z += (0.0f - m_move.z) * LAND_REV;
 	}
+
+	// 中心座標の更新
+	m_posCenter = rPos;
+	m_posCenter.y += m_fHeght * 0.5f;
 }
 
 //============================================================
@@ -962,6 +976,11 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%d", &m_nRecover);
 		}
+		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_fHeght);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
@@ -1024,4 +1043,19 @@ void CPlayer::ControlClone()
 		// 生成したら0に戻す
 		m_nNumClone = 0;
 	}
+}
+
+//==========================================
+//  直前のチェックポイントに帰る
+//==========================================
+void CPlayer::SaveReset()
+{
+	// セーブされていない場合関数を抜ける
+	if (m_pCheckPoint == nullptr) { return; }
+
+	// チェックポイントの座標に飛ぶ
+	SetVec3Position(m_pCheckPoint->GetVec3Position());
+
+	// セーブした時点での士気力にする
+	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
