@@ -104,7 +104,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nMaxClone			(0),			// 一度に分身できる上限
 	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
-	m_fHeght			(0.0f)			// 立幅
+	m_fHeght			(0.0f),			// 立幅
+	m_fInertial			(0.0f)			// 慣性力
 {
 
 }
@@ -907,7 +908,6 @@ void CPlayer::Move()
 	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 
-
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
 		pos += m_move;
@@ -921,10 +921,10 @@ void CPlayer::Move()
 void CPlayer::Inertial()
 {
 	// x軸方向の慣性
-	m_move.x += (0.0f - m_move.x) * 0.1f;
+	m_move.x += (0.0f - m_move.x) * m_fInertial;
 
 	// z軸方向の慣性
-	m_move.z += (0.0f - m_move.z) * 0.1f;
+	m_move.z += (0.0f - m_move.z) * m_fInertial;
 }
 
 //==========================================
@@ -979,15 +979,18 @@ void CPlayer::LoadParameter()
 		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
 		{
 			// データを格納
-			fscanf(pFile, "%d", &m_fHeght);
+			fscanf(pFile, "%f", &m_fHeght);
+		}
+		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fInertial);
 		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
 		}
 	}
-
-	return;
 }
 
 //==========================================

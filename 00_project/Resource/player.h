@@ -157,6 +157,7 @@ private:
 	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
 	float m_fHeght; // 縦幅
 	D3DXVECTOR3 m_posCenter; // 中心座標
+	float m_fInertial; // 慣性力
 
 };
 
