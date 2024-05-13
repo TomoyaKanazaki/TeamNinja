@@ -203,7 +203,7 @@ HRESULT CPlayer::Init(void)
 
 	// ブラーの情報
 	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
-	CBlur::Create
+	//CBlur::Create
 	( // 引数
 		this,	// 親オブジェクト
 		mat,	// ブラーマテリアル
