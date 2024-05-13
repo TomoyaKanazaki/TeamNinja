@@ -1,661 +1,241 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="シェーダー">
-      <UniqueIdentifier>{00dd5524-55df-4b40-8691-a6e2a68c944e}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="data\SHADER\ZTexCreator.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\Gauss.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\BrightCheck.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Resource\renderState.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\precompile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\random.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\particle3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\pause.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\particle2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectTornado.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\orbit.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshTube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshWall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshRing.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshSphere.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshDome.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshField.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCylinder.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCircle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectDivChara.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectChara.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectBillboard.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\multiModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\multiValue.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\modelUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\motion.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\manager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\loading.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\liquid.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\listManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\impact.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gauge3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\hitStop.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gameManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gauge2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\flash.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\field.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\debugproc.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\deltaTime.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\debug.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collision.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\cinemaScope.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\blur.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\anim2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\wall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\wave.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\value.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\valueUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\tutorialManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\useful.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\titleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timerUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\texture.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\stage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sky.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sound.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\shaderMono.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\shaderToon.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\shader.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scrollMeshField.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scrollMeshRing.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\screen.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scroll2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scenery.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTitle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneRanking.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneResult.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneGame.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resultManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\retentionManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\renderer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resource.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\rankingManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\shadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\font.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fontChar.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\char2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\string2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\text2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effekseerControl.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effekseerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\ZTexture.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\DepthShadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\player_clone.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy_chase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\checkpoint.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\character.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\map.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
+    <ClCompile Include="Resource\anim2D.cpp" />
+    <ClCompile Include="Resource\blur.cpp" />
+    <ClCompile Include="Resource\camera.cpp" />
+    <ClCompile Include="Resource\char2D.cpp" />
+    <ClCompile Include="Resource\character.cpp" />
+    <ClCompile Include="Resource\checkpoint.cpp" />
+    <ClCompile Include="Resource\cinemaScope.cpp" />
+    <ClCompile Include="Resource\collision.cpp" />
+    <ClCompile Include="Resource\debug.cpp" />
+    <ClCompile Include="Resource\debugproc.cpp" />
+    <ClCompile Include="Resource\deltaTime.cpp" />
+    <ClCompile Include="Resource\DepthShadow.cpp" />
+    <ClCompile Include="Resource\effect2D.cpp" />
+    <ClCompile Include="Resource\effect3D.cpp" />
+    <ClCompile Include="Resource\effekseerControl.cpp" />
+    <ClCompile Include="Resource\effekseerManager.cpp" />
+    <ClCompile Include="Resource\enemy.cpp" />
+    <ClCompile Include="Resource\enemy_chase.cpp" />
+    <ClCompile Include="Resource\fade.cpp" />
+    <ClCompile Include="Resource\field.cpp" />
+    <ClCompile Include="Resource\flash.cpp" />
+    <ClCompile Include="Resource\font.cpp" />
+    <ClCompile Include="Resource\fontChar.cpp" />
+    <ClCompile Include="Resource\gameManager.cpp" />
+    <ClCompile Include="Resource\gauge2D.cpp" />
+    <ClCompile Include="Resource\gauge3D.cpp" />
+    <ClCompile Include="Resource\hitStop.cpp" />
+    <ClCompile Include="Resource\impact.cpp" />
+    <ClCompile Include="Resource\input.cpp" />
+    <ClCompile Include="Resource\light.cpp" />
+    <ClCompile Include="Resource\liquid.cpp" />
+    <ClCompile Include="Resource\listManager.cpp" />
+    <ClCompile Include="Resource\loading.cpp" />
+    <ClCompile Include="Resource\main.cpp" />
+    <ClCompile Include="Resource\manager.cpp" />
+    <ClCompile Include="Resource\map.cpp" />
+    <ClCompile Include="Resource\model.cpp" />
+    <ClCompile Include="Resource\modelUI.cpp" />
+    <ClCompile Include="Resource\motion.cpp" />
+    <ClCompile Include="Resource\multiModel.cpp" />
+    <ClCompile Include="Resource\multiValue.cpp" />
+    <ClCompile Include="Resource\object.cpp" />
+    <ClCompile Include="Resource\object2D.cpp" />
+    <ClCompile Include="Resource\object3D.cpp" />
+    <ClCompile Include="Resource\objectBillboard.cpp" />
+    <ClCompile Include="Resource\objectChara.cpp" />
+    <ClCompile Include="Resource\objectDivChara.cpp" />
+    <ClCompile Include="Resource\objectMeshCircle.cpp" />
+    <ClCompile Include="Resource\objectMeshCube.cpp" />
+    <ClCompile Include="Resource\objectMeshCylinder.cpp" />
+    <ClCompile Include="Resource\objectMeshDome.cpp" />
+    <ClCompile Include="Resource\objectMeshField.cpp" />
+    <ClCompile Include="Resource\objectMeshRing.cpp" />
+    <ClCompile Include="Resource\objectMeshSphere.cpp" />
+    <ClCompile Include="Resource\objectMeshTube.cpp" />
+    <ClCompile Include="Resource\objectMeshWall.cpp" />
+    <ClCompile Include="Resource\objectModel.cpp" />
+    <ClCompile Include="Resource\objectTornado.cpp" />
+    <ClCompile Include="Resource\orbit.cpp" />
+    <ClCompile Include="Resource\particle2D.cpp" />
+    <ClCompile Include="Resource\particle3D.cpp" />
+    <ClCompile Include="Resource\pause.cpp" />
+    <ClCompile Include="Resource\player.cpp" />
+    <ClCompile Include="Resource\player_clone.cpp" />
+    <ClCompile Include="Resource\precompile.cpp" />
+    <ClCompile Include="Resource\random.cpp" />
+    <ClCompile Include="Resource\rankingManager.cpp" />
+    <ClCompile Include="Resource\renderer.cpp" />
+    <ClCompile Include="Resource\renderState.cpp" />
+    <ClCompile Include="Resource\resultManager.cpp" />
+    <ClCompile Include="Resource\retentionManager.cpp" />
+    <ClCompile Include="Resource\scene.cpp" />
+    <ClCompile Include="Resource\sceneGame.cpp" />
+    <ClCompile Include="Resource\sceneRanking.cpp" />
+    <ClCompile Include="Resource\sceneResult.cpp" />
+    <ClCompile Include="Resource\scenery.cpp" />
+    <ClCompile Include="Resource\sceneTitle.cpp" />
+    <ClCompile Include="Resource\sceneTutorial.cpp" />
+    <ClCompile Include="Resource\screen.cpp" />
+    <ClCompile Include="Resource\scroll2D.cpp" />
+    <ClCompile Include="Resource\scrollMeshField.cpp" />
+    <ClCompile Include="Resource\scrollMeshRing.cpp" />
+    <ClCompile Include="Resource\shader.cpp" />
+    <ClCompile Include="Resource\shaderMono.cpp" />
+    <ClCompile Include="Resource\shaderToon.cpp" />
+    <ClCompile Include="Resource\shadow.cpp" />
+    <ClCompile Include="Resource\sky.cpp" />
+    <ClCompile Include="Resource\sound.cpp" />
+    <ClCompile Include="Resource\stage.cpp" />
+    <ClCompile Include="Resource\string2D.cpp" />
+    <ClCompile Include="Resource\text2D.cpp" />
+    <ClCompile Include="Resource\texture.cpp" />
+    <ClCompile Include="Resource\timerManager.cpp" />
+    <ClCompile Include="Resource\timerUI.cpp" />
+    <ClCompile Include="Resource\titleManager.cpp" />
+    <ClCompile Include="Resource\tutorialManager.cpp" />
+    <ClCompile Include="Resource\useful.cpp" />
+    <ClCompile Include="Resource\value.cpp" />
+    <ClCompile Include="Resource\valueUI.cpp" />
+    <ClCompile Include="Resource\wall.cpp" />
+    <ClCompile Include="Resource\wave.cpp" />
+    <ClCompile Include="Resource\ZTexture.cpp" />
+    <ClCompile Include="Resource\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Resource\wall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\wave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\value.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\valueUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\tutorialManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\useful.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\titleManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timerUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sky.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sound.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\shadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\shaderMono.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\shaderToon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\shader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scrollMeshField.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scrollMeshRing.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scroll2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scenery.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\screen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTitle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneRanking.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneResult.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneGame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\resultManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\retentionManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\rankingManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\renderState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\precompile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\random.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\pause.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\particle2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\particle3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectTornado.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\orbit.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshTube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshWall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshSphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshField.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshRing.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshDome.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCylinder.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCircle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectDivChara.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectBillboard.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectChara.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\multiValue.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\motion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\multiModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\modelUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\listManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\loading.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\liquid.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\impact.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\input.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gauge3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\hitStop.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gauge2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gameManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\flash.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\field.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\deltaTime.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\debugproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\debug.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collision.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\cinemaScope.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\blur.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\anim2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\font.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fontChar.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\char2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\string2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\text2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effekseerControl.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effekseerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\ZTexture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\DepthShadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\player_clone.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy_chase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\checkpoint.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-<<<<<<< .mine
-    <ClCompile Include="Resource\map.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-=======
-    <ClCompile Include="Resource\character.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
->>>>>>> .theirs
+    <ClInclude Include="Resource\anim2D.h" />
+    <ClInclude Include="Resource\blur.h" />
+    <ClInclude Include="Resource\camera.h" />
+    <ClInclude Include="Resource\char2D.h" />
+    <ClInclude Include="Resource\character.h" />
+    <ClInclude Include="Resource\checkpoint.h" />
+    <ClInclude Include="Resource\cinemaScope.h" />
+    <ClInclude Include="Resource\collision.h" />
+    <ClInclude Include="Resource\debug.h" />
+    <ClInclude Include="Resource\debugproc.h" />
+    <ClInclude Include="Resource\deltaTime.h" />
+    <ClInclude Include="Resource\DepthShadow.h" />
+    <ClInclude Include="Resource\effect2D.h" />
+    <ClInclude Include="Resource\effect3D.h" />
+    <ClInclude Include="Resource\effekseerControl.h" />
+    <ClInclude Include="Resource\effekseerManager.h" />
+    <ClInclude Include="Resource\enemy.h" />
+    <ClInclude Include="Resource\enemy_chase.h" />
+    <ClInclude Include="Resource\fade.h" />
+    <ClInclude Include="Resource\field.h" />
+    <ClInclude Include="Resource\flash.h" />
+    <ClInclude Include="Resource\font.h" />
+    <ClInclude Include="Resource\fontChar.h" />
+    <ClInclude Include="Resource\gameManager.h" />
+    <ClInclude Include="Resource\gauge2D.h" />
+    <ClInclude Include="Resource\gauge3D.h" />
+    <ClInclude Include="Resource\hitStop.h" />
+    <ClInclude Include="Resource\impact.h" />
+    <ClInclude Include="Resource\input.h" />
+    <ClInclude Include="Resource\light.h" />
+    <ClInclude Include="Resource\liquid.h" />
+    <ClInclude Include="Resource\listManager.h" />
+    <ClInclude Include="Resource\loading.h" />
+    <ClInclude Include="Resource\main.h" />
+    <ClInclude Include="Resource\manager.h" />
+    <ClInclude Include="Resource\map.h" />
+    <ClInclude Include="Resource\model.h" />
+    <ClInclude Include="Resource\modelUI.h" />
+    <ClInclude Include="Resource\motion.h" />
+    <ClInclude Include="Resource\multiModel.h" />
+    <ClInclude Include="Resource\multiValue.h" />
+    <ClInclude Include="Resource\object.h" />
+    <ClInclude Include="Resource\object2D.h" />
+    <ClInclude Include="Resource\object3D.h" />
+    <ClInclude Include="Resource\objectBillboard.h" />
+    <ClInclude Include="Resource\objectChara.h" />
+    <ClInclude Include="Resource\objectDivChara.h" />
+    <ClInclude Include="Resource\objectMeshCircle.h" />
+    <ClInclude Include="Resource\objectMeshCube.h" />
+    <ClInclude Include="Resource\objectMeshCylinder.h" />
+    <ClInclude Include="Resource\objectMeshDome.h" />
+    <ClInclude Include="Resource\objectMeshField.h" />
+    <ClInclude Include="Resource\objectMeshRing.h" />
+    <ClInclude Include="Resource\objectMeshSphere.h" />
+    <ClInclude Include="Resource\objectMeshTube.h" />
+    <ClInclude Include="Resource\objectMeshWall.h" />
+    <ClInclude Include="Resource\objectModel.h" />
+    <ClInclude Include="Resource\objectTornado.h" />
+    <ClInclude Include="Resource\orbit.h" />
+    <ClInclude Include="Resource\particle2D.h" />
+    <ClInclude Include="Resource\particle3D.h" />
+    <ClInclude Include="Resource\pause.h" />
+    <ClInclude Include="Resource\player.h" />
+    <ClInclude Include="Resource\player_clone.h" />
+    <ClInclude Include="Resource\precompile.h" />
+    <ClInclude Include="Resource\random.h" />
+    <ClInclude Include="Resource\rankingManager.h" />
+    <ClInclude Include="Resource\renderer.h" />
+    <ClInclude Include="Resource\renderState.h" />
+    <ClInclude Include="Resource\resource.h" />
+    <ClInclude Include="Resource\resultManager.h" />
+    <ClInclude Include="Resource\retentionManager.h" />
+    <ClInclude Include="Resource\scene.h" />
+    <ClInclude Include="Resource\sceneGame.h" />
+    <ClInclude Include="Resource\sceneRanking.h" />
+    <ClInclude Include="Resource\sceneResult.h" />
+    <ClInclude Include="Resource\scenery.h" />
+    <ClInclude Include="Resource\sceneTitle.h" />
+    <ClInclude Include="Resource\sceneTutorial.h" />
+    <ClInclude Include="Resource\screen.h" />
+    <ClInclude Include="Resource\scroll2D.h" />
+    <ClInclude Include="Resource\scrollMeshField.h" />
+    <ClInclude Include="Resource\scrollMeshRing.h" />
+    <ClInclude Include="Resource\shader.h" />
+    <ClInclude Include="Resource\shaderMono.h" />
+    <ClInclude Include="Resource\shaderToon.h" />
+    <ClInclude Include="Resource\shadow.h" />
+    <ClInclude Include="Resource\sky.h" />
+    <ClInclude Include="Resource\sound.h" />
+    <ClInclude Include="Resource\stage.h" />
+    <ClInclude Include="Resource\string2D.h" />
+    <ClInclude Include="Resource\text2D.h" />
+    <ClInclude Include="Resource\texture.h" />
+    <ClInclude Include="Resource\timerManager.h" />
+    <ClInclude Include="Resource\timerUI.h" />
+    <ClInclude Include="Resource\titleManager.h" />
+    <ClInclude Include="Resource\tutorialManager.h" />
+    <ClInclude Include="Resource\useful.h" />
+    <ClInclude Include="Resource\value.h" />
+    <ClInclude Include="Resource\valueUI.h" />
+    <ClInclude Include="Resource\wall.h" />
+    <ClInclude Include="Resource\wave.h" />
+    <ClInclude Include="Resource\ZTexture.h" />
+    <ClInclude Include="Resource\timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{5a3a16d8-8d3b-443d-b2e6-88de266fcffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{d5a522a4-2887-438b-9762-237d1b79d6a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
-      <Filter>リソース ファイル</Filter>
+      <Filter>Resource</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="data\SHADER\BrightCheck.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\Gauss.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\ZTexCreator.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
