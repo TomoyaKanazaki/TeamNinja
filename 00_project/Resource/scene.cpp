@@ -36,8 +36,8 @@ namespace
 		const D3DXVECTOR3 POS		 = D3DXVECTOR3(200.0f, 200.0f, 0.0f);	// タイマー位置
 		const D3DXVECTOR3 VAL_SIZE	 = D3DXVECTOR3(46.8f, 62.4f, 0.0f);		// タイマー数字大きさ
 		const D3DXVECTOR3 PART_SIZE	 = D3DXVECTOR3(27.3f, 62.4f, 0.0f);		// タイマー区切り大きさ
-		const D3DXVECTOR3 VAL_SPACE	 = D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);		// タイマー数字空白
-		const D3DXVECTOR3 PART_SPACE = D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// タイマー区切り空白
+		const D3DXVECTOR3 VAL_SPACE	 = D3DXVECTOR3(60.0f, 0.0f, 0.0f);		// タイマー数字空白
+		const D3DXVECTOR3 PART_SPACE = D3DXVECTOR3(120.0f, 0.0f, 0.0f);	// タイマー区切り空白
 	}
 }
 

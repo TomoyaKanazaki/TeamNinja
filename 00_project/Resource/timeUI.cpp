@@ -348,7 +348,13 @@ void CTimeUI::SetValueType(const CValue::EType type)
 
 		// テクスチャを割当
 		assert(m_apPart[nCntPart] != nullptr);
-		//m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);	// TODO
+
+		// TODO
+#if 1
+		//m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);
+#else
+		m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);	// TODO
+#endif
 	}
 }
 
@@ -357,8 +363,16 @@ void CTimeUI::SetValueType(const CValue::EType type)
 //============================================================
 void CTimeUI::SetSizingValue(const D3DXVECTOR3& rSize)
 {
-	// 引数の数字の大きさを設定
+	// 設定された数字の大きさを保存
 	m_sizeValue = rSize;
+
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
+
+		// 数字の大きさを設定
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->SetVec3Sizing(rSize);
+	}
 
 	// 相対位置の設定
 	SetPositionRelative();
@@ -369,8 +383,16 @@ void CTimeUI::SetSizingValue(const D3DXVECTOR3& rSize)
 //============================================================
 void CTimeUI::SetSizingPart(const D3DXVECTOR3& rSize)
 {
-	// 引数の区切りの大きさを設定
+	// 設定された区切りの大きさを保存
 	m_sizePart = rSize;
+
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
+
+		// 区切りの大きさを設定
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->SetVec3Sizing(rSize);
+	}
 
 	// 相対位置の設定
 	SetPositionRelative();
@@ -426,61 +448,51 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
-//	数字全体の横幅取得処理
+//	タイム全体の横幅取得処理
 //============================================================
 float CTimeUI::GetTimeWidth(void) const
 {
-#if 0
-	// 数字がない場合抜ける
-	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+	float fTimeWidth = 0.0f;				// タイム全体の横幅
+	int nEndNumID = timeUI::MAX_DIGIT - 1;	// 終端数字のインデックス
 
-	float fValueWidth = 0.0f;	// 数字全体の縦幅
-	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
-	for (int i = 0; i < nEndNumID; i++)
-	{ // 終端数字を抜いた桁数分繰り返す
+	// 全ての空白を加算 (最後の文字は含まない)
+	fTimeWidth += m_spaceValue.x * nEndNumID;
+	fTimeWidth += m_spacePart.x * timeUI::MAX_PART;
 
-		// 次の数字までの列間を加算
-		fValueWidth += m_space.x;
-	}
+	// 先頭数字の横幅を加算
+	assert(m_apValue[0] != nullptr);
+	fTimeWidth += m_apValue[0]->GetVec3Sizing().x * 0.5f;
 
-	// 先頭と終端の数字の無視されたサイズを加算
-	fValueWidth += m_listValue.front()->GetVec3Sizing().x * 0.5f;	// 先頭数字の原点左サイズ
-	fValueWidth += m_listValue.back()->GetVec3Sizing().x * 0.5f;	// 終端数字の原点右サイズ
+	// 終端数字の横幅を加算
+	assert(m_apValue[nEndNumID] != nullptr);
+	fTimeWidth += m_apValue[nEndNumID]->GetVec3Sizing().x * 0.5f;
 
-	// 数字全体の縦幅を返す
-	return fValueWidth;
-#else
-	return 100.0f;
-#endif
+	// タイム全体の横幅を返す
+	return fTimeWidth;
 }
 
 //============================================================
-//	数字全体の縦幅取得処理
+//	タイム全体の縦幅取得処理
 //============================================================
 float CTimeUI::GetTimeHeight(void) const
 {
-#if 0
-	// 数字がない場合抜ける
-	if ((int)m_listValue.size() <= 0) { assert(false); return 0.0f; }
+	float fTimeHeight = 0.0f;				// タイム全体の縦幅
+	int nEndNumID = timeUI::MAX_DIGIT - 1;	// 終端数字のインデックス
 
-	float fValueHeight = 0.0f;	// 数字全体の縦幅
-	int nEndNumID = (int)m_listValue.size() - 1;	// 終端数字のインデックス
-	for (int i = 0; i < nEndNumID; i++)
-	{ // 終端数字を抜いた桁数分繰り返す
+	// 全ての空白を加算 (最後の文字は含まない)
+	fTimeHeight += m_spaceValue.y * nEndNumID;
+	fTimeHeight += m_spacePart.y * timeUI::MAX_PART;
 
-		// 次の数字までの行間を加算
-		fValueHeight += m_space.y;
-	}
+	// 先頭数字の縦幅を加算
+	assert(m_apValue[0] != nullptr);
+	fTimeHeight += m_apValue[0]->GetVec3Sizing().y * 0.5f;
 
-	// 先頭と終端の数字の無視されたサイズを加算
-	fValueHeight += m_listValue.front()->GetVec3Sizing().y * 0.5f;	// 先頭数字の原点上サイズ
-	fValueHeight += m_listValue.back()->GetVec3Sizing().y * 0.5f;	// 終端数字の原点下サイズ
+	// 終端数字の縦幅を加算
+	assert(m_apValue[nEndNumID] != nullptr);
+	fTimeHeight += m_apValue[nEndNumID]->GetVec3Sizing().y * 0.5f;
 
-	// 数字全体の縦幅を返す
-	return fValueHeight;
-#else
-	return 100.0f;
-#endif
+	// タイム全体の縦幅を返す
+	return fTimeHeight;
 }
 
 //============================================================
@@ -500,8 +512,8 @@ void CTimeUI::SetPositionRelative(void)
 	D3DXVECTOR3 spaceValue = m_spaceValue * 0.5f;	// 数字の空白
 	D3DXVECTOR3 spacePart = m_spacePart * 0.5f;		// 区切りの空白
 	D3DXVECTOR3 posPoly = m_pos - spaceValue;		// ポリゴン生成位置
-	int nNumValue = 0;	// 数字の生成数
-	int nNumPart = 0;	// 区切りの生成数
+	int nValueID = 0;	// 数字の生成数
+	int nPartID = 0;	// 区切りの生成数
 
 	for (int nCntTimer = 0; nCntTimer < timeUI::MAX_DIGIT + timeUI::MAX_PART; nCntTimer++)
 	{ // 数字の数 + 区切りの数分繰り返す
@@ -509,42 +521,36 @@ void CTimeUI::SetPositionRelative(void)
 		if (nCntTimer == timeUI::MAX_MIN || nCntTimer == timeUI::MAX_MIN + timeUI::MAX_SEC + 1)
 		{ // 区切りタイミングの場合
 
-			assert(m_apPart[nNumValue] != nullptr);
+			assert(m_apPart[nValueID] != nullptr);
 
 			// ポリゴン生成位置をずらす
 			posPoly += spacePart;
 
 			// 区切りの位置を設定
-			m_apPart[nNumValue]->SetVec3Position(posPoly);
-
-			// 区切りの大きさを設定
-			m_apPart[nNumValue]->SetVec3Sizing(m_sizePart);
-
-			// 区切り生成数を加算
-			nNumValue++;
+			m_apPart[nValueID]->SetVec3Position(posPoly);
 
 			// ポリゴン生成位置をずらす
 			posPoly += spacePart;
+
+			// 区切り生成数を加算
+			nValueID++;
 		}
 		else
 		{ // 数字タイミングの場合
 
-			assert(m_apValue[nNumPart] != nullptr);
+			assert(m_apValue[nPartID] != nullptr);
 
 			// ポリゴン生成位置をずらす
 			posPoly += spaceValue;
 
 			// 数字の位置を設定
-			m_apValue[nNumPart]->SetVec3Position(posPoly);
-
-			// 数字の大きさを設定
-			m_apValue[nNumPart]->SetVec3Sizing(m_sizeValue);
-
-			// 数字生成数を加算
-			nNumPart++;
+			m_apValue[nPartID]->SetVec3Position(posPoly);
 
 			// ポリゴン生成位置をずらす
 			posPoly += spaceValue;
+
+			// 数字生成数を加算
+			nPartID++;
 		}
 	}
 }
