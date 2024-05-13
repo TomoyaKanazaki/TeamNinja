@@ -1,18 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="data\SHADER\BrightCheck.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\Gauss.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="data\SHADER\ZTexCreator.fx">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
+    <FxCompile Include="data\SHADER\BrightCheck.fx" />
+    <FxCompile Include="data\SHADER\DepthBufShadowEffect.fx" />
+    <FxCompile Include="data\SHADER\Gauss.fx" />
+    <FxCompile Include="data\SHADER\ZTexCreator.fx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\anim2D.cpp" />
@@ -41,6 +33,7 @@
     <ClCompile Include="Resource\gameManager.cpp" />
     <ClCompile Include="Resource\gauge2D.cpp" />
     <ClCompile Include="Resource\gauge3D.cpp" />
+    <ClCompile Include="Resource\goal.cpp" />
     <ClCompile Include="Resource\hitStop.cpp" />
     <ClCompile Include="Resource\impact.cpp" />
     <ClCompile Include="Resource\input.cpp" />
@@ -50,7 +43,6 @@
     <ClCompile Include="Resource\loading.cpp" />
     <ClCompile Include="Resource\main.cpp" />
     <ClCompile Include="Resource\manager.cpp" />
-    <ClCompile Include="Resource\map.cpp" />
     <ClCompile Include="Resource\model.cpp" />
     <ClCompile Include="Resource\modelUI.cpp" />
     <ClCompile Include="Resource\motion.cpp" />
@@ -107,6 +99,7 @@
     <ClCompile Include="Resource\string2D.cpp" />
     <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />
+    <ClCompile Include="Resource\timer.cpp" />
     <ClCompile Include="Resource\timerManager.cpp" />
     <ClCompile Include="Resource\timerUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />
@@ -117,13 +110,7 @@
     <ClCompile Include="Resource\wall.cpp" />
     <ClCompile Include="Resource\wave.cpp" />
     <ClCompile Include="Resource\ZTexture.cpp" />
-    <ClCompile Include="Resource\timer.cpp" />
-    <ClInclude Include="Resource\ZTexture.h">
-      <Filter>sauce</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\goal.h">
-      <Filter>sauce</Filter>
-    </ClInclude>
+    <ClCompile Include="Resource\timeUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\anim2D.h" />
@@ -152,6 +139,7 @@
     <ClInclude Include="Resource\gameManager.h" />
     <ClInclude Include="Resource\gauge2D.h" />
     <ClInclude Include="Resource\gauge3D.h" />
+    <ClInclude Include="Resource\goal.h" />
     <ClInclude Include="Resource\hitStop.h" />
     <ClInclude Include="Resource\impact.h" />
     <ClInclude Include="Resource\input.h" />
@@ -161,7 +149,6 @@
     <ClInclude Include="Resource\loading.h" />
     <ClInclude Include="Resource\main.h" />
     <ClInclude Include="Resource\manager.h" />
-    <ClInclude Include="Resource\map.h" />
     <ClInclude Include="Resource\model.h" />
     <ClInclude Include="Resource\modelUI.h" />
     <ClInclude Include="Resource\motion.h" />
@@ -219,6 +206,7 @@
     <ClInclude Include="Resource\string2D.h" />
     <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
+    <ClInclude Include="Resource\timer.h" />
     <ClInclude Include="Resource\timerManager.h" />
     <ClInclude Include="Resource\timerUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
@@ -229,23 +217,9 @@
     <ClInclude Include="Resource\wall.h" />
     <ClInclude Include="Resource\wave.h" />
     <ClInclude Include="Resource\ZTexture.h" />
-    <ClInclude Include="Resource\timer.h" />
+    <ClInclude Include="Resource\timeUI.h" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{5a3a16d8-8d3b-443d-b2e6-88de266fcffb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{d5a522a4-2887-438b-9762-237d1b79d6a4}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource\resource.rc">
-<<<<<<< .mine
-      <Filter>Resource</Filter>
-=======
-      <Filter>sauce</Filter>
->>>>>>> .theirs
-    </ResourceCompile>
+    <ResourceCompile Include="Resource\resource.rc" />
   </ItemGroup>
 </Project>

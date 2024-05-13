@@ -21,7 +21,7 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\timer000.png",	// 区切り表示
+		"data\\TEXTURE\\timePart000.png",	// 区切り表示
 	};
 
 	const int	PRIORITY	= 6;					// タイマーの優先順位

@@ -255,6 +255,7 @@
     <ClInclude Include="Resource\timer.h" />
     <ClInclude Include="Resource\timerManager.h" />
     <ClInclude Include="Resource\timerUI.h" />
+    <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
     <ClInclude Include="Resource\tutorialManager.h" />
     <ClInclude Include="Resource\useful.h" />
@@ -365,6 +366,7 @@
     <ClCompile Include="Resource\timer.cpp" />
     <ClCompile Include="Resource\timerManager.cpp" />
     <ClCompile Include="Resource\timerUI.cpp" />
+    <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />
     <ClCompile Include="Resource\tutorialManager.cpp" />
     <ClCompile Include="Resource\useful.cpp" />
