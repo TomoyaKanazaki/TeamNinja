@@ -321,6 +321,9 @@
     <ClCompile Include="Resource\ZTexture.cpp">
       <Filter>sauce</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\goal.cpp">
+      <Filter>sauce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\anim2D.h">
@@ -630,6 +633,9 @@
       <Filter>sauce</Filter>
     </ClInclude>
     <ClInclude Include="Resource\ZTexture.h">
+      <Filter>sauce</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goal.h">
       <Filter>sauce</Filter>
     </ClInclude>
   </ItemGroup>

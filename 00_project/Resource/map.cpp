@@ -7,6 +7,7 @@
 #include "map.h"
 
 #include "checkpoint.h"
+#include "goal.h"
 
 //==========================================
 //  定数定義
@@ -63,6 +64,30 @@ HRESULT map::Create()
 
 			// チェックポイントを生成
 			CCheckPoint::Create(pos, rot);
+		}
+		if (strcmp(&aStr[0], "GOAL") == 0) // チェックポイントの生成
+		{
+			// データの取得用変数
+			D3DXVECTOR3 pos, rot;
+
+			// 文字列読み込み (POS)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &pos.x);
+			fscanf(pFile, "%f", &pos.y);
+			fscanf(pFile, "%f", &pos.z);
+
+			// 文字列読み込み (ROT)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &rot.x);
+			fscanf(pFile, "%f", &rot.y);
+			fscanf(pFile, "%f", &rot.z);
+
+			// チェックポイントを生成
+			CGoal::Create(pos, rot);
 		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
