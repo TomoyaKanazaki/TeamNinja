@@ -145,7 +145,12 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	CSceneGame::GetTimerUI()->End();
 
 	// リザルト情報を保存
-	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->Get());
+	// TODO：GetTimeを修正
+#if 0
+	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
+#else
+	GET_RETENTION->SetResult(win, 0);
+#endif
 
 	// リザルト画面に遷移
 	GET_MANAGER->SetScene(CScene::MODE_RESULT, GAMEEND_WAIT_FRAME);

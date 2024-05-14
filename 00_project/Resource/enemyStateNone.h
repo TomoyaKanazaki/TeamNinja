@@ -17,7 +17,7 @@ class CEnemyStateNone : public CEnemyState
 {
 public:
 
-	CEnemyStateNone(const CEnemy* pEnemy);	// コンストラクタ
+	CEnemyStateNone(CEnemy* pEnemy);	// コンストラクタ
 	~CEnemyStateNone();						// デストラクタ
 
 	void Process(void) override;			// 状態処理

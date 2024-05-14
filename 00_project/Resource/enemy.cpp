@@ -86,7 +86,7 @@ HRESULT CEnemy::Init(void)
 	m_iterator = m_pList->AddList(this);
 
 	// 敵の状態を生成
-	m_pState = new CEnemyStateNone(this);
+	ChangeState(new CEnemyStateNone(this));
 
 	// 成功を返す
 	return S_OK;
@@ -186,4 +186,21 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// 状態の設定処理
+//============================================================
+void CEnemy::ChangeState(CEnemyState* pNext)
+{
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 終了処理
+		m_pState->Uninit();
+		m_pState = nullptr;
+	}
+
+	// 状態を設定する
+	m_pState = pNext;
 }

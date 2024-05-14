@@ -13,7 +13,7 @@
 //==========================
 // コンストラクタ
 //==========================
-CEnemyStateNone::CEnemyStateNone(const CEnemy* pEnemy) : CEnemyState(pEnemy)
+CEnemyStateNone::CEnemyStateNone(CEnemy* pEnemy) : CEnemyState(pEnemy)
 {
 
 }
