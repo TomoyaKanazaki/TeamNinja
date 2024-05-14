@@ -21,17 +21,19 @@ class CEnemyState
 {
 public:
 
-	explicit CEnemyState(const CEnemy* pEnemy);	// コンストラクタ
+	explicit CEnemyState(CEnemy* pEnemy);	// コンストラクタ
 	virtual ~CEnemyState();			// デストラクタ
 
 	virtual void Uninit(void);			// 終了処理
 
+	// メンバ関数
 	virtual void Process(void) = 0;		// 状態処理
+	CEnemy* GetEnemy(void) { return m_pEnemy; }		// 敵の情報の取得処理
 
 private:
 
 	// メンバ変数
-	const CEnemy* m_pEnemy;				// 本体の情報
+	CEnemy* m_pEnemy;				// 本体の情報
 };
 
 #endif
