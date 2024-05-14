@@ -11,7 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 
-#include "enemy_chase.h"
+#include "enemyChase.h"
 
 #include "enemyState.h"
 #include "enemyStateNone.h"
