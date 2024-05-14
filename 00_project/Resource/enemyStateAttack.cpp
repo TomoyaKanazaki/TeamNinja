@@ -8,12 +8,15 @@
 //	インクルードファイル
 //****************************************************************************************************************
 #include "enemyStateAttack.h"
+#include "enemy.h"
 #include "useful.h"
+
+#include "enemyStateNone.h"
 
 //==========================
 // コンストラクタ
 //==========================
-CEnemyStateAttack::CEnemyStateAttack(const CEnemy* pEnemy) : CEnemyState(pEnemy)
+CEnemyStateAttack::CEnemyStateAttack(CEnemy* pEnemy) : CEnemyState(pEnemy)
 {
 
 }
@@ -31,5 +34,8 @@ CEnemyStateAttack::~CEnemyStateAttack()
 //==========================
 void CEnemyStateAttack::Process(void)
 {
+	// ここでアタックモーションにすればGood!!
 
+	// 攻撃モーションが終わったらNoneStateにする
+	GetEnemy()->ChangeState(new CEnemyStateNone(GetEnemy()));
 }
