@@ -401,14 +401,12 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayerClone::ChasePrev()
 {
-	// リストを取得
-	std::list<CPlayerClone*> List = m_pList->GetList();
-
-	// リストの先頭を取得
-	CPlayerClone* pTarget = *List.begin();
+	// リストの先頭を取得する
+	std::list<CPlayerClone*> list = m_pList->GetList();
+	auto itrBegin = list.begin();
 
 	// 先頭と自身を比較する
-	if (pTarget == this)
+	if (*itrBegin == this)
 	{
 		// ついていく
 		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
@@ -416,25 +414,26 @@ void CPlayerClone::ChasePrev()
 		return;
 	}
 
-	return;
+	// リストの最後尾を取得する
+	auto itrEnd = list.end();
+
+	// 次のポインタを取得する変数
+	CPlayerClone* prev = *itrBegin;
 
 	// 自身に一致するポインタの一つ前に追従する
-	while (1)
+	for (auto itr = itrBegin; itr != itrEnd; itr++)
 	{
-		// 一つ前のポインタを保存
-		CPlayerClone* prev = pTarget;
-
-		// ポインタを１つ進める
-		pTarget++;
-
-		// 進めたポインタと自身を比較する
-		if (pTarget == this)
+		// 現在のポインタと自身を比較する
+		if (*itr == this)
 		{
 			// ついていく
 			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
 
 			return;
 		}
+
+		// 現在のポインタを保存する
+		prev = *itr;
 	}
 }
 
