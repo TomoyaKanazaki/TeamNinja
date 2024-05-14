@@ -392,6 +392,18 @@ CTimeUI *CTimeUI::Create
 }
 
 //============================================================
+//	表示時間の設定処理
+//============================================================
+void CTimeUI::SetTime(const float fTime)
+{
+	// 引数の表示時間を設定
+	m_fTime = fTime;
+
+	// 表示時間の補正
+	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
+}
+
+//============================================================
 //	数字の種類の設定処理
 //============================================================
 void CTimeUI::SetValueType(const CValue::EType type)
@@ -527,18 +539,6 @@ void CTimeUI::SetAlignY(const EAlignY align)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	表示時間の設定処理
-//============================================================
-void CTimeUI::SetTime(const float fTime)
-{
-	// 引数の表示時間を設定
-	m_fTime = fTime;
-
-	// 表示時間の補正
-	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
 }
 
 //============================================================

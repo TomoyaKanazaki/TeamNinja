@@ -28,8 +28,8 @@ namespace
 {
 	namespace timerInfo
 	{
-		const int TIME_START = 0;	// 開始時間
-		const int TIME_LIMIT = 0;	// 制限時間
+		const float TIME_START = 0.0f;		// 開始時間
+		const float TIME_LIMIT = 180.0f;	// 制限時間
 		const D3DXVECTOR3 POS		 = D3DXVECTOR3(1100.0f, 43.5f, 0.0f);	// タイマー位置
 		const D3DXVECTOR3 OFFSET	 = D3DXVECTOR3(146.0f, 13.0f, 0.0f);	// タイマー背景オフセット
 		const D3DXVECTOR3 VAL_SIZE	 = D3DXVECTOR3(46.8f, 62.4f, 0.0f);		// タイマー数字大きさ

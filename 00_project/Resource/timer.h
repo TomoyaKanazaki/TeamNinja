@@ -53,7 +53,11 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CTimer *Create(const float fLimit);	// 生成
+	static CTimer *Create	// 生成
+	( // 引数
+		const float fTime,	// 開始時間
+		const float fLimit	// 制限時間
+	);
 	static CListManager<CTimer> *GetList(void);	// リスト取得
 
 	// メンバ関数
