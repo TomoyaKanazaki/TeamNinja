@@ -22,6 +22,15 @@
 class CEnemyChase : public CEnemy
 {
 public:
+
+	// 状態
+	enum EState
+	{
+		STATE_PLAYER = 0,	// プレイヤー追跡状態
+		STATE_CLONE,		// 分身追跡状態
+		STATE_MAX			// この列挙型の総数
+	};
+
 	// コンストラクタ
 	explicit CEnemyChase(const EType type);
 
@@ -37,7 +46,11 @@ public:
 private:
 
 	// メンバ関数
-	void Chase(void);
+	void TargetSelect(void);		// 標的選択処理
+	void Chase(const D3DXVECTOR3 posTarget);		// 追跡処理
+
+	// メンバ変数
+	EState m_state;			// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

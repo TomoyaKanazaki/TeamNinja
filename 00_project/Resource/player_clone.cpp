@@ -245,7 +245,7 @@ void CPlayerClone::Delete(const int nNum)
 	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
 	// 分身を取得
-	CPlayerClone* pAvatar = m_pList->GetIndex(nNum);
+	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
 
 	// 分身の終了
 	pAvatar->Uninit();
@@ -266,7 +266,7 @@ void CPlayerClone::Delete(void)
 	for (int i = 0; i < nNum; ++i)
 	{
 		// 分身を取得
-		CPlayerClone* pAvatar = m_pList->GetIndex(0);
+		CPlayerClone* pAvatar = *m_pList->GetIndex(0);
 
 		// 分身の終了
 		pAvatar->Uninit();
