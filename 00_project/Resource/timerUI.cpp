@@ -8,38 +8,15 @@
 //	インクルードファイル
 //************************************************************
 #include "timerUI.h"
-#include "manager.h"
-#include "renderer.h"
-#include "texture.h"
-#include "object2D.h"
+#include "timer.h"
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const char *TEXTURE_FILE[] =	// テクスチャファイル
-	{
-		"data\\TEXTURE\\timer001.png",	// 背景テクスチャ
-	};
-
-	const int PRIORITY = 5;	// タイマーUIの優先順位
-}
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CTimerUI::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
-
-//************************************************************
-//	子クラス [CTimerUI] のメンバ関数
+//	親クラス [CTimerUI] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimerUI::CTimerUI() :
-	m_pBG		(nullptr),	// 背景の情報
-	m_offsetBG	(VEC3_ZERO)	// 背景のオフセット
+CTimerUI::CTimerUI() : m_pTimer(nullptr)
 {
 
 }
@@ -58,24 +35,10 @@ CTimerUI::~CTimerUI()
 HRESULT CTimerUI::Init(void)
 {
 	// メンバ変数を初期化
-	m_pBG = nullptr;		// 背景の情報
-	m_offsetBG = VEC3_ZERO;	// 背景のオフセット
+	m_pTimer = nullptr;	// タイマー管理情報
 
-	// 背景の生成
-	m_pBG = CObject2D::Create(VEC3_ZERO);
-	if (m_pBG == nullptr)
-	{ // 生成に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// テクスチャを登録・割当
-	m_pBG->BindTexture(TEXTURE_FILE[TEXTURE_BG]);
-
-	// タイマーマネージャーの初期化
-	if (FAILED(CTimerManager::Init()))
+	// タイムUIの初期化
+	if (FAILED(CTimeUI::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -83,8 +46,18 @@ HRESULT CTimerUI::Init(void)
 		return E_FAIL;
 	}
 
-	// 優先順位を設定
-	SetPriority(PRIORITY);
+	// タイマーの生成
+	m_pTimer = CTimer::Create(0.0f);
+	if (m_pTimer == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// タイマーの自動更新・自動終了をOFFにする
+	m_pTimer->SetLabel(LABEL_NONE);
 
 	// 成功を返す
 	return S_OK;
@@ -95,11 +68,11 @@ HRESULT CTimerUI::Init(void)
 //============================================================
 void CTimerUI::Uninit(void)
 {
-	// 背景の終了
-	SAFE_UNINIT(m_pBG);
+	// タイマーの終了
+	SAFE_UNINIT(m_pTimer);
 
-	// タイマーマネージャーの終了
-	CTimerManager::Uninit();
+	// タイムUIの終了
+	CTimeUI::Uninit();
 }
 
 //============================================================
@@ -107,59 +80,26 @@ void CTimerUI::Uninit(void)
 //============================================================
 void CTimerUI::Update(const float fDeltaTime)
 {
-	// 背景の更新
-	m_pBG->Update(fDeltaTime);
+	// タイマーの更新
+	m_pTimer->Update(fDeltaTime);
 
-	// タイマーマネージャーの更新
-	CTimerManager::Update(fDeltaTime);
+	// 時間
+	CTimeUI::SetTime(m_pTimer->GetTime());
+
+	// タイムUIの更新
+	CTimeUI::Update(fDeltaTime);
 }
 
 //============================================================
-//	位置の設定処理
+//	描画処理
 //============================================================
-void CTimerUI::SetPosition(const D3DXVECTOR3& rPos)
+void CTimerUI::Draw(CShader *pShader)
 {
-	// 引数の位置を設定
-	CTimerManager::SetPosition(rPos);
+	// タイマーの描画
+	m_pTimer->Draw(pShader);
 
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CTimerUI::SetPriority(const int nPriority)
-{
-	// 背景の優先順位を設定
-	m_pBG->SetPriority(nPriority);
-
-	// 優先順位の設定
-	CTimerManager::SetPriority(nPriority);
-}
-
-//============================================================
-//	更新状況の設定処理
-//============================================================
-void CTimerUI::SetEnableUpdate(const bool bUpdate)
-{
-	// 背景の更新状況を設定
-	m_pBG->SetEnableUpdate(bUpdate);
-
-	// 更新状況の設定
-	CTimerManager::SetEnableUpdate(bUpdate);
-}
-
-//============================================================
-//	描画状況の設定処理
-//============================================================
-void CTimerUI::SetEnableDraw(const bool bDraw)
-{
-	// 背景の更新状況を設定
-	m_pBG->SetEnableDraw(bDraw);
-
-	// 描画状況の設定
-	CTimerManager::SetEnableDraw(bDraw);
+	// タイムUIの描画
+	CTimeUI::Draw(pShader);
 }
 
 //============================================================
@@ -167,15 +107,18 @@ void CTimerUI::SetEnableDraw(const bool bDraw)
 //============================================================
 CTimerUI *CTimerUI::Create
 (
-	const ETime time,				// 設定タイム
-	const long nTime,				// 制限時間
+	const float fTime,				// 開始時間
+	const float fLimit,				// 制限時間
 	const D3DXVECTOR3& rPos,		// 位置
 	const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 	const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
 	const D3DXVECTOR3& rSpaceValue,	// 数字の空白
 	const D3DXVECTOR3& rSpacePart,	// 区切りの空白
-	const D3DXVECTOR3& rOffsetBG,	// 背景のオフセット
-	const D3DXVECTOR3& rSizeBG		// 背景の大きさ
+	const CValue::EType type,		// 数字種類
+	const EAlignX alignX,			// 横配置
+	const EAlignY alignY,			// 縦配置
+	const D3DXVECTOR3& rRot,		// 向き
+	const D3DXCOLOR& rCol			// 色
 )
 {
 	// タイマーUIの生成
@@ -197,11 +140,17 @@ CTimerUI *CTimerUI::Create
 			return nullptr;
 		}
 
-		// 制限時間を設定
-		pTimerUI->SetLimit(time, nTime);
+		// 開始時間を設定
+		pTimerUI->SetTime(fTime);
 
-		// 位置を設定
-		pTimerUI->SetPosition(rPos);
+		// 数字種類を設定
+		pTimerUI->SetValueType(type);
+
+		// 原点位置を設定
+		pTimerUI->SetVec3Position(rPos);
+
+		// 原点向きを設定
+		pTimerUI->SetVec3Rotation(rRot);
 
 		// 数字の大きさを設定
 		pTimerUI->SetSizingValue(rSizeValue);
@@ -215,57 +164,16 @@ CTimerUI *CTimerUI::Create
 		// 区切りの空白を設定
 		pTimerUI->SetSpacePart(rSpacePart);
 
-		// オフセットを設定
-		pTimerUI->SetOffset(rOffsetBG);
+		// 色を設定
+		pTimerUI->SetColor(rCol);
 
-		// 背景の大きさを設定
-		pTimerUI->SetSizingBG(rSizeBG);
+		// 横配置を設定
+		pTimerUI->SetAlignX(alignX);
+
+		// 縦配置を設定
+		pTimerUI->SetAlignY(alignY);
 
 		// 確保したアドレスを返す
 		return pTimerUI;
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CTimerUI::Release(CTimerUI *&prTimerUI)
-{
-	// タイマーUIの終了
-	assert(prTimerUI != nullptr);
-	prTimerUI->Uninit();
-
-	// メモリ開放
-	SAFE_DELETE(prTimerUI);
-}
-
-//============================================================
-//	オフセットの設定処理
-//============================================================
-void CTimerUI::SetOffset(const D3DXVECTOR3& rOffset)
-{
-	// オフセットの設定
-	m_offsetBG = rOffset;
-
-	// 相対位置の設定
-	SetPositionRelative();
-}
-
-//============================================================
-//	背景の大きさ設定処理
-//============================================================
-void CTimerUI::SetSizingBG(const D3DXVECTOR3& rSize)
-{
-	// 背景の大きさを設定
-	assert(m_pBG != nullptr);
-	m_pBG->SetVec3Sizing(rSize);
-}
-
-//============================================================
-//	相対位置の設定処理
-//============================================================
-void CTimerUI::SetPositionRelative(void)
-{
-	// 背景位置を設定
-	m_pBG->SetVec3Position(GetPosition() + m_offsetBG);
 }

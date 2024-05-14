@@ -13,27 +13,17 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "timerManager.h"
-
-//************************************************************
-//	前方宣言
-//************************************************************
-class CObject2D;	// オブジェクト2Dクラス
+#include "timeUI.h"
+#include "timer.h"
+#include "value.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // タイマーUIクラス
-class CTimerUI : public CTimerManager
+class CTimerUI : public CTimeUI
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
-	{
-		TEXTURE_BG = 0,	// 背景テクスチャ
-		TEXTURE_MAX		// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CTimerUI();
 
@@ -43,38 +33,39 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(const float fDeltaTime) override;		// 更新
-	void SetPosition(const D3DXVECTOR3& rPos) override;	// 位置設定
-	void SetPriority(const int nPriority) override;		// 優先順位設定
-	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
-	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
+	void Update(const float fDeltaTime) override;	// 更新
+	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
 	static CTimerUI *Create	// 生成
 	( // 引数
-		const ETime time,				// 設定タイム
-		const long nTime,				// 制限時間
+		const float fTime,				// 開始時間
+		const float fLimit,				// 制限時間
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 		const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
 		const D3DXVECTOR3& rSpaceValue,	// 数字の空白
 		const D3DXVECTOR3& rSpacePart,	// 区切りの空白
-		const D3DXVECTOR3& rOffsetBG,	// 背景のオフセット
-		const D3DXVECTOR3& rSizeBG		// 背景の大きさ
+		const CValue::EType type = CValue::TYPE_NORMAL,	// 数字種類
+		const EAlignX alignX = XALIGN_CENTER,			// 横配置
+		const EAlignY alignY = YALIGN_CENTER,			// 縦配置
+		const D3DXVECTOR3& rRot = VEC3_ZERO,			// 向き
+		const D3DXCOLOR& rCol = XCOL_WHITE				// 色
 	);
-	static void Release(CTimerUI *&prTimerUI);	// 破棄
 
 	// メンバ関数
-	void SetOffset(const D3DXVECTOR3& rOffset);	// オフセット設定
-	void SetSizingBG(const D3DXVECTOR3& rSize);	// 背景大きさ設定
+	void Start(void)	{ m_pTimer->Start(); }	// 計測開始
+	void End(void)		{ m_pTimer->End(); }	// 計測終了
+	void EnableStop(const bool bStop)	{ m_pTimer->EnableStop(bStop);}		// 計測停止設定
+	void SetTime(const float fTime)		{ m_pTimer->SetTime(fTime); }		// 時間設定
+	void SetLimit(const float fLimit)	{ m_pTimer->SetLimit(fLimit); }		// 制限時間設定
+	float GetTime(void) const			{ return m_pTimer->GetTime(); }		// 時間取得
+	float GetLimit(void) const			{ return m_pTimer->GetLimit(); }	// 制限時間取得
+	CTimer::EState GetState(void) const	{ return m_pTimer->GetState(); }	// 計測状態取得
 
 private:
-	// メンバ関数
-	void SetPositionRelative(void);	// 相対位置設定
-
 	// メンバ変数
-	CObject2D *m_pBG;		// 背景の情報
-	D3DXVECTOR3 m_offsetBG;	// 背景のオフセット
+	CTimer *m_pTimer;	// タイマー管理情報
 };
 
 #endif	// _TIMER_UI_H_

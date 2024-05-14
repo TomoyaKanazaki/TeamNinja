@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "timer.h"
 #include "value.h"
 #include "object2D.h"
 
@@ -24,9 +25,7 @@ namespace
 		"data\\TEXTURE\\timePart000.png",	// 通常区切り
 	};
 
-	const int	PRIORITY	= 6;	// タイムUIの優先順位
-	const float	TIME_NUMMIN	= 0.0f;	// 最少タイム
-	const float	TIME_NUMMAX	= 60.0f * 99.0f + 59.0f + 0.999f;	// 最大タイム
+	const int PRIORITY = 6;	// タイムUIの優先順位
 }
 
 //************************************************************
@@ -40,7 +39,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI),
+CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
 	m_type			(CValue::TYPE_NORMAL),	// 数字種類
 	m_pos			(VEC3_ZERO),			// 原点位置
 	m_rot			(VEC3_ZERO),			// 原点向き
@@ -51,7 +50,7 @@ CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI),
 	m_col			(XCOL_WHITE),			// 色
 	m_alignX		(XALIGN_CENTER),		// 横配置
 	m_alignY		(YALIGN_CENTER),		// 縦配置
-	m_fTime			(0.0f)					// 表示タイム
+	m_fTime			(0.0f)					// 表示時間
 {
 	// メンバ変数をクリア
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
@@ -84,7 +83,7 @@ HRESULT CTimeUI::Init(void)
 	m_col			= XCOL_WHITE;		// 色
 	m_alignX		= XALIGN_CENTER;	// 横配置
 	m_alignY		= YALIGN_CENTER;	// 縦配置
-	m_fTime			= 0.0f;				// 表示タイム
+	m_fTime			= 0.0f;				// 表示時間
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
@@ -114,8 +113,16 @@ HRESULT CTimeUI::Init(void)
 		}
 	}
 
-	// 優先順位を設定
+	// 優先順位の設定
 	SetPriority(PRIORITY);
+
+	// 更新状況の設定
+	SetEnableUpdate(false);
+	CObject::SetEnableUpdate(true);	// 自身はONにする
+
+	// 描画状況の設定
+	SetEnableDraw(false);
+	CObject::SetEnableDraw(true);	// 自身はONにする
 
 	// 成功を返す
 	return S_OK;
@@ -175,9 +182,23 @@ void CTimeUI::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CTimeUI::Draw(CShader * /*pShader*/)
+void CTimeUI::Draw(CShader *pShader)
 {
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
 
+		// 数字の更新
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->Draw(pShader);
+	}
+
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
+
+		// 区切りの更新
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->Draw(pShader);
+	}
 }
 
 //============================================================
@@ -185,6 +206,9 @@ void CTimeUI::Draw(CShader * /*pShader*/)
 //============================================================
 void CTimeUI::SetPriority(const int nPriority)
 {
+	// 自身の優先順位を設定
+	CObject::SetPriority(nPriority);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -207,6 +231,9 @@ void CTimeUI::SetPriority(const int nPriority)
 //============================================================
 void CTimeUI::SetEnableUpdate(const bool bUpdate)
 {
+	// 自身の更新状況を設定
+	CObject::SetEnableUpdate(bUpdate);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -229,6 +256,9 @@ void CTimeUI::SetEnableUpdate(const bool bUpdate)
 //============================================================
 void CTimeUI::SetEnableDraw(const bool bDraw)
 {
+	// 自身の描画状況を設定
+	CObject::SetEnableDraw(bDraw);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -291,7 +321,7 @@ void CTimeUI::SetVec3Rotation(const D3DXVECTOR3& rRot)
 //============================================================
 CTimeUI *CTimeUI::Create
 (
-	const float fTime,				// 表示タイム
+	const float fTime,				// 表示時間
 	const D3DXVECTOR3& rPos,		// 位置
 	const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 	const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
@@ -323,7 +353,7 @@ CTimeUI *CTimeUI::Create
 			return nullptr;
 		}
 
-		// 表示タイムを設定
+		// 表示時間を設定
 		pTimeUI->SetTime(fTime);
 
 		// 数字種類を設定
@@ -500,15 +530,15 @@ void CTimeUI::SetAlignY(const EAlignY align)
 }
 
 //============================================================
-//	表示タイムの設定処理
+//	表示時間の設定処理
 //============================================================
 void CTimeUI::SetTime(const float fTime)
 {
-	// 引数の表示タイムを設定
+	// 引数の表示時間を設定
 	m_fTime = fTime;
 
-	// 表示タイムの補正
-	useful::LimitNum(m_fTime, TIME_NUMMIN, TIME_NUMMAX);
+	// 表示時間の補正
+	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
 }
 
 //============================================================

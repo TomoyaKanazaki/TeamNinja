@@ -81,7 +81,7 @@ public:
 	// 静的メンバ関数
 	static CTimeUI *Create	// 生成
 	( // 引数
-		const float fTime,				// 表示タイム
+		const float fTime,				// 表示時間
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 		const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
@@ -103,7 +103,7 @@ public:
 	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
 	void SetAlignY(const EAlignY align);			// 縦配置設定
-	void SetTime(const float fTime);				// 表示タイム設定
+	void SetTime(const float fTime);				// 表示時間設定
 	float GetTimeWidth(void) const;					// タイム全体の横幅取得
 	float GetTimeHeight(void) const;				// タイム全体の縦幅取得
 	D3DXVECTOR3 GetTimeSize(void) const;			// タイム全体の大きさ取得
@@ -115,7 +115,7 @@ public:
 	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色の設定
 	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
-	float GetTime(void) const				{ return m_fTime; }			// 表示タイム取得
+	float GetTime(void) const				{ return m_fTime; }			// 表示時間取得
 	int GetMin(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
 	int GetSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
 	int GetMSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
@@ -141,7 +141,7 @@ private:
 	D3DXCOLOR m_col;			// 色
 	EAlignX m_alignX;			// 横配置
 	EAlignY m_alignY;			// 縦配置
-	float m_fTime;				// 表示タイム
+	float m_fTime;				// 表示時間
 };
 
 #endif	// _TIME_UI_H_

@@ -10,6 +10,14 @@
 #include "timer.h"
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const int PRIORITY = 0;	// タイマーの優先順位
+}
+
+//************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CTimer> *CTimer::m_pList = nullptr;	// オブジェクトリスト
@@ -20,10 +28,11 @@ CListManager<CTimer> *CTimer::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimer::CTimer() : CObject(CObject::LABEL_TIMER),
+CTimer::CTimer() : CObject(CObject::LABEL_TIMER, CObject::DIM_3D, PRIORITY),
 	m_funcCount	(nullptr),		// 計測関数ポインタ
 	m_state		(STATE_NONE),	// 計測状態
 	m_fTime		(0.0f),			// 計測時間
+	m_fLimit	(0.0f),			// 制限時間
 	m_bStop		(false),		// 計測停止状況
 	m_lTime		(0),			// 計測ミリ秒
 	m_nMin		(0),			// 分
@@ -50,6 +59,7 @@ HRESULT CTimer::Init(void)
 	m_funcCount = nullptr;		// 計測関数ポインタ
 	m_state		= STATE_NONE;	// 計測状態
 	m_fTime		= 0.0f;			// 計測時間
+	m_fLimit	= 0.0f;			// 制限時間
 	m_bStop		= false;		// 計測停止状況
 	m_lTime		= 0;			// 計測ミリ秒
 	m_nMin		= 0;			// 分
@@ -220,11 +230,29 @@ void CTimer::EnableStop(const bool bStop)
 }
 
 //============================================================
+//	時間の設定処理
+//============================================================
+void CTimer::SetTime(const float fTime)
+{
+	// 時間を保存
+	m_fTime = fTime;
+
+	// 時間を補正
+	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
+}
+
+//============================================================
 //	制限時間の設定処理
 //============================================================
 void CTimer::SetLimit(const float fLimit)
 {
-	if (fLimit <= 0.0f)
+	// 制限時間を保存
+	m_fLimit = fLimit;
+
+	// 制限時間を補正
+	useful::LimitNum(m_fLimit, timer::TIME_MIN, timer::TIME_MAX);
+
+	if (m_fLimit <= 0.0f)
 	{ // 制限時間がない場合
 
 		// カウントアップ関数を設定
@@ -232,9 +260,6 @@ void CTimer::SetLimit(const float fLimit)
 	}
 	else
 	{ // 時間制限がある場合
-
-		// 制限時間を設定
-		m_fTime = fLimit;
 
 		// カウントダウン関数を設定
 		m_funcCount = std::bind(&CTimer::CountDown, this, std::placeholders::_1);

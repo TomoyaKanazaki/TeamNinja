@@ -16,6 +16,15 @@
 #include "object.h"
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace timer
+{
+	const float	TIME_MIN = 0.0f;	// 最少タイム
+	const float	TIME_MAX = 60.0f * 99.0f + 59.0f + 0.999f;	// 最大タイム
+}
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // タイマークラス
@@ -51,8 +60,11 @@ public:
 	void Start(void);	// 計測開始
 	void End(void);		// 計測終了
 	void EnableStop(const bool bStop);	// 計測停止設定
+	void SetTime(const float fTime);	// 時間設定
 	void SetLimit(const float fLimit);	// 制限時間設定
-	EState GetState(void) const { return m_state; }	// 計測状態取得
+	float GetTime(void) const	{ return m_fTime; }		// 時間取得
+	float GetLimit(void) const	{ return m_fLimit; }	// 制限時間取得
+	EState GetState(void) const	{ return m_state; }		// 計測状態取得
 
 private:
 	// オーバーライド関数
@@ -71,6 +83,7 @@ private:
 	std::function<void(const float)> m_funcCount;	// 計測関数ポインタ
 	EState	m_state;	// 計測状態
 	float	m_fTime;	// 計測時間
+	float	m_fLimit;	// 制限時間
 	bool	m_bStop;	// 計測停止状況
 	long	m_lTime;	// 計測ミリ秒
 	int		m_nMin;		// 分
