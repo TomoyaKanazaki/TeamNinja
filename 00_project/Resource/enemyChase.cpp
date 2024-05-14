@@ -8,11 +8,12 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "enemy_chase.h"
+#include "enemyChase.h"
 #include "renderer.h"
 #include "deltaTime.h"
 
 #include "player.h"
+#include "player_clone.h"
 
 //************************************************************
 //	定数宣言
@@ -30,7 +31,8 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyChase::CEnemyChase(const EType type) : CEnemy(type)
+CEnemyChase::CEnemyChase(const EType type) : CEnemy(type),
+m_state(STATE_PLAYER)			// 状態
 {
 
 }
@@ -84,8 +86,8 @@ void CEnemyChase::Update(const float fDeltaTime)
 	// 過去位置更新
 	UpdateOldPosition();
 
-	// 追跡処理
-	Chase();
+	// 標的選択処理
+	TargetSelect();
 
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
@@ -101,19 +103,57 @@ void CEnemyChase::Draw(CShader* pShader)
 }
 
 //============================================================
+// 標的選択処理
+//============================================================
+void CEnemyChase::TargetSelect(void)
+{
+	D3DXVECTOR3 posTarget = VEC3_ZERO;		// 標的の位置
+
+	switch (m_state)
+	{
+	case CEnemyChase::STATE_PLAYER:
+
+		// プレイヤーの位置を取得する
+		posTarget = CScene::GetPlayer()->GetVec3Position();
+
+		break;
+
+	case CEnemyChase::STATE_CLONE:
+
+		// 分身のリストが無い場合抜け出す
+		if (CPlayerClone::GetList() == nullptr ||
+			*CPlayerClone::GetList()->GetBegin() == nullptr) { return; }
+
+		// 分身の位置を取得する
+		posTarget = (*CPlayerClone::GetList()->GetBegin())->GetVec3Position();
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
+
+	// 追跡処理
+	Chase(posTarget);
+}
+
+//============================================================
 // 追跡処理
 //============================================================
-void CEnemyChase::Chase(void)
+void CEnemyChase::Chase(const D3DXVECTOR3 posTarget)
 {
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
 	D3DXVECTOR3 rot = GetVec3Rotation();		// 向き
-	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();		// プレイヤーの位置
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
 	float fDiff;
 
 	// 目的の向きを取得
-	destRot.y = atan2f(pos.x - posPlayer.x, pos.z - posPlayer.z);
+	destRot.y = atan2f(pos.x - posTarget.x, pos.z - posTarget.z);
 
 	// 向きの差分
 	fDiff = destRot.y - rot.y;

@@ -29,9 +29,9 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	T* GetBegin(void);	// リスト先頭取得
-	T* GetEnd(void);	// リスト最後尾取得
-	T* GetIndex(const int nID);	// リストインデックス取得
+	AIterator GetBegin(void);	// リスト先頭取得
+	AIterator GetEnd(void);	// リスト最後尾取得
+	AIterator GetIndex(const int nID);	// リストインデックス取得
 	AIterator AddList(T *pObject);			// リスト追加
 	void DelList(const AIterator iterator);	// リスト削除
 	int GetNumAll(void);			// リスト内の要素数取得
@@ -90,38 +90,39 @@ template<class T> void CListManager<T>::Uninit(void)
 //============================================================
 //	リスト先頭取得処理
 //============================================================
-template<class T> T* CListManager<T>::GetBegin(void)
+template<class T>
+std::_List_iterator<std::_List_val<std::_List_simple_types<T*>>> CListManager<T>::GetBegin(void)
 {
-	T* pBegin = m_list.begin();	// リスト先頭
-	assert(pBegin != nullptr);
-	return pBegin;	// リスト先頭を返す
+	// リスト先頭を返す
+	return m_list.begin();
 }
 
 //============================================================
 //	リスト最後尾取得処理
 //============================================================
-template<class T> T* CListManager<T>::GetEnd(void)
+template<class T>
+std::_List_iterator<std::_List_val<std::_List_simple_types<T*>>> CListManager<T>::GetEnd(void)
 {
-	T* pEnd = m_list.end();	// リスト最後尾
-	assert(pEnd != nullptr);
-	return pEnd;	// リスト最後尾を返す
+	// リスト最後尾を返す
+	return m_list.end();
 }
 
 //============================================================
 //	リストインデックス取得処理
 //============================================================
-template<class T> T* CListManager<T>::GetIndex(const int nID)
+template<class T>
+std::_List_iterator<std::_List_val<std::_List_simple_types<T*>>> CListManager<T>::GetIndex(const int nID)
 {
 	AIterator itr = m_list.begin();	// リスト先頭
 
 	// インデックスが範囲外の場合抜ける
-	if (nID <= NONE_IDX || nID >= (int)m_list.size()) { assert(false); return nullptr; }
+	if (nID <= NONE_IDX || nID >= (int)m_list.size()) { assert(false); return itr; }
 
 	// 引数のインデックス分進める
 	std::advance(itr, nID);
 
-	// 進めたイテレーターの中身を返す
-	return *itr;
+	// 進めたイテレーターを返す
+	return itr;
 }
 
 //============================================================

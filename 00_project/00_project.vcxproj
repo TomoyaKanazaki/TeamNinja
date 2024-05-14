@@ -178,7 +178,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyState.h" />
     <ClInclude Include="Resource\enemyStateAttack.h" />
-    <ClInclude Include="Resource\enemy_chase.h" />
+    <ClInclude Include="Resource\enemyChase.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
@@ -288,7 +288,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyState.cpp" />
     <ClCompile Include="Resource\enemyStateAttack.cpp" />
-    <ClCompile Include="Resource\enemy_chase.cpp" />
+    <ClCompile Include="Resource\enemyChase.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />
