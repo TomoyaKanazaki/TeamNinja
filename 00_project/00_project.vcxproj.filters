@@ -645,5 +645,8 @@
     <FxCompile Include="draw.fx">
       <Filter>シェーダー</Filter>
     </FxCompile>
+    <FxCompile Include="data\SHADER\shaderToon.fx">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
