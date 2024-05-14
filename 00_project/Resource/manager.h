@@ -29,9 +29,9 @@ class CLight;				// ライトクラス
 class CTexture;				// テクスチャクラス
 class CModel;				// モデルクラス
 class CFont;				// フォントクラス
+class CCharacter;			// キャラクタークラス
 class CFade;				// フェードクラス
 class CLoading;				// ローディングクラス
-class CMotionManager;		// モーションマネージャークラス
 class CEffekseerManager;	// エフェクシアマネージャークラス
 class CRetentionManager;	// データ保存マネージャークラス
 class CDebug;				// デバッグクラス
@@ -79,10 +79,10 @@ public:
 	CTexture			*GetTexture(void);		// テクスチャ取得
 	CModel				*GetModel(void);		// モデル取得
 	CFont				*GetFont(void);			// フォント取得
+	CCharacter			*GetCharacter(void);	// キャラクター取得
 	CFade				*GetFade(void);			// フェード取得
 	CLoading			*GetLoading(void);		// ローディング取得
 	CScene				*GetScene(void);		// シーン取得
-	CMotionManager		*GetMotion(void);		// モーションマネージャー取得
 	CEffekseerManager	*GetEffekseer(void);	// エフェクシアマネージャー取得
 	CRetentionManager	*GetRetention(void);	// データ保存マネージャー取得
 	CDebug				*GetDebug(void);		// デバッグ取得
@@ -105,10 +105,10 @@ private:
 	CTexture			*m_pTexture;	// テクスチャインスタンス
 	CModel				*m_pModel;		// モデルインスタンス
 	CFont				*m_pFont;		// フォントインスタンス
+	CCharacter			*m_pCharacter;	// キャラクターインスタンス
 	CFade				*m_pFade;		// フェードインスタンス
 	CLoading			*m_pLoading;	// ローディングインスタンス
 	CScene				*m_pScene;		// シーンインスタンス
-	CMotionManager		*m_pMotion;		// モーションマネージャー
 	CEffekseerManager	*m_pEffekseer;	// エフェクシアマネージャー
 	CRetentionManager	*m_pRetention;	// データ保存マネージャー
 	CDebug				*m_pDebug;		// デバッグ

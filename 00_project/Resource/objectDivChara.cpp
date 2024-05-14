@@ -129,7 +129,7 @@ void CObjectDivChara::Draw(CShader *pShader)
 		// ワールドマトリックスの設定
 		pDevice->SetTransform(D3DTS_WORLD, apMtxWorld[nCntChara]);
 
-		for (int nCntParts = 0; nCntParts < m_apBody[nCntChara]->GetNumModel(); nCntParts++)
+		for (int nCntParts = 0; nCntParts < m_apBody[nCntChara]->GetNumParts(); nCntParts++)
 		{ // パーツの総数分繰り返す
 
 			// パーツの描画
@@ -296,16 +296,21 @@ void CObjectDivChara::SetMaterial
 }
 
 //============================================================
-//	モデル情報の設定処理
+//	キャラクター情報割当
 //============================================================
-void CObjectDivChara::SetModelInfo(void)
+void CObjectDivChara::BindCharaData
+(
+	const char *pCharaPassLower,	// 下半身キャラ情報パス
+	const char *pCharaPassUpper		// 上半身キャラ情報パス
+)
 {
-	for (int i = 0; i < BODY_MAX; i++)
-	{ // 分割した身体の数分繰り返す
+	// 下半身のキャラクター情報の割当
+	if (pCharaPassLower == nullptr) { assert(false); return; }	// パス指定なし
+	m_apBody[BODY_LOWER]->BindCharaData(pCharaPassLower);
 
-		// モデル情報の設定
-		m_apBody[i]->SetModelInfo();
-	}
+	// 上半身のキャラクター情報の割当
+	if (pCharaPassUpper == nullptr) { assert(false); return; }	// パス指定なし
+	m_apBody[BODY_UPPER]->BindCharaData(pCharaPassUpper);
 }
 
 //============================================================
@@ -324,13 +329,13 @@ void CObjectDivChara::SetEnableMotionUpdate(const bool bUpdate)
 //============================================================
 //	モーション情報の追加処理
 //============================================================
-void CObjectDivChara::AddMotionInfo(const EBody bodyID, CMotion::SMotionInfo info)
+void CObjectDivChara::AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo)
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{ // 正規インデックスの場合
 
 		// 引数インデックスのモーション情報を追加
-		m_apBody[bodyID]->AddMotionInfo(info);
+		m_apBody[bodyID]->AddMotionInfo(rInfo);
 	}
 	else { assert(false); }	// インデックスエラー
 }
@@ -763,7 +768,7 @@ float CObjectDivChara::GetMaxAlpha(void) const
 //============================================================
 void CObjectDivChara::SetUpperParentID(const int nUpperParentID)
 {
-	if (nUpperParentID > NONE_IDX && nUpperParentID < m_apBody[BODY_LOWER]->GetNumModel())
+	if (nUpperParentID > NONE_IDX && nUpperParentID < m_apBody[BODY_LOWER]->GetNumParts())
 	{ // 正規インデックスの場合
 
 		// 上半身の親インデックスを設定
@@ -796,11 +801,11 @@ CMultiModel *CObjectDivChara::GetMultiModel(const EBody bodyID, const int nModel
 {
 	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
 	{
-		if (nModelID > NONE_IDX && nModelID < m_apBody[bodyID]->GetNumModel())
+		if (nModelID > NONE_IDX && nModelID < m_apBody[bodyID]->GetNumParts())
 		{ // 正規インデックスの場合
 
 			// 引数インデックスのパーツを返す
-			return m_apBody[bodyID]->GetMultiModel(nModelID);
+			return m_apBody[bodyID]->GetParts(nModelID);
 		}
 	}
 

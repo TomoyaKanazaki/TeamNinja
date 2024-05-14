@@ -86,6 +86,9 @@ private:
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
+	// メンバ関数 (金崎追加)
+	void Chase(); // プレイヤーについていく処理
+
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト
 

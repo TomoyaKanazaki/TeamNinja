@@ -13,6 +13,9 @@
 
 #include "enemy_chase.h"
 
+#include "enemyState.h"
+#include "enemyStateNone.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -35,8 +38,10 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 //============================================================
 CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
 m_oldPos(VEC3_ZERO),		// 過去位置
+m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(type)				// 種類
+m_type(type),				// 種類
+m_pState(nullptr)			// 状態
 {
 
 }
@@ -54,10 +59,6 @@ CEnemy::~CEnemy()
 //============================================================
 HRESULT CEnemy::Init(void)
 {
-	// メンバ変数を初期化
-	m_oldPos = VEC3_ZERO;	// 過去位置
-	m_move = VEC3_ZERO;	// 移動量
-
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
 	{ // 初期化に失敗した場合
@@ -66,12 +67,6 @@ HRESULT CEnemy::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	//// キャラクター情報の割当
-	//BindCharaData(SETUP_TXT);
-
-	// モデル情報の設定
-	SetModelInfo();
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -89,6 +84,9 @@ HRESULT CEnemy::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// 敵の状態を生成
+	m_pState = new CEnemyStateNone(this);
 
 	// 成功を返す
 	return S_OK;

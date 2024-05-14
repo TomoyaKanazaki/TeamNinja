@@ -12,13 +12,14 @@
 #include "input.h"
 #include "manager.h"
 #include "useful.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
 	const float	MOVE		= 150.0f;	// 移動量
@@ -34,6 +35,8 @@ namespace
 
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
+
+	const float DISTANCE = 50.0f; // プレイヤーとの距離
 }
 
 //************************************************************
@@ -81,9 +84,6 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// モデル情報の設定
-	SetModelInfo();
-
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
 	if (m_pShadow == nullptr)
@@ -110,6 +110,9 @@ HRESULT CPlayerClone::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// マテリアルを変更
+	SetAllMaterial(material::Green());
 
 	// 成功を返す
 	return S_OK;
@@ -145,6 +148,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+
+	// プレイヤーの後を追う
+	Chase();
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
@@ -423,4 +429,25 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
+}
+
+//==========================================
+//  プレイヤーについていく処理
+//==========================================
+void CPlayerClone::Chase()
+{
+	// プレイヤーの情報を取得
+	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// プレイヤーに対して後ろ移動
+	D3DXVECTOR3 pos = posPlayer + D3DXVECTOR3
+	(
+		sinf(rotPlayer.y) * DISTANCE,
+		0.0f,
+		cosf(rotPlayer.y) * DISTANCE
+	);
+
+	// 位置を適用
+	SetVec3Position(pos);
 }

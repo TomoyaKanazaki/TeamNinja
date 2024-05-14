@@ -3,6 +3,7 @@
 //	プレイヤー処理 [player.cpp]
 //	Author：藤田勇一
 //  Adder : 金崎朋弥
+//  Adder : 小原立暉
 //
 //============================================================
 //************************************************************
@@ -35,22 +36,23 @@
 
 #include "input.h"
 #include "player_clone.h"
+#include "checkpoint.h"
 
 #include "gauge2D.h"
+#include "blur.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\TXT\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 150.0f;	// 移動量
+	const float	MOVE		= 300.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
-	const float	HEIGHT		= 100.0f;	// 縦幅
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
@@ -63,7 +65,14 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 20;	// 分割数
 
-	const char* PARAM_FILE = "data/TXT/PlayerParameter.txt";
+	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
+
+	// ブラーの情報
+	namespace blurInfo
+	{
+		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
+		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
+	}
 }
 
 //************************************************************
@@ -93,7 +102,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bCreateClone		(false),		// 分身生成モードフラグ
 	m_nNumClone			(0),			// 生成する分身の数
 	m_nMaxClone			(0),			// 一度に分身できる上限
-	m_nRecover			(0)				// ジャストアクションでの回復量
+	m_nRecover			(0),			// ジャストアクションでの回復量
+	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
+	m_fHeght			(0.0f),			// 立幅
+	m_fInertial			(0.0f)			// 慣性力
 {
 
 }
@@ -123,6 +135,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_bCreateClone		= false;		// 分身生成モードフラグ
 	m_nNumClone			= 0;			// 生成する分身の数
+	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -139,9 +152,6 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// モデル情報の設定
-	SetModelInfo();
-
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
 	if (m_pShadow == nullptr)
@@ -155,7 +165,7 @@ HRESULT CPlayer::Init(void)
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
 	( // 引数
-		GetMultiModel(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
 		ORBIT_OFFSET,	// オフセット情報
 		ORBIT_PART		// 分割数
 	);
@@ -194,6 +204,16 @@ HRESULT CPlayer::Init(void)
 	);
 	m_pTensionGauge->SetNum(m_nInitTension);
 	m_pTensionGauge->SetLabel(LABEL_UI);
+
+	// ブラーの情報
+	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
+	//CBlur::Create
+	( // 引数
+		this,	// 親オブジェクト
+		mat,	// ブラーマテリアル
+		blurInfo::START_ALPHA,	// ブラー開始透明度
+		blurInfo::MAX_LENGTH	// 保持オブジェクト最大数
+	);
 
 	// プレイヤーを出現させる
 	SetSpawn();
@@ -425,10 +445,13 @@ bool CPlayer::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVecKnock
 //============================================================
 //	ヒット処理
 //============================================================
-bool CPlayer::Hit(const int /*nDamage*/)
+bool CPlayer::Hit(const int nDamage)
 {
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// 士気力を減少
+	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
@@ -510,7 +533,7 @@ float CPlayer::GetRadius(void) const
 float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
-	return HEIGHT;
+	return m_fHeght;
 }
 
 //==========================================
@@ -619,6 +642,13 @@ CPlayer::EMotion CPlayer::UpdateNormal(void)
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
 
+	// チェックポイントに帰る
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	if (pKey->IsTrigger(DIK_Q))
+	{
+		SaveReset();
+	}
+
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -698,6 +728,10 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
 		m_move.x += (0.0f - m_move.x) * LAND_REV;
 		m_move.z += (0.0f - m_move.z) * LAND_REV;
 	}
+
+	// 中心座標の更新
+	m_posCenter = rPos;
+	m_posCenter.y += m_fHeght * 0.5f;
 }
 
 //============================================================
@@ -830,28 +864,55 @@ void CPlayer::Move()
 	CInputKeyboard* pKey = GET_INPUTKEY;
 
 	// 一次保存の変数
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 speed = VEC3_ZERO;
+
+	// カメラの向き
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+
+	// スティックの向き
+	float fStickRot = 0.0f;
 
 	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { move.z += 1.0f; }
-	if (pKey->IsPress(DIK_S)) { move.z -= 1.0f; }
-	if (pKey->IsPress(DIK_D)) { move.x += 1.0f; }
-	if (pKey->IsPress(DIK_A)) { move.x -= 1.0f; }
+	if (pKey->IsPress(DIK_W)) { speed.z -= 1.0f; }
+	if (pKey->IsPress(DIK_S)) { speed.z += 1.0f; }
+	if (pKey->IsPress(DIK_D)) { speed.x -= 1.0f; }
+	if (pKey->IsPress(DIK_A)) { speed.x += 1.0f; }
 
-	// 値の正規化
-	D3DXVec3Normalize(&move, &move);
+	// 入力していないと抜ける
+	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
 
-	// 現在の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
+	// スティックの向きを設定する
+	fStickRot = atan2f(speed.x, speed.z);
 
-	// 移動量を加算
-	m_move += move * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
 
-	// 移動量を適用
-	pos += m_move;
-	
-	// 座標を適用
-	SetVec3Position(pos);
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	// 向きを設定
+	m_destRot.y = fStickRot;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 移動量を設定する
+	m_move.x = sinf(fStickRot + D3DX_PI);
+	m_move.z = cosf(fStickRot + D3DX_PI);
+
+	D3DXVec3Normalize(&m_move, &m_move);
+
+	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+
+	{ // 位置の設定
+		D3DXVECTOR3 pos = GetVec3Position();
+		pos += m_move;
+		SetVec3Position(pos);
+	}
 }
 
 //==========================================
@@ -860,10 +921,10 @@ void CPlayer::Move()
 void CPlayer::Inertial()
 {
 	// x軸方向の慣性
-	m_move.x += (0.0f - m_move.x) * 0.1f;
+	m_move.x += (0.0f - m_move.x) * m_fInertial;
 
 	// z軸方向の慣性
-	m_move.z += (0.0f - m_move.z) * 0.1f;
+	m_move.z += (0.0f - m_move.z) * m_fInertial;
 }
 
 //==========================================
@@ -915,13 +976,21 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%d", &m_nRecover);
 		}
+		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fHeght);
+		}
+		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fInertial);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
 		}
 	}
-
-	return;
 }
 
 //==========================================
@@ -977,4 +1046,19 @@ void CPlayer::ControlClone()
 		// 生成したら0に戻す
 		m_nNumClone = 0;
 	}
+}
+
+//==========================================
+//  直前のチェックポイントに帰る
+//==========================================
+void CPlayer::SaveReset()
+{
+	// セーブされていない場合関数を抜ける
+	if (m_pCheckPoint == nullptr) { return; }
+
+	// チェックポイントの座標に飛ぶ
+	SetVec3Position(m_pCheckPoint->GetVec3Position());
+
+	// セーブした時点での士気力にする
+	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }

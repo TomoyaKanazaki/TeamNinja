@@ -20,6 +20,8 @@
 #include "multiModel.h"
 
 #include "enemy.h"
+#include "checkpoint.h"
+#include "goal.h"
 
 //************************************************************
 //	定数宣言
@@ -31,6 +33,8 @@ namespace
 	const D3DXVECTOR3 SIZE_SKIP	 = D3DXVECTOR3(381.0f, 77.0f, 0.0f);	// スキップ操作の表示大きさ
 	const int CHANGE_UI_PRIORITY = 5;	// シネマスコープ終了時のUI優先順位
 	const int GAMEEND_WAIT_FRAME = 0;	// リザルト画面への遷移余韻フレーム
+
+	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 }
 
 //************************************************************
@@ -40,7 +44,8 @@ namespace
 //	コンストラクタ
 //============================================================
 CGameManager::CGameManager() :
-	m_state	(STATE_NONE)	// 状態
+	m_state	(STATE_NONE),	// 状態
+	m_pGoal	(nullptr)		// ゴールのポインタ
 {
 
 }
@@ -60,9 +65,12 @@ HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
+	m_pGoal = nullptr;		// ゴールのポインタ
 
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
 
+	// マップを生成
+	if (FAILED(MapLoad())) { return E_FAIL; }
 
 	// 成功を返す
 	return S_OK;
@@ -73,7 +81,7 @@ HRESULT CGameManager::Init(void)
 //============================================================
 void CGameManager::Uninit(void)
 {
-
+	SAFE_UNINIT(m_pGoal);
 }
 
 //============================================================
@@ -91,6 +99,16 @@ void CGameManager::Update(const float fDeltaTime)
 		{
 			TransitionResult(CRetentionManager::EWin::WIN_FAILED);
 		}
+
+		// ゴールしていた場合リザルト
+		if (m_pGoal != nullptr)
+		{
+			if (m_pGoal->GetClear())
+			{
+				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
+			}
+		}
+
 
 		break;
 
@@ -173,4 +191,85 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
+}
+
+//==========================================
+//  マップの生成
+//==========================================
+HRESULT CGameManager::MapLoad()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
+
+	//ファイルを読み取り専用で開く
+	pFile = fopen(MAP_TXT, "r");
+
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return E_FAIL; }
+
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
+
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
+
+		// 条件分岐
+		if (strcmp(&aStr[0], "CHECKPOINT") == 0) // チェックポイントの生成
+		{
+			// データの取得用変数
+			D3DXVECTOR3 pos, rot;
+
+			// 文字列読み込み (POS)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &pos.x);
+			fscanf(pFile, "%f", &pos.y);
+			fscanf(pFile, "%f", &pos.z);
+
+			// 文字列読み込み (ROT)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &rot.x);
+			fscanf(pFile, "%f", &rot.y);
+			fscanf(pFile, "%f", &rot.z);
+
+			// チェックポイントを生成
+			CCheckPoint::Create(pos, rot);
+		}
+		if (strcmp(&aStr[0], "GOAL") == 0) // チェックポイントの生成
+		{
+			// データの取得用変数
+			D3DXVECTOR3 pos, rot;
+
+			// 文字列読み込み (POS)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &pos.x);
+			fscanf(pFile, "%f", &pos.y);
+			fscanf(pFile, "%f", &pos.z);
+
+			// 文字列読み込み (ROT)
+			fscanf(pFile, "%s", &aStr[0]);
+
+			// データ取得
+			fscanf(pFile, "%f", &rot.x);
+			fscanf(pFile, "%f", &rot.y);
+			fscanf(pFile, "%f", &rot.z);
+
+			// チェックポイントを生成
+			m_pGoal = CGoal::Create(pos, rot);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
+	}
+
+	return S_OK;
 }

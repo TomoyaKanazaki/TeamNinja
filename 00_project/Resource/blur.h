@@ -43,13 +43,6 @@ public:
 	// デストラクタ
 	~CBlur();
 
-	// ブラー情報構造体
-	struct SInfo
-	{
-		CObjectModel *apCharaParts[motion::MAX_PARTS];	// パーツの情報
-		int nNumParts;	// パーツ数
-	};
-
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
@@ -80,7 +73,7 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	std::vector<SInfo*> m_oldObject;	// 過去オブジェクト情報
+	std::vector<std::vector<CObjectModel*>> m_oldObject;	// 過去オブジェクト情報
 	CObjectChara *m_pParent;	// 親オブジェクト
 	D3DXMATERIAL m_mat;			// ブラー反映マテリアル
 	float	m_fStartAlpha;		// ブラーの開始透明度
