@@ -22,25 +22,6 @@
 #include "stage.h"
 #include "player.h"
 
-// TODO
-#include "timeUI.h"
-
-//************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	// TODO
-	namespace infoTimeUI
-	{
-		const D3DXVECTOR3 POS		 = D3DXVECTOR3(200.0f, 200.0f, 0.0f);	// タイマー位置
-		const D3DXVECTOR3 VAL_SIZE	 = D3DXVECTOR3(46.8f, 62.4f, 0.0f);		// タイマー数字大きさ
-		const D3DXVECTOR3 PART_SIZE	 = D3DXVECTOR3(27.3f, 62.4f, 0.0f);		// タイマー区切り大きさ
-		const D3DXVECTOR3 VAL_SPACE	 = D3DXVECTOR3(60.0f, 0.0f, 0.0f);		// タイマー数字空白
-		const D3DXVECTOR3 PART_SPACE = D3DXVECTOR3(120.0f, 0.0f, 0.0f);	// タイマー区切り空白
-	}
-}
-
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -82,23 +63,6 @@ HRESULT CScene::Init(void)
 
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
-
-	// TODO
-	CTimeUI *pTime = CTimeUI::Create
-	(
-		infoTimeUI::POS,		// 位置
-		infoTimeUI::VAL_SIZE,	// 数字の大きさ
-		infoTimeUI::PART_SIZE,	// 区切りの大きさ
-		infoTimeUI::VAL_SPACE,	// 数字の空白
-		infoTimeUI::PART_SPACE	// 区切りの空白
-	);
-	CObject2D *pSize = CObject2D::Create
-	(
-		SCREEN_CENT,
-		pTime->GetTimeSize()
-	);
-	pSize->SetLabel(CObject::LABEL_EFFECT);
-	pSize->SetPriority(7);
 
 	// 成功を返す
 	return S_OK;

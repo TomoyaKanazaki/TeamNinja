@@ -560,8 +560,8 @@ void CMultiValue::SetPositionRelative(void)
 	D3DXVECTOR3 rotStart	= D3DXVECTOR3(m_rot.z + HALF_PI, m_rot.z, 0.0f);	// 文字の開始向き
 
 	D3DXVECTOR3 posOffset = VEC3_ZERO;	// 文字の開始オフセット
-	posOffset.x = -sizeValue.x + sizeHead.x - (sizeValue.x * (m_alignX - 1));
-	posOffset.y = -sizeValue.y + sizeHead.y - (sizeValue.y * (m_alignY - 1));
+	posOffset.x = -sizeValue.x + sizeHead.x - (sizeValue.x * (m_alignX - 1));	// 開始オフセットX
+	posOffset.y = -sizeValue.y + sizeHead.y - (sizeValue.y * (m_alignY - 1));	// 開始オフセットY
 
 	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(rotStart.x) * posOffset.x + sinf(rotStart.y) * posOffset.y;	// 開始位置X

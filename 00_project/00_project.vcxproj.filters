@@ -111,6 +111,9 @@
     <ClCompile Include="Resource\wave.cpp" />
     <ClCompile Include="Resource\ZTexture.cpp" />
     <ClCompile Include="Resource\timeUI.cpp" />
+    <ClCompile Include="Resource\enemyStateNone.cpp" />
+    <ClCompile Include="Resource\enemyStateAttack.cpp" />
+    <ClCompile Include="Resource\enemyState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\anim2D.h" />
@@ -218,6 +221,9 @@
     <ClInclude Include="Resource\wave.h" />
     <ClInclude Include="Resource\ZTexture.h" />
     <ClInclude Include="Resource\timeUI.h" />
+    <ClInclude Include="Resource\enemyStateNone.h" />
+    <ClInclude Include="Resource\enemyStateAttack.h" />
+    <ClInclude Include="Resource\enemyState.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc" />

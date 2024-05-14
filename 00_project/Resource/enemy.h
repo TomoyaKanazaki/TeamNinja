@@ -17,7 +17,12 @@
 #include "motion.h"
 
 //************************************************************
-//	クラス定義
+// 前方宣言
+//************************************************************
+class CEnemyState;			// 敵の状態の基盤
+
+//************************************************************
+// クラス定義
 //************************************************************
 // 敵クラス
 class CEnemy : public CObjectChara
@@ -60,6 +65,9 @@ public:
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
 
+	// 小原追加のやつ
+	void ChangeState(CEnemyState* pNext);				// 状態の設定処理
+
 protected:
 
 private:
@@ -73,6 +81,7 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	EType m_type;					// 種類
+	CEnemyState* m_pState;			// 状態
 };
 
 #endif	// _ENEMY_H_
