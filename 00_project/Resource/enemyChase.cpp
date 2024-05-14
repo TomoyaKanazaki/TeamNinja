@@ -8,7 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "enemy_chase.h"
+#include "enemyChase.h"
 #include "renderer.h"
 #include "deltaTime.h"
 
