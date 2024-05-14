@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "timer.h"
 #include "value.h"
 #include "object2D.h"
 
@@ -24,7 +25,7 @@ namespace
 		"data\\TEXTURE\\timePart000.png",	// 通常区切り
 	};
 
-	const int PRIORITY = 6;	// タイマーの優先順位
+	const int PRIORITY = 6;	// タイムUIの優先順位
 }
 
 //************************************************************
@@ -38,16 +39,18 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI),
+CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
 	m_type			(CValue::TYPE_NORMAL),	// 数字種類
-	m_pos			(VEC3_ZERO),			// 位置
+	m_pos			(VEC3_ZERO),			// 原点位置
+	m_rot			(VEC3_ZERO),			// 原点向き
 	m_sizeValue		(VEC3_ZERO),			// 数字の大きさ
 	m_sizePart		(VEC3_ZERO),			// 区切りの大きさ
 	m_spaceValue	(VEC3_ZERO),			// 数字の空白
 	m_spacePart		(VEC3_ZERO),			// 区切りの空白
 	m_col			(XCOL_WHITE),			// 色
 	m_alignX		(XALIGN_CENTER),		// 横配置
-	m_alignY		(YALIGN_CENTER)			// 縦配置
+	m_alignY		(YALIGN_CENTER),		// 縦配置
+	m_fTime			(0.0f)					// 表示時間
 {
 	// メンバ変数をクリア
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
@@ -71,7 +74,8 @@ HRESULT CTimeUI::Init(void)
 	memset(&m_apValue[0], 0, sizeof(m_apValue));	// 数値の情報
 	memset(&m_apPart[0], 0, sizeof(m_apPart));		// 区切りの情報
 	m_type			= CValue::TYPE_NORMAL;			// 数字種類
-	m_pos			= VEC3_ZERO;		// 位置
+	m_pos			= VEC3_ZERO;		// 原点位置
+	m_rot			= VEC3_ZERO;		// 原点向き
 	m_sizeValue		= VEC3_ZERO;		// 数字の大きさ
 	m_sizePart		= VEC3_ZERO;		// 区切りの大きさ
 	m_spaceValue	= VEC3_ZERO;		// 数字の空白
@@ -79,6 +83,7 @@ HRESULT CTimeUI::Init(void)
 	m_col			= XCOL_WHITE;		// 色
 	m_alignX		= XALIGN_CENTER;	// 横配置
 	m_alignY		= YALIGN_CENTER;	// 縦配置
+	m_fTime			= 0.0f;				// 表示時間
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
@@ -108,8 +113,16 @@ HRESULT CTimeUI::Init(void)
 		}
 	}
 
-	// 優先順位を設定
+	// 優先順位の設定
 	SetPriority(PRIORITY);
+
+	// 更新状況の設定
+	SetEnableUpdate(false);
+	CObject::SetEnableUpdate(true);	// 自身はONにする
+
+	// 描画状況の設定
+	SetEnableDraw(false);
+	CObject::SetEnableDraw(true);	// 自身はONにする
 
 	// 成功を返す
 	return S_OK;
@@ -143,26 +156,6 @@ void CTimeUI::Uninit(void)
 //============================================================
 void CTimeUI::Update(const float fDeltaTime)
 {
-	// TODO
-#if 1
-	if (GET_INPUTKEY->IsPress(DIK_W))
-	{
-		m_pos.y -= 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_S))
-	{
-		m_pos.y += 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_A))
-	{
-		m_pos.x -= 1.0f;
-	}
-	if (GET_INPUTKEY->IsPress(DIK_D))
-	{
-		m_pos.x += 1.0f;
-	}
-#endif
-
 	// 相対位置の設定
 	SetPositionRelative();
 
@@ -189,21 +182,23 @@ void CTimeUI::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CTimeUI::Draw(CShader * /*pShader*/)
+void CTimeUI::Draw(CShader *pShader)
 {
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
 
-}
+		// 数字の更新
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->Draw(pShader);
+	}
 
-//============================================================
-//	位置の設定処理
-//============================================================
-void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
-{
-	// 引数の位置を設定
-	m_pos = rPos;
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
 
-	// 相対位置の設定
-	SetPositionRelative();
+		// 区切りの更新
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->Draw(pShader);
+	}
 }
 
 //============================================================
@@ -211,6 +206,9 @@ void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
 //============================================================
 void CTimeUI::SetPriority(const int nPriority)
 {
+	// 自身の優先順位を設定
+	CObject::SetPriority(nPriority);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -233,6 +231,9 @@ void CTimeUI::SetPriority(const int nPriority)
 //============================================================
 void CTimeUI::SetEnableUpdate(const bool bUpdate)
 {
+	// 自身の更新状況を設定
+	CObject::SetEnableUpdate(bUpdate);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -255,6 +256,9 @@ void CTimeUI::SetEnableUpdate(const bool bUpdate)
 //============================================================
 void CTimeUI::SetEnableDraw(const bool bDraw)
 {
+	// 自身の描画状況を設定
+	CObject::SetEnableDraw(bDraw);
+
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
 
@@ -273,16 +277,60 @@ void CTimeUI::SetEnableDraw(const bool bDraw)
 }
 
 //============================================================
+//	位置の設定処理
+//============================================================
+void CTimeUI::SetVec3Position(const D3DXVECTOR3& rPos)
+{
+	// 引数の位置を設定
+	m_pos = rPos;
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
+//	向きの設定処理
+//============================================================
+void CTimeUI::SetVec3Rotation(const D3DXVECTOR3& rRot)
+{
+	// 引数の向きを設定
+	m_rot = rRot;
+
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
+
+		// 数字の向きを設定
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->SetVec3Rotation(rRot);
+	}
+
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
+
+		// 区切りの向きを設定
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->SetVec3Rotation(rRot);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CTimeUI *CTimeUI::Create
 (
+	const float fTime,				// 表示時間
 	const D3DXVECTOR3& rPos,		// 位置
 	const D3DXVECTOR3& rSizeValue,	// 数字の大きさ
 	const D3DXVECTOR3& rSizePart,	// 区切りの大きさ
 	const D3DXVECTOR3& rSpaceValue,	// 数字の空白
 	const D3DXVECTOR3& rSpacePart,	// 区切りの空白
 	const CValue::EType type,		// 数字種類
+	const EAlignX alignX,			// 横配置
+	const EAlignY alignY,			// 縦配置
+	const D3DXVECTOR3& rRot,		// 向き
 	const D3DXCOLOR& rCol			// 色
 )
 {
@@ -305,8 +353,17 @@ CTimeUI *CTimeUI::Create
 			return nullptr;
 		}
 
+		// 表示時間を設定
+		pTimeUI->SetTime(fTime);
+
 		// 数字種類を設定
 		pTimeUI->SetValueType(type);
+
+		// 原点位置を設定
+		pTimeUI->SetVec3Position(rPos);
+
+		// 原点向きを設定
+		pTimeUI->SetVec3Rotation(rRot);
 
 		// 数字の大きさを設定
 		pTimeUI->SetSizingValue(rSizeValue);
@@ -323,8 +380,11 @@ CTimeUI *CTimeUI::Create
 		// 色を設定
 		pTimeUI->SetColor(rCol);
 
-		// 位置を設定
-		pTimeUI->SetVec3Position(rPos);
+		// 横配置を設定
+		pTimeUI->SetAlignX(alignX);
+
+		// 縦配置を設定
+		pTimeUI->SetAlignY(alignY);
 
 		// 確保したアドレスを返す
 		return pTimeUI;
@@ -352,13 +412,7 @@ void CTimeUI::SetValueType(const CValue::EType type)
 
 		// テクスチャを割当
 		assert(m_apPart[nCntPart] != nullptr);
-
-		// TODO
-#if 1
-		//m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);
-#else
-		m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);	// TODO
-#endif
+		m_apPart[nCntPart]->BindTexture(TEXTURE_FILE[(int)type]);
 	}
 }
 
@@ -476,6 +530,18 @@ void CTimeUI::SetAlignY(const EAlignY align)
 }
 
 //============================================================
+//	表示時間の設定処理
+//============================================================
+void CTimeUI::SetTime(const float fTime)
+{
+	// 引数の表示時間を設定
+	m_fTime = fTime;
+
+	// 表示時間の補正
+	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
+}
+
+//============================================================
 //	タイム全体の横幅取得処理
 //============================================================
 float CTimeUI::GetTimeWidth(void) const
@@ -537,11 +603,21 @@ D3DXVECTOR3 CTimeUI::GetTimeSize(void) const
 //============================================================
 void CTimeUI::SetPositionRelative(void)
 {
-	D3DXVECTOR3 spaceValue = m_spaceValue * 0.5f;	// 数字の空白
-	D3DXVECTOR3 spacePart = m_spacePart * 0.5f;		// 区切りの空白
-	D3DXVECTOR3 posStart = m_pos - spaceValue;		// ポリゴン生成位置
 	int nValueID = 0;	// 数字の生成数
 	int nPartID = 0;	// 区切りの生成数
+	D3DXVECTOR3 spaceValue = m_spaceValue * 0.5f;	// 数字の空白
+	D3DXVECTOR3 spacePart = m_spacePart * 0.5f;		// 区切りの空白
+	D3DXVECTOR3 sizeTime = GetTimeSize() * 0.5f;	// タイム全体の大きさ
+	D3DXVECTOR3 sizeHead = m_apValue[0]->GetVec3Sizing() * 0.5f;	// 先頭数字の大きさ
+	D3DXVECTOR3 rotStart = D3DXVECTOR3(m_rot.z + HALF_PI, m_rot.z, 0.0f);	// 文字の開始向き
+
+	D3DXVECTOR3 posOffset = VEC3_ZERO;	// 文字の開始オフセット
+	posOffset.x = -sizeTime.x - spaceValue.x + sizeHead.x - (sizeTime.x * (m_alignX - 1));	// 開始オフセットX
+	posOffset.y = -sizeTime.y - spaceValue.y + sizeHead.y - (sizeTime.y * (m_alignY - 1));	// 開始オフセットY
+
+	D3DXVECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
+	posStart.x = m_pos.x + sinf(rotStart.x) * posOffset.x + sinf(rotStart.y) * posOffset.y;	// 開始位置X
+	posStart.y = m_pos.y + cosf(rotStart.x) * posOffset.x + cosf(rotStart.y) * posOffset.y;	// 開始位置Y
 
 	for (int nCntTimer = 0; nCntTimer < timeUI::MAX_DIGIT + timeUI::MAX_PART; nCntTimer++)
 	{ // 数字の数 + 区切りの数分繰り返す
@@ -552,13 +628,15 @@ void CTimeUI::SetPositionRelative(void)
 			assert(m_apPart[nValueID] != nullptr);
 
 			// ポリゴン生成位置をずらす
-			posStart += spacePart;
+			posStart.x += sinf(rotStart.x) * spacePart.x + sinf(rotStart.y) * spacePart.y;
+			posStart.y += cosf(rotStart.x) * spacePart.x + cosf(rotStart.y) * spacePart.y;
 
 			// 区切りの位置を設定
 			m_apPart[nValueID]->SetVec3Position(posStart);
 
 			// ポリゴン生成位置をずらす
-			posStart += spacePart;
+			posStart.x += sinf(rotStart.x) * spacePart.x + sinf(rotStart.y) * spacePart.y;
+			posStart.y += cosf(rotStart.x) * spacePart.x + cosf(rotStart.y) * spacePart.y;
 
 			// 区切りの生成数を加算
 			nValueID++;
@@ -569,13 +647,15 @@ void CTimeUI::SetPositionRelative(void)
 			assert(m_apValue[nPartID] != nullptr);
 
 			// ポリゴン生成位置をずらす
-			posStart += spaceValue;
+			posStart.x += sinf(rotStart.x) * spaceValue.x + sinf(rotStart.y) * spaceValue.y;
+			posStart.y += cosf(rotStart.x) * spaceValue.x + cosf(rotStart.y) * spaceValue.y;
 
 			// 数字の位置を設定
 			m_apValue[nPartID]->SetVec3Position(posStart);
 
 			// ポリゴン生成位置をずらす
-			posStart += spaceValue;
+			posStart.x += sinf(rotStart.x) * spaceValue.x + sinf(rotStart.y) * spaceValue.y;
+			posStart.y += cosf(rotStart.x) * spaceValue.x + cosf(rotStart.y) * spaceValue.y;
 
 			// 数字の生成数を加算
 			nPartID++;
@@ -590,7 +670,6 @@ void CTimeUI::SetTexNum(void)
 {
 	int aNumDivide[timeUI::MAX_DIGIT];	// 数値分解用
 
-#if 0
 	// 分を桁数ごとに分解
 	useful::DivideDigitNum(&aNumDivide[0], GetMin(), timeUI::MAX_MIN);
 
@@ -599,16 +678,6 @@ void CTimeUI::SetTexNum(void)
 
 	// ミリ秒を桁数ごとに分解
 	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN + timeUI::MAX_SEC], GetMSec(), timeUI::MAX_MSEC);
-#else
-	// 分を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[0], 0, timeUI::MAX_MIN);
-
-	// 秒を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN], 0, timeUI::MAX_SEC);
-
-	// ミリ秒を桁数ごとに分解
-	useful::DivideDigitNum(&aNumDivide[timeUI::MAX_MIN + timeUI::MAX_SEC], 0, timeUI::MAX_MSEC);
-#endif
 
 	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
 	{ // 数字の数分繰り返す
