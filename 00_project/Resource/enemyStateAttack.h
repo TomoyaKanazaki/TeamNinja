@@ -17,7 +17,7 @@ class CEnemyStateAttack : public CEnemyState
 {
 public:
 
-	CEnemyStateAttack(const CEnemy* pEnemy);	// コンストラクタ
+	CEnemyStateAttack(CEnemy* pEnemy);	// コンストラクタ
 	~CEnemyStateAttack();						// デストラクタ
 
 	void Process(void) override;				// 状態処理
