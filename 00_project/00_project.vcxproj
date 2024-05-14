@@ -176,8 +176,9 @@
     <ClInclude Include="Resource\effekseerControl.h" />
     <ClInclude Include="Resource\effekseerManager.h" />
     <ClInclude Include="Resource\enemy.h" />
+    <ClInclude Include="Resource\enemyStateAttack.h" />
     <ClInclude Include="Resource\enemy_chase.h" />
-    <ClInclude Include="Resource\enemy_nonestate.h" />
+    <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
     <ClInclude Include="Resource\flash.h" />
@@ -284,8 +285,9 @@
     <ClCompile Include="Resource\effekseerControl.cpp" />
     <ClCompile Include="Resource\effekseerManager.cpp" />
     <ClCompile Include="Resource\enemy.cpp" />
+    <ClCompile Include="Resource\enemyStateAttack.cpp" />
     <ClCompile Include="Resource\enemy_chase.cpp" />
-    <ClCompile Include="Resource\enemy_nonestate.cpp" />
+    <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />
     <ClCompile Include="Resource\flash.cpp" />
