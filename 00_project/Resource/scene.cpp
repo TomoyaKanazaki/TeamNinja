@@ -84,21 +84,21 @@ HRESULT CScene::Init(void)
 	CPlayer::Create(m_mode);
 
 	// TODO
-	CTimeUI *pTime = CTimeUI::Create
-	(
-		infoTimeUI::POS,		// 位置
-		infoTimeUI::VAL_SIZE,	// 数字の大きさ
-		infoTimeUI::PART_SIZE,	// 区切りの大きさ
-		infoTimeUI::VAL_SPACE,	// 数字の空白
-		infoTimeUI::PART_SPACE	// 区切りの空白
-	);
-	CObject2D *pSize = CObject2D::Create
-	(
-		SCREEN_CENT,
-		pTime->GetTimeSize()
-	);
-	pSize->SetLabel(CObject::LABEL_EFFECT);
-	pSize->SetPriority(7);
+	//CTimeUI *pTime = CTimeUI::Create
+	//(
+	//	infoTimeUI::POS,		// 位置
+	//	infoTimeUI::VAL_SIZE,	// 数字の大きさ
+	//	infoTimeUI::PART_SIZE,	// 区切りの大きさ
+	//	infoTimeUI::VAL_SPACE,	// 数字の空白
+	//	infoTimeUI::PART_SPACE	// 区切りの空白
+	//);
+	//CObject2D *pSize = CObject2D::Create
+	//(
+	//	SCREEN_CENT,
+	//	pTime->GetTimeSize()
+	//);
+	//pSize->SetLabel(CObject::LABEL_EFFECT);
+	//pSize->SetPriority(7);
 
 	// 成功を返す
 	return S_OK;

@@ -873,10 +873,10 @@ void CPlayer::Move()
 	float fStickRot = 0.0f;
 
 	// “ü—Í‚ğó‚¯æ‚é
-	if (pKey->IsPress(DIK_W)) { speed.z += 1.0f; }
-	if (pKey->IsPress(DIK_S)) { speed.z -= 1.0f; }
-	if (pKey->IsPress(DIK_D)) { speed.x += 1.0f; }
-	if (pKey->IsPress(DIK_A)) { speed.x -= 1.0f; }
+	if (pKey->IsPress(DIK_W)) { speed.z -= 1.0f; }
+	if (pKey->IsPress(DIK_S)) { speed.z += 1.0f; }
+	if (pKey->IsPress(DIK_D)) { speed.x -= 1.0f; }
+	if (pKey->IsPress(DIK_A)) { speed.x += 1.0f; }
 
 	// “ü—Í‚µ‚Ä‚¢‚È‚¢‚Æ”²‚¯‚é
 	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
@@ -894,7 +894,7 @@ void CPlayer::Move()
 	useful::NormalizeRot(fStickRot);
 
 	// Œü‚«‚ğİ’è
-	m_destRot.y = fStickRot + D3DX_PI;
+	m_destRot.y = fStickRot;
 
 	// Œü‚«‚Ì³‹K‰»
 	useful::NormalizeRot(m_destRot.y);
