@@ -13,6 +13,9 @@
 
 #include "enemy_chase.h"
 
+#include "enemyState.h"
+#include "enemyStateNone.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -37,7 +40,8 @@ CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::D
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(type)				// 種類
+m_type(type),				// 種類
+m_pState(nullptr)			// 状態
 {
 
 }
@@ -80,6 +84,9 @@ HRESULT CEnemy::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// 敵の状態を生成
+	m_pState = new CEnemyStateNone(this);
 
 	// 成功を返す
 	return S_OK;
