@@ -19,7 +19,7 @@
 //************************************************************
 // 前方宣言
 //************************************************************
-class CEnemyStateNone;			// 敵の基盤状態
+class CEnemyState;			// 敵の状態の基盤
 
 //************************************************************
 // クラス定義
@@ -78,7 +78,7 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	EType m_type;					// 種類
-	CEnemyStateNone* m_pState;		// 状態
+	CEnemyState* m_pState;			// 状態
 };
 
 #endif	// _ENEMY_H_

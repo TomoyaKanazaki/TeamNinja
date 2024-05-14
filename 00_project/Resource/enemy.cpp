@@ -13,6 +13,9 @@
 
 #include "enemy_chase.h"
 
+#include "enemyState.h"
+#include "enemyStateNone.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -81,6 +84,9 @@ HRESULT CEnemy::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// 敵の状態を生成
+	m_pState = new CEnemyStateNone(this);
 
 	// 成功を返す
 	return S_OK;

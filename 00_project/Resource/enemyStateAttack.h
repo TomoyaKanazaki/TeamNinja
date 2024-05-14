@@ -10,10 +10,10 @@
 //***********************************
 // インクルードファイル
 //***********************************
-#include "enemyStateNone.h"
+#include "enemyState.h"
 
 // クラス定義(敵の攻撃状態クラス)
-class CEnemyStateAttack : public CEnemyStateNone
+class CEnemyStateAttack : public CEnemyState
 {
 public:
 
