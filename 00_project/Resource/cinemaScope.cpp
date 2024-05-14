@@ -15,7 +15,6 @@
 #include "fade.h"
 #include "texture.h"
 #include "object2D.h"
-#include "timerManager.h"
 
 //************************************************************
 //	’è”éŒ¾

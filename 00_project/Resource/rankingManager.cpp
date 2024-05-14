@@ -15,7 +15,8 @@
 #include "texture.h"
 #include "object2D.h"
 #include "anim2D.h"
-#include "timerManager.h"
+#include "timer.h"
+#include "timeUI.h"
 #include "retentionManager.h"
 
 //************************************************************
@@ -86,7 +87,7 @@ namespace
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
-long CRankingManager::m_aRanking[ranking::NUM_DISP] = { 0 };	// ランキング情報
+float CRankingManager::m_aRanking[ranking::NUM_DISP] = { 0 };	// ランキング情報
 int CRankingManager::m_nNewRankID = NONE_IDX;	// 変動したスコアのインデックス
 
 //************************************************************
@@ -227,10 +228,9 @@ HRESULT CRankingManager::Init(void)
 		//	クリアタイム表示の生成・設定
 		//----------------------------------------------------
 		// クリアタイム表示の生成
-		m_apTime[nCntRank] = CTimerManager::Create
+		m_apTime[nCntRank] = CTimeUI::Create
 		( // 引数
-			CTimerManager::TIME_SEC,						// 設定タイム
-			0,												// 制限時間
+			0.0f,											// 制限時間
 			time::POS + (time::SPACE * (float)nCntRank),	// 位置
 			time::SIZE_VAL * time::SET_SCALE,				// 数字の大きさ
 			time::SIZE_PART * time::SET_SCALE,				// 区切りの大きさ
@@ -262,13 +262,7 @@ HRESULT CRankingManager::Init(void)
 		}
 	
 		// タイムを設定
-		if (!m_apTime[nCntRank]->SetMSec(m_aRanking[nCntRank]))
-		{ // 設定に失敗した場合
-	
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
+		m_apTime[nCntRank]->SetTime(m_aRanking[nCntRank]);
 	}
 
 	// 成功を返す
@@ -283,8 +277,8 @@ void CRankingManager::Uninit(void)
 	for (int nCntRank = 0; nCntRank < ranking::NUM_DISP; nCntRank++)
 	{ // ランキングの上位表示数分繰り返す
 
-		// クリアタイムの破棄
-		SAFE_REF_RELEASE(m_apTime[nCntRank]);
+		// クリアタイムの終了
+		SAFE_UNINIT(m_apTime[nCntRank]);
 
 		// 順位表示の終了
 		SAFE_UNINIT(m_apRank[nCntRank]);
@@ -384,25 +378,25 @@ void CRankingManager::Update(const float fDeltaTime)
 //============================================================
 //	設定処理
 //============================================================
-void CRankingManager::Set(const long nValue)
+void CRankingManager::Set(const float fValue)
 {
 	// 変数を宣言
-	long nLowestID = ranking::NUM_DISP - 1;	// 最下位の配列インデックス
+	int nLowestID = ranking::NUM_DISP - 1;	// 最下位の配列インデックス
 
 	// 読込
 	Load();
 
-	if (nValue < m_aRanking[nLowestID])
+	if (fValue < m_aRanking[nLowestID])
 	{ // 最下位のクリアタイムより早いクリアタイムの場合
 
 		// ソート
-		Sort(nValue);
+		Sort(fValue);
 
 		// 保存
 		Save();
 
 		// スコア変動インデックスの設定
-		SetNewRank(nValue);
+		SetNewRank(fValue);
 	}
 }
 
@@ -776,14 +770,14 @@ bool CRankingManager::UpdateDrawWait(const int nWait)
 //============================================================
 //	ソート処理
 //============================================================
-void CRankingManager::Sort(const long nValue)
+void CRankingManager::Sort(const float fValue)
 {
 	// 変数を宣言
-	long nKeepNum;		// ソート用
+	float fKeepNum;		// ソート用
 	int	nCurrentMinID;	// 最小値のインデックス
 
 	// 現在の最下位の情報と書き換え
-	m_aRanking[ranking::NUM_DISP - 1] = nValue;
+	m_aRanking[ranking::NUM_DISP - 1] = fValue;
 
 	for (int nCntKeep = 0; nCntKeep < (ranking::NUM_DISP - 1); nCntKeep++)
 	{ // 入れ替える値の総数 -1回分繰り返す
@@ -806,9 +800,9 @@ void CRankingManager::Sort(const long nValue)
 		{ // 最小値の要素番号に変動があった場合
 
 			// 要素の入れ替え
-			nKeepNum					= m_aRanking[nCntKeep];
+			fKeepNum					= m_aRanking[nCntKeep];
 			m_aRanking[nCntKeep]		= m_aRanking[nCurrentMinID];
-			m_aRanking[nCurrentMinID]	= nKeepNum;
+			m_aRanking[nCurrentMinID]	= fKeepNum;
 		}
 	}
 }
@@ -816,12 +810,12 @@ void CRankingManager::Sort(const long nValue)
 //============================================================
 //	スコア変動インデックスの設定処理
 //============================================================
-void CRankingManager::SetNewRank(const long nValue)
+void CRankingManager::SetNewRank(const float fValue)
 {
 	for (int nCntRank = 0; nCntRank < ranking::NUM_DISP; nCntRank++)
 	{ // ランキングの上位表示数分繰り返す
 
-		if (m_aRanking[nCntRank] == nValue)
+		if (m_aRanking[nCntRank] == fValue)
 		{ // 入れ替わった値と一致した場合
 
 			// 一致した値を設定
@@ -845,7 +839,7 @@ void CRankingManager::Save(void)
 	{ // ファイルが開けた場合
 
 		// ファイルに数値を書き出す
-		fwrite(&m_aRanking[0], sizeof(long), ranking::NUM_DISP, pFile);
+		fwrite(&m_aRanking[0], sizeof(float), ranking::NUM_DISP, pFile);
 
 		// ファイルを閉じる
 		fclose(pFile);
@@ -873,7 +867,7 @@ void CRankingManager::Load(void)
 	{ // ファイルが開けた場合
 
 		// ファイルの数値を読み込む
-		fread(&m_aRanking[0], sizeof(long), ranking::NUM_DISP, pFile);
+		fread(&m_aRanking[0], sizeof(float), ranking::NUM_DISP, pFile);
 
 		// ファイルを閉じる
 		fclose(pFile);
@@ -890,18 +884,16 @@ void CRankingManager::Load(void)
 		if (pFile != nullptr)
 		{ // ファイルが開けた場合
 
-			// 変数配列を宣言
-			long nMaxTime = CTimerManager::GetMaxTime();	// 最大タイム
-
+			float fMaxTime = timer::TIME_MAX;	// 最大タイム
 			for (int nCntRank = 0; nCntRank < ranking::NUM_DISP; nCntRank++)
 			{ // ランキングの上位表示数分繰り返す
 
 				// ランキング情報をクリア
-				m_aRanking[nCntRank] = nMaxTime;
+				m_aRanking[nCntRank] = fMaxTime;
 			}
 
 			// ファイルに数値を書き出す
-			fwrite(&m_aRanking[0], sizeof(long), ranking::NUM_DISP, pFile);
+			fwrite(&m_aRanking[0], sizeof(float), ranking::NUM_DISP, pFile);
 
 			// ファイルを閉じる
 			fclose(pFile);

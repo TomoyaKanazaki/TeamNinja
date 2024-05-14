@@ -21,9 +21,9 @@ namespace ranking
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObject2D;		// オブジェクト2Dクラス
-class CAnim2D;			// アニメーション2Dクラス
-class CTimerManager;	// タイマーマネージャークラス
+class CObject2D;	// オブジェクト2Dクラス
+class CAnim2D;		// アニメーション2Dクラス
+class CTimeUI;		// タイムUIクラス
 
 //************************************************************
 //	クラス定義
@@ -65,7 +65,7 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 
 	// 静的メンバ関数
-	static void Set(const long nValue);		// 設定
+	static void Set(const float fValue);	// 設定
 	static CRankingManager *Create(void);	// 生成
 	static void Release(CRankingManager *&prRankingManager);	// 破棄
 
@@ -87,18 +87,18 @@ private:
 	bool UpdateDrawWait(const int nWait);	// 表示待機
 
 	// 静的メンバ関数
-	static void Sort(const long nValue);		// ソート
-	static void SetNewRank(const long nValue);	// スコア変動インデックス設定
-	static void Save(void);		// 保存
-	static void Load(void);		// 読込
+	static void Sort(const float fValue);		// ソート
+	static void SetNewRank(const float fValue);	// スコア変動インデックス設定
+	static void Save(void);	// 保存
+	static void Load(void);	// 読込
 
 	// 静的メンバ変数
-	static long m_aRanking[ranking::NUM_DISP];	// ランキング情報
+	static float m_aRanking[ranking::NUM_DISP];	// ランキング情報
 	static int m_nNewRankID;	// 変動したスコアのインデックス
 
 	// メンバ変数
-	CTimerManager *m_apTime[ranking::NUM_DISP];	// クリアタイムの情報
-	CAnim2D *m_apRank[ranking::NUM_DISP];		// 順位の情報
+	CTimeUI *m_apTime[ranking::NUM_DISP];	// クリアタイムの情報
+	CAnim2D *m_apRank[ranking::NUM_DISP];	// 順位の情報
 	CObject2D *m_pLogo;		// ランキングロゴの情報
 	CObject2D *m_pFade;		// フェードの情報
 	EState m_state;			// 状態

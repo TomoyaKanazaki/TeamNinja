@@ -64,11 +64,15 @@ public:
 	void Start(void);	// 計測開始
 	void End(void);		// 計測終了
 	void EnableStop(const bool bStop);	// 計測停止設定
+	void AddTime(const float fTime);	// 時間加算
 	void SetTime(const float fTime);	// 時間設定
 	void SetLimit(const float fLimit);	// 制限時間設定
 	float GetTime(void) const	{ return m_fTime; }		// 時間取得
 	float GetLimit(void) const	{ return m_fLimit; }	// 制限時間取得
 	EState GetState(void) const	{ return m_state; }		// 計測状態取得
+	int GetMin(void) const		{ return m_nMin; }		// 分取得
+	int GetSec(void) const		{ return m_nSec; }		// 秒取得
+	int GetMSec(void) const		{ return m_nMSec; }		// ミリ秒取得
 
 private:
 	// オーバーライド関数

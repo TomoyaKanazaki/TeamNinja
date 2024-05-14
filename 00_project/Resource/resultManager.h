@@ -21,8 +21,8 @@ namespace result
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObject2D;		// オブジェクト2Dクラス
-class CTimerManager;	// タイマーマネージャークラス
+class CObject2D;	// オブジェクト2Dクラス
+class CTimeUI;		// タイムUIクラス
 
 //************************************************************
 //	クラス定義
@@ -99,7 +99,7 @@ private:
 	CObject2D *m_pContLogo;	// コンテニューロゴの情報
 	CObject2D *m_pTimeLogo;	// タイムロゴの情報
 	CObject2D *m_pFade;		// フェードの情報
-	CTimerManager *m_pTime;	// タイムの情報
+	CTimeUI *m_pTime;		// タイムの情報
 	EState m_state;			// 状態
 	int m_nCounterState;	// 状態管理カウンター
 	int m_nSelect;			// 現在の選択

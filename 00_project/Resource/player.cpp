@@ -26,7 +26,6 @@
 #include "shadow.h"
 #include "orbit.h"
 #include "object2D.h"
-#include "timerManager.h"
 #include "rankingManager.h"
 #include "stage.h"
 #include "field.h"

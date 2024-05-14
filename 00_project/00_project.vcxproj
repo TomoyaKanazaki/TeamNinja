@@ -256,7 +256,6 @@
     <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
     <ClInclude Include="Resource\timer.h" />
-    <ClInclude Include="Resource\timerManager.h" />
     <ClInclude Include="Resource\timerUI.h" />
     <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
@@ -370,7 +369,6 @@
     <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />
     <ClCompile Include="Resource\timer.cpp" />
-    <ClCompile Include="Resource\timerManager.cpp" />
     <ClCompile Include="Resource\timerUI.cpp" />
     <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />

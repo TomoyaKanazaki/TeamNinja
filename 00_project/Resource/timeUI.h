@@ -96,7 +96,10 @@ public:
 
 	// 仮想関数
 	virtual void SetTime(const float fTime);				// 表示時間設定
-	virtual float GetTime(void) const { return m_fTime; }	// 表示時間取得
+	virtual float GetTime(void) const	{ return m_fTime; }	// 表示時間取得
+	virtual int GetMin(void) const		{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
+	virtual int GetSec(void) const		{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
+	virtual int GetMSec(void) const		{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
 
 	// メンバ関数
 	void SetValueType(const CValue::EType type);	// 数字の種類設定
@@ -118,9 +121,6 @@ public:
 	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色の設定
 	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
-	int GetMin(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 60000); }		// 分取得
-	int GetSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) / 1000 % 60); }	// 秒取得
-	int GetMSec(void) const	{ return (int)((DWORD)(m_fTime * 1000.0f) % 1000); }		// ミリ秒取得
 
 private:
 	// オーバーライド関数
