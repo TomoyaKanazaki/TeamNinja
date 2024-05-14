@@ -150,13 +150,10 @@ void CPlayerClone::Update(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// プレイヤーの後を追う
-	Chase();
+	ChasePrev();
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
-
-	// 操作処理
-	UpdateControl();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -306,38 +303,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateNormal(void)
 }
 
 //============================================================
-// 操作処理
-//============================================================
-void CPlayerClone::UpdateControl(void)
-{
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	if (pKey->IsPress(DIK_W))
-	{ // Wキーを押した場合
-
-		pos.z -= 3.0f;
-	}
-	if (pKey->IsPress(DIK_A))
-	{ // Aキーを押した場合
-
-		pos.x += 3.0f;
-	}
-	if (pKey->IsPress(DIK_S))
-	{ // Sキーを押した場合
-
-		pos.z += 3.0f;
-	}
-	if (pKey->IsPress(DIK_D))
-	{ // Dキーを押した場合
-
-		pos.x -= 3.0f;
-	}
-
-	SetVec3Position(pos);
-}
-
-//============================================================
 //	モーション・オブジェクトキャラクターの更新処理
 //============================================================
 void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
@@ -432,20 +397,58 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-//  プレイヤーについていく処理
+//  前についていく処理
 //==========================================
-void CPlayerClone::Chase()
+void CPlayerClone::ChasePrev()
 {
-	// プレイヤーの情報を取得
-	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+	// リストを取得
+	std::list<CPlayerClone*> List = m_pList->GetList();
 
-	// プレイヤーに対して後ろ移動
-	D3DXVECTOR3 pos = posPlayer + D3DXVECTOR3
+	// リストの先頭を取得
+	CPlayerClone* pTarget = *List.begin();
+
+	// 先頭と自身を比較する
+	if (pTarget == this)
+	{
+		// ついていく
+		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+
+		return;
+	}
+
+	return;
+
+	// 自身に一致するポインタの一つ前に追従する
+	while (1)
+	{
+		// 一つ前のポインタを保存
+		CPlayerClone* prev = pTarget;
+
+		// ポインタを１つ進める
+		pTarget++;
+
+		// 進めたポインタと自身を比較する
+		if (pTarget == this)
+		{
+			// ついていく
+			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
+
+			return;
+		}
+	}
+}
+
+//==========================================
+//  ついていく処理
+//==========================================
+void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+{
+	// 一つ前に対して後ろ移動
+	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
 	(
-		sinf(rotPlayer.y) * DISTANCE,
+		sinf(rRot.y) * DISTANCE,
 		0.0f,
-		cosf(rotPlayer.y) * DISTANCE
+		cosf(rRot.y) * DISTANCE
 	);
 
 	// 位置を適用
