@@ -37,7 +37,8 @@ CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::D
 m_oldPos(VEC3_ZERO),		// ‰ß‹ˆÊ’u
 m_destRot(VEC3_ZERO),		// –Ú“I‚ÌŒü‚«
 m_move(VEC3_ZERO),			// ˆÚ“®—Ê
-m_type(type)				// í—Ş
+m_type(type),				// í—Ş
+m_pState(nullptr)			// ó‘Ô
 {
 
 }

@@ -36,6 +36,9 @@ CEnemyStateNone::~CEnemyStateNone()
 //==========================
 void CEnemyStateNone::Uninit(void)
 {
+	// –{‘Ì‚Ìî•ñÁ‹
+	m_pEnemy = nullptr;
+
 	// ©g‚ğíœ‚·‚é
 	delete this;
 }

@@ -1,11 +1,11 @@
 //===================================
 //
-// 敵の状態(基盤)ヘッダー[enemy_nonestate.h]
+// 敵の状態(基盤)ヘッダー[enemyStateNone.h]
 // Author 小原立暉
 //
 //===================================
-#ifndef _ENEMY_NONESTATE_H_
-#define _ENEMY_NONESTATE_H_
+#ifndef _ENEMY_STATE_NONE_H_
+#define _ENEMY_STATE_NONE_H_
 //***********************************
 // インクルードファイル
 //***********************************
