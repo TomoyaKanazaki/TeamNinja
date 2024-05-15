@@ -36,7 +36,7 @@ namespace
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 
-	const float DISTANCE = 50.0f; // プレイヤーとの距離
+	const float DISTANCE = 75.0f; // プレイヤーとの距離
 }
 
 //************************************************************
@@ -452,4 +452,24 @@ void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 
 	// 位置を適用
 	SetVec3Position(pos);
+
+	// 目標の方向を向く処理
+	ViewTarget(rPos);
+}
+
+//==========================================
+//  目標の方向を向く処理
+//==========================================
+void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
+{
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = rPos - GetVec3Position();
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
+
+	// 向きを適用する
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y = fRot;
+	SetVec3Rotation(rot);
 }
