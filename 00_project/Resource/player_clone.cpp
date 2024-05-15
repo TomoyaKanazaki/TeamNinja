@@ -114,6 +114,9 @@ HRESULT CPlayerClone::Init(void)
 	// マテリアルを変更
 	SetAllMaterial(material::Green());
 
+	// サイズを調整
+	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
+
 	// 成功を返す
 	return S_OK;
 }
