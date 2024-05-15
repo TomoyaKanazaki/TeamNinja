@@ -185,6 +185,19 @@ void CObjectChara::SetVec3Rotation(const D3DXVECTOR3& rRot)
 }
 
 //============================================================
+//	拡大率の設定処理
+//============================================================
+void CObjectChara::SetVec3Scaling(const D3DXVECTOR3& rScale)
+{
+	for (auto& rVec : m_vecParts)
+	{ // パーツ数分繰り返す
+
+		// パーツの拡大率を設定
+		rVec->SetVec3Scaling(rScale);
+	}
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CObjectChara *CObjectChara::Create(const D3DXVECTOR3 &rPos, const D3DXVECTOR3 &rRot)
