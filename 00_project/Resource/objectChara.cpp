@@ -192,8 +192,12 @@ void CObjectChara::SetVec3Scaling(const D3DXVECTOR3& rScale)
 	for (auto& rVec : m_vecParts)
 	{ // パーツ数分繰り返す
 
-		// パーツの拡大率を設定
-		rVec->SetVec3Scaling(rScale);
+		if (rVec->GetParentObject() == nullptr)
+		{ // 親がいない場合
+
+			// パーツの拡大率を設定
+			rVec->SetVec3Scaling(rScale);
+		}
 	}
 }
 

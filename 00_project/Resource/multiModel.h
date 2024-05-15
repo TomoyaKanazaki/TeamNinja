@@ -44,6 +44,7 @@ public:
 
 	// メンバ関数
 	void SetParentObject(CObject *pObject);		// 親オブジェクト設定
+	CObject *GetParentObject(void) const;		// 親オブジェクト取得
 	void SetParentModel(CMultiModel *pModel);	// 親オブジェクト設定
 	void DeleteParentObject(void);				// 親オブジェクト削除
 
