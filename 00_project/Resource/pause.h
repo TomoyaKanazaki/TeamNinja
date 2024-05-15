@@ -65,6 +65,7 @@ public:
 private:
 	// メンバ関数
 	void Select(void);	// 選択操作
+	void EnableTimerStopAll(const bool bStop);	// 全タイマー計測状況設定
 
 	// メンバ変数
 	CObject2D *m_apSelect[SELECT_MAX];	// 選択情報

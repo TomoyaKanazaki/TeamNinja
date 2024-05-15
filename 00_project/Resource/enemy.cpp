@@ -11,7 +11,10 @@
 #include "manager.h"
 #include "renderer.h"
 
-#include "enemy_chase.h"
+#include "enemyChase.h"
+
+#include "enemyState.h"
+#include "enemyStateNone.h"
 
 //************************************************************
 //	定数宣言
@@ -37,7 +40,8 @@ CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::D
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(type)				// 種類
+m_type(type),				// 種類
+m_pState(nullptr)			// 状態
 {
 
 }
@@ -81,6 +85,9 @@ HRESULT CEnemy::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// 敵の状態を生成
+	ChangeState(new CEnemyStateNone(this));
+
 	// 成功を返す
 	return S_OK;
 }
@@ -90,6 +97,14 @@ HRESULT CEnemy::Init(void)
 //============================================================
 void CEnemy::Uninit(void)
 {
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 状態の破棄
+		m_pState->Uninit();
+		m_pState = nullptr;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -179,4 +194,21 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// 状態の設定処理
+//============================================================
+void CEnemy::ChangeState(CEnemyState* pNext)
+{
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 終了処理
+		m_pState->Uninit();
+		m_pState = nullptr;
+	}
+
+	// 状態を設定する
+	m_pState = pNext;
 }

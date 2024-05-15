@@ -501,6 +501,39 @@ void CCamera::SetEnableUpdate(const bool bUpdate)
 	m_bUpdate = bUpdate;
 }
 
+//==========================================
+//  プレイヤー座標を二次元座標に変換する
+//==========================================
+D3DXVECTOR3 CCamera::CalcPlayerPos()
+{
+	// プレイヤー座標を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetCenterPos();
+
+	//ビューポートの設定
+	D3DVIEWPORT9 vp = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f };
+
+	//計算用変数宣言
+	D3DXMATRIX mtxWorld; //ワールドマトリックス
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	//スクリーン座標を算出
+	D3DXVECTOR3 screenPos;
+	D3DXVec3Project
+	(
+		&screenPos,
+		&posPlayer,
+		&vp,
+		&m_aCamera[TYPE_MAIN].mtxProjection,
+		&m_aCamera[TYPE_MAIN].mtxView,
+		&mtxWorld
+	);
+
+	// スクリーン座標を返す
+	return screenPos;
+}
+
 //============================================================
 //	生成処理
 //============================================================

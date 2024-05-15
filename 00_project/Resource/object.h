@@ -81,6 +81,7 @@ public:
 	{
 		LABEL_NONE = 0,		// なし
 		LABEL_UI,			// UI
+		LABEL_TIMER,		// タイマー
 		LABEL_WAVE,			// 波動
 		LABEL_FIRE,			// 炎
 		LABEL_THUNDER,		// 雷
@@ -99,6 +100,7 @@ public:
 		LABEL_DEBUG,		// デバッグ
 		LABEL_AVATAR,		// 分身
 		LABEL_CHECKPOINT,	// チェックポイント
+		LABEL_GOAL,			// ゴール
 		LABEL_MAX			// この列挙型の総数
 	};
 

@@ -170,6 +170,9 @@ void CCheckPoint::CollisionPlayer(void)
 	// プレイヤーを回復する
 	Player->RecoverCheckPoint();
 
+	// プレイヤーに自信の情報を与える
+	Player->SetCheckPoint(this);
+
 	// 士気力を保存する
 	m_nSaveTension = Player->GetTension();
 

@@ -23,19 +23,6 @@
 #include "player.h"
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	// ボスの情報
-	namespace boss
-	{
-		const D3DXVECTOR3 SPAWN_POS = D3DXVECTOR3(0.0f, 0.0f, 600.0f);	// スポーン位置
-		const D3DXVECTOR3 SPAWN_ROT = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// スポーン向き
-	}
-}
-
-//************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CStage *CScene::m_pStage = nullptr;	// ステージの情報
@@ -128,10 +115,8 @@ void CScene::Update(const float fDeltaTime)
 //============================================================
 CScene *CScene::Create(EMode mode)
 {
-	// ポインタを宣言
-	CScene *pScene = nullptr;	// シーン情報
-
 	// シーンの生成
+	CScene *pScene = nullptr;	// シーン情報
 	switch (mode)
 	{ // モードごとの処理
 	case MODE_TITLE:
@@ -159,17 +144,9 @@ CScene *CScene::Create(EMode mode)
 		break;
 	}
 
-	if (pScene == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 確保したアドレスを返す
-		return pScene;
-	}
+	// 確保したアドレスを返す
+	assert(pScene != nullptr);
+	return pScene;
 }
 
 //============================================================

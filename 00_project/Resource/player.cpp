@@ -26,7 +26,6 @@
 #include "shadow.h"
 #include "orbit.h"
 #include "object2D.h"
-#include "timerManager.h"
 #include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
@@ -36,6 +35,7 @@
 
 #include "input.h"
 #include "player_clone.h"
+#include "checkpoint.h"
 
 #include "gauge2D.h"
 #include "blur.h"
@@ -48,11 +48,10 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 150.0f;	// 移動量
+	const float	MOVE		= 300.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
 	const float	RADIUS		= 20.0f;	// 半径
-	const float	HEIGHT		= 100.0f;	// 縦幅
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
@@ -102,7 +101,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bCreateClone		(false),		// 分身生成モードフラグ
 	m_nNumClone			(0),			// 生成する分身の数
 	m_nMaxClone			(0),			// 一度に分身できる上限
-	m_nRecover			(0)				// ジャストアクションでの回復量
+	m_nRecover			(0),			// ジャストアクションでの回復量
+	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
+	m_fHeght			(0.0f),			// 立幅
+	m_fInertial			(0.0f)			// 慣性力
 {
 
 }
@@ -132,6 +134,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_bCreateClone		= false;		// 分身生成モードフラグ
 	m_nNumClone			= 0;			// 生成する分身の数
+	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -203,7 +206,7 @@ HRESULT CPlayer::Init(void)
 
 	// ブラーの情報
 	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
-	CBlur::Create
+	//CBlur::Create
 	( // 引数
 		this,	// 親オブジェクト
 		mat,	// ブラーマテリアル
@@ -441,10 +444,13 @@ bool CPlayer::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVecKnock
 //============================================================
 //	ヒット処理
 //============================================================
-bool CPlayer::Hit(const int /*nDamage*/)
+bool CPlayer::Hit(const int nDamage)
 {
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// 士気力を減少
+	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
@@ -526,7 +532,7 @@ float CPlayer::GetRadius(void) const
 float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
-	return HEIGHT;
+	return m_fHeght;
 }
 
 //==========================================
@@ -635,6 +641,13 @@ CPlayer::EMotion CPlayer::UpdateNormal(void)
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
 
+	// チェックポイントに帰る
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	if (pKey->IsTrigger(DIK_Q))
+	{
+		SaveReset();
+	}
+
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -714,6 +727,10 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
 		m_move.x += (0.0f - m_move.x) * LAND_REV;
 		m_move.z += (0.0f - m_move.z) * LAND_REV;
 	}
+
+	// 中心座標の更新
+	m_posCenter = rPos;
+	m_posCenter.y += m_fHeght * 0.5f;
 }
 
 //============================================================
@@ -855,10 +872,10 @@ void CPlayer::Move()
 	float fStickRot = 0.0f;
 
 	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { speed.z += 1.0f; }
-	if (pKey->IsPress(DIK_S)) { speed.z -= 1.0f; }
-	if (pKey->IsPress(DIK_D)) { speed.x += 1.0f; }
-	if (pKey->IsPress(DIK_A)) { speed.x -= 1.0f; }
+	if (pKey->IsPress(DIK_W)) { speed.z -= 1.0f; }
+	if (pKey->IsPress(DIK_S)) { speed.z += 1.0f; }
+	if (pKey->IsPress(DIK_D)) { speed.x -= 1.0f; }
+	if (pKey->IsPress(DIK_A)) { speed.x += 1.0f; }
 
 	// 入力していないと抜ける
 	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
@@ -876,7 +893,7 @@ void CPlayer::Move()
 	useful::NormalizeRot(fStickRot);
 
 	// 向きを設定
-	m_destRot.y = fStickRot + D3DX_PI;
+	m_destRot.y = fStickRot;
 
 	// 向きの正規化
 	useful::NormalizeRot(m_destRot.y);
@@ -889,7 +906,6 @@ void CPlayer::Move()
 
 	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-
 
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
@@ -904,10 +920,10 @@ void CPlayer::Move()
 void CPlayer::Inertial()
 {
 	// x軸方向の慣性
-	m_move.x += (0.0f - m_move.x) * 0.1f;
+	m_move.x += (0.0f - m_move.x) * m_fInertial;
 
 	// z軸方向の慣性
-	m_move.z += (0.0f - m_move.z) * 0.1f;
+	m_move.z += (0.0f - m_move.z) * m_fInertial;
 }
 
 //==========================================
@@ -959,13 +975,21 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%d", &m_nRecover);
 		}
+		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fHeght);
+		}
+		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fInertial);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
 		}
 	}
-
-	return;
 }
 
 //==========================================
@@ -1021,4 +1045,19 @@ void CPlayer::ControlClone()
 		// 生成したら0に戻す
 		m_nNumClone = 0;
 	}
+}
+
+//==========================================
+//  直前のチェックポイントに帰る
+//==========================================
+void CPlayer::SaveReset()
+{
+	// セーブされていない場合関数を抜ける
+	if (m_pCheckPoint == nullptr) { return; }
+
+	// チェックポイントの座標に飛ぶ
+	SetVec3Position(m_pCheckPoint->GetVec3Position());
+
+	// セーブした時点での士気力にする
+	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }

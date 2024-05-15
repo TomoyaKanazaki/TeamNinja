@@ -28,9 +28,9 @@ namespace
 {
 	namespace timerInfo
 	{
-		const int TIME_LIMIT = 0;	// 制限時間
-
-		const D3DXVECTOR3 POS		 = D3DXVECTOR3(955.0f, 43.5f, 0.0f);	// タイマー位置
+		const float TIME_START = 0.0f;		// 開始時間
+		const float TIME_LIMIT = 180.0f;	// 制限時間
+		const D3DXVECTOR3 POS		 = D3DXVECTOR3(1100.0f, 43.5f, 0.0f);	// タイマー位置
 		const D3DXVECTOR3 OFFSET	 = D3DXVECTOR3(146.0f, 13.0f, 0.0f);	// タイマー背景オフセット
 		const D3DXVECTOR3 VAL_SIZE	 = D3DXVECTOR3(46.8f, 62.4f, 0.0f);		// タイマー数字大きさ
 		const D3DXVECTOR3 PART_SIZE	 = D3DXVECTOR3(27.3f, 62.4f, 0.0f);		// タイマー区切り大きさ
@@ -83,15 +83,13 @@ HRESULT CSceneGame::Init(void)
 	// タイマーUIの生成
 	m_pTimerUI = CTimerUI::Create
 	( // 引数
-		CTimerManager::TIME_SEC,	// 設定タイム
-		timerInfo::TIME_LIMIT,		// 制限時間
-		timerInfo::POS,				// 位置
-		timerInfo::VAL_SIZE,		// 数字の大きさ
-		timerInfo::PART_SIZE,		// 区切りの大きさ
-		timerInfo::VAL_SPACE,		// 数字の空白
-		timerInfo::PART_SPACE,		// 区切りの空白
-		timerInfo::OFFSET,			// 背景のオフセット
-		timerInfo::BG_SIZE			// 背景の大きさ
+		timerInfo::TIME_START,	// 開始時間
+		timerInfo::TIME_LIMIT,	// 制限時間
+		timerInfo::POS,			// 位置
+		timerInfo::VAL_SIZE,	// 数字の大きさ
+		timerInfo::PART_SIZE,	// 区切りの大きさ
+		timerInfo::VAL_SPACE,	// 数字の空白
+		timerInfo::PART_SPACE	// 区切りの空白
 	);
 	if (m_pTimerUI == nullptr)
 	{ // 非使用中の場合
@@ -154,6 +152,9 @@ HRESULT CSceneGame::Init(void)
 	//--------------------------------------------------------
 	//	初期設定
 	//--------------------------------------------------------
+	// タイマーの計測を開始する
+	m_pTimerUI->Start();
+
 	// BGMの再生
 	PLAY_SOUND(CSound::LABEL_BGM_GAME);
 
@@ -168,9 +169,6 @@ void CSceneGame::Uninit(void)
 {
 	// ゲームマネージャーの破棄
 	SAFE_REF_RELEASE(m_pGameManager);
-
-	// タイマーUIの破棄
-	SAFE_REF_RELEASE(m_pTimerUI);
 
 	// シネマスコープの破棄
 	SAFE_REF_RELEASE(m_pCinemaScope);
@@ -196,10 +194,6 @@ void CSceneGame::Update(const float fDeltaTime)
 	// ゲームマネージャーの更新
 	assert(m_pGameManager != nullptr);
 	m_pGameManager->Update(fDeltaTime);
-
-	// タイマーUIの更新
-	assert(m_pTimerUI != nullptr);
-	m_pTimerUI->Update(fDeltaTime);
 
 	// ヒットストップの更新
 	assert(m_pHitStop != nullptr);
