@@ -24,6 +24,7 @@ class CCinemaScope;	// シネマスコープクラス
 class CPause;		// ポーズクラス
 class CHitStop;		// ヒットストップクラス
 class CFlash;		// フラッシュクラス
+class CEditManager;	// エディットマネージャークラス
 
 //************************************************************
 //	クラス定義
@@ -50,6 +51,7 @@ public:
 	static CPause		*GetPause(void);		// ポーズ取得
 	static CHitStop		*GetHitStop(void);		// ヒットストップ取得
 	static CFlash		*GetFlash(void);		// フラッシュ取得
+	static CEditManager	*GetEditManager(void);	// エディターマネージャー取得
 
 private:
 	// 静的メンバ変数
@@ -59,6 +61,7 @@ private:
 	static CPause		*m_pPause;			// ポーズ
 	static CHitStop		*m_pHitStop;		// ヒットストップ
 	static CFlash		*m_pFlash;			// フラッシュ
+	static CEditManager *m_pEditManager;	// エディターマネージャー
 };
 
 #endif	// _SCENE_GAME_H_

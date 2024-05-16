@@ -171,6 +171,9 @@
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
+    <ClInclude Include="Resource\editBlock.h" />
+    <ClInclude Include="Resource\editManager.h" />
+    <ClInclude Include="Resource\editStage.h" />
     <ClInclude Include="Resource\effect2D.h" />
     <ClInclude Include="Resource\effect3D.h" />
     <ClInclude Include="Resource\effekseerControl.h" />
@@ -280,6 +283,9 @@
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
+    <ClCompile Include="Resource\editBlock.cpp" />
+    <ClCompile Include="Resource\editManager.cpp" />
+    <ClCompile Include="Resource\editStage.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
     <ClCompile Include="Resource\effect3D.cpp" />
     <ClCompile Include="Resource\effekseerControl.cpp" />
