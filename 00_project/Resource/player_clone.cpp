@@ -13,6 +13,8 @@
 #include "manager.h"
 #include "useful.h"
 #include "player.h"
+#include "orbit.h"
+#include "multiModel.h"
 
 //************************************************************
 //	定数宣言
@@ -36,6 +38,9 @@ namespace
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 
+	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.0f, -10.0f, 0.0f), XCOL_GREEN);	// オフセット情報
+	const int ORBIT_PART = 10;	// 分割数
+
 	const float DISTANCE = 75.0f; // プレイヤーとの距離
 }
 
@@ -51,7 +56,8 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
-m_pShadow(nullptr)		// 影の情報
+m_pShadow(nullptr),		// 影の情報
+m_pOrbit(nullptr)		// 軌跡の情報
 {
 
 }
@@ -71,6 +77,7 @@ HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
 	m_pShadow = nullptr;		// 影の情報
+	m_pOrbit = nullptr;		// 軌跡の情報
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -87,6 +94,21 @@ HRESULT CPlayerClone::Init(void)
 	// 影の生成
 	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
 	if (m_pShadow == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 軌跡の生成
+	m_pOrbit = COrbit::Create
+	( // 引数
+		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+		ORBIT_OFFSET,	// オフセット情報
+		ORBIT_PART		// 分割数
+	);
+	if (m_pOrbit == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -130,6 +152,9 @@ void CPlayerClone::Uninit(void)
 	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
 	SAFE_UNINIT(m_pShadow);
 
+	// 軌跡の終了
+	SAFE_UNINIT(m_pOrbit);
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -157,6 +182,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
+
+	// 軌跡の更新
+	m_pOrbit->Update(fDeltaTime);
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -480,7 +508,7 @@ void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 	D3DXVECTOR3 vecTarget = posTarget - pos;
 
 	// 目標へのベクトルに倍率をかけ現在地に加算する
-	pos += vecTarget * 0.2f;
+	pos += vecTarget * 0.1f;
 
 	// 位置を適用
 	SetVec3Position(pos);

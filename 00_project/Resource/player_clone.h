@@ -19,6 +19,7 @@
 //	前方宣言
 //************************************************************
 class CShadow;	// 影クラス
+class COrbit;	// 軌跡クラス
 
 //************************************************************
 //	クラス定義
@@ -98,6 +99,7 @@ private:
 	// メンバ変数
 	CListManager<CPlayerClone>::AIterator m_iterator;	// イテレーター
 	CShadow* m_pShadow;			// 影の情報
+	COrbit* m_pOrbit;			// 軌跡の情報
 };
 
 #endif	// _PLAYER_H_
