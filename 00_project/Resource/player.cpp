@@ -490,7 +490,7 @@ void CPlayer::SetSpawn(void)
 	SetEnableDraw(true);
 
 	// ’Ç]ƒJƒƒ‰‚Ì–Ú•WˆÊ’u‚ÌÝ’è
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_FOLLOW);
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
 	GET_MANAGER->GetCamera()->SetDestFollow();
 }
 
