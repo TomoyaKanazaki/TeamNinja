@@ -18,11 +18,22 @@ namespace
 {
 	const char* TEXTURE_FILE = "TODO";		// テクスチャ
 	const int PRIORITY = 6;			// スタートUIの優先順位
-
 	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(1600.0f, 400.0f, 0.0f);		// サイズ
-	const D3DXVECTOR3 INIT_ZOOM_SUB = D3DXVECTOR3(20.0f, 5.0f, 0.0f);		// 初期のサイズの減算量
-	const D3DXVECTOR3 ACCELE_ZOOM_SUB = D3DXVECTOR3(4.0f, 1.0f, 0.0f);		// サイズの減算加速度
-	const D3DXVECTOR3 BOUND_SIZE = D3DXVECTOR3(400.0f, 100.0f, 0.0f);		// バウンド状態に移行するサイズ
+
+	// ズーム状態の定数
+	namespace zoom
+	{
+		const D3DXVECTOR3 INIT_ZOOM_SUB = D3DXVECTOR3(20.0f, 5.0f, 0.0f);		// 初期のサイズの減算量
+		const D3DXVECTOR3 ACCELE_ZOOM_SUB = D3DXVECTOR3(4.0f, 1.0f, 0.0f);		// サイズの減算加速度
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(360.0f, 90.0f, 0.0f);			// バウンド状態に移行するサイズ
+	}
+
+	// バウンド状態の定数
+	namespace bound
+	{
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(400.0f, 100.0f, 0.0f);		// バウンド状態に移行するサイズ
+		const D3DXVECTOR3 BOUND_SUB = D3DXVECTOR3(10.0f, 2.5f, 0.0f);			// 初期のサイズの減算量
+	}
 }
 
 //************************************************************
@@ -146,6 +157,8 @@ void CStartUI::State(void)
 
 	case CStartUI::STATE_BOUND:		// バウンド状態
 
+		// バウンド処理
+		Bound();
 
 		break;
 
@@ -173,17 +186,44 @@ void CStartUI::Zoom(void)
 	size -= m_sizeMove;
 
 	// サイズの移動量を加算する
-	m_sizeMove += ACCELE_ZOOM_SUB;
+	m_sizeMove += zoom::ACCELE_ZOOM_SUB;
 
-	if (size.x < BOUND_SIZE.x ||
-		size.y < BOUND_SIZE.y)
+	if (size.x < zoom::DEST_SIZE.x ||
+		size.y < zoom::DEST_SIZE.y)
 	{ // 一定のサイズになった場合
 
 		// サイズを補正する
-		size = BOUND_SIZE;
+		size = zoom::DEST_SIZE;
+
+		// サイズの移動量を設定する
+		m_sizeMove = bound::BOUND_SUB;
 
 		// バウンド状態にする
 		m_state = STATE_BOUND;
+	}
+
+	// サイズを適用
+	SetVec3Sizing(size);
+}
+
+//============================================================
+// バウンド処理
+//============================================================
+void CStartUI::Bound(void)
+{
+	// サイズを減算する
+	D3DXVECTOR3 size = GetVec3Sizing();
+	size += m_sizeMove;
+
+	if (size.x > bound::DEST_SIZE.x ||
+		size.y > bound::DEST_SIZE.y)
+	{ // 一定のサイズになった場合
+
+		// サイズを補正する
+		size = bound::DEST_SIZE;
+
+		// 停止状態にする
+		m_state = STATE_STOP;
 	}
 
 	// サイズを適用

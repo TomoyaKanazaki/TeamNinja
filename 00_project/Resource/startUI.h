@@ -52,6 +52,7 @@ private:
 	// メンバ関数
 	void State(void);		// 状態処理
 	void Zoom(void);		// ズーム処理
+	void Bound(void);		// バウンド処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_sizeMove;	// サイズの移動量
