@@ -142,8 +142,12 @@ void CEnemyChase::TargetSelect(void)
 		// ’ÇÕˆ—
 		Chase(posTarget);
 
-		// Ú‹ßˆ—
-		Approach(posTarget);
+		if (Approach(posTarget))
+		{ // Ú‹ß‚µ‚½ê‡
+
+			// ƒqƒbƒgˆ—
+			(*CPlayerClone::GetList()->GetBegin())->Hit(1);
+		}
 
 		break;
 
