@@ -71,6 +71,9 @@ public:
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 
+	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
+	bool Hit(const int nDamage);		// ヒット
+
 	// 静的メンバ関数
 	static CPlayerClone* Create(void);					// 生成
 	static void Delete(const int nNum);					// 消去処理
@@ -80,7 +83,6 @@ public:
 private:
 	// メンバ関数
 	EMotion UpdateNormal(void);		// 通常状態時の更新
-
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新

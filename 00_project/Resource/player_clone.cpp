@@ -206,6 +206,26 @@ void CPlayerClone::SetEnableDraw(const bool bDraw)
 }
 
 //============================================================
+//	ノックバックヒット処理
+//============================================================
+bool CPlayerClone::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVecKnock*/)
+{
+	if (IsDeath()) { return false; }	// 死亡済み
+
+	return true;
+}
+
+//============================================================
+//	ヒット処理
+//============================================================
+bool CPlayerClone::Hit(const int nDamage)
+{
+	if (IsDeath()) { return false; }	// 死亡済み
+
+	return true;
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CPlayerClone* CPlayerClone::Create(void)
