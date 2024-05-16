@@ -14,6 +14,7 @@
 
 #include "player.h"
 #include "player_clone.h"
+#include "enemyStateAttack.h"
 
 //************************************************************
 //	定数宣言
@@ -23,6 +24,7 @@ namespace
 	const char* SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 	const float MOVE = -420.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
+	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
 }
 
 //************************************************************
@@ -116,6 +118,16 @@ void CEnemyChase::TargetSelect(void)
 		// プレイヤーの位置を取得する
 		posTarget = CScene::GetPlayer()->GetVec3Position();
 
+		// 追跡処理
+		Chase(posTarget);
+
+		if (Approach(posTarget))
+		{ // 接近した場合
+
+			// ヒット処理
+			CScene::GetPlayer()->Hit(1);
+		}
+
 		break;
 
 	case CEnemyChase::STATE_CLONE:
@@ -127,6 +139,12 @@ void CEnemyChase::TargetSelect(void)
 		// 分身の位置を取得する
 		posTarget = (*CPlayerClone::GetList()->GetBegin())->GetVec3Position();
 
+		// 追跡処理
+		Chase(posTarget);
+
+		// 接近処理
+		Approach(posTarget);
+
 		break;
 
 	default:
@@ -136,9 +154,6 @@ void CEnemyChase::TargetSelect(void)
 
 		break;
 	}
-
-	// 追跡処理
-	Chase(posTarget);
 }
 
 //============================================================
@@ -179,4 +194,29 @@ void CEnemyChase::Chase(const D3DXVECTOR3 posTarget)
 	SetDestRotation(destRot);
 	SetVec3Rotation(rot);
 	SetMovePosition(move);
+}
+
+//============================================================
+// 接近処理
+//============================================================
+bool CEnemyChase::Approach(const D3DXVECTOR3 posTarget)
+{
+	float fDistance = 0.0f;					// 距離
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+
+	// 距離を測る
+	fDistance = sqrtf((posTarget.x - pos.x) * (posTarget.x - pos.x) + (posTarget.z - pos.z) * (posTarget.z - pos.z));
+
+	if (fDistance <= ATTACK_DISTANCE)
+	{ // 一定の距離に入った場合
+
+		// 攻撃状態にする
+		ChangeState(new CEnemyStateAttack(this));
+
+		// 接近した
+		return true;
+	}
+
+	// 接近してない
+	return false;
 }

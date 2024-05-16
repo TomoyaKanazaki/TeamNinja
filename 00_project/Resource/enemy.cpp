@@ -124,6 +124,13 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 状態処理
+		m_pState->Process();
+	}
+
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
 }
