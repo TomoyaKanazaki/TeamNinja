@@ -34,7 +34,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyChase::CEnemyChase(const EType type) : CEnemy(type),
-m_state(STATE_CLONE)			// 状態
+m_state(STATE_PLAYER)			// 状態
 {
 
 }
@@ -141,9 +141,6 @@ void CEnemyChase::TargetSelect(void)
 
 		// 追跡処理
 		Chase(posTarget);
-
-		// 接近処理
-		Approach(posTarget);
 
 		if (Approach(posTarget))
 		{ // 接近した場合

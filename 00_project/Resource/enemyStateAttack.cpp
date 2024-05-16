@@ -34,8 +34,8 @@ CEnemyStateAttack::~CEnemyStateAttack()
 //==========================
 void CEnemyStateAttack::Process(void)
 {
-	// ここでアタックモーションにすればGood!!
+	// TODO ここでアタックモーションにすればGood!!
 
-	// 攻撃モーションが終わったらNoneStateにする
+	// TODO 攻撃モーションが終わったらNoneStateにする
 	GetEnemy()->ChangeState(new CEnemyStateNone(GetEnemy()));
 }
