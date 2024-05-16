@@ -18,6 +18,8 @@
 #include "pause.h"
 #include "hitStop.h"
 #include "flash.h"
+#include "editManager.h"
+
 #include "stage.h"
 #include "player.h"
 
@@ -49,6 +51,7 @@ CCinemaScope	*CSceneGame::m_pCinemaScope	= nullptr;	// シネマスコープ
 CPause			*CSceneGame::m_pPause		= nullptr;	// ポーズ
 CHitStop		*CSceneGame::m_pHitStop		= nullptr;	// ヒットストップ
 CFlash			*CSceneGame::m_pFlash		= nullptr;	// フラッシュ
+CEditManager	*CSceneGame::m_pEditManager	= nullptr;	// エディットマネージャー
 
 //************************************************************
 //	子クラス [CSceneGame] のメンバ関数
@@ -92,7 +95,7 @@ HRESULT CSceneGame::Init(void)
 		timerInfo::PART_SPACE	// 区切りの空白
 	);
 	if (m_pTimerUI == nullptr)
-	{ // 非使用中の場合
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -112,7 +115,7 @@ HRESULT CSceneGame::Init(void)
 	// ポーズの生成
 	m_pPause = CPause::Create();
 	if (m_pPause == nullptr)
-	{ // 非使用中の場合
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -122,7 +125,7 @@ HRESULT CSceneGame::Init(void)
 	// ヒットストップの生成
 	m_pHitStop = CHitStop::Create();
 	if (m_pHitStop == nullptr)
-	{ // 非使用中の場合
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -132,7 +135,7 @@ HRESULT CSceneGame::Init(void)
 	// フラッシュの生成
 	m_pFlash = CFlash::Create();
 	if (m_pFlash == nullptr)
-	{ // 非使用中の場合
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -142,12 +145,25 @@ HRESULT CSceneGame::Init(void)
 	// ゲームマネージャーの生成
 	m_pGameManager = CGameManager::Create();
 	if (m_pGameManager == nullptr)
-	{ // 非使用中の場合
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
 		return E_FAIL;
 	}
+
+#if _DEBUG
+
+	// エディットマネージャーの生成
+	m_pEditManager = CEditManager::Create();
+	if (m_pEditManager == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+#endif	// _DEBUG
 
 	//--------------------------------------------------------
 	//	初期設定
@@ -181,6 +197,13 @@ void CSceneGame::Uninit(void)
 
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
+
+#if _DEBUG
+
+	// エディットマネージャーの破棄
+	SAFE_REF_RELEASE(m_pEditManager);
+
+#endif	// _DEBUG
 
 	// シーンの終了
 	CScene::Uninit();
@@ -245,6 +268,10 @@ void CSceneGame::Update(const float fDeltaTime)
 			GET_MANAGER->GetCamera()->Update(fDeltaTime);
 		}
 	}
+
+	// エディットマネージャーの更新
+	assert(m_pEditManager != nullptr);
+	m_pEditManager->Update();
 
 #endif	// _DEBUG
 }
@@ -319,4 +346,16 @@ CFlash *CSceneGame::GetFlash(void)
 
 	// フラッシュのポインタを返す
 	return m_pFlash;
+}
+
+//============================================================
+//	エディターマネージャー取得処理
+//============================================================
+CEditManager *CSceneGame::GetEditManager(void)
+{
+	// インスタンス未使用
+	assert(m_pEditManager != nullptr);
+
+	// エディターマネージャーのポインタを返す
+	return m_pEditManager;
 }
