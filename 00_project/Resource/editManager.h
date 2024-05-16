@@ -15,8 +15,10 @@
 //************************************************************
 #define KEY_DOUBLE		(DIK_LCONTROL)	// 二重化キー
 #define NAME_DOUBLE		("LCTRL")		// 二重化表示
-#define KEY_TRIGGER		(DIK_LSHIFT)	// トリガー化キー
-#define NAME_TRIGGER	("LSHIFT")		// トリガー化表示
+#define KEY_TRIGGER		(DIK_LSHIFT)	// トリガーキー
+#define NAME_TRIGGER	("LSHIFT")		// トリガー表示
+#define KEY_REVERSE		(DIK_LALT)		// 操作逆転キー
+#define NAME_REVERSE	("LALT")		// 操作逆転表示
 
 //************************************************************
 //	クラス定義
