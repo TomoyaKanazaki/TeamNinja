@@ -466,12 +466,21 @@ void CPlayerClone::ChasePrev()
 void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 {
 	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
+	D3DXVECTOR3 posTarget = rPos + D3DXVECTOR3
 	(
 		sinf(rRot.y) * DISTANCE,
 		0.0f,
 		cosf(rRot.y) * DISTANCE
 	);
+
+	// 現在の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 目標地点へのベクトルを求める
+	D3DXVECTOR3 vecTarget = posTarget - pos;
+
+	// 目標へのベクトルに倍率をかけ現在地に加算する
+	pos += vecTarget * 0.2f;
 
 	// 位置を適用
 	SetVec3Position(pos);
