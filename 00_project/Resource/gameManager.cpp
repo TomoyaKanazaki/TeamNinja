@@ -22,6 +22,7 @@
 
 #include "enemy.h"
 #include "checkpoint.h"
+#include "startUI.h"
 #include "goal.h"
 
 //************************************************************
@@ -67,6 +68,9 @@ HRESULT CGameManager::Init(void)
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
 	m_pGoal = nullptr;		// ゴールのポインタ
+
+	// スタートUIを生成
+	CStartUI::Create();
 
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
 
