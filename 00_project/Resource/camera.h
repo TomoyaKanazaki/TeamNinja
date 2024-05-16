@@ -38,6 +38,7 @@ public:
 		STATE_CONTROL,	// 操作状態
 		STATE_ROTATE,	// 回転状態
 		STATE_FOLLOW,	// 追従状態
+		STATE_TPS,		// 三人称状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -105,6 +106,7 @@ public:
 
 	void SetDestRotate(void);	// カメラ目標位置設定 (回転)
 	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
+	void SetDestTps(void);		// カメラ目標位置設定 (三人称)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -130,6 +132,7 @@ private:
 	void Rotate(void);		// カメラの更新 (回転)
 	void Follow(void);		// カメラの更新 (追従)
 	void Control(void);		// カメラの更新 (操作)
+	void Tps(void);			// 三人称の更新 (操作)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)

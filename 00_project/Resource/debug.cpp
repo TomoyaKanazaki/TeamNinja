@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "scene.h"
 #include "sceneGame.h"
+#include "editManager.h"
 #include "debugproc.h"
 #include "pause.h"
 
@@ -452,7 +453,8 @@ void CDebug::ChangeEditMode(void)
 	if (GET_INPUTKEY->IsTrigger(KEY_EDITMODE))
 	{
 		// エディット状況のフラグを反転
-		//CGameManager::GetEditStage()->SetEnableEdit(!CGameManager::GetEditStage()->IsEdit());
+		CEditManager *pEdit = CSceneGame::GetEditManager();
+		pEdit->SetEnableEdit(!pEdit->IsEdit());
 	}
 }
 

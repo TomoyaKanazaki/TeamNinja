@@ -15,9 +15,9 @@
 //************************************************************
 #include "retentionManager.h"
 
-//==========================================
+//************************************************************
 //  前方宣言
-//==========================================
+//************************************************************
 class CGoal;
 
 //************************************************************
@@ -51,7 +51,7 @@ public:
 
 	// 静的メンバ関数
 	static CGameManager *Create(void);	// 生成
-	static void Release(CGameManager *&prGameManager);	// 破棄
+	static void Release(CGameManager *&prGameManager);		// 破棄
 
 private:
 
@@ -61,7 +61,6 @@ private:
 	// メンバ変数
 	EState m_state;	// 状態
 	CGoal* m_pGoal; // ゴールオブジェクトのポインタ
-
 };
 
 #endif	// _GAMEMANAGER_H_
