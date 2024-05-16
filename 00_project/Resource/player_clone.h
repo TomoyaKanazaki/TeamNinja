@@ -81,13 +81,14 @@ private:
 	// メンバ関数
 	EMotion UpdateNormal(void);		// 通常状態時の更新
 
-	void UpdateControl(void);		// 操作処理
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	void Chase(); // プレイヤーについていく処理
+	void ChasePrev(); // 前についていく処理
+	void Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
+	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト

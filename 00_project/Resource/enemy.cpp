@@ -11,7 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 
-#include "enemy_chase.h"
+#include "enemyChase.h"
 
 #include "enemyState.h"
 #include "enemyStateNone.h"
@@ -97,6 +97,14 @@ HRESULT CEnemy::Init(void)
 //============================================================
 void CEnemy::Uninit(void)
 {
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 状態の破棄
+		m_pState->Uninit();
+		m_pState = nullptr;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -116,6 +124,13 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
+	if (m_pState != nullptr)
+	{ // 状態が NULL じゃない場合
+
+		// 状態処理
+		m_pState->Process();
+	}
+
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
 }

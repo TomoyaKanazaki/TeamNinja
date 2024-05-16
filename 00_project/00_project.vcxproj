@@ -178,7 +178,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyState.h" />
     <ClInclude Include="Resource\enemyStateAttack.h" />
-    <ClInclude Include="Resource\enemy_chase.h" />
+    <ClInclude Include="Resource\enemyChase.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
@@ -256,7 +256,6 @@
     <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
     <ClInclude Include="Resource\timer.h" />
-    <ClInclude Include="Resource\timerManager.h" />
     <ClInclude Include="Resource\timerUI.h" />
     <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
@@ -288,7 +287,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyState.cpp" />
     <ClCompile Include="Resource\enemyStateAttack.cpp" />
-    <ClCompile Include="Resource\enemy_chase.cpp" />
+    <ClCompile Include="Resource\enemyChase.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />
@@ -370,7 +369,6 @@
     <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />
     <ClCompile Include="Resource\timer.cpp" />
-    <ClCompile Include="Resource\timerManager.cpp" />
     <ClCompile Include="Resource\timerUI.cpp" />
     <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />

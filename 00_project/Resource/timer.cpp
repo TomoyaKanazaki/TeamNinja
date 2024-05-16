@@ -150,7 +150,11 @@ void CTimer::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CTimer *CTimer::Create(const float fLimit)
+CTimer *CTimer::Create
+(
+	const float fTime,	// 開始時間
+	const float fLimit	// 制限時間
+)
 {
 	// タイマーの生成
 	CTimer *pTimer = new CTimer;
@@ -170,6 +174,9 @@ CTimer *CTimer::Create(const float fLimit)
 			SAFE_DELETE(pTimer);
 			return nullptr;
 		}
+
+		// 開始時間を設定
+		pTimer->SetTime(fTime);
 
 		// 制限時間を設定
 		pTimer->SetLimit(fLimit);
@@ -230,11 +237,23 @@ void CTimer::EnableStop(const bool bStop)
 }
 
 //============================================================
+//	時間の加算処理
+//============================================================
+void CTimer::AddTime(const float fTime)
+{
+	// 時間を加算
+	m_fTime += fTime;
+
+	// 時間を補正
+	useful::LimitNum(m_fTime, timer::TIME_MIN, timer::TIME_MAX);
+}
+
+//============================================================
 //	時間の設定処理
 //============================================================
 void CTimer::SetTime(const float fTime)
 {
-	// 時間を保存
+	// 時間を設定
 	m_fTime = fTime;
 
 	// 時間を補正
@@ -260,6 +279,9 @@ void CTimer::SetLimit(const float fLimit)
 	}
 	else
 	{ // 時間制限がある場合
+
+		// 制限の開始時間を設定
+		m_fTime = fLimit;
 
 		// カウントダウン関数を設定
 		m_funcCount = std::bind(&CTimer::CountDown, this, std::placeholders::_1);

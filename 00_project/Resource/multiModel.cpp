@@ -206,6 +206,15 @@ void CMultiModel::SetParentObject(CObject *pObject)
 }
 
 //============================================================
+//	親オブジェクトの取得処理
+//============================================================
+CObject *CMultiModel::GetParentObject(void) const
+{
+	// 親オブジェクトを返す
+	return m_pParent;
+}
+
+//============================================================
 //	親オブジェクトの設定処理
 //============================================================
 void CMultiModel::SetParentModel(CMultiModel *pModel)

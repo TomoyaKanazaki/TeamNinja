@@ -47,7 +47,7 @@ HRESULT CTimerUI::Init(void)
 	}
 
 	// タイマーの生成
-	m_pTimer = CTimer::Create(0.0f);
+	m_pTimer = CTimer::Create(0.0f, 0.0f);
 	if (m_pTimer == nullptr)
 	{ // 生成に失敗した場合
 
@@ -83,8 +83,8 @@ void CTimerUI::Update(const float fDeltaTime)
 	// タイマーの更新
 	m_pTimer->Update(fDeltaTime);
 
-	// 時間
-	CTimeUI::SetTime(m_pTimer->GetTime());
+	// 表示時間の設定
+	SetTime(m_pTimer->GetTime());
 
 	// タイムUIの更新
 	CTimeUI::Update(fDeltaTime);
@@ -100,6 +100,18 @@ void CTimerUI::Draw(CShader *pShader)
 
 	// タイムUIの描画
 	CTimeUI::Draw(pShader);
+}
+
+//============================================================
+//	表示時間の設定処理
+//============================================================
+void CTimerUI::SetTime(const float fTime)
+{
+	// タイマー時間の設定
+	m_pTimer->SetTime(fTime);
+
+	// 表示時間の設定
+	CTimeUI::SetTime(fTime);
 }
 
 //============================================================
@@ -142,6 +154,9 @@ CTimerUI *CTimerUI::Create
 
 		// 開始時間を設定
 		pTimerUI->SetTime(fTime);
+
+		// 制限時間を設定
+		pTimerUI->SetLimit(fLimit);
 
 		// 数字種類を設定
 		pTimerUI->SetValueType(type);

@@ -15,7 +15,7 @@
 #include "texture.h"
 #include "model.h"
 #include "object2D.h"
-#include "timerManager.h"
+#include "timeUI.h"
 #include "retentionManager.h"
 
 //************************************************************
@@ -224,11 +224,10 @@ HRESULT CResultManager::Init(void)
 	//--------------------------------------------------------
 	//	タイム表示の生成・設定
 	//--------------------------------------------------------
-	// タイマーマネージャーの生成
-	m_pTime = CTimerManager::Create
+	// タイムUIの生成
+	m_pTime = CTimeUI::Create
 	( // 引数
-		CTimerManager::TIME_SEC,			// 設定タイム
-		0,									// 制限時間
+		0.0f,								// 制限時間
 		POS_TIME,							// 位置
 		SIZE_TIME_VAL * SET_TIME_SCALE,		// 数字の大きさ
 		SIZE_TIME_PART * SET_TIME_SCALE,	// 区切りの大きさ
@@ -250,12 +249,7 @@ HRESULT CResultManager::Init(void)
 	m_pTime->SetEnableDraw(false);
 
 	// タイムを設定
-	if (!m_pTime->SetMSec(GET_RETENTION->GetTime()))
-	{ // 設定に失敗した場合
-
-		// 失敗を返す
-		return E_FAIL;
-	}
+	m_pTime->SetTime(GET_RETENTION->GetTime());
 
 	//--------------------------------------------------------
 	//	コンテニューロゴ表示の生成・設定
@@ -326,8 +320,8 @@ HRESULT CResultManager::Init(void)
 //============================================================
 void CResultManager::Uninit(void)
 {
-	// タイムの破棄
-	SAFE_REF_RELEASE(m_pTime);
+	// タイムの終了
+	SAFE_UNINIT(m_pTime);
 
 	for (int nCntResult = 0; nCntResult < result::NUM_POLYGON; nCntResult++)
 	{ // リザルト表示の総数分繰り返す

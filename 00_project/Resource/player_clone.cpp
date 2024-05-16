@@ -36,7 +36,7 @@ namespace
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 
-	const float DISTANCE = 50.0f; // プレイヤーとの距離
+	const float DISTANCE = 75.0f; // プレイヤーとの距離
 }
 
 //************************************************************
@@ -114,6 +114,9 @@ HRESULT CPlayerClone::Init(void)
 	// マテリアルを変更
 	SetAllMaterial(material::Green());
 
+	// サイズを調整
+	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
+
 	// 成功を返す
 	return S_OK;
 }
@@ -150,13 +153,10 @@ void CPlayerClone::Update(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// プレイヤーの後を追う
-	Chase();
+	ChasePrev();
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
-
-	// 操作処理
-	UpdateControl();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -248,7 +248,7 @@ void CPlayerClone::Delete(const int nNum)
 	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
 	// 分身を取得
-	CPlayerClone* pAvatar = m_pList->GetIndex(nNum);
+	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
 
 	// 分身の終了
 	pAvatar->Uninit();
@@ -269,7 +269,7 @@ void CPlayerClone::Delete(void)
 	for (int i = 0; i < nNum; ++i)
 	{
 		// 分身を取得
-		CPlayerClone* pAvatar = m_pList->GetIndex(0);
+		CPlayerClone* pAvatar = *m_pList->GetIndex(0);
 
 		// 分身の終了
 		pAvatar->Uninit();
@@ -303,38 +303,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateNormal(void)
 
 	// 現在のモーションを返す
 	return currentMotion;
-}
-
-//============================================================
-// 操作処理
-//============================================================
-void CPlayerClone::UpdateControl(void)
-{
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	if (pKey->IsPress(DIK_W))
-	{ // Wキーを押した場合
-
-		pos.z -= 3.0f;
-	}
-	if (pKey->IsPress(DIK_A))
-	{ // Aキーを押した場合
-
-		pos.x += 3.0f;
-	}
-	if (pKey->IsPress(DIK_S))
-	{ // Sキーを押した場合
-
-		pos.z += 3.0f;
-	}
-	if (pKey->IsPress(DIK_D))
-	{ // Dキーを押した場合
-
-		pos.x -= 3.0f;
-	}
-
-	SetVec3Position(pos);
 }
 
 //============================================================
@@ -432,22 +400,79 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-//  プレイヤーについていく処理
+//  前についていく処理
 //==========================================
-void CPlayerClone::Chase()
+void CPlayerClone::ChasePrev()
 {
-	// プレイヤーの情報を取得
-	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+	// リストの先頭を取得する
+	std::list<CPlayerClone*> list = m_pList->GetList();
+	auto itrBegin = list.begin();
 
-	// プレイヤーに対して後ろ移動
-	D3DXVECTOR3 pos = posPlayer + D3DXVECTOR3
+	// 先頭と自身を比較する
+	if (*itrBegin == this)
+	{
+		// ついていく
+		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+
+		return;
+	}
+
+	// リストの最後尾を取得する
+	auto itrEnd = list.end();
+
+	// 次のポインタを取得する変数
+	CPlayerClone* prev = *itrBegin;
+
+	// 自身に一致するポインタの一つ前に追従する
+	for (auto itr = itrBegin; itr != itrEnd; itr++)
+	{
+		// 現在のポインタと自身を比較する
+		if (*itr == this)
+		{
+			// ついていく
+			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
+
+			return;
+		}
+
+		// 現在のポインタを保存する
+		prev = *itr;
+	}
+}
+
+//==========================================
+//  ついていく処理
+//==========================================
+void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+{
+	// 一つ前に対して後ろ移動
+	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
 	(
-		sinf(rotPlayer.y) * DISTANCE,
+		sinf(rRot.y) * DISTANCE,
 		0.0f,
-		cosf(rotPlayer.y) * DISTANCE
+		cosf(rRot.y) * DISTANCE
 	);
 
 	// 位置を適用
 	SetVec3Position(pos);
+
+	// 目標の方向を向く処理
+	ViewTarget(rPos);
+}
+
+//==========================================
+//  目標の方向を向く処理
+//==========================================
+void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
+{
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = rPos - GetVec3Position();
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
+
+	// 向きを適用する
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y = fRot;
+	SetVec3Rotation(rot);
 }
