@@ -31,8 +31,14 @@ namespace
 	// バウンド状態の定数
 	namespace bound
 	{
-		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(400.0f, 100.0f, 0.0f);		// バウンド状態に移行するサイズ
-		const D3DXVECTOR3 BOUND_SUB = D3DXVECTOR3(10.0f, 2.5f, 0.0f);			// 初期のサイズの減算量
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(440.0f, 110.0f, 0.0f);		// バウンド状態に移行するサイズ
+		const D3DXVECTOR3 BOUND_SUB = D3DXVECTOR3(15.0f, 3.75f, 0.0f);			// 初期のサイズの減算量
+	}
+
+	// 停止状態の定数
+	namespace stop
+	{
+		const int DELETE_COUNT = 60;		// 停止状態のカウント数
 	}
 }
 
@@ -44,7 +50,8 @@ namespace
 //============================================================
 CStartUI::CStartUI() : CObject2D(CObject::LABEL_STARTUI, CObject::DIM_2D, PRIORITY),
 m_sizeMove(VEC3_ZERO),		// サイズの移動量
-m_state(STATE_ZOOM)			// ズーム状態
+m_state(STATE_ZOOM),		// ズーム状態
+m_nDeleteCount(0)			// 消失までのカウント
 {
 
 }
@@ -91,9 +98,6 @@ void CStartUI::Update(const float fDeltaTime)
 {
 	// 状態処理
 	State();
-
-	// オブジェクト2Dの更新
-	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================
@@ -164,6 +168,18 @@ void CStartUI::State(void)
 
 	case CStartUI::STATE_STOP:		// 停止状態
 
+		// 消失カウントを加算する
+		m_nDeleteCount++;
+
+		if (m_nDeleteCount >= stop::DELETE_COUNT)
+		{ // カウントが一定以上になった場合
+
+			// 終了処理
+			Uninit();
+
+			// この先の処理を行わない
+			return;
+		}
 
 		break;
 
@@ -174,6 +190,9 @@ void CStartUI::State(void)
 
 		break;
 	}
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================

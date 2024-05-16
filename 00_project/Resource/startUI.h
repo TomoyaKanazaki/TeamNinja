@@ -57,6 +57,7 @@ private:
 	// メンバ変数
 	D3DXVECTOR3 m_sizeMove;	// サイズの移動量
 	EState m_state;			// 状態
+	int m_nDeleteCount;		// 消失カウント
 };
 
 #endif	// _EFFECT2D_H_
