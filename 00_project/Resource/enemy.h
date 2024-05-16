@@ -66,7 +66,8 @@ public:
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// ˆÊ’uˆÚ“®—Êæ“¾
 
 	// ¬Œ´’Ç‰Á‚Ì‚â‚Â
-	void ChangeState(CEnemyState* pNext);				// ó‘Ô‚Ìİ’èˆ—
+	CEnemyState* GetState(void) const { return m_pState; }		// ó‘Ô‚Ìæ“¾ˆ—
+	void ChangeState(CEnemyState* pNext);						// ó‘Ô‚Ìİ’èˆ—
 
 protected:
 

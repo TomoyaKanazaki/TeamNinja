@@ -62,7 +62,7 @@ namespace
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
-	const int ORBIT_PART = 20;	// 分割数
+	const int ORBIT_PART = 15;	// 分割数
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -490,7 +490,7 @@ void CPlayer::SetSpawn(void)
 	SetEnableDraw(true);
 
 	// 追従カメラの目標位置の設定
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_FOLLOW);
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
 	GET_MANAGER->GetCamera()->SetDestFollow();
 }
 
