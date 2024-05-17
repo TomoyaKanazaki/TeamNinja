@@ -28,7 +28,7 @@ public:
 	{
 		STATE_ZOOM = 0,		// ズーム状態
 		STATE_BOUND,		// バウンド状態
-		STATE_STOP,			// 停止状態
+		STATE_FADE,			// フェーズ状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -53,6 +53,7 @@ private:
 	void State(void);		// 状態処理
 	void Zoom(void);		// ズーム処理
 	void Bound(void);		// バウンド処理
+	void Fade(void);		// フェード処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_sizeMove;	// サイズの移動量

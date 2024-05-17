@@ -138,7 +138,7 @@ CStartUI* CStartUI::Create(void)
 		pStartUI->SetVec3Position(SCREEN_CENT);		// 位置を設定
 		pStartUI->SetVec3Rotation(VEC3_ZERO);		// 向きを設定
 		pStartUI->SetVec3Sizing(INIT_SIZE);			// 大きさを設定
-		pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));// テクスチャを登録・割当
+		//pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));// テクスチャを登録・割当
 
 		// 確保したアドレスを返す
 		return pStartUI;
@@ -166,7 +166,7 @@ void CStartUI::State(void)
 
 		break;
 
-	case CStartUI::STATE_STOP:		// 停止状態
+	case CStartUI::STATE_FADE:		// フェーズ状態
 
 		// 消失カウントを加算する
 		m_nDeleteCount++;
@@ -241,10 +241,18 @@ void CStartUI::Bound(void)
 		// サイズを補正する
 		size = bound::DEST_SIZE;
 
-		// 停止状態にする
-		m_state = STATE_STOP;
+		// フェーズ状態にする
+		m_state = STATE_FADE;
 	}
 
 	// サイズを適用
 	SetVec3Sizing(size);
+}
+
+//============================================================
+// フェード処理
+//============================================================
+void CStartUI::Fade(void)
+{
+
 }
