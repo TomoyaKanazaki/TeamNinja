@@ -17,7 +17,7 @@ namespace
 {
 	const char* TEXTURE_FILE = "";		// テクスチャファイル
 
-	const int	PRIORITY = 2;			// 影の優先順位
+	const int	PRIORITY = 2;			// 分身のUIの優先順位
 	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(50.0f, 0.0f, 50.0f);		// 半径(サイズ)
 }
 
@@ -97,7 +97,7 @@ void CCloneAngleUI::Draw(CShader* pShader)
 //============================================================
 CCloneAngleUI* CCloneAngleUI::Create(CObject *pParent)
 {
-	// 影の生成
+	// 分身のUIの生成
 	CCloneAngleUI* pUI = new CCloneAngleUI;
 
 	if (pUI == nullptr)
@@ -108,11 +108,11 @@ CCloneAngleUI* CCloneAngleUI::Create(CObject *pParent)
 	else
 	{ // 生成に成功した場合
 
-		// 影の初期化
+		// 分身のUIの初期化
 		if (FAILED(pUI->Init()))
 		{ // 初期化に失敗した場合
 
-			// 影の破棄
+			// 分身のUIの破棄
 			SAFE_DELETE(pUI);
 			return nullptr;
 		}
