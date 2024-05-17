@@ -886,6 +886,12 @@ void CPlayer::CloneAngleUISetUp(void)
 	float fStickRot = pPad->GetPressRStickRot() + (D3DX_PI * 0.5f);	// スティックの向き
 	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
 
+	// 入力していないと表示を消す
+	if (fSpeed == 0.0f) { m_pCloneAngleUI->SetEnableDraw(false); return; }
+
+	// 分身出る方向のUIを表示する
+	m_pCloneAngleUI->SetEnableDraw(true);
+
 	// 位置を設定
 	m_pCloneAngleUI->SetVec3Position
 	(
@@ -896,9 +902,6 @@ void CPlayer::CloneAngleUISetUp(void)
 			pos.z + cosf(fStickRot) * 70.0f
 		)
 	);
-
-	// 入力していないと抜ける
-	if (fSpeed == 0.0f) { return; }
 
 	// 向きを設定
 	m_pCloneAngleUI->SetVec3Rotation
