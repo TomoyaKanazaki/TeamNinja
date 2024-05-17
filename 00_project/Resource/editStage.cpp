@@ -21,7 +21,8 @@ CEditStage::CEditStage()
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditManager = nullptr;	// エディットマネージャーの情報
+	m_pEditManager = nullptr;	// エディットマネージャー
+	m_pStage = nullptr;			// ステージエディター
 
 #endif	// _DEBUG
 }
@@ -49,7 +50,7 @@ CEditStage *CEditStage::Create(CEditManager *pEditManager, EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_FIELD:
-		//pEditStage = new CEditFiled;	// エディットフィールド
+		//pEditStage = new CEditField;	// エディットフィールド
 		break;
 
 	case TYPE_WALL:
@@ -115,7 +116,7 @@ void CEditStage::Release(CEditStage *&prEditStage)
 //============================================================
 //	エディットマネージャー取得処理
 //============================================================
-const CEditManager *CEditStage::GetPtrEditManager(void) const
+CEditManager *CEditStage::GetPtrEditManager(void) const
 {
 #if _DEBUG
 

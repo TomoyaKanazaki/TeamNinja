@@ -29,6 +29,7 @@
 #include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
+#include "cloneAngleUI.h"
 
 #include "effect3D.h"
 #include "particle3D.h"
@@ -47,15 +48,14 @@ namespace
 {
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
-	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 300.0f;	// 移動量
-	const float	JUMP		= 21.0f;	// ジャンプ上昇量
-	const float	GRAVITY		= 1.0f;		// 重力
-	const float	RADIUS		= 20.0f;	// 半径
-	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
-	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
-	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
-	const float	LAND_REV	= 0.16f;	// 通常状態時の地上の移動量の減衰係数
+	const int	PRIORITY	= 3;			// プレイヤーの優先順位
+	const float	JUMP		= 21.0f;		// ジャンプ上昇量
+	const float	GRAVITY		= 1.0f;			// 重力
+	const float	RADIUS		= 20.0f;		// 半径
+	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
+	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
+	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
+	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
 
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
@@ -63,6 +63,10 @@ namespace
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
+
+	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
+	const float	STEALTH_MOVE	= 1.0f;	// 忍び足の移動量
+	const float	NORMAL_MOVE		= 6.0f;	// 通常の移動量
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -104,7 +108,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fHeght			(0.0f),			// 立幅
-	m_fInertial			(0.0f)			// 慣性力
+	m_fInertial			(0.0f),			// 慣性力
+	m_pCloneAngleUI		(nullptr)		// 分身出す方向のUI
 {
 
 }
@@ -135,6 +140,7 @@ HRESULT CPlayer::Init(void)
 	m_bCreateClone		= false;		// 分身生成モードフラグ
 	m_nNumClone			= 0;			// 生成する分身の数
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
+	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -169,6 +175,16 @@ HRESULT CPlayer::Init(void)
 		ORBIT_PART		// 分割数
 	);
 	if (m_pOrbit == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 分身出す方向のUIの生成
+	m_pCloneAngleUI = CCloneAngleUI::Create(GetVec3Position());
+	if (m_pCloneAngleUI == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -236,6 +252,9 @@ void CPlayer::Uninit(void)
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
+	// 分身出す方向のUIの終了
+	SAFE_UNINIT(m_pCloneAngleUI);
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -290,6 +309,12 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
+
+	// 分身出す方向のUIのセットアップ処理
+	CloneAngleUISetUp();
+
+	// 分身出す方向のUIの更新
+	m_pCloneAngleUI->Update(fDeltaTime);
 
 	// 操作
 	Move();
@@ -852,6 +877,45 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
+// 分身出す方向のUIのセットアップ処理
+//==========================================
+void CPlayer::CloneAngleUISetUp(void)
+{
+	CInputPad* pPad = GET_INPUTPAD;			// 入力情報を取得
+	float fSpeed = pPad->GetPressRStickTilt();						// スティックの傾き
+	float fStickRot = pPad->GetPressRStickRot() + (D3DX_PI * 0.5f);	// スティックの向き
+	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
+
+	// 入力していないと表示を消す
+	if (fSpeed == 0.0f) { m_pCloneAngleUI->SetEnableDraw(false); return; }
+
+	// 分身出る方向のUIを表示する
+	m_pCloneAngleUI->SetEnableDraw(true);
+
+	// 位置を設定
+	m_pCloneAngleUI->SetVec3Position
+	(
+		D3DXVECTOR3
+		(
+			pos.x + sinf(fStickRot) * 70.0f,
+			pos.y + 10.0f,
+			pos.z + cosf(fStickRot) * 70.0f
+		)
+	);
+
+	// 向きを設定
+	m_pCloneAngleUI->SetVec3Rotation
+	(
+		D3DXVECTOR3
+		(
+			0.0f,
+			fStickRot,
+			0.0f
+		)
+	);
+}
+
+//==========================================
 //  操作処理
 //==========================================
 void CPlayer::Move()
@@ -860,31 +924,27 @@ void CPlayer::Move()
 	Inertial();
 
 	// 入力情報の取得
-	CInputKeyboard* pKey = GET_INPUTKEY;
-
-	// 一次保存の変数
-	D3DXVECTOR3 speed = VEC3_ZERO;
-
-	// カメラの向き
+	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
-
-	// スティックの向き
-	float fStickRot = 0.0f;
-
-	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { speed.z -= 1.0f; }
-	if (pKey->IsPress(DIK_S)) { speed.z += 1.0f; }
-	if (pKey->IsPress(DIK_D)) { speed.x -= 1.0f; }
-	if (pKey->IsPress(DIK_A)) { speed.x += 1.0f; }
+	
+	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
+	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
-	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
+	if (fSpeed == 0.0f) { m_move = VEC3_ZERO; return; }
 
-	// スティックの向きを設定する
-	fStickRot = atan2f(speed.x, speed.z);
+	if (fSpeed >= STEALTH_BORDER)
+	{ // 通常速度の場合
 
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
+		// 速度を通常にする
+		fSpeed = NORMAL_MOVE;
+	}
+	else
+	{ // 忍び足の場合
+
+		// 速度を忍び足にする
+		fSpeed = STEALTH_MOVE;
+	}
 
 	// 向きにカメラの向きを加算する
 	fStickRot += CameraRot.y;
@@ -899,17 +959,12 @@ void CPlayer::Move()
 	useful::NormalizeRot(m_destRot.y);
 
 	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI);
-	m_move.z = cosf(fStickRot + D3DX_PI);
-
-	D3DXVec3Normalize(&m_move, &m_move);
-
-	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
+	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
 
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
-		pos += m_move;
+		pos += (m_move * GET_MANAGER->GetDeltaTime()->GetTime());
 		SetVec3Position(pos);
 	}
 }
@@ -997,53 +1052,28 @@ void CPlayer::LoadParameter()
 //==========================================
 void CPlayer::ControlClone()
 {
-	// 分身が出ていた場合の処理
-	if (CPlayerClone::GetList() != nullptr)
+	// 入力情報の受け取り
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// 右スティックの入力
+	if (pPad->GetTriggerRStick())
 	{
-		// 士気力ゲージを減少する
-		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
+		// 移動量ベクトルのスカラー値を算出
+		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 
-		// 分身を削除する
-		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
-		{
-			// プレイヤーの分身を消去
-			CPlayerClone::Delete();
-		}
+		// スティックの角度を取得
+		float fRot = pPad->GetPressRStickRot();
 
-		// 関数を抜ける
-		return;
-	}
+		// スカラー値にスティックの角度を適用する
+		D3DXVECTOR3 move = D3DXVECTOR3
+		(
+			moveScalar * cosf(fRot),
+			0.0f,
+			moveScalar * sinf(fRot)
+		);
 
-	// 分身の数を設定する
-	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
-		// 分身の数を加算
-		++m_nNumClone;
-
-		// 分身可能フラグをオン
-		m_bCreateClone = true;
-
-		// 上限を超えた場合0に戻す
-		if (m_nNumClone > m_nMaxClone)
-		{
-			m_nNumClone = 0;
-
-			// 0の時はフラグをオフ
-			m_bCreateClone = false;
-		}
-	}
-
-	// 分身を生成する
-	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
-	{
-		// プレイヤーの分身を生成
-		for (unsigned int i = 0; i < m_nNumClone; ++i)
-		{
-			CPlayerClone::Create();
-		}
-
-		// 生成したら0に戻す
-		m_nNumClone = 0;
+		// 分身を出す
+		CPlayerClone::Create(move);
 	}
 }
 

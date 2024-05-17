@@ -30,12 +30,13 @@ namespace
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
+CListManager<CField> *CField::m_pList = nullptr;	// オブジェクトリスト
 CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
 
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -73,6 +74,23 @@ HRESULT CField::Init(void)
 	// セットアップの読込
 	LoadSetup();
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CField>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -87,6 +105,16 @@ void CField::Uninit(void)
 
 		// 地形情報の破棄
 		SAFE_DEL_ARRAY(m_aTerrainInfo[nCntField].pPosGap);
+	}
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
 	}
 
 	// オブジェクトメッシュフィールドの終了
@@ -116,7 +144,7 @@ void CField::Draw(CShader *pShader)
 //============================================================
 CField *CField::Create
 (
-	const ETexture texture,		// 種類
+	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
@@ -143,8 +171,8 @@ CField *CField::Create
 			return nullptr;
 		}
 
-		// テクスチャを登録・割当
-		pField->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[texture]));
+		// 種類を設定
+		pField->SetType(type);
 
 		// 位置を設定
 		pField->SetVec3Position(rPos);
@@ -173,6 +201,15 @@ CField *CField::Create
 }
 
 //============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CField> *CField::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
+}
+
+//============================================================
 //	地形の設定処理
 //============================================================
 void CField::SetTerrain(const ETerrain terrain)
@@ -184,6 +221,15 @@ void CField::SetTerrain(const ETerrain terrain)
 		CObjectMeshField::SetTerrain(m_aTerrainInfo[terrain].part, m_aTerrainInfo[terrain].pPosGap);
 	}
 	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	種類の設定処理
+//============================================================
+void CField::SetType(const EType type)
+{
+	// テクスチャを登録・割当
+	BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 }
 
 //============================================================

@@ -166,12 +166,14 @@
     <ClInclude Include="Resource\character.h" />
     <ClInclude Include="Resource\checkpoint.h" />
     <ClInclude Include="Resource\cinemaScope.h" />
+    <ClInclude Include="Resource\cloneAngleUI.h" />
     <ClInclude Include="Resource\collision.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
     <ClInclude Include="Resource\editBlock.h" />
+    <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editStage.h" />
     <ClInclude Include="Resource\effect2D.h" />
@@ -255,7 +257,7 @@
     <ClInclude Include="Resource\sky.h" />
     <ClInclude Include="Resource\sound.h" />
     <ClInclude Include="Resource\stage.h" />
-    <ClInclude Include="Resource\startUI.h" />
+    <ClInclude Include="Resource\popupUI.h" />
     <ClInclude Include="Resource\string2D.h" />
     <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
@@ -279,12 +281,13 @@
     <ClCompile Include="Resource\character.cpp" />
     <ClCompile Include="Resource\checkpoint.cpp" />
     <ClCompile Include="Resource\cinemaScope.cpp" />
+    <ClCompile Include="Resource\cloneAngleUI.cpp" />
     <ClCompile Include="Resource\collision.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
-    <ClCompile Include="Resource\editBlock.cpp" />
+    <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
@@ -372,7 +375,7 @@
     <ClCompile Include="Resource\sky.cpp" />
     <ClCompile Include="Resource\sound.cpp" />
     <ClCompile Include="Resource\stage.cpp" />
-    <ClCompile Include="Resource\startUI.cpp" />
+    <ClCompile Include="Resource\popupUI.cpp" />
     <ClCompile Include="Resource\string2D.cpp" />
     <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />
