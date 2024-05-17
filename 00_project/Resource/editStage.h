@@ -51,11 +51,11 @@ public:
 	static void Release(CEditStage *&prEditStage);	// 破棄
 
 	// メンバ関数
-	const CEditManager *GetPtrEditManager(void) const;	// エディットマネージャー取得
+	CEditManager *GetPtrEditManager(void) const;	// エディットマネージャー取得
 
 private:
 	// メンバ変数
-	const CEditManager *m_pEditManager;	// エディットマネージャー
+	CEditManager *m_pEditManager;	// エディットマネージャー
 	CEditStage *m_pStage;	// ステージエディター
 };
 
