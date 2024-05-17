@@ -15,7 +15,7 @@
 //************************************************************
 namespace
 {
-	const char* TEXTURE_FILE = "";		// テクスチャファイル
+	const char* TEXTURE_FILE = "data\\TEXTURE\\warning000.png";		// テクスチャファイル
 
 	const int	PRIORITY = 2;			// 分身のUIの優先順位
 	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(50.0f, 0.0f, 50.0f);		// 半径(サイズ)
@@ -27,8 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CCloneAngleUI::CCloneAngleUI() : CObject3D(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
-m_pParentObject(nullptr)		// 親オブジェクト
+CCloneAngleUI::CCloneAngleUI() : CObject3D(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY)
 {
 
 }
@@ -46,9 +45,6 @@ CCloneAngleUI::~CCloneAngleUI()
 //============================================================
 HRESULT CCloneAngleUI::Init(void)
 {
-	// メンバ変数を初期化
-	m_pParentObject = nullptr;		// 親オブジェクト
-
 	// オブジェクト3Dの初期化
 	if (FAILED(CObject3D::Init()))
 	{ // 初期化に失敗した場合
@@ -67,9 +63,6 @@ HRESULT CCloneAngleUI::Init(void)
 //============================================================
 void CCloneAngleUI::Uninit(void)
 {
-	// 親オブジェクトを NULL にする
-	m_pParentObject = nullptr;
-
 	// オブジェクト3Dの終了
 	CObject3D::Uninit();
 }
@@ -95,7 +88,7 @@ void CCloneAngleUI::Draw(CShader* pShader)
 //============================================================
 //	生成処理
 //============================================================
-CCloneAngleUI* CCloneAngleUI::Create(CObject *pParent)
+CCloneAngleUI* CCloneAngleUI::Create(const D3DXVECTOR3& rPos)
 {
 	// 分身のUIの生成
 	CCloneAngleUI* pUI = new CCloneAngleUI;
@@ -118,16 +111,13 @@ CCloneAngleUI* CCloneAngleUI::Create(CObject *pParent)
 		}
 
 		// 位置を設定
-		pUI->SetVec3Position(pParent->GetVec3Position());
+		pUI->SetVec3Position(rPos);
 
 		// サイズを設定
 		pUI->SetVec3Sizing(RADIUS);
 
-		// 親オブジェクトを設定
-		pUI->m_pParentObject = pParent;
-
 		// テクスチャを登録・割当
-		//pUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));
+		pUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));
 
 		// 確保したアドレスを返す
 		return pUI;

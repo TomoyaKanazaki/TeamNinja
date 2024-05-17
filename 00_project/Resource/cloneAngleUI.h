@@ -36,12 +36,10 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CCloneAngleUI* Create(CObject *pParent);	// 生成
+	static CCloneAngleUI* Create(const D3DXVECTOR3& rPos);	// 生成
 
 private:
 
-	// メンバ変数
-	CObject* m_pParentObject;	// 親オブジェクト
 };
 
 #endif	// _SHADOW_H_
