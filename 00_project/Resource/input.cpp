@@ -1136,6 +1136,50 @@ float CInputPad::GetPressRStickTilt(int nPadID)
 	return fRTilt;
 }
 
+//==========================================
+//  トリガー取得(Lスティック)
+//==========================================
+bool CInputPad::GetTriggerLStick(int nDirection)
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerL == STICK_INIT_VALUE)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	return abs(m_nStickTriggerL - nDirection) < 45 ? true : false;
+}
+
+//==========================================
+//  トリガー取得(Rスティック)
+//==========================================
+bool CInputPad::GetTriggerLStick(int nDirection) //右
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerR == STICK_INIT_VALUE)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	return abs(m_nStickTriggerR - nDirection) < 45 ? true : false;
+}
+
 //============================================================
 //	生成処理
 //============================================================

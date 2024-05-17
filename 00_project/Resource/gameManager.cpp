@@ -34,7 +34,7 @@ namespace
 	const D3DXVECTOR3 POS_SKIP	 = D3DXVECTOR3(1092.0f, 673.0f, 0.0f);	// スキップ操作の表示位置
 	const D3DXVECTOR3 SIZE_SKIP	 = D3DXVECTOR3(381.0f, 77.0f, 0.0f);	// スキップ操作の表示大きさ
 	const int CHANGE_UI_PRIORITY = 5;	// シネマスコープ終了時のUI優先順位
-	const int GAMEEND_WAIT_FRAME = 0;	// リザルト画面への遷移余韻フレーム
+	const int GAMEEND_WAIT_FRAME = 120;	// リザルト画面への遷移余韻フレーム
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 }

@@ -9,6 +9,7 @@
 #include "scene.h"
 #include "player.h"
 #include "collision.h"
+#include "startUI.h"
 
 //==========================================
 //  定数定義
@@ -149,6 +150,9 @@ void CGoal::CollisionPlayer(void)
 	// 当たっていない場合関数を抜ける
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), m_fRadius, Player->GetRadius()))
 	{ return; }
+
+	// ゴール時のUIを表示する
+	CStartUI::Create();
 
 	// クリアフラグをオンにする
 	m_bClear = true;
