@@ -723,7 +723,7 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 				{ // 使用されていない場合
 
 					// 地面オブジェクトの生成
-					pStage->m_field.ppField[nCurrentID] = CField::Create((CField::ETexture)nTextureID, pos, D3DXToRadian(rot), size, col, part);
+					pStage->m_field.ppField[nCurrentID] = CField::Create((CField::EType)nTextureID, pos, D3DXToRadian(rot), size, col, part);
 					if (pStage->m_field.ppField[nCurrentID] == nullptr)
 					{ // 確保に失敗した場合
 
