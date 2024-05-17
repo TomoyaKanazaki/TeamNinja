@@ -1,14 +1,14 @@
 //============================================================
 //
-// startUIヘッダー [startUI.h]
+// popupUIヘッダー [popupUI.h]
 // Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _STARTUI_H_
-#define _STARTUI_H_
+#ifndef _POPUPUI_H_
+#define _POPUPUI_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,8 +18,8 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// startUIクラス
-class CStartUI : public CObject2D
+// CPopUpUIクラス
+class CPopUpUI : public CObject2D
 {
 public:
 
@@ -34,10 +34,10 @@ public:
 	};
 
 	// コンストラクタ
-	CStartUI(void);
+	CPopUpUI();
 
 	// デストラクタ
-	~CStartUI() override;
+	~CPopUpUI() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -46,7 +46,7 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CStartUI* Create(void);	// 生成
+	static CPopUpUI* Create(const char* texture = nullptr);	// 生成
 
 private:
 
