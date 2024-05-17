@@ -256,7 +256,7 @@
     <ClInclude Include="Resource\sky.h" />
     <ClInclude Include="Resource\sound.h" />
     <ClInclude Include="Resource\stage.h" />
-    <ClInclude Include="Resource\startUI.h" />
+    <ClInclude Include="Resource\popupUI.h" />
     <ClInclude Include="Resource\string2D.h" />
     <ClInclude Include="Resource\text2D.h" />
     <ClInclude Include="Resource\texture.h" />
@@ -373,7 +373,7 @@
     <ClCompile Include="Resource\sky.cpp" />
     <ClCompile Include="Resource\sound.cpp" />
     <ClCompile Include="Resource\stage.cpp" />
-    <ClCompile Include="Resource\startUI.cpp" />
+    <ClCompile Include="Resource\popupUI.cpp" />
     <ClCompile Include="Resource\string2D.cpp" />
     <ClCompile Include="Resource\text2D.cpp" />
     <ClCompile Include="Resource\texture.cpp" />

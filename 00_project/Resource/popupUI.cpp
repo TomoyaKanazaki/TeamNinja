@@ -7,7 +7,7 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "startUI.h"
+#include "popupUI.h"
 #include "manager.h"
 #include "texture.h"
 
@@ -16,7 +16,6 @@
 //************************************************************
 namespace
 {
-	const char* TEXTURE_FILE = "TODO";		// テクスチャ
 	const int PRIORITY = 6;			// スタートUIの優先順位
 	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(1600.0f, 400.0f, 0.0f);		// サイズ
 
@@ -50,12 +49,12 @@ namespace
 }
 
 //************************************************************
-//	子クラス [CStartUI] のメンバ関数
+//	子クラス [CPopUpUI] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CStartUI::CStartUI() : CObject2D(CObject::LABEL_STARTUI, CObject::DIM_2D, PRIORITY),
+CPopUpUI::CPopUpUI() : CObject2D(CObject::LABEL_STARTUI, CObject::DIM_2D, PRIORITY),
 m_sizeMove(VEC3_ZERO),				// サイズの移動量
 m_state(STATE_ZOOM),				// 状態
 m_nDispCount(0),					// 表示カウント
@@ -68,7 +67,7 @@ m_fAlpha(1.0f)						// 透明度
 //============================================================
 //	デストラクタ
 //============================================================
-CStartUI::~CStartUI()
+CPopUpUI::~CPopUpUI()
 {
 
 }
@@ -76,7 +75,7 @@ CStartUI::~CStartUI()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CStartUI::Init(void)
+HRESULT CPopUpUI::Init(void)
 {
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -94,7 +93,7 @@ HRESULT CStartUI::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CStartUI::Uninit(void)
+void CPopUpUI::Uninit(void)
 {
 	// オブジェクト2Dの終了
 	CObject2D::Uninit();
@@ -103,7 +102,7 @@ void CStartUI::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CStartUI::Update(const float fDeltaTime)
+void CPopUpUI::Update(const float fDeltaTime)
 {
 	// 状態処理
 	State();
@@ -112,7 +111,7 @@ void CStartUI::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CStartUI::Draw(CShader* pShader)
+void CPopUpUI::Draw(CShader* pShader)
 {
 	// オブジェクト2Dの描画
 	CObject2D::Draw(pShader);
@@ -121,10 +120,10 @@ void CStartUI::Draw(CShader* pShader)
 //============================================================
 //	生成処理
 //============================================================
-CStartUI* CStartUI::Create(void)
+CPopUpUI* CPopUpUI::Create(const char* texture)
 {
 	// スタートUIの生成
-	CStartUI* pStartUI = new CStartUI;
+	CPopUpUI* pStartUI = new CPopUpUI;
 
 	if (pStartUI == nullptr)
 	{ // 生成に失敗した場合
@@ -147,7 +146,11 @@ CStartUI* CStartUI::Create(void)
 		pStartUI->SetVec3Position(SCREEN_CENT);		// 位置を設定
 		pStartUI->SetVec3Rotation(VEC3_ZERO);		// 向きを設定
 		pStartUI->SetVec3Sizing(INIT_SIZE);			// 大きさを設定
-		//pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));// テクスチャを登録・割当
+
+		if (texture != nullptr)
+		{ // テクスチャが NULL じゃない場合
+			pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(texture));	// テクスチャを登録・割当
+		}
 
 		// 確保したアドレスを返す
 		return pStartUI;
@@ -157,32 +160,32 @@ CStartUI* CStartUI::Create(void)
 //============================================================
 // 状態処理
 //============================================================
-void CStartUI::State(void)
+void CPopUpUI::State(void)
 {
 	switch (m_state)
 	{
-	case CStartUI::STATE_ZOOM:		// ズーム状態
+	case CPopUpUI::STATE_ZOOM:		// ズーム状態
 
 		// ズーム処理
 		Zoom();
 
 		break;
 
-	case CStartUI::STATE_BOUND:		// バウンド状態
+	case CPopUpUI::STATE_BOUND:		// バウンド状態
 
 		// バウンド処理
 		Bound();
 
 		break;
 
-	case CStartUI::STATE_DISP:		// 表示状態
+	case CPopUpUI::STATE_DISP:		// 表示状態
 
 		// 表示処理
 		Disp();
 
 		break;
 
-	case CStartUI::STATE_FADE:		// フェーズ状態
+	case CPopUpUI::STATE_FADE:		// フェーズ状態
 
 		if (Fade())
 		{ // フェードし終わった場合
@@ -208,7 +211,7 @@ void CStartUI::State(void)
 //============================================================
 // ズーム処理
 //============================================================
-void CStartUI::Zoom(void)
+void CPopUpUI::Zoom(void)
 {
 	// サイズを減算する
 	D3DXVECTOR3 size = GetVec3Sizing();
@@ -238,7 +241,7 @@ void CStartUI::Zoom(void)
 //============================================================
 // バウンド処理
 //============================================================
-void CStartUI::Bound(void)
+void CPopUpUI::Bound(void)
 {
 	// サイズを減算する
 	D3DXVECTOR3 size = GetVec3Sizing();
@@ -262,7 +265,7 @@ void CStartUI::Bound(void)
 //============================================================
 // 表示処理
 //============================================================
-void CStartUI::Disp(void)
+void CPopUpUI::Disp(void)
 {
 	// 表示カウントを加算する
 	m_nDispCount++;
@@ -278,7 +281,7 @@ void CStartUI::Disp(void)
 //============================================================
 // フェード処理
 //============================================================
-bool CStartUI::Fade(void)
+bool CPopUpUI::Fade(void)
 {
 	// 透明度を減算する
 	m_fAlpha -= m_fSubAlpha;

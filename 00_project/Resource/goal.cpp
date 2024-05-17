@@ -9,7 +9,7 @@
 #include "scene.h"
 #include "player.h"
 #include "collision.h"
-#include "startUI.h"
+#include "popupUI.h"
 
 //==========================================
 //  定数定義
@@ -152,7 +152,7 @@ void CGoal::CollisionPlayer(void)
 	{ return; }
 
 	// ゴール時のUIを表示する
-	CStartUI::Create();
+	CPopUpUI::Create();
 
 	// クリアフラグをオンにする
 	m_bClear = true;
