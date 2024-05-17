@@ -46,7 +46,7 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// •`‰æ
 
 	// Ã“Iƒƒ“ƒoŠÖ”
-	static CPopUpUI* Create(const char* texture = nullptr);	// ¶¬
+	static CPopUpUI* Create(const char* texture = "data\\TEXTURE\\alcohol.png");	// ¶¬
 
 private:
 
