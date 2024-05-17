@@ -47,15 +47,14 @@ namespace
 {
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
-	const int	PRIORITY	= 3;		// プレイヤーの優先順位
-	const float	MOVE		= 300.0f;	// 移動量
-	const float	JUMP		= 21.0f;	// ジャンプ上昇量
-	const float	GRAVITY		= 1.0f;		// 重力
-	const float	RADIUS		= 20.0f;	// 半径
-	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
-	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
-	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
-	const float	LAND_REV	= 0.16f;	// 通常状態時の地上の移動量の減衰係数
+	const int	PRIORITY	= 3;			// プレイヤーの優先順位
+	const float	JUMP		= 21.0f;		// ジャンプ上昇量
+	const float	GRAVITY		= 1.0f;			// 重力
+	const float	RADIUS		= 20.0f;		// 半径
+	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
+	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
+	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
+	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
 
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
@@ -63,6 +62,10 @@ namespace
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
+
+	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
+	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
+	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -860,31 +863,27 @@ void CPlayer::Move()
 	Inertial();
 
 	// 入力情報の取得
-	CInputKeyboard* pKey = GET_INPUTKEY;
-
-	// 一次保存の変数
-	D3DXVECTOR3 speed = VEC3_ZERO;
-
-	// カメラの向き
+	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
-
-	// スティックの向き
-	float fStickRot = 0.0f;
-
-	// 入力を受け取る
-	if (pKey->IsPress(DIK_W)) { speed.z -= 1.0f; }
-	if (pKey->IsPress(DIK_S)) { speed.z += 1.0f; }
-	if (pKey->IsPress(DIK_D)) { speed.x -= 1.0f; }
-	if (pKey->IsPress(DIK_A)) { speed.x += 1.0f; }
+	
+	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
+	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
-	if (speed.x == 0.0f && speed.z == 0.0f) { m_move = VEC3_ZERO; return; }
+	if (fSpeed == 0.0f) { m_move = VEC3_ZERO; return; }
 
-	// スティックの向きを設定する
-	fStickRot = atan2f(speed.x, speed.z);
+	if (fSpeed >= STEALTH_BORDER)
+	{ // 通常速度の場合
 
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
+		// 速度を通常にする
+		fSpeed = NORMAL_MOVE;
+	}
+	else
+	{ // 忍び足の場合
+
+		// 速度を忍び足にする
+		fSpeed = STEALTH_MOVE;
+	}
 
 	// 向きにカメラの向きを加算する
 	fStickRot += CameraRot.y;
@@ -899,13 +898,11 @@ void CPlayer::Move()
 	useful::NormalizeRot(m_destRot.y);
 
 	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI);
-	m_move.z = cosf(fStickRot + D3DX_PI);
+	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
+	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
 
-	D3DXVec3Normalize(&m_move, &m_move);
-
-	m_move.x *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	m_move.z *= MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.x *= GET_MANAGER->GetDeltaTime()->GetTime();
+	m_move.z *= GET_MANAGER->GetDeltaTime()->GetTime();
 
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
