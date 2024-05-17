@@ -903,7 +903,7 @@ void CPlayer::Move()
 
 	{ // ˆÊ’u‚ÌÝ’è
 		D3DXVECTOR3 pos = GetVec3Position();
-		pos += m_move * GET_MANAGER->GetDeltaTime()->GetTime();
+		pos += (m_move * GET_MANAGER->GetDeltaTime()->GetTime());
 		SetVec3Position(pos);
 	}
 }
