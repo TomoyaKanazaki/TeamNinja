@@ -56,6 +56,7 @@ public:
 private:
 	// メンバ変数
 	const CEditManager *m_pEditManager;	// エディットマネージャー
+	CEditStage *m_pStage;	// ステージエディター
 };
 
 #endif	// _EDIT_STAGE_H_

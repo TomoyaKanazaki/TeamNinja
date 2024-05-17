@@ -172,6 +172,7 @@
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
     <ClInclude Include="Resource\editBlock.h" />
+    <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editStage.h" />
     <ClInclude Include="Resource\effect2D.h" />
@@ -284,7 +285,7 @@
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
-    <ClCompile Include="Resource\editBlock.cpp" />
+    <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
