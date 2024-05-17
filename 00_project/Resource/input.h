@@ -2,6 +2,7 @@
 //
 //	入力ヘッダー [input.h]
 //	Author：藤田勇一
+//	adder : 金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -164,7 +165,17 @@ public:
 		KEY_RSTICK_Y,	// 右スティック 上下
 		KEY_MAX			// この列挙型の総数
 	};
-	
+
+	//ジョイスティック方向
+	enum EStick
+	{
+		STICK_UP = 180, //上方向
+		STICK_DOWN = 0, //下方向
+		STICK_RIGHT = 90, //右方向
+		STICK_LEFT = -90, //左方向
+		STICK_ALL = 360 // 全方向判定
+	};
+
 	// 振動種類列挙
 	enum EType
 	{
@@ -216,16 +227,25 @@ public:
 	float GetPressRStickRot(int nPadID = 0);	// プレス取得 (Rスティック向き)
 	float GetPressLStickTilt(int nPadID = 0);	// プレス取得 (Lスティック傾き)
 	float GetPressRStickTilt(int nPadID = 0);	// プレス取得 (Rスティック傾き)
+	bool GetTriggerLStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Lスティック)
+	bool GetTriggerRStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Rスティック)
 
 private:
 	// メンバ関数
 	void UpdateVibration(SVibration *pVibration, int nPadID);	// バイブレーション更新
+	bool KnockLStick(int nIdx, XINPUT_STATE JoyKey);
+	bool KnockRStick(int nIdx, XINPUT_STATE JoyKey);
 
 	// メンバ変数
 	SVibration   m_aVibration[pad::MAX_NUM];		// バイブ情報
 	XINPUT_STATE m_aKeyStatePress[pad::MAX_NUM];	// プレス情報
 	XINPUT_STATE m_aKeyStateTrigger[pad::MAX_NUM];	// トリガー情報
 	XINPUT_STATE m_aKeyStateRelease[pad::MAX_NUM];	// リリース情報
+	int m_nStickAngleL[pad::MAX_NUM]; // 左スティックの角度
+	int m_nStickAngleR[pad::MAX_NUM]; // 右スティックの角度
+	int m_nStickTriggerL[pad::MAX_NUM]; // 左スティックのトリガー
+	int m_nStickTriggerR[pad::MAX_NUM]; // 右スティックのトリガー
+
 };
 
 #endif	// _INPUT_H_
