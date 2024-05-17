@@ -28,6 +28,7 @@ public:
 	{
 		STATE_ZOOM = 0,		// ズーム状態
 		STATE_BOUND,		// バウンド状態
+		STATE_DISP,			// 表示状態
 		STATE_FADE,			// フェーズ状態
 		STATE_MAX			// この列挙型の総数
 	};
@@ -53,12 +54,15 @@ private:
 	void State(void);		// 状態処理
 	void Zoom(void);		// ズーム処理
 	void Bound(void);		// バウンド処理
-	void Fade(void);		// フェード処理
+	void Disp(void);		// 表示処理
+	bool Fade(void);		// フェード処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_sizeMove;	// サイズの移動量
 	EState m_state;			// 状態
-	int m_nDeleteCount;		// 消失カウント
+	int m_nDispCount;		// 表示カウント
+	float m_fSubAlpha;		// 透明度の減算量
+	float m_fAlpha;			// 透明度
 };
 
 #endif	// _EFFECT2D_H_
