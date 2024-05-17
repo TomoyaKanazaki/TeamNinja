@@ -23,22 +23,29 @@ namespace
 	// ズーム状態の定数
 	namespace zoom
 	{
-		const D3DXVECTOR3 INIT_ZOOM_SUB = D3DXVECTOR3(20.0f, 5.0f, 0.0f);		// 初期のサイズの減算量
-		const D3DXVECTOR3 ACCELE_ZOOM_SUB = D3DXVECTOR3(4.0f, 1.0f, 0.0f);		// サイズの減算加速度
-		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(360.0f, 90.0f, 0.0f);			// バウンド状態に移行するサイズ
+		const D3DXVECTOR3 INIT_ZOOM_SUB = D3DXVECTOR3(20.0f, 5.0f, 0.0f);	// 初期のサイズの減算量
+		const D3DXVECTOR3 ACCELE_ZOOM_SUB = D3DXVECTOR3(4.0f, 1.0f, 0.0f);	// サイズの減算加速度
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(360.0f, 90.0f, 0.0f);		// バウンド状態に移行するサイズ
 	}
 
 	// バウンド状態の定数
 	namespace bound
 	{
-		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(440.0f, 110.0f, 0.0f);		// バウンド状態に移行するサイズ
-		const D3DXVECTOR3 BOUND_SUB = D3DXVECTOR3(15.0f, 3.75f, 0.0f);			// 初期のサイズの減算量
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(440.0f, 110.0f, 0.0f);	// バウンド状態に移行するサイズ
+		const D3DXVECTOR3 BOUND_SUB = D3DXVECTOR3(15.0f, 3.75f, 0.0f);		// 初期のサイズの減算量
 	}
 
-	// 停止状態の定数
-	namespace stop
+	// 描画状態の定数
+	namespace disp
 	{
-		const int DELETE_COUNT = 60;		// 停止状態のカウント数
+		const int DISP_COUNT = 50;					// 表示カウント
+	}
+
+	// フェード状態の定数
+	namespace fade
+	{
+		const float INIT_ALPHA_SUB = 0.02f;			// 初期の透明度の減算量
+		const float ACCELE_ALPHA_SUB = 0.01f;		// 透明度の減算加速度
 	}
 }
 
@@ -49,9 +56,11 @@ namespace
 //	コンストラクタ
 //============================================================
 CStartUI::CStartUI() : CObject2D(CObject::LABEL_STARTUI, CObject::DIM_2D, PRIORITY),
-m_sizeMove(VEC3_ZERO),		// サイズの移動量
-m_state(STATE_ZOOM),		// ズーム状態
-m_nDeleteCount(0)			// 消失までのカウント
+m_sizeMove(VEC3_ZERO),				// サイズの移動量
+m_state(STATE_ZOOM),				// 状態
+m_nDispCount(0),					// 表示カウント
+m_fSubAlpha(fade::INIT_ALPHA_SUB),	// 透明度の減算量
+m_fAlpha(1.0f)						// 透明度
 {
 
 }
@@ -138,7 +147,7 @@ CStartUI* CStartUI::Create(void)
 		pStartUI->SetVec3Position(SCREEN_CENT);		// 位置を設定
 		pStartUI->SetVec3Rotation(VEC3_ZERO);		// 向きを設定
 		pStartUI->SetVec3Sizing(INIT_SIZE);			// 大きさを設定
-		pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));// テクスチャを登録・割当
+		//pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE));// テクスチャを登録・割当
 
 		// 確保したアドレスを返す
 		return pStartUI;
@@ -166,16 +175,17 @@ void CStartUI::State(void)
 
 		break;
 
-	case CStartUI::STATE_STOP:		// 停止状態
+	case CStartUI::STATE_DISP:		// 表示状態
 
-		// 消失カウントを加算する
-		m_nDeleteCount++;
+		// 表示処理
+		Disp();
 
-		if (m_nDeleteCount >= stop::DELETE_COUNT)
-		{ // カウントが一定以上になった場合
+		break;
 
-			// 終了処理
-			Uninit();
+	case CStartUI::STATE_FADE:		// フェーズ状態
+
+		if (Fade())
+		{ // フェードし終わった場合
 
 			// この先の処理を行わない
 			return;
@@ -241,10 +251,57 @@ void CStartUI::Bound(void)
 		// サイズを補正する
 		size = bound::DEST_SIZE;
 
-		// 停止状態にする
-		m_state = STATE_STOP;
+		// 表示状態にする
+		m_state = STATE_DISP;
 	}
 
 	// サイズを適用
 	SetVec3Sizing(size);
+}
+
+//============================================================
+// 表示処理
+//============================================================
+void CStartUI::Disp(void)
+{
+	// 表示カウントを加算する
+	m_nDispCount++;
+
+	if (m_nDispCount % disp::DISP_COUNT == 0)
+	{ // カウントが一定以上になった場合
+
+		// フェード状態にする
+		m_state = STATE_FADE;
+	}
+}
+
+//============================================================
+// フェード処理
+//============================================================
+bool CStartUI::Fade(void)
+{
+	// 透明度を減算する
+	m_fAlpha -= m_fSubAlpha;
+
+	// 透明度の減算量を増やす
+	m_fSubAlpha += fade::ACCELE_ALPHA_SUB;
+
+	if (m_fAlpha <= 0.0f)
+	{ // 完全に透明になった場合
+
+		// 透明度を補正する
+		m_fAlpha = 0.0f;
+
+		// 終了処理
+		Uninit();
+
+		// true を返す
+		return true;
+	}
+
+	// 頂点カラーの設定処理
+	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fAlpha));
+
+	// false を返す
+	return false;
 }

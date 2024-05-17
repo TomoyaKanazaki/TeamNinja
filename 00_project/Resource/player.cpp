@@ -997,54 +997,7 @@ void CPlayer::LoadParameter()
 //==========================================
 void CPlayer::ControlClone()
 {
-	// 分身が出ていた場合の処理
-	if (CPlayerClone::GetList() != nullptr)
-	{
-		// 士気力ゲージを減少する
-		m_pTensionGauge->AddNum(-CPlayerClone::GetList()->GetNumAll());
-
-		// 分身を削除する
-		if (GET_INPUTKEY->IsTrigger(DIK_RETURN))
-		{
-			// プレイヤーの分身を消去
-			CPlayerClone::Delete();
-		}
-
-		// 関数を抜ける
-		return;
-	}
-
-	// 分身の数を設定する
-	if (GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
-		// 分身の数を加算
-		++m_nNumClone;
-
-		// 分身可能フラグをオン
-		m_bCreateClone = true;
-
-		// 上限を超えた場合0に戻す
-		if (m_nNumClone > m_nMaxClone)
-		{
-			m_nNumClone = 0;
-
-			// 0の時はフラグをオフ
-			m_bCreateClone = false;
-		}
-	}
-
-	// 分身を生成する
-	if (GET_INPUTKEY->IsTrigger(DIK_RETURN) && m_bCreateClone)
-	{
-		// プレイヤーの分身を生成
-		for (unsigned int i = 0; i < m_nNumClone; ++i)
-		{
-			CPlayerClone::Create();
-		}
-
-		// 生成したら0に戻す
-		m_nNumClone = 0;
-	}
+	//
 }
 
 //==========================================
