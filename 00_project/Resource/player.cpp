@@ -997,7 +997,14 @@ void CPlayer::LoadParameter()
 //==========================================
 void CPlayer::ControlClone()
 {
-	//
+	// 入力情報の受け取り
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// 右スティックの入力
+	if (pPad->GetTriggerRStick())
+	{
+		CPlayerClone::Create();
+	}
 }
 
 //==========================================
