@@ -58,6 +58,14 @@ public:
 		MOTION_MAX			// この列挙型の総数
 	};
 
+	// 行動パターン
+	enum EAction
+	{
+		ACTION_NONE, // 通常の行動
+		ACTION_MOVE, // 歩行
+		ACTION_MAX
+	};
+
 	// コンストラクタ
 	CPlayerClone();
 
@@ -76,10 +84,11 @@ public:
 	bool Hit(const int nDamage);		// ヒット
 
 	// 静的メンバ関数
-	static CPlayerClone* Create(void);					// 生成
-	static void Delete(const int nNum);					// 消去処理
-	static void Delete();								// 全消去処理 (金崎追加)
-	static CListManager<CPlayerClone>* GetList(void);	// リスト取得
+	static CPlayerClone* Create();							// 生成
+	static CPlayerClone* Create(const D3DXVECTOR3& move);	// 生成(歩行型)
+	static void Delete(const int nNum);						// 消去処理
+	static void Delete();									// 全消去処理 (金崎追加)
+	static CListManager<CPlayerClone>* GetList(void);		// リスト取得
 
 private:
 	// メンバ関数
@@ -100,6 +109,9 @@ private:
 	CListManager<CPlayerClone>::AIterator m_iterator;	// イテレーター
 	CShadow* m_pShadow;			// 影の情報
 	COrbit* m_pOrbit;			// 軌跡の情報
+	D3DXVECTOR3 m_move; // 移動量
+	EAction m_Action; // 行動
+	float m_fTimer; // 自動消滅タイマー
 };
 
 #endif	// _PLAYER_H_

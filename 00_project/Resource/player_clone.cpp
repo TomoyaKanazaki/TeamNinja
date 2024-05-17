@@ -42,6 +42,7 @@ namespace
 	const int ORBIT_PART = 10;	// 分割数
 
 	const float DISTANCE = 75.0f; // プレイヤーとの距離
+	const float TIMER = 10.0f; // 自動消滅タイマー
 }
 
 //************************************************************
@@ -56,8 +57,11 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
-m_pShadow(nullptr),		// 影の情報
-m_pOrbit(nullptr)		// 軌跡の情報
+m_pShadow(nullptr),			// 影の情報
+m_pOrbit(nullptr),			// 軌跡の情報
+m_move(0.0f, 0.0f, 0.0f),	// 移動量
+m_Action(ACTION_NONE),		// 行動
+m_fTimer(0.0f)				// 自動消滅タイマー
 {
 
 }
@@ -78,6 +82,9 @@ HRESULT CPlayerClone::Init(void)
 	// メンバ変数を初期化
 	m_pShadow = nullptr;		// 影の情報
 	m_pOrbit = nullptr;		// 軌跡の情報
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
+	m_Action = ACTION_NONE; // 行動
+	m_fTimer = 0.0f; // 自動消滅タイマー
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -177,8 +184,31 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
-	// プレイヤーの後を追う
-	ChasePrev();
+	// 各種行動を起こす
+	switch (m_Action)
+	{
+	case ACTION_MOVE:
+
+		// 移動
+		SetVec3Position(GetVec3Position() + m_move);
+
+		// 消滅
+		m_fTimer -= fDeltaTime;
+		if (m_fTimer <= 0.0f)
+		{
+			Uninit();
+			return;
+		}
+
+		break;
+
+	case ACTION_NONE:
+
+		// 一つ前を追いかける
+		ChasePrev();
+
+		break;
+	}
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
@@ -282,6 +312,39 @@ CPlayerClone* CPlayerClone::Create(void)
 		// 確保したアドレスを返す
 		return pPlayer;
 	}
+}
+
+//==========================================
+//  生成処理(歩行)
+//==========================================
+CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 移動量を設定
+	pPlayer->m_move = move;
+
+	// 行動を設定
+	pPlayer->m_Action = ACTION_MOVE;
+
+	// 自動消滅タイマーを設定
+	pPlayer->m_fTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer;
 }
 
 //============================================================
