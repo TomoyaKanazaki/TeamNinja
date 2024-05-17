@@ -1,29 +1,23 @@
-#if 0
+#if 1
 //============================================================
 //
-//	エディットブロック処理 [editBlock.cpp]
+//	エディットフィールド処理 [editField.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "editBlock.h"
+#include "editField.h"
 #include "manager.h"
 #include "input.h"
 #include "collision.h"
-#include "editStageManager.h"
+#include "editStage.h"
 #include "stage.h"
-#include "effect3D.h"
 
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_TRIGGER		(DIK_LSHIFT)	// トリガー化キー
-#define NAME_TRIGGER	("LSHIFT")		// トリガー化表示
-#define KEY_REVERSE		(DIK_LCONTROL)	// 操作逆転化キー
-#define NAME_REVERSE	("LCTRL")		// 操作逆転化表示
-
 #define KEY_CREATE		(DIK_0)	// 生成キー
 #define NAME_CREATE		("0")	// 生成表示
 #define KEY_RELEASE		(DIK_9)	// 破棄キー
@@ -49,29 +43,24 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(50.0f, 50.0f, 50.0f);	// 大きさ
+	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(50.0f, 50.0f);	// 大きさ
 	const float	MAX_SIZE	= 10000.0f;	// 最大の大きさ
 	const float	INIT_ALPHA	= 0.5f;		// 配置前のα値
 }
 
 //************************************************************
-//	静的メンバ変数宣言
-//************************************************************
-CEditBlock::SInfo CEditBlock::m_save = {};	// 保存情報
-
-//************************************************************
-//	親クラス [CEditBlock] のメンバ関数
+//	親クラス [CEditField] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditBlock::CEditBlock()
+CEditField::CEditField()
 {
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pBlock = NULL;	// ブロック情報
-	memset(&m_block, 0, sizeof(m_block));	// ブロック配置情報
+	m_pField = nullptr;	// フィールド情報
+	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// フィールド配置情報
 
 #endif	// _DEBUG
 }
@@ -79,7 +68,7 @@ CEditBlock::CEditBlock()
 //============================================================
 //	デストラクタ
 //============================================================
-CEditBlock::~CEditBlock()
+CEditField::~CEditField()
 {
 #if _DEBUG
 #endif	// _DEBUG
@@ -88,14 +77,14 @@ CEditBlock::~CEditBlock()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CEditBlock::Init(void)
+HRESULT CEditField::Init(void)
 {
 #if _DEBUG
 
 	// ポインタを宣言
-	CEditStageManager *pEdit = GetPtrEditStage();	// エディットステージ情報
-	if (pEdit == NULL)
-	{ // エディットステージが存在しない場合
+	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー情報
+	if (pEditManager == nullptr)
+	{ // エディットマネージャーが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -103,28 +92,25 @@ HRESULT CEditBlock::Init(void)
 	}
 
 	// 変数を宣言
-	D3DXVECTOR3 posEdit = pEdit->GetVec3Position();	// エディットの位置
+	D3DXVECTOR3 posEdit = pEditManager->GetVec3Position();	// エディットの位置
 
 	// メンバ変数を初期化
-	m_pBlock		= NULL;					// ブロック情報
-	m_block.type	= CBlock::TYPE_STONE;	// ブロック種類
-	m_block.size	= INIT_SIZE;			// 大きさ
-	m_block.partX	= VEC2_ONE;				// テクスチャ分割数X
-	m_block.partY	= VEC2_ONE;				// テクスチャ分割数Y
-	m_block.partZ	= VEC2_ONE;				// テクスチャ分割数Z
+	m_pField			 = nullptr;				// フィールド情報
+	m_infoCreate.texture = (CField::ETexture)0;	// フィールド種類
+	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
+	m_infoCreate.part	 = GRID2_ONE;			// テクスチャ分割数X
 
-	// ブロックの生成
-	m_pBlock = CBlock::Create
+	// フィールドの生成
+	m_pField = CField::Create
 	( // 引数
-		m_block.type,	// 種類
-		posEdit,		// 位置
-		VEC3_ZERO,		// 向き
-		m_block.size,	// 大きさ
-		m_block.partX,	// テクスチャ分割数X
-		m_block.partY,	// テクスチャ分割数Y
-		m_block.partZ	// テクスチャ分割数Z
+		m_infoCreate.texture,	// 種類
+		posEdit,				// 位置
+		VEC3_ZERO,				// 向き
+		m_infoCreate.size,		// 大きさ
+		m_infoCreate.col,		// 色
+		m_infoCreate.part		// テクスチャ分割数X
 	);
-	if (m_pBlock == NULL)
+	if (m_pField == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
@@ -133,8 +119,8 @@ HRESULT CEditBlock::Init(void)
 	}
 
 	// 色を設定
-	D3DXCOLOR col = m_pBlock->GetColor();	// 元の色を取得
-	m_pBlock->SetColor(D3DXCOLOR(col.r, col.g, col.b, INIT_ALPHA));
+	D3DXCOLOR col = m_pField->GetColor();	// 元の色を取得
+	m_pField->SetColor(D3DXCOLOR(col.r, col.g, col.b, INIT_ALPHA));
 
 	// 成功を返す
 	return S_OK;
@@ -150,18 +136,18 @@ HRESULT CEditBlock::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CEditBlock::Uninit(void)
+void CEditField::Uninit(void)
 {
 #if _DEBUG
 
-	if (m_pBlock != NULL)
+	if (m_pField != nullptr)
 	{ // 生成に失敗した場合
 
-		// ブロックの色の全初期化
-		InitAllColorBlock();
+		// フィールドの色の全初期化
+		InitAllColorField();
 
-		// ブロックの終了
-		m_pBlock->Uninit();
+		// フィールドの終了
+		m_pField->Uninit();
 	}
 
 #endif	// _DEBUG
@@ -170,14 +156,14 @@ void CEditBlock::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEditBlock::Update(void)
+void CEditField::Update(void)
 {
 #if _DEBUG
 
 	// ポインタを宣言
-	CEditStageManager *pEdit = GetPtrEditStage();	// エディットステージ情報
-	if (pEdit == NULL)
-	{ // エディットステージが存在しない場合
+	CEditStageManager *pEditManager = GetPtrEditManager();	// エディットマネージャー情報
+	if (pEditManager == nullptr)
+	{ // エディットマネージャーが存在しない場合
 
 		// 処理を抜ける
 		assert(false);
@@ -193,14 +179,14 @@ void CEditBlock::Update(void)
 	// 種類変更の更新
 	UpdateChangeType();
 
-	// ブロックの生成
-	CreateBlock();
+	// フィールドの生成
+	CreateField();
 
-	// ブロックの破棄
-	ReleaseBlock();
+	// フィールドの破棄
+	ReleaseField();
 
 	// 位置を反映
-	m_pBlock->SetVec3Position(pEdit->GetVec3Position());
+	m_pField->SetVec3Position(pEditManager->GetVec3Position());
 
 #endif	// _DEBUG
 }
@@ -208,7 +194,7 @@ void CEditBlock::Update(void)
 //============================================================
 //	操作表示の描画処理
 //============================================================
-void CEditBlock::DrawDebugControl(void)
+void CEditField::DrawDebugControl(void)
 {
 	// ポインタを宣言
 	CDebugProc *pDebug = CManager::GetInstance()->GetDebugProc();	// デバッグプロックの情報
@@ -222,49 +208,49 @@ void CEditBlock::DrawDebugControl(void)
 //============================================================
 //	情報表示の描画処理
 //============================================================
-void CEditBlock::DrawDebugInfo(void)
+void CEditField::DrawDebugInfo(void)
 {
 	// ポインタを宣言
 	CDebugProc *pDebug = CManager::GetInstance()->GetDebugProc();	// デバッグプロックの情報
 
-	pDebug->Print(CDebugProc::POINT_RIGHT, "%d：[種類]\n", m_block.type);
-	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_block.size.x, m_block.size.y, m_block.size.z);
-	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割X]\n", m_block.partX.x, m_block.partX.y);
-	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割Y]\n", m_block.partY.x, m_block.partY.y);
-	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割Z]\n", m_block.partZ.x, m_block.partZ.y);
+	pDebug->Print(CDebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
+	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y, m_infoCreate.size.z);
+	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割X]\n", m_infoCreate.partX.x, m_infoCreate.partX.y);
+	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割Y]\n", m_infoCreate.partY.x, m_infoCreate.partY.y);
+	pDebug->Print(CDebugProc::POINT_RIGHT, "%f %f：[テクスチャ分割Z]\n", m_infoCreate.partZ.x, m_infoCreate.partZ.y);
 }
 
 //============================================================
 //	情報保存処理
 //============================================================
-void CEditBlock::SaveInfo(void)
+void CEditField::SaveInfo(void)
 {
 	// 現在の情報を保存
-	m_save = m_block;
+	m_save = m_infoCreate;
 }
 
 //============================================================
 //	情報読込処理
 //============================================================
-void CEditBlock::LoadInfo(void)
+void CEditField::LoadInfo(void)
 {
 	// 保存情報を設定
-	m_block = m_save;
+	m_infoCreate = m_save;
 }
 
 //============================================================
 //	保存処理
 //============================================================
-void CEditBlock::Save(FILE *pFile)
+void CEditField::Save(FILE *pFile)
 {
 #if _DEBUG
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{ // ファイルが存在する場合
 
 		// 見出しを書き出し
 		fprintf(pFile, "#------------------------------------------------------------------------------\n");
-		fprintf(pFile, "#	ブロックの配置情報\n");
+		fprintf(pFile, "#	フィールドの配置情報\n");
 		fprintf(pFile, "#------------------------------------------------------------------------------\n");
 
 		// 情報開始地点を書き出し
@@ -276,20 +262,20 @@ void CEditBlock::Save(FILE *pFile)
 			// ポインタを宣言
 			CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
 	
-			if (pObjectTop != NULL)
+			if (pObjectTop != nullptr)
 			{ // 先頭が存在する場合
 	
 				// ポインタを宣言
 				CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
 	
-				while (pObjCheck != NULL)
+				while (pObjCheck != nullptr)
 				{ // オブジェクトが使用されている場合繰り返す
 		
 					// ポインタを宣言
 					CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
 	
 					if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-					{ // オブジェクトラベルがブロックではない場合
+					{ // オブジェクトラベルがフィールドではない場合
 	
 						// 次のオブジェクトへのポインタを代入
 						pObjCheck = pObjectNext;
@@ -298,7 +284,7 @@ void CEditBlock::Save(FILE *pFile)
 						continue;
 					}
 	
-					if (pObjCheck == (CObject*)m_pBlock)
+					if (pObjCheck == (CObject*)m_pField)
 					{ // 同じアドレスだった場合
 	
 						// 次のオブジェクトへのポインタを代入
@@ -308,24 +294,24 @@ void CEditBlock::Save(FILE *pFile)
 						continue;
 					}
 
-					// ブロックの情報を取得
-					D3DXVECTOR3 posBlock		= pObjCheck->GetVec3Position();		// 位置
-					D3DXVECTOR3 rotBlock		= pObjCheck->GetVec3Rotation();		// 向き
-					D3DXVECTOR3 sizeBlock		= pObjCheck->GetVec3Sizing();		// 大きさ
-					D3DXVECTOR2 partTexXBlock	= pObjCheck->GetTexturePatternX();	// テクスチャ分割X
-					D3DXVECTOR2 partTexYBlock	= pObjCheck->GetTexturePatternY();	// テクスチャ分割Y
-					D3DXVECTOR2 partTexZBlock	= pObjCheck->GetTexturePatternZ();	// テクスチャ分割Z
+					// フィールドの情報を取得
+					D3DXVECTOR3 posField		= pObjCheck->GetVec3Position();		// 位置
+					D3DXVECTOR3 rotField		= pObjCheck->GetVec3Rotation();		// 向き
+					D3DXVECTOR3 sizeField		= pObjCheck->GetVec3Sizing();		// 大きさ
+					D3DXVECTOR2 partTexXField	= pObjCheck->GetTexturePatternX();	// テクスチャ分割X
+					D3DXVECTOR2 partTexYField	= pObjCheck->GetTexturePatternY();	// テクスチャ分割Y
+					D3DXVECTOR2 partTexZField	= pObjCheck->GetTexturePatternZ();	// テクスチャ分割Z
 					int nType = pObjCheck->GetType();	// 種類
 	
 					// 情報を書き出し
 					fprintf(pFile, "	BLOCKSET\n");
 					fprintf(pFile, "		TYPE = %d\n", nType);
-					fprintf(pFile, "		POS = %.2f %.2f %.2f\n", posBlock.x, posBlock.y, posBlock.z);
-					fprintf(pFile, "		ROT = %.2f %.2f %.2f\n", rotBlock.x, rotBlock.y, rotBlock.z);
-					fprintf(pFile, "		SIZE = %.2f %.2f %.2f\n", sizeBlock.x, sizeBlock.y, sizeBlock.z);
-					fprintf(pFile, "		PARTX = %.2f %.2f \n", partTexXBlock.x, partTexXBlock.y);
-					fprintf(pFile, "		PARTY = %.2f %.2f \n", partTexYBlock.x, partTexYBlock.y);
-					fprintf(pFile, "		PARTZ = %.2f %.2f \n", partTexZBlock.x, partTexZBlock.y);
+					fprintf(pFile, "		POS = %.2f %.2f %.2f\n", posField.x, posField.y, posField.z);
+					fprintf(pFile, "		ROT = %.2f %.2f %.2f\n", rotField.x, rotField.y, rotField.z);
+					fprintf(pFile, "		SIZE = %.2f %.2f %.2f\n", sizeField.x, sizeField.y, sizeField.z);
+					fprintf(pFile, "		PARTX = %.2f %.2f \n", partTexXField.x, partTexXField.y);
+					fprintf(pFile, "		PARTY = %.2f %.2f \n", partTexYField.x, partTexYField.y);
+					fprintf(pFile, "		PARTZ = %.2f %.2f \n", partTexZField.x, partTexZField.y);
 					fprintf(pFile, "	END_BLOCKSET\n\n");
 
 					// 次のオブジェクトへのポインタを代入
@@ -344,7 +330,7 @@ void CEditBlock::Save(FILE *pFile)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditBlock::UpdateSizing(void)
+void CEditField::UpdateSizing(void)
 {
 	// ポインタを宣言
 	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
@@ -354,97 +340,97 @@ void CEditBlock::UpdateSizing(void)
 	{
 		if (m_pKeyboard->IsPress(KEY_UP_SCALE_X))
 		{
-			m_block.size.x += INIT_SIZE.x;
+			m_infoCreate.size.x += INIT_SIZE.x;
 		}
 		if (m_pKeyboard->IsPress(KEY_DOWN_SCALE_X))
 		{
-			m_block.size.x -= INIT_SIZE.x;
+			m_infoCreate.size.x -= INIT_SIZE.x;
 		}
 		if (m_pKeyboard->IsPress(KEY_UP_SCALE_Y))
 		{
-			m_block.size.y += INIT_SIZE.y;
+			m_infoCreate.size.y += INIT_SIZE.y;
 		}
 		if (m_pKeyboard->IsPress(KEY_DOWN_SCALE_Y))
 		{
-			m_block.size.y -= INIT_SIZE.y;
+			m_infoCreate.size.y -= INIT_SIZE.y;
 		}
 		if (m_pKeyboard->IsPress(KEY_UP_SCALE_Z))
 		{
-			m_block.size.z += INIT_SIZE.z;
+			m_infoCreate.size.z += INIT_SIZE.z;
 		}
 		if (m_pKeyboard->IsPress(KEY_DOWN_SCALE_Z))
 		{
-			m_block.size.z -= INIT_SIZE.z;
+			m_infoCreate.size.z -= INIT_SIZE.z;
 		}
 	}
 	else
 	{
 		if (m_pKeyboard->IsTrigger(KEY_UP_SCALE_X))
 		{
-			m_block.size.x += INIT_SIZE.x;
+			m_infoCreate.size.x += INIT_SIZE.x;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_DOWN_SCALE_X))
 		{
-			m_block.size.x -= INIT_SIZE.x;
+			m_infoCreate.size.x -= INIT_SIZE.x;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_UP_SCALE_Y))
 		{
-			m_block.size.y += INIT_SIZE.y;
+			m_infoCreate.size.y += INIT_SIZE.y;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_DOWN_SCALE_Y))
 		{
-			m_block.size.y -= INIT_SIZE.y;
+			m_infoCreate.size.y -= INIT_SIZE.y;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_UP_SCALE_Z))
 		{
-			m_block.size.z += INIT_SIZE.z;
+			m_infoCreate.size.z += INIT_SIZE.z;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_DOWN_SCALE_Z))
 		{
-			m_block.size.z -= INIT_SIZE.z;
+			m_infoCreate.size.z -= INIT_SIZE.z;
 		}
 	}
 
 	// 大きさを補正
-	useful::LimitNum(m_block.size.x, INIT_SIZE.x, MAX_SIZE);
-	useful::LimitNum(m_block.size.y, INIT_SIZE.y, MAX_SIZE);
-	useful::LimitNum(m_block.size.z, INIT_SIZE.z, MAX_SIZE);
+	useful::LimitNum(m_infoCreate.size.x, INIT_SIZE.x, MAX_SIZE);
+	useful::LimitNum(m_infoCreate.size.y, INIT_SIZE.y, MAX_SIZE);
+	useful::LimitNum(m_infoCreate.size.z, INIT_SIZE.z, MAX_SIZE);
 
 	// 大きさを反映
-	m_pBlock->SetVec3Sizing(m_block.size);
+	m_pField->SetVec3Sizing(m_infoCreate.size);
 }
 
 //============================================================
 //	テクスチャ分割の更新処理
 //============================================================
-void CEditBlock::UpdateTexPart(void)
+void CEditField::UpdateTexPart(void)
 {
 	// 変数を宣言
 	D3DXVECTOR3 partTex = VEC3_ZERO;	// テクスチャ分割数
 
 	// 分割数を設定
-	partTex.x = m_block.size.x / INIT_SIZE.x;
-	partTex.y = m_block.size.y / INIT_SIZE.y;
-	partTex.z = m_block.size.z / INIT_SIZE.z;
+	partTex.x = m_infoCreate.size.x / INIT_SIZE.x;
+	partTex.y = m_infoCreate.size.y / INIT_SIZE.y;
+	partTex.z = m_infoCreate.size.z / INIT_SIZE.z;
 
 	// テクスチャ分割数を設定
-	m_block.partX.x = partTex.z;
-	m_block.partX.y = partTex.y;
-	m_block.partY.x = partTex.x;
-	m_block.partY.y = partTex.z;
-	m_block.partZ.x = partTex.x;
-	m_block.partZ.y = partTex.y;
+	m_infoCreate.partX.x = partTex.z;
+	m_infoCreate.partX.y = partTex.y;
+	m_infoCreate.partY.x = partTex.x;
+	m_infoCreate.partY.y = partTex.z;
+	m_infoCreate.partZ.x = partTex.x;
+	m_infoCreate.partZ.y = partTex.y;
 
 	// テクスチャ分割数を割当
-	m_pBlock->SetTexturePatternX(m_block.partX);
-	m_pBlock->SetTexturePatternY(m_block.partY);
-	m_pBlock->SetTexturePatternZ(m_block.partZ);
+	m_pField->SetTexturePatternX(m_infoCreate.partX);
+	m_pField->SetTexturePatternY(m_infoCreate.partY);
+	m_pField->SetTexturePatternZ(m_infoCreate.partZ);
 }
 
 //============================================================
 //	種類変更の更新処理
 //============================================================
-void CEditBlock::UpdateChangeType(void)
+void CEditField::UpdateChangeType(void)
 {
 	// ポインタを宣言
 	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
@@ -452,23 +438,23 @@ void CEditBlock::UpdateChangeType(void)
 	// 種類を変更
 	if (m_pKeyboard->IsTrigger(KEY_TYPE))
 	{
-		m_block.type = (CBlock::EType)((m_block.type + 1) % CBlock::TYPE_MAX);
+		m_infoCreate.type = (CField::EType)((m_infoCreate.type + 1) % CField::TYPE_MAX);
 	}
 
 	// 種類を反映
-	m_pBlock->SetType(m_block.type);
+	m_pField->SetType(m_infoCreate.type);
 }
 
 //============================================================
-//	ブロックの生成処理
+//	フィールドの生成処理
 //============================================================
-void CEditBlock::CreateBlock(void)
+void CEditField::CreateField(void)
 {
 	// ポインタを宣言
 	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
-	CEditStageManager *pEdit = GetPtrEditStage();	// エディットステージ情報
-	if (pEdit == NULL)
-	{ // エディットステージが存在しない場合
+	CEditStageManager *pEditManager = GetPtrEditManager();	// エディットマネージャー情報
+	if (pEditManager == nullptr)
+	{ // エディットマネージャーが存在しない場合
 
 		// 処理を抜ける
 		assert(false);
@@ -476,52 +462,52 @@ void CEditBlock::CreateBlock(void)
 	}
 
 	// 変数を宣言
-	D3DXVECTOR3 posEdit = pEdit->GetVec3Position();	// エディットの位置
-	D3DXCOLOR colBlock = XCOL_WHITE;	// 色保存用
+	D3DXVECTOR3 posEdit = pEditManager->GetVec3Position();	// エディットの位置
+	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
 
-	// ブロックを配置
+	// フィールドを配置
 	if (m_pKeyboard->IsTrigger(KEY_CREATE))
 	{
 		//----------------------------------------------------
-		//	ブロックの情報を配置用に変更
+		//	フィールドの情報を配置用に変更
 		//----------------------------------------------------
 		// 自動更新・自動描画をONにする
-		m_pBlock->SetEnableUpdate(true);
-		m_pBlock->SetEnableDraw(true);
+		m_pField->SetEnableUpdate(true);
+		m_pField->SetEnableDraw(true);
 
 		// 色を設定
-		colBlock = m_pBlock->GetColor();	// 元の色を取得
-		m_pBlock->SetColor(D3DXCOLOR(colBlock.r, colBlock.g, colBlock.b, 1.0f));
+		colField = m_pField->GetColor();	// 元の色を取得
+		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, 1.0f));
 
 		// 未保存を設定
-		pEdit->UnSave();
+		pEditManager->UnSave();
 
 		//----------------------------------------------------
-		//	新しいブロックの生成
+		//	新しいフィールドの生成
 		//----------------------------------------------------
-		// ブロックの生成
-		m_pBlock = CBlock::Create
+		// フィールドの生成
+		m_pField = CField::Create
 		( // 引数
-			m_block.type,	// 種類
+			m_infoCreate.type,	// 種類
 			posEdit,		// 位置
 			VEC3_ZERO,		// 向き
-			m_block.size,	// 大きさ
-			m_block.partX,	// テクスチャ分割数X
-			m_block.partY,	// テクスチャ分割数Y
-			m_block.partZ	// テクスチャ分割数Z
+			m_infoCreate.size,	// 大きさ
+			m_infoCreate.partX,	// テクスチャ分割数X
+			m_infoCreate.partY,	// テクスチャ分割数Y
+			m_infoCreate.partZ	// テクスチャ分割数Z
 		);
-		assert(m_pBlock != NULL);
+		assert(m_pField != nullptr);
 
 		// 色を設定
-		colBlock = m_pBlock->GetColor();	// 元の色を取得
-		m_pBlock->SetColor(D3DXCOLOR(colBlock.r, colBlock.g, colBlock.b, INIT_ALPHA));
+		colField = m_pField->GetColor();	// 元の色を取得
+		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, INIT_ALPHA));
 	}
 }
 
 //============================================================
-//	ブロックの破棄処理
+//	フィールドの破棄処理
 //============================================================
-void CEditBlock::ReleaseBlock(void)
+void CEditField::ReleaseField(void)
 {
 	// 変数を宣言
 	bool bRelease = false;	// 破棄状況
@@ -529,26 +515,26 @@ void CEditBlock::ReleaseBlock(void)
 	// ポインタを宣言
 	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
 
-	// ブロックを削除
+	// フィールドを削除
 	if (m_pKeyboard->IsTrigger(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
 		bRelease = true;
 	}
 
-	// ブロックの削除判定
-	DeleteCollisionBlock(bRelease);
+	// フィールドの削除判定
+	DeleteCollisionField(bRelease);
 }
 
 //============================================================
-//	ブロックの削除判定
+//	フィールドの削除判定
 //============================================================
-void CEditBlock::DeleteCollisionBlock(const bool bRelase)
+void CEditField::DeleteCollisionField(const bool bRelase)
 {
 	// ポインタを宣言
-	CEditStageManager *pEdit = GetPtrEditStage();	// エディットステージ情報
-	if (pEdit == NULL)
-	{ // エディットステージが存在しない場合
+	CEditStageManager *pEditManager = GetPtrEditManager();	// エディットマネージャー情報
+	if (pEditManager == nullptr)
+	{ // エディットマネージャーが存在しない場合
 
 		// 処理を抜ける
 		assert(false);
@@ -556,7 +542,7 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 	}
 
 	// 変数を宣言
-	D3DXVECTOR3 posEdit = pEdit->GetVec3Position();	// エディットの位置
+	D3DXVECTOR3 posEdit = pEditManager->GetVec3Position();	// エディットの位置
 
 	for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
 	{ // 優先順位の総数分繰り返す
@@ -564,24 +550,24 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 		// ポインタを宣言
 		CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
 
-		if (pObjectTop != NULL)
+		if (pObjectTop != nullptr)
 		{ // 先頭が存在する場合
 
 			// ポインタを宣言
 			CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
 
-			while (pObjCheck != NULL)
+			while (pObjCheck != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 
 				// 変数を宣言
-				D3DXVECTOR3 posBlock = VEC3_ZERO;	// ブロック位置
-				D3DXVECTOR3 sizeBlock = VEC3_ZERO;	// ブロック大きさ
+				D3DXVECTOR3 posField = VEC3_ZERO;	// フィールド位置
+				D3DXVECTOR3 sizeField = VEC3_ZERO;	// フィールド大きさ
 
 				// ポインタを宣言
 				CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
 
 				if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-				{ // オブジェクトラベルがブロックではない場合
+				{ // オブジェクトラベルがフィールドではない場合
 
 					// 次のオブジェクトへのポインタを代入
 					pObjCheck = pObjectNext;
@@ -590,7 +576,7 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 					continue;
 				}
 
-				if (pObjCheck == (CObject*)m_pBlock)
+				if (pObjCheck == (CObject*)m_pField)
 				{ // 同じアドレスだった場合
 
 					// 次のオブジェクトへのポインタを代入
@@ -600,19 +586,19 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 					continue;
 				}
 
-				// ブロックの位置を取得
-				posBlock = pObjCheck->GetVec3Position();
+				// フィールドの位置を取得
+				posField = pObjCheck->GetVec3Position();
 
-				// ブロックの大きさを取得
-				sizeBlock = pObjCheck->GetVec3Sizing();
+				// フィールドの大きさを取得
+				sizeField = pObjCheck->GetVec3Sizing();
 
 				// 球体の当たり判定
 				if (collision::Circle3D
 				( // 引数
 					posEdit,	// 判定位置
-					posBlock,	// 判定目標位置
-					(sizeBlock.x + sizeBlock.z) * 0.5f,			// 判定半径
-					(m_block.size.x + m_block.size.z) * 0.5f	// 判定目標半径
+					posField,	// 判定目標位置
+					(sizeField.x + sizeField.z) * 0.5f,			// 判定半径
+					(m_infoCreate.size.x + m_infoCreate.size.z) * 0.5f	// 判定目標半径
 				))
 				{ // 判定内だった場合
 
@@ -623,7 +609,7 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 						pObjCheck->Uninit();
 
 						// 未保存を設定
-						pEdit->UnSave();
+						pEditManager->UnSave();
 					}
 					else
 					{ // 破棄しない場合
@@ -647,9 +633,9 @@ void CEditBlock::DeleteCollisionBlock(const bool bRelase)
 }
 
 //============================================================
-//	ブロックの色の全初期化処理
+//	フィールドの色の全初期化処理
 //============================================================
-void CEditBlock::InitAllColorBlock(void)
+void CEditField::InitAllColorField(void)
 {
 	for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
 	{ // 優先順位の総数分繰り返す
@@ -657,20 +643,20 @@ void CEditBlock::InitAllColorBlock(void)
 		// ポインタを宣言
 		CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
 
-		if (pObjectTop != NULL)
+		if (pObjectTop != nullptr)
 		{ // 先頭が存在する場合
 
 			// ポインタを宣言
 			CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
 
-			while (pObjCheck != NULL)
+			while (pObjCheck != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 
 				// ポインタを宣言
 				CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
 
 				if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-				{ // オブジェクトラベルがブロックではない場合
+				{ // オブジェクトラベルがフィールドではない場合
 
 					// 次のオブジェクトへのポインタを代入
 					pObjCheck = pObjectNext;
@@ -679,7 +665,7 @@ void CEditBlock::InitAllColorBlock(void)
 					continue;
 				}
 
-				if (pObjCheck == (CObject*)m_pBlock)
+				if (pObjCheck == (CObject*)m_pField)
 				{ // 同じアドレスだった場合
 
 					// 次のオブジェクトへのポインタを代入
