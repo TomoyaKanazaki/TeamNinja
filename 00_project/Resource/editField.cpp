@@ -1,4 +1,4 @@
-#if 1
+#if 0
 //============================================================
 //
 //	エディットフィールド処理 [editField.cpp]
@@ -9,7 +9,6 @@
 //	インクルードファイル
 //************************************************************
 #include "editField.h"
-#include "editStage.h"
 #include "editManager.h"
 #include "manager.h"
 #include "collision.h"
@@ -91,20 +90,20 @@ HRESULT CEditField::Init(void)
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
 	// メンバ変数を初期化
-	m_pField			 = nullptr;				// フィールド情報
-	m_infoCreate.texture = (CField::ETexture)0;	// フィールド種類
-	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
-	m_infoCreate.part	 = GRID2_ONE;			// テクスチャ分割数X
+	m_pField			 = nullptr;			// 情報
+	m_infoCreate.type	= (CField::EType)0;	// 種類
+	m_infoCreate.size	 = INIT_SIZE;		// 大きさ
+	m_infoCreate.part	 = GRID2_ONE;		// テクスチャ分割数X
 
 	// フィールドの生成
 	m_pField = CField::Create
 	( // 引数
-		m_infoCreate.texture,	// 種類
-		posEdit,				// 位置
-		VEC3_ZERO,				// 向き
-		m_infoCreate.size,		// 大きさ
-		m_infoCreate.col,		// 色
-		m_infoCreate.part		// 分割数
+		m_infoCreate.type,	// 種類
+		posEdit,			// 位置
+		VEC3_ZERO,			// 向き
+		m_infoCreate.size,	// 大きさ
+		m_infoCreate.col,	// 色
+		m_infoCreate.part	// 分割数
 	);
 	if (m_pField == nullptr)
 	{ // 生成に失敗した場合
@@ -214,7 +213,7 @@ void CEditField::DrawDebugInfo(void)
 void CEditField::SaveInfo(void)
 {
 	// 現在の情報を保存
-	m_save = m_infoCreate;
+	//m_save = m_infoCreate;
 }
 
 //============================================================
@@ -223,7 +222,7 @@ void CEditField::SaveInfo(void)
 void CEditField::LoadInfo(void)
 {
 	// 保存情報を設定
-	m_infoCreate = m_save;
+	//m_infoCreate = m_save;
 }
 
 //============================================================
@@ -232,6 +231,8 @@ void CEditField::LoadInfo(void)
 void CEditField::Save(FILE *pFile)
 {
 #if _DEBUG
+
+#if 0
 
 	if (pFile != nullptr)
 	{ // ファイルが存在する場合
@@ -312,6 +313,8 @@ void CEditField::Save(FILE *pFile)
 		fprintf(pFile, "END_STAGE_BLOCKSET\n\n");
 	}
 
+#endif
+
 #endif	// _DEBUG
 }
 
@@ -380,7 +383,6 @@ void CEditField::UpdateTexPart(void)
 	// 分割数を設定
 	partTex.x = m_infoCreate.size.x / INIT_SIZE.x;
 	partTex.y = m_infoCreate.size.y / INIT_SIZE.y;
-	partTex.z = m_infoCreate.size.z / INIT_SIZE.z;
 
 	// テクスチャ分割数を設定
 	m_infoCreate.partX.x = partTex.z;
@@ -452,12 +454,12 @@ void CEditField::CreateField(void)
 		// フィールドの生成
 		m_pField = CField::Create
 		( // 引数
-			m_infoCreate.texture,	// 種類
-			posEdit,				// 位置
-			VEC3_ZERO,				// 向き
-			m_infoCreate.size,		// 大きさ
-			m_infoCreate.col,		// 色
-			m_infoCreate.part		// 分割数
+			m_infoCreate.type,	// 種類
+			posEdit,			// 位置
+			VEC3_ZERO,			// 向き
+			m_infoCreate.size,	// 大きさ
+			m_infoCreate.col,	// 色
+			m_infoCreate.part	// 分割数
 		);
 		assert(m_pField != nullptr);
 

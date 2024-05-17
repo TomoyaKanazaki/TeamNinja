@@ -116,7 +116,7 @@ void CEditStage::Release(CEditStage *&prEditStage)
 //============================================================
 //	エディットマネージャー取得処理
 //============================================================
-const CEditManager *CEditStage::GetPtrEditManager(void) const
+CEditManager *CEditStage::GetPtrEditManager(void) const
 {
 #if _DEBUG
 
