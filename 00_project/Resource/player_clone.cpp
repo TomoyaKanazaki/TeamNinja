@@ -190,7 +190,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	case ACTION_MOVE:
 
 		// à⁄ìÆ
-		SetVec3Position(GetVec3Position() + m_move);
+		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
 
 		// è¡ñ≈
 		m_fTimer -= fDeltaTime;

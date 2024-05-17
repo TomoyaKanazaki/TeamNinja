@@ -901,12 +901,9 @@ void CPlayer::Move()
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
 
-	m_move.x *= GET_MANAGER->GetDeltaTime()->GetTime();
-	m_move.z *= GET_MANAGER->GetDeltaTime()->GetTime();
-
 	{ // 位置の設定
 		D3DXVECTOR3 pos = GetVec3Position();
-		pos += m_move;
+		pos += m_move * GET_MANAGER->GetDeltaTime()->GetTime();
 		SetVec3Position(pos);
 	}
 }
@@ -1000,7 +997,22 @@ void CPlayer::ControlClone()
 	// 右スティックの入力
 	if (pPad->GetTriggerRStick())
 	{
-		CPlayerClone::Create();
+		// 移動量ベクトルのスカラー値を算出
+		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+
+		// スティックの角度を取得
+		float fRot = pPad->GetPressRStickRot();
+
+		// スカラー値にスティックの角度を適用する
+		D3DXVECTOR3 move = D3DXVECTOR3
+		(
+			moveScalar * cosf(fRot),
+			0.0f,
+			moveScalar * sinf(fRot)
+		);
+
+		// 分身を出す
+		CPlayerClone::Create(move);
 	}
 }
 
