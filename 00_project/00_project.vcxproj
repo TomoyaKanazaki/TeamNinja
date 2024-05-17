@@ -166,6 +166,7 @@
     <ClInclude Include="Resource\character.h" />
     <ClInclude Include="Resource\checkpoint.h" />
     <ClInclude Include="Resource\cinemaScope.h" />
+    <ClInclude Include="Resource\cloneAngleUI.h" />
     <ClInclude Include="Resource\collision.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="Resource\character.cpp" />
     <ClCompile Include="Resource\checkpoint.cpp" />
     <ClCompile Include="Resource\cinemaScope.cpp" />
+    <ClCompile Include="Resource\cloneAngleUI.cpp" />
     <ClCompile Include="Resource\collision.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
