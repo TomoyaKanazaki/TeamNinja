@@ -233,8 +233,8 @@ public:
 private:
 	// メンバ関数
 	void UpdateVibration(SVibration *pVibration, int nPadID);	// バイブレーション更新
-	bool KnockLStick(int nIdx, XINPUT_STATE JoyKey);
-	bool KnockRStick(int nIdx, XINPUT_STATE JoyKey);
+	bool KnockLStickTrigger(int nIdx, XINPUT_STATE JoyKey);
+	bool KnockRStickTrigger(int nIdx, XINPUT_STATE JoyKey);
 
 	// メンバ変数
 	SVibration   m_aVibration[pad::MAX_NUM];		// バイブ情報

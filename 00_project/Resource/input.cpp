@@ -731,11 +731,21 @@ void CInputPad::Update(void)
 			m_nStickAngleR[nCntJoyKey] = (int)D3DXToDegree(atan2f((float)aKeyState[nCntJoyKey].Gamepad.sThumbRX, (float)aKeyState[nCntJoyKey].Gamepad.sThumbRY));
 
 			//スティックのトリガー情報を保存
-			if (KnockLStick(nCntJoyKey, aKeyState[nCntJoyKey])) //左
+			if (KnockLStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //左
 			{
 				m_nStickTriggerL[nCntJoyKey] = m_nStickAngleL[nCntJoyKey];
 			}
-			if (KnockRStick(nCntJoyKey, aKeyState[nCntJoyKey])) //右
+			if (KnockRStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //右
+			{
+				m_nStickTriggerR[nCntJoyKey] = m_nStickAngleR[nCntJoyKey];
+			}
+
+			//スティックのトリガー情報を保存
+			if (KnockLStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //左
+			{
+				m_nStickTriggerL[nCntJoyKey] = m_nStickAngleL[nCntJoyKey];
+			}
+			if (KnockRStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //右
 			{
 				m_nStickTriggerR[nCntJoyKey] = m_nStickAngleR[nCntJoyKey];
 			}
@@ -1168,7 +1178,7 @@ float CInputPad::GetPressRStickTilt(int nPadID)
 //==========================================
 //  入力判定(Lスティック)
 //==========================================
-bool CInputPad::KnockLStick(int nIdx, XINPUT_STATE JoyKey) //左
+bool CInputPad::KnockLStickTrigger(int nIdx, XINPUT_STATE JoyKey) //左
 {
 	//ローカル変数宣言
 	bool bJudgment = false;
@@ -1190,7 +1200,7 @@ bool CInputPad::KnockLStick(int nIdx, XINPUT_STATE JoyKey) //左
 //==========================================
 //  入力判定(Rスティック)
 //==========================================
-bool CInputPad::KnockRStick(int nIdx, XINPUT_STATE JoyKey) //右
+bool CInputPad::KnockRStickTrigger(int nIdx, XINPUT_STATE JoyKey) //右
 {
 	//ローカル変数宣言
 	bool bJudgment = false;
