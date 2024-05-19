@@ -29,6 +29,7 @@
 #include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
+#include "cloneAngleUI.h"
 
 #include "effect3D.h"
 #include "particle3D.h"
@@ -64,8 +65,8 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
-	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
+	const float	STEALTH_MOVE	= 1.0f;	// 忍び足の移動量
+	const float	NORMAL_MOVE		= 6.0f;	// 通常の移動量
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -107,7 +108,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fHeght			(0.0f),			// 立幅
-	m_fInertial			(0.0f)			// 慣性力
+	m_fInertial			(0.0f),			// 慣性力
+	m_pCloneAngleUI		(nullptr)		// 分身出す方向のUI
 {
 
 }
@@ -138,6 +140,7 @@ HRESULT CPlayer::Init(void)
 	m_bCreateClone		= false;		// 分身生成モードフラグ
 	m_nNumClone			= 0;			// 生成する分身の数
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
+	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -172,6 +175,16 @@ HRESULT CPlayer::Init(void)
 		ORBIT_PART		// 分割数
 	);
 	if (m_pOrbit == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 分身出す方向のUIの生成
+	m_pCloneAngleUI = CCloneAngleUI::Create(GetVec3Position());
+	if (m_pCloneAngleUI == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -239,6 +252,9 @@ void CPlayer::Uninit(void)
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
+	// 分身出す方向のUIの終了
+	SAFE_UNINIT(m_pCloneAngleUI);
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -293,6 +309,12 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
+
+	// 分身出す方向のUIのセットアップ処理
+	CloneAngleUISetUp();
+
+	// 分身出す方向のUIの更新
+	m_pCloneAngleUI->Update(fDeltaTime);
 
 	// 操作
 	Move();
@@ -852,6 +874,45 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
+}
+
+//==========================================
+// 分身出す方向のUIのセットアップ処理
+//==========================================
+void CPlayer::CloneAngleUISetUp(void)
+{
+	CInputPad* pPad = GET_INPUTPAD;			// 入力情報を取得
+	float fSpeed = pPad->GetPressRStickTilt();						// スティックの傾き
+	float fStickRot = pPad->GetPressRStickRot() + (D3DX_PI * 0.5f);	// スティックの向き
+	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
+
+	// 入力していないと表示を消す
+	if (fSpeed == 0.0f) { m_pCloneAngleUI->SetEnableDraw(false); return; }
+
+	// 分身出る方向のUIを表示する
+	m_pCloneAngleUI->SetEnableDraw(true);
+
+	// 位置を設定
+	m_pCloneAngleUI->SetVec3Position
+	(
+		D3DXVECTOR3
+		(
+			pos.x + sinf(fStickRot) * 70.0f,
+			pos.y + 10.0f,
+			pos.z + cosf(fStickRot) * 70.0f
+		)
+	);
+
+	// 向きを設定
+	m_pCloneAngleUI->SetVec3Rotation
+	(
+		D3DXVECTOR3
+		(
+			0.0f,
+			fStickRot,
+			0.0f
+		)
+	);
 }
 
 //==========================================

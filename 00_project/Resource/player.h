@@ -21,10 +21,11 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CShadow;		// 影クラス
-class COrbit;		// 軌跡クラス
-class CGauge2D;		// ゲージクラス
-class CCheckPoint;	// チェックポイントクラス
+class CShadow;			// 影クラス
+class COrbit;			// 軌跡クラス
+class CCloneAngleUI;	// 分身出す方向UI
+class CGauge2D;			// ゲージクラス
+class CCheckPoint;		// チェックポイントクラス
 
 //************************************************************
 //	クラス定義
@@ -124,6 +125,8 @@ private:
 	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
 
+	void CloneAngleUISetUp(void);	// 分身出す方向のUIのセットアップ処理
+
 	// メンバ関数 (金崎追加)
 	void Move(); // 操作処理
 	void Inertial(); // 運動の第一法則
@@ -158,7 +161,7 @@ private:
 	float m_fHeght; // 縦幅
 	D3DXVECTOR3 m_posCenter; // 中心座標
 	float m_fInertial; // 慣性力
-
+	CCloneAngleUI* m_pCloneAngleUI;	// 分身出す方向のUI
 };
 
 #endif	// _PLAYER_H_
