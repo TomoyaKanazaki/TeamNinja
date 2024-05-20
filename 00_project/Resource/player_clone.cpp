@@ -146,6 +146,9 @@ HRESULT CPlayerClone::Init(void)
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 
+	// プレイヤー位置に出現
+	SetVec3Position(GET_PLAYER->GetVec3Position());
+
 	// 成功を返す
 	return S_OK;
 }
