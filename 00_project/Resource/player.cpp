@@ -65,8 +65,8 @@ namespace
 	const int ORBIT_PART = 15;	// •ªŠ„”
 
 	const float STEALTH_BORDER	= 15000.0f;	// ”E‚Ñ‘«‚É‚È‚éŠî€‚ÌƒXƒs[ƒh
-	const float	STEALTH_MOVE	= 1.0f;	// ”E‚Ñ‘«‚ÌˆÚ“®—Ê
-	const float	NORMAL_MOVE		= 6.0f;	// ’Êí‚ÌˆÚ“®—Ê
+	const float	STEALTH_MOVE	= 100.0f;	// ”E‚Ñ‘«‚ÌˆÚ“®—Ê
+	const float	NORMAL_MOVE		= 600.0f;	// ’Êí‚ÌˆÚ“®—Ê
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -737,7 +737,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
 {
 	// ˆÚ“®—Ê‚ð‰ÁŽZ
-	rPos += m_move;
+	rPos += m_move * GET_MANAGER->GetDeltaTime()->GetTime();
 
 	// ˆÚ“®—Ê‚ðŒ¸Š
 	if (m_bJump)
@@ -964,12 +964,6 @@ void CPlayer::Move()
 	// ˆÚ“®—Ê‚ðÝ’è‚·‚é
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
-
-	{ // ˆÊ’u‚ÌÝ’è
-		D3DXVECTOR3 pos = GetVec3Position();
-		pos += (m_move * GET_MANAGER->GetDeltaTime()->GetTime());
-		SetVec3Position(pos);
-	}
 }
 
 //==========================================
