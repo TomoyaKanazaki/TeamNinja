@@ -24,7 +24,7 @@ namespace
 	namespace basic
 	{
 		const D3DXVECTOR3 INIT_VECU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトルの初期値
-		const D3DXVECTOR3 INIT_POSV = D3DXVECTOR3(0.0f, 0.0f, -600.0f);	// 視点の初期値
+		const D3DXVECTOR3 INIT_POSV = D3DXVECTOR3(0.0f, 300.0f, -600.0f);	// 視点の初期値
 		const float VIEW_NEAR	= 10.0f;	// モデルが見えるZ軸の最小値
 		const float VIEW_FAR	= 50000.0f;	// モデルが見えるZ軸の最大値
 		const float MIN_DIS		= 1.0f;		// カメラの視点から注視点への距離の最小
@@ -658,7 +658,7 @@ void CCamera::Release(CCamera *&prCamera)
 //============================================================
 void CCamera::Tps(void)
 {
-	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	//CInputPad* pPad = GET_INPUTPAD;	// パッド情報
 	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
 	if (pList == nullptr) { return; }	// リスト未使用
 	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
@@ -672,27 +672,27 @@ void CCamera::Tps(void)
 	//----------------------------------------------------
 	//	向きの更新
 	//----------------------------------------------------
-	float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
-	if (pad::DEAD_ZONE < fRTilt)
-	{ // デッドゾーン以上の場合
+	//float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
+	//if (pad::DEAD_ZONE < fRTilt)
+	//{ // デッドゾーン以上の場合
 
-		// 目標向きを設定
-		float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
-		m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
-		m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
+	//	// 目標向きを設定
+	//	float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
+	//	m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
+	//	m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
 
-		// 目標向きを正規化
-		useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
-		useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
+	//	// 目標向きを正規化
+	//	useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
+	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
 
-		// 差分向きを計算
-		diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
-		useful::NormalizeRot(diffRot);	// 差分向きを正規化
+	//	// 差分向きを計算
+	//	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	//	useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
-		// 現在向きの更新
-		m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
-		useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
-	}
+	//	// 現在向きの更新
+	//	m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
+	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+	//}
 
 	//----------------------------------------------------
 	//	距離の更新
