@@ -34,9 +34,10 @@ public:
 	struct SInfo
 	{
 		CField::EType type;	// 種類
-		D3DXVECTOR2	size;	// 大きさ
-		D3DXCOLOR	col;	// 色
-		POSGRID2	part;	// 分割数
+		D3DXVECTOR2 size;	// 大きさ
+		D3DXCOLOR col;		// 色
+		POSGRID2 part;		// 分割数
+		POSGRID2 texPart;	// テクスチャ分割数
 	};
 
 	// オーバーライド関数
