@@ -29,7 +29,7 @@
 namespace
 {
 	const char* CLASS_NAME	= "WindowClass";	// ウインドウクラスの名前
-	const char* WINDOW_NAME	= "LastBattle";		// ウインドウの名前 (キャプションに表示)
+	const char* WINDOW_NAME	= "孤軍奮闘";		// ウインドウの名前 (キャプションに表示)
 
 	const int	FPS			= 60;			// アプリケーションのFPS値
 	const int	APP_FPS		= 1000 / FPS;	// アプリケーションの経過時間の判定用

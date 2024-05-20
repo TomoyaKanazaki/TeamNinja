@@ -229,12 +229,16 @@ public:
 	float GetPressRStickTilt(int nPadID = 0);	// プレス取得 (Rスティック傾き)
 	bool GetTriggerLStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Lスティック)
 	bool GetTriggerRStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Rスティック)
+	bool GetReleaseLStick(int nDirection = STICK_ALL, int nPadID = 0); // リリース取得(Lスティック)
+	bool GetReleaseRStick(int nDirection = STICK_ALL, int nPadID = 0); // リリース取得(Rスティック)
 
 private:
 	// メンバ関数
 	void UpdateVibration(SVibration *pVibration, int nPadID);	// バイブレーション更新
 	bool KnockLStickTrigger(int nIdx, XINPUT_STATE JoyKey);
 	bool KnockRStickTrigger(int nIdx, XINPUT_STATE JoyKey);
+	bool KnockLStickRelease(int nIdx, XINPUT_STATE JoyKey);
+	bool KnockRStickRelease(int nIdx, XINPUT_STATE JoyKey);
 
 	// メンバ変数
 	SVibration   m_aVibration[pad::MAX_NUM];		// バイブ情報
@@ -245,6 +249,8 @@ private:
 	int m_nStickAngleR[pad::MAX_NUM]; // 右スティックの角度
 	int m_nStickTriggerL[pad::MAX_NUM]; // 左スティックのトリガー
 	int m_nStickTriggerR[pad::MAX_NUM]; // 右スティックのトリガー
+	int m_nStickReleaseL[pad::MAX_NUM]; // 左スティックのリリース
+	int m_nStickReleaseR[pad::MAX_NUM]; // 右スティックのリリース
 
 };
 
