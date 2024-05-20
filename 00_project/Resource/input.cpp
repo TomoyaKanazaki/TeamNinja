@@ -645,10 +645,10 @@ CInputPad::CInputPad()
 	memset(&m_aKeyStateRelease[0], 0, sizeof(m_aKeyStateRelease));	// リリース情報
 	memset(&m_nStickAngleL[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
 	memset(&m_nStickAngleR[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
-	memset(&m_nStickTriggerL[0], 0, sizeof(m_nStickAngleL));		// スティックトリガー情報
-	memset(&m_nStickTriggerR[0], 0, sizeof(m_nStickAngleL));		// スティックトリガー情報
-	memset(&m_nStickReleaseL[0], 0, sizeof(m_nStickAngleL));		// スティックリリース情報
-	memset(&m_nStickReleaseR[0], 0, sizeof(m_nStickAngleL));		// スティックリリース情報
+	memset(&m_nStickTriggerL[0], 0, sizeof(m_nStickTriggerL));		// スティックトリガー情報
+	memset(&m_nStickTriggerR[0], 0, sizeof(m_nStickTriggerR));		// スティックトリガー情報
+	memset(&m_nStickReleaseL[0], 0, sizeof(m_nStickReleaseL));		// スティックリリース情報
+	memset(&m_nStickReleaseR[0], 0, sizeof(m_nStickReleaseR));		// スティックリリース情報
 }
 
 //============================================================
@@ -701,10 +701,6 @@ void CInputPad::Update(void)
 		m_nStickTriggerL[nCntJoyKey] = stick::INIT_VALUE;
 		m_nStickTriggerR[nCntJoyKey] = stick::INIT_VALUE;
 
-		//スティックのトリガー情報をリセット
-		m_nStickReleaseL[nCntJoyKey] = stick::INIT_VALUE;
-		m_nStickReleaseR[nCntJoyKey] = stick::INIT_VALUE;
-
 		if (XInputGetState(nCntJoyKey, &aKeyState[nCntJoyKey]) == ERROR_SUCCESS)
 		{ // コントローラーが接続されている場合
 
@@ -747,14 +743,8 @@ void CInputPad::Update(void)
 			}
 
 			//スティックのリリース情報を保存
-			if (KnockLStickRelease(nCntJoyKey, aKeyState[nCntJoyKey])) //左
-			{
-				m_nStickReleaseL[nCntJoyKey] = m_nStickAngleL[nCntJoyKey];
-			}
-			if (KnockRStickRelease(nCntJoyKey, aKeyState[nCntJoyKey])) //右
-			{
-				m_nStickReleaseR[nCntJoyKey] = m_nStickAngleR[nCntJoyKey];
-			}
+			m_nStickReleaseL[nCntJoyKey] = KnockLStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
+			m_nStickReleaseR[nCntJoyKey] = KnockRStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
 
 			// パッドのプレス情報を保存
 			m_aKeyStatePress[nCntJoyKey] = aKeyState[nCntJoyKey];
@@ -1234,10 +1224,10 @@ bool CInputPad::KnockLStickRelease(int nIdx, XINPUT_STATE JoyKey)
 	bool bJudgment = false;
 
 	//前回入力の判定
-	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLX) >= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLY) >= stick::TRIGGER_DEAD)
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLX) >= stick::TRIGGER_DEAD || fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLY) >= stick::TRIGGER_DEAD)
 	{
 		//今回入力の判定
-		if (fabsf(JoyKey.Gamepad.sThumbLX) <= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbLY) <= stick::TRIGGER_DEAD)
+		if (fabsf(JoyKey.Gamepad.sThumbLX) <= stick::TRIGGER_DEAD && fabsf(JoyKey.Gamepad.sThumbLY) <= stick::TRIGGER_DEAD)
 		{
 			bJudgment = true;
 		}
@@ -1256,10 +1246,10 @@ bool CInputPad::KnockRStickRelease(int nIdx, XINPUT_STATE JoyKey)
 	bool bJudgment = false;
 
 	//前回入力の判定
-	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRX) >= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRY) >= stick::TRIGGER_DEAD)
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRX) >= stick::TRIGGER_DEAD || fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRY) >= stick::TRIGGER_DEAD)
 	{
 		//今回入力の判定
-		if (fabsf(JoyKey.Gamepad.sThumbRX) <= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbRY) <= stick::TRIGGER_DEAD)
+		if (fabsf(JoyKey.Gamepad.sThumbRX) <= stick::TRIGGER_DEAD && fabsf(JoyKey.Gamepad.sThumbRY) <= stick::TRIGGER_DEAD)
 		{
 			bJudgment = true;
 		}
@@ -1306,35 +1296,17 @@ bool CInputPad::GetTriggerRStick(int nDirection, int nPadID)
 //==========================================
 //  リリース取得(Lスティック)
 //==========================================
-bool CInputPad::GetReleaseLStick(int nDirection, int nPadID)
+bool CInputPad::GetReleaseLStick(int nPadID)
 {
-	// 全判定の場合
-	if (nDirection == STICK_ALL)
-	{
-		// 初期化された値じゃない場合
-		if (m_nStickTriggerL[nPadID] == stick::INIT_VALUE) { return false; }
-
-		return true;
-	}
-
-	return abs(m_nStickTriggerL[nPadID] - nDirection) < 45 ? true : false;
+	return m_nStickReleaseL[nPadID];
 }
 
 //==========================================
 //  リリース取得(Rスティック)
 //==========================================
-bool CInputPad::GetReleaseRStick(int nDirection, int nPadID)
+bool CInputPad::GetReleaseRStick(int nPadID)
 {
-	// 全判定の場合
-	if (nDirection == STICK_ALL)
-	{
-		// 初期化された値じゃない場合
-		if (m_nStickTriggerR[nPadID] == stick::INIT_VALUE) { return false; }
-
-		return true;
-	}
-
-	return abs(m_nStickTriggerR[nPadID] - nDirection) < 45 ? true : false;
+	return m_nStickReleaseR[nPadID];
 }
 
 //============================================================

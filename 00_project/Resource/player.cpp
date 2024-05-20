@@ -65,8 +65,8 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
-	const float	STEALTH_MOVE	= 1.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE		= 6.0f;	// 通常の移動量
+	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
+	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
 
@@ -737,7 +737,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
 {
 	// 移動量を加算
-	rPos += m_move;
+	rPos += m_move * GET_MANAGER->GetDeltaTime()->GetTime();
 
 	// 移動量を減衰
 	if (m_bJump)
@@ -883,7 +883,7 @@ void CPlayer::CloneAngleUISetUp(void)
 {
 	CInputPad* pPad = GET_INPUTPAD;			// 入力情報を取得
 	float fSpeed = pPad->GetPressRStickTilt();						// スティックの傾き
-	float fStickRot = pPad->GetPressRStickRot() + (D3DX_PI * 0.5f);	// スティックの向き
+	float fStickRot = pPad->GetPressRStickRot() + GET_MANAGER->GetCamera()->GetRotation().y + (D3DX_PI * 0.5f);	// スティックの向き
 	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
 
 	// 入力していないと表示を消す
@@ -891,6 +891,9 @@ void CPlayer::CloneAngleUISetUp(void)
 
 	// 分身出る方向のUIを表示する
 	m_pCloneAngleUI->SetEnableDraw(true);
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
 
 	// 位置を設定
 	m_pCloneAngleUI->SetVec3Position
@@ -961,12 +964,6 @@ void CPlayer::Move()
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
-
-	{ // 位置の設定
-		D3DXVECTOR3 pos = GetVec3Position();
-		pos += (m_move * GET_MANAGER->GetDeltaTime()->GetTime());
-		SetVec3Position(pos);
-	}
 }
 
 //==========================================
