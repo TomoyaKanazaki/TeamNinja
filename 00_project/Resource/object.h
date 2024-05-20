@@ -101,6 +101,7 @@ public:
 		LABEL_AVATAR,		// 分身
 		LABEL_CHECKPOINT,	// チェックポイント
 		LABEL_GOAL,			// ゴール
+		LABEL_STARTUI,		// スタートUI
 		LABEL_MAX			// この列挙型の総数
 	};
 

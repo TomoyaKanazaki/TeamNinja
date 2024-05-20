@@ -51,7 +51,7 @@ namespace
 
 	const D3DXVECTOR3 POS_TIME_LOGO		= D3DXVECTOR3(290.0f, 330.0f, 0.0f);	// タイムロゴ位置
 	const D3DXVECTOR3 SIZE_TIME_LOGO	= D3DXVECTOR3(487.5f, 154.7f, 0.0f);	// タイムロゴ大きさ
-	const D3DXVECTOR3 POS_TIME			= D3DXVECTOR3(555.0f, 330.0f, 0.0f);	// タイム位置
+	const D3DXVECTOR3 POS_TIME			= D3DXVECTOR3(845.0f, 330.0f, 0.0f);	// タイム位置
 	const D3DXVECTOR3 SIZE_TIME_VAL		= D3DXVECTOR3(98.0f, 117.0f, 0.0f);		// タイム数字大きさ
 	const D3DXVECTOR3 SIZE_TIME_PART	= D3DXVECTOR3(50.0f, 117.0f, 0.0f);		// タイム区切り大きさ
 	const D3DXVECTOR3 SPACE_TIME_VAL	= D3DXVECTOR3(SIZE_TIME_VAL.x  * 0.85f, 0.0f, 0.0f);	// タイム数字空白

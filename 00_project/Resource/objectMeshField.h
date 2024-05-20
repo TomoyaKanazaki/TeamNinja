@@ -60,19 +60,22 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXVECTOR2& rSize,	// 大きさ
 		const D3DXCOLOR& rCol,		// 色
-		const POSGRID2& rPart		// 分割数
+		const POSGRID2& rPart,		// 分割数
+		const POSGRID2& rTexPart	// テクスチャ分割数
 	);
 
 	// メンバ関数
-	CRenderState *GetRenderState(void);			// レンダーステート情報取得
-	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
-	void SetColor(const D3DXCOLOR& rCol);		// 色設定
-	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const	{ return m_meshField.col; }	// 色取得
-	POSGRID2 GetPattern(void) const	{ return m_part; }			// 分割数取得
-	int GetNumVertex(void) const	{ return m_nNumVtx; }		// 頂点数取得
+	CRenderState *GetRenderState(void);				// レンダーステート情報取得
+	void BindTexture(const int nTextureID);			// テクスチャ割当 (インデックス)
+	void BindTexture(const char *pTexturePass);		// テクスチャ割当 (パス)
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	HRESULT SetPattern(const POSGRID2& rPart);		// 分割数設定
+	void SetTexPattern(const POSGRID2& rTexPart);	// テクスチャ分割数設定
+	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_meshField.col; }	// 色取得
+	POSGRID2 GetPattern(void) const		{ return m_part; }			// 分割数取得
+	POSGRID2 GetTexPattern(void) const	{ return m_texPart; }		// テクスチャ分割数取得
+	int GetNumVertex(void) const		{ return m_nNumVtx; }		// 頂点数取得
 
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);		// 座標のずれ設定
 	D3DXVECTOR3 GetGapPosition(const int nID);							// 座標のずれ取得
@@ -120,6 +123,7 @@ private:
 
 	SMeshField m_meshField;	// メッシュフィールドの情報
 	POSGRID2 m_part;		// 分割数
+	POSGRID2 m_texPart;		// テクスチャ分割数
 	int m_nNumVtx;			// 必要頂点数
 	int m_nNumIdx;			// 必要インデックス数
 	int m_nTextureID;		// テクスチャインデックス

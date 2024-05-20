@@ -2,6 +2,7 @@
 //
 //	入力処理 [input.cpp]
 //	Author：藤田勇一
+//	adder : 金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -30,6 +31,12 @@ namespace
 		const WORD LEVEL_WALLDASH	= (WORD)(USHRT_MAX * 0.6f);	// 壁走りの振動レベル
 		const WORD LEVEL_FLAILCHAGE	= (WORD)(USHRT_MAX * 0.4f);	// フレイル溜めの振動レベル
 		const WORD LEVEL_FLAILSHOT	= (WORD)(USHRT_MAX * 1.0f);	// フレイル投げの振動レベル
+	}
+
+	namespace stick
+	{
+		const int TRIGGER_DEAD = 5000; // トリガー取得の閾値
+		const int INIT_VALUE = 1000; // スティック入力の初期値
 	}
 }
 
@@ -635,7 +642,13 @@ CInputPad::CInputPad()
 	memset(&m_aVibration[0],		0, sizeof(m_aVibration));		// バイブ情報
 	memset(&m_aKeyStatePress[0],	0, sizeof(m_aKeyStatePress));	// プレス情報
 	memset(&m_aKeyStateTrigger[0],	0, sizeof(m_aKeyStateTrigger));	// トリガー情報
-	memset(&m_aKeyStateRelease[0],	0, sizeof(m_aKeyStateRelease));	// リリース情報
+	memset(&m_aKeyStateRelease[0], 0, sizeof(m_aKeyStateRelease));	// リリース情報
+	memset(&m_nStickAngleL[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
+	memset(&m_nStickAngleR[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
+	memset(&m_nStickTriggerL[0], 0, sizeof(m_nStickAngleL));		// スティックトリガー情報
+	memset(&m_nStickTriggerR[0], 0, sizeof(m_nStickAngleL));		// スティックトリガー情報
+	memset(&m_nStickReleaseL[0], 0, sizeof(m_nStickAngleL));		// スティックリリース情報
+	memset(&m_nStickReleaseR[0], 0, sizeof(m_nStickAngleL));		// スティックリリース情報
 }
 
 //============================================================
@@ -684,6 +697,14 @@ void CInputPad::Update(void)
 	for (int nCntJoyKey = 0; nCntJoyKey < pad::MAX_NUM; nCntJoyKey++)
 	{ // プレイヤーの最大人数分ループ
 
+		//スティックのトリガー情報をリセット
+		m_nStickTriggerL[nCntJoyKey] = stick::INIT_VALUE;
+		m_nStickTriggerR[nCntJoyKey] = stick::INIT_VALUE;
+
+		//スティックのトリガー情報をリセット
+		m_nStickReleaseL[nCntJoyKey] = stick::INIT_VALUE;
+		m_nStickReleaseR[nCntJoyKey] = stick::INIT_VALUE;
+
 		if (XInputGetState(nCntJoyKey, &aKeyState[nCntJoyKey]) == ERROR_SUCCESS)
 		{ // コントローラーが接続されている場合
 
@@ -710,6 +731,30 @@ void CInputPad::Update(void)
 			// パッドのトリガー情報を保存 (R2)
 			m_aKeyStateTrigger[nCntJoyKey].Gamepad.bRightTrigger =
 			(m_aKeyStatePress[nCntJoyKey].Gamepad.bRightTrigger ^ aKeyState[nCntJoyKey].Gamepad.bRightTrigger) & aKeyState[nCntJoyKey].Gamepad.bRightTrigger;
+
+			//スティックの角度を保存
+			m_nStickAngleL[nCntJoyKey] = (int)D3DXToDegree(atan2f((float)aKeyState[nCntJoyKey].Gamepad.sThumbLX, (float)aKeyState[nCntJoyKey].Gamepad.sThumbLY));
+			m_nStickAngleR[nCntJoyKey] = (int)D3DXToDegree(atan2f((float)aKeyState[nCntJoyKey].Gamepad.sThumbRX, (float)aKeyState[nCntJoyKey].Gamepad.sThumbRY));
+
+			//スティックのトリガー情報を保存
+			if (KnockLStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //左
+			{
+				m_nStickTriggerL[nCntJoyKey] = m_nStickAngleL[nCntJoyKey];
+			}
+			if (KnockRStickTrigger(nCntJoyKey, aKeyState[nCntJoyKey])) //右
+			{
+				m_nStickTriggerR[nCntJoyKey] = m_nStickAngleR[nCntJoyKey];
+			}
+
+			//スティックのリリース情報を保存
+			if (KnockLStickRelease(nCntJoyKey, aKeyState[nCntJoyKey])) //左
+			{
+				m_nStickReleaseL[nCntJoyKey] = m_nStickAngleL[nCntJoyKey];
+			}
+			if (KnockRStickRelease(nCntJoyKey, aKeyState[nCntJoyKey])) //右
+			{
+				m_nStickReleaseR[nCntJoyKey] = m_nStickAngleR[nCntJoyKey];
+			}
 
 			// パッドのプレス情報を保存
 			m_aKeyStatePress[nCntJoyKey] = aKeyState[nCntJoyKey];
@@ -1134,6 +1179,162 @@ float CInputPad::GetPressRStickTilt(int nPadID)
 
 	// Rスティックの傾きを返す
 	return fRTilt;
+}
+
+//==========================================
+//  入力判定(Lスティック)
+//==========================================
+bool CInputPad::KnockLStickTrigger(int nIdx, XINPUT_STATE JoyKey) //左
+{
+	//ローカル変数宣言
+	bool bJudgment = false;
+
+	//前回入力の判定
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLX) <= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLY) <= stick::TRIGGER_DEAD)
+	{
+		//今回入力の判定
+		if (fabsf(JoyKey.Gamepad.sThumbLX) >= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbLY) >= stick::TRIGGER_DEAD)
+		{
+			bJudgment = true;
+		}
+	}
+
+	//変数を返す
+	return bJudgment;
+}
+
+//==========================================
+//  入力判定(Rスティック)
+//==========================================
+bool CInputPad::KnockRStickTrigger(int nIdx, XINPUT_STATE JoyKey) //右
+{
+	//ローカル変数宣言
+	bool bJudgment = false;
+
+	//前回入力の判定
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRX) <= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRY) <= stick::TRIGGER_DEAD)
+	{
+		//今回入力の判定
+		if (fabsf(JoyKey.Gamepad.sThumbRX) >= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbRY) >= stick::TRIGGER_DEAD)
+		{
+			bJudgment = true;
+		}
+	}
+
+	//変数を返す
+	return bJudgment;
+}
+
+//==========================================
+//  入力判定(Lスティック)
+//==========================================
+bool CInputPad::KnockLStickRelease(int nIdx, XINPUT_STATE JoyKey)
+{
+	//ローカル変数宣言
+	bool bJudgment = false;
+
+	//前回入力の判定
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLX) >= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbLY) >= stick::TRIGGER_DEAD)
+	{
+		//今回入力の判定
+		if (fabsf(JoyKey.Gamepad.sThumbLX) <= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbLY) <= stick::TRIGGER_DEAD)
+		{
+			bJudgment = true;
+		}
+	}
+
+	//変数を返す
+	return bJudgment;
+}
+
+//==========================================
+//  入力判定(Rスティック)
+//==========================================
+bool CInputPad::KnockRStickRelease(int nIdx, XINPUT_STATE JoyKey)
+{
+	//ローカル変数宣言
+	bool bJudgment = false;
+
+	//前回入力の判定
+	if (fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRX) >= stick::TRIGGER_DEAD && fabsf(m_aKeyStatePress[nIdx].Gamepad.sThumbRY) >= stick::TRIGGER_DEAD)
+	{
+		//今回入力の判定
+		if (fabsf(JoyKey.Gamepad.sThumbRX) <= stick::TRIGGER_DEAD || fabsf(JoyKey.Gamepad.sThumbRY) <= stick::TRIGGER_DEAD)
+		{
+			bJudgment = true;
+		}
+	}
+
+	//変数を返す
+	return bJudgment;
+}
+
+//==========================================
+//  トリガー取得(Lスティック)
+//==========================================
+bool CInputPad::GetTriggerLStick(int nDirection, int nPadID)
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerL[nPadID] == stick::INIT_VALUE) { return false; }
+
+		return true;
+	}
+
+	return abs(m_nStickTriggerL[nPadID] - nDirection) < 45 ? true : false;
+}
+
+//==========================================
+//  トリガー取得(Rスティック)
+//==========================================
+bool CInputPad::GetTriggerRStick(int nDirection, int nPadID)
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerR[nPadID] == stick::INIT_VALUE) { return false; }
+
+		return true;
+	}
+
+	return abs(m_nStickTriggerR[nPadID] - nDirection) < 45 ? true : false;
+}
+
+//==========================================
+//  リリース取得(Lスティック)
+//==========================================
+bool CInputPad::GetReleaseLStick(int nDirection, int nPadID)
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerL[nPadID] == stick::INIT_VALUE) { return false; }
+
+		return true;
+	}
+
+	return abs(m_nStickTriggerL[nPadID] - nDirection) < 45 ? true : false;
+}
+
+//==========================================
+//  リリース取得(Rスティック)
+//==========================================
+bool CInputPad::GetReleaseRStick(int nDirection, int nPadID)
+{
+	// 全判定の場合
+	if (nDirection == STICK_ALL)
+	{
+		// 初期化された値じゃない場合
+		if (m_nStickTriggerR[nPadID] == stick::INIT_VALUE) { return false; }
+
+		return true;
+	}
+
+	return abs(m_nStickTriggerR[nPadID] - nDirection) < 45 ? true : false;
 }
 
 //============================================================

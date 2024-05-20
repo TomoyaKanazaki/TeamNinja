@@ -273,11 +273,9 @@ void CEditManager::Release(CEditManager *&prEditManager)
 //============================================================
 void CEditManager::ChangeType(void)
 {
-	// ポインタを宣言
-	CInputKeyboard *m_pKeyboard = GET_INPUTKEY;	// キーボード情報
-
 	// エディターのタイプ変更
-	if (m_pKeyboard->IsTrigger(KEY_CHANGE_TYPE))
+	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+	if (pKeyboard->IsTrigger(KEY_CHANGE_TYPE))
 	{
 #if 0
 		// 情報保存
@@ -343,10 +341,10 @@ void CEditManager::DrawDebugInfo(void)
 void CEditManager::SaveStage(void)
 {
 	// ステージを保存
-	CInputKeyboard *m_pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (m_pKeyboard->IsPress(KEY_DOUBLE))
+	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+	if (pKeyboard->IsPress(KEY_DOUBLE))
 	{
-		if (m_pKeyboard->IsTrigger(KEY_SAVE))
+		if (pKeyboard->IsTrigger(KEY_SAVE))
 		{
 			// 保存処理
 			Save();

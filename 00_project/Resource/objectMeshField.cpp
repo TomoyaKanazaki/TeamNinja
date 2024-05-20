@@ -18,8 +18,10 @@
 //************************************************************
 namespace
 {
-	const int	NUM_VTX_TRIANGLE = 3;	// 三角形ポリゴンの頂点数
-	const float	COLL_RADIUS = 100.0f;	// 当たり判定を行う距離
+	const int	NUM_VTX_TRIANGLE = 3;		// 三角形ポリゴンの頂点数
+	const float	COLL_RADIUS = 100.0f;		// 当たり判定を行う距離
+	const POSGRID2 MIN_PART = GRID2_ONE;	// 分割数の最小値
+	const POSGRID2 MIN_TEXPART = GRID2_ONE;	// テクスチャ分割数の最小値
 }
 
 //************************************************************
@@ -227,7 +229,8 @@ CObjectMeshField *CObjectMeshField::Create
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
 	const D3DXCOLOR& rCol,		// 色
-	const POSGRID2& rPart		// 分割数
+	const POSGRID2& rPart,		// 分割数
+	const POSGRID2& rTexPart	// テクスチャ分割数
 )
 {
 	// オブジェクトメッシュフィールドの生成
@@ -269,6 +272,9 @@ CObjectMeshField *CObjectMeshField::Create
 			SAFE_DELETE(pMeshField);
 			return nullptr;
 		}
+
+		// テクスチャ分割数を設定
+		pMeshField->SetPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pMeshField;
@@ -349,6 +355,10 @@ HRESULT CObjectMeshField::SetPattern(const POSGRID2& rPart)
 	//--------------------------------------------------------
 	//	変更情報を設定
 	//--------------------------------------------------------
+	// 分割数の設定不可
+	assert(rPart.x >= MIN_PART.x);
+	assert(rPart.y >= MIN_PART.y);
+
 	// 引数の分割数を設定
 	m_part = rPart;
 
@@ -485,6 +495,24 @@ HRESULT CObjectMeshField::SetPattern(const POSGRID2& rPart)
 
 	// 成功を返す
 	return S_OK;
+}
+
+//============================================================
+//	テクスチャ分割数の設定処理
+//============================================================
+void CObjectMeshField::SetTexPattern(const POSGRID2& rTexPart)
+{
+	if (rTexPart.x >= MIN_TEXPART.x
+	&&  rTexPart.y >= MIN_TEXPART.y)
+	{ // テクスチャ分割数が最低値以上の場合
+
+		// 引数のテクスチャ分割数を設定
+		m_texPart = rTexPart;
+
+		// 頂点情報の設定
+		SetVtx(true);
+	}
+	else { assert(false); }	// 最低値未満
 }
 
 //============================================================
@@ -1105,6 +1133,13 @@ void CObjectMeshField::SetVtx(bool bNor)
 
 				// テクスチャ座標の設定
 				pVtx[0].tex = D3DXVECTOR2(1.0f * nCntWidth, 1.0f * nCntHeight);
+
+				// テクスチャ座標の設定
+				pVtx[0].tex = D3DXVECTOR2
+				( // 引数
+					(float)(nCntWidth - m_part.x),	// u
+					(nCntHeight - m_part.y) * -1.0f	// v
+				);
 
 				// 頂点データのポインタを 1つ分進める
 				pVtx += 1;

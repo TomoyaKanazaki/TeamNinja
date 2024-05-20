@@ -22,11 +22,11 @@
 class CField : public CObjectMeshField
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
+	// 種類列挙
+	enum EType
 	{
-		TEXTURE_ASH = 0,	// 火山灰テクスチャ
-		TEXTURE_MAX			// この列挙型の総数
+		TYPE_ASH = 0,	// 火山灰テクスチャ
+		TYPE_MAX		// この列挙型の総数
 	};
 
 	// 地形列挙
@@ -59,20 +59,27 @@ public:
 	static void LoadSetup(void);	// セットアップ
 	static CField *Create	// 生成
 	( // 引数
-		const ETexture texture,		// 種類
+		const EType type,			// 種類
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXVECTOR2& rSize,	// 大きさ
 		const D3DXCOLOR& rCol,		// 色
-		const POSGRID2& rPart		// 分割数
+		const POSGRID2& rPart,		// 分割数
+		const POSGRID2& rTexPart	// テクスチャ分割数
 	);
+	static CListManager<CField> *GetList(void);	// リスト取得
 
 	// メンバ関数
 	void SetTerrain(const ETerrain terrain);	// 地形設定
+	void SetType(const EType type);				// 種類設定
 
 private:
 	// 静的メンバ変数
+	static CListManager<CField> *m_pList;	// オブジェクトリスト
 	static STerrainInfo m_aTerrainInfo[TERRAIN_MAX];	// 地形情報
+
+	// メンバ変数
+	CListManager<CField>::AIterator m_iterator;	// イテレーター
 };
 
 #endif	// _FIELD_H_

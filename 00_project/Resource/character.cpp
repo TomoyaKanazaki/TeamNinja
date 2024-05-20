@@ -17,6 +17,7 @@
 namespace
 {
 	const char *LOAD_FOLDER = "data\\CHARACTER";	// キャラクターフォルダ相対パス
+	const CCharacter::SCharaData ZERO_CHARADATA;	// キャラクター情報初期値
 }
 
 //************************************************************
@@ -121,9 +122,9 @@ CCharacter::SCharaData CCharacter::Regist(const char *pCharaPass)
 	if (FAILED(LoadSetup(&tempCharaData, pCharaPass)))
 	{ // 読込に失敗した場合
 
-		// 初期化されたキャラクター情報を返す
+		// 初期値を返す
 		assert(false);
-		return tempCharaData;
+		return ZERO_CHARADATA;
 	}
 
 	// キャラクター情報を保存
