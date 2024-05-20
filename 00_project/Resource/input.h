@@ -229,8 +229,8 @@ public:
 	float GetPressRStickTilt(int nPadID = 0);	// プレス取得 (Rスティック傾き)
 	bool GetTriggerLStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Lスティック)
 	bool GetTriggerRStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Rスティック)
-	bool GetReleaseLStick(int nDirection = STICK_ALL, int nPadID = 0); // リリース取得(Lスティック)
-	bool GetReleaseRStick(int nDirection = STICK_ALL, int nPadID = 0); // リリース取得(Rスティック)
+	bool GetReleaseLStick(int nPadID = 0); // リリース取得(Lスティック)
+	bool GetReleaseRStick(int nPadID = 0); // リリース取得(Rスティック)
 
 private:
 	// メンバ関数
@@ -249,8 +249,8 @@ private:
 	int m_nStickAngleR[pad::MAX_NUM]; // 右スティックの角度
 	int m_nStickTriggerL[pad::MAX_NUM]; // 左スティックのトリガー
 	int m_nStickTriggerR[pad::MAX_NUM]; // 右スティックのトリガー
-	int m_nStickReleaseL[pad::MAX_NUM]; // 左スティックのリリース
-	int m_nStickReleaseR[pad::MAX_NUM]; // 右スティックのリリース
+	bool m_nStickReleaseL[pad::MAX_NUM]; // 左スティックのリリース
+	bool m_nStickReleaseR[pad::MAX_NUM]; // 右スティックのリリース
 
 };
 

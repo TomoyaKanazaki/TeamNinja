@@ -132,7 +132,7 @@ void CEnemy::Update(const float fDeltaTime)
 	}
 
 	// オブジェクトキャラクターの更新
-	CObjectChara::Update(fDeltaTime);
+	//CObjectChara::Update(fDeltaTime);
 }
 
 //============================================================
