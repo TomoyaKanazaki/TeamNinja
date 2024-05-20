@@ -11,6 +11,7 @@
 #include "enemyChase.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "collision.h"
 
 #include "player.h"
 #include "player_clone.h"
@@ -25,6 +26,7 @@ namespace
 	const float MOVE = -420.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
 	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
+	const float VIEW_RANGE = 400.0f;						// 視界の範囲
 }
 
 //************************************************************
@@ -118,8 +120,15 @@ void CEnemyChase::TargetSelect(void)
 		// プレイヤーの位置を取得する
 		posTarget = CScene::GetPlayer()->GetVec3Position();
 
-		// 追跡処理
-		Chase(posTarget);
+		if (Search(posTarget))
+		{ // 探索範囲に引っかかった場合
+
+			// 追跡処理
+			Chase(posTarget);
+
+			// デバッグ
+			DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!");
+		}
 
 		if (Approach(posTarget))
 		{ // 接近した場合
@@ -139,8 +148,15 @@ void CEnemyChase::TargetSelect(void)
 		// 分身の位置を取得する
 		posTarget = (*CPlayerClone::GetList()->GetBegin())->GetVec3Position();
 
-		// 追跡処理
-		Chase(posTarget);
+		if (Search(posTarget))
+		{ // 探索範囲に引っかかった場合
+
+			// 追跡処理
+			Chase(posTarget);
+
+			// デバッグ
+			DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!");
+		}
 
 		if (Approach(posTarget))
 		{ // 接近した場合
@@ -161,9 +177,23 @@ void CEnemyChase::TargetSelect(void)
 }
 
 //============================================================
+// 探索処理
+//============================================================
+bool CEnemyChase::Search(const D3DXVECTOR3& posTarget)
+{
+	float fRot = GetVec3Rotation().y + D3DX_PI;
+
+	// 向きを正規化
+	useful::NormalizeRot(fRot);
+
+	// 当たり判定の結果を返す
+	return collision::Sector(GetVec3Position(), posTarget, fRot, VIEW_RANGE, D3DX_PI);
+}
+
+//============================================================
 // 追跡処理
 //============================================================
-void CEnemyChase::Chase(const D3DXVECTOR3 posTarget)
+void CEnemyChase::Chase(const D3DXVECTOR3& posTarget)
 {
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
@@ -203,7 +233,7 @@ void CEnemyChase::Chase(const D3DXVECTOR3 posTarget)
 //============================================================
 // 接近処理
 //============================================================
-bool CEnemyChase::Approach(const D3DXVECTOR3 posTarget)
+bool CEnemyChase::Approach(const D3DXVECTOR3& posTarget)
 {
 	float fDistance = 0.0f;					// 距離
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置

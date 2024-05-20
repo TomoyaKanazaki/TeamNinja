@@ -47,8 +47,9 @@ private:
 
 	// メンバ関数
 	void TargetSelect(void);		// 標的選択処理
-	void Chase(const D3DXVECTOR3 posTarget);		// 追跡処理
-	bool Approach(const D3DXVECTOR3 posTarget);		// 接近処理
+	bool Search(const D3DXVECTOR3& posTarget);		// 探索処理
+	void Chase(const D3DXVECTOR3& posTarget);		// 追跡処理
+	bool Approach(const D3DXVECTOR3& posTarget);	// 接近処理
 
 	// メンバ変数
 	EState m_state;			// 状態
