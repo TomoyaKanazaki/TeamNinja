@@ -388,7 +388,7 @@ void CEditField::UpdateTexPart(void)
 	m_infoCreate.partY.y = partTex.z;
 
 	// テクスチャ分割数を割当
-	m_pField->SetTexturePatternX(m_infoCreate.partX);
+	m_pField-(m_infoCreate.partX);
 	m_pField->SetTexturePatternY(m_infoCreate.partY);
 }
 

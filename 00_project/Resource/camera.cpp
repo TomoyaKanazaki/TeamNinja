@@ -90,7 +90,7 @@ namespace
 		const float	ROTX_REV = 0.5f;		// カメラピッチ回転の補正係数
 		const float	REV_ROT = 1.0f;			// カメラ向きの補正係数
 		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
-		const float	INIT_HEIGHT = -1200.0f;	// 追従カメラの高さ
+		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
 		const float	INIT_ROTX = 1.8f;		// 追従カメラの向きX初期値
 
 		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
