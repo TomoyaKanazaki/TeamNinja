@@ -70,7 +70,7 @@ namespace
 	// クリアタイム基本情報
 	namespace time
 	{
-		const D3DXVECTOR3 POS			= D3DXVECTOR3(485.0f, 250.0f, 0.0f);	// クリアタイム表示の位置
+		const D3DXVECTOR3 POS			= D3DXVECTOR3(735.0f, 250.0f, 0.0f);	// クリアタイム表示の位置
 		const D3DXVECTOR3 SPACE			= D3DXVECTOR3(0.0f, 100.0f, 0.0f);		// クリアタイム表示の空白
 		const D3DXVECTOR3 SIZE_VAL		= D3DXVECTOR3(88.0f, 105.0f, 0.0f);		// クリアタイム表示の数字大きさ
 		const D3DXVECTOR3 SIZE_PART		= D3DXVECTOR3(45.0f, 105.0f, 0.0f);		// クリアタイム表示の区切り大きさ

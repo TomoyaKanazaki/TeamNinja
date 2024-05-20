@@ -1059,7 +1059,7 @@ void CPlayer::ControlClone()
 	CInputPad* pPad = GET_INPUTPAD;
 
 	// 右スティックの入力
-	if (pPad->GetTriggerRStick())
+	if (pPad->GetReleaseRStick())
 	{
 		// 移動量ベクトルのスカラー値を算出
 		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
