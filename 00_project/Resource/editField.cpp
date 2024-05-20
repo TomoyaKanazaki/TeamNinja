@@ -76,7 +76,6 @@ HRESULT CEditField::Init(void)
 {
 #if _DEBUG
 
-	// ポインタを宣言
 	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
 	if (pEditManager == nullptr)
 	{ // エディットマネージャーが存在しない場合
@@ -86,9 +85,6 @@ HRESULT CEditField::Init(void)
 		return E_FAIL;
 	}
 
-	// 変数を宣言
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-
 	// メンバ変数を初期化
 	m_pField			 = nullptr;			// 情報
 	m_infoCreate.type	= (CField::EType)0;	// 種類
@@ -96,6 +92,7 @@ HRESULT CEditField::Init(void)
 	m_infoCreate.part	 = GRID2_ONE;		// テクスチャ分割数X
 
 	// フィールドの生成
+	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	m_pField = CField::Create
 	( // 引数
 		m_infoCreate.type,	// 種類
@@ -155,7 +152,6 @@ void CEditField::Update(void)
 {
 #if _DEBUG
 
-	// ポインタを宣言
 	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
 	if (pEditManager == nullptr)
 	{ // エディットマネージャーが存在しない場合
@@ -323,8 +319,9 @@ void CEditField::Save(FILE *pFile)
 //============================================================
 void CEditField::UpdateSizing(void)
 {
-	// 大きさを変更
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+
+	// 大きさを変更
 	if (!pKeyboard->IsPress(KEY_TRIGGER))
 	{
 		if (pKeyboard->IsPress(KEY_UP_SIZE_X))
@@ -400,8 +397,9 @@ void CEditField::UpdateTexPart(void)
 //============================================================
 void CEditField::ChangeType(void)
 {
-	// 種類を変更
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+
+	// 種類を変更
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
 		m_infoCreate.type = (CField::EType)((m_infoCreate.type + 1) % CField::TYPE_MAX);
@@ -416,7 +414,7 @@ void CEditField::ChangeType(void)
 //============================================================
 void CEditField::CreateField(void)
 {
-	// ポインタを宣言
+	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
 	if (pEditManager == nullptr)
 	{ // エディットマネージャーが存在しない場合
@@ -426,12 +424,10 @@ void CEditField::CreateField(void)
 		return;
 	}
 
-	// 変数を宣言
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
 
 	// フィールドを配置
-	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	if (pKeyboard->IsTrigger(KEY_CREATE))
 	{
 		//----------------------------------------------------
@@ -474,9 +470,10 @@ void CEditField::CreateField(void)
 //============================================================
 void CEditField::ReleaseField(void)
 {
-	// フィールドを削除
-	bool bRelease = false;	// 破棄状況
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+	bool bRelease = false;	// 破棄状況
+
+	// フィールドを削除
 	if (pKeyboard->IsTrigger(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
@@ -492,7 +489,6 @@ void CEditField::ReleaseField(void)
 //============================================================
 void CEditField::DeleteCollisionField(const bool bRelase)
 {
-	// ポインタを宣言
 	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
 	if (pEditManager == nullptr)
 	{ // エディットマネージャーが存在しない場合
@@ -502,93 +498,54 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 		return;
 	}
 
-	// 変数を宣言
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
+	for (auto& rList : listField)
+	{ // フィールド数分繰り返す
 
-	for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
-	{ // 優先順位の総数分繰り返す
+		// 同じアドレスだった場合次へ
+		if (rList == m_pField) { continue; }
 
-		// ポインタを宣言
-		CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
+		D3DXVECTOR3 posField  = rList->GetVec3Position();	// フィールド位置
+		D3DXVECTOR3 sizeField = rList->GetVec3Sizing();		// フィールド大きさ
 
-		if (pObjectTop != nullptr)
-		{ // 先頭が存在する場合
+		// TODO：判定きもいよー
+		// 矩形の当たり判定
+		if (collision::Box3D
+		( // 引数
+			posEdit,	// 判定位置
+			posField,	// 判定目標位置
+			m_pField->GetVec3Sizing(),
+			m_pField->GetVec3Sizing(),
+			sizeField,
+			sizeField
+		))
+		{ // 判定内だった場合
 
-			// ポインタを宣言
-			CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
+			if (bRelase)
+			{ // 破棄する場合
 
-			while (pObjCheck != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+				// 終了処理
+				rList->Uninit();
 
-				// 変数を宣言
-				D3DXVECTOR3 posField = VEC3_ZERO;	// フィールド位置
-				D3DXVECTOR3 sizeField = VEC3_ZERO;	// フィールド大きさ
-
-				// ポインタを宣言
-				CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
-
-				if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-				{ // オブジェクトラベルがフィールドではない場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-
-					// 次の繰り返しに移行
-					continue;
-				}
-
-				if (pObjCheck == (CObject*)m_pField)
-				{ // 同じアドレスだった場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-
-					// 次の繰り返しに移行
-					continue;
-				}
-
-				// フィールドの位置を取得
-				posField = pObjCheck->GetVec3Position();
-
-				// フィールドの大きさを取得
-				sizeField = pObjCheck->GetVec3Sizing();
-
-				// 球体の当たり判定
-				if (collision::Circle3D
-				( // 引数
-					posEdit,	// 判定位置
-					posField,	// 判定目標位置
-					(sizeField.x + sizeField.z) * 0.5f,			// 判定半径
-					(m_infoCreate.size.x + m_infoCreate.size.z) * 0.5f	// 判定目標半径
-				))
-				{ // 判定内だった場合
-
-					if (bRelase)
-					{ // 破棄する場合
-
-						// 終了処理
-						pObjCheck->Uninit();
-
-						// 未保存を設定
-						pEditManager->UnSave();
-					}
-					else
-					{ // 破棄しない場合
-
-						// 赤を設定
-						pObjCheck->SetColor(XCOL_RED);
-					}
-				}
-				else
-				{ // 判定外だった場合
-
-					// 通常色を設定
-					pObjCheck->SetColor(XCOL_WHITE);
-				}
-
-				// 次のオブジェクトへのポインタを代入
-				pObjCheck = pObjectNext;
+				// 未保存を設定
+				pEditManager->UnSave();
 			}
+			else
+			{ // 破棄しない場合
+
+				// 赤を設定
+				rList->SetColor(XCOL_RED);
+			}
+		}
+		else
+		{ // 判定外だった場合
+
+			// 通常色を設定
+			rList->SetColor(XCOL_WHITE);
 		}
 	}
 }
@@ -598,51 +555,15 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 //============================================================
 void CEditField::InitAllColorField(void)
 {
-	for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
-	{ // 優先順位の総数分繰り返す
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
 
-		// ポインタを宣言
-		CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
+	for (auto& rList : listField)
+	{ // フィールド数分繰り返す
 
-		if (pObjectTop != nullptr)
-		{ // 先頭が存在する場合
-
-			// ポインタを宣言
-			CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
-
-			while (pObjCheck != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
-
-				// ポインタを宣言
-				CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
-
-				if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-				{ // オブジェクトラベルがフィールドではない場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-
-					// 次の繰り返しに移行
-					continue;
-				}
-
-				if (pObjCheck == (CObject*)m_pField)
-				{ // 同じアドレスだった場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-
-					// 次の繰り返しに移行
-					continue;
-				}
-
-				// 通常色を設定
-				pObjCheck->SetColor(XCOL_WHITE);
-
-				// 次のオブジェクトへのポインタを代入
-				pObjCheck = pObjectNext;
-			}
-		}
+		// 通常色を設定
+		rList->SetColor(XCOL_WHITE);
 	}
 }
 #endif
