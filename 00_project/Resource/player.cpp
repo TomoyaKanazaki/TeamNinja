@@ -883,7 +883,7 @@ void CPlayer::CloneAngleUISetUp(void)
 {
 	CInputPad* pPad = GET_INPUTPAD;			// 入力情報を取得
 	float fSpeed = pPad->GetPressRStickTilt();						// スティックの傾き
-	float fStickRot = pPad->GetPressRStickRot() + (D3DX_PI * 0.5f);	// スティックの向き
+	float fStickRot = pPad->GetPressRStickRot() + GET_MANAGER->GetCamera()->GetRotation().y + (D3DX_PI * 0.5f);	// スティックの向き
 	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
 
 	// 入力していないと表示を消す
@@ -891,6 +891,9 @@ void CPlayer::CloneAngleUISetUp(void)
 
 	// 分身出る方向のUIを表示する
 	m_pCloneAngleUI->SetEnableDraw(true);
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
 
 	// 位置を設定
 	m_pCloneAngleUI->SetVec3Position
