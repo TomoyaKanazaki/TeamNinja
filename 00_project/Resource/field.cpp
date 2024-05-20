@@ -149,7 +149,8 @@ CField *CField::Create
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
 	const D3DXCOLOR& rCol,		// 色
-	const POSGRID2& rPart		// 分割数
+	const POSGRID2& rPart,		// 分割数
+	const POSGRID2& rTexPart	// テクスチャ分割数
 )
 {
 	// 地面の生成
@@ -194,6 +195,9 @@ CField *CField::Create
 			SAFE_DELETE(pField);
 			return nullptr;
 		}
+
+		// テクスチャ分割数を設定
+		pField->SetPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pField;

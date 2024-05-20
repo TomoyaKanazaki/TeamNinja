@@ -64,7 +64,8 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXVECTOR2& rSize,	// 大きさ
 		const D3DXCOLOR& rCol,		// 色
-		const POSGRID2& rPart		// 分割数
+		const POSGRID2& rPart,		// 分割数
+		const POSGRID2& rTexPart	// テクスチャ分割数
 	);
 	static CListManager<CField> *GetList(void);	// リスト取得
 
