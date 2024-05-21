@@ -109,7 +109,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fHeght			(0.0f),			// 立幅
 	m_fInertial			(0.0f),			// 慣性力
-	m_pCloneAngleUI		(nullptr)		// 分身出す方向のUI
+	m_pCloneAngleUI		(nullptr),		// 分身出す方向のUI
+	m_fMove				(0.0f)			// 移動量
 {
 
 }
@@ -141,6 +142,7 @@ HRESULT CPlayer::Init(void)
 	m_nNumClone			= 0;			// 生成する分身の数
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
+	m_fMove				= 0.0f;			// 移動量
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -602,6 +604,14 @@ void CPlayer::RecoverJust()
 	m_pTensionGauge->AddNum(m_nRecover);
 }
 
+//==========================================
+//  カーソル位置の取得
+//==========================================
+D3DXVECTOR3 CPlayer::GetTargetPos() const
+{
+	return m_pCloneAngleUI->GetVec3Position();
+}
+
 //============================================================
 //	スポーン状態時の更新処理
 //============================================================
@@ -964,6 +974,9 @@ void CPlayer::Move()
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+
+	// 移動量をスカラー値に変換する
+	m_fMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 }
 
 //==========================================
@@ -1037,6 +1050,11 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%f", &m_fInertial);
 		}
+		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fChargeTime);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
@@ -1053,33 +1071,17 @@ void CPlayer::ControlClone()
 	CInputPad* pPad = GET_INPUTPAD;
 
 	// 右スティックの入力
-	if (pPad->GetReleaseRStick())
+	if (pPad->GetTriggerRStick())
 	{
-		// 移動量ベクトルのスカラー値を算出
-		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-
-		// 出現方向UIの位置を取得
-		D3DXVECTOR3 posUI = m_pCloneAngleUI->GetVec3Position();
-
-		// 現在座標を取得
-		D3DXVECTOR3 pos = GetVec3Position();
-
-		// 自身とUIを結ぶベクトルを算出する
-		D3DXVECTOR3 vec = posUI - pos;
-
-		// ベクトルの方向を算出する
-		float fRot = atan2f(vec.z, vec.x);
-
-		// スカラー値にスティックの角度を適用する
-		D3DXVECTOR3 move = D3DXVECTOR3
-		(
-			moveScalar * cosf(fRot),
-			0.0f,
-			moveScalar * sinf(fRot)
-		);
-
-		// 分身を出す
-		CPlayerClone::Create(move);
+		// 分身が存在していない場合方向を決めて分身を出す
+		if (CPlayerClone::GetList() == nullptr)
+		{
+			CPlayerClone::Create(m_fChargeTime);
+		}
+		else // 存在していた場合は追従する分身
+		{
+			CPlayerClone::Create();
+		}
 	}
 }
 

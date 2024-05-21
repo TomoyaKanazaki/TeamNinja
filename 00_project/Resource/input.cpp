@@ -642,13 +642,15 @@ CInputPad::CInputPad()
 	memset(&m_aVibration[0],		0, sizeof(m_aVibration));		// バイブ情報
 	memset(&m_aKeyStatePress[0],	0, sizeof(m_aKeyStatePress));	// プレス情報
 	memset(&m_aKeyStateTrigger[0],	0, sizeof(m_aKeyStateTrigger));	// トリガー情報
-	memset(&m_aKeyStateRelease[0], 0, sizeof(m_aKeyStateRelease));	// リリース情報
-	memset(&m_nStickAngleL[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
-	memset(&m_nStickAngleR[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
-	memset(&m_nStickTriggerL[0], 0, sizeof(m_nStickTriggerL));		// スティックトリガー情報
-	memset(&m_nStickTriggerR[0], 0, sizeof(m_nStickTriggerR));		// スティックトリガー情報
-	memset(&m_nStickReleaseL[0], 0, sizeof(m_nStickReleaseL));		// スティックリリース情報
-	memset(&m_nStickReleaseR[0], 0, sizeof(m_nStickReleaseR));		// スティックリリース情報
+	memset(&m_aKeyStateRelease[0],	0, sizeof(m_aKeyStateRelease));	// リリース情報
+	memset(&m_nStickAngleL[0],		0, sizeof(m_nStickAngleL));		// スティック角度情報
+	memset(&m_nStickAngleR[0],		0, sizeof(m_nStickAngleL));		// スティック角度情報
+	memset(&m_nStickTriggerL[0],	0, sizeof(m_nStickTriggerL));	// スティックトリガー情報
+	memset(&m_nStickTriggerR[0],	0, sizeof(m_nStickTriggerR));	// スティックトリガー情報
+	memset(&m_bStickReleaseL[0],	0, sizeof(m_bStickReleaseL));	// スティックリリース情報
+	memset(&m_bStickReleaseR[0],	0, sizeof(m_bStickReleaseR));	// スティックリリース情報
+	memset(&m_bStickL[0],			0, sizeof(m_bStickL));			// スティック入力情報
+	memset(&m_bStickR[0],			0, sizeof(m_bStickR));			// スティック入力情報
 }
 
 //============================================================
@@ -665,10 +667,18 @@ CInputPad::~CInputPad()
 HRESULT CInputPad::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_aVibration[0],		0, sizeof(m_aVibration));		// バイブ情報
-	memset(&m_aKeyStatePress[0],	0, sizeof(m_aKeyStatePress));	// プレス情報
-	memset(&m_aKeyStateTrigger[0],	0, sizeof(m_aKeyStateTrigger));	// トリガー情報
-	memset(&m_aKeyStateRelease[0],	0, sizeof(m_aKeyStateRelease));	// リリース情報
+	memset(&m_aVibration[0], 0, sizeof(m_aVibration));				// バイブ情報
+	memset(&m_aKeyStatePress[0], 0, sizeof(m_aKeyStatePress));		// プレス情報
+	memset(&m_aKeyStateTrigger[0], 0, sizeof(m_aKeyStateTrigger));	// トリガー情報
+	memset(&m_aKeyStateRelease[0], 0, sizeof(m_aKeyStateRelease));	// リリース情報
+	memset(&m_nStickAngleL[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
+	memset(&m_nStickAngleR[0], 0, sizeof(m_nStickAngleL));			// スティック角度情報
+	memset(&m_nStickTriggerL[0], 0, sizeof(m_nStickTriggerL));		// スティックトリガー情報
+	memset(&m_nStickTriggerR[0], 0, sizeof(m_nStickTriggerR));		// スティックトリガー情報
+	memset(&m_bStickReleaseL[0], 0, sizeof(m_bStickReleaseL));		// スティックリリース情報
+	memset(&m_bStickReleaseR[0], 0, sizeof(m_bStickReleaseR));		// スティックリリース情報
+	memset(&m_bStickL[0], 0, sizeof(m_bStickL));					// スティック入力情報
+	memset(&m_bStickR[0], 0, sizeof(m_bStickR));					// スティック入力情報
 
 	// XInputのステートを有効化
 	XInputEnable(true);
@@ -743,8 +753,20 @@ void CInputPad::Update(void)
 			}
 
 			//スティックのリリース情報を保存
-			m_nStickReleaseL[nCntJoyKey] = KnockLStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
-			m_nStickReleaseR[nCntJoyKey] = KnockRStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
+			m_bStickReleaseL[nCntJoyKey] = KnockLStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
+			m_bStickReleaseR[nCntJoyKey] = KnockRStickRelease(nCntJoyKey, aKeyState[nCntJoyKey]);
+
+			// スティック入力情報
+			if (fabsf(aKeyState[nCntJoyKey].Gamepad.sThumbLX) >= stick::TRIGGER_DEAD || fabsf(aKeyState[nCntJoyKey].Gamepad.sThumbLY) >= stick::TRIGGER_DEAD)
+			{
+				m_bStickL[nCntJoyKey] = true;
+			}
+			else { m_bStickL[nCntJoyKey] = false; }
+			if (fabsf(aKeyState[nCntJoyKey].Gamepad.sThumbRX) >= stick::TRIGGER_DEAD || fabsf(aKeyState[nCntJoyKey].Gamepad.sThumbRY) >= stick::TRIGGER_DEAD)
+			{
+				m_bStickR[nCntJoyKey] = true;
+			}
+			else { m_bStickR[nCntJoyKey] = false; }
 
 			// パッドのプレス情報を保存
 			m_aKeyStatePress[nCntJoyKey] = aKeyState[nCntJoyKey];
@@ -1298,7 +1320,7 @@ bool CInputPad::GetTriggerRStick(int nDirection, int nPadID)
 //==========================================
 bool CInputPad::GetReleaseLStick(int nPadID)
 {
-	return m_nStickReleaseL[nPadID];
+	return m_bStickReleaseL[nPadID];
 }
 
 //==========================================
@@ -1306,7 +1328,23 @@ bool CInputPad::GetReleaseLStick(int nPadID)
 //==========================================
 bool CInputPad::GetReleaseRStick(int nPadID)
 {
-	return m_nStickReleaseR[nPadID];
+	return m_bStickReleaseR[nPadID];
+}
+
+//==========================================
+//  入力フラグの取得(Lスティック)
+//==========================================
+bool CInputPad::GetLStick(int nPadID)
+{
+	return m_bStickL[nPadID];
+}
+
+//==========================================
+//  入力フラグの取得(Rスティック)
+//==========================================
+bool CInputPad::GetRStick(int nPadID)
+{
+	return m_bStickR[nPadID];
 }
 
 //============================================================
