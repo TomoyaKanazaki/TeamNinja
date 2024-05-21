@@ -231,6 +231,8 @@ public:
 	bool GetTriggerRStick(int nDirection = STICK_ALL, int nPadID = 0); // トリガー取得(Rスティック)
 	bool GetReleaseLStick(int nPadID = 0); // リリース取得(Lスティック)
 	bool GetReleaseRStick(int nPadID = 0); // リリース取得(Rスティック)
+	bool GetLStick(int nPadID = 0); // 入力フラグの取得(Lスティック)
+	bool GetRStick(int nPadID = 0); // 入力フラグの取得(Rスティック)
 
 private:
 	// メンバ関数
@@ -249,8 +251,10 @@ private:
 	int m_nStickAngleR[pad::MAX_NUM]; // 右スティックの角度
 	int m_nStickTriggerL[pad::MAX_NUM]; // 左スティックのトリガー
 	int m_nStickTriggerR[pad::MAX_NUM]; // 右スティックのトリガー
-	bool m_nStickReleaseL[pad::MAX_NUM]; // 左スティックのリリース
-	bool m_nStickReleaseR[pad::MAX_NUM]; // 右スティックのリリース
+	bool m_bStickReleaseL[pad::MAX_NUM]; // 左スティックのリリース
+	bool m_bStickReleaseR[pad::MAX_NUM]; // 右スティックのリリース
+	bool m_bStickL[pad::MAX_NUM]; // 左スティックの入力情報
+	bool m_bStickR[pad::MAX_NUM]; // 右スティックの入力情報
 
 };
 
