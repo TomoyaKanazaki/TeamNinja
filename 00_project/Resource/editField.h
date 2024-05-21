@@ -1,4 +1,4 @@
-#if 0
+#if 1
 //============================================================
 //
 //	エディットフィールドヘッダー [editField.h]
@@ -25,7 +25,7 @@ class CEditField : public CEditStage
 {
 public:
 	// コンストラクタ
-	CEditField();
+	CEditField(CEditManager *pEditManager);
 
 	// デストラクタ
 	~CEditField() override;

@@ -9,6 +9,7 @@
 //************************************************************
 #include "editManager.h"
 #include "manager.h"
+#include "editStage.h"
 
 //************************************************************
 //	マクロ定義
@@ -48,9 +49,10 @@ CEditManager::CEditManager()
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_type	= TYPE_STAGE;	// エディットタイプ
-	m_bSave	= false;		// 保存状況
-	m_bEdit	= false;		// エディット状況
+	m_pStage = nullptr;		// ステージエディター
+	m_type	 = TYPE_STAGE;	// エディットタイプ
+	m_bSave	 = false;		// 保存状況
+	m_bEdit	 = false;		// エディット状況
 
 #endif	// _DEBUG
 }
@@ -72,9 +74,20 @@ HRESULT CEditManager::Init(void)
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_type	= TYPE_STAGE;	// エディットタイプ
-	m_bSave	= false;		// 保存状況
-	m_bEdit	= false;		// エディット状況
+	m_pStage = nullptr;		// ステージエディター
+	m_type	 = TYPE_STAGE;	// エディットタイプ
+	m_bSave	 = false;		// 保存状況
+	m_bEdit	 = false;		// エディット状況
+
+	// エディットステージの生成
+	m_pStage = CEditStage::Create(this, CEditStage::TYPE_FIELD);
+	if (m_pStage == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// 成功を返す
 	return S_OK;
@@ -93,6 +106,14 @@ HRESULT CEditManager::Init(void)
 void CEditManager::Uninit(void)
 {
 #if _DEBUG
+
+	// ステージエディターの終了
+	assert(m_pStage != nullptr);
+	m_pStage->Uninit();
+
+	// エディットステージの破棄
+	SAFE_REF_RELEASE(m_pStage);
+
 #endif	// _DEBUG
 }
 
@@ -111,6 +132,10 @@ void CEditManager::Update(void)
 
 	// ステージ保存
 	SaveStage();
+
+	// ステージエディターの更新
+	assert(m_pStage != nullptr);
+	m_pStage->Update();
 
 	// 操作表示の描画
 	DrawDebugControl();
@@ -303,8 +328,20 @@ void CEditManager::ChangeType(void)
 		// 情報読込
 		m_pStage->LoadInfo();
 #else
+
+		// エディットステージの破棄
+		SAFE_REF_RELEASE(m_pStage);
+
 		// エディットタイプの変更
 		m_type = (EType)((m_type + 1) % TYPE_MAX);
+
+		// エディットステージの生成
+		if (m_pStage == nullptr)
+		{ // エディットステージが使用されていない場合
+
+			m_pStage = CEditStage::Create(this, CEditStage::TYPE_FIELD);
+			assert(m_pStage != nullptr);	// 生成失敗
+		}
 #endif
 	}
 }
@@ -320,6 +357,10 @@ void CEditManager::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "ステージ保存：[%s+%s]\n", NAME_DOUBLE, NAME_SAVE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_TYPE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
+
+	// ステージエディターの操作表示
+	assert(m_pStage != nullptr);
+	m_pStage->DrawDebugControl();
 }
 
 //============================================================
@@ -333,6 +374,10 @@ void CEditManager::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, (m_bSave) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_type]);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
+
+	// ステージエディターの情報表示
+	assert(m_pStage != nullptr);
+	m_pStage->DrawDebugInfo();
 }
 
 //============================================================

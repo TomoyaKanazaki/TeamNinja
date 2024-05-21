@@ -9,6 +9,40 @@
 //************************************************************
 #include "editStage.h"
 #include "manager.h"
+#include "editManager.h"
+#include "editField.h"
+
+//************************************************************
+//	マクロ定義
+//************************************************************
+#define KEY_MOVE_UP		(DIK_UP)	// 移動量上昇キー
+#define NAME_MOVE_UP	("↑")		// 移動量上昇表示
+#define KEY_MOVE_DOWN	(DIK_DOWN)	// 移動量下降キー
+#define NAME_MOVE_DOWN	("↓")		// 移動量下降表示
+
+#define KEY_FAR		(DIK_W)	// 奥移動キー
+#define NAME_FAR	("W")	// 奥移動表示
+#define KEY_NEAR	(DIK_S)	// 手前移動キー
+#define NAME_NEAR	("S")	// 手前移動表示
+#define KEY_RIGHT	(DIK_D)	// 右移動キー
+#define NAME_RIGHT	("D")	// 右移動表示
+#define KEY_LEFT	(DIK_A)	// 左移動キー
+#define NAME_LEFT	("A")	// 左移動表示
+#define KEY_UP		(DIK_E)	// 上移動キー
+#define NAME_UP		("E")	// 上移動表示
+#define KEY_DOWN	(DIK_Q)	// 下移動キー
+#define NAME_DOWN	("Q")	// 下移動表示
+
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const float INIT_MOVE	= 10.0f;	// 配置物の初期移動量
+	const float CHANGE_MOVE	= 2.0f;		// 配置物の移動量の変動量
+	const float MIN_MOVE	= 10.0f;	// 配置物の最小移動量
+	const float MAX_MOVE	= 100.0f;	// 配置物の最大移動量
+}
 
 //************************************************************
 //	親クラス [CEditStage] のメンバ関数
@@ -16,13 +50,14 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditStage::CEditStage()
+CEditStage::CEditStage(CEditManager *pEditManager)
 {
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditManager = nullptr;	// エディットマネージャー
-	m_pStage = nullptr;			// ステージエディター
+	m_pEditManager = pEditManager;	// エディットマネージャー
+	m_fMove	= 0.0f;			// 位置移動量
+	m_pos	= VEC3_ZERO;	// 位置
 
 #endif	// _DEBUG
 }
@@ -34,6 +69,59 @@ CEditStage::~CEditStage()
 {
 #if _DEBUG
 #endif	// _DEBUG
+}
+
+//============================================================
+//	初期化処理
+//============================================================
+HRESULT CEditStage::Init(void)
+{
+	// メンバ変数を初期化
+	m_fMove	= INIT_MOVE;	// 位置移動量
+	m_pos	= VEC3_ZERO;	// 位置
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	終了処理
+//============================================================
+void CEditStage::Uninit(void)
+{
+
+}
+
+//============================================================
+//	更新処理
+//============================================================
+void CEditStage::Update(void)
+{
+	// 移動量の更新
+	UpdateChangeMove();
+
+	// 位置の更新
+	UpdatePosition();
+}
+
+//============================================================
+//	操作表示の描画処理
+//============================================================
+void CEditStage::DrawDebugControl(void)
+{
+	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "移動量変更：[%s/%s+%s]\n", NAME_MOVE_UP, NAME_MOVE_DOWN, NAME_DOUBLE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
+}
+
+//============================================================
+//	情報表示の描画処理
+//============================================================
+void CEditStage::DrawDebugInfo(void)
+{
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：[移動量]\n", m_fMove);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[位置]\n", m_pos.x, m_pos.y, m_pos.z);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
 }
 
 //============================================================
@@ -50,11 +138,11 @@ CEditStage *CEditStage::Create(CEditManager *pEditManager, EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_FIELD:
-		//pEditStage = new CEditField;	// エディットフィールド
+		pEditStage = new CEditField(pEditManager);	// エディットフィールド
 		break;
 
 	case TYPE_WALL:
-		//pEditStage = new CEditWall;	// エディットウォール
+		//pEditStage = new CEditWall(pEditManager);	// エディットウォール
 		break;
 
 	default:	// 例外処理
@@ -129,4 +217,104 @@ CEditManager *CEditStage::GetPtrEditManager(void) const
 	return nullptr;
 
 #endif	// _DEBUG
+}
+
+//============================================================
+//	移動量の更新処理
+//============================================================
+void CEditStage::UpdateChangeMove(void)
+{
+	// 移動量を変更
+	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
+	if (m_pKeyboard->IsPress(KEY_DOUBLE))
+	{
+		if (!m_pKeyboard->IsPress(KEY_TRIGGER))
+		{
+			if (m_pKeyboard->IsPress(KEY_MOVE_UP))
+			{
+				m_fMove += CHANGE_MOVE;
+			}
+			if (m_pKeyboard->IsPress(KEY_MOVE_DOWN))
+			{
+				m_fMove -= CHANGE_MOVE;
+			}
+		}
+		else
+		{
+			if (m_pKeyboard->IsTrigger(KEY_MOVE_UP))
+			{
+				m_fMove += CHANGE_MOVE;
+			}
+			if (m_pKeyboard->IsTrigger(KEY_MOVE_DOWN))
+			{
+				m_fMove -= CHANGE_MOVE;
+			}
+		}
+	}
+
+	// 移動量を補正
+	useful::LimitNum(m_fMove, MIN_MOVE, MAX_MOVE);
+}
+
+//============================================================
+//	位置の更新処理
+//============================================================
+void CEditStage::UpdatePosition(void)
+{
+	// 位置を変更
+	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
+	if (!m_pKeyboard->IsPress(KEY_TRIGGER))
+	{
+		if (m_pKeyboard->IsPress(KEY_FAR))
+		{
+			m_pos.z += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_NEAR))
+		{
+			m_pos.z -= m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_RIGHT))
+		{
+			m_pos.x += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_LEFT))
+		{
+			m_pos.x -= m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_UP))
+		{
+			m_pos.y += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_DOWN))
+		{
+			m_pos.y -= m_fMove;
+		}
+	}
+	else
+	{
+		if (m_pKeyboard->IsTrigger(KEY_FAR))
+		{
+			m_pos.z += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_NEAR))
+		{
+			m_pos.z -= m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_RIGHT))
+		{
+			m_pos.x += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_LEFT))
+		{
+			m_pos.x -= m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_UP))
+		{
+			m_pos.y += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_DOWN))
+		{
+			m_pos.y -= m_fMove;
+		}
+	}
 }

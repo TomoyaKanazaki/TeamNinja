@@ -274,7 +274,7 @@ CObjectMeshField *CObjectMeshField::Create
 		}
 
 		// テクスチャ分割数を設定
-		pMeshField->SetPattern(rTexPart);
+		pMeshField->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pMeshField;
@@ -1107,6 +1107,13 @@ void CObjectMeshField::SetVtx(bool bNor)
 	if (m_pVtxBuff != nullptr)
 	{ // 使用中の場合
 
+		// テクスチャ分割数の割合を計算
+		D3DXVECTOR2 texRate = D3DXVECTOR2
+		(
+			(float)m_texPart.x / (float)m_part.x,
+			(float)m_texPart.y / (float)m_part.y
+		);
+
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
 		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
@@ -1135,11 +1142,7 @@ void CObjectMeshField::SetVtx(bool bNor)
 				pVtx[0].tex = D3DXVECTOR2(1.0f * nCntWidth, 1.0f * nCntHeight);
 
 				// テクスチャ座標の設定
-				pVtx[0].tex = D3DXVECTOR2
-				( // 引数
-					(float)(nCntWidth - m_part.x),	// u
-					(nCntHeight - m_part.y) * -1.0f	// v
-				);
+				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
 
 				// 頂点データのポインタを 1つ分進める
 				pVtx += 1;

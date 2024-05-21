@@ -1,4 +1,4 @@
-#if 0
+#if 1
 //============================================================
 //
 //	エディットフィールド処理 [editField.cpp]
@@ -38,7 +38,7 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(50.0f, 50.0f);	// 大きさ
+	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(100.0f, 100.0f);	// 大きさ
 	const float	MAX_SIZE = 10000.0f;	// 最大の大きさ
 	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
 }
@@ -49,7 +49,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditField::CEditField()
+CEditField::CEditField(CEditManager *pEditManager) : CEditStage(pEditManager)
 {
 #if _DEBUG
 
@@ -76,6 +76,23 @@ HRESULT CEditField::Init(void)
 {
 #if _DEBUG
 
+	// メンバ変数を初期化
+	m_pField			 = nullptr;				// 情報
+	m_infoCreate.type	 = (CField::EType)0;	// 種類
+	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
+	m_infoCreate.col	 = XCOL_WHITE;			// 色
+	m_infoCreate.part	 = GRID2_ONE;			// 分割数
+	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
+
+	// 親クラスの初期化
+	if (FAILED(CEditStage::Init()))
+	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
 	if (pEditManager == nullptr)
 	{ // エディットマネージャーが存在しない場合
@@ -85,22 +102,17 @@ HRESULT CEditField::Init(void)
 		return E_FAIL;
 	}
 
-	// メンバ変数を初期化
-	m_pField			 = nullptr;			// 情報
-	m_infoCreate.type	= (CField::EType)0;	// 種類
-	m_infoCreate.size	 = INIT_SIZE;		// 大きさ
-	m_infoCreate.part	 = GRID2_ONE;		// テクスチャ分割数X
-
 	// フィールドの生成
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	m_pField = CField::Create
 	( // 引数
-		m_infoCreate.type,	// 種類
-		posEdit,			// 位置
-		VEC3_ZERO,			// 向き
-		m_infoCreate.size,	// 大きさ
-		m_infoCreate.col,	// 色
-		m_infoCreate.part	// 分割数
+		m_infoCreate.type,		// 種類
+		posEdit,				// 位置
+		VEC3_ZERO,				// 向き
+		m_infoCreate.size,		// 大きさ
+		m_infoCreate.col,		// 色
+		m_infoCreate.part,		// 分割数
+		m_infoCreate.texPart	// テクスチャ分割数
 	);
 	if (m_pField == nullptr)
 	{ // 生成に失敗した場合
@@ -132,15 +144,14 @@ void CEditField::Uninit(void)
 {
 #if _DEBUG
 
-	if (m_pField != nullptr)
-	{ // 生成に失敗した場合
+	// 親クラスの終了
+	CEditStage::Uninit();
 
-		// フィールドの色の全初期化
-		InitAllColorField();
+	// フィールドの色の全初期化
+	InitAllColorField();
 
-		// フィールドの終了
-		m_pField->Uninit();
-	}
+	// フィールドの終了
+	SAFE_UNINIT(m_pField);
 
 #endif	// _DEBUG
 }
@@ -160,6 +171,12 @@ void CEditField::Update(void)
 		assert(false);
 		return;
 	}
+
+	// エディットがOFFなら抜ける
+	if (!pEditManager->IsEdit()) { return; }
+
+	// 親クラスの更新
+	CEditStage::Update();
 
 	// 大きさの更新
 	UpdateSizing();
@@ -187,6 +204,9 @@ void CEditField::Update(void)
 //============================================================
 void CEditField::DrawDebugControl(void)
 {
+	// 操作表示の描画
+	CEditStage::DrawDebugControl();
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
@@ -198,9 +218,13 @@ void CEditField::DrawDebugControl(void)
 //============================================================
 void CEditField::DrawDebugInfo(void)
 {
+	// 情報表示の描画
+	CEditStage::DrawDebugInfo();
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.texPart.x, m_infoCreate.texPart.y);
 }
 
 //============================================================
@@ -374,22 +398,12 @@ void CEditField::UpdateSizing(void)
 //============================================================
 void CEditField::UpdateTexPart(void)
 {
-	// 変数を宣言
-	D3DXVECTOR3 partTex = VEC3_ZERO;	// テクスチャ分割数
-
-	// 分割数を設定
-	partTex.x = m_infoCreate.size.x / INIT_SIZE.x;
-	partTex.y = m_infoCreate.size.y / INIT_SIZE.y;
+	// テクスチャ分割数を設定
+	m_infoCreate.texPart.x = (int)(m_infoCreate.size.x / INIT_SIZE.x);
+	m_infoCreate.texPart.y = (int)(m_infoCreate.size.y / INIT_SIZE.y);
 
 	// テクスチャ分割数を設定
-	m_infoCreate.partX.x = partTex.z;
-	m_infoCreate.partX.y = partTex.y;
-	m_infoCreate.partY.x = partTex.x;
-	m_infoCreate.partY.y = partTex.z;
-
-	// テクスチャ分割数を割当
-	m_pField-(m_infoCreate.partX);
-	m_pField->SetTexturePatternY(m_infoCreate.partY);
+	m_pField->SetTexPattern(m_infoCreate.texPart);
 }
 
 //============================================================
@@ -450,12 +464,13 @@ void CEditField::CreateField(void)
 		// フィールドの生成
 		m_pField = CField::Create
 		( // 引数
-			m_infoCreate.type,	// 種類
-			posEdit,			// 位置
-			VEC3_ZERO,			// 向き
-			m_infoCreate.size,	// 大きさ
-			m_infoCreate.col,	// 色
-			m_infoCreate.part	// 分割数
+			m_infoCreate.type,		// 種類
+			posEdit,				// 位置
+			VEC3_ZERO,				// 向き
+			m_infoCreate.size,		// 大きさ
+			m_infoCreate.col,		// 色
+			m_infoCreate.part,		// 分割数
+			m_infoCreate.texPart	// テクスチャ分割数
 		);
 		assert(m_pField != nullptr);
 
@@ -510,18 +525,30 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 		if (rList == m_pField) { continue; }
 
 		D3DXVECTOR3 posField  = rList->GetVec3Position();	// フィールド位置
-		D3DXVECTOR3 sizeField = rList->GetVec3Sizing();		// フィールド大きさ
+		D3DXVECTOR3 sizeThisField = D3DXVECTOR3(0.0f, 25.0f, 0.0f);		// フィールド大きさ
+		D3DXVECTOR3 sizeOtherField = D3DXVECTOR3(0.0f, 25.0f, 0.0f);	// フィールド大きさ
+
+		D3DXVECTOR2 sizeThis = m_pField->GetVec2Sizing();
+		sizeThisField.x = sizeThis.x;
+		sizeThisField.z = sizeThis.y;
+
+		D3DXVECTOR2 sizeOther = rList->GetVec2Sizing();
+		sizeOtherField.x = sizeOther.x;
+		sizeOtherField.z = sizeOther.y;
+
+		sizeThisField *= 0.5f;	// フィールド大きさ
+		sizeOtherField *= 0.5f;	// フィールド大きさ
 
 		// TODO：判定きもいよー
 		// 矩形の当たり判定
 		if (collision::Box3D
 		( // 引数
-			posEdit,	// 判定位置
-			posField,	// 判定目標位置
-			m_pField->GetVec3Sizing(),
-			m_pField->GetVec3Sizing(),
-			sizeField,
-			sizeField
+			posEdit,		// 判定位置
+			posField,		// 判定目標位置
+			sizeThisField,
+			sizeThisField,
+			sizeOtherField,
+			sizeOtherField
 		))
 		{ // 判定内だった場合
 

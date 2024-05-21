@@ -31,20 +31,22 @@ public:
 	};
 
 	// コンストラクタ
-	CEditStage();
+	CEditStage(CEditManager *pEditManager);
 
 	// デストラクタ
 	virtual ~CEditStage();
 
 	// 純粋仮想関数
-	virtual HRESULT Init(void)	= 0;	// 初期化
-	virtual void Uninit(void)	= 0;	// 終了
-	virtual void Update(void)	= 0;	// 更新
-	virtual void SaveInfo(void)	= 0;	// 情報保存
-	virtual void LoadInfo(void)	= 0;	// 情報読込
-	virtual void DrawDebugControl(void)	= 0;	// 操作表示描画
-	virtual void DrawDebugInfo(void)	= 0;	// 情報表示描画
-	virtual void Save(FILE *pFile)		= 0;	// 保存
+	virtual void SaveInfo(void)		= 0;	// 情報保存
+	virtual void LoadInfo(void)		= 0;	// 情報読込
+	virtual void Save(FILE *pFile)	= 0;	// 保存
+
+	// 仮想関数
+	virtual HRESULT Init(void);	// 初期化
+	virtual void Uninit(void);	// 終了
+	virtual void Update(void);	// 更新
+	virtual void DrawDebugControl(void);	// 操作表示描画
+	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
 	static CEditStage *Create(CEditManager *pEditManager, EType type);	// 生成
@@ -52,11 +54,17 @@ public:
 
 	// メンバ関数
 	CEditManager *GetPtrEditManager(void) const;	// エディットマネージャー取得
+	D3DXVECTOR3 GetVec3Position(void) const { return m_pos; }	// 位置取得
 
 private:
+	// メンバ関数
+	void UpdateChangeMove(void);	// 移動量更新
+	void UpdatePosition(void);		// 位置更新
+
 	// メンバ変数
 	CEditManager *m_pEditManager;	// エディットマネージャー
-	CEditStage *m_pStage;	// ステージエディター
+	float m_fMove;		// 位置移動量
+	D3DXVECTOR3 m_pos;	// 位置
 };
 
 #endif	// _EDIT_STAGE_H_

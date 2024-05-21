@@ -197,7 +197,7 @@ CField *CField::Create
 		}
 
 		// テクスチャ分割数を設定
-		pField->SetPattern(rTexPart);
+		pField->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pField;
