@@ -425,18 +425,37 @@ void CPlayerClone::Delete(void)
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
 
-	// 全ての分身を削除する
+	// 削除する分身の番号を保存する変数
+	bool* bDelete = new bool[nNum];
+
+	// 削除フラグを立てる
 	for (int i = 0; i < nNum; ++i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(m_pList->GetNumAll() - 1);
+		// 削除フラグをオフ
+		bDelete[i] = false;
 
-		// 追従状態の分身のみ削除される
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 追従状態の分身の削除フラグをオン
 		if (pAvatar->GetAction() == ACTION_NONE)
 		{
-			pAvatar->Uninit();
+			bDelete[i] = true;
 		}
 	}
+
+	// フラグの立っている分身を削除する
+	for (int i = nNum - 1; i >= 0; --i)
+	{
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 削除
+		if (bDelete[i]) { pAvatar->Uninit(); }
+	}
+
+	// 削除フラグを削除
+	delete[] bDelete;
 }
 
 //============================================================
@@ -571,19 +590,10 @@ void CPlayerClone::ChasePrev()
 	std::list<CPlayerClone*> list = m_pList->GetList();
 	auto itrBegin = list.begin();
 
-	// 先頭と自身を比較する
-	if (*itrBegin == this)
-	{
-		// ついていく
-		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-
-		return;
-	}
-
 	// リストの最後尾を取得する
 	auto itrEnd = list.end();
 
-	// 次のポインタを取得する変数
+	// 前のポインタを取得する変数
 	CPlayerClone* prev = *itrBegin;
 
 	// 自身に一致するポインタの一つ前に追従する
@@ -593,7 +603,7 @@ void CPlayerClone::ChasePrev()
 		if (*itr == this)
 		{
 			// 一つ前が追従型じゃない場合プレイヤーについていく
-			if (prev->GetAction() != ACTION_NONE)
+			if (this == *itrBegin || prev->GetAction() != ACTION_NONE)
 			{
 				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 				return;
