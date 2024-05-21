@@ -1058,8 +1058,17 @@ void CPlayer::ControlClone()
 		// 移動量ベクトルのスカラー値を算出
 		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 
-		// スティックの角度を取得
-		float fRot = pPad->GetPressRStickRot();
+		// 出現方向UIの位置を取得
+		D3DXVECTOR3 posUI = m_pCloneAngleUI->GetVec3Position();
+
+		// 現在座標を取得
+		D3DXVECTOR3 pos = GetVec3Position();
+
+		// 自身とUIを結ぶベクトルを算出する
+		D3DXVECTOR3 vec = posUI - pos;
+
+		// ベクトルの方向を算出する
+		float fRot = atan2f(vec.z, vec.x);
 
 		// スカラー値にスティックの角度を適用する
 		D3DXVECTOR3 move = D3DXVECTOR3
