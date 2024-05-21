@@ -15,6 +15,7 @@
 #include "player.h"
 #include "orbit.h"
 #include "multiModel.h"
+#include "deltaTime.h"
 
 //************************************************************
 //	定数宣言
@@ -61,7 +62,8 @@ m_pShadow(nullptr),			// 影の情報
 m_pOrbit(nullptr),			// 軌跡の情報
 m_move(0.0f, 0.0f, 0.0f),	// 移動量
 m_Action(ACTION_NONE),		// 行動
-m_fTimer(0.0f)				// 自動消滅タイマー
+m_fDeleteTimer(0.0f),		// 自動消滅タイマー
+m_fChargeTimer(0.0f)		// ため時間タイマー
 {
 
 }
@@ -84,7 +86,8 @@ HRESULT CPlayerClone::Init(void)
 	m_pOrbit = nullptr;		// 軌跡の情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
 	m_Action = ACTION_NONE; // 行動
-	m_fTimer = 0.0f; // 自動消滅タイマー
+	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
+	m_fChargeTimer = 0.0f; // ため時間タイマー
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -196,8 +199,8 @@ void CPlayerClone::Update(const float fDeltaTime)
 		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
 
 		// 消滅
-		m_fTimer -= fDeltaTime;
-		if (m_fTimer <= 0.0f)
+		m_fDeleteTimer -= fDeltaTime;
+		if (m_fDeleteTimer <= 0.0f)
 		{
 			Uninit();
 			return;
@@ -210,6 +213,16 @@ void CPlayerClone::Update(const float fDeltaTime)
 		// 一つ前を追いかける
 		ChasePrev();
 
+		break;
+
+	case ACTION_CHARGE:
+
+		// ためてね
+		Charge();
+
+		break;
+
+	default:
 		break;
 	}
 
@@ -344,7 +357,40 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	pPlayer->m_Action = ACTION_MOVE;
 
 	// 自動消滅タイマーを設定
-	pPlayer->m_fTimer = TIMER;
+	pPlayer->m_fDeleteTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer;
+}
+
+//==========================================
+//  生成処理(チャージ)
+//==========================================
+CPlayerClone* CPlayerClone::Create(const float fTimer)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 行動を設定
+	pPlayer->m_Action = ACTION_CHARGE;
+
+	// 自動消滅タイマーを設定
+	pPlayer->m_fChargeTimer = fTimer;
+
+	// 位置を設定する
+	pPlayer->SetVec3Position(GET_PLAYER->GetTargetPos());
 
 	// 確保したアドレスを返す
 	return pPlayer;
@@ -379,15 +425,37 @@ void CPlayerClone::Delete(void)
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
 
-	// 全ての分身を削除する
+	// 削除する分身の番号を保存する変数
+	bool* bDelete = new bool[nNum];
+
+	// 削除フラグを立てる
 	for (int i = 0; i < nNum; ++i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(0);
+		// 削除フラグをオフ
+		bDelete[i] = false;
 
-		// 分身の終了
-		pAvatar->Uninit();
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 追従状態の分身の削除フラグをオン
+		if (pAvatar->GetAction() == ACTION_NONE)
+		{
+			bDelete[i] = true;
+		}
 	}
+
+	// フラグの立っている分身を削除する
+	for (int i = nNum - 1; i >= 0; --i)
+	{
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 削除
+		if (bDelete[i]) { pAvatar->Uninit(); }
+	}
+
+	// 削除フラグを削除
+	delete[] bDelete;
 }
 
 //============================================================
@@ -522,19 +590,10 @@ void CPlayerClone::ChasePrev()
 	std::list<CPlayerClone*> list = m_pList->GetList();
 	auto itrBegin = list.begin();
 
-	// 先頭と自身を比較する
-	if (*itrBegin == this)
-	{
-		// ついていく
-		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-
-		return;
-	}
-
 	// リストの最後尾を取得する
 	auto itrEnd = list.end();
 
-	// 次のポインタを取得する変数
+	// 前のポインタを取得する変数
 	CPlayerClone* prev = *itrBegin;
 
 	// 自身に一致するポインタの一つ前に追従する
@@ -543,7 +602,14 @@ void CPlayerClone::ChasePrev()
 		// 現在のポインタと自身を比較する
 		if (*itr == this)
 		{
-			// ついていく
+			// 一つ前が追従型じゃない場合プレイヤーについていく
+			if (this == *itrBegin || prev->GetAction() != ACTION_NONE)
+			{
+				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+				return;
+			}
+
+			// 一つ前についていく
 			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
 
 			return;
@@ -598,4 +664,54 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 	D3DXVECTOR3 rot = GetVec3Rotation();
 	rot.y = fRot;
 	SetVec3Rotation(rot);
+}
+
+//==========================================
+//  ため
+//==========================================
+void CPlayerClone::Charge()
+{
+	// ため時間が0の場合関数を抜ける
+	if (m_fChargeTimer <= 0.0f) { return; }
+
+	// ため時間を減算する
+	m_fChargeTimer -= GET_MANAGER->GetDeltaTime()->GetTime();
+
+	// 入力情報を取得する
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// スティック入力がないもしくはタイマーが0の場合分身を発射して関数を抜ける
+	if (!pPad->GetRStick() || m_fChargeTimer <= 0.0f)
+	{
+		// タイマーを0にする
+		m_fChargeTimer = 0.0f;
+
+		// プレイヤーの移動量を取得
+		float fMove = GET_PLAYER->GetMove();
+
+		// 移動量ベクトルを算出
+		D3DXVECTOR3 vecMove = GET_PLAYER->GetTargetPos() - GET_PLAYER->GetVec3Position();
+
+		// 移動量ベクトルの角度を算出
+		float fRot = atan2f(vecMove.z, vecMove.x);
+
+		// 移動量を算出する
+		m_move = D3DXVECTOR3
+		(
+			fMove * cosf(fRot),
+			0.0f,
+			fMove * sinf(fRot)
+		);
+
+		// 自動消滅タイマーを設定
+		m_fDeleteTimer = TIMER;
+
+		// 行動状態を歩行に変更
+		m_Action = ACTION_MOVE;
+		
+		return;
+	}
+
+	// カーソルの位置に立つ
+	SetVec3Position(GET_PLAYER->GetTargetPos());
 }
