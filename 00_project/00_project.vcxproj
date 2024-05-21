@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="MapModel.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
     <ClInclude Include="Resource\camera.h" />
@@ -274,6 +275,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MapModel.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
     <ClCompile Include="Resource\camera.cpp" />
