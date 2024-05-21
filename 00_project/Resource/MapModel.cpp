@@ -17,7 +17,7 @@ int CMapModel::m_nNumAll = 0;
 //<**********************************************
 namespace
 {
-	const char* MODEL_NAME = "data\\MODEL\\PLAYER\\02_head.x"; //モデルパス
+	const char* MODEL_NAME = "data\\MODEL\\Tree\\BirchTree_1.x"; //モデルパス
 }
 
 //<==============================================
@@ -37,7 +37,7 @@ CMapModel::~CMapModel()
 //<==============================================
 //生成処理
 //<==============================================
-CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const D3DXVECTOR3& rSize)
 {
 	CMapModel* pMapModel = new CMapModel;
 
@@ -45,6 +45,7 @@ CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 
 	pMapModel->SetVec3Position(rPos);	//位置情報
 	pMapModel->SetVec3Rotation(rRot);	//向き情報
+	pMapModel->SetVec3Scaling(rSize);	//向き情報
 	pMapModel->BindModel(MODEL_NAME);	//モデル割り当て
 
 	return pMapModel;
