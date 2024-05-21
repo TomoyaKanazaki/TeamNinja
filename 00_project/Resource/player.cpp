@@ -1083,6 +1083,16 @@ void CPlayer::ControlClone()
 			CPlayerClone::Create();
 		}
 	}
+
+	// •ªg‚Ìíœ
+	if (pPad->IsTrigger(CInputPad::KEY_RB))
+	{
+		// ƒŠƒXƒg‚ª‘¶İ‚µ‚È‚¢ê‡‚Éíœ‚µ‚È‚¢
+		if (CPlayerClone::GetList() != nullptr)
+		{
+			CPlayerClone::Delete();
+		}
+	}
 }
 
 //==========================================

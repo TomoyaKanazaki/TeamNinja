@@ -429,10 +429,13 @@ void CPlayerClone::Delete(void)
 	for (int i = 0; i < nNum; ++i)
 	{
 		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(0);
+		CPlayerClone* pAvatar = *m_pList->GetIndex(m_pList->GetNumAll() - 1);
 
-		// 分身の終了
-		pAvatar->Uninit();
+		// 追従状態の分身のみ削除される
+		if (pAvatar->GetAction() == ACTION_NONE)
+		{
+			pAvatar->Uninit();
+		}
 	}
 }
 
@@ -589,7 +592,14 @@ void CPlayerClone::ChasePrev()
 		// 現在のポインタと自身を比較する
 		if (*itr == this)
 		{
-			// ついていく
+			// 一つ前が追従型じゃない場合プレイヤーについていく
+			if (prev->GetAction() != ACTION_NONE)
+			{
+				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+				return;
+			}
+
+			// 一つ前についていく
 			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
 
 			return;
