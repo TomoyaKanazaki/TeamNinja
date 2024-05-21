@@ -102,14 +102,14 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nMaxTension		(0),			// 最大士気力
 	m_nInitTension		(0),			// 初期士気力
 	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
-	m_bCreateClone		(false),		// 分身生成モードフラグ
-	m_nNumClone			(0),			// 生成する分身の数
 	m_nMaxClone			(0),			// 一度に分身できる上限
 	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fHeght			(0.0f),			// 立幅
 	m_fInertial			(0.0f),			// 慣性力
-	m_pCloneAngleUI		(nullptr)		// 分身出す方向のUI
+	m_pCloneAngleUI		(nullptr),		// 分身出す方向のUI
+	m_fMove				(0.0f),			// 移動量
+	m_fChargeTime		(0.0f)			// ため時間
 {
 
 }
@@ -137,10 +137,9 @@ HRESULT CPlayer::Init(void)
 	m_bJump				= true;			// ジャンプ状況
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
-	m_bCreateClone		= false;		// 分身生成モードフラグ
-	m_nNumClone			= 0;			// 生成する分身の数
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
+	m_fMove				= 0.0f;			// 移動量
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -327,7 +326,6 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// デバッグ表示
 	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-	DebugProc::Print(DebugProc::POINT_RIGHT, "生成する分身 : %d", m_nNumClone);
 
 #ifdef _DEBUG
 
@@ -600,6 +598,14 @@ void CPlayer::RecoverJust()
 
 	// 固定値で士気力を回復する
 	m_pTensionGauge->AddNum(m_nRecover);
+}
+
+//==========================================
+//  カーソル位置の取得
+//==========================================
+D3DXVECTOR3 CPlayer::GetTargetPos() const
+{
+	return m_pCloneAngleUI->GetVec3Position();
 }
 
 //============================================================
@@ -964,6 +970,9 @@ void CPlayer::Move()
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+
+	// 移動量をスカラー値に変換する
+	m_fMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 }
 
 //==========================================
@@ -1037,6 +1046,11 @@ void CPlayer::LoadParameter()
 			// データを格納
 			fscanf(pFile, "%f", &m_fInertial);
 		}
+		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fChargeTime);
+		}
 		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
 		{
 			break;
@@ -1052,25 +1066,58 @@ void CPlayer::ControlClone()
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// 右スティックの入力
-	if (pPad->GetReleaseRStick())
+	// 分身の削除
+	if (pPad->IsTrigger(CInputPad::KEY_RB))
 	{
-		// 移動量ベクトルのスカラー値を算出
-		float moveScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+		// リストが存在しない場合に削除しない
+		if (CPlayerClone::GetList() != nullptr)
+		{
+			CPlayerClone::Delete();
+		}
+	}
 
-		// スティックの角度を取得
-		float fRot = pPad->GetPressRStickRot();
+	// 分身の数が上限だった場合関数を抜ける
+	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
 
-		// スカラー値にスティックの角度を適用する
-		D3DXVECTOR3 move = D3DXVECTOR3
-		(
-			moveScalar * cosf(fRot),
-			0.0f,
-			moveScalar * sinf(fRot)
-		);
+	// 右スティックの入力
+	if (pPad->GetTriggerRStick())
+	{
+		// 分身が存在していない場合方向を決めて分身する
+		if (CPlayerClone::GetList() == nullptr)
+		{
+			CPlayerClone::Create(m_fChargeTime);
 
-		// 分身を出す
-		CPlayerClone::Create(move);
+			// 士気力が減少する
+			m_pTensionGauge->AddNum(-500);
+			return;
+		}
+
+		// 分身リストの先頭を取得する
+		std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();
+		auto itrBegin = list.begin();
+
+		// 分身リストの最後尾を取得する
+		auto itrEnd = list.end();
+
+		// 自身に一致するポインタの一つ前に追従する
+		for (auto itr = itrBegin; itr != itrEnd; itr++)
+		{
+			// ポインタを取得
+			CPlayerClone* cull = *itr;
+
+			// 歩行中の分身がいたら追従型の分身を出す
+			if (cull->GetAction() == CPlayerClone::ACTION_MOVE)
+			{
+				CPlayerClone::Create();
+				return;
+			}
+		}
+
+		// 以上の条件にそぐわない場合方向を決める分身を出す
+		CPlayerClone::Create(m_fChargeTime);
+
+		// 士気力が減少する
+		m_pTensionGauge->AddNum(-500);
 	}
 }
 

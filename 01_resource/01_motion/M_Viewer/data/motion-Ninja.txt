@@ -14,21 +14,21 @@ NUM_MODEL = 15
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/Ninja/00_waist.x		# [0]体
-MODEL_FILENAME = data/MODEL/Ninja/01_body.x		# [1]頭
-MODEL_FILENAME = data/MODEL/Ninja/02_head.x		# [2]右腕
-MODEL_FILENAME = data/MODEL/Ninja/03_00_LShoulder.x		# [3]右手
-MODEL_FILENAME = data/MODEL/Ninja/03_01_LArm.x		# [4]左腕
-MODEL_FILENAME = data/MODEL/Ninja/03_02_LHand.x		# [5]左手
-MODEL_FILENAME = data/MODEL/Ninja/04_00_RShoulder.x		# [6]右腿
-MODEL_FILENAME = data/MODEL/Ninja/04_01_RArm.x		# [7]右足
-MODEL_FILENAME = data/MODEL/Ninja/04_02_RHand.x		# [8]左腿
-MODEL_FILENAME = data/MODEL/Ninja/05_00_LThighs.x		# [9]左足
-MODEL_FILENAME = data/MODEL/Ninja/05_01_LShin.x		# [0]体
-MODEL_FILENAME = data/MODEL/Ninja/05_02_LFoot.x		# [0]体
-MODEL_FILENAME = data/MODEL/Ninja/06_00_RThighs.x		# [1]頭
-MODEL_FILENAME = data/MODEL/Ninja/06_01_RShin.x		# [2]右腕
-MODEL_FILENAME = data/MODEL/Ninja/06_02_RFoot.x		# [2]右腕
+MODEL_FILENAME = data/MODEL/Ninja/00_waist.x		# [0]腰
+MODEL_FILENAME = data/MODEL/Ninja/01_body.x			# [1]体
+MODEL_FILENAME = data/MODEL/Ninja/02_head.x			# [2]頭
+MODEL_FILENAME = data/MODEL/Ninja/03_LShoulder.x	# [3]左肩
+MODEL_FILENAME = data/MODEL/Ninja/04_RShoulder.x	# [4]右肩
+MODEL_FILENAME = data/MODEL/Ninja/05_LArm.x			# [5]左腕
+MODEL_FILENAME = data/MODEL/Ninja/06_RArm.x			# [6]右腕
+MODEL_FILENAME = data/MODEL/Ninja/07_LHand.x		# [7]左手
+MODEL_FILENAME = data/MODEL/Ninja/08_RHand.x		# [8]右手
+MODEL_FILENAME = data/MODEL/Ninja/09_LThighs.x		# [9]左太もも
+MODEL_FILENAME = data/MODEL/Ninja/10_RThighs.x		# [10]右太もも
+MODEL_FILENAME = data/MODEL/Ninja/11_LShin.x		# [11]左すね
+MODEL_FILENAME = data/MODEL/Ninja/12_RShin.x		# [12]右すね
+MODEL_FILENAME = data/MODEL/Ninja/13_LFoot.x		# [13]左手
+MODEL_FILENAME = data/MODEL/Ninja/14_RFoot.x		# [14]右手
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -40,115 +40,107 @@ CHARACTERSET
 	NUM_PARTS = 15					# パーツ数
 
 	PARTSSET
-		INDEX = 0					# 体
+		INDEX = 0					# 腰
 		PARENT = -1					# (親)NULL
-		POS = 0.0 23.0 0.0
+		POS = 0.0 37.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
-		INDEX = 1					# 胴
-		PARENT = 0					# (親)体
-		POS = -2.0 10.0 3.0
+		INDEX = 1					# 体
+		PARENT = 0					# (親)腰
+		POS = 0.0 0.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 2					# 頭
 		PARENT = 1					# (親)体
-		POS = 0.0 25.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-//<==========================================
-//左腕
-//<==========================================
-	PARTSSET
-		INDEX = 3					# 右手
-		PARENT = 1					# (親)右腕
-		POS = -14.0 8.0 -2.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 4					# 左腕
-		PARENT = 3					# (親)体
-		POS = 0.0 -10.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 5					# 左手
-		PARENT = 4					# (親)左腕
-		POS = -2.5 -10.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-//<==========================================
-//右腕
-//<==========================================
-	PARTSSET
-		INDEX = 6					# 右腿
-		PARENT = 1					# (親)腕
-		POS = 14.0 8.0 -2.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 7					# 右足
-		PARENT = 6					# (親)右腿
-		POS = 2.0 -10.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-
-	PARTSSET
-		INDEX = 8					# 左腿
-		PARENT = 7					# (親)体
-		POS = 2.5 -10.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-//<==========================================
-//左足
-//<==========================================
-	PARTSSET
-		INDEX = 9					# 左足
-		PARENT = 0					# (親)左腿
-		POS = -7.0 -8.0 0.0
+		POS = 0.0 23.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
-		PARTSSET
-		INDEX = 10					# 左足
-		PARENT = 9					# (親)左腿
-		POS = 0.0 -10.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-	
-			PARTSSET
-		INDEX = 11					# 左足
-		PARENT = 10					# (親)左腿
-		POS = -2.0 -5.0 0.0
-		ROT = 0.0 0.0 0.0
-	END_PARTSSET
-//<==========================================
-//右足
-//<==========================================
 	PARTSSET
-		INDEX = 12					# 左足
-		PARENT = 0					# (親)左腿
-		POS = 7.0 -8.0 0.0
+		INDEX = 3					# 左肩
+		PARENT = 1					# (親)体
+		POS = -11.0 18.5 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4					# 右肩
+		PARENT = 1					# (親)体
+		POS = 11.0 18.5 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5					# 左腕
+		PARENT = 3					# (親)左肩
+		POS = -2.5 -5.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
-		PARTSSET
+	PARTSSET
+		INDEX = 6					# 右腕
+		PARENT = 4					# (親)右肩
+		POS = 2.5 -5.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7					# 左手
+		PARENT = 5					# (親)左腕
+		POS = -3.0 -11.0 -4.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8					# 右手
+		PARENT = 6					# (親)右腕
+		POS = 3.0 -11.0 -4.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 9					# 左太もも
+		PARENT = 0					# (親)腰
+		POS = -5.5 -4.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 10					# 右太もも
+		PARENT = 0					# (親)腰
+		POS = 5.5 -4.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 11					# 左すね
+		PARENT = 9					# (親)左太もも
+		POS = -3.0 -16.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 12					# 右すね
+		PARENT = 10					# (親)右太もも
+		POS = 3.0 -16.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+	
+	PARTSSET
 		INDEX = 13					# 左足
-		PARENT = 12					# (親)左腿
-		POS = 0.0 -10.0 0.0
+		PARENT = 11					# (親)左すね
+		POS = 0.0 -8.8 1.5
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
-			PARTSSET
-		INDEX = 14					# 左足
-		PARENT = 13					# (親)左腿
-		POS = 0.0 -5.0 0.0
+	PARTSSET
+		INDEX = 14					# 右足
+		PARENT = 12					# (親)右すね
+		POS = 0.0 -8.8 1.5
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	

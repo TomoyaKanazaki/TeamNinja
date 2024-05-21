@@ -105,10 +105,12 @@ public:
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const; // 士気力の値を取得
+	float GetMove()const { return m_fMove; } // 移動量の取得
 	void RecoverCheckPoint(); // チェックポイントでの回復処理
 	void RecoverJust(); // ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint) { m_pCheckPoint = checkpoint; }// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const { return m_posCenter; } // プレイヤーの中心座標を取得
+	D3DXVECTOR3 GetTargetPos() const; // 分身カーソルの位置を取得
 
 private:
 	// メンバ関数
@@ -147,14 +149,13 @@ private:
 	EState		m_state;			// 状態
 	int			m_nCounterState;	// 状態管理カウンター
 	bool		m_bJump;			// ジャンプ状況
+	float		m_fMove;			// 移動量
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
 	unsigned int m_nMaxTension; // 士気力の最大値
 	unsigned int m_nInitTension; // 士気力の初期値
 	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
-	bool m_bCreateClone; // 分身生成モードフラグ
-	unsigned int m_nNumClone; // 生成する分身の数
 	unsigned int m_nMaxClone; // 一度に分身できる上限
 	unsigned int m_nRecover; // ジャストアクションでの回復量
 	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
@@ -162,6 +163,8 @@ private:
 	D3DXVECTOR3 m_posCenter; // 中心座標
 	float m_fInertial; // 慣性力
 	CCloneAngleUI* m_pCloneAngleUI;	// 分身出す方向のUI
+	float m_fChargeTime; // ため時間
+
 };
 
 #endif	// _PLAYER_H_
