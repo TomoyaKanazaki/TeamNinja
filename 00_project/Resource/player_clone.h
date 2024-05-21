@@ -83,6 +83,7 @@ public:
 
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
+	EAction GetAction() const { return m_Action; } // 行動を取得
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
