@@ -1066,7 +1066,7 @@ void CPlayer::ControlClone()
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// 分身の削除
+	// 追従分身の削除
 	if (pPad->IsTrigger(CInputPad::KEY_RB))
 	{
 		// リストが存在しない場合に削除しない
@@ -1075,6 +1075,18 @@ void CPlayer::ControlClone()
 			CPlayerClone::Delete();
 		}
 	}
+
+#ifdef _DEBUG
+	// 移動分身の削除
+	if (pPad->IsTrigger(CInputPad::KEY_LB))
+	{
+		// リストが存在しない場合に削除しない
+		if (CPlayerClone::GetList() != nullptr)
+		{
+			CPlayerClone::Delete(CPlayerClone::ACTION_MOVE);
+		}
+	}
+#endif
 
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
