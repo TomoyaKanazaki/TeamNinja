@@ -417,7 +417,7 @@ void CPlayerClone::Delete(const int nNum)
 //============================================================
 //  全消去処理 (金崎追加)
 //============================================================
-void CPlayerClone::Delete(void)
+void CPlayerClone::Delete(const EAction act)
 {
 	// リスト情報がない場合停止する
 	if (m_pList == nullptr) { assert(false); return; }
@@ -425,18 +425,37 @@ void CPlayerClone::Delete(void)
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
 
-	// 全ての分身を削除する
+	// 削除する分身の番号を保存する変数
+	bool* bDelete = new bool[nNum];
+
+	// 削除フラグを立てる
 	for (int i = 0; i < nNum; ++i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(m_pList->GetNumAll() - 1);
+		// 削除フラグをオフ
+		bDelete[i] = false;
 
-		// 追従状態の分身のみ削除される
-		if (pAvatar->GetAction() == ACTION_NONE)
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 分身の削除フラグをオン
+		if (pAvatar->GetAction() == act)
 		{
-			pAvatar->Uninit();
+			bDelete[i] = true;
 		}
 	}
+
+	// フラグの立っている分身を削除する
+	for (int i = nNum - 1; i >= 0; --i)
+	{
+		// 分身を取得
+		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+
+		// 削除
+		if (bDelete[i]) { pAvatar->Uninit(); }
+	}
+
+	// 削除フラグを削除
+	delete[] bDelete;
 }
 
 //============================================================
@@ -567,46 +586,45 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayerClone::ChasePrev()
 {
-	// リストの先頭を取得する
+	// リストを取得する
 	std::list<CPlayerClone*> list = m_pList->GetList();
 	auto itrBegin = list.begin();
-
-	// 先頭と自身を比較する
-	if (*itrBegin == this)
-	{
-		// ついていく
-		Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-
-		return;
-	}
-
-	// リストの最後尾を取得する
 	auto itrEnd = list.end();
 
-	// 次のポインタを取得する変数
+	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
 
-	// 自身に一致するポインタの一つ前に追従する
-	for (auto itr = itrBegin; itr != itrEnd; itr++)
+	// 自身のポインタを走査する
+	for (auto itr = itrBegin; itr != itrEnd; ++itr)
 	{
-		// 現在のポインタと自身を比較する
-		if (*itr == this)
+		// 自身ではない場合一つ前を保存して次に進む
+		if (*itr != this) { prev = *itr; continue; }
+
+		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
+		if (this == *itrBegin) { Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); return; }
+
+		// 自身の追従する相手を選択する
+		while (1)
 		{
-			// 一つ前が追従型じゃない場合プレイヤーについていく
+			// 一つ前のポインタを保存する
+			--itr;
+			prev = *itr;
+
+			// 前が追従していない場合
 			if (prev->GetAction() != ACTION_NONE)
 			{
+				// 一つ前が先頭でない場合次に進む
+				if (prev != *itrBegin) { continue; }
+
+				// プレイヤーに追従し関数を抜ける
 				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 				return;
 			}
 
-			// 一つ前についていく
+			// 一つ前に追従し関数を抜ける
 			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
-
 			return;
 		}
-
-		// 現在のポインタを保存する
-		prev = *itr;
 	}
 }
 
