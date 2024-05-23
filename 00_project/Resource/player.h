@@ -156,7 +156,7 @@ private:
 	unsigned int m_nMaxTension; // 士気力の最大値
 	unsigned int m_nInitTension; // 士気力の初期値
 	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
-	unsigned int m_nMaxClone; // 一度に分身できる上限
+	int m_nMaxClone; // 一度に分身できる上限
 	unsigned int m_nRecover; // ジャストアクションでの回復量
 	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
 	float m_fHeght; // 縦幅
