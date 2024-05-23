@@ -34,9 +34,9 @@ public:
 	virtual ~CEditorObject();
 
 	// ƒˆ‰¼‘zŠÖ”
-	virtual void SaveInfo(void)		= 0;	// î•ñ•Û‘¶
-	virtual void LoadInfo(void)		= 0;	// î•ñ“Ç
-	virtual void Save(FILE *pFile)	= 0;	// •Û‘¶
+	virtual void SaveInfo(void)	= 0;	// î•ñ•Û‘¶
+	virtual void LoadInfo(void)	= 0;	// î•ñ“Ç
+	virtual void Save(void)		= 0;	// •Û‘¶
 
 	// ‰¼‘zŠÖ”
 	virtual HRESULT Init(void);	// ‰Šú‰»

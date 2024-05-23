@@ -43,9 +43,9 @@ public:
 	void Uninit(void);	// 終了
 	void Update(void);	// 更新
 	void UnSave(void);	// 未保存設定
-	void SwitchEnableEdit(void);			// エディット状況切替
-	void SetEnableEdit(const bool bEdit);	// エディット状況設定
-	bool IsEdit(void) const;				// エディット状況取得
+	void SwitchEnableEdit(void);				// エディット状況切替
+	void SetEnableEdit(const bool bEdit);		// エディット状況設定
+	bool IsEdit(void) const { return m_bEdit; }	// エディット状況取得
 
 	// 静的メンバ関数
 	static CEditManager *Create(void);	// 生成
@@ -56,7 +56,6 @@ private:
 	void ChangeEditorType(void);	// エディタータイプ変更
 	void DrawDebugControl(void);	// 操作表示描画
 	void DrawDebugInfo(void);		// 情報表示描画
-	void SaveStage(void);			// ステージ保存
 	void Save(void);				// 保存
 
 	// メンバ変数

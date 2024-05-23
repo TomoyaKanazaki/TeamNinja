@@ -415,9 +415,9 @@ void CCamera::SetDestFollow(void)
 void CCamera::SetDestTps(void)
 {
 	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
-	if (pList == nullptr) { return; }	// リスト未使用
-	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
-	if (m_state != STATE_TPS) { return; }	// カメラ追従状態以外
+	if (pList == nullptr)			{ return; }	// リスト未使用
+	if (pList->GetNumAll() != 1)	{ return; }	// プレイヤーが1人じゃない
+	if (m_state != STATE_TPS)		{ return; }	// カメラ追従状態以外
 
 	auto player = pList->GetList().front();	// プレイヤー情報
 	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置

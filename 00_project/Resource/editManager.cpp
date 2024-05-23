@@ -120,8 +120,8 @@ void CEditManager::Update(void)
 	assert(m_pEditor != nullptr);
 	m_pEditor->Update();
 
-	// ステージ保存
-	SaveStage();
+	// 保存操作
+	Save();
 
 	// 操作表示の描画
 	DrawDebugControl();
@@ -181,15 +181,6 @@ void CEditManager::SetEnableEdit(const bool bEdit)
 		// エディットステージの破棄
 		SAFE_REF_RELEASE(m_pEditor);
 	}
-}
-
-//============================================================
-//	エディット状況取得処理
-//============================================================
-bool CEditManager::IsEdit(void) const
-{
-	// エディット状況を返す
-	return m_bEdit;
 }
 
 //============================================================
@@ -304,9 +295,9 @@ void CEditManager::DrawDebugInfo(void)
 }
 
 //============================================================
-//	ステージ保存処理
+//	保存処理
 //============================================================
-void CEditManager::SaveStage(void)
+void CEditManager::Save(void)
 {
 	// ステージを保存
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
@@ -314,92 +305,12 @@ void CEditManager::SaveStage(void)
 	{
 		if (pKeyboard->IsTrigger(KEY_SAVE))
 		{
-			// 保存処理
-			Save();
+			// 現在のエディタータイプ情報を保存
+			assert(m_pEditor != nullptr);
+			m_pEditor->Save();
 
 			// 保存した状態にする
 			m_bSave = true;
 		}
-	}
-}
-
-//============================================================
-//	保存処理
-//============================================================
-void CEditManager::Save(void)
-{
-	// ポインタを宣言
-	FILE *pFile = nullptr;	// ファイルポインタ
-
-	// ファイルを書き出し形式で開く
-	pFile = fopen(SAVE_TXT, "w");
-
-	if (pFile != nullptr)
-	{ // ファイルが開けた場合
-
-		// 見出しを書き出し
-		fprintf(pFile, "#==============================================================================\n");
-		fprintf(pFile, "#\n");
-		fprintf(pFile, "#	ステージセーブテキスト [save_stage.txt]\n");
-		fprintf(pFile, "#	Author : you\n");
-		fprintf(pFile, "#\n");
-		fprintf(pFile, "#==============================================================================\n");
-		fprintf(pFile, "---------->--<---------- ここから下を コピーし貼り付け ---------->--<----------\n\n");
-
-#if 0
-		// 情報保存
-		m_pStage->SaveInfo();
-
-		for (int nCntThing = 0; nCntThing < CEditStage::THING_MAX; nCntThing++)
-		{ // 配置物の総数分繰り返す
-
-			// エディットステージの破棄
-			if (m_pStage != nullptr)
-			{ // エディットステージが使用されている場合
-
-				HRESULT hr = CEditStage::Release(m_pStage);
-				assert(hr != E_FAIL);	// 破棄失敗
-			}
-
-			// エディットステージの生成
-			if (m_pStage == nullptr)
-			{ // エディットステージが使用されていない場合
-
-				m_pStage = CEditStage::Create(this, (CEditStage::EThing)nCntThing);
-				assert(m_pStage != nullptr);	// 生成失敗
-			}
-
-			// 配置物の保存
-			m_pStage->Save(pFile);
-		}
-
-		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
-
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
-		}
-
-		// エディットステージの生成
-		if (m_pStage == nullptr)
-		{ // エディットステージが使用されていない場合
-
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
-		}
-
-		// 情報読込
-		m_pStage->LoadInfo();
-#endif
-
-		// ファイルを閉じる
-		fclose(pFile);
-	}
-	else
-	{ // ファイルが開けなかった場合
-
-		// エラーメッセージボックス
-		MessageBox(nullptr, "ステ－ジセーブファイルの書き出しに失敗！", "警告！", MB_ICONWARNING);
 	}
 }

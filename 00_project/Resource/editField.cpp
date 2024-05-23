@@ -179,6 +179,32 @@ void CEditField::Update(void)
 }
 
 //============================================================
+//	保存処理
+//============================================================
+void CEditField::Save(void)
+{
+
+}
+
+//============================================================
+//	情報保存処理
+//============================================================
+void CEditField::SaveInfo(void)
+{
+	// 現在の情報を保存
+	//m_save = m_infoCreate;
+}
+
+//============================================================
+//	情報読込処理
+//============================================================
+void CEditField::LoadInfo(void)
+{
+	// 保存情報を設定
+	//m_infoCreate = m_save;
+}
+
+//============================================================
 //	操作表示の描画処理
 //============================================================
 void CEditField::DrawDebugControl(void)
@@ -204,117 +230,6 @@ void CEditField::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.texPart.x, m_infoCreate.texPart.y);
-}
-
-//============================================================
-//	情報保存処理
-//============================================================
-void CEditField::SaveInfo(void)
-{
-	// 現在の情報を保存
-	//m_save = m_infoCreate;
-}
-
-//============================================================
-//	情報読込処理
-//============================================================
-void CEditField::LoadInfo(void)
-{
-	// 保存情報を設定
-	//m_infoCreate = m_save;
-}
-
-//============================================================
-//	保存処理
-//============================================================
-void CEditField::Save(FILE *pFile)
-{
-#if _DEBUG
-
-#if 0
-
-	if (pFile != nullptr)
-	{ // ファイルが存在する場合
-
-		// 見出しを書き出し
-		fprintf(pFile, "#------------------------------------------------------------------------------\n");
-		fprintf(pFile, "#	フィールドの配置情報\n");
-		fprintf(pFile, "#------------------------------------------------------------------------------\n");
-
-		// 情報開始地点を書き出し
-		fprintf(pFile, "STAGE_BLOCKSET\n\n");
-
-		for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
-
-			// ポインタを宣言
-			CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
-
-			if (pObjectTop != nullptr)
-			{ // 先頭が存在する場合
-
-				// ポインタを宣言
-				CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
-
-				while (pObjCheck != nullptr)
-				{ // オブジェクトが使用されている場合繰り返す
-
-					// ポインタを宣言
-					CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
-
-					if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-					{ // オブジェクトラベルがフィールドではない場合
-
-						// 次のオブジェクトへのポインタを代入
-						pObjCheck = pObjectNext;
-
-						// 次の繰り返しに移行
-						continue;
-					}
-
-					if (pObjCheck == (CObject*)m_pField)
-					{ // 同じアドレスだった場合
-
-						// 次のオブジェクトへのポインタを代入
-						pObjCheck = pObjectNext;
-
-						// 次の繰り返しに移行
-						continue;
-					}
-
-					// フィールドの情報を取得
-					D3DXVECTOR3 posField = pObjCheck->GetVec3Position();		// 位置
-					D3DXVECTOR3 rotField = pObjCheck->GetVec3Rotation();		// 向き
-					D3DXVECTOR3 sizeField = pObjCheck->GetVec3Sizing();		// 大きさ
-					D3DXVECTOR2 partTexXField = pObjCheck->GetTexturePatternX();	// テクスチャ分割X
-					D3DXVECTOR2 partTexYField = pObjCheck->GetTexturePatternY();	// テクスチャ分割Y
-					D3DXVECTOR2 partTexZField = pObjCheck->GetTexturePatternZ();	// テクスチャ分割Z
-					int nType = pObjCheck->GetType();	// 種類
-
-					// 情報を書き出し
-					fprintf(pFile, "	BLOCKSET\n");
-					fprintf(pFile, "		TYPE = %d\n", nType);
-					fprintf(pFile, "		POS = %.2f %.2f %.2f\n", posField.x, posField.y, posField.z);
-					fprintf(pFile, "		ROT = %.2f %.2f %.2f\n", rotField.x, rotField.y, rotField.z);
-					fprintf(pFile, "		SIZE = %.2f %.2f %.2f\n", sizeField.x, sizeField.y, sizeField.z);
-					fprintf(pFile, "		PARTX = %.2f %.2f \n", partTexXField.x, partTexXField.y);
-					fprintf(pFile, "		PARTY = %.2f %.2f \n", partTexYField.x, partTexYField.y);
-					fprintf(pFile, "		PARTZ = %.2f %.2f \n", partTexZField.x, partTexZField.y);
-					fprintf(pFile, "	END_BLOCKSET\n\n");
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-				}
-			}
-		}
-
-		// 情報終了地点を書き出し
-		fprintf(pFile, "END_STAGE_BLOCKSET\n\n");
-	}
-
-#endif
-
-#endif	// _DEBUG
 }
 
 //============================================================
