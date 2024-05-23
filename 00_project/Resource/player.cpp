@@ -49,8 +49,8 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP		= 21.0f;		// ジャンプ上昇量
-	const float	GRAVITY		= 1.0f;			// 重力
+	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
+	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
@@ -484,7 +484,7 @@ bool CPlayer::Hit(const int nDamage)
 void CPlayer::SetSpawn(void)
 {
 	// 変数を宣言
-	D3DXVECTOR3 set = VEC3_ZERO;	// 引数設定用
+	D3DXVECTOR3 set = D3DXVECTOR3(0.0f, 500.0f, 0.0f);	// 引数設定用
 
 	// 情報を初期化
 	SetState(STATE_SPAWN);	// スポーン状態の設定
@@ -940,7 +940,7 @@ void CPlayer::Move()
 	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
-	if (fSpeed == 0.0f) { m_move = VEC3_ZERO; return; }
+	if (!pPad->GetLStick()) { return; }
 
 	if (fSpeed >= STEALTH_BORDER)
 	{ // 通常速度の場合
@@ -970,6 +970,14 @@ void CPlayer::Move()
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+
+	// ジャンプ
+#ifdef _DEBUG
+	if (pPad->IsTrigger(CInputPad::KEY_X))
+	{
+		m_move.y = JUMP;
+	}
+#endif
 
 	// 移動量をスカラー値に変換する
 	m_fMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
@@ -1066,7 +1074,7 @@ void CPlayer::ControlClone()
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// 分身の削除
+	// 追従分身の削除
 	if (pPad->IsTrigger(CInputPad::KEY_RB))
 	{
 		// リストが存在しない場合に削除しない
@@ -1075,6 +1083,18 @@ void CPlayer::ControlClone()
 			CPlayerClone::Delete();
 		}
 	}
+
+#ifdef _DEBUG
+	// 移動分身の削除
+	if (pPad->IsTrigger(CInputPad::KEY_LB))
+	{
+		// リストが存在しない場合に削除しない
+		if (CPlayerClone::GetList() != nullptr)
+		{
+			CPlayerClone::Delete(CPlayerClone::ACTION_MOVE);
+		}
+	}
+#endif
 
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
@@ -1086,9 +1106,6 @@ void CPlayer::ControlClone()
 		if (CPlayerClone::GetList() == nullptr)
 		{
 			CPlayerClone::Create(m_fChargeTime);
-
-			// 士気力が減少する
-			m_pTensionGauge->AddNum(-500);
 			return;
 		}
 
