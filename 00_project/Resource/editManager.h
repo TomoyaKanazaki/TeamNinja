@@ -11,9 +11,10 @@
 #define _EDIT_MANAGER_H_
 
 //************************************************************
-//	前方宣言
+//	インクルードファイル
 //************************************************************
-class CEditor;	// エディタークラス
+#include "editor.h"
+#include "editStage.h"
 
 //************************************************************
 //	マクロ定義
@@ -47,13 +48,17 @@ public:
 	void SetEnableEdit(const bool bEdit);	// エディット状況設定
 	bool IsEdit(void) const;				// エディット状況取得
 
+	void ChangeEditorType(void);	// エディットタイプ変更
+	void ChangeStageType(void);		// エディットステージタイプ変更
+	CEditor::EType GetTypeEditor(void)		{ return m_typeEditor; }	// エディットタイプ
+	CEditStage::EType GetTypeStage(void)	{ return m_typeStage; }		// エディットステージタイプ
+
 	// 静的メンバ関数
 	static CEditManager *Create(void);	// 生成
 	static void Release(CEditManager *&prEditManager);	// 破棄
 
 private:
 	// メンバ関数
-	void ChangeType(void);			// エディター変更
 	void DrawDebugControl(void);	// 操作表示描画
 	void DrawDebugInfo(void);		// 情報表示描画
 	void SaveStage(void);			// ステージ保存
@@ -63,7 +68,6 @@ private:
 	CEditor *m_pEditor;	// エディター情報
 	bool m_bSave;		// 保存状況
 	bool m_bEdit;		// エディット状況
-
 	CEditor::EType m_typeEditor;	// エディットタイプ
 	CEditStage::EType m_typeStage;	// エディットステージタイプ
 };

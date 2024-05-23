@@ -9,7 +9,30 @@
 //************************************************************
 #include "editor.h"
 #include "manager.h"
+#include "editManager.h"
 #include "editStage.h"
+
+//************************************************************
+//	マクロ定義
+//************************************************************
+#define NAME_CHANGE_EDITOR	("1")	// エディットタイプ変更表示
+
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const char *TYPE_NAME[] =	// エディットタイプ名
+	{
+		"ステージ",
+		"当たり判定",
+	};
+}
+
+//************************************************************
+//	スタティックアサート
+//************************************************************
+static_assert(NUM_ARRAY(TYPE_NAME) == CEditor::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	親クラス [CEditor] のメンバ関数
@@ -62,9 +85,25 @@ void CEditor::Update(void)
 }
 
 //============================================================
+//	操作表示の描画処理
+//============================================================
+void CEditor::DrawDebugControl(void)
+{
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_EDITOR);
+}
+
+//============================================================
+//	情報表示の描画処理
+//============================================================
+void CEditor::DrawDebugInfo(void)
+{
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_pEditManager->GetTypeEditor()]);
+}
+
+//============================================================
 //	生成処理
 //============================================================
-CEditor *CEditor::Create(CEditManager *pEditManager, CEditManager::EType type)
+CEditor *CEditor::Create(CEditManager *pEditManager, EType type)
 {
 #if _DEBUG
 
@@ -74,11 +113,11 @@ CEditor *CEditor::Create(CEditManager *pEditManager, CEditManager::EType type)
 	// エディターの生成
 	switch (type)
 	{ // 種類ごとの処理
-	case CEditManager::TYPE_STAGE:
+	case TYPE_STAGE:
 		pEditor = CEditStage::Create(pEditManager, CEditStage::TYPE_FIELD);	// エディットステージ
 		break;
 
-	case CEditManager::TYPE_COLLISION:
+	case TYPE_COLLISION:
 
 		// TODO：エディット当たり判定できたら置き換え
 		//pEditor = CEditCollision;	// エディット当たり判定

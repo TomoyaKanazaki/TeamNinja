@@ -9,15 +9,14 @@
 //************************************************************
 #include "editManager.h"
 #include "manager.h"
-#include "editStage.h"
 
 //************************************************************
 //	マクロ定義
 //************************************************************
 #define KEY_SAVE			(DIK_F9)	// 保存キー
 #define NAME_SAVE			("F9")		// 保存表示
-#define KEY_CHANGE_TYPE		(DIK_1)		// エディットタイプ変更キー
-#define NAME_CHANGE_TYPE	("1")		// エディットタイプ変更表示
+#define KEY_CHANGE_EDITOR	(DIK_1)		// エディットタイプ変更キー
+#define KEY_CHANGE_STAGE	(DIK_2)		// エディットステージタイプ変更キー
 
 //************************************************************
 //	定数宣言
@@ -25,19 +24,7 @@
 namespace
 {
 	const char* SAVE_TXT = "data\\TXT\\save_stage.txt";	// ステージセーブテキスト
-
-	// 種類名
-	const char *TYPE_NAME[] =
-	{
-		"ステージ",
-		"当たり判定",
-	};
 }
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(TYPE_NAME) == CEditManager::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	親クラス [CEditManager] のメンバ関数
@@ -130,15 +117,18 @@ void CEditManager::Update(void)
 	// エディットモードじゃない場合抜ける
 	if (!m_bEdit) { return; }
 
-	// エディットタイプの変更
-	ChangeType();
+	// エディットタイプ変更
+	ChangeEditorType();
 
-	// ステージ保存
-	SaveStage();
+	// エディットステージタイプ変更
+	ChangeStageType();
 
 	// エディター情報の更新
 	assert(m_pEditor != nullptr);
 	m_pEditor->Update();
+
+	// ステージ保存
+	SaveStage();
 
 	// 操作表示の描画
 	DrawDebugControl();
@@ -297,53 +287,50 @@ void CEditManager::Release(CEditManager *&prEditManager)
 }
 
 //============================================================
-//	エディターの変更処理
+//	エディットタイプの変更処理
 //============================================================
-void CEditManager::ChangeType(void)
+void CEditManager::ChangeEditorType(void)
 {
 	// エディターのタイプ変更
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (pKeyboard->IsTrigger(KEY_CHANGE_TYPE))
+	if (pKeyboard->IsTrigger(KEY_CHANGE_EDITOR))
 	{
-#if 0
-		// 情報保存
-		m_pStage->SaveInfo();
-
-		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
-
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
-		}
-
-		// エディットタイプの変更
-		m_type = (EType)((m_type + 1) % TYPE_MAX);
-
-		// エディットステージの生成
-		if (m_pStage == nullptr)
-		{ // エディットステージが使用されていない場合
-
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
-		}
-
-		// 情報読込
-		m_pStage->LoadInfo();
-#else
 		// エディター情報の破棄
 		SAFE_REF_RELEASE(m_pEditor);
 
 		// エディットタイプの変更
-		m_type = (EType)((m_type + 1) % TYPE_MAX);
+		m_typeEditor = (CEditor::EType)((m_typeEditor + 1) % CEditor::TYPE_MAX);
 
 		if (m_pEditor == nullptr)
 		{
 			// エディター情報の生成
-			m_pEditor = CEditor::Create(this, m_type);
+			m_pEditor = CEditor::Create(this, m_typeEditor);
 			assert(m_pEditor != nullptr);	// 生成失敗
 		}
-#endif
+	}
+}
+
+//============================================================
+//	エディットステージタイプの変更処理
+//============================================================
+void CEditManager::ChangeStageType(void)
+{
+	// エディターのタイプ変更
+	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
+	if (pKeyboard->IsTrigger(KEY_CHANGE_STAGE))
+	{
+		// エディター情報の破棄
+		SAFE_REF_RELEASE(m_pEditor);
+
+		// エディットタイプの変更
+		m_typeStage = (CEditStage::EType)((m_typeStage + 1) % CEditStage::TYPE_MAX);
+
+		if (m_pEditor == nullptr)
+		{
+			// エディター情報の生成
+			m_pEditor = CEditStage::Create(this, m_typeStage);
+			assert(m_pEditor != nullptr);	// 生成失敗
+		}
 	}
 }
 
@@ -356,8 +343,6 @@ void CEditManager::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット操作]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "ステージ保存：[%s+%s]\n", NAME_DOUBLE, NAME_SAVE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_TYPE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
 
 	// エディター情報の操作表示
 	assert(m_pEditor != nullptr);
@@ -373,8 +358,6 @@ void CEditManager::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット情報]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, (m_bSave) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_type]);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
 
 	// エディター情報の情報表示
 	assert(m_pEditor != nullptr);

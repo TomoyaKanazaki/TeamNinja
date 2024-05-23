@@ -15,6 +15,8 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
+#define NAME_CHANGE_STAGE	("2")	// エディットステージタイプ変更表示
+
 #define KEY_FAR		(DIK_W)	// 奥移動キー
 #define NAME_FAR	("W")	// 奥移動表示
 #define KEY_NEAR	(DIK_S)	// 手前移動キー
@@ -33,7 +35,11 @@
 //************************************************************
 namespace
 {
-
+	const char *TYPE_NAME[] =	// エディットステージタイプ名
+	{
+		"地面",
+		"壁",
+	};
 }
 
 //************************************************************
@@ -69,6 +75,15 @@ HRESULT CEditStage::Init(void)
 	// メンバ変数を初期化
 	m_pos = VEC3_ZERO;	// 位置
 
+	// 親クラスの初期化
+	if (FAILED(CEditor::Init()))
+	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// 成功を返す
 	return S_OK;
 }
@@ -78,7 +93,8 @@ HRESULT CEditStage::Init(void)
 //============================================================
 void CEditStage::Uninit(void)
 {
-
+	// 親クラスの終了
+	CEditor::Uninit();
 }
 
 //============================================================
@@ -86,6 +102,9 @@ void CEditStage::Uninit(void)
 //============================================================
 void CEditStage::Update(void)
 {
+	// 親クラスの更新
+	CEditor::Update();
+
 	// 位置の更新
 	UpdatePosition();
 }
@@ -95,6 +114,10 @@ void CEditStage::Update(void)
 //============================================================
 void CEditStage::DrawDebugControl(void)
 {
+	// 操作表示の描画
+	CEditor::DrawDebugControl();
+
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ変更：[%s]\n", NAME_CHANGE_STAGE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
 }
 
@@ -103,6 +126,10 @@ void CEditStage::DrawDebugControl(void)
 //============================================================
 void CEditStage::DrawDebugInfo(void)
 {
+	// 情報表示の描画
+	CEditor::DrawDebugInfo();
+
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットステージタイプ]\n", TYPE_NAME[GetPtrEditManager()->GetTypeEditor()]);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[位置]\n", m_pos.x, m_pos.y, m_pos.z);
 }
 
