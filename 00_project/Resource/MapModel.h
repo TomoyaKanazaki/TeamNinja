@@ -54,7 +54,7 @@ public:
 	void Draw(CShader* pShader = nullptr) override;		//•`‰æ
 
 	//Ã“Iƒƒ“ƒoŠÖ”
-	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot,const D3DXVECTOR3& rSize,const int& nModelId); //¶¬ˆ—
+	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize=D3DXVECTOR3(1.0f,1.0f,1.0f)); //¶¬ˆ—
 
 private:
 

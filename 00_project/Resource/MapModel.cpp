@@ -57,7 +57,7 @@ CMapModel::~CMapModel()
 //<==============================================
 //¶¬ˆ—
 //<==============================================
-CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const D3DXVECTOR3& rSize, const int& nModelId)
+CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize)
 {
 	CMapModel* pMapModel = new CMapModel;
 
@@ -85,9 +85,6 @@ HRESULT CMapModel::Init()
 		assert(false);
 		return E_FAIL;
 	}
-
-	//Ž©g‚Ìƒ‰ƒxƒ‹‚ðÝ’è
-	SetLabel(LABEL_MAPMODEL);
 
 	return S_OK;
 }
