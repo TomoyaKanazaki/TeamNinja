@@ -196,40 +196,26 @@ CListManager<CGimmick>* CGimmick::GetList(void)
 	return m_pList;
 }
 
-////==========================================
-//// ギミックの当たり判定
-////==========================================
-//void CPlayer::CollisionGimmick(void)
-//{
-//	// ギミックがなかった場合抜ける
-//	if (CGimmick::GetList() == nullptr) { return; }
-//
-//	// リストを取得
-//	std::list<CGimmick*> list = CGimmick::GetList()->GetList();
-//	auto gimBegin = list.begin();
-//	auto gimEnd = list.end();
-//	D3DXVECTOR3 pos = GetVec3Position();
-//	D3DXVECTOR3 size = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);
-//	D3DXVECTOR3 posGim = VEC3_ZERO;
-//	D3DXVECTOR3 sizeGim = VEC3_ZERO;
-//
-//	for (auto gim : list)
-//	{
-//		posGim = gim->GetVec3Position();
-//		sizeGim = gim->GetVec3Sizing();
-//
-//		if (collision::Box2D
-//		(
-//			pos,		// 判定位置
-//			posGim,		// 判定目標位置
-//			size,		// 判定サイズ(右・上・後)
-//			-size,		// 判定サイズ(左・下・前)
-//			sizeGim,	// 判定目標サイズ(右・上・後)
-//			-sizeGim	// 判定目標サイズ(左・下・前)
-//		))
-//		{ // 四角の中に入った場合
-//
-//
-//		}
-//	}
-//}
+//============================================================
+// クローンのリストの全消去処理
+//============================================================
+void CGimmick::CloneListClear(void)
+{
+	// リストが NULL の場合抜ける
+	if (m_pClonelist == nullptr) { return; }
+
+	// 中身を全消去する
+	m_pClonelist->GetList().clear();
+}
+
+//============================================================
+// クローンのリストの登録処理
+//============================================================
+void CGimmick::CloneListRegist(CPlayerClone* clone)
+{
+	// リストが NULL の場合抜ける
+	if (m_pClonelist == nullptr) { return; }
+
+	// リストに追加する
+	m_pClonelist->AddList(clone);
+}

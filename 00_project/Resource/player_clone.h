@@ -103,6 +103,8 @@ private:
 	void Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
 	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
 
+	void CollisionGimmick(void);	// ギミックの当たり判定処理
+
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト
 
