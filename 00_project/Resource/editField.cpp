@@ -49,7 +49,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditField::CEditField(CEditManager *pEditManager) : CEditStage(pEditManager)
+CEditField::CEditField(CEditManager *pEditManager) : CEditorObject(pEditManager)
 {
 #if _DEBUG
 
@@ -85,7 +85,7 @@ HRESULT CEditField::Init(void)
 	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
 
 	// 親クラスの初期化
-	if (FAILED(CEditStage::Init()))
+	if (FAILED(CEditorObject::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -145,7 +145,7 @@ void CEditField::Uninit(void)
 #if _DEBUG
 
 	// 親クラスの終了
-	CEditStage::Uninit();
+	CEditorObject::Uninit();
 
 	// フィールドの色の全初期化
 	InitAllColorField();
@@ -176,7 +176,7 @@ void CEditField::Update(void)
 	if (!pEditManager->IsEdit()) { return; }
 
 	// 親クラスの更新
-	CEditStage::Update();
+	CEditorObject::Update();
 
 	// 大きさの更新
 	UpdateSizing();
@@ -205,7 +205,7 @@ void CEditField::Update(void)
 void CEditField::DrawDebugControl(void)
 {
 	// 操作表示の描画
-	CEditStage::DrawDebugControl();
+	CEditorObject::DrawDebugControl();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
@@ -219,7 +219,7 @@ void CEditField::DrawDebugControl(void)
 void CEditField::DrawDebugInfo(void)
 {
 	// 情報表示の描画
-	CEditStage::DrawDebugInfo();
+	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);

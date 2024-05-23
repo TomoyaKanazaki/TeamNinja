@@ -13,28 +13,6 @@
 #include "editStage.h"
 
 //************************************************************
-//	マクロ定義
-//************************************************************
-#define NAME_CHANGE_EDITOR	("1")	// エディットタイプ変更表示
-
-//************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const char *TYPE_NAME[] =	// エディットタイプ名
-	{
-		"ステージ",
-		"当たり判定",
-	};
-}
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(TYPE_NAME) == CEditor::TYPE_MAX, "ERROR : Type Count Mismatch");
-
-//************************************************************
 //	親クラス [CEditor] のメンバ関数
 //************************************************************
 //============================================================
@@ -89,7 +67,7 @@ void CEditor::Update(void)
 //============================================================
 void CEditor::DrawDebugControl(void)
 {
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_EDITOR);
+
 }
 
 //============================================================
@@ -97,7 +75,7 @@ void CEditor::DrawDebugControl(void)
 //============================================================
 void CEditor::DrawDebugInfo(void)
 {
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_pEditManager->GetTypeEditor()]);
+
 }
 
 //============================================================
@@ -114,14 +92,14 @@ CEditor *CEditor::Create(CEditManager *pEditManager, EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_STAGE:
-		pEditor = CEditStage::Create(pEditManager, CEditStage::TYPE_FIELD);	// エディットステージ
+		pEditor = new CEditStage(pEditManager);	// エディットステージ
 		break;
 
 	case TYPE_COLLISION:
 
 		// TODO：エディット当たり判定できたら置き換え
-		//pEditor = CEditCollision;	// エディット当たり判定
-		pEditor = CEditStage::Create(pEditManager, CEditStage::TYPE_FIELD);	// エディットステージ
+		//pEditor = new CEditCollision(pEditManager);	// エディット当たり判定
+		pEditor = new CEditStage(pEditManager);	// エディットステージ
 
 		break;
 

@@ -362,10 +362,14 @@
     </ClInclude>
     <ClInclude Include="Resource\editor.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>    <ClInclude Include="Resource\gimmick.h">
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick_jumptable.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editorObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -708,10 +712,14 @@
     </ClCompile>
     <ClCompile Include="Resource\editor.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>    <ClCompile Include="Resource\gimmick.cpp">
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_jumptable.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editorObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -176,6 +176,7 @@
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
+    <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
     <ClInclude Include="Resource\effect2D.h" />
     <ClInclude Include="Resource\effect3D.h" />
@@ -294,6 +295,7 @@
     <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editor.cpp" />
+    <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
     <ClCompile Include="Resource\effect3D.cpp" />

@@ -13,10 +13,10 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_SAVE			(DIK_F9)	// 保存キー
-#define NAME_SAVE			("F9")		// 保存表示
-#define KEY_CHANGE_EDITOR	(DIK_1)		// エディットタイプ変更キー
-#define KEY_CHANGE_STAGE	(DIK_2)		// エディットステージタイプ変更キー
+#define KEY_SAVE	(DIK_F9)	// 保存キー
+#define NAME_SAVE	("F9")		// 保存表示
+#define KEY_CHANGE_EDITOR	(DIK_1)	// エディットタイプ変更キー
+#define NAME_CHANGE_EDITOR	("1")	// エディットタイプ変更表示
 
 //************************************************************
 //	定数宣言
@@ -24,7 +24,18 @@
 namespace
 {
 	const char* SAVE_TXT = "data\\TXT\\save_stage.txt";	// ステージセーブテキスト
+
+	const char *TYPE_NAME[] =	// エディットタイプ名
+	{
+		"ステージ",
+		"当たり判定",
+	};
 }
+
+//************************************************************
+//	スタティックアサート
+//************************************************************
+static_assert(NUM_ARRAY(TYPE_NAME) == CEditor::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	親クラス [CEditManager] のメンバ関数
@@ -37,11 +48,10 @@ CEditManager::CEditManager()
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditor	= nullptr;		// エディター情報
-	m_bSave		= false;		// 保存状況
-	m_bEdit		= false;		// エディット状況
-	m_typeEditor	= CEditor::TYPE_STAGE;		// エディットタイプ
-	m_typeStage		= CEditStage::TYPE_FIELD;	// エディットステージタイプ
+	m_pEditor	 = nullptr;	// エディター情報
+	m_bSave		 = false;	// 保存状況
+	m_bEdit		 = false;	// エディット状況
+	m_typeEditor = CEditor::TYPE_STAGE;	// エディットタイプ
 
 #endif	// _DEBUG
 }
@@ -63,11 +73,10 @@ HRESULT CEditManager::Init(void)
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_pEditor	= nullptr;		// エディター情報
-	m_bSave		= false;		// 保存状況
-	m_bEdit		= false;		// エディット状況
-	m_typeEditor	= CEditor::TYPE_STAGE;		// エディットタイプ
-	m_typeStage		= CEditStage::TYPE_FIELD;	// エディットステージタイプ
+	m_pEditor	 = nullptr;	// エディター情報
+	m_bSave		 = false;	// 保存状況
+	m_bEdit		 = false;	// エディット状況
+	m_typeEditor = CEditor::TYPE_STAGE;	// エディットタイプ
 
 	// エディター情報の生成
 	m_pEditor = CEditor::Create(this, m_typeEditor);
@@ -98,10 +107,6 @@ void CEditManager::Uninit(void)
 #if _DEBUG
 
 	// エディター情報の終了
-	assert(m_pEditor != nullptr);
-	m_pEditor->Uninit();
-
-	// エディター情報の終了
 	SAFE_REF_RELEASE(m_pEditor);
 
 #endif	// _DEBUG
@@ -119,9 +124,6 @@ void CEditManager::Update(void)
 
 	// エディットタイプ変更
 	ChangeEditorType();
-
-	// エディットステージタイプ変更
-	ChangeStageType();
 
 	// エディター情報の更新
 	assert(m_pEditor != nullptr);
@@ -311,30 +313,6 @@ void CEditManager::ChangeEditorType(void)
 }
 
 //============================================================
-//	エディットステージタイプの変更処理
-//============================================================
-void CEditManager::ChangeStageType(void)
-{
-	// エディターのタイプ変更
-	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (pKeyboard->IsTrigger(KEY_CHANGE_STAGE))
-	{
-		// エディター情報の破棄
-		SAFE_REF_RELEASE(m_pEditor);
-
-		// エディットタイプの変更
-		m_typeStage = (CEditStage::EType)((m_typeStage + 1) % CEditStage::TYPE_MAX);
-
-		if (m_pEditor == nullptr)
-		{
-			// エディター情報の生成
-			m_pEditor = CEditStage::Create(this, m_typeStage);
-			assert(m_pEditor != nullptr);	// 生成失敗
-		}
-	}
-}
-
-//============================================================
 //	操作表示の描画処理
 //============================================================
 void CEditManager::DrawDebugControl(void)
@@ -343,6 +321,7 @@ void CEditManager::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット操作]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "ステージ保存：[%s+%s]\n", NAME_DOUBLE, NAME_SAVE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_EDITOR);
 
 	// エディター情報の操作表示
 	assert(m_pEditor != nullptr);
@@ -358,6 +337,7 @@ void CEditManager::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット情報]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, (m_bSave) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_typeEditor]);
 
 	// エディター情報の情報表示
 	assert(m_pEditor != nullptr);

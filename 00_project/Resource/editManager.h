@@ -14,7 +14,6 @@
 //	インクルードファイル
 //************************************************************
 #include "editor.h"
-#include "editStage.h"
 
 //************************************************************
 //	マクロ定義
@@ -49,9 +48,7 @@ public:
 	bool IsEdit(void) const;				// エディット状況取得
 
 	void ChangeEditorType(void);	// エディットタイプ変更
-	void ChangeStageType(void);		// エディットステージタイプ変更
-	CEditor::EType GetTypeEditor(void)		{ return m_typeEditor; }	// エディットタイプ
-	CEditStage::EType GetTypeStage(void)	{ return m_typeStage; }		// エディットステージタイプ
+	CEditor::EType GetTypeEditor(void)	{ return m_typeEditor; }	// エディットタイプ取得
 
 	// 静的メンバ関数
 	static CEditManager *Create(void);	// 生成
@@ -69,7 +66,6 @@ private:
 	bool m_bSave;		// 保存状況
 	bool m_bEdit;		// エディット状況
 	CEditor::EType m_typeEditor;	// エディットタイプ
-	CEditStage::EType m_typeStage;	// エディットステージタイプ
 };
 
 #endif	// _EDIT_MANAGER_H_
