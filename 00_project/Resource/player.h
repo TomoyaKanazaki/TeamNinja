@@ -52,8 +52,6 @@ public:
 		MODEL_LEGDR,		// ‰Eדר
 		MODEL_FOOTL,		// ¶‘«
 		MODEL_FOOTR,		// ‰E‘«
-		MODEL_SWORDL,		// ¶•
-		MODEL_SWORDR,		// ‰E•
 		MODEL_MAX			// ‚±‚ּ—ס‹“^‚ּ‘”
 	};
 

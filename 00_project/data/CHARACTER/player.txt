@@ -10,141 +10,125 @@
 CHARACTERSET
 
 	PARTSSET
-		INDEX = 0
-		PARENT = -1
-		POS = 0.0 32.4 0.0
+		INDEX = 0					# 腰
+		PARENT = -1					# (親)NULL
+		POS = 0.0 37.0 0.0
 		ROT = 0.0 0.0 0.0
 		FILEPASS = data\MODEL\PLAYER\00_waist.x
 	END_PARTSSET
-	
+
 	PARTSSET
-		INDEX = 1
-		PARENT = 0
-		POS = -0.2 6.6 -0.0
+		INDEX = 1					# 体
+		PARENT = 0					# (親)腰
+		POS = 0.0 0.0 0.0
 		ROT = 0.0 0.0 0.0
 		FILEPASS = data\MODEL\PLAYER\01_body.x
 	END_PARTSSET
-	
+
 	PARTSSET
-		INDEX = 2
-		PARENT = 1
-		POS = -0.1 19.8 -0.4
+		INDEX = 2					# 頭
+		PARENT = 1					# (親)体
+		POS = 0.0 23.0 0.0
 		ROT = 0.0 0.0 0.0
 		FILEPASS = data\MODEL\PLAYER\02_head.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 3
-		PARENT = 1
-		POS = -10.1 12.6 0.2
+		INDEX = 3					# 左肩
+		PARENT = 1					# (親)体
+		POS = -11.0 18.5 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\03_armUL.x
+		FILEPASS = data\MODEL\PLAYER\03_Lshoulder.x
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4					# 右肩
+		PARENT = 1					# (親)体
+		POS = 11.0 18.5 0.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\PLAYER\04_Rshoulder.x
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5					# 左腕
+		PARENT = 3					# (親)左肩
+		POS = -2.5 -5.0 0.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\PLAYER\05_Larm.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 4
-		PARENT = 1
-		POS = 10.1 12.6 0.2
+		INDEX = 6					# 右腕
+		PARENT = 4					# (親)右肩
+		POS = 2.5 -5.0 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\04_armUR.x
+		FILEPASS = data\MODEL\PLAYER\06_Rarm.x
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7					# 左手
+		PARENT = 5					# (親)左腕
+		POS = -3.0 -11.0 -4.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\PLAYER\07_Lhand.x
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8					# 右手
+		PARENT = 6					# (親)右腕
+		POS = 3.0 -11.0 -4.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\PLAYER\08_Rhand.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 5
-		PARENT = 3
-		POS = -7.3 -0.2 0.1
+		INDEX = 9					# 左太もも
+		PARENT = 0					# (親)腰
+		POS = -5.5 -4.0 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\05_armDL.x
+		FILEPASS = data\MODEL\PLAYER\09_Lthighs.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 6
-		PARENT = 4
-		POS = 7.3 -0.2 0.1
+		INDEX = 10					# 右太もも
+		PARENT = 0					# (親)腰
+		POS = 5.5 -4.0 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\06_armDR.x
+		FILEPASS = data\MODEL\PLAYER\10_Rthighs.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 7
-		PARENT = 5
-		POS = -11.7 -0.1 -0.2
+		INDEX = 11					# 左すね
+		PARENT = 9					# (親)左太もも
+		POS = -3.0 -16.0 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\07_handL.x
+		FILEPASS = data\MODEL\PLAYER\11_Lshin.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 8
-		PARENT = 6
-		POS = 11.7 -0.1 -0.2
+		INDEX = 12					# 右すね
+		PARENT = 10					# (親)右太もも
+		POS = 3.0 -16.0 0.0
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\08_handR.x
+		FILEPASS = data\MODEL\PLAYER\12_Rshin.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 9
-		PARENT = 0
-		POS = -5.8 -5.3 0.0
+		INDEX = 13					# 左足
+		PARENT = 11					# (親)左すね
+		POS = 0.0 -8.8 1.5
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\09_legUL.x
+		FILEPASS = data\MODEL\PLAYER\13_Lfoot.x
 	END_PARTSSET
 	
 	PARTSSET
-		INDEX = 10
-		PARENT = 0
-		POS = 5.8 -5.3 0.0
+		INDEX = 14					# 右足
+		PARENT = 12					# (親)右すね
+		POS = 0.0 -8.8 1.5
 		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\10_legUR.x
+		FILEPASS = data\MODEL\PLAYER\14_Rfoot.x
 	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 11
-		PARENT = 9
-		POS = -0.2 -8.8 0.4
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\11_legDL.x
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 12
-		PARENT = 10
-		POS = 0.2 -8.8 0.4
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\12_legDR.x
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 13
-		PARENT = 11
-		POS = 0.4 -7.7 -0.5
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\13_footL.x
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 14
-		PARENT = 12
-		POS = -0.4 -7.7 -0.5
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\14_footR.x
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 15
-		PARENT = 7
-		POS = -5.8 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\15_sword.x
-	END_PARTSSET
-	
-	PARTSSET
-		INDEX = 16
-		PARENT = 8
-		POS = 5.8 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		FILEPASS = data\MODEL\PLAYER\15_sword.x
-	END_PARTSSET
-	
+
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
@@ -152,4 +136,3 @@ END_CHARACTERSET
 #------------------------------------------------------------------------------
 MOTIONPASS = data\MOTION\PLAYER\idol.txt	# 待機モーション
 MOTIONPASS = data\MOTION\PLAYER\cautious.txt	# 警戒モーション
-MOTIONPASS = data\MOTION\PLAYER\walk.txt	# 歩行モーション
