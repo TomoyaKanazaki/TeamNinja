@@ -38,7 +38,7 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(100.0f, 100.0f);	// 大きさ
+	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(editstage::SIZE, editstage::SIZE);	// 大きさ
 	const float	MAX_SIZE = 10000.0f;	// 最大の大きさ
 	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
 }

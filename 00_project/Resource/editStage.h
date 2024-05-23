@@ -11,6 +11,14 @@
 #define _EDIT_STAGE_H_
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace editstage
+{
+	const float SIZE = 50.0f;	// 一ブロックの大きさ
+}
+
+//************************************************************
 //	前方宣言
 //************************************************************
 class CEditManager;	// エディットマネージャークラス
@@ -58,12 +66,10 @@ public:
 
 private:
 	// メンバ関数
-	void UpdateChangeMove(void);	// 移動量更新
-	void UpdatePosition(void);		// 位置更新
+	void UpdatePosition(void);	// 位置更新
 
 	// メンバ変数
 	CEditManager *m_pEditManager;	// エディットマネージャー
-	float m_fMove;		// 位置移動量
 	D3DXVECTOR3 m_pos;	// 位置
 };
 

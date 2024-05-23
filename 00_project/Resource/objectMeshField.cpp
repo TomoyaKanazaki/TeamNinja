@@ -1104,15 +1104,15 @@ void CObjectMeshField::SetVtx(bool bNor)
 	// ポインタを宣言
 	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
 
+	// テクスチャ分割数の割合を計算
+	D3DXVECTOR2 texRate = D3DXVECTOR2
+	(
+		(float)m_texPart.x / (float)m_part.x,
+		(float)m_texPart.y / (float)m_part.y
+	);
+
 	if (m_pVtxBuff != nullptr)
 	{ // 使用中の場合
-
-		// テクスチャ分割数の割合を計算
-		D3DXVECTOR2 texRate = D3DXVECTOR2
-		(
-			(float)m_texPart.x / (float)m_part.x,
-			(float)m_texPart.y / (float)m_part.y
-		);
 
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
 		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -1137,9 +1137,6 @@ void CObjectMeshField::SetVtx(bool bNor)
 
 				// 頂点カラーの設定
 				pVtx[0].col = m_meshField.col;
-
-				// テクスチャ座標の設定
-				pVtx[0].tex = D3DXVECTOR2(1.0f * nCntWidth, 1.0f * nCntHeight);
 
 				// テクスチャ座標の設定
 				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
