@@ -215,13 +215,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
-	case ACTION_CHARGE:
-
-		// ためてね
-		Charge();
-
-		break;
-
 	default:
 		break;
 	}
@@ -358,39 +351,6 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 
 	// 自動消滅タイマーを設定
 	pPlayer->m_fDeleteTimer = TIMER;
-
-	// 確保したアドレスを返す
-	return pPlayer;
-}
-
-//==========================================
-//  生成処理(チャージ)
-//==========================================
-CPlayerClone* CPlayerClone::Create(const float fTimer)
-{
-	// ポインタを宣言
-	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
-
-	// 生成に失敗した場合nullを返す
-	if (pPlayer == nullptr) { return nullptr; }
-
-	// プレイヤーの初期化
-	if (FAILED(pPlayer->Init()))
-	{ // 初期化に失敗した場合
-
-		// プレイヤーの破棄
-		SAFE_DELETE(pPlayer);
-		return nullptr;
-	}
-
-	// 行動を設定
-	pPlayer->m_Action = ACTION_CHARGE;
-
-	// 自動消滅タイマーを設定
-	pPlayer->m_fChargeTimer = fTimer;
-
-	// 位置を設定する
-	pPlayer->SetVec3Position(GET_PLAYER->GetTargetPos());
 
 	// 確保したアドレスを返す
 	return pPlayer;
@@ -672,54 +632,4 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 	D3DXVECTOR3 rot = GetVec3Rotation();
 	rot.y = fRot;
 	SetVec3Rotation(rot);
-}
-
-//==========================================
-//  ため
-//==========================================
-void CPlayerClone::Charge()
-{
-	// ため時間が0の場合関数を抜ける
-	if (m_fChargeTimer <= 0.0f) { return; }
-
-	// ため時間を減算する
-	m_fChargeTimer -= GET_MANAGER->GetDeltaTime()->GetTime();
-
-	// 入力情報を取得する
-	CInputPad* pPad = GET_INPUTPAD;
-
-	// スティック入力がないもしくはタイマーが0の場合分身を発射して関数を抜ける
-	if (!pPad->GetRStick() || m_fChargeTimer <= 0.0f)
-	{
-		// タイマーを0にする
-		m_fChargeTimer = 0.0f;
-
-		// プレイヤーの移動量を取得
-		float fMove = GET_PLAYER->GetMove();
-
-		// 移動量ベクトルを算出
-		D3DXVECTOR3 vecMove = GET_PLAYER->GetTargetPos() - GET_PLAYER->GetVec3Position();
-
-		// 移動量ベクトルの角度を算出
-		float fRot = atan2f(vecMove.z, vecMove.x);
-
-		// 移動量を算出する
-		m_move = D3DXVECTOR3
-		(
-			fMove * cosf(fRot),
-			0.0f,
-			fMove * sinf(fRot)
-		);
-
-		// 自動消滅タイマーを設定
-		m_fDeleteTimer = TIMER;
-
-		// 行動状態を歩行に変更
-		m_Action = ACTION_MOVE;
-		
-		return;
-	}
-
-	// カーソルの位置に立つ
-	SetVec3Position(GET_PLAYER->GetTargetPos());
 }
