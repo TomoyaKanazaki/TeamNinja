@@ -42,12 +42,11 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditStage::CEditStage(CEditManager *pEditManager)
+CEditStage::CEditStage(CEditManager *pEditManager) : CEditor(pEditManager)
 {
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditManager = pEditManager;	// エディットマネージャー
 	m_pos = VEC3_ZERO;	// 位置
 
 #endif	// _DEBUG
@@ -97,7 +96,6 @@ void CEditStage::Update(void)
 void CEditStage::DrawDebugControl(void)
 {
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
 }
 
 //============================================================
@@ -106,7 +104,6 @@ void CEditStage::DrawDebugControl(void)
 void CEditStage::DrawDebugInfo(void)
 {
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[位置]\n", m_pos.x, m_pos.y, m_pos.z);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
 }
 
 //============================================================
@@ -127,7 +124,11 @@ CEditStage *CEditStage::Create(CEditManager *pEditManager, EType type)
 		break;
 
 	case TYPE_WALL:
+
+		// TODO：エディットフィールドできたら置き換え
+		pEditStage = new CEditField(pEditManager);	// エディットフィールド
 		//pEditStage = new CEditWall(pEditManager);	// エディットウォール
+
 		break;
 
 	default:	// 例外処理
@@ -182,24 +183,6 @@ void CEditStage::Release(CEditStage *&prEditStage)
 
 	// 成功を返す
 	return S_OK;
-
-#endif	// _DEBUG
-}
-
-//============================================================
-//	エディットマネージャー取得処理
-//============================================================
-CEditManager *CEditStage::GetPtrEditManager(void) const
-{
-#if _DEBUG
-
-	// エディットマネージャーを返す
-	return m_pEditManager;
-
-#else	// NDEBUG
-
-	// nullptrを返す
-	return nullptr;
 
 #endif	// _DEBUG
 }

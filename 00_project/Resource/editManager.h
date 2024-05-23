@@ -13,7 +13,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CEditStage;	// エディットステージクラス
+class CEditor;	// エディタークラス
 
 //************************************************************
 //	マクロ定義
@@ -32,13 +32,6 @@ class CEditStage;	// エディットステージクラス
 class CEditManager
 {
 public:
-	// 種類列挙
-	enum EType
-	{
-		TYPE_STAGE = 0,	// ステージ種類
-		TYPE_MAX		// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CEditManager();
 
@@ -67,10 +60,12 @@ private:
 	void Save(void);				// 保存
 
 	// メンバ変数
-	CEditStage *m_pStage;	// ステージエディター
-	EType m_type;	// エディットタイプ
-	bool m_bSave;	// 保存状況
-	bool m_bEdit;	// エディット状況
+	CEditor *m_pEditor;	// エディター情報
+	bool m_bSave;		// 保存状況
+	bool m_bEdit;		// エディット状況
+
+	CEditor::EType m_typeEditor;	// エディットタイプ
+	CEditStage::EType m_typeStage;	// エディットステージタイプ
 };
 
 #endif	// _EDIT_MANAGER_H_
