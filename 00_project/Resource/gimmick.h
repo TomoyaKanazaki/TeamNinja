@@ -15,6 +15,7 @@
 //************************************************************
 #include "object3D.h"
 #include "listManager.h"
+#include "player_clone.h"
 
 //************************************************************
 // 前方宣言
@@ -51,6 +52,10 @@ public:
 	// セット・ゲット関係
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
+
+	// メンバ関数
+	void CloneListClear(void);				// クローンのリストの全消去処理
+	void CloneListRegist(CPlayerClone* clone);		// クローンのリストの登録処理
 
 	// 静的メンバ関数
 	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成
