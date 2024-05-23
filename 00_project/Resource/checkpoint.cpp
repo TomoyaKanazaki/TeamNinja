@@ -9,6 +9,7 @@
 #include "scene.h"
 #include "player.h"
 #include "collision.h"
+#include "popupUI.h"
 
 //==========================================
 //  定数定義
@@ -170,7 +171,7 @@ void CCheckPoint::CollisionPlayer(void)
 	// プレイヤーを回復する
 	Player->RecoverCheckPoint();
 
-	// プレイヤーに自信の情報を与える
+	// プレイヤーに自身の情報を与える
 	Player->SetCheckPoint(this);
 
 	// 士気力を保存する
@@ -181,6 +182,9 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// セーブフラグをオンにする
 	m_bSave = true;
+	
+	// UIを表示
+	CPopUpUI::Create();
 }
 
 //==========================================
