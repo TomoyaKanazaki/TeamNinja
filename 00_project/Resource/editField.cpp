@@ -55,6 +55,7 @@ CEditField::CEditField(CEditManager *pEditManager) : CEditorObject(pEditManager)
 
 	// メンバ変数をクリア
 	m_pField = nullptr;	// フィールド情報
+	m_bSave = false;	// 保存状況
 	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// フィールド配置情報
 
 #endif	// _DEBUG
@@ -83,6 +84,7 @@ HRESULT CEditField::Init(void)
 	m_infoCreate.col	 = XCOL_WHITE;			// 色
 	m_infoCreate.part	 = GRID2_ONE;			// 分割数
 	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
+	m_bSave				 = false;				// 保存状況
 
 	// 親クラスの初期化
 	if (FAILED(CEditorObject::Init()))
@@ -183,7 +185,30 @@ void CEditField::Update(void)
 //============================================================
 void CEditField::Save(void)
 {
+#if _DEBUG
 
+	// 保存済みにする
+	m_bSave = true;
+
+#endif	// _DEBUG
+}
+
+//============================================================
+//	保存状況取得処理
+//============================================================
+bool CEditField::IsSave(void)
+{
+#if _DEBUG
+
+	// 保存状況を返す
+	return m_bSave;
+
+#else	// NDEBUG
+
+	// falseを返す
+	return false;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -191,8 +216,12 @@ void CEditField::Save(void)
 //============================================================
 void CEditField::SaveInfo(void)
 {
+#if _DEBUG
+
 	// 現在の情報を保存
 	//m_save = m_infoCreate;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -200,8 +229,12 @@ void CEditField::SaveInfo(void)
 //============================================================
 void CEditField::LoadInfo(void)
 {
+#if _DEBUG
+
 	// 保存情報を設定
 	//m_infoCreate = m_save;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -209,6 +242,8 @@ void CEditField::LoadInfo(void)
 //============================================================
 void CEditField::DrawDebugControl(void)
 {
+#if _DEBUG
+
 	// 操作表示の描画
 	CEditorObject::DrawDebugControl();
 
@@ -216,6 +251,8 @@ void CEditField::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -223,6 +260,8 @@ void CEditField::DrawDebugControl(void)
 //============================================================
 void CEditField::DrawDebugInfo(void)
 {
+#if _DEBUG
+
 	// 情報表示の描画
 	CEditorObject::DrawDebugInfo();
 
@@ -230,6 +269,8 @@ void CEditField::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.texPart.x, m_infoCreate.texPart.y);
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -350,7 +391,7 @@ void CEditField::CreateField(void)
 		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, 1.0f));
 
 		// 未保存を設定
-		pEditManager->UnSave();
+		m_bSave = false;
 
 		//----------------------------------------------------
 		//	新しいフィールドの生成
@@ -453,7 +494,7 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 				rList->Uninit();
 
 				// 未保存を設定
-				pEditManager->UnSave();
+				m_bSave = false;
 			}
 			else
 			{ // 破棄しない場合

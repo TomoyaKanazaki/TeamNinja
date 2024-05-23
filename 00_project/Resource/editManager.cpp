@@ -49,7 +49,6 @@ CEditManager::CEditManager()
 
 	// メンバ変数をクリア
 	m_pEditor	= nullptr;	// エディター情報
-	m_bSave		= false;	// 保存状況
 	m_bEdit		= false;	// エディット状況
 	m_type		= CEditor::TYPE_STAGE;	// エディタータイプ
 
@@ -75,7 +74,6 @@ HRESULT CEditManager::Init(void)
 
 	// メンバ変数を初期化
 	m_pEditor	= nullptr;	// エディター情報
-	m_bSave		= false;	// 保存状況
 	m_bEdit		= false;	// エディット状況
 	m_type		= CEditor::TYPE_STAGE;	// エディタータイプ
 
@@ -133,21 +131,16 @@ void CEditManager::Update(void)
 }
 
 //============================================================
-//	未保存の設定処理
-//============================================================
-void CEditManager::UnSave(void)
-{
-	// 保存していない状況にする
-	m_bSave = false;
-}
-
-//============================================================
 //	エディット状況の切替処理
 //============================================================
 void CEditManager::SwitchEnableEdit(void)
 {
+#if _DEBUG
+
 	// エディット状況を反転
 	SetEnableEdit(!m_bEdit);
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -155,6 +148,8 @@ void CEditManager::SwitchEnableEdit(void)
 //============================================================
 void CEditManager::SetEnableEdit(const bool bEdit)
 {
+#if _DEBUG
+
 	// 引数のエディット状況にする
 	m_bEdit = bEdit;
 
@@ -181,6 +176,8 @@ void CEditManager::SetEnableEdit(const bool bEdit)
 		// エディットステージの破棄
 		SAFE_REF_RELEASE(m_pEditor);
 	}
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -286,7 +283,7 @@ void CEditManager::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット情報]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
-	DebugProc::Print(DebugProc::POINT_RIGHT, (m_bSave) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
+	DebugProc::Print(DebugProc::POINT_RIGHT, (m_pEditor->IsSave()) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディタータイプ]\n", TYPE_NAME[m_type]);
 
 	// エディター情報の情報表示
@@ -308,9 +305,6 @@ void CEditManager::Save(void)
 			// 現在のエディタータイプ情報を保存
 			assert(m_pEditor != nullptr);
 			m_pEditor->Save();
-
-			// 保存した状態にする
-			m_bSave = true;
 		}
 	}
 }

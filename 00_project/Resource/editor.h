@@ -41,6 +41,7 @@ public:
 	virtual void Uninit(void)	= 0;	// 終了
 	virtual void Update(void)	= 0;	// 更新
 	virtual void Save(void)		= 0;	// 保存
+	virtual bool IsSave(void)	= 0;	// 保存状況取得
 	virtual void SaveInfo(void)	= 0;	// 情報保存
 	virtual void LoadInfo(void)	= 0;	// 情報読込
 	virtual void DrawDebugControl(void)	= 0;	// 操作表示描画

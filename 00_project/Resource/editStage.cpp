@@ -66,6 +66,8 @@ CEditStage::~CEditStage()
 //============================================================
 HRESULT CEditStage::Init(void)
 {
+#if _DEBUG
+
 	// メンバ変数を初期化
 	m_pEditor	= nullptr;		// エディター情報
 	m_type		= TYPE_FIELD;	// オブジェクトタイプ
@@ -82,6 +84,13 @@ HRESULT CEditStage::Init(void)
 
 	// 成功を返す
 	return S_OK;
+
+#else	// NDEBUG
+
+	// 成功を返す
+	return S_OK;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -89,8 +98,12 @@ HRESULT CEditStage::Init(void)
 //============================================================
 void CEditStage::Uninit(void)
 {
+#if _DEBUG
+
 	// エディター情報の破棄
 	SAFE_REF_RELEASE(m_pEditor);
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -98,12 +111,16 @@ void CEditStage::Uninit(void)
 //============================================================
 void CEditStage::Update(void)
 {
+#if _DEBUG
+
 	// オブジェクトタイプの変更
 	ChangeObjectType();
 
 	// エディター情報の更新
 	assert(m_pEditor != nullptr);
 	m_pEditor->Update();
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -121,13 +138,31 @@ void CEditStage::Save(void)
 }
 
 //============================================================
+//	保存状況取得処理
+//============================================================
+bool CEditStage::IsSave(void)
+{
+#if _DEBUG
+
+	// エディター情報の保存
+	assert(m_pEditor != nullptr);
+	return m_pEditor->IsSave();
+
+#endif	// _DEBUG
+}
+
+//============================================================
 //	情報保存処理
 //============================================================
 void CEditStage::SaveInfo(void)
 {
+#if _DEBUG
+
 	// エディター情報の情報保存
 	assert(m_pEditor != nullptr);
 	m_pEditor->SaveInfo();
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -135,9 +170,13 @@ void CEditStage::SaveInfo(void)
 //============================================================
 void CEditStage::LoadInfo(void)
 {
+#if _DEBUG
+
 	// エディター情報の情報読込
 	assert(m_pEditor != nullptr);
 	m_pEditor->LoadInfo();
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -145,11 +184,15 @@ void CEditStage::LoadInfo(void)
 //============================================================
 void CEditStage::DrawDebugControl(void)
 {
+#if _DEBUG
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ変更：[%s]\n", NAME_CHANGE_OBJECT);
 
 	// エディター情報の操作表示
 	assert(m_pEditor != nullptr);
 	m_pEditor->DrawDebugControl();
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -157,11 +200,15 @@ void CEditStage::DrawDebugControl(void)
 //============================================================
 void CEditStage::DrawDebugInfo(void)
 {
+#if _DEBUG
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットステージタイプ]\n", TYPE_NAME[m_type]);
 
 	// エディター情報の情報表示
 	assert(m_pEditor != nullptr);
 	m_pEditor->DrawDebugInfo();
+
+#endif	// _DEBUG
 }
 
 //============================================================

@@ -59,11 +59,20 @@ CEditorObject::~CEditorObject()
 //============================================================
 HRESULT CEditorObject::Init(void)
 {
+#if _DEBUG
+
 	// メンバ変数を初期化
 	m_pos = VEC3_ZERO;	// 位置
 
 	// 成功を返す
 	return S_OK;
+
+#else	// NDEBUG
+
+	// 成功を返す
+	return S_OK;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -71,7 +80,8 @@ HRESULT CEditorObject::Init(void)
 //============================================================
 void CEditorObject::Uninit(void)
 {
-
+#if _DEBUG
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -79,8 +89,12 @@ void CEditorObject::Uninit(void)
 //============================================================
 void CEditorObject::Update(void)
 {
+#if _DEBUG
+
 	// 位置の更新
 	UpdatePosition();
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -88,7 +102,11 @@ void CEditorObject::Update(void)
 //============================================================
 void CEditorObject::DrawDebugControl(void)
 {
+#if _DEBUG
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -96,7 +114,11 @@ void CEditorObject::DrawDebugControl(void)
 //============================================================
 void CEditorObject::DrawDebugInfo(void)
 {
+#if _DEBUG
+
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[位置]\n", m_pos.x, m_pos.y, m_pos.z);
+
+#endif	// _DEBUG
 }
 
 //============================================================

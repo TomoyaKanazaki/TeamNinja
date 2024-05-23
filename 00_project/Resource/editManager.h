@@ -42,7 +42,6 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(void);	// 更新
-	void UnSave(void);	// 未保存設定
 	void SwitchEnableEdit(void);				// エディット状況切替
 	void SetEnableEdit(const bool bEdit);		// エディット状況設定
 	bool IsEdit(void) const { return m_bEdit; }	// エディット状況取得
@@ -60,7 +59,6 @@ private:
 
 	// メンバ変数
 	CEditor *m_pEditor;		// エディター情報
-	bool m_bSave;			// 保存状況
 	bool m_bEdit;			// エディット状況
 	CEditor::EType m_type;	// エディタータイプ
 };
