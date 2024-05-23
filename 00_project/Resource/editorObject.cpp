@@ -172,11 +172,6 @@ void CEditorObject::Release(CEditorObject *&prEditorObject)
 	// ƒƒ‚ƒŠŠJ•ú
 	SAFE_DELETE(prEditorObject);
 
-#else	// NDEBUG
-
-	// ¬Œ÷‚ğ•Ô‚·
-	return S_OK;
-
 #endif	// _DEBUG
 }
 

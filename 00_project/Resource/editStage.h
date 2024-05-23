@@ -59,13 +59,14 @@ public:
 	void Save(FILE *pFile);	// 保存
 	void DrawDebugControl(void);	// 操作表示描画
 	void DrawDebugInfo(void);		// 情報表示描画
-	void ChangeObjectType(void);	// オブジェクトタイプ変更
-	CEditStage::EType GetTypeStage(void) { return m_typeObject; }	// オブジェクトタイプ取得
 
 private:
+	// メンバ関数
+	void ChangeObjectType(void);	// オブジェクトタイプ変更
+
 	// メンバ変数
-	CEditorObject *m_pEditor;		// エディター情報
-	CEditStage::EType m_typeObject;	// オブジェクトタイプ
+	CEditorObject *m_pEditor;	// エディター情報
+	CEditStage::EType m_type;	// オブジェクトタイプ
 };
 
 #endif	// _EDIT_STAGE_H_

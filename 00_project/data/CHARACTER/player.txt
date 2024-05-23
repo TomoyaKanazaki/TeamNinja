@@ -134,5 +134,5 @@ END_CHARACTERSET
 #------------------------------------------------------------------------------
 #	モーション情報
 #------------------------------------------------------------------------------
-MOTIONPASS = data\MOTION\PLAYER\idol.txt	# 待機モーション
+MOTIONPASS = data\MOTION\PLAYER\idol.txt		# 待機モーション
 MOTIONPASS = data\MOTION\PLAYER\cautious.txt	# 警戒モーション

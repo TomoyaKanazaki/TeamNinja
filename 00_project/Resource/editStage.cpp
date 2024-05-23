@@ -46,8 +46,8 @@ CEditStage::CEditStage(CEditManager *pEditManager) : CEditor(pEditManager)
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditor = nullptr;		// エディター情報
-	m_typeObject = TYPE_FIELD;	// オブジェクトタイプ
+	m_pEditor	= nullptr;		// エディター情報
+	m_type		= TYPE_FIELD;	// オブジェクトタイプ
 
 #endif	// _DEBUG
 }
@@ -67,20 +67,11 @@ CEditStage::~CEditStage()
 HRESULT CEditStage::Init(void)
 {
 	// メンバ変数を初期化
-	m_pEditor = nullptr;		// エディター情報
-	m_typeObject = TYPE_FIELD;	// オブジェクトタイプ
-
-	// 親クラスの初期化
-	if (FAILED(CEditor::Init()))
-	{ // 初期化に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	m_pEditor	= nullptr;		// エディター情報
+	m_type		= TYPE_FIELD;	// オブジェクトタイプ
 
 	// エディター情報の生成
-	m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_typeObject);
+	m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_type);
 	if (m_pEditor == nullptr)
 	{ // 生成に失敗した場合
 
@@ -98,9 +89,6 @@ HRESULT CEditStage::Init(void)
 //============================================================
 void CEditStage::Uninit(void)
 {
-	// 親クラスの終了
-	CEditor::Uninit();
-
 	// エディター情報の破棄
 	SAFE_REF_RELEASE(m_pEditor);
 }
@@ -110,9 +98,6 @@ void CEditStage::Uninit(void)
 //============================================================
 void CEditStage::Update(void)
 {
-	// 親クラスの更新
-	CEditor::Update();
-
 	// オブジェクトタイプの変更
 	ChangeObjectType();
 
@@ -160,9 +145,6 @@ void CEditStage::Save(FILE *pFile)
 //============================================================
 void CEditStage::DrawDebugControl(void)
 {
-	// 操作表示の描画
-	CEditor::DrawDebugControl();
-
 	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ変更：[%s]\n", NAME_CHANGE_OBJECT);
 
 	// エディター情報の操作表示
@@ -175,10 +157,7 @@ void CEditStage::DrawDebugControl(void)
 //============================================================
 void CEditStage::DrawDebugInfo(void)
 {
-	// 情報表示の描画
-	CEditor::DrawDebugInfo();
-
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットステージタイプ]\n", TYPE_NAME[m_typeObject]);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットステージタイプ]\n", TYPE_NAME[m_type]);
 
 	// エディター情報の情報表示
 	assert(m_pEditor != nullptr);
@@ -197,13 +176,13 @@ void CEditStage::ChangeObjectType(void)
 		// エディター情報の破棄
 		SAFE_REF_RELEASE(m_pEditor);
 
-		// エディットタイプの変更
-		m_typeObject = (CEditStage::EType)((m_typeObject + 1) % CEditStage::TYPE_MAX);
+		// オブジェクトタイプの変更
+		m_type = (CEditStage::EType)((m_type + 1) % CEditStage::TYPE_MAX);
 
 		if (m_pEditor == nullptr)
 		{
 			// エディター情報の生成
-			m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_typeObject);
+			m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_type);
 			assert(m_pEditor != nullptr);	// 生成失敗
 		}
 	}

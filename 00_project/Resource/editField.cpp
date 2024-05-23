@@ -93,15 +93,6 @@ HRESULT CEditField::Init(void)
 		return E_FAIL;
 	}
 
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
 	// フィールドの生成
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	m_pField = CField::Create
@@ -162,18 +153,6 @@ void CEditField::Uninit(void)
 void CEditField::Update(void)
 {
 #if _DEBUG
-
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
-
-	// エディットがOFFなら抜ける
-	if (!pEditManager->IsEdit()) { return; }
 
 	// 親クラスの更新
 	CEditorObject::Update();
