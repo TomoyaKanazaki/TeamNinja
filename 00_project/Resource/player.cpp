@@ -1099,43 +1099,45 @@ void CPlayer::ControlClone()
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
 
-	// 右スティックの入力
-	if (pPad->GetTriggerRStick())
+	// 右スティックの入力がない場合関数を抜ける
+	if (!pPad->GetTriggerRStick()) { return; }
+
+#ifndef _DEBUG
+	// 士気力が減少する
+	m_pTensionGauge->AddNum(-500);
+#endif
+
+	// プレイヤーの方向を取得
+	float fRotPlayer = GetVec3Rotation().y;
+
+	// スティック入力の方向を取得する
+	float fRotStick = pPad->GetPressRStickRot();
+
+	// スティック方向を3D空間に対応する
+	float fTemp = fRotStick - (D3DX_PI * 0.5f);
+	useful::NormalizeRot(fTemp);
+
+	// プレイヤー方向からスティックの方向を減算
+	float fRot = fRotPlayer - fTemp;
+	useful::NormalizeRot(fRot);
+
+	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
+	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
-		// 分身が存在していない場合方向を決めて分身する
-		if (CPlayerClone::GetList() == nullptr)
-		{
-			CPlayerClone::Create(m_fChargeTime);
-			return;
-		}
-
-		// 分身リストの先頭を取得する
-		std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();
-		auto itrBegin = list.begin();
-
-		// 分身リストの最後尾を取得する
-		auto itrEnd = list.end();
-
-		// 自身に一致するポインタの一つ前に追従する
-		for (auto itr = itrBegin; itr != itrEnd; itr++)
-		{
-			// ポインタを取得
-			CPlayerClone* cull = *itr;
-
-			// 歩行中の分身がいたら追従型の分身を出す
-			if (cull->GetAction() == CPlayerClone::ACTION_MOVE)
-			{
-				CPlayerClone::Create();
-				return;
-			}
-		}
-
-		// 以上の条件にそぐわない場合方向を決める分身を出す
-		CPlayerClone::Create(m_fChargeTime);
-
-		// 士気力が減少する
-		m_pTensionGauge->AddNum(-500);
+		CPlayerClone::Create();
+		return;
 	}
+
+	// 分身の移動量を算出する
+	D3DXVECTOR3 move = D3DXVECTOR3
+	(
+		m_fMove * cosf(-fRotStick),
+		0.0f,
+		m_fMove * sinf(-fRotStick)
+	);
+
+	// 歩く分身を出す
+	CPlayerClone::Create(move);
 }
 
 //==========================================

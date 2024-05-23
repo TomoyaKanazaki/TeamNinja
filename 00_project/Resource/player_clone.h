@@ -63,7 +63,6 @@ public:
 	{
 		ACTION_NONE, // 通常の行動
 		ACTION_MOVE, // 歩行
-		ACTION_CHARGE, // チャージ
 		ACTION_MAX
 	};
 
@@ -88,7 +87,6 @@ public:
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
 	static CPlayerClone* Create(const D3DXVECTOR3& move);	// 生成(歩行型)
-	static CPlayerClone* Create(const float fTimer);		// 生成(チャージ型)
 	static void Delete(const int nNum);						// 消去処理
 	static void Delete(const EAction act = ACTION_NONE);	// 全消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);		// リスト取得
@@ -104,7 +102,6 @@ private:
 	void ChasePrev(); // 前についていく処理
 	void Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
 	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
-	void Charge(); // ため
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト
