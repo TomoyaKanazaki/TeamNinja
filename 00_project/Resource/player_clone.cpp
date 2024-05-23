@@ -222,6 +222,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
+	// ギミックとの当たり判定
+	CollisionGimmick();
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -658,19 +661,22 @@ void CPlayerClone::CollisionGimmick(void)
 	{
 		// 位置とサイズを取得
 		posGim = gim->GetVec3Position();
-		sizeGim = gim->GetVec3Sizing();
+		sizeGim = gim->GetVec3Sizing() / 2;
 
 		if (collision::Box2D
 		(
 			pos,		// 判定位置
 			posGim,		// 判定目標位置
 			size,		// 判定サイズ(右・上・後)
-			-size,		// 判定サイズ(左・下・前)
+			size,		// 判定サイズ(左・下・前)
 			sizeGim,	// 判定目標サイズ(右・上・後)
-			-sizeGim	// 判定目標サイズ(左・下・前)
+			sizeGim		// 判定目標サイズ(左・下・前)
 		))
 		{ // 四角の中に入った場合
 
+		}
+		else
+		{ // 入ってなかった場合
 
 		}
 	}

@@ -18,11 +18,6 @@
 #include "player_clone.h"
 
 //************************************************************
-// 前方宣言
-//************************************************************
-class CPlayerClone;			// 分身
-
-//************************************************************
 //	クラス定義
 //************************************************************
 // ギミックの親クラス
@@ -53,10 +48,6 @@ public:
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
 
-	// メンバ関数
-	void CloneListClear(void);				// クローンのリストの全消去処理
-	void CloneListRegist(CPlayerClone* clone);		// クローンのリストの登録処理
-
 	// 静的メンバ関数
 	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
@@ -66,7 +57,6 @@ private:
 	// メンバ変数
 	EType m_type;		// 種類
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
-	CListManager<CPlayerClone>* m_pClonelist;		// クローンのリスト
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト
