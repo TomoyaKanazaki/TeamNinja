@@ -18,7 +18,7 @@
 namespace
 {
 	const int	PRIORITY = 2;			// ギミック範囲ポリゴンの優先順位
-	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(70.0f, 0.0f, 70.0f);		// 半径(サイズ)
+	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(200.0f, 0.0f, 50.0f);		// 半径(サイズ)
 }
 
 //************************************************************
@@ -33,8 +33,7 @@ CListManager<CGimmick>* CGimmick::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_JUMPTABLE),
-m_pClonelist(nullptr)
+m_type(TYPE_JUMPTABLE)
 {
 
 }
@@ -194,28 +193,4 @@ CListManager<CGimmick>* CGimmick::GetList(void)
 {
 	// リスト構造を返す
 	return m_pList;
-}
-
-//============================================================
-// クローンのリストの全消去処理
-//============================================================
-void CGimmick::CloneListClear(void)
-{
-	// リストが NULL の場合抜ける
-	if (m_pClonelist == nullptr) { return; }
-
-	// 中身を全消去する
-	m_pClonelist->GetList().clear();
-}
-
-//============================================================
-// クローンのリストの登録処理
-//============================================================
-void CGimmick::CloneListRegist(CPlayerClone* clone)
-{
-	// リストが NULL の場合抜ける
-	if (m_pClonelist == nullptr) { return; }
-
-	// リストに追加する
-	m_pClonelist->AddList(clone);
 }
