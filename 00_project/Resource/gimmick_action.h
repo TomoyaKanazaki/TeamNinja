@@ -35,6 +35,8 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
+	virtual void CollisionClone(void);		// クローンとの当たり判定
+
 	// セット・ゲット関係
 	void SetNumClone(const int nNum) { m_nNumClone = nNum; }	// 分身の総数の設定処理
 	int GetNumClone(void) { return m_nNumClone; }				// 分身の総数の取得処理
@@ -45,6 +47,7 @@ private:
 
 	// メンバ変数
 	int m_nNumClone;	// 範囲に入っている分身の数
+	int m_nNumActive;	// 発動可能な分身の数
 	bool m_bActive;		// 発動状況
 };
 
