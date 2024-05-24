@@ -17,6 +17,9 @@
 #include "multiModel.h"
 #include "deltaTime.h"
 
+#include "collision.h"
+#include "gimmick_action.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -61,9 +64,10 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 m_pShadow(nullptr),			// 影の情報
 m_pOrbit(nullptr),			// 軌跡の情報
 m_move(0.0f, 0.0f, 0.0f),	// 移動量
-m_Action(ACTION_NONE),		// 行動
+m_Action(ACTION_CHASE),		// 行動
 m_fDeleteTimer(0.0f),		// 自動消滅タイマー
-m_fChargeTimer(0.0f)		// ため時間タイマー
+m_fChargeTimer(0.0f),		// ため時間タイマー
+m_pGimmick(nullptr)			// ギミックのポインタ
 {
 
 }
@@ -85,9 +89,10 @@ HRESULT CPlayerClone::Init(void)
 	m_pShadow = nullptr;		// 影の情報
 	m_pOrbit = nullptr;		// 軌跡の情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
-	m_Action = ACTION_NONE; // 行動
+	m_Action = ACTION_CHASE; // 行動
 	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
 	m_fChargeTimer = 0.0f; // ため時間タイマー
+	m_pGimmick = nullptr; // ギミックのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -193,7 +198,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 各種行動を起こす
 	switch (m_Action)
 	{
-	case ACTION_MOVE:
+	case ACTION_MOVE: // 歩行
 
 		// 移動
 		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
@@ -208,17 +213,14 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
-	case ACTION_NONE:
+	case ACTION_CHASE: // 追従
 
 		// 一つ前を追いかける
 		ChasePrev();
 
 		break;
 
-	case ACTION_CHARGE:
-
-		// ためてね
-		Charge();
+	case ACTION_WAIT: // ギミック待機
 
 		break;
 
@@ -299,6 +301,18 @@ bool CPlayerClone::Hit(const int nDamage)
 	return true;
 }
 
+//==========================================
+//  ギミックのポインタを取得する
+//==========================================
+void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
+{
+	// 引数をポインタに設定する
+	m_pGimmick = gimmick;
+
+	// ギミック待機状態になる
+	m_Action = ACTION_WAIT;
+}
+
 //============================================================
 //	生成処理
 //============================================================
@@ -363,39 +377,6 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	return pPlayer;
 }
 
-//==========================================
-//  生成処理(チャージ)
-//==========================================
-CPlayerClone* CPlayerClone::Create(const float fTimer)
-{
-	// ポインタを宣言
-	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
-
-	// 生成に失敗した場合nullを返す
-	if (pPlayer == nullptr) { return nullptr; }
-
-	// プレイヤーの初期化
-	if (FAILED(pPlayer->Init()))
-	{ // 初期化に失敗した場合
-
-		// プレイヤーの破棄
-		SAFE_DELETE(pPlayer);
-		return nullptr;
-	}
-
-	// 行動を設定
-	pPlayer->m_Action = ACTION_CHARGE;
-
-	// 自動消滅タイマーを設定
-	pPlayer->m_fChargeTimer = fTimer;
-
-	// 位置を設定する
-	pPlayer->SetVec3Position(GET_PLAYER->GetTargetPos());
-
-	// 確保したアドレスを返す
-	return pPlayer;
-}
-
 //============================================================
 // 消去処理
 //============================================================
@@ -417,7 +398,7 @@ void CPlayerClone::Delete(const int nNum)
 //============================================================
 //  全消去処理 (金崎追加)
 //============================================================
-void CPlayerClone::Delete(void)
+void CPlayerClone::Delete(const EAction act)
 {
 	// リスト情報がない場合停止する
 	if (m_pList == nullptr) { assert(false); return; }
@@ -437,8 +418,8 @@ void CPlayerClone::Delete(void)
 		// 分身を取得
 		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
 
-		// 追従状態の分身の削除フラグをオン
-		if (pAvatar->GetAction() == ACTION_NONE)
+		// 分身の削除フラグをオン
+		if (pAvatar->GetAction() == act)
 		{
 			bDelete[i] = true;
 		}
@@ -586,37 +567,45 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayerClone::ChasePrev()
 {
-	// リストの先頭を取得する
+	// リストを取得する
 	std::list<CPlayerClone*> list = m_pList->GetList();
 	auto itrBegin = list.begin();
-
-	// リストの最後尾を取得する
 	auto itrEnd = list.end();
 
-	// 前のポインタを取得する変数
+	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
 
-	// 自身に一致するポインタの一つ前に追従する
-	for (auto itr = itrBegin; itr != itrEnd; itr++)
+	// 自身のポインタを走査する
+	for (auto itr = itrBegin; itr != itrEnd; ++itr)
 	{
-		// 現在のポインタと自身を比較する
-		if (*itr == this)
+		// 自身ではない場合一つ前を保存して次に進む
+		if (*itr != this) { prev = *itr; continue; }
+
+		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
+		if (this == *itrBegin) { Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); return; }
+
+		// 自身の追従する相手を選択する
+		while (1)
 		{
-			// 一つ前が追従型じゃない場合プレイヤーについていく
-			if (this == *itrBegin || prev->GetAction() != ACTION_NONE)
+			// 一つ前のポインタを保存する
+			--itr;
+			prev = *itr;
+
+			// 前が追従していない場合
+			if (prev->GetAction() != ACTION_CHASE)
 			{
+				// 一つ前が先頭でない場合次に進む
+				if (prev != *itrBegin) { continue; }
+
+				// プレイヤーに追従し関数を抜ける
 				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 				return;
 			}
 
-			// 一つ前についていく
+			// 一つ前に追従し関数を抜ける
 			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
-
 			return;
 		}
-
-		// 現在のポインタを保存する
-		prev = *itr;
 	}
 }
 
@@ -667,51 +656,24 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 }
 
 //==========================================
-//  ため
+//  ギミック待機
 //==========================================
-void CPlayerClone::Charge()
+void CPlayerClone::Wait()
 {
-	// ため時間が0の場合関数を抜ける
-	if (m_fChargeTimer <= 0.0f) { return; }
+	// ギミックがnullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
 
-	// ため時間を減算する
-	m_fChargeTimer -= GET_MANAGER->GetDeltaTime()->GetTime();
+	// ギミックの位置に移動する
+	SetVec3Position(m_pGimmick->GetVec3Position());
 
-	// 入力情報を取得する
-	CInputPad* pPad = GET_INPUTPAD;
-
-	// スティック入力がないもしくはタイマーが0の場合分身を発射して関数を抜ける
-	if (!pPad->GetRStick() || m_fChargeTimer <= 0.0f)
+	// ギミックがアクティブ状態なら
+	if (m_pGimmick->IsActive())
 	{
-		// タイマーを0にする
-		m_fChargeTimer = 0.0f;
-
-		// プレイヤーの移動量を取得
-		float fMove = GET_PLAYER->GetMove();
-
-		// 移動量ベクトルを算出
-		D3DXVECTOR3 vecMove = GET_PLAYER->GetTargetPos() - GET_PLAYER->GetVec3Position();
-
-		// 移動量ベクトルの角度を算出
-		float fRot = atan2f(vecMove.z, vecMove.x);
-
-		// 移動量を算出する
-		m_move = D3DXVECTOR3
-		(
-			fMove * cosf(fRot),
-			0.0f,
-			fMove * sinf(fRot)
-		);
-
-		// 自動消滅タイマーを設定
-		m_fDeleteTimer = TIMER;
-
-		// 行動状態を歩行に変更
-		m_Action = ACTION_MOVE;
-		
-		return;
+		// ギミックに対応したステータスを適用する
+		switch (m_pGimmick->GetType())
+		{
+		default:
+			break;
+		}
 	}
-
-	// カーソルの位置に立つ
-	SetVec3Position(GET_PLAYER->GetTargetPos());
 }

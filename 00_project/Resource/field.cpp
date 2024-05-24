@@ -44,7 +44,9 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 //	コンストラクタ
 //============================================================
-CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::DIM_3D, PRIORITY)
+CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::DIM_3D, PRIORITY),
+	m_terrain	(TERRAIN_120x120),	// 地形
+	m_type		(TYPE_ASH)			// 種類
 {
 
 }
@@ -62,6 +64,10 @@ CField::~CField()
 //============================================================
 HRESULT CField::Init(void)
 {
+	// メンバ変数をクリア
+	m_terrain	= TERRAIN_120x120;	// 地形
+	m_type		= TYPE_ASH;			// 種類
+
 	// オブジェクトメッシュフィールドの初期化
 	if (FAILED(CObjectMeshField::Init()))
 	{ // 初期化に失敗した場合
@@ -197,7 +203,7 @@ CField *CField::Create
 		}
 
 		// テクスチャ分割数を設定
-		pField->SetPattern(rTexPart);
+		pField->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pField;
@@ -219,7 +225,10 @@ CListManager<CField> *CField::GetList(void)
 void CField::SetTerrain(const ETerrain terrain)
 {
 	if (terrain > NONE_IDX && terrain < TERRAIN_MAX)
-	{ // 値が範囲内の場合
+	{ // インデックスが範囲内の場合
+
+		// 地形を保存
+		m_terrain = terrain;
 
 		// 地形を設定
 		CObjectMeshField::SetTerrain(m_aTerrainInfo[terrain].part, m_aTerrainInfo[terrain].pPosGap);
@@ -232,8 +241,16 @@ void CField::SetTerrain(const ETerrain terrain)
 //============================================================
 void CField::SetType(const EType type)
 {
-	// テクスチャを登録・割当
-	BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // インデックスが範囲内の場合
+
+		// 種類を保存
+		m_type = type;
+
+		// テクスチャを登録・割当
+		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	}
+	else { assert(false); }	// 範囲外
 }
 
 //============================================================

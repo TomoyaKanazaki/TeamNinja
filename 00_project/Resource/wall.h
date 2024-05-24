@@ -22,11 +22,11 @@
 class CWall : public CObjectMeshWall
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
+	// 種類列挙
+	enum EType
 	{
-		TEXTURE_NORMAL = 0,	// 通常テクスチャ
-		TEXTURE_MAX			// この列挙型の総数
+		TYPE_NORMAL = 0,	// 通常テクスチャ
+		TYPE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -38,19 +38,32 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(const float fDeltaTime) override;		// 更新
+	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
 	static CWall *Create	// 生成
 	( // 引数
-		const ETexture texture,		// 種類
+		const EType type,			// 種類
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXVECTOR2& rSize,	// 大きさ
 		const D3DXCOLOR& rCol,		// 色
 		const POSGRID2& rPart		// 分割数
 	);
+	static CListManager<CWall> *GetList(void);	// リスト取得
+
+	// メンバ関数
+	void SetType(const EType type);					// 種類設定
+	EType GetType(void) const { return m_type; }	// 種類取得
+
+private:
+	// 静的メンバ変数
+	static CListManager<CWall> *m_pList;	// オブジェクトリスト
+
+	// メンバ変数
+	CListManager<CWall>::AIterator m_iterator;	// イテレーター
+	EType m_type;	// 種類
 };
 
 #endif	// _WALL_H_

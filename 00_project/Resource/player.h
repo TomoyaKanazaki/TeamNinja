@@ -52,8 +52,6 @@ public:
 		MODEL_LEGDR,		// 右脛
 		MODEL_FOOTL,		// 左足
 		MODEL_FOOTR,		// 右足
-		MODEL_SWORDL,		// 左剣
-		MODEL_SWORDR,		// 右剣
 		MODEL_MAX			// この列挙型の総数
 	};
 
@@ -136,6 +134,13 @@ private:
 	void ControlClone(); // 分身の処理
 	void SaveReset(); // 直前のチェックポイントに帰る
 
+#ifdef _DEBUG
+
+	void KeyboardControl(void);		// キーボードの操作処理
+
+#endif // _DEBUG
+
+
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
 
@@ -156,7 +161,7 @@ private:
 	unsigned int m_nMaxTension; // 士気力の最大値
 	unsigned int m_nInitTension; // 士気力の初期値
 	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
-	unsigned int m_nMaxClone; // 一度に分身できる上限
+	int m_nMaxClone; // 一度に分身できる上限
 	unsigned int m_nRecover; // ジャストアクションでの回復量
 	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
 	float m_fHeght; // 縦幅

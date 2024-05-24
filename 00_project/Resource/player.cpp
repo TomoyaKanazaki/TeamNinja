@@ -49,8 +49,8 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP		= 21.0f;		// ジャンプ上昇量
-	const float	GRAVITY		= 1.0f;			// 重力
+	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
+	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
@@ -350,6 +350,9 @@ void CPlayer::Update(const float fDeltaTime)
 		RecoverJust();
 	}
 
+	// キーボード操作処理
+	KeyboardControl();
+
 #endif
 }
 
@@ -484,7 +487,7 @@ bool CPlayer::Hit(const int nDamage)
 void CPlayer::SetSpawn(void)
 {
 	// 変数を宣言
-	D3DXVECTOR3 set = VEC3_ZERO;	// 引数設定用
+	D3DXVECTOR3 set = D3DXVECTOR3(0.0f, 500.0f, 0.0f);	// 引数設定用
 
 	// 情報を初期化
 	SetState(STATE_SPAWN);	// スポーン状態の設定
@@ -940,7 +943,7 @@ void CPlayer::Move()
 	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
-	if (fSpeed == 0.0f) { m_move = VEC3_ZERO; return; }
+	if (!pPad->GetLStick()) { return; }
 
 	if (fSpeed >= STEALTH_BORDER)
 	{ // 通常速度の場合
@@ -970,6 +973,14 @@ void CPlayer::Move()
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
 	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+
+	// ジャンプ
+#ifdef _DEBUG
+	if (pPad->IsTrigger(CInputPad::KEY_X))
+	{
+		m_move.y = JUMP;
+	}
+#endif
 
 	// 移動量をスカラー値に変換する
 	m_fMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
@@ -1066,7 +1077,7 @@ void CPlayer::ControlClone()
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// 分身の削除
+	// 追従分身の削除
 	if (pPad->IsTrigger(CInputPad::KEY_RB))
 	{
 		// リストが存在しない場合に削除しない
@@ -1076,49 +1087,60 @@ void CPlayer::ControlClone()
 		}
 	}
 
+#ifdef _DEBUG
+	// 移動分身の削除
+	if (pPad->IsTrigger(CInputPad::KEY_LB))
+	{
+		// リストが存在しない場合に削除しない
+		if (CPlayerClone::GetList() != nullptr)
+		{
+			CPlayerClone::Delete(CPlayerClone::ACTION_MOVE);
+		}
+	}
+#endif
+
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
 
-	// 右スティックの入力
-	if (pPad->GetTriggerRStick())
+	// 右スティックの入力がない場合関数を抜ける
+	if (!pPad->GetTriggerRStick()) { return; }
+
+#ifndef _DEBUG
+	// 士気力が減少する
+	m_pTensionGauge->AddNum(-500);
+#endif
+
+	// プレイヤーの方向を取得
+	float fRotPlayer = GetVec3Rotation().y;
+
+	// スティック入力の方向を取得する
+	float fRotStick = pPad->GetPressRStickRot();
+
+	// スティック方向を3D空間に対応する
+	float fTemp = fRotStick - (D3DX_PI * 0.5f);
+	useful::NormalizeRot(fTemp);
+
+	// プレイヤー方向からスティックの方向を減算
+	float fRot = fRotPlayer - fTemp;
+	useful::NormalizeRot(fRot);
+
+	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
+	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
-		// 分身が存在していない場合方向を決めて分身する
-		if (CPlayerClone::GetList() == nullptr)
-		{
-			CPlayerClone::Create(m_fChargeTime);
-
-			// 士気力が減少する
-			m_pTensionGauge->AddNum(-500);
-			return;
-		}
-
-		// 分身リストの先頭を取得する
-		std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();
-		auto itrBegin = list.begin();
-
-		// 分身リストの最後尾を取得する
-		auto itrEnd = list.end();
-
-		// 自身に一致するポインタの一つ前に追従する
-		for (auto itr = itrBegin; itr != itrEnd; itr++)
-		{
-			// ポインタを取得
-			CPlayerClone* cull = *itr;
-
-			// 歩行中の分身がいたら追従型の分身を出す
-			if (cull->GetAction() == CPlayerClone::ACTION_MOVE)
-			{
-				CPlayerClone::Create();
-				return;
-			}
-		}
-
-		// 以上の条件にそぐわない場合方向を決める分身を出す
-		CPlayerClone::Create(m_fChargeTime);
-
-		// 士気力が減少する
-		m_pTensionGauge->AddNum(-500);
+		CPlayerClone::Create();
+		return;
 	}
+
+	// 分身の移動量を算出する
+	D3DXVECTOR3 move = D3DXVECTOR3
+	(
+		m_fMove * cosf(-fRotStick),
+		0.0f,
+		m_fMove * sinf(-fRotStick)
+	);
+
+	// 歩く分身を出す
+	CPlayerClone::Create(move);
 }
 
 //==========================================
@@ -1135,3 +1157,106 @@ void CPlayer::SaveReset()
 	// セーブした時点での士気力にする
 	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
+
+#ifdef _DEBUG
+
+//==========================================
+// キーボードの操作処理
+//==========================================
+void CPlayer::KeyboardControl(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	float fStickRot = 0.0f;
+
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	if (pKey->IsPress(DIK_W))
+	{ // 前関係移動
+		if (pKey->IsPress(DIK_A))
+		{
+			fStickRot = (D3DX_PI * 0.75f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			fStickRot = (D3DX_PI * -0.75f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			fStickRot = D3DX_PI;
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+	}
+	else if (pKey->IsPress(DIK_S))
+	{ // 後ろ関係移動
+		if (pKey->IsPress(DIK_A))
+		{
+			fStickRot = (D3DX_PI * 0.25f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			fStickRot = (D3DX_PI * -0.25f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			fStickRot = 0.0f;
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+	}
+	else if (pKey->IsPress(DIK_A))
+	{ // 左関係移動
+		fStickRot = (D3DX_PI * 0.5f);
+
+		// 位置を設定
+		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+	}
+	else if (pKey->IsPress(DIK_D))
+	{ // 右関係移動
+		fStickRot = (D3DX_PI * -0.5f);
+
+		// 位置を設定
+		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+	}
+
+	// 向きを設定
+	m_destRot.y = fStickRot;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 位置を適用
+	SetVec3Position(pos);
+	SetVec3Rotation(m_destRot);
+}
+
+#endif // _DEBUG

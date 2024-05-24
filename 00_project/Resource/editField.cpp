@@ -1,4 +1,4 @@
-#if 0
+#if 1
 //============================================================
 //
 //	エディットフィールド処理 [editField.cpp]
@@ -21,8 +21,8 @@
 #define NAME_CREATE		("0")	// 生成表示
 #define KEY_RELEASE		(DIK_9)	// 破棄キー
 #define NAME_RELEASE	("9")	// 破棄表示
-#define KEY_TYPE		(DIK_2)	// 種類変更キー
-#define NAME_TYPE		("2")	// 種類変更表示
+#define KEY_TYPE		(DIK_3)	// 種類変更キー
+#define NAME_TYPE		("3")	// 種類変更表示
 
 #define KEY_UP_SIZE_X		(DIK_T)	// X軸拡大キー
 #define NAME_UP_SIZE_X		("T")	// X軸拡大表示
@@ -38,9 +38,12 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(50.0f, 50.0f);	// 大きさ
+	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_field.txt";	// セーブテキストパス
+
+	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(editstage::SIZE, editstage::SIZE);	// 大きさ
 	const float	MAX_SIZE = 10000.0f;	// 最大の大きさ
 	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
+	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
 }
 
 //************************************************************
@@ -55,6 +58,7 @@ CEditField::CEditField()
 
 	// メンバ変数をクリア
 	m_pField = nullptr;	// フィールド情報
+	m_bSave = false;	// 保存状況
 	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// フィールド配置情報
 
 #endif	// _DEBUG
@@ -76,31 +80,35 @@ HRESULT CEditField::Init(void)
 {
 #if _DEBUG
 
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
+	// メンバ変数を初期化
+	m_pField			 = nullptr;				// 情報
+	m_infoCreate.type	 = (CField::EType)0;	// 種類
+	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
+	m_infoCreate.col	 = XCOL_WHITE;			// 色
+	m_infoCreate.part	 = GRID2_ONE;			// 分割数
+	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
+	m_bSave				 = false;				// 保存状況
+
+	// 親クラスの初期化
+	if (FAILED(CEditorObject::Init()))
+	{ // 初期化に失敗した場合
 
 		// 失敗を返す
 		assert(false);
 		return E_FAIL;
 	}
 
-	// メンバ変数を初期化
-	m_pField			 = nullptr;			// 情報
-	m_infoCreate.type	= (CField::EType)0;	// 種類
-	m_infoCreate.size	 = INIT_SIZE;		// 大きさ
-	m_infoCreate.part	 = GRID2_ONE;		// テクスチャ分割数X
-
 	// フィールドの生成
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	m_pField = CField::Create
 	( // 引数
-		m_infoCreate.type,	// 種類
-		posEdit,			// 位置
-		VEC3_ZERO,			// 向き
-		m_infoCreate.size,	// 大きさ
-		m_infoCreate.col,	// 色
-		m_infoCreate.part	// 分割数
+		m_infoCreate.type,		// 種類
+		posEdit,				// 位置
+		VEC3_ZERO,				// 向き
+		m_infoCreate.size,		// 大きさ
+		m_infoCreate.col,		// 色
+		m_infoCreate.part,		// 分割数
+		m_infoCreate.texPart	// テクスチャ分割数
 	);
 	if (m_pField == nullptr)
 	{ // 生成に失敗した場合
@@ -132,15 +140,14 @@ void CEditField::Uninit(void)
 {
 #if _DEBUG
 
-	if (m_pField != nullptr)
-	{ // 生成に失敗した場合
+	// 親クラスの終了
+	CEditorObject::Uninit();
 
-		// フィールドの色の全初期化
-		InitAllColorField();
+	// フィールドの色の全初期化
+	InitAllColorField();
 
-		// フィールドの終了
-		m_pField->Uninit();
-	}
+	// フィールドの終了
+	SAFE_UNINIT(m_pField);
 
 #endif	// _DEBUG
 }
@@ -152,14 +159,8 @@ void CEditField::Update(void)
 {
 #if _DEBUG
 
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
+	// 親クラスの更新
+	CEditorObject::Update();
 
 	// 大きさの更新
 	UpdateSizing();
@@ -183,24 +184,21 @@ void CEditField::Update(void)
 }
 
 //============================================================
-//	操作表示の描画処理
+//	保存状況取得処理
 //============================================================
-void CEditField::DrawDebugControl(void)
+bool CEditField::IsSave(void)
 {
-	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
-}
+#if _DEBUG
 
-//============================================================
-//	情報表示の描画処理
-//============================================================
-void CEditField::DrawDebugInfo(void)
-{
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
+	// 保存状況を返す
+	return m_bSave;
+
+#else	// NDEBUG
+
+	// falseを返す
+	return false;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -208,8 +206,12 @@ void CEditField::DrawDebugInfo(void)
 //============================================================
 void CEditField::SaveInfo(void)
 {
+#if _DEBUG
+
 	// 現在の情報を保存
 	//m_save = m_infoCreate;
+
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -217,99 +219,46 @@ void CEditField::SaveInfo(void)
 //============================================================
 void CEditField::LoadInfo(void)
 {
+#if _DEBUG
+
 	// 保存情報を設定
 	//m_infoCreate = m_save;
+
+#endif	// _DEBUG
 }
 
 //============================================================
-//	保存処理
+//	操作表示の描画処理
 //============================================================
-void CEditField::Save(FILE *pFile)
+void CEditField::DrawDebugControl(void)
 {
 #if _DEBUG
 
-#if 0
+	// 操作表示の描画
+	CEditorObject::DrawDebugControl();
 
-	if (pFile != nullptr)
-	{ // ファイルが存在する場合
+	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_TRIGGER);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
 
-		// 見出しを書き出し
-		fprintf(pFile, "#------------------------------------------------------------------------------\n");
-		fprintf(pFile, "#	フィールドの配置情報\n");
-		fprintf(pFile, "#------------------------------------------------------------------------------\n");
+#endif	// _DEBUG
+}
 
-		// 情報開始地点を書き出し
-		fprintf(pFile, "STAGE_BLOCKSET\n\n");
+//============================================================
+//	情報表示の描画処理
+//============================================================
+void CEditField::DrawDebugInfo(void)
+{
+#if _DEBUG
 
-		for (int nCntPri = 0; nCntPri < MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+	// 情報表示の描画
+	CEditorObject::DrawDebugInfo();
 
-			// ポインタを宣言
-			CObject *pObjectTop = CObject::GetTop(nCntPri);	// 先頭オブジェクト
-
-			if (pObjectTop != nullptr)
-			{ // 先頭が存在する場合
-
-				// ポインタを宣言
-				CObject *pObjCheck = pObjectTop;	// オブジェクト確認用
-
-				while (pObjCheck != nullptr)
-				{ // オブジェクトが使用されている場合繰り返す
-
-					// ポインタを宣言
-					CObject *pObjectNext = pObjCheck->GetNext();	// 次オブジェクト
-
-					if (pObjCheck->GetLabel() != CObject::LABEL_BLOCK)
-					{ // オブジェクトラベルがフィールドではない場合
-
-						// 次のオブジェクトへのポインタを代入
-						pObjCheck = pObjectNext;
-
-						// 次の繰り返しに移行
-						continue;
-					}
-
-					if (pObjCheck == (CObject*)m_pField)
-					{ // 同じアドレスだった場合
-
-						// 次のオブジェクトへのポインタを代入
-						pObjCheck = pObjectNext;
-
-						// 次の繰り返しに移行
-						continue;
-					}
-
-					// フィールドの情報を取得
-					D3DXVECTOR3 posField = pObjCheck->GetVec3Position();		// 位置
-					D3DXVECTOR3 rotField = pObjCheck->GetVec3Rotation();		// 向き
-					D3DXVECTOR3 sizeField = pObjCheck->GetVec3Sizing();		// 大きさ
-					D3DXVECTOR2 partTexXField = pObjCheck->GetTexturePatternX();	// テクスチャ分割X
-					D3DXVECTOR2 partTexYField = pObjCheck->GetTexturePatternY();	// テクスチャ分割Y
-					D3DXVECTOR2 partTexZField = pObjCheck->GetTexturePatternZ();	// テクスチャ分割Z
-					int nType = pObjCheck->GetType();	// 種類
-
-					// 情報を書き出し
-					fprintf(pFile, "	BLOCKSET\n");
-					fprintf(pFile, "		TYPE = %d\n", nType);
-					fprintf(pFile, "		POS = %.2f %.2f %.2f\n", posField.x, posField.y, posField.z);
-					fprintf(pFile, "		ROT = %.2f %.2f %.2f\n", rotField.x, rotField.y, rotField.z);
-					fprintf(pFile, "		SIZE = %.2f %.2f %.2f\n", sizeField.x, sizeField.y, sizeField.z);
-					fprintf(pFile, "		PARTX = %.2f %.2f \n", partTexXField.x, partTexXField.y);
-					fprintf(pFile, "		PARTY = %.2f %.2f \n", partTexYField.x, partTexYField.y);
-					fprintf(pFile, "		PARTZ = %.2f %.2f \n", partTexZField.x, partTexZField.y);
-					fprintf(pFile, "	END_BLOCKSET\n\n");
-
-					// 次のオブジェクトへのポインタを代入
-					pObjCheck = pObjectNext;
-				}
-			}
-		}
-
-		// 情報終了地点を書き出し
-		fprintf(pFile, "END_STAGE_BLOCKSET\n\n");
-	}
-
-#endif
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[分割]\n", m_infoCreate.part.x, m_infoCreate.part.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d %d：[テクスチャ分割]\n", m_infoCreate.texPart.x, m_infoCreate.texPart.y);
 
 #endif	// _DEBUG
 }
@@ -374,22 +323,12 @@ void CEditField::UpdateSizing(void)
 //============================================================
 void CEditField::UpdateTexPart(void)
 {
-	// 変数を宣言
-	D3DXVECTOR3 partTex = VEC3_ZERO;	// テクスチャ分割数
-
-	// 分割数を設定
-	partTex.x = m_infoCreate.size.x / INIT_SIZE.x;
-	partTex.y = m_infoCreate.size.y / INIT_SIZE.y;
+	// テクスチャ分割数を設定
+	m_infoCreate.texPart.x = (int)(m_infoCreate.size.x / INIT_SIZE.x);
+	m_infoCreate.texPart.y = (int)(m_infoCreate.size.y / INIT_SIZE.y);
 
 	// テクスチャ分割数を設定
-	m_infoCreate.partX.x = partTex.z;
-	m_infoCreate.partX.y = partTex.y;
-	m_infoCreate.partY.x = partTex.x;
-	m_infoCreate.partY.y = partTex.z;
-
-	// テクスチャ分割数を割当
-	m_pField-(m_infoCreate.partX);
-	m_pField->SetTexturePatternY(m_infoCreate.partY);
+	m_pField->SetTexPattern(m_infoCreate.texPart);
 }
 
 //============================================================
@@ -415,17 +354,8 @@ void CEditField::ChangeType(void)
 void CEditField::CreateField(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
-
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
+	D3DXCOLOR colField = XCOL_WHITE;			// 色保存用
 
 	// フィールドを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
@@ -442,7 +372,7 @@ void CEditField::CreateField(void)
 		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, 1.0f));
 
 		// 未保存を設定
-		pEditManager->UnSave();
+		m_bSave = false;
 
 		//----------------------------------------------------
 		//	新しいフィールドの生成
@@ -450,12 +380,13 @@ void CEditField::CreateField(void)
 		// フィールドの生成
 		m_pField = CField::Create
 		( // 引数
-			m_infoCreate.type,	// 種類
-			posEdit,			// 位置
-			VEC3_ZERO,			// 向き
-			m_infoCreate.size,	// 大きさ
-			m_infoCreate.col,	// 色
-			m_infoCreate.part	// 分割数
+			m_infoCreate.type,		// 種類
+			posEdit,				// 位置
+			VEC3_ZERO,				// 向き
+			m_infoCreate.size,		// 大きさ
+			m_infoCreate.col,		// 色
+			m_infoCreate.part,		// 分割数
+			m_infoCreate.texPart	// テクスチャ分割数
 		);
 		assert(m_pField != nullptr);
 
@@ -489,15 +420,6 @@ void CEditField::ReleaseField(void)
 //============================================================
 void CEditField::DeleteCollisionField(const bool bRelase)
 {
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
-
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
@@ -509,19 +431,33 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 		// 同じアドレスだった場合次へ
 		if (rList == m_pField) { continue; }
 
-		D3DXVECTOR3 posField  = rList->GetVec3Position();	// フィールド位置
-		D3DXVECTOR3 sizeField = rList->GetVec3Sizing();		// フィールド大きさ
+		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
 
-		// TODO：判定きもいよー
+		// 自身の大きさを設定
+		D3DXVECTOR2 sizeThisField = m_pField->GetVec2Sizing();	// 自身の地面の大きさ
+		sizeThis.x = sizeThisField.x;	// 判定サイズXを設定
+		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
+		sizeThis.z = sizeThisField.y;	// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
+
+		// 対象の大きさを設定
+		D3DXVECTOR2 sizeOtherField = rList->GetVec2Sizing();	// 対象の地面の大きさ
+		sizeOther.x = sizeOtherField.x;	// 判定サイズXを設定
+		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
+		sizeOther.z = sizeOtherField.y;	// 判定サイズZを設定
+		sizeOther *= 0.5f;				// 判定サイズを半分に
+
 		// 矩形の当たり判定
 		if (collision::Box3D
 		( // 引数
 			posEdit,	// 判定位置
-			posField,	// 判定目標位置
-			m_pField->GetVec3Sizing(),
-			m_pField->GetVec3Sizing(),
-			sizeField,
-			sizeField
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
 		))
 		{ // 判定内だった場合
 
@@ -532,7 +468,7 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 				rList->Uninit();
 
 				// 未保存を設定
-				pEditManager->UnSave();
+				m_bSave = false;
 			}
 			else
 			{ // 破棄しない場合
@@ -565,5 +501,102 @@ void CEditField::InitAllColorField(void)
 		// 通常色を設定
 		rList->SetColor(XCOL_WHITE);
 	}
+}
+
+//============================================================
+//	保存処理
+//============================================================
+HRESULT CEditField::Save(void)
+{
+#if _DEBUG
+
+	// 地面のリストを取得
+	CListManager<CField> *pListManager = CField::GetList();	// リストマネージャー
+	std::list<CField*> listField;	// 地面リスト
+	if (pListManager != nullptr)
+	{ // リストマネージャーが生成されている場合
+
+		// リストを取得
+		listField = pListManager->GetList();
+	}
+
+	// ファイルを開く
+	std::ofstream  file(SAVE_PASS);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 見出しを書き出し
+	file << "#==============================================================================" << std::endl;
+	file << "#" << std::endl;
+	file << "#	ステージ地面配置のセーブデータ [save_field.txt]" << std::endl;
+	file << "#	Author : 藤田 勇一" << std::endl;
+	file << "#" << std::endl;
+	file << "#==============================================================================" << std::endl;
+	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
+
+	// フィールドの色の全初期化
+	InitAllColorField();
+
+	// 小数点書き出しの方法を指定
+	file << std::fixed << std::setprecision(DIGIT_FLOAT);
+
+	// 読み込み開始文字列を書き出し
+	file << "STAGE_FIELDSET\n" << std::endl;
+
+	for (const auto& rList : listField)
+	{ // 地面の総数分繰り返す
+
+		// 同じアドレスだった場合次へ
+		if (rList == m_pField) { continue; }
+
+		// 書き出す情報を取得
+		CField::EType type	= rList->GetType();			// 種類
+		D3DXVECTOR3 pos		= rList->GetVec3Position();	// 位置
+		D3DXVECTOR3 rot		= rList->GetVec3Rotation();	// 向き
+		D3DXVECTOR2 size	= rList->GetVec2Sizing();	// 大きさ
+		D3DXCOLOR col		= rList->GetColor();		// 色
+		POSGRID2 part		= rList->GetPattern();		// 分割数
+		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
+
+		// 向きを360度に変換
+		D3DXToDegree(rot);
+
+		// 情報を書き出し
+		file << "	FIELDSET" << std::endl;
+		file << "		TYPE	= " << type << std::endl;
+		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
+		file << "		COL		= " << col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
+		file << "		PART	= " << part.x << " " << part.y << std::endl;
+		file << "		TEXPART	= " << texPart.x << " " << texPart.y << std::endl;
+		file << "	END_FIELDSET\n" << std::endl;
+	}
+
+	// 読み込み終了文字列を書き出し
+	file << "END_STAGE_FIELDSET" << std::endl;
+
+	// フィールドの削除判定
+	DeleteCollisionField(false);
+
+	// 保存済みにする
+	m_bSave = true;
+
+	// 成功を返す
+	return S_OK;
+
+#else	// NDEBUG
+
+	// 成功を返す
+	return S_OK;
+
+#endif	// _DEBUG
 }
 #endif

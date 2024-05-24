@@ -72,6 +72,8 @@ public:
 	// メンバ関数
 	void SetTerrain(const ETerrain terrain);	// 地形設定
 	void SetType(const EType type);				// 種類設定
+	ETerrain GetTerrain(void) const	{ return m_terrain; }	// 地形取得
+	EType GetType(void) const		{ return m_type; }		// 種類取得
 
 private:
 	// 静的メンバ変数
@@ -80,6 +82,8 @@ private:
 
 	// メンバ変数
 	CListManager<CField>::AIterator m_iterator;	// イテレーター
+	ETerrain m_terrain;	// 地形
+	EType m_type;		// 種類
 };
 
 #endif	// _FIELD_H_

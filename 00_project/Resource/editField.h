@@ -1,4 +1,4 @@
-#if 0
+#if 1
 //============================================================
 //
 //	エディットフィールドヘッダー [editField.h]
@@ -14,14 +14,14 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "editStage.h"
+#include "editorObject.h"
 #include "field.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // エディットフィールドクラス
-class CEditField : public CEditStage
+class CEditField : public CEditorObject
 {
 public:
 	// コンストラクタ
@@ -44,11 +44,12 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
+	HRESULT Save(void) override;	// 保存
+	bool IsSave(void) override;		// 保存状況取得
 	void SaveInfo(void) override;	// 情報保存
 	void LoadInfo(void) override;	// 情報読込
 	void DrawDebugControl(void) override;	// 操作表示描画
 	void DrawDebugInfo(void) override;		// 情報表示描画
-	void Save(FILE *pFile) override;		// 保存
 
 private:
 	// メンバ関数
@@ -64,6 +65,7 @@ private:
 	// メンバ変数
 	CField *m_pField;	// フィールド情報
 	SInfo m_infoCreate;	// フィールド配置情報
+	bool m_bSave;		// 保存状況
 };
 
 #endif	// _EDIT_FIELD_H_

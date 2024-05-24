@@ -13,29 +13,27 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_SAVE			(DIK_F9)	// 保存キー
-#define NAME_SAVE			("F9")		// 保存表示
-#define KEY_CHANGE_TYPE		(DIK_1)		// エディットタイプ変更キー
-#define NAME_CHANGE_TYPE	("1")		// エディットタイプ変更表示
+#define KEY_SAVE	(DIK_F9)	// 保存キー
+#define NAME_SAVE	("F9")		// 保存表示
+#define KEY_CHANGE_EDITOR	(DIK_1)	// エディットタイプ変更キー
+#define NAME_CHANGE_EDITOR	("1")	// エディットタイプ変更表示
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char* SAVE_TXT = "data\\TXT\\save_stage.txt";	// ステージセーブテキスト
-
-	// 種類名
-	const char *TYPE_NAME[] =
+	const char *TYPE_NAME[] =	// エディットタイプ名
 	{
 		"ステージ",
+		"当たり判定",
 	};
 }
 
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TYPE_NAME) == CEditManager::TYPE_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(TYPE_NAME) == CEditor::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	親クラス [CEditManager] のメンバ関数
@@ -48,9 +46,10 @@ CEditManager::CEditManager()
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_type	= TYPE_STAGE;	// エディットタイプ
-	m_bSave	= false;		// 保存状況
-	m_bEdit	= false;		// エディット状況
+	m_pEditor	= nullptr;	// エディター情報
+	m_bEdit		= false;	// エディット状況
+	m_type		= CEditor::TYPE_STAGE;	// エディタータイプ
+
 
 #endif	// _DEBUG
 }
@@ -72,9 +71,9 @@ HRESULT CEditManager::Init(void)
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_type	= TYPE_STAGE;	// エディットタイプ
-	m_bSave	= false;		// 保存状況
-	m_bEdit	= false;		// エディット状況
+	m_pEditor	= nullptr;	// エディター情報
+	m_bEdit		= false;	// エディット状況
+	m_type		= CEditor::TYPE_STAGE;	// エディタータイプ
 
 	// 成功を返す
 	return S_OK;
@@ -93,6 +92,10 @@ HRESULT CEditManager::Init(void)
 void CEditManager::Uninit(void)
 {
 #if _DEBUG
+
+	// エディター情報の破棄
+	SAFE_REF_RELEASE(m_pEditor);
+
 #endif	// _DEBUG
 }
 
@@ -106,11 +109,15 @@ void CEditManager::Update(void)
 	// エディットモードじゃない場合抜ける
 	if (!m_bEdit) { return; }
 
-	// エディットタイプの変更
-	ChangeType();
+	// エディタータイプ変更
+	ChangeEditorType();
 
-	// ステージ保存
-	SaveStage();
+	// エディター情報の更新
+	assert(m_pEditor != nullptr);
+	m_pEditor->Update();
+
+	// 保存操作
+	Save();
 
 	// 操作表示の描画
 	DrawDebugControl();
@@ -122,52 +129,16 @@ void CEditManager::Update(void)
 }
 
 //============================================================
-//	未保存の設定処理
-//============================================================
-void CEditManager::UnSave(void)
-{
-	// 保存していない状況にする
-	m_bSave = false;
-}
-
-//============================================================
 //	エディット状況の切替処理
 //============================================================
 void CEditManager::SwitchEnableEdit(void)
 {
+#if _DEBUG
+
 	// エディット状況を反転
-	m_bEdit = !m_bEdit;
+	SetEnableEdit(!m_bEdit);
 
-#if 0
-	if (m_bEdit)
-	{ // エディットONの場合
-
-		// エディットステージの生成
-		if (m_pStage == nullptr)
-		{ // エディットステージが使用されていない場合
-
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
-		}
-
-		// 情報読込
-		m_pStage->LoadInfo();
-	}
-	else
-	{ // エディットOFFの場合
-
-		// 情報保存
-		m_pStage->SaveInfo();
-
-		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
-
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
-		}
-	}
-#endif
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -175,42 +146,36 @@ void CEditManager::SwitchEnableEdit(void)
 //============================================================
 void CEditManager::SetEnableEdit(const bool bEdit)
 {
+#if _DEBUG
+
 	// 引数のエディット状況にする
 	m_bEdit = bEdit;
 
-#if 0
-	if (bEdit)
-	{ // エディットモードの場合
+	if (m_bEdit)
+	{ // エディットONの場合
 
 		// エディットステージの生成
-		if (m_pStage == nullptr)
+		if (m_pEditor == nullptr)
 		{ // エディットステージが使用されていない場合
 
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
+			m_pEditor = CEditor::Create(this, m_type);
+			assert(m_pEditor != nullptr);	// 生成失敗
 		}
+
+		// 情報読込
+		m_pEditor->LoadInfo();
 	}
 	else
-	{ // エディットモードではない場合
+	{ // エディットOFFの場合
+
+		// 情報保存
+		m_pEditor->SaveInfo();
 
 		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
-
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
-		}
+		SAFE_REF_RELEASE(m_pEditor);
 	}
-#endif
-}
 
-//============================================================
-//	エディット状況取得処理
-//============================================================
-bool CEditManager::IsEdit(void) const
-{
-	// エディット状況を返す
-	return m_bEdit;
+#endif	// _DEBUG
 }
 
 //============================================================
@@ -269,43 +234,26 @@ void CEditManager::Release(CEditManager *&prEditManager)
 }
 
 //============================================================
-//	エディターの変更処理
+//	エディタータイプの変更処理
 //============================================================
-void CEditManager::ChangeType(void)
+void CEditManager::ChangeEditorType(void)
 {
-	// エディターのタイプ変更
+	// エディタータイプの変更
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (pKeyboard->IsTrigger(KEY_CHANGE_TYPE))
+	if (pKeyboard->IsTrigger(KEY_CHANGE_EDITOR))
 	{
-#if 0
-		// 情報保存
-		m_pStage->SaveInfo();
+		// エディター情報の破棄
+		SAFE_REF_RELEASE(m_pEditor);
 
-		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
+		// エディタータイプの変更
+		m_type = (CEditor::EType)((m_type + 1) % CEditor::TYPE_MAX);
 
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
+		if (m_pEditor == nullptr)
+		{
+			// エディター情報の生成
+			m_pEditor = CEditor::Create(this, m_type);
+			assert(m_pEditor != nullptr);	// 生成失敗
 		}
-
-		// エディットタイプの変更
-		m_type = (EType)((m_type + 1) % TYPE_MAX);
-
-		// エディットステージの生成
-		if (m_pStage == nullptr)
-		{ // エディットステージが使用されていない場合
-
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
-		}
-
-		// 情報読込
-		m_pStage->LoadInfo();
-#else
-		// エディットタイプの変更
-		m_type = (EType)((m_type + 1) % TYPE_MAX);
-#endif
 	}
 }
 
@@ -318,8 +266,11 @@ void CEditManager::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット操作]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "ステージ保存：[%s+%s]\n", NAME_DOUBLE, NAME_SAVE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_TYPE);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットタイプ変更：[%s]\n", NAME_CHANGE_EDITOR);
+
+	// エディター情報の操作表示
+	assert(m_pEditor != nullptr);
+	m_pEditor->DrawDebugControl();
 }
 
 //============================================================
@@ -330,15 +281,18 @@ void CEditManager::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "[エディット情報]　\n");
 	DebugProc::Print(DebugProc::POINT_RIGHT, "======================================\n");
-	DebugProc::Print(DebugProc::POINT_RIGHT, (m_bSave) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットタイプ]\n", TYPE_NAME[m_type]);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "--------------------------------------\n");
+	DebugProc::Print(DebugProc::POINT_RIGHT, (m_pEditor->IsSave()) ? "保存済：[保存状況]\n" : "未保存：[保存状況]\n");
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディタータイプ]\n", TYPE_NAME[m_type]);
+
+	// エディター情報の情報表示
+	assert(m_pEditor != nullptr);
+	m_pEditor->DrawDebugInfo();
 }
 
 //============================================================
-//	ステージ保存処理
+//	保存処理
 //============================================================
-void CEditManager::SaveStage(void)
+HRESULT CEditManager::Save(void)
 {
 	// ステージを保存
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
@@ -346,92 +300,18 @@ void CEditManager::SaveStage(void)
 	{
 		if (pKeyboard->IsTrigger(KEY_SAVE))
 		{
-			// 保存処理
-			Save();
+			// 現在のエディタータイプ情報を保存
+			assert(m_pEditor != nullptr);
+			if (FAILED(m_pEditor->Save()))
+			{ // セーブに失敗した場合
 
-			// 保存した状態にする
-			m_bSave = true;
-		}
-	}
-}
-
-//============================================================
-//	保存処理
-//============================================================
-void CEditManager::Save(void)
-{
-	// ポインタを宣言
-	FILE *pFile = nullptr;	// ファイルポインタ
-
-	// ファイルを書き出し形式で開く
-	pFile = fopen(SAVE_TXT, "w");
-
-	if (pFile != nullptr)
-	{ // ファイルが開けた場合
-
-		// 見出しを書き出し
-		fprintf(pFile, "#==============================================================================\n");
-		fprintf(pFile, "#\n");
-		fprintf(pFile, "#	ステージセーブテキスト [save_stage.txt]\n");
-		fprintf(pFile, "#	Author : you\n");
-		fprintf(pFile, "#\n");
-		fprintf(pFile, "#==============================================================================\n");
-		fprintf(pFile, "---------->--<---------- ここから下を コピーし貼り付け ---------->--<----------\n\n");
-
-#if 0
-		// 情報保存
-		m_pStage->SaveInfo();
-
-		for (int nCntThing = 0; nCntThing < CEditStage::THING_MAX; nCntThing++)
-		{ // 配置物の総数分繰り返す
-
-			// エディットステージの破棄
-			if (m_pStage != nullptr)
-			{ // エディットステージが使用されている場合
-
-				HRESULT hr = CEditStage::Release(m_pStage);
-				assert(hr != E_FAIL);	// 破棄失敗
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
 			}
-
-			// エディットステージの生成
-			if (m_pStage == nullptr)
-			{ // エディットステージが使用されていない場合
-
-				m_pStage = CEditStage::Create(this, (CEditStage::EThing)nCntThing);
-				assert(m_pStage != nullptr);	// 生成失敗
-			}
-
-			// 配置物の保存
-			m_pStage->Save(pFile);
 		}
-
-		// エディットステージの破棄
-		if (m_pStage != nullptr)
-		{ // エディットステージが使用されている場合
-
-			HRESULT hr = CEditStage::Release(m_pStage);
-			assert(hr != E_FAIL);	// 破棄失敗
-		}
-
-		// エディットステージの生成
-		if (m_pStage == nullptr)
-		{ // エディットステージが使用されていない場合
-
-			m_pStage = CEditStage::Create(this, m_thing);
-			assert(m_pStage != nullptr);	// 生成失敗
-		}
-
-		// 情報読込
-		m_pStage->LoadInfo();
-#endif
-
-		// ファイルを閉じる
-		fclose(pFile);
 	}
-	else
-	{ // ファイルが開けなかった場合
 
-		// エラーメッセージボックス
-		MessageBox(nullptr, "ステ－ジセーブファイルの書き出しに失敗！", "警告！", MB_ICONWARNING);
-	}
+	// 成功を返す
+	return S_OK;
 }

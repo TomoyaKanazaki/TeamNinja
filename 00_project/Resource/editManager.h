@@ -11,6 +11,11 @@
 #define _EDIT_MANAGER_H_
 
 //************************************************************
+//	インクルードファイル
+//************************************************************
+#include "editor.h"
+
+//************************************************************
 //	マクロ定義
 //************************************************************
 #define KEY_DOUBLE		(DIK_LCONTROL)	// 二重化キー
@@ -27,13 +32,6 @@
 class CEditManager
 {
 public:
-	// 種類列挙
-	enum EType
-	{
-		TYPE_STAGE = 0,	// ステージ種類
-		TYPE_MAX		// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CEditManager();
 
@@ -44,10 +42,9 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void Update(void);	// 更新
-	void UnSave(void);	// 未保存設定
-	void SwitchEnableEdit(void);			// エディット状況切替
-	void SetEnableEdit(const bool bEdit);	// エディット状況設定
-	bool IsEdit(void) const;				// エディット状況取得
+	void SwitchEnableEdit(void);				// エディット状況切替
+	void SetEnableEdit(const bool bEdit);		// エディット状況設定
+	bool IsEdit(void) const { return m_bEdit; }	// エディット状況取得
 
 	// 静的メンバ関数
 	static CEditManager *Create(void);	// 生成
@@ -55,16 +52,15 @@ public:
 
 private:
 	// メンバ関数
-	void ChangeType(void);			// エディター変更
+	void ChangeEditorType(void);	// エディタータイプ変更
 	void DrawDebugControl(void);	// 操作表示描画
 	void DrawDebugInfo(void);		// 情報表示描画
-	void SaveStage(void);			// ステージ保存
-	void Save(void);				// 保存
+	HRESULT Save(void);				// 保存
 
 	// メンバ変数
-	EType m_type;	// エディットタイプ
-	bool m_bSave;	// 保存状況
-	bool m_bEdit;	// エディット状況
+	CEditor *m_pEditor;		// エディター情報
+	bool m_bEdit;			// エディット状況
+	CEditor::EType m_type;	// エディタータイプ
 };
 
 #endif	// _EDIT_MANAGER_H_
