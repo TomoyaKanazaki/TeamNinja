@@ -64,9 +64,10 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 m_pShadow(nullptr),			// 影の情報
 m_pOrbit(nullptr),			// 軌跡の情報
 m_move(0.0f, 0.0f, 0.0f),	// 移動量
-m_Action(ACTION_NONE),		// 行動
+m_Action(ACTION_CHASE),		// 行動
 m_fDeleteTimer(0.0f),		// 自動消滅タイマー
-m_fChargeTimer(0.0f)		// ため時間タイマー
+m_fChargeTimer(0.0f),		// ため時間タイマー
+m_pGimmick(nullptr)			// ギミックのポインタ
 {
 
 }
@@ -88,9 +89,10 @@ HRESULT CPlayerClone::Init(void)
 	m_pShadow = nullptr;		// 影の情報
 	m_pOrbit = nullptr;		// 軌跡の情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
-	m_Action = ACTION_NONE; // 行動
+	m_Action = ACTION_CHASE; // 行動
 	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
 	m_fChargeTimer = 0.0f; // ため時間タイマー
+	m_pGimmick = nullptr; // ギミックのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -196,7 +198,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 各種行動を起こす
 	switch (m_Action)
 	{
-	case ACTION_MOVE:
+	case ACTION_MOVE: // 歩行
 
 		// 移動
 		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
@@ -211,19 +213,20 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
-	case ACTION_NONE:
+	case ACTION_CHASE: // 追従
 
 		// 一つ前を追いかける
 		ChasePrev();
 
 		break;
 
+	case ACTION_WAIT: // ギミック待機
+
+		break;
+
 	default:
 		break;
 	}
-
-	// ギミックとの当たり判定
-	CollisionGimmick();
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
@@ -296,6 +299,18 @@ bool CPlayerClone::Hit(const int nDamage)
 	if (IsDeath()) { return false; }	// 死亡済み
 
 	return true;
+}
+
+//==========================================
+//  ギミックのポインタを取得する
+//==========================================
+void CPlayerClone::SetGimmick(CGimmick* gimmick)
+{
+	// 引数をポインタに設定する
+	m_pGimmick = gimmick;
+
+	// ギミック待機状態になる
+	m_Action = ACTION_WAIT;
 }
 
 //============================================================
@@ -577,7 +592,7 @@ void CPlayerClone::ChasePrev()
 			prev = *itr;
 
 			// 前が追従していない場合
-			if (prev->GetAction() != ACTION_NONE)
+			if (prev->GetAction() != ACTION_CHASE)
 			{
 				// 一つ前が先頭でない場合次に進む
 				if (prev != *itrBegin) { continue; }
@@ -640,44 +655,25 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 	SetVec3Rotation(rot);
 }
 
-
 //==========================================
-// ギミックの当たり判定
+//  ギミック待機
 //==========================================
-void CPlayerClone::CollisionGimmick(void)
+void CPlayerClone::Wait()
 {
-	// ギミックがなかった場合抜ける
-	if (CGimmick::GetList() == nullptr) { return; }
-	
-	std::list<CGimmick*> list = CGimmick::GetList()->GetList();	// リストを取得
-	auto gimBegin = list.begin();			// 最初のギミック
-	auto gimEnd = list.end();				// 最後のギミック
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
-	D3DXVECTOR3 size = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);		// サイズ
-	D3DXVECTOR3 posGim = VEC3_ZERO;			// ギミックの位置
-	D3DXVECTOR3 sizeGim = VEC3_ZERO;		// ギミックのサイズ
+	// ギミックがnullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
 
-	for (auto gim : list)
+	// ギミックの位置に移動する
+	SetVec3Position(m_pGimmick->GetVec3Position());
+
+	// ギミックがアクティブ状態なら
+	if (m_pGimmick->IsActive())
 	{
-		// 位置とサイズを取得
-		posGim = gim->GetVec3Position();
-		sizeGim = gim->GetVec3Sizing() / 2;
-
-		if (collision::Box2D
-		(
-			pos,		// 判定位置
-			posGim,		// 判定目標位置
-			size,		// 判定サイズ(右・上・後)
-			size,		// 判定サイズ(左・下・前)
-			sizeGim,	// 判定目標サイズ(右・上・後)
-			sizeGim		// 判定目標サイズ(左・下・前)
-		))
-		{ // 四角の中に入った場合
-
-		}
-		else
-		{ // 入ってなかった場合
-
+		// ギミックに対応したステータスを適用する
+		switch (m_pGimmick->GetType())
+		{
+		default:
+			break;
 		}
 	}
 }

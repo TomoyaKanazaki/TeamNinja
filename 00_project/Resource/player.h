@@ -134,6 +134,13 @@ private:
 	void ControlClone(); // 分身の処理
 	void SaveReset(); // 直前のチェックポイントに帰る
 
+#ifdef _DEBUG
+
+	void KeyboardControl(void);		// キーボードの操作処理
+
+#endif // _DEBUG
+
+
 	// 静的メンバ変数
 	static CListManager<CPlayer> *m_pList;	// オブジェクトリスト
 

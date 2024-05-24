@@ -1,6 +1,6 @@
 //============================================================
 //
-//	ジャンプ台処理 [gimmick_jumptable.cpp]
+//	アクションギミック処理 [gimmick_action.cpp]
 //	Author：小原立暉
 //
 //============================================================
@@ -8,15 +8,17 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "gimmick_jumptable.h"
+#include "gimmick_action.h"
 
 //************************************************************
-//	子クラス [CGimmickJumpTable] のメンバ関数
+//	子クラス [CGimmickAction] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmickJumpTable::CGimmickJumpTable() : CGimmickAction()
+CGimmickAction::CGimmickAction() : CGimmick(),
+m_nNumClone(0),
+m_bActive(false)
 {
 
 }
@@ -24,7 +26,7 @@ CGimmickJumpTable::CGimmickJumpTable() : CGimmickAction()
 //============================================================
 //	デストラクタ
 //============================================================
-CGimmickJumpTable::~CGimmickJumpTable()
+CGimmickAction::~CGimmickAction()
 {
 
 }
@@ -32,10 +34,10 @@ CGimmickJumpTable::~CGimmickJumpTable()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CGimmickJumpTable::Init(void)
+HRESULT CGimmickAction::Init(void)
 {
 	// オブジェクト3Dの初期化
-	if (FAILED(CGimmickAction::Init()))
+	if (FAILED(CGimmick::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -50,26 +52,26 @@ HRESULT CGimmickJumpTable::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CGimmickJumpTable::Uninit(void)
+void CGimmickAction::Uninit(void)
 {
 	// オブジェクト3Dの終了
-	CGimmickAction::Uninit();
+	CGimmick::Uninit();
 }
 
 //============================================================
 //	更新処理
 //============================================================
-void CGimmickJumpTable::Update(const float fDeltaTime)
+void CGimmickAction::Update(const float fDeltaTime)
 {
 	// オブジェクト3Dの更新
-	CGimmickAction::Update(fDeltaTime);
+	CGimmick::Update(fDeltaTime);
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CGimmickJumpTable::Draw(CShader* pShader)
+void CGimmickAction::Draw(CShader* pShader)
 {
 	// オブジェクト3Dの描画
-	CGimmickAction::Draw(pShader);
+	CGimmick::Draw(pShader);
 }

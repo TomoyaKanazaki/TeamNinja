@@ -350,6 +350,9 @@ void CPlayer::Update(const float fDeltaTime)
 		RecoverJust();
 	}
 
+	// キーボード操作処理
+	KeyboardControl();
+
 #endif
 }
 
@@ -1154,3 +1157,106 @@ void CPlayer::SaveReset()
 	// セーブした時点での士気力にする
 	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
+
+#ifdef _DEBUG
+
+//==========================================
+// キーボードの操作処理
+//==========================================
+void CPlayer::KeyboardControl(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	float fStickRot = 0.0f;
+
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	if (pKey->IsPress(DIK_W))
+	{ // 前関係移動
+		if (pKey->IsPress(DIK_A))
+		{
+			fStickRot = (D3DX_PI * 0.75f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			fStickRot = (D3DX_PI * -0.75f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			fStickRot = D3DX_PI;
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+	}
+	else if (pKey->IsPress(DIK_S))
+	{ // 後ろ関係移動
+		if (pKey->IsPress(DIK_A))
+		{
+			fStickRot = (D3DX_PI * 0.25f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			fStickRot = (D3DX_PI * -0.25f);
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			fStickRot = 0.0f;
+
+			// 位置を設定
+			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+		}
+	}
+	else if (pKey->IsPress(DIK_A))
+	{ // 左関係移動
+		fStickRot = (D3DX_PI * 0.5f);
+
+		// 位置を設定
+		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+	}
+	else if (pKey->IsPress(DIK_D))
+	{ // 右関係移動
+		fStickRot = (D3DX_PI * -0.5f);
+
+		// 位置を設定
+		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
+		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
+	}
+
+	// 向きを設定
+	m_destRot.y = fStickRot;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 位置を適用
+	SetVec3Position(pos);
+	SetVec3Rotation(m_destRot);
+}
+
+#endif // _DEBUG
