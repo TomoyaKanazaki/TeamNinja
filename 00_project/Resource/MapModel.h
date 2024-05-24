@@ -55,13 +55,16 @@ public:
 	void Update(const float fDeltaTime) override;		//更新
 	void Draw(CShader* pShader = nullptr) override;		//描画
 
+	void ChangeModel(void);
+
 	//静的メンバ関数
 	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize=VEC3_ONE); //生成処理
 
 private:
-	void ChangeModel(void);
-
+	
 	void Collision(void);
+
+	void Rotate(void);
 
 	static int m_nNumAll;						//総数
 	static const char* mc_apModelFile[];		//モデル定数
