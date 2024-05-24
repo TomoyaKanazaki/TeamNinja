@@ -37,7 +37,6 @@ CStage::CStage()
 {
 	// メンバ変数をクリア
 	memset(&m_stageLimit,	0, sizeof(m_stageLimit));	// 範囲
-	memset(&m_scenery,		0, sizeof(m_scenery));		// 景色情報
 	memset(&m_sky,			0, sizeof(m_sky));			// 空情報
 	memset(&m_liquid,		0, sizeof(m_liquid));		// 液体情報
 }
@@ -58,10 +57,6 @@ HRESULT CStage::Init(void)
 	// メンバ変数を初期化
 	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
 
-	// 景色の情報を初期化
-	m_scenery.ppScenery = nullptr;	// 景色の情報
-	m_scenery.nNum = 0;				// 景色の総数
-
 	// 空の情報を初期化
 	m_sky.ppSky = nullptr;	// 空の情報
 	m_sky.nNum = 0;			// 空の総数
@@ -79,9 +74,6 @@ HRESULT CStage::Init(void)
 //============================================================
 void CStage::Uninit(void)
 {
-	// 景色の破棄
-	SAFE_DEL_ARRAY(m_scenery.ppScenery);
-
 	// 空の破棄
 	SAFE_DEL_ARRAY(m_sky.ppSky);
 
@@ -810,10 +802,9 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
 	POSGRID2 texPart = GRID2_ZERO;	// テクスチャ分割数の代入用
 
+	int nType = 0;			// 種類の代入用
 	float fRadius = 0.0f;	// 半径の代入用
 	float fHeight = 0.0f;	// 縦幅の代入用
-	int nTextureID = 0;		// テクスチャインデックスの代入用
-	int nCurrentID = 0;		// 現在の読み込み数の保存用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -830,48 +821,13 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 	if (strcmp(pString, "STAGE_SCENERYSET") == 0)
 	{ // 読み込んだ文字列が STAGE_SCENERYSET の場合
 
-		// 現在の読み込み数を初期化
-		nCurrentID = 0;
-
 		do
 		{ // 読み込んだ文字列が END_STAGE_SCENERYSET ではない場合ループ
 
 			// ファイルから文字列を読み込む
 			fscanf(pFile, "%s", &aString[0]);
 
-			if (strcmp(&aString[0], "NUM") == 0)
-			{ // 読み込んだ文字列が NUM の場合
-
-				fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
-				fscanf(pFile, "%d", &pStage->m_scenery.nNum);	// 読み込み数を読み込む
-
-				if (pStage->m_scenery.nNum > 0)
-				{ // 読み込むものがある場合
-
-					if (pStage->m_scenery.ppScenery == nullptr)
-					{ // 景色が使用されていない場合
-
-						// 景色の読み込み数分メモリ確保
-						pStage->m_scenery.ppScenery = new CScenery*[pStage->m_scenery.nNum];
-
-						if (pStage->m_scenery.ppScenery != nullptr)
-						{ // 確保に成功した場合
-
-							// メモリクリア
-							memset(pStage->m_scenery.ppScenery, 0, sizeof(CScenery*) * pStage->m_scenery.nNum);
-						}
-						else { assert(false); return E_FAIL; }	// 確保失敗
-					}
-					else { assert(false); return E_FAIL; }	// 使用中
-				}
-				else
-				{ // 読み込むものがない場合
-
-					// 処理を抜ける
-					break;
-				}
-			}
-			else if (strcmp(&aString[0], "SCENERYSET") == 0)
+			if (strcmp(&aString[0], "SCENERYSET") == 0)
 			{ // 読み込んだ文字列が SCENERYSET の場合
 	
 				do
@@ -880,11 +836,11 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 					// ファイルから文字列を読み込む
 					fscanf(pFile, "%s", &aString[0]);
 	
-					if (strcmp(&aString[0], "TEXTURE_ID") == 0)
-					{ // 読み込んだ文字列が TEXTURE_ID の場合
+					if (strcmp(&aString[0], "TYPE") == 0)
+					{ // 読み込んだ文字列が TYPE の場合
 	
 						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nTextureID);	// テクスチャインデックスを読み込む
+						fscanf(pFile, "%d", &nType);		// 種類を読み込む
 					}
 					else if (strcmp(&aString[0], "POS") == 0)
 					{ // 読み込んだ文字列が POS の場合
@@ -939,31 +895,16 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 					}
 				} while (strcmp(&aString[0], "END_SCENERYSET") != 0);	// 読み込んだ文字列が END_SCENERYSET ではない場合ループ
 
-				if (pStage->m_scenery.ppScenery[nCurrentID] == nullptr)
-				{ // 使用されていない場合
+				// 景色オブジェクトの生成
+				if (CScenery::Create((CScenery::EType)nType, pos, D3DXToRadian(rot), col, part, texPart, fRadius, fHeight) == nullptr)
+				{ // 確保に失敗した場合
 
-					// 景色オブジェクトの生成
-					pStage->m_scenery.ppScenery[nCurrentID] = CScenery::Create((CScenery::ETexture)nTextureID, pos, D3DXToRadian(rot), col, part, texPart, fRadius, fHeight);
-					if (pStage->m_scenery.ppScenery[nCurrentID] == nullptr)
-					{ // 確保に失敗した場合
-
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
-					}
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
 				}
-				else { assert(false); }	// 使用中
-
-				// 読込総数オーバー
-				assert(nCurrentID < pStage->m_scenery.nNum);
-
-				// 現在の読み込み数を加算
-				nCurrentID++;
 			}
 		} while (strcmp(&aString[0], "END_STAGE_SCENERYSET") != 0);	// 読み込んだ文字列が END_STAGE_SCENERYSET ではない場合ループ
-
-		// 読込総数の不一致
-		assert(nCurrentID == pStage->m_scenery.nNum);
 	}
 
 	// 成功を返す

@@ -31,7 +31,12 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CScenery::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CScenery::TYPE_MAX, "ERROR : Type Count Mismatch");
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CScenery> *CScenery::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CScenery] のメンバ関数
@@ -39,7 +44,9 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CScenery::TEXTURE_MAX, "ERROR : Texture
 //============================================================
 //	コンストラクタ
 //============================================================
-CScenery::CScenery() : CObjectMeshCylinder(CObject::LABEL_SCENERY, CObject::DIM_3D, PRIORITY)
+CScenery::CScenery() : CObjectMeshCylinder(CObject::LABEL_SCENERY, CObject::DIM_3D, PRIORITY),
+	m_type	(TYPE_MOUNTAIN_SMALL_00)	// 種類
+
 {
 
 }
@@ -57,6 +64,9 @@ CScenery::~CScenery()
 //============================================================
 HRESULT CScenery::Init(void)
 {
+	// メンバ変数をクリア
+	m_type = TYPE_MOUNTAIN_SMALL_00;	// 種類
+
 	// オブジェクトメッシュシリンダーの初期化
 	if (FAILED(CObjectMeshCylinder::Init()))
 	{ // 初期化に失敗した場合
@@ -83,6 +93,23 @@ HRESULT CScenery::Init(void)
 	// ライティングをOFFにする
 	pRenderState->SetLighting(false);
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CScenery>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -92,6 +119,16 @@ HRESULT CScenery::Init(void)
 //============================================================
 void CScenery::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクトメッシュシリンダーの終了
 	CObjectMeshCylinder::Uninit();
 }
@@ -119,7 +156,7 @@ void CScenery::Draw(CShader *pShader)
 //============================================================
 CScenery *CScenery::Create
 (
-	const ETexture texture,		// 種類
+	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXCOLOR& rCol,		// 色
@@ -148,8 +185,8 @@ CScenery *CScenery::Create
 			return nullptr;
 		}
 
-		// テクスチャを登録・割当
-		pScenery->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[texture]));
+		// 種類を設定
+		pScenery->SetType(type);
 
 		// 位置を設定
 		pScenery->SetVec3Position(rPos);
@@ -181,4 +218,30 @@ CScenery *CScenery::Create
 		// 確保したアドレスを返す
 		return pScenery;
 	}
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CScenery> *CScenery::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
+}
+
+//============================================================
+//	種類の設定処理
+//============================================================
+void CScenery::SetType(const EType type)
+{
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // インデックスが範囲内の場合
+
+		// 種類を保存
+		m_type = type;
+
+		// テクスチャを登録・割当
+		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	}
+	else { assert(false); }	// 範囲外
 }

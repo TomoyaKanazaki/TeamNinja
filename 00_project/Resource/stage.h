@@ -57,13 +57,6 @@ public:
 		float fKillY;		// §ŒÀˆÊ’u (íœ)
 	};
 
-	// •—Œi\‘¢‘Ì
-	struct SScenery
-	{
-		CScenery **ppScenery;	// •—Œi‚Ìî•ñ
-		int nNum;				// •—Œi‚Ì‘”
-	};
-
 	// ‹ó\‘¢‘Ì
 	struct SSky
 	{
@@ -108,7 +101,6 @@ private:
 
 	// ƒƒ“ƒo•Ï”
 	SStageLimit	m_stageLimit;	// ”ÍˆÍî•ñ
-	SScenery	m_scenery;		// ŒiFî•ñ
 	SSky		m_sky;			// ‹óî•ñ
 	SLiquid		m_liquid;		// ‰t‘Ìî•ñ
 };
