@@ -33,9 +33,7 @@ CListManager<CGimmick>* CGimmick::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_JUMPTABLE),
-m_nNumClone(0),
-m_bActive(false)
+m_type(TYPE_JUMPTABLE)
 {
 
 }
