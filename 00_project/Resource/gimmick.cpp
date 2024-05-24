@@ -33,7 +33,9 @@ CListManager<CGimmick>* CGimmick::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_JUMPTABLE)
+m_type(TYPE_JUMPTABLE),
+m_nNumClone(0),
+m_bActive(false)
 {
 
 }
@@ -194,3 +196,44 @@ CListManager<CGimmick>* CGimmick::GetList(void)
 	// リスト構造を返す
 	return m_pList;
 }
+
+////==========================================
+//// ギミックの当たり判定
+////==========================================
+//void CPlayerClone::CollisionGimmick(void)
+//{
+//	// ギミックがなかった場合抜ける
+//	if (CGimmick::GetList() == nullptr) { return; }
+//
+//	std::list<CGimmick*> list = CGimmick::GetList()->GetList();	// リストを取得
+//	auto gimBegin = list.begin();			// 最初のギミック
+//	auto gimEnd = list.end();				// 最後のギミック
+//	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+//	D3DXVECTOR3 size = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);		// サイズ
+//	D3DXVECTOR3 posGim = VEC3_ZERO;			// ギミックの位置
+//	D3DXVECTOR3 sizeGim = VEC3_ZERO;		// ギミックのサイズ
+//
+//	for (auto gim : list)
+//	{
+//		// 位置とサイズを取得
+//		posGim = gim->GetVec3Position();
+//		sizeGim = gim->GetVec3Sizing() / 2;
+//
+//		if (collision::Box2D
+//		(
+//			pos,		// 判定位置
+//			posGim,		// 判定目標位置
+//			size,		// 判定サイズ(右・上・後)
+//			size,		// 判定サイズ(左・下・前)
+//			sizeGim,	// 判定目標サイズ(右・上・後)
+//			sizeGim		// 判定目標サイズ(左・下・前)
+//		))
+//		{ // 四角の中に入った場合
+//
+//		}
+//		else
+//		{ // 入ってなかった場合
+//
+//		}
+//	}
+//}
