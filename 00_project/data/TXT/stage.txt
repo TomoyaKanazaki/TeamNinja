@@ -97,11 +97,8 @@ END_STAGE_SCENERYSET
 #------------------------------------------------------------------------------
 STAGE_SKYSET
 
-	# ãÛÇÃëçêî
-	NUM = 2
-	
 	SKYSET
-		TEXTURE_ID = 0
+		TYPE	= 0
 		POS		= 0.0 0.0 0.0
 		ROT		= 0.0 0.0 0.0
 		COL		= 1.0 1.0 1.0 1.0
@@ -111,7 +108,7 @@ STAGE_SKYSET
 	END_SKYSET
 	
 	SKYSET
-		TEXTURE_ID = 0
+		TYPE	= 0
 		POS		= 0.0 0.0 0.0
 		ROT		= 0.0 0.0 180.0
 		COL		= 1.0 1.0 1.0 1.0
@@ -127,7 +124,6 @@ END_STAGE_SKYSET
 #------------------------------------------------------------------------------
 STAGE_LIQUIDSET
 
-	# âtëÃÇÃëçêî
-	NUM = 0
-	
+
+
 END_STAGE_LIQUIDSET

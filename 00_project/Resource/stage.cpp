@@ -37,8 +37,6 @@ CStage::CStage()
 {
 	// メンバ変数をクリア
 	memset(&m_stageLimit,	0, sizeof(m_stageLimit));	// 範囲
-	memset(&m_sky,			0, sizeof(m_sky));			// 空情報
-	memset(&m_liquid,		0, sizeof(m_liquid));		// 液体情報
 }
 
 //============================================================
@@ -57,14 +55,6 @@ HRESULT CStage::Init(void)
 	// メンバ変数を初期化
 	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
 
-	// 空の情報を初期化
-	m_sky.ppSky = nullptr;	// 空の情報
-	m_sky.nNum = 0;			// 空の総数
-
-	// 液体の情報を初期化
-	m_liquid.ppLiquid = nullptr;	// 液体の情報
-	m_liquid.nNum = 0;				// 液体の総数
-
 	// 成功を返す
 	return S_OK;
 }
@@ -74,11 +64,7 @@ HRESULT CStage::Init(void)
 //============================================================
 void CStage::Uninit(void)
 {
-	// 空の破棄
-	SAFE_DEL_ARRAY(m_sky.ppSky);
 
-	// 液体の破棄
-	SAFE_DEL_ARRAY(m_liquid.ppLiquid);
 }
 
 //============================================================
@@ -923,9 +909,8 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
 	POSGRID2 texPart = GRID2_ZERO;	// テクスチャ分割数の代入用
 
+	int nType = 0;			// 種類の代入用
 	float fRadius = 0.0f;	// 半径の代入用
-	int nTextureID = 0;		// テクスチャインデックスの代入用
-	int nCurrentID = 0;		// 現在の読み込み数の保存用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -942,48 +927,13 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 	if (strcmp(pString, "STAGE_SKYSET") == 0)
 	{ // 読み込んだ文字列が STAGE_SKYSET の場合
 
-		// 現在の読み込み数を初期化
-		nCurrentID = 0;
-
 		do
 		{ // 読み込んだ文字列が END_STAGE_SKYSET ではない場合ループ
 
 			// ファイルから文字列を読み込む
 			fscanf(pFile, "%s", &aString[0]);
 
-			if (strcmp(&aString[0], "NUM") == 0)
-			{ // 読み込んだ文字列が NUM の場合
-
-				fscanf(pFile, "%s", &aString[0]);			// = を読み込む (不要)
-				fscanf(pFile, "%d", &pStage->m_sky.nNum);	// 読み込み数を読み込む
-
-				if (pStage->m_sky.nNum > 0)
-				{ // 読み込むものがある場合
-
-					if (pStage->m_sky.ppSky == nullptr)
-					{ // 空が使用されていない場合
-
-						// 空の読み込み数分メモリ確保
-						pStage->m_sky.ppSky = new CSky*[pStage->m_sky.nNum];
-
-						if (pStage->m_sky.ppSky != nullptr)
-						{ // 確保に成功した場合
-
-							// メモリクリア
-							memset(pStage->m_sky.ppSky, 0, sizeof(CSky*) * pStage->m_sky.nNum);
-						}
-						else { assert(false); return E_FAIL; }	// 確保失敗
-					}
-					else { assert(false); return E_FAIL; }	// 使用中
-				}
-				else
-				{ // 読み込むものがない場合
-
-					// 処理を抜ける
-					break;
-				}
-			}
-			else if (strcmp(&aString[0], "SKYSET") == 0)
+			if (strcmp(&aString[0], "SKYSET") == 0)
 			{ // 読み込んだ文字列が SKYSET の場合
 
 				do
@@ -992,11 +942,11 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 					// ファイルから文字列を読み込む
 					fscanf(pFile, "%s", &aString[0]);
 
-					if (strcmp(&aString[0], "TEXTURE_ID") == 0)
-					{ // 読み込んだ文字列が TEXTURE_ID の場合
+					if (strcmp(&aString[0], "TYPE") == 0)
+					{ // 読み込んだ文字列が TYPE の場合
 
 						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nTextureID);	// テクスチャインデックスを読み込む
+						fscanf(pFile, "%d", &nType);		// 種類を読み込む
 					}
 					else if (strcmp(&aString[0], "POS") == 0)
 					{ // 読み込んだ文字列が POS の場合
@@ -1045,31 +995,16 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 					}
 				} while (strcmp(&aString[0], "END_SKYSET") != 0);	// 読み込んだ文字列が END_SKYSET ではない場合ループ
 
-				if (pStage->m_sky.ppSky[nCurrentID] == nullptr)
-				{ // 使用されていない場合
+				// 空オブジェクトの生成
+				if (CSky::Create((CSky::EType)nType, pos, D3DXToRadian(rot), col, part, texPart, fRadius) == nullptr)
+				{ // 確保に失敗した場合
 
-					// 空オブジェクトの生成
-					pStage->m_sky.ppSky[nCurrentID] = CSky::Create((CSky::ETexture)nTextureID, pos, D3DXToRadian(rot), col, part, texPart, fRadius);
-					if (pStage->m_sky.ppSky[nCurrentID] == nullptr)
-					{ // 確保に失敗した場合
-
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
-					}
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
 				}
-				else { assert(false); }	// 使用中
-
-				// 読込総数オーバー
-				assert(nCurrentID < pStage->m_sky.nNum);
-
-				// 現在の読み込み数を加算
-				nCurrentID++;
 			}
 		} while (strcmp(&aString[0], "END_STAGE_SKYSET") != 0);	// 読み込んだ文字列が END_STAGE_SKYSET ではない場合ループ
-
-		// 読込総数の不一致
-		assert(nCurrentID == pStage->m_sky.nNum);
 	}
 
 	// 成功を返す
@@ -1089,11 +1024,10 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
 	CLiquid::STexMove texMove;		// テクスチャ移動量の代入用
 
+	int nType = 0;				// 種類の代入用
 	float fMaxUp = 0.0f;		// 波の最高上昇量
 	float fAddSinRot = 0.0f;	// 波打ち向き加算量
 	float fAddVtxRot = 0.0f;	// 隣波の向き加算量
-	int nTypeID = 0;			// 種類インデックスの代入用
-	int nCurrentID = 0;			// 現在の読み込み数の保存用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -1110,48 +1044,13 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 	if (strcmp(pString, "STAGE_LIQUIDSET") == 0)
 	{ // 読み込んだ文字列が STAGE_LIQUIDSET の場合
 
-		// 現在の読み込み数を初期化
-		nCurrentID = 0;
-
 		do
 		{ // 読み込んだ文字列が END_STAGE_LIQUIDSET ではない場合ループ
 
 			// ファイルから文字列を読み込む
 			fscanf(pFile, "%s", &aString[0]);
 
-			if (strcmp(&aString[0], "NUM") == 0)
-			{ // 読み込んだ文字列が NUM の場合
-
-				fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
-				fscanf(pFile, "%d", &pStage->m_liquid.nNum);	// 読み込み数を読み込む
-
-				if (pStage->m_liquid.nNum > 0)
-				{ // 読み込むものがある場合
-
-					if (pStage->m_liquid.ppLiquid == nullptr)
-					{ // 液体が使用されていない場合
-
-						// 液体の読み込み数分メモリ確保
-						pStage->m_liquid.ppLiquid = new CLiquid*[pStage->m_liquid.nNum];
-
-						if (pStage->m_liquid.ppLiquid != nullptr)
-						{ // 確保に成功した場合
-
-							// メモリクリア
-							memset(pStage->m_liquid.ppLiquid, 0, sizeof(CLiquid*) * pStage->m_liquid.nNum);
-						}
-						else { assert(false); return E_FAIL; }	// 確保失敗
-					}
-					else { assert(false); return E_FAIL; }	// 使用中
-				}
-				else
-				{ // 読み込むものがない場合
-
-					// 処理を抜ける
-					break;
-				}
-			}
-			else if (strcmp(&aString[0], "LIQUIDSET") == 0)
+			if (strcmp(&aString[0], "LIQUIDSET") == 0)
 			{ // 読み込んだ文字列が LIQUIDSET の場合
 
 				do
@@ -1164,7 +1063,7 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 					{ // 読み込んだ文字列が TYPE の場合
 
 						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nTypeID);		// 種類を読み込む
+						fscanf(pFile, "%d", &nType);		// 種類を読み込む
 					}
 					else if (strcmp(&aString[0], "POS") == 0)
 					{ // 読み込んだ文字列が POS の場合
@@ -1239,43 +1138,29 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 					}
 				} while (strcmp(&aString[0], "END_LIQUIDSET") != 0);	// 読み込んだ文字列が END_LIQUIDSET ではない場合ループ
 
-				if (pStage->m_liquid.ppLiquid[nCurrentID] == nullptr)
-				{ // 使用されていない場合
+				// 液体オブジェクトの生成
+				CLiquid *pLiquid = CLiquid::Create
+				( // 引数
+					(CLiquid::EType)nType,		// 種類
+					pos,						// 位置
+					D3DXToRadian(rot),			// 向き
+					size,						// 大きさ
+					col,						// 色
+					part,						// 分割数
+					texMove,					// テクスチャ移動量
+					fMaxUp,						// 波の最高上昇量
+					D3DXToRadian(fAddSinRot),	// 波打ち向き加算量
+					D3DXToRadian(fAddVtxRot)	// 隣波の向き加算量
+				);
+				if (pLiquid == nullptr)
+				{ // 確保に失敗した場合
 
-					// 液体オブジェクトの生成
-					pStage->m_liquid.ppLiquid[nCurrentID] = CLiquid::Create
-					( // 引数
-						(CLiquid::EType)nTypeID,	// 種類
-						pos,						// 位置
-						D3DXToRadian(rot),			// 向き
-						size,						// 大きさ
-						col,						// 色
-						part,						// 分割数
-						texMove,					// テクスチャ移動量
-						fMaxUp,						// 波の最高上昇量
-						D3DXToRadian(fAddSinRot),	// 波打ち向き加算量
-						D3DXToRadian(fAddVtxRot)	// 隣波の向き加算量
-					);
-					if (pStage->m_liquid.ppLiquid[nCurrentID] == nullptr)
-					{ // 確保に失敗した場合
-
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
-					}
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
 				}
-				else { assert(false); }	// 使用中
-
-				// 読込総数オーバー
-				assert(nCurrentID < pStage->m_liquid.nNum);
-
-				// 現在の読み込み数を加算
-				nCurrentID++;
 			}
 		} while (strcmp(&aString[0], "END_STAGE_LIQUIDSET") != 0);	// 読み込んだ文字列が END_STAGE_LIQUIDSET ではない場合ループ
-
-		// 読込総数の不一致
-		assert(nCurrentID == pStage->m_liquid.nNum);
 	}
 
 	// 成功を返す

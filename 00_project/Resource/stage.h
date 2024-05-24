@@ -16,13 +16,6 @@
 #include "scene.h"
 
 //************************************************************
-//	前方宣言
-//************************************************************
-class CScenery;	// 景色クラス
-class CSky;		// 空クラス
-class CLiquid;	// 液体クラス
-
-//************************************************************
 //	クラス定義
 //************************************************************
 // ステージクラス
@@ -57,20 +50,6 @@ public:
 		float fKillY;		// 制限位置 (削除)
 	};
 
-	// 空構造体
-	struct SSky
-	{
-		CSky **ppSky;	// 空の情報
-		int nNum;		// 空の総数
-	};
-
-	// 液体構造体
-	struct SLiquid
-	{
-		CLiquid **ppLiquid;	// 液体の情報
-		int nNum;			// 液体の総数
-	};
-
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -101,8 +80,6 @@ private:
 
 	// メンバ変数
 	SStageLimit	m_stageLimit;	// 範囲情報
-	SSky		m_sky;			// 空情報
-	SLiquid		m_liquid;		// 液体情報
 };
 
 #endif	// _STAGE_H_
