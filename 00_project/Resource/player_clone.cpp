@@ -18,7 +18,7 @@
 #include "deltaTime.h"
 
 #include "collision.h"
-#include "gimmick.h"
+#include "gimmick_action.h"
 
 //************************************************************
 //	定数宣言
@@ -304,7 +304,7 @@ bool CPlayerClone::Hit(const int nDamage)
 //==========================================
 //  ギミックのポインタを取得する
 //==========================================
-void CPlayerClone::SetGimmick(CGimmick* gimmick)
+void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
