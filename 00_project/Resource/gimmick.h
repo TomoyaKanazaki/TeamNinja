@@ -17,6 +17,11 @@
 #include "listManager.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CPlayerClone;		// プレイヤーの分身
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // ギミックの親クラス
@@ -42,6 +47,8 @@ public:
 	virtual void Uninit(void) override;		// 終了
 	virtual void Update(const float fDeltaTime) override;		// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;		// 描画
+
+	virtual void CollisionClone(void);		// クローンとの当たり判定
 
 	// セット・ゲット関係
 	void SetType(const EType type) { m_type = type; }			// 種類の設定処理

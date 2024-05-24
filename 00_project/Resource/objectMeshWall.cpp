@@ -13,6 +13,15 @@
 #include "texture.h"
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const POSGRID2 MIN_PART = GRID2_ONE;	// 分割数の最小値
+	const POSGRID2 MIN_TEXPART = GRID2_ONE;	// テクスチャ分割数の最小値
+}
+
+//************************************************************
 //	子クラス [CObjectMeshWall] のメンバ関数
 //************************************************************
 //============================================================
@@ -23,6 +32,7 @@ CObjectMeshWall::CObjectMeshWall(const CObject::ELabel label, const CObject::EDi
 	m_pIdxBuff		(nullptr),		// インデックスバッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報
 	m_part			(GRID2_ZERO),	// 分割数
+	m_texPart		(GRID2_ZERO),	// テクスチャ分割数
 	m_nNumVtx		(0),			// 必要頂点数
 	m_nNumIdx		(0),			// 必要インデックス数
 	m_nTextureID	(0)				// テクスチャインデックス
@@ -49,6 +59,7 @@ HRESULT CObjectMeshWall::Init(void)
 	m_pIdxBuff		= nullptr;		// インデックスバッファ
 	m_pRenderState	= nullptr;		// レンダーステートの情報
 	m_part			= GRID2_ZERO;	// 分割数
+	m_texPart		= GRID2_ZERO;	// テクスチャ分割数
 	m_nNumVtx		= 0;			// 必要頂点数
 	m_nNumIdx		= 0;			// 必要インデックス数
 	m_nTextureID	= NONE_IDX;		// テクスチャインデックス
@@ -202,7 +213,8 @@ CObjectMeshWall *CObjectMeshWall::Create
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
 	const D3DXCOLOR& rCol,		// 色
-	const POSGRID2& rPart		// 分割数
+	const POSGRID2& rPart,		// 分割数
+	const POSGRID2& rTexPart	// テクスチャ分割数
 )
 {
 	// オブジェクトメッシュウォールの生成
@@ -244,6 +256,9 @@ CObjectMeshWall *CObjectMeshWall::Create
 			SAFE_DELETE(pMeshWall);
 			return nullptr;
 		}
+
+		// テクスチャ分割数を設定
+		pMeshWall->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pMeshWall;
@@ -318,6 +333,10 @@ HRESULT CObjectMeshWall::SetPattern(const POSGRID2& rPart)
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
+	// 分割数の設定不可
+	assert(rPart.x >= MIN_PART.x);
+	assert(rPart.y >= MIN_PART.y);
+
 	// 引数の分割数を設定
 	m_part = rPart;
 
@@ -376,12 +395,37 @@ HRESULT CObjectMeshWall::SetPattern(const POSGRID2& rPart)
 }
 
 //============================================================
+//	テクスチャ分割数の設定処理
+//============================================================
+void CObjectMeshWall::SetTexPattern(const POSGRID2& rTexPart)
+{
+	if (rTexPart.x >= MIN_TEXPART.x
+	&&  rTexPart.y >= MIN_TEXPART.y)
+	{ // テクスチャ分割数が最低値以上の場合
+
+		// 引数のテクスチャ分割数を設定
+		m_texPart = rTexPart;
+
+		// 頂点情報の設定
+		SetVtx();
+	}
+	else { assert(false); }	// 最低値未満
+}
+
+//============================================================
 //	頂点情報の設定処理
 //============================================================
 void CObjectMeshWall::SetVtx(void)
 {
 	// ポインタを宣言
 	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
+
+	// テクスチャ分割数の割合を計算
+	D3DXVECTOR2 texRate = D3DXVECTOR2
+	(
+		(float)m_texPart.x / (float)m_part.x,
+		(float)m_texPart.y / (float)m_part.y
+	);
 
 	if (m_pVtxBuff != nullptr)
 	{ // 使用中の場合
@@ -410,7 +454,7 @@ void CObjectMeshWall::SetVtx(void)
 				pVtx[0].col = m_meshWall.col;
 
 				// テクスチャ座標の設定
-				pVtx[0].tex = D3DXVECTOR2(1.0f * nCntWidth, 1.0f * nCntHeight);
+				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
 
 				// 頂点データのポインタを 1つ分進める
 				pVtx += 1;
