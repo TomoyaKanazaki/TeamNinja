@@ -40,7 +40,9 @@ public:
 		MODEL_TYPE_MOSS_ROCK_BIG,		//大きい苔岩
 		MODEL_TYPE_WOODLOG,				//原木
 		MODEL_TYPE_TREESTUMP,			//木の幹
-		MODEL_TYPE_PLANT,				//草
+		MODEL_TYPE_PLANT1,				//4つしかつながっていない草
+		MODEL_TYPE_PLANT2,				//多くつながっている草
+		MODEL_TYPE_BUSH,				//草むら
 		MODEL_TYPE_MAX
 	};
 
@@ -49,22 +51,22 @@ public:
 	~CMapModel();
 
 	HRESULT Init() override;							//初期化
-	void Uninit() override;								//終了
+	void Uninit()override { CObjectModel::Uninit(); }	//終了
 	void Update(const float fDeltaTime) override;		//更新
 	void Draw(CShader* pShader = nullptr) override;		//描画
 
 	//静的メンバ関数
-	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize=D3DXVECTOR3(1.0f,1.0f,1.0f)); //生成処理
+	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize=VEC3_ONE); //生成処理
 
 private:
-
-	void Collision(void);
 	void ChangeModel(void);
 
-	static int m_nNumAll;
-	static const char* mc_apModelFile[];		// モデル定数
+	void Collision(void);
 
-	int m_nModelId;
+	static int m_nNumAll;						//総数
+	static const char* mc_apModelFile[];		//モデル定数
+
+	int m_nModelId;								//モデル番号
 
 };
 
