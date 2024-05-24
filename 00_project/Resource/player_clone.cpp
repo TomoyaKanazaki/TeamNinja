@@ -697,7 +697,13 @@ void CPlayerClone::Wait()
 		// ギミックに対応したステータスを適用する
 		switch (m_pGimmick->GetType())
 		{
-		default:
+		case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
+
+			/* jump台のモーション */
+
+			break;
+
+		default: // その他
 			break;
 		}
 	}
