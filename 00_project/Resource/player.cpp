@@ -943,8 +943,9 @@ void CPlayer::Move()
 	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
+#ifndef _DEBUG
 	if (!pPad->GetLStick()) { return; }
-
+#endif
 	if (fSpeed >= STEALTH_BORDER)
 	{ // 通常速度の場合
 
@@ -976,7 +977,7 @@ void CPlayer::Move()
 
 	// ジャンプ
 #ifdef _DEBUG
-	if (pPad->IsTrigger(CInputPad::KEY_X))
+	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		m_move.y = JUMP;
 	}

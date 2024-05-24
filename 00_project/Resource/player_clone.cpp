@@ -700,8 +700,8 @@ void CPlayerClone::Wait()
 	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
 		/* jump台のモーション */
 #ifdef _DEBUG
-			// マテリアルを変更
-		SetAllMaterial(material::Red());
+		// マテリアルを変更
+		SetAllMaterial(material::Blue());
 #endif
 
 		break;
