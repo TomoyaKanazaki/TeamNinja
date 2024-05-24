@@ -18,7 +18,6 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CWall;	// 壁クラス
 class CScenery;	// 景色クラス
 class CSky;		// 空クラス
 class CLiquid;	// 液体クラス
@@ -56,13 +55,6 @@ public:
 		float fRadius;		// 制限位置 (半径)
 		float fField;		// 制限位置 (地面)
 		float fKillY;		// 制限位置 (削除)
-	};
-
-	// 壁構造体
-	struct SWall
-	{
-		CWall **ppWall;	// 壁の情報
-		int nNum;		// 壁の総数
 	};
 
 	// 風景構造体
@@ -116,7 +108,6 @@ private:
 
 	// メンバ変数
 	SStageLimit	m_stageLimit;	// 範囲情報
-	SWall		m_wall;			// 壁情報
 	SScenery	m_scenery;		// 景色情報
 	SSky		m_sky;			// 空情報
 	SLiquid		m_liquid;		// 液体情報

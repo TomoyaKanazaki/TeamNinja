@@ -37,7 +37,6 @@ CStage::CStage()
 {
 	// メンバ変数をクリア
 	memset(&m_stageLimit,	0, sizeof(m_stageLimit));	// 範囲
-	memset(&m_wall,			0, sizeof(m_wall));			// 壁情報
 	memset(&m_scenery,		0, sizeof(m_scenery));		// 景色情報
 	memset(&m_sky,			0, sizeof(m_sky));			// 空情報
 	memset(&m_liquid,		0, sizeof(m_liquid));		// 液体情報
@@ -58,10 +57,6 @@ HRESULT CStage::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
-
-	// 壁の情報を初期化
-	m_wall.ppWall = nullptr;	// 壁の情報
-	m_wall.nNum = 0;			// 壁の総数
 
 	// 景色の情報を初期化
 	m_scenery.ppScenery = nullptr;	// 景色の情報
@@ -84,9 +79,6 @@ HRESULT CStage::Init(void)
 //============================================================
 void CStage::Uninit(void)
 {
-	// 壁の破棄
-	SAFE_DEL_ARRAY(m_wall.ppWall);
-
 	// 景色の破棄
 	SAFE_DEL_ARRAY(m_scenery.ppScenery);
 
@@ -698,14 +690,12 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 {
 	// 変数を宣言
+	int nType = 0;					// 種類の代入用
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 	D3DXVECTOR2 size = VEC2_ZERO;	// 大きさの代入用
 	D3DXCOLOR col = XCOL_WHITE;		// 色の代入用
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
-
-	int nCurrentID = 0;	// 現在の読み込み数の保存用
-	int nTextureID = 0;	// テクスチャインデックスの代入用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -722,48 +712,13 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 	if (strcmp(pString, "STAGE_WALLSET") == 0)
 	{ // 読み込んだ文字列が STAGE_WALLSET の場合
 
-		// 現在の読み込み数を初期化
-		nCurrentID = 0;
-
 		do
 		{ // 読み込んだ文字列が END_STAGE_SCENERYSET ではない場合ループ
 
 			// ファイルから文字列を読み込む
 			fscanf(pFile, "%s", &aString[0]);
 
-			if (strcmp(&aString[0], "NUM") == 0)
-			{ // 読み込んだ文字列が NUM の場合
-
-				fscanf(pFile, "%s", &aString[0]);			// = を読み込む (不要)
-				fscanf(pFile, "%d", &pStage->m_wall.nNum);	// 読み込み数を読み込む
-
-				if (pStage->m_wall.nNum > 0)
-				{ // 読み込むものがある場合
-
-					if (pStage->m_wall.ppWall == nullptr)
-					{ // 壁が使用されていない場合
-
-						// 壁の読み込み数分メモリ確保
-						pStage->m_wall.ppWall = new CWall*[pStage->m_wall.nNum];
-
-						if (pStage->m_wall.ppWall != nullptr)
-						{ // 確保に成功した場合
-
-							// メモリクリア
-							memset(pStage->m_wall.ppWall, 0, sizeof(CWall*) * pStage->m_wall.nNum);
-						}
-						else { assert(false); return E_FAIL; }	// 確保失敗
-					}
-					else { assert(false); return E_FAIL; }	// 使用中
-				}
-				else
-				{ // 読み込むものがない場合
-
-					// 処理を抜ける
-					break;
-				}
-			}
-			else if (strcmp(&aString[0], "WALLSET") == 0)
+			if (strcmp(&aString[0], "WALLSET") == 0)
 			{ // 読み込んだ文字列が WALLSET の場合
 	
 				do
@@ -772,11 +727,11 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 					// ファイルから文字列を読み込む
 					fscanf(pFile, "%s", &aString[0]);
 	
-					if (strcmp(&aString[0], "TEXTURE_ID") == 0)
-					{ // 読み込んだ文字列が TEXTURE_ID の場合
+					if (strcmp(&aString[0], "TYPE") == 0)
+					{ // 読み込んだ文字列が TYPE の場合
 	
 						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nTextureID);	// テクスチャインデックスを読み込む
+						fscanf(pFile, "%d", &nType);		// 種類を読み込む
 					}
 					else if (strcmp(&aString[0], "POS") == 0)
 					{ // 読み込んだ文字列が POS の場合
@@ -819,31 +774,16 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 					}
 				} while (strcmp(&aString[0], "END_WALLSET") != 0);	// 読み込んだ文字列が END_WALLSET ではない場合ループ
 
-				if (pStage->m_wall.ppWall[nCurrentID] == nullptr)
-				{ // 使用されていない場合
+				// 壁オブジェクトの生成
+				if (CWall::Create((CWall::EType)nType, pos, D3DXToRadian(rot), size, col, part) == nullptr)
+				{ // 確保に失敗した場合
 
-					// 壁オブジェクトの生成
-					pStage->m_wall.ppWall[nCurrentID] = CWall::Create((CWall::ETexture)nTextureID, pos, D3DXToRadian(rot), size, col, part);
-					if (pStage->m_wall.ppWall[nCurrentID] == nullptr)
-					{ // 確保に失敗した場合
-
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
-					}
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
 				}
-				else { assert(false); }	// 使用中
-
-				// 読込総数オーバー
-				assert(nCurrentID < pStage->m_wall.nNum);
-
-				// 現在の読み込み数を加算
-				nCurrentID++;
 			}
 		} while (strcmp(&aString[0], "END_STAGE_WALLSET") != 0);	// 読み込んだ文字列が END_STAGE_WALLSET ではない場合ループ
-
-		// 読込総数の不一致
-		assert(nCurrentID == pStage->m_wall.nNum);
 	}
 
 	// 成功を返す
