@@ -37,7 +37,6 @@ CStage::CStage()
 {
 	// メンバ変数をクリア
 	memset(&m_stageLimit,	0, sizeof(m_stageLimit));	// 範囲
-	memset(&m_field,		0, sizeof(m_field));		// 地面情報
 	memset(&m_wall,			0, sizeof(m_wall));			// 壁情報
 	memset(&m_scenery,		0, sizeof(m_scenery));		// 景色情報
 	memset(&m_sky,			0, sizeof(m_sky));			// 空情報
@@ -59,10 +58,6 @@ HRESULT CStage::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
-
-	// 地面の情報を初期化
-	m_field.ppField = nullptr;	// 地面の情報
-	m_field.nNum = 0;			// 地面の総数
 
 	// 壁の情報を初期化
 	m_wall.ppWall = nullptr;	// 壁の情報
@@ -89,9 +84,6 @@ HRESULT CStage::Init(void)
 //============================================================
 void CStage::Uninit(void)
 {
-	// 地面の破棄
-	SAFE_DEL_ARRAY(m_field.ppField);
-
 	// 壁の破棄
 	SAFE_DEL_ARRAY(m_wall.ppWall);
 
@@ -215,34 +207,31 @@ bool CStage::CollisionKillY(const D3DXVECTOR3& rPos)
 //============================================================
 bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 {
-	// 変数を宣言
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+
 	CField *pCurrentField = nullptr;			// 着地予定の地面
 	float fCurrentPos = m_stageLimit.fField;	// 着地予定のY座標
 
-	for (int nCntField = 0; nCntField < m_field.nNum; nCntField++)
+	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す
 
-		if (m_field.ppField[nCntField] != nullptr)
-		{ // 地面が使用されている場合
+		assert(rList != nullptr);
+		if (rList->IsPositionRange(rPos))
+		{ // 地面の範囲内の場合
 
-			if (m_field.ppField[nCntField]->IsPositionRange(rPos))
-			{ // 地面の範囲内の場合
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
+			if (fCurrentPos <= fPosHeight)
+			{ // 現在の着地予定Y座標より高い位置にある場合
 
-				// 変数を宣言
-				float fPosHeight = m_field.ppField[nCntField]->GetPositionHeight(rPos);	// 着地Y座標
+				// 着地予定の地面を更新
+				pCurrentField = rList;
 
-				if (fCurrentPos <= fPosHeight)
-				{ // 現在の着地予定Y座標より高い位置にある場合
-
-					// 着地予定の地面を更新
-					pCurrentField = m_field.ppField[nCntField];
-
-					// 着地予定のY座標を更新
-					fCurrentPos = fPosHeight;
-				}
+				// 着地予定のY座標を更新
+				fCurrentPos = fPosHeight;
 			}
 		}
-		else { assert(false); }	// 非使用中
 	}
 
 	if (pCurrentField != nullptr)
@@ -264,20 +253,20 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 //============================================================
 bool CStage::IsFieldPositionRange(const D3DXVECTOR3&rPos)
 {
-	for (int nCntField = 0; nCntField < m_field.nNum; nCntField++)
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+
+	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す
 
-		if (m_field.ppField[nCntField] != nullptr)
-		{ // 地面が使用されている場合
+		assert(rList != nullptr);
+		if (rList->IsPositionRange(rPos))
+		{ // 地面の範囲内の場合
 
-			if (m_field.ppField[nCntField]->IsPositionRange(rPos))
-			{ // 地面の範囲内の場合
-
-				// 範囲内にいる状態を返す
-				return true;
-			}
+			// 範囲内にいる状態を返す
+			return true;
 		}
-		else { assert(false); }	// 非使用中
 	}
 
 	// 範囲内にいない状態を返す
@@ -289,34 +278,31 @@ bool CStage::IsFieldPositionRange(const D3DXVECTOR3&rPos)
 //============================================================
 float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
 {
-	// 変数を宣言
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+
 	CField *pCurrentField = nullptr;			// 着地予定の地面
 	float fCurrentPos = m_stageLimit.fField;	// 着地予定のY座標
 
-	for (int nCntField = 0; nCntField < m_field.nNum; nCntField++)
+	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す
 
-		if (m_field.ppField[nCntField] != nullptr)
-		{ // 地面が使用されている場合
+		assert(rList != nullptr);
+		if (rList->IsPositionRange(rPos))
+		{ // 地面の範囲内の場合
 
-			if (m_field.ppField[nCntField]->IsPositionRange(rPos))
-			{ // 地面の範囲内の場合
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
+			if (fCurrentPos <= fPosHeight)
+			{ // 現在の着地予定Y座標より高い位置にある場合
 
-				// 変数を宣言
-				float fPosHeight = m_field.ppField[nCntField]->GetPositionHeight(rPos);	// 着地Y座標
+				// 着地予定の地面を更新
+				pCurrentField = rList;
 
-				if (fCurrentPos <= fPosHeight)
-				{ // 現在の着地予定Y座標より高い位置にある場合
-
-					// 着地予定の地面を更新
-					pCurrentField = m_field.ppField[nCntField];
-
-					// 着地予定のY座標を更新
-					fCurrentPos = fPosHeight;
-				}
+				// 着地予定のY座標を更新
+				fCurrentPos = fPosHeight;
 			}
 		}
-		else { assert(false); }	// 非使用中
 	}
 
 	if (pCurrentField != nullptr)
@@ -598,15 +584,13 @@ HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
 HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 {
 	// 変数を宣言
+	int nType = 0;					// 種類の代入用
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 	D3DXVECTOR2 size = VEC2_ZERO;	// 大きさの代入用
 	D3DXCOLOR col = XCOL_WHITE;		// 色の代入用
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
 	POSGRID2 texPart = GRID2_ZERO;	// テクスチャ分割数の代入用
-
-	int nCurrentID = 0;	// 現在の読み込み数の保存用
-	int nTextureID = 0;	// テクスチャインデックスの代入用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -623,48 +607,13 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 	if (strcmp(pString, "STAGE_FIELDSET") == 0)
 	{ // 読み込んだ文字列が STAGE_FIELDSET の場合
 
-		// 現在の読み込み数を初期化
-		nCurrentID = 0;
-
 		do
 		{ // 読み込んだ文字列が END_STAGE_FIELDSET ではない場合ループ
 
 			// ファイルから文字列を読み込む
 			fscanf(pFile, "%s", &aString[0]);
 
-			if (strcmp(&aString[0], "NUM") == 0)
-			{ // 読み込んだ文字列が NUM の場合
-
-				fscanf(pFile, "%s", &aString[0]);			// = を読み込む (不要)
-				fscanf(pFile, "%d", &pStage->m_field.nNum);	// 読み込み数を読み込む
-
-				if (pStage->m_field.nNum > 0)
-				{ // 読み込むものがある場合
-
-					if (pStage->m_field.ppField == nullptr)
-					{ // 地面が使用されていない場合
-
-						// 地面の読み込み数分メモリ確保
-						pStage->m_field.ppField = new CField*[pStage->m_field.nNum];
-
-						if (pStage->m_field.ppField != nullptr)
-						{ // 確保に成功した場合
-
-							// メモリクリア
-							memset(pStage->m_field.ppField, 0, sizeof(CField*) * pStage->m_field.nNum);
-						}
-						else { assert(false); return E_FAIL; }	// 確保失敗
-					}
-					else { assert(false); return E_FAIL; }	// 使用中
-				}
-				else
-				{ // 読み込むものがない場合
-
-					// 処理を抜ける
-					break;
-				}
-			}
-			else if (strcmp(&aString[0], "FIELDSET") == 0)
+			if (strcmp(&aString[0], "FIELDSET") == 0)
 			{ // 読み込んだ文字列が FIELDSET の場合
 	
 				do
@@ -673,11 +622,11 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 					// ファイルから文字列を読み込む
 					fscanf(pFile, "%s", &aString[0]);
 	
-					if (strcmp(&aString[0], "TEXTURE_ID") == 0)
-					{ // 読み込んだ文字列が TEXTURE_ID の場合
+					if (strcmp(&aString[0], "TYPE") == 0)
+					{ // 読み込んだ文字列が TYPE の場合
 	
 						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
-						fscanf(pFile, "%d", &nTextureID);	// テクスチャインデックスを読み込む
+						fscanf(pFile, "%d", &nType);		// 種類を読み込む
 					}
 					else if (strcmp(&aString[0], "POS") == 0)
 					{ // 読み込んだ文字列が POS の場合
@@ -727,31 +676,16 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 					}
 				} while (strcmp(&aString[0], "END_FIELDSET") != 0);	// 読み込んだ文字列が END_FIELDSET ではない場合ループ
 
-				if (pStage->m_field.ppField[nCurrentID] == nullptr)
-				{ // 使用されていない場合
-
-					// 地面オブジェクトの生成
-					pStage->m_field.ppField[nCurrentID] = CField::Create((CField::EType)nTextureID, pos, D3DXToRadian(rot), size, col, part, texPart);
-					if (pStage->m_field.ppField[nCurrentID] == nullptr)
-					{ // 確保に失敗した場合
-
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
-					}
+				// 地面オブジェクトの生成
+				if (CField::Create((CField::EType)nType, pos, D3DXToRadian(rot), size, col, part, texPart) == nullptr)
+				{ // 確保に失敗した場合
+	
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
 				}
-				else { assert(false); }	// 使用中
-
-				// 読込総数オーバー
-				assert(nCurrentID < pStage->m_field.nNum);
-
-				// 現在の読み込み数を加算
-				nCurrentID++;
 			}
 		} while (strcmp(&aString[0], "END_STAGE_FIELDSET") != 0);	// 読み込んだ文字列が END_STAGE_FIELDSET ではない場合ループ
-
-		// 読込総数の不一致
-		assert(nCurrentID == pStage->m_field.nNum);
 	}
 
 	// 成功を返す

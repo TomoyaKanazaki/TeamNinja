@@ -355,7 +355,7 @@ void CEditField::CreateField(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
+	D3DXCOLOR colField = XCOL_WHITE;			// 色保存用
 
 	// フィールドを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
