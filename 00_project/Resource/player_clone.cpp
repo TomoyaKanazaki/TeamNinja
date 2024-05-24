@@ -692,19 +692,21 @@ void CPlayerClone::Wait()
 	SetVec3Position(m_pGimmick->GetVec3Position());
 
 	// ギミックがアクティブ状態なら
-	if (m_pGimmick->IsActive())
+	if (!m_pGimmick->IsActive()) { return; }
+
+	// ギミックに対応したステータスを適用する
+	switch (m_pGimmick->GetType())
 	{
-		// ギミックに対応したステータスを適用する
-		switch (m_pGimmick->GetType())
-		{
-		case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
+	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
+		/* jump台のモーション */
+#ifdef _DEBUG
+			// マテリアルを変更
+		SetAllMaterial(material::Red());
+#endif
 
-			/* jump台のモーション */
+		break;
 
-			break;
-
-		default: // その他
-			break;
-		}
+	default: // その他
+		break;
 	}
 }
