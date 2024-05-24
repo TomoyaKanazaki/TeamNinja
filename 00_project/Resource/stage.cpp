@@ -696,6 +696,7 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 	D3DXVECTOR2 size = VEC2_ZERO;	// 大きさの代入用
 	D3DXCOLOR col = XCOL_WHITE;		// 色の代入用
 	POSGRID2 part = GRID2_ZERO;		// 分割数の代入用
+	POSGRID2 texPart = GRID2_ZERO;	// テクスチャ分割数の代入用
 
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
@@ -772,10 +773,17 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 						fscanf(pFile, "%d", &part.x);		// 横分割数を読み込む
 						fscanf(pFile, "%d", &part.y);		// 縦分割数を読み込む
 					}
+					else if (strcmp(&aString[0], "TEXPART") == 0)
+					{ // 読み込んだ文字列が TEXPART の場合
+
+						fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
+						fscanf(pFile, "%d", &texPart.x);	// テクスチャ横分割数を読み込む
+						fscanf(pFile, "%d", &texPart.y);	// テクスチャ縦分割数を読み込む
+					}
 				} while (strcmp(&aString[0], "END_WALLSET") != 0);	// 読み込んだ文字列が END_WALLSET ではない場合ループ
 
 				// 壁オブジェクトの生成
-				if (CWall::Create((CWall::EType)nType, pos, D3DXToRadian(rot), size, col, part) == nullptr)
+				if (CWall::Create((CWall::EType)nType, pos, D3DXToRadian(rot), size, col, part, texPart) == nullptr)
 				{ // 確保に失敗した場合
 
 					// 失敗を返す

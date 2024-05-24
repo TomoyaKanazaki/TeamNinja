@@ -140,7 +140,8 @@ CWall *CWall::Create
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
 	const D3DXCOLOR& rCol,		// 色
-	const POSGRID2& rPart		// 分割数
+	const POSGRID2& rPart,		// 分割数
+	const POSGRID2& rTexPart	// テクスチャ分割数
 )
 {
 	// 壁の生成
@@ -185,6 +186,9 @@ CWall *CWall::Create
 			SAFE_DELETE(pWall);
 			return nullptr;
 		}
+
+		// テクスチャ分割数を設定
+		pWall->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pWall;
