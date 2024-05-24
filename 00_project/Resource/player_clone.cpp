@@ -64,7 +64,7 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 m_pShadow(nullptr),			// 影の情報
 m_pOrbit(nullptr),			// 軌跡の情報
 m_move(0.0f, 0.0f, 0.0f),	// 移動量
-m_Action(ACTION_NONE),		// 行動
+m_Action(ACTION_CHASE),		// 行動
 m_fDeleteTimer(0.0f),		// 自動消滅タイマー
 m_fChargeTimer(0.0f),		// ため時間タイマー
 m_pGimmick(nullptr)			// ギミックのポインタ
@@ -89,7 +89,7 @@ HRESULT CPlayerClone::Init(void)
 	m_pShadow = nullptr;		// 影の情報
 	m_pOrbit = nullptr;		// 軌跡の情報
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
-	m_Action = ACTION_NONE; // 行動
+	m_Action = ACTION_CHASE; // 行動
 	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
 	m_fChargeTimer = 0.0f; // ため時間タイマー
 	m_pGimmick = nullptr; // ギミックのポインタ
@@ -198,7 +198,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 各種行動を起こす
 	switch (m_Action)
 	{
-	case ACTION_MOVE:
+	case ACTION_MOVE: // 歩行
 
 		// 移動
 		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
@@ -213,10 +213,14 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
-	case ACTION_NONE:
+	case ACTION_CHASE: // 追従
 
 		// 一つ前を追いかける
 		ChasePrev();
+
+		break;
+
+	case ACTION_WAIT: // ギミック待機
 
 		break;
 
@@ -295,6 +299,18 @@ bool CPlayerClone::Hit(const int nDamage)
 	if (IsDeath()) { return false; }	// 死亡済み
 
 	return true;
+}
+
+//==========================================
+//  ギミックのポインタを取得する
+//==========================================
+void CPlayerClone::SetGimmick(CGimmick* gimmick)
+{
+	// 引数をポインタに設定する
+	m_pGimmick = gimmick;
+
+	// ギミック待機状態になる
+	m_Action = ACTION_WAIT;
 }
 
 //============================================================
@@ -576,7 +592,7 @@ void CPlayerClone::ChasePrev()
 			prev = *itr;
 
 			// 前が追従していない場合
-			if (prev->GetAction() != ACTION_NONE)
+			if (prev->GetAction() != ACTION_CHASE)
 			{
 				// 一つ前が先頭でない場合次に進む
 				if (prev != *itrBegin) { continue; }
@@ -637,4 +653,27 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 	D3DXVECTOR3 rot = GetVec3Rotation();
 	rot.y = fRot;
 	SetVec3Rotation(rot);
+}
+
+//==========================================
+//  ギミック待機
+//==========================================
+void CPlayerClone::Wait()
+{
+	// ギミックがnullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
+
+	// ギミックの位置に移動する
+	SetVec3Position(m_pGimmick->GetVec3Position());
+
+	// ギミックがアクティブ状態なら
+	if (m_pGimmick->IsActive())
+	{
+		// ギミックに対応したステータスを適用する
+		switch (m_pGimmick->GetType())
+		{
+		default:
+			break;
+		}
+	}
 }
