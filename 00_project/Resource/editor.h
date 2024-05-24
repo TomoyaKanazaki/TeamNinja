@@ -40,7 +40,7 @@ public:
 	virtual HRESULT Init(void)	= 0;	// ‰Šú‰»
 	virtual void Uninit(void)	= 0;	// I—¹
 	virtual void Update(void)	= 0;	// XV
-	virtual void Save(void)		= 0;	// •Û‘¶
+	virtual HRESULT Save(void)	= 0;	// •Û‘¶
 	virtual bool IsSave(void)	= 0;	// •Û‘¶ó‹µæ“¾
 	virtual void SaveInfo(void)	= 0;	// î•ñ•Û‘¶
 	virtual void LoadInfo(void)	= 0;	// î•ñ“Ç

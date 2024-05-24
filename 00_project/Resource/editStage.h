@@ -54,7 +54,7 @@ public:
 	HRESULT Init(void) override;	// ‰Šú‰»
 	void Uninit(void) override;		// I—¹
 	void Update(void) override;		// XV
-	void Save(void) override;		// •Û‘¶
+	HRESULT Save(void) override;	// •Û‘¶
 	bool IsSave(void) override;		// •Û‘¶ó‹µæ“¾
 	void SaveInfo(void) override;	// î•ñ•Û‘¶
 	void LoadInfo(void) override;	// î•ñ“Ç

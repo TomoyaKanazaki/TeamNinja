@@ -38,9 +38,12 @@
 //************************************************************
 namespace
 {
+	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_field.txt";	// セーブテキストパス
+
 	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(editstage::SIZE, editstage::SIZE);	// 大きさ
 	const float	MAX_SIZE = 10000.0f;	// 最大の大きさ
 	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
+	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
 }
 
 //************************************************************
@@ -49,7 +52,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditField::CEditField(CEditManager *pEditManager) : CEditorObject(pEditManager)
+CEditField::CEditField()
 {
 #if _DEBUG
 
@@ -176,19 +179,6 @@ void CEditField::Update(void)
 
 	// 位置を反映
 	m_pField->SetVec3Position(GetVec3Position());
-
-#endif	// _DEBUG
-}
-
-//============================================================
-//	保存処理
-//============================================================
-void CEditField::Save(void)
-{
-#if _DEBUG
-
-	// 保存済みにする
-	m_bSave = true;
 
 #endif	// _DEBUG
 }
@@ -364,15 +354,6 @@ void CEditField::ChangeType(void)
 void CEditField::CreateField(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
-
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
 
@@ -439,15 +420,6 @@ void CEditField::ReleaseField(void)
 //============================================================
 void CEditField::DeleteCollisionField(const bool bRelase)
 {
-	CEditManager *pEditManager = GetPtrEditManager();	// エディットマネージャー
-	if (pEditManager == nullptr)
-	{ // エディットマネージャーが存在しない場合
-
-		// 処理を抜ける
-		assert(false);
-		return;
-	}
-
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
@@ -459,31 +431,33 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 		// 同じアドレスだった場合次へ
 		if (rList == m_pField) { continue; }
 
-		D3DXVECTOR3 posField  = rList->GetVec3Position();	// フィールド位置
-		D3DXVECTOR3 sizeThisField = D3DXVECTOR3(0.0f, 25.0f, 0.0f);		// フィールド大きさ
-		D3DXVECTOR3 sizeOtherField = D3DXVECTOR3(0.0f, 25.0f, 0.0f);	// フィールド大きさ
+		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
 
-		D3DXVECTOR2 sizeThis = m_pField->GetVec2Sizing();
-		sizeThisField.x = sizeThis.x;
-		sizeThisField.z = sizeThis.y;
+		// 自身の大きさを設定
+		D3DXVECTOR2 sizeThisField = m_pField->GetVec2Sizing();	// 自身の地面の大きさ
+		sizeThis.x = sizeThisField.x;	// 判定サイズXを設定
+		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
+		sizeThis.z = sizeThisField.y;	// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
 
-		D3DXVECTOR2 sizeOther = rList->GetVec2Sizing();
-		sizeOtherField.x = sizeOther.x;
-		sizeOtherField.z = sizeOther.y;
+		// 対象の大きさを設定
+		D3DXVECTOR2 sizeOtherField = rList->GetVec2Sizing();	// 対象の地面の大きさ
+		sizeOther.x = sizeOtherField.x;	// 判定サイズXを設定
+		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
+		sizeOther.z = sizeOtherField.y;	// 判定サイズZを設定
+		sizeOther *= 0.5f;				// 判定サイズを半分に
 
-		sizeThisField *= 0.5f;	// フィールド大きさ
-		sizeOtherField *= 0.5f;	// フィールド大きさ
-
-		// TODO：判定きもいよー
 		// 矩形の当たり判定
 		if (collision::Box3D
 		( // 引数
-			posEdit,		// 判定位置
-			posField,		// 判定目標位置
-			sizeThisField,
-			sizeThisField,
-			sizeOtherField,
-			sizeOtherField
+			posEdit,	// 判定位置
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
 		))
 		{ // 判定内だった場合
 
@@ -527,5 +501,103 @@ void CEditField::InitAllColorField(void)
 		// 通常色を設定
 		rList->SetColor(XCOL_WHITE);
 	}
+}
+
+//============================================================
+//	保存処理
+//============================================================
+HRESULT CEditField::Save(void)
+{
+#if _DEBUG
+
+	// 地面のリストを取得
+	CListManager<CField> *pListManager = CField::GetList();	// リストマネージャー
+	std::list<CField*> listField;	// 地面リスト
+	if (pListManager != nullptr)
+	{ // リストマネージャーが生成されている場合
+
+		// リストを取得
+		listField = pListManager->GetList();
+	}
+
+	// ファイルを開く
+	std::ofstream  file(SAVE_PASS);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 見出しを書き出し
+	file << "#==============================================================================" << std::endl;
+	file << "#" << std::endl;
+	file << "#	ステージ地面配置のセーブデータ [save_field.txt]" << std::endl;
+	file << "#	Author : 藤田 勇一" << std::endl;
+	file << "#" << std::endl;
+	file << "#==============================================================================" << std::endl;
+	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
+
+	// 小数点書き出しの方法を指定
+	file << std::fixed << std::setprecision(DIGIT_FLOAT);
+
+	// 読み込み開始文字列を書き出し
+	file << "STAGE_FIELDSET\n" << std::endl;
+
+	// 総数を書き出し
+	file << "	# 地面の総数" << std::endl;
+	file << "	NUM = " << (int)listField.size() - 1 << "\n" << std::endl;
+
+	// フィールドの色の全初期化
+	InitAllColorField();
+
+	for (const auto& rList : listField)
+	{ // 地面の総数分繰り返す
+
+		// 同じアドレスだった場合次へ
+		if (rList == m_pField) { continue; }
+
+		// 書き出す情報を取得
+		CField::EType type	= rList->GetType();			// 種類
+		D3DXVECTOR3 pos		= rList->GetVec3Position();	// 位置
+		D3DXVECTOR3 rot		= rList->GetVec3Rotation();	// 向き
+		D3DXVECTOR2 size	= rList->GetVec2Sizing();	// 大きさ
+		D3DXCOLOR col		= rList->GetColor();		// 色
+		POSGRID2 part		= rList->GetPattern();		// 分割数
+		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
+
+		// 情報を書き出し
+		file << "	FIELDSET" << std::endl;
+		file << "		TEXTURE_ID = "	<< type << std::endl;
+		file << "		POS		= "		<< pos.x << " " << pos.y << " " << pos.z << std::endl;
+		file << "		ROT		= "		<< rot.x << " " << rot.y << " " << rot.z << std::endl;
+		file << "		SIZE	= "		<< size.x << " " << size.y << std::endl;
+		file << "		COL		= "		<< col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
+		file << "		PART	= "		<< part.x << " " << part.y << std::endl;
+		file << "		TEXPART	= "		<< texPart.x << " " << texPart.y << std::endl;
+		file << "	END_FIELDSET\n" << std::endl;
+	}
+
+	// フィールドの削除判定
+	DeleteCollisionField(false);
+
+	// 読み込み終了文字列を書き出し
+	file << "END_STAGE_FIELDSET" << std::endl;
+
+	// 保存済みにする
+	m_bSave = true;
+
+	// 成功を返す
+	return S_OK;
+
+#else	// NDEBUG
+
+	// 成功を返す
+	return S_OK;
+
+#endif	// _DEBUG
 }
 #endif

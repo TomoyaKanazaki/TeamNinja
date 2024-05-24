@@ -23,8 +23,6 @@
 //************************************************************
 namespace
 {
-	const char* SAVE_TXT = "data\\TXT\\save_stage.txt";	// ステージセーブテキスト
-
 	const char *TYPE_NAME[] =	// エディットタイプ名
 	{
 		"ステージ",
@@ -294,7 +292,7 @@ void CEditManager::DrawDebugInfo(void)
 //============================================================
 //	保存処理
 //============================================================
-void CEditManager::Save(void)
+HRESULT CEditManager::Save(void)
 {
 	// ステージを保存
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
@@ -304,7 +302,16 @@ void CEditManager::Save(void)
 		{
 			// 現在のエディタータイプ情報を保存
 			assert(m_pEditor != nullptr);
-			m_pEditor->Save();
+			if (FAILED(m_pEditor->Save()))
+			{ // セーブに失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
 		}
 	}
+
+	// 成功を返す
+	return S_OK;
 }

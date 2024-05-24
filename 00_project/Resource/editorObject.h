@@ -28,13 +28,13 @@ class CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditorObject(CEditManager *pEditManager);
+	CEditorObject();
 
 	// デストラクタ
 	virtual ~CEditorObject();
 
 	// 純粋仮想関数
-	virtual void Save(void)		= 0;	// 保存
+	virtual HRESULT Save(void)	= 0;	// 保存
 	virtual bool IsSave(void)	= 0;	// 保存状況取得
 	virtual void SaveInfo(void)	= 0;	// 情報保存
 	virtual void LoadInfo(void)	= 0;	// 情報読込
@@ -47,11 +47,10 @@ public:
 	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
-	static CEditorObject *Create(CEditManager *pEditManager, CEditStage::EType type);	// 生成
+	static CEditorObject *Create(CEditStage::EType type);	// 生成
 	static void Release(CEditorObject *&prEditorObject);	// 破棄
 
 	// メンバ関数
-	CEditManager *GetPtrEditManager(void) const;	// エディットマネージャー取得
 	D3DXVECTOR3 GetVec3Position(void) const { return m_pos; }	// 位置取得
 
 private:
@@ -59,7 +58,6 @@ private:
 	void UpdatePosition(void);	// 位置更新
 
 	// メンバ変数
-	CEditManager *m_pEditManager;	// エディットマネージャー
 	D3DXVECTOR3 m_pos;	// 位置
 };
 

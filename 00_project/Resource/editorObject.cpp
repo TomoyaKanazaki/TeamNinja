@@ -34,12 +34,11 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditorObject::CEditorObject(CEditManager *pEditManager)
+CEditorObject::CEditorObject()
 {
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pEditManager = pEditManager;	// エディットマネージャー
 	m_pos = VEC3_ZERO;	// 位置
 
 #endif	// _DEBUG
@@ -124,7 +123,7 @@ void CEditorObject::DrawDebugInfo(void)
 //============================================================
 //	生成処理
 //============================================================
-CEditorObject *CEditorObject::Create(CEditManager *pEditManager, CEditStage::EType type)
+CEditorObject *CEditorObject::Create(CEditStage::EType type)
 {
 #if _DEBUG
 
@@ -135,14 +134,14 @@ CEditorObject *CEditorObject::Create(CEditManager *pEditManager, CEditStage::ETy
 	switch (type)
 	{ // 種類ごとの処理
 	case CEditStage::TYPE_FIELD:
-		pEditorObject = new CEditField(pEditManager);	// エディットフィールド
+		pEditorObject = new CEditField;	// エディットフィールド
 		break;
 
 	case CEditStage::TYPE_WALL:
 
 		// TODO：エディットフィールドできたら置き換え
-		pEditorObject = new CEditField(pEditManager);	// エディットフィールド
-		//pEditorObject = new CEditWall(pEditManager);	// エディットウォール
+		pEditorObject = new CEditField;	// エディットフィールド
+		//pEditorObject = new CEditWall;	// エディットウォール
 
 		break;
 
@@ -193,24 +192,6 @@ void CEditorObject::Release(CEditorObject *&prEditorObject)
 
 	// メモリ開放
 	SAFE_DELETE(prEditorObject);
-
-#endif	// _DEBUG
-}
-
-//============================================================
-//	エディットマネージャー取得処理
-//============================================================
-CEditManager *CEditorObject::GetPtrEditManager(void) const
-{
-#if _DEBUG
-
-	// エディットマネージャーを返す
-	return m_pEditManager;
-
-#else	// NDEBUG
-
-	// nullptrを返す
-	return nullptr;
 
 #endif	// _DEBUG
 }

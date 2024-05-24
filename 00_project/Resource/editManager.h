@@ -55,7 +55,7 @@ private:
 	void ChangeEditorType(void);	// エディタータイプ変更
 	void DrawDebugControl(void);	// 操作表示描画
 	void DrawDebugInfo(void);		// 情報表示描画
-	void Save(void);				// 保存
+	HRESULT Save(void);				// 保存
 
 	// メンバ変数
 	CEditor *m_pEditor;		// エディター情報

@@ -73,7 +73,7 @@ HRESULT CEditStage::Init(void)
 	m_type		= TYPE_FIELD;	// オブジェクトタイプ
 
 	// エディター情報の生成
-	m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_type);
+	m_pEditor = CEditorObject::Create(m_type);
 	if (m_pEditor == nullptr)
 	{ // 生成に失敗した場合
 
@@ -126,13 +126,27 @@ void CEditStage::Update(void)
 //============================================================
 //	保存処理
 //============================================================
-void CEditStage::Save(void)
+HRESULT CEditStage::Save(void)
 {
 #if _DEBUG
 
 	// エディター情報の保存
 	assert(m_pEditor != nullptr);
-	m_pEditor->Save();
+	if (FAILED(m_pEditor->Save()))
+	{ // セーブに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+
+#else	// NDEBUG
+
+	// 成功を返す
+	return S_OK;
 
 #endif	// _DEBUG
 }
@@ -147,6 +161,11 @@ bool CEditStage::IsSave(void)
 	// エディター情報の保存
 	assert(m_pEditor != nullptr);
 	return m_pEditor->IsSave();
+
+#else	// NDEBUG
+
+	// falseを返す
+	return false;
 
 #endif	// _DEBUG
 }
@@ -229,7 +248,7 @@ void CEditStage::ChangeObjectType(void)
 		if (m_pEditor == nullptr)
 		{
 			// エディター情報の生成
-			m_pEditor = CEditorObject::Create(GetPtrEditManager(), m_type);
+			m_pEditor = CEditorObject::Create(m_type);
 			assert(m_pEditor != nullptr);	// 生成失敗
 		}
 	}
