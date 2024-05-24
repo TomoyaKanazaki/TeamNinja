@@ -15,7 +15,6 @@
 //************************************************************
 #include "object3D.h"
 #include "listManager.h"
-#include "player_clone.h"
 
 //************************************************************
 //	クラス定義
@@ -47,10 +46,6 @@ public:
 	// セット・ゲット関係
 	void SetType(const EType type) { m_type = type; }			// 種類の設定処理
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
-	void SetNumClone(const int nNum) { m_nNumClone = nNum; }	// 分身の総数の設定処理
-	int GetNumClone(void) { return m_nNumClone; }				// 分身の総数の取得処理
-	void SetEnableActive(const bool bAct) { m_bActive = bAct; }	// 発動条件の設定処理
-	bool IsActive(void) { return m_bActive; }					// 発動条件の取得処理
 
 	// 静的メンバ関数
 	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成
@@ -61,8 +56,6 @@ private:
 	// メンバ変数
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
 	EType m_type;		// 種類
-	int m_nNumClone;	// 範囲に入っている分身の数
-	bool m_bActive;		// 発動状況
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト

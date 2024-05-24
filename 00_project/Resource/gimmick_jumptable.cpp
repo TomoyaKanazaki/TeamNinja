@@ -16,7 +16,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmickJumpTable::CGimmickJumpTable() : CGimmick()
+CGimmickJumpTable::CGimmickJumpTable() : CGimmickAction()
 {
 
 }
@@ -35,7 +35,7 @@ CGimmickJumpTable::~CGimmickJumpTable()
 HRESULT CGimmickJumpTable::Init(void)
 {
 	// オブジェクト3Dの初期化
-	if (FAILED(CGimmick::Init()))
+	if (FAILED(CGimmickAction::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -53,7 +53,7 @@ HRESULT CGimmickJumpTable::Init(void)
 void CGimmickJumpTable::Uninit(void)
 {
 	// オブジェクト3Dの終了
-	CGimmick::Uninit();
+	CGimmickAction::Uninit();
 }
 
 //============================================================
@@ -62,7 +62,7 @@ void CGimmickJumpTable::Uninit(void)
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
 	// オブジェクト3Dの更新
-	CGimmick::Update(fDeltaTime);
+	CGimmickAction::Update(fDeltaTime);
 }
 
 //============================================================
@@ -71,5 +71,5 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 void CGimmickJumpTable::Draw(CShader* pShader)
 {
 	// オブジェクト3Dの描画
-	CGimmick::Draw(pShader);
+	CGimmickAction::Draw(pShader);
 }
