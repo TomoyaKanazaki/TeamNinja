@@ -25,7 +25,7 @@ class CEditField : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditField(CEditManager *pEditManager);
+	CEditField();
 
 	// デストラクタ
 	~CEditField() override;
@@ -44,7 +44,7 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(void) override;		// 更新
-	void Save(void) override;		// 保存
+	HRESULT Save(void) override;	// 保存
 	bool IsSave(void) override;		// 保存状況取得
 	void SaveInfo(void) override;	// 情報保存
 	void LoadInfo(void) override;	// 情報読込
