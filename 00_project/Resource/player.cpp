@@ -1158,6 +1158,21 @@ void CPlayer::SaveReset()
 	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
 
+//==========================================
+//  分身を呼び戻す
+//==========================================
+void CPlayer::CallClone()
+{
+	// パッドの入力情報を取得する
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// 右スティックの押し込みがなかった場合関数を抜ける
+	if (pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+
+	// 分身を追従する
+	CPlayerClone::CallBack();
+}
+
 #ifdef _DEBUG
 
 //==========================================
