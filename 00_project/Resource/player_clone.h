@@ -47,8 +47,6 @@ public:
 		MODEL_LEGDR,		// 右脛
 		MODEL_FOOTL,		// 左足
 		MODEL_FOOTR,		// 右足
-		MODEL_SWORDL,		// 左剣
-		MODEL_SWORDR,		// 右剣
 		MODEL_MAX			// この列挙型の総数
 	};
 
@@ -85,6 +83,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	EAction GetAction() const { return m_Action; } // 行動を取得
+	void SetAction(EAction action) { m_Action = action; } // 行動を設定
 	void SetGimmick(CGimmickAction* gimmick); // ギミックのポインタを受け取る
 
 	// 静的メンバ関数
@@ -93,6 +92,7 @@ public:
 	static void Delete(const int nNum);						// 消去処理
 	static void Delete(const EAction act = ACTION_CHASE);	// 全消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);		// リスト取得
+	static void CallBack();									// 分身を呼び戻す
 
 private:
 	// メンバ関数

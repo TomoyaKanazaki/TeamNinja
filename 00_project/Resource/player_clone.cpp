@@ -448,6 +448,31 @@ CListManager<CPlayerClone>* CPlayerClone::GetList(void)
 	return m_pList;
 }
 
+//==========================================
+//  分身を追従に変更
+//==========================================
+void CPlayerClone::CallBack()
+{
+	// リスト情報がない場合停止する
+	if (m_pList == nullptr) { assert(false); return; }
+
+	// 総数を取得
+	int nNum = m_pList->GetNumAll();
+
+	// 追従と歩行以外の行動を追従に変更
+	for (int i = 0; i < nNum; ++i)
+	{
+		// 分身を取得
+		CPlayerClone* pClone = *m_pList->GetIndex(i);
+
+		// 歩行中の場合は次に進む
+		if (pClone->GetAction() == ACTION_MOVE || pClone->GetAction() == ACTION_CHASE) { continue; }
+
+		// 追従状態にする
+		pClone->SetAction(ACTION_CHASE);
+	}
+}
+
 //============================================================
 //	通常状態時の更新処理
 //============================================================
