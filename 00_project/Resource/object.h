@@ -103,7 +103,7 @@ public:
 		LABEL_GOAL,			// ゴール
 		LABEL_STARTUI,		// スタートUI
 		LABEL_GIMMICK,		// ギミック
-		LABEL_MAXMODEL,	// マップモデル
+		LABEL_MAPMODEL,		// マップモデル
 		LABEL_MAX			// この列挙型の総数
 	};
 
