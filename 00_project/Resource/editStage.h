@@ -11,15 +11,29 @@
 #define _EDIT_STAGE_H_
 
 //************************************************************
+//	インクルードファイル
+//************************************************************
+#include "editor.h"
+
+//************************************************************
 //	前方宣言
 //************************************************************
-class CEditManager;	// エディットマネージャークラス
+class CEditManager;		// エディットマネージャークラス
+class CEditorObject;	// エディターオブジェクトクラス
+
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace editstage
+{
+	const float SIZE = 50.0f;	// 一ブロックの大きさ
+}
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // エディットステージクラス
-class CEditStage
+class CEditStage : public CEditor
 {
 public:
 	// 種類列挙
@@ -31,32 +45,29 @@ public:
 	};
 
 	// コンストラクタ
-	CEditStage();
+	CEditStage(CEditManager *pEditManager);
 
 	// デストラクタ
 	virtual ~CEditStage();
 
-	// 純粋仮想関数
-	virtual HRESULT Init(void)	= 0;	// 初期化
-	virtual void Uninit(void)	= 0;	// 終了
-	virtual void Update(void)	= 0;	// 更新
-	virtual void SaveInfo(void)	= 0;	// 情報保存
-	virtual void LoadInfo(void)	= 0;	// 情報読込
-	virtual void DrawDebugControl(void)	= 0;	// 操作表示描画
-	virtual void DrawDebugInfo(void)	= 0;	// 情報表示描画
-	virtual void Save(FILE *pFile)		= 0;	// 保存
-
-	// 静的メンバ関数
-	static CEditStage *Create(CEditManager *pEditManager, EType type);	// 生成
-	static void Release(CEditStage *&prEditStage);	// 破棄
-
 	// メンバ関数
-	CEditManager *GetPtrEditManager(void) const;	// エディットマネージャー取得
+	HRESULT Init(void) override;	// 初期化
+	void Uninit(void) override;		// 終了
+	void Update(void) override;		// 更新
+	void Save(void) override;		// 保存
+	bool IsSave(void) override;		// 保存状況取得
+	void SaveInfo(void) override;	// 情報保存
+	void LoadInfo(void) override;	// 情報読込
+	void DrawDebugControl(void) override;	// 操作表示描画
+	void DrawDebugInfo(void) override;		// 情報表示描画
 
 private:
+	// メンバ関数
+	void ChangeObjectType(void);	// オブジェクトタイプ変更
+
 	// メンバ変数
-	CEditManager *m_pEditManager;	// エディットマネージャー
-	CEditStage *m_pStage;	// ステージエディター
+	CEditorObject *m_pEditor;	// エディター情報
+	CEditStage::EType m_type;	// オブジェクトタイプ
 };
 
 #endif	// _EDIT_STAGE_H_

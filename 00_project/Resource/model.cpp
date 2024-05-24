@@ -130,30 +130,30 @@ int CModel::Regist(std::string sFilePass)
 
 	// xファイルの読込
 	if (FAILED(LoadXFileModel(&tempMapInfo, sFilePass)))
-		{ // xファイルの読込に失敗した場合
+	{ // xファイルの読込に失敗した場合
 
-			// 失敗を返す
-			assert(false);
-			return NONE_IDX;
-		}
+		// 失敗を返す
+		assert(false);
+		return NONE_IDX;
+	}
 
 	// テクスチャの読込
 	if (FAILED(LoadTextureModel(&tempMapInfo)))
-		{ // テクスチャの読込に失敗した場合
+	{ // テクスチャの読込に失敗した場合
 
-			// 失敗を返す
-			assert(false);
-			return NONE_IDX;
-		}
+		// 失敗を返す
+		assert(false);
+		return NONE_IDX;
+	}
 
 	// 当たり判定の作成
 	if (FAILED(SetCollisionModel(&tempMapInfo)))
-		{ // 当たり判定の作成に失敗した場合
+	{ // 当たり判定の作成に失敗した場合
 
-			// 失敗を返す
-			assert(false);
-			return NONE_IDX;
-		}
+		// 失敗を返す
+		assert(false);
+		return NONE_IDX;
+	}
 
 	// ファイルパス名を保存
 	tempMapInfo.sFilePassName = sFilePass;
