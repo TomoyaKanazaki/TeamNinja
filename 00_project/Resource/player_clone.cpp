@@ -66,7 +66,8 @@ m_pOrbit(nullptr),			// 軌跡の情報
 m_move(0.0f, 0.0f, 0.0f),	// 移動量
 m_Action(ACTION_NONE),		// 行動
 m_fDeleteTimer(0.0f),		// 自動消滅タイマー
-m_fChargeTimer(0.0f)		// ため時間タイマー
+m_fChargeTimer(0.0f),		// ため時間タイマー
+m_pGimmick(nullptr)			// ギミックのポインタ
 {
 
 }
@@ -91,6 +92,7 @@ HRESULT CPlayerClone::Init(void)
 	m_Action = ACTION_NONE; // 行動
 	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
 	m_fChargeTimer = 0.0f; // ため時間タイマー
+	m_pGimmick = nullptr; // ギミックのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))

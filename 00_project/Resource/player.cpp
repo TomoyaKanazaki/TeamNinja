@@ -109,7 +109,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fInertial			(0.0f),			// Šµ«—Í
 	m_pCloneAngleUI		(nullptr),		// •ªgo‚·•ûŒü‚ÌUI
 	m_fMove				(0.0f),			// ˆÚ“®—Ê
-	m_fChargeTime		(0.0f)			// ‚½‚ßŠÔ
+	m_fChargeTime		(0.0f),			// ‚½‚ßŠÔ
 {
 
 }

@@ -20,6 +20,7 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
+class CGimmick;	//　ギミッククラス
 
 //************************************************************
 //	クラス定義
@@ -83,6 +84,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	EAction GetAction() const { return m_Action; } // 行動を取得
+	void SetGimmick(CGimmick* gimmick) { m_pGimmick = gimmick; } // ギミックのポインタを受け取る
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
@@ -114,6 +116,8 @@ private:
 	EAction m_Action; // 行動
 	float m_fDeleteTimer; // 自動消滅タイマー
 	float m_fChargeTimer; // ため時間タイマー
+	CGimmick* m_pGimmick; // ギミックのポインタ
+
 };
 
 #endif	// _PLAYER_H_
