@@ -355,7 +355,7 @@ void CEditField::CreateField(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	D3DXCOLOR colField = XCOL_WHITE;	// 色保存用
+	D3DXCOLOR colField = XCOL_WHITE;			// 色保存用
 
 	// フィールドを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
@@ -541,18 +541,14 @@ HRESULT CEditField::Save(void)
 	file << "#==============================================================================" << std::endl;
 	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
 
+	// フィールドの色の全初期化
+	InitAllColorField();
+
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
 	// 読み込み開始文字列を書き出し
 	file << "STAGE_FIELDSET\n" << std::endl;
-
-	// 総数を書き出し
-	file << "	# 地面の総数" << std::endl;
-	file << "	NUM = " << (int)listField.size() - 1 << "\n" << std::endl;
-
-	// フィールドの色の全初期化
-	InitAllColorField();
 
 	for (const auto& rList : listField)
 	{ // 地面の総数分繰り返す
@@ -569,23 +565,26 @@ HRESULT CEditField::Save(void)
 		POSGRID2 part		= rList->GetPattern();		// 分割数
 		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
 
+		// 向きを360度に変換
+		D3DXToDegree(rot);
+
 		// 情報を書き出し
 		file << "	FIELDSET" << std::endl;
-		file << "		TEXTURE_ID = "	<< type << std::endl;
-		file << "		POS		= "		<< pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "		ROT		= "		<< rot.x << " " << rot.y << " " << rot.z << std::endl;
-		file << "		SIZE	= "		<< size.x << " " << size.y << std::endl;
-		file << "		COL		= "		<< col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
-		file << "		PART	= "		<< part.x << " " << part.y << std::endl;
-		file << "		TEXPART	= "		<< texPart.x << " " << texPart.y << std::endl;
+		file << "		TYPE	= " << type << std::endl;
+		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
+		file << "		COL		= " << col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
+		file << "		PART	= " << part.x << " " << part.y << std::endl;
+		file << "		TEXPART	= " << texPart.x << " " << texPart.y << std::endl;
 		file << "	END_FIELDSET\n" << std::endl;
 	}
 
-	// フィールドの削除判定
-	DeleteCollisionField(false);
-
 	// 読み込み終了文字列を書き出し
 	file << "END_STAGE_FIELDSET" << std::endl;
+
+	// フィールドの削除判定
+	DeleteCollisionField(false);
 
 	// 保存済みにする
 	m_bSave = true;

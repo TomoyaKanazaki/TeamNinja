@@ -28,7 +28,12 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CWall::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CWall::TYPE_MAX, "ERROR : Type Count Mismatch");
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CWall> *CWall::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CWall] のメンバ関数
@@ -36,7 +41,8 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CWall::TEXTURE_MAX, "ERROR : Texture Co
 //============================================================
 //	コンストラクタ
 //============================================================
-CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::DIM_3D, PRIORITY)
+CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::DIM_3D, PRIORITY),
+	m_type	(TYPE_NORMAL)	// 種類
 {
 
 }
@@ -54,6 +60,9 @@ CWall::~CWall()
 //============================================================
 HRESULT CWall::Init(void)
 {
+	// メンバ変数をクリア
+	m_type = TYPE_NORMAL;	// 種類
+
 	// オブジェクトメッシュウォールの初期化
 	if (FAILED(CObjectMeshWall::Init()))
 	{ // 初期化に失敗した場合
@@ -62,6 +71,23 @@ HRESULT CWall::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CWall>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
 
 	// 成功を返す
 	return S_OK;
@@ -72,6 +98,16 @@ HRESULT CWall::Init(void)
 //============================================================
 void CWall::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクトメッシュウォールの終了
 	CObjectMeshWall::Uninit();
 }
@@ -99,7 +135,7 @@ void CWall::Draw(CShader *pShader)
 //============================================================
 CWall *CWall::Create
 (
-	const ETexture texture,		// 種類
+	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR2& rSize,	// 大きさ
@@ -126,8 +162,8 @@ CWall *CWall::Create
 			return nullptr;
 		}
 
-		// テクスチャを登録・割当
-		pWall->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[texture]));
+		// 種類を設定
+		pWall->SetType(type);
 
 		// 位置を設定
 		pWall->SetVec3Position(rPos);
@@ -153,4 +189,30 @@ CWall *CWall::Create
 		// 確保したアドレスを返す
 		return pWall;
 	}
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CWall> *CWall::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
+}
+
+//============================================================
+//	種類の設定処理
+//============================================================
+void CWall::SetType(const EType type)
+{
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // インデックスが範囲内の場合
+
+		// 種類を保存
+		m_type = type;
+
+		// テクスチャを登録・割当
+		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	}
+	else { assert(false); }	// 範囲外
 }
