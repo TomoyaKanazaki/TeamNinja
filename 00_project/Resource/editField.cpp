@@ -565,6 +565,9 @@ HRESULT CEditField::Save(void)
 		POSGRID2 part		= rList->GetPattern();		// 分割数
 		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
 
+		// 向きを360度に変換
+		D3DXToDegree(rot);
+
 		// 情報を書き出し
 		file << "	FIELDSET" << std::endl;
 		file << "		TYPE	= " << type << std::endl;
