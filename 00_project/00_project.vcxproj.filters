@@ -384,7 +384,7 @@
     <ClInclude Include="Resource\collisionModel.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="collisionCylinder.h">
+    <ClInclude Include="Resource\collisionCylinder.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -749,7 +749,7 @@
     <ClCompile Include="Resource\collisionModel.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="collisionCylinder.cpp">
+    <ClCompile Include="Resource\collisionCylinder.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -159,7 +159,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="collisionCylinder.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
@@ -170,6 +169,7 @@
     <ClInclude Include="Resource\cinemaScope.h" />
     <ClInclude Include="Resource\cloneAngleUI.h" />
     <ClInclude Include="Resource\collision.h" />
+    <ClInclude Include="Resource\collisionCylinder.h" />
     <ClInclude Include="Resource\collisionModel.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
@@ -284,7 +284,6 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="collisionCylinder.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
@@ -295,6 +294,7 @@
     <ClCompile Include="Resource\cinemaScope.cpp" />
     <ClCompile Include="Resource\cloneAngleUI.cpp" />
     <ClCompile Include="Resource\collision.cpp" />
+    <ClCompile Include="Resource\collisionCylinder.cpp" />
     <ClCompile Include="Resource\collisionModel.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
