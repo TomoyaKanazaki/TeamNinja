@@ -11,6 +11,7 @@
 #include "gimmick_action.h"
 
 #include "player_clone.h"
+#include "player.h"
 #include "collision.h"
 
 // 定数定義
@@ -132,9 +133,45 @@ void CGimmickAction::CollisionClone(void)
 		else
 		{ // 入ってなかった場合
 
+			// TODO：外れた時にポインタを外す処理を入れる
 		}
 	}
 
 	// 分身の総数を設定する
 	m_nNumClone = nNumClone;
+}
+
+//============================================================
+// プレイヤーとの当たり判定
+//============================================================
+void CGimmickAction::CollisionPlayer(void)
+{
+	// プレイヤーのリスト構造が無ければ抜ける
+	if (CPlayer::GetList() == nullptr) { return; }
+
+	std::list<CPlayer*> list = CPlayer::GetList()->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	D3DXVECTOR3 size = GetVec3Sizing() / 2;	// サイズ
+	D3DXVECTOR3 posPlayer = VEC3_ZERO;		// プレイヤーの位置
+	D3DXVECTOR3 sizePlayer = CLONE_RADIUS;	// プレイヤーのサイズ
+
+	for (auto player : list)
+	{
+		// 位置を取得
+		posPlayer = player->GetVec3Position();
+
+		if (collision::Box2D
+		(
+			pos,		// 判定位置
+			posPlayer,	// 判定目標位置
+			size,		// 判定サイズ(右・上・後)
+			size,		// 判定サイズ(左・下・前)
+			sizePlayer,	// 判定目標サイズ(右・上・後)
+			sizePlayer	// 判定目標サイズ(左・下・前)
+		))
+		{ // 四角の中に入った場合
+
+			player;
+		}
+	}
 }
