@@ -104,13 +104,12 @@ public:
 	float GetHeight(void) const;		// 縦幅取得
 
 	// メンバ関数 (金崎朋弥)
-	int GetTension() const; // 士気力の値を取得
-	float GetScalar() const { return m_fScalar; } // スカラーの取得
-	void RecoverCheckPoint(); // チェックポイントでの回復処理
-	void RecoverJust(); // ジャストアクションでの回復処理
-	void SetCheckPoint(CCheckPoint* checkpoint) { m_pCheckPoint = checkpoint; }// チェックポイントを取得する処理
-	D3DXVECTOR3 GetCenterPos() const { return m_posCenter; } // プレイヤーの中心座標を取得
-	D3DXVECTOR3 GetTargetPos() const; // 分身カーソルの位置を取得
+	int GetTension() const;		// 士気力の値を取得
+	void RecoverCheckPoint();	// チェックポイントでの回復処理
+	void RecoverJust();			// ジャストアクションでの回復処理
+	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
+	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
+	float GetScalar() const				{ return m_fScalar; }	// スカラーの取得
 
 private:
 	// メンバ関数
@@ -126,12 +125,10 @@ private:
 	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
-	void CloneAngleUISetUp(void);			// 分身出す方向のUIのセットアップ処理
 
 	// メンバ関数 (金崎追加)
-	void Move();			// 操作処理
-	void Inertial();		// 運動の第一法則
 	void LoadParameter();	// 定数値の読み込み
+	void Inertial();		// 運動の第一法則
 	void ControlClone();	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
@@ -169,7 +166,6 @@ private:
 	float m_fHeght;					// 縦幅
 	D3DXVECTOR3 m_posCenter;		// 中心座標
 	float m_fInertial;				// 慣性力
-	CCloneAngleUI* m_pCloneAngleUI;	// 分身出す方向のUI
 	float m_fChargeTime;			// ため時間
 
 };
