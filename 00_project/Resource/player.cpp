@@ -490,7 +490,7 @@ bool CPlayer::Hit(const int nDamage)
 void CPlayer::SetSpawn(void)
 {
 	// 変数を宣言
-	D3DXVECTOR3 set = D3DXVECTOR3(0.0f, 500.0f, 0.0f);	// 引数設定用
+	D3DXVECTOR3 set = VEC3_ZERO;	// 引数設定用
 
 	// 情報を初期化
 	SetState(STATE_SPAWN);	// スポーン状態の設定

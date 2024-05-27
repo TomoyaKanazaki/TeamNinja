@@ -88,6 +88,12 @@ void CGimmickAction::Update(const float fDeltaTime)
 		// プレイヤーとの当たり判定
 		CollisionPlayer();
 	}
+	else
+	{ // 上記以外
+
+		// 分身との当たり判定処理
+		CollisionClone();
+	}
 
 	// オブジェクト3Dの更新
 	CGimmick::Update(fDeltaTime);
@@ -119,6 +125,9 @@ void CGimmickAction::CollisionClone(void)
 
 	for (auto clone : list)
 	{
+		// 追跡する分身だった場合次の分身にする
+		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
+
 		// 位置を取得
 		posClone = clone->GetVec3Position();
 
