@@ -59,7 +59,13 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
-		MOTION_MOVE,		// 移動モーション
+		MOTION_CAUTIOUS,	// 警戒モーション
+		MOTION_DASH,		// 歩行モーション
+		MOTION_STEALTHWALK,	// 忍び足モーション
+		MOTION_JUMP_MINI,	// 小ジャンプモーション
+		MOTION_JUMP_HIGH,	// 大ジャンプモーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -118,6 +124,7 @@ private:
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
+	void UpdateSaveTeleport(void);	// 保存位置の更新
 
 	bool UpdateLanding(D3DXVECTOR3& rPos);							// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新

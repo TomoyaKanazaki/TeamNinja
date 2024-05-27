@@ -274,9 +274,6 @@ void CPlayer::Update(const float fDeltaTime)
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
 
-	// 分身の処理
-	ControlClone();
-
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 
@@ -622,18 +619,17 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// ステージ範囲外の補正
 	pStage->LimitPosition(posPlayer, RADIUS);
 
+	// 分身の処理
+	ControlClone();
+
 	// 位置を反映
 	SetVec3Position(posPlayer);
 
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
 
-	// チェックポイントに帰る
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	if (pKey->IsTrigger(DIK_Q))
-	{
-		SaveReset();
-	}
+	// 保存位置の更新
+	UpdateSaveTeleport();
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -718,6 +714,19 @@ void CPlayer::UpdateGravity(void)
 {
 	// 重力を加算
 	m_move.y -= GRAVITY;
+}
+
+//============================================================
+//	保存位置の更新処理
+//============================================================
+void CPlayer::UpdateSaveTeleport(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	if (pKey->IsTrigger(DIK_Q))
+	{
+		// チェックポイントに帰る
+		SaveReset();
+	}
 }
 
 //============================================================
@@ -923,6 +932,7 @@ void CPlayer::ControlClone()
 	}
 
 #ifdef _DEBUG
+
 	// 移動分身の削除
 	if (pPad->IsTrigger(CInputPad::KEY_LB))
 	{
@@ -932,6 +942,7 @@ void CPlayer::ControlClone()
 			CPlayerClone::Delete(CPlayerClone::ACTION_MOVE);
 		}
 	}
+
 #endif
 
 	// 分身の数が上限だった場合関数を抜ける
@@ -941,8 +952,10 @@ void CPlayer::ControlClone()
 	if (!pPad->GetTriggerRStick()) { return; }
 
 #ifndef _DEBUG
+
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
+
 #endif
 
 	// プレイヤーの方向を取得
