@@ -108,7 +108,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fHeght			(0.0f),			// 立幅
 	m_fInertial			(0.0f),			// 慣性力
 	m_pCloneAngleUI		(nullptr),		// 分身出す方向のUI
-	m_fMove				(0.0f),			// 移動量
+	m_fScalar				(0.0f),			// 移動量
 	m_fChargeTime		(0.0f)			// ため時間
 {
 
@@ -139,7 +139,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
-	m_fMove				= 0.0f;			// 移動量
+	m_fScalar				= 0.0f;			// 移動量
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -352,6 +352,9 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// キーボード操作処理
 	KeyboardControl();
+
+	// 分身のキーボード操作処理
+	KeyboardCloneControl();
 
 #endif
 }
@@ -984,7 +987,7 @@ void CPlayer::Move()
 #endif
 
 	// 移動量をスカラー値に変換する
-	m_fMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 }
 
 //==========================================
@@ -1135,9 +1138,9 @@ void CPlayer::ControlClone()
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		m_fMove * cosf(-fRotStick),
+		m_fScalar * cosf(-fRotStick),
 		0.0f,
-		m_fMove * sinf(-fRotStick)
+		m_fScalar * sinf(-fRotStick)
 	);
 
 	// 歩く分身を出す
@@ -1182,16 +1185,8 @@ void CPlayer::CallClone()
 void CPlayer::KeyboardControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
-	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
 	D3DXVECTOR3 pos = GetVec3Position();
-
 	float fStickRot = 0.0f;
-
-	// 向きにカメラの向きを加算する
-	fStickRot += CameraRot.y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
 
 	if (pKey->IsPress(DIK_W))
 	{ // 前関係移動
@@ -1273,6 +1268,111 @@ void CPlayer::KeyboardControl(void)
 	// 位置を適用
 	SetVec3Position(pos);
 	SetVec3Rotation(m_destRot);
+}
+
+//==========================================
+// 分身のキーボード操作処理
+//==========================================
+void CPlayer::KeyboardCloneControl(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	float fStickRot = 0.0f;
+	D3DXVECTOR3 move = VEC3_ZERO;
+
+	if (pKey->IsTrigger(DIK_I))
+	{ // 前関係移動
+		if (pKey->IsTrigger(DIK_J))
+		{
+			fStickRot = (D3DX_PI * 0.75f);
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+		else if (pKey->IsTrigger(DIK_L))
+		{
+			fStickRot = (D3DX_PI * -0.75f);
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+		else
+		{
+			fStickRot = D3DX_PI;
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+	}
+	else if (pKey->IsTrigger(DIK_K))
+	{ // 後ろ関係移動
+		if (pKey->IsTrigger(DIK_J))
+		{
+			fStickRot = (D3DX_PI * 0.25f);
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+		else if (pKey->IsTrigger(DIK_L))
+		{
+			fStickRot = (D3DX_PI * -0.25f);
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+		else
+		{
+			fStickRot = 0.0f;
+
+			move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+			move.y = 0.0f;
+			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+			// 歩く分身を出す
+			CPlayerClone::Create(move);
+		}
+	}
+	else if (pKey->IsTrigger(DIK_J))
+	{ // 左関係移動
+		fStickRot = (D3DX_PI * 0.5f);
+
+		move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+		move.y = 0.0f;
+		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+		// 歩く分身を出す
+		CPlayerClone::Create(move);
+	}
+	else if (pKey->IsTrigger(DIK_L))
+	{ // 右関係移動
+		fStickRot = (D3DX_PI * -0.5f);
+
+		move.x = sinf(fStickRot - D3DX_PI) * 7.0f;
+		move.y = 0.0f;
+		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
+
+		// 歩く分身を出す
+		CPlayerClone::Create(move);
+	}
 }
 
 #endif // _DEBUG
