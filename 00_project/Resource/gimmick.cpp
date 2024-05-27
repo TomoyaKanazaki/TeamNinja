@@ -105,9 +105,6 @@ void CGimmick::Uninit(void)
 //============================================================
 void CGimmick::Update(const float fDeltaTime)
 {
-	// 分身との当たり判定処理
-	CollisionClone();
-
 	// オブジェクト3Dの更新
 	CObject3D::Update(fDeltaTime);
 }
