@@ -99,7 +99,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fHeght			(0.0f),			// 立幅
 	m_fInertial			(0.0f),			// 慣性力
-	m_pCloneAngleUI		(nullptr),		// 分身出す方向のUI
 	m_fScalar			(0.0f),			// 移動量
 	m_fChargeTime		(0.0f)			// ため時間
 {
@@ -130,7 +129,6 @@ HRESULT CPlayer::Init(void)
 	m_nCounterState		= 0;			// 状態管理カウンター
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
-	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
 	m_fScalar			= 0.0f;			// 移動量
 
 	// 定数パラメータの読み込み
@@ -166,16 +164,6 @@ HRESULT CPlayer::Init(void)
 		ORBIT_PART		// 分割数
 	);
 	if (m_pOrbit == nullptr)
-	{ // 非使用中の場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// 分身出す方向のUIの生成
-	m_pCloneAngleUI = CCloneAngleUI::Create(GetVec3Position());
-	if (m_pCloneAngleUI == nullptr)
 	{ // 非使用中の場合
 
 		// 失敗を返す
@@ -233,9 +221,6 @@ void CPlayer::Uninit(void)
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
-	// 分身出す方向のUIの終了
-	SAFE_UNINIT(m_pCloneAngleUI);
-
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -288,15 +273,6 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
-
-	// 分身出す方向のUIのセットアップ処理
-	CloneAngleUISetUp();
-
-	// 分身出す方向のUIの更新
-	m_pCloneAngleUI->Update(fDeltaTime);
-
-	// 操作
-	Move();
 
 	// 分身の処理
 	ControlClone();
@@ -442,10 +418,13 @@ CListManager<CPlayer> *CPlayer::GetList(void)
 //============================================================
 //	ノックバックヒット処理
 //============================================================
-bool CPlayer::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVecKnock*/)
+bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
 {
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// 士気力を減少
+	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
@@ -481,7 +460,7 @@ void CPlayer::SetSpawn(void)
 	SetVec3Position(pos);
 
 	// 向きを設定
-	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 向き
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向き
 	SetVec3Rotation(rot);
 	m_destRot = rot;
 
@@ -585,14 +564,6 @@ void CPlayer::RecoverJust()
 	m_pTensionGauge->AddNum(m_nRecover);
 }
 
-//==========================================
-//  カーソル位置の取得
-//==========================================
-D3DXVECTOR3 CPlayer::GetTargetPos() const
-{
-	return m_pCloneAngleUI->GetVec3Position();
-}
-
 //============================================================
 //	スポーン状態時の更新処理
 //============================================================
@@ -682,6 +653,60 @@ void CPlayer::UpdateOldPosition(void)
 //============================================================
 CPlayer::EMotion CPlayer::UpdateMove(void)
 {
+	// 運動の第一法則
+	Inertial();
+
+	// 入力情報の取得
+	CInputPad* pPad = GET_INPUTPAD;
+	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
+	
+	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
+	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
+
+	// 入力していないと抜ける
+#ifndef _DEBUG
+	if (!pPad->GetLStick()) { return; }
+#endif
+	if (fSpeed >= STEALTH_BORDER)
+	{ // 通常速度の場合
+
+		// 速度を通常にする
+		fSpeed = NORMAL_MOVE;
+	}
+	else
+	{ // 忍び足の場合
+
+		// 速度を忍び足にする
+		fSpeed = STEALTH_MOVE;
+	}
+
+	// 向きにカメラの向きを加算する
+	fStickRot += CameraRot.y;
+
+	// 向きの正規化
+	useful::NormalizeRot(fStickRot);
+
+	// 向きを設定
+	m_destRot.y = fStickRot;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+
+	// 移動量を設定する
+	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
+	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+
+	// ジャンプ
+#ifdef _DEBUG
+	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		m_move.y = JUMP;
+	}
+#endif
+
+	// 移動量をスカラー値に変換する
+	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+
 	// 待機モーションを返す
 	return MOTION_IDOL;
 }
@@ -868,108 +893,6 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-// 分身出す方向のUIのセットアップ処理
-//==========================================
-void CPlayer::CloneAngleUISetUp(void)
-{
-	CInputPad* pPad = GET_INPUTPAD;			// 入力情報を取得
-	float fSpeed = pPad->GetPressRStickTilt();						// スティックの傾き
-	float fStickRot = pPad->GetPressRStickRot() + GET_MANAGER->GetCamera()->GetRotation().y + (D3DX_PI * 0.5f);	// スティックの向き
-	D3DXVECTOR3 pos = GetVec3Position();	// プレイヤーの位置
-
-	// 入力していないと表示を消す
-	if (fSpeed == 0.0f) { m_pCloneAngleUI->SetEnableDraw(false); return; }
-
-	// 分身出る方向のUIを表示する
-	m_pCloneAngleUI->SetEnableDraw(true);
-
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
-
-	// 位置を設定
-	m_pCloneAngleUI->SetVec3Position
-	(
-		D3DXVECTOR3
-		(
-			pos.x + sinf(fStickRot) * 70.0f,
-			pos.y + 10.0f,
-			pos.z + cosf(fStickRot) * 70.0f
-		)
-	);
-
-	// 向きを設定
-	m_pCloneAngleUI->SetVec3Rotation
-	(
-		D3DXVECTOR3
-		(
-			0.0f,
-			fStickRot,
-			0.0f
-		)
-	);
-}
-
-//==========================================
-//  操作処理
-//==========================================
-void CPlayer::Move()
-{
-	// 運動の第一法則
-	Inertial();
-
-	// 入力情報の取得
-	CInputPad* pPad = GET_INPUTPAD;
-	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
-	
-	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
-	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
-
-	// 入力していないと抜ける
-#ifndef _DEBUG
-	if (!pPad->GetLStick()) { return; }
-#endif
-	if (fSpeed >= STEALTH_BORDER)
-	{ // 通常速度の場合
-
-		// 速度を通常にする
-		fSpeed = NORMAL_MOVE;
-	}
-	else
-	{ // 忍び足の場合
-
-		// 速度を忍び足にする
-		fSpeed = STEALTH_MOVE;
-	}
-
-	// 向きにカメラの向きを加算する
-	fStickRot += CameraRot.y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
-
-	// 向きを設定
-	m_destRot.y = fStickRot;
-
-	// 向きの正規化
-	useful::NormalizeRot(m_destRot.y);
-
-	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
-	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
-
-	// ジャンプ
-#ifdef _DEBUG
-	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
-		m_move.y = JUMP;
-	}
-#endif
-
-	// 移動量をスカラー値に変換する
-	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-}
-
-//==========================================
 //  慣性の法則
 //==========================================
 void CPlayer::Inertial()
@@ -979,77 +902,6 @@ void CPlayer::Inertial()
 
 	// z軸方向の慣性
 	m_move.z += (0.0f - m_move.z) * m_fInertial;
-}
-
-//==========================================
-//  定数読み込み
-//==========================================
-void CPlayer::LoadParameter()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(PARAM_FILE, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐処理
-		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxTension);
-		}
-		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nInitTension);
-		}
-		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nSpeedTension);
-		}
-		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxClone);
-		}
-		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nRecover);
-		}
-		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fHeght);
-		}
-		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fInertial);
-		}
-		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fChargeTime);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
-	}
 }
 
 //==========================================
@@ -1351,6 +1203,77 @@ void CPlayer::KeyboardCloneControl(void)
 
 		// 歩く分身を出す
 		CPlayerClone::Create(move);
+	}
+}
+
+//==========================================
+//  定数読み込み
+//==========================================
+void CPlayer::LoadParameter()
+{
+	//ローカル変数宣言
+	FILE* pFile; // ファイルポインタ
+
+	//ファイルを読み取り専用で開く
+	pFile = fopen(PARAM_FILE, "r");
+
+	// ファイルが開けなかった場合
+	if (pFile == NULL) { assert(false); return; }
+
+	// 情報の読み込み
+	while (1)
+	{
+		// 文字列の記録用
+		char aStr[256];
+
+		// 文字列読み込み
+		fscanf(pFile, "%s", &aStr[0]);
+
+		// 条件分岐処理
+		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxTension);
+		}
+		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nInitTension);
+		}
+		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nSpeedTension);
+		}
+		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nMaxClone);
+		}
+		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
+		{
+			// データを格納
+			fscanf(pFile, "%d", &m_nRecover);
+		}
+		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fHeght);
+		}
+		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fInertial);
+		}
+		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
+		{
+			// データを格納
+			fscanf(pFile, "%f", &m_fChargeTime);
+		}
+		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
+		{
+			break;
+		}
 	}
 }
 
