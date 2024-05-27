@@ -26,6 +26,7 @@
 #include "goal.h"
 
 #include "gimmick.h"
+#include "actor.h"
 
 //************************************************************
 //	定数宣言
@@ -77,6 +78,9 @@ HRESULT CGameManager::Init(void)
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
 
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), CGimmick::TYPE_JUMPTABLE);
+
+	// アクターを生成
+	CActor::Create(D3DXVECTOR3(-400.0f, 0.0f, 400.0f));
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }
