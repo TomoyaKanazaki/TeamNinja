@@ -135,7 +135,6 @@ private:
 
 	// メンバ関数 (金崎追加)
 	void LoadParameter();	// 定数値の読み込み
-	void Inertial();		// 運動の第一法則
 	void ControlClone();	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
