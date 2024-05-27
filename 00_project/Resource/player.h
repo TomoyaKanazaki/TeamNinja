@@ -93,6 +93,8 @@ public:
 	// メンバ関数
 	void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }	// 目標向き設定
 	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
+	void SetMove(const D3DXVECTOR3& rMove)			{ m_move = rMove; }		// 移動量の設定
+	D3DXVECTOR3 GetMove(void) const					{ return m_move; }		// 移動量の取得
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	void SetSpawn(void);				// 出現設定
@@ -103,7 +105,7 @@ public:
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const; // 士気力の値を取得
-	float GetMove()const { return m_fMove; } // 移動量の取得
+	float GetScalar()const { return m_fScalar; } // スカラーの取得
 	void RecoverCheckPoint(); // チェックポイントでの回復処理
 	void RecoverJust(); // ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint) { m_pCheckPoint = checkpoint; }// チェックポイントを取得する処理
@@ -137,7 +139,8 @@ private:
 
 #ifdef _DEBUG
 
-	void KeyboardControl(void);		// キーボードの操作処理
+	void KeyboardControl(void);			// キーボードの操作処理
+	void KeyboardCloneControl(void);	// 分身のキーボード操作処理
 
 #endif // _DEBUG
 
@@ -154,7 +157,7 @@ private:
 	EState		m_state;			// 状態
 	int			m_nCounterState;	// 状態管理カウンター
 	bool		m_bJump;			// ジャンプ状況
-	float		m_fMove;			// 移動量
+	float		m_fScalar;			// 移動量
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
