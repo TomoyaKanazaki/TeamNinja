@@ -105,9 +105,6 @@ void CGimmick::Uninit(void)
 //============================================================
 void CGimmick::Update(const float fDeltaTime)
 {
-	// 分身との当たり判定処理
-	CollisionClone();
-
 	// オブジェクト3Dの更新
 	CObject3D::Update(fDeltaTime);
 }
@@ -202,6 +199,14 @@ CListManager<CGimmick>* CGimmick::GetList(void)
 // クローンとの当たり判定
 //============================================================
 void CGimmick::CollisionClone(void)
+{
+
+}
+
+//============================================================
+// プレイヤーとの当たり判定
+//============================================================
+void CGimmick::CollisionPlayer(void)
 {
 
 }

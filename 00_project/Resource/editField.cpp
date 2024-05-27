@@ -41,9 +41,8 @@ namespace
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_field.txt";	// セーブテキストパス
 
 	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(editstage::SIZE, editstage::SIZE);	// 大きさ
-	const float	MAX_SIZE = 10000.0f;	// 最大の大きさ
-	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
-	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
+	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
+	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
 }
 
 //************************************************************
@@ -84,7 +83,6 @@ HRESULT CEditField::Init(void)
 	m_pField			 = nullptr;				// 情報
 	m_infoCreate.type	 = (CField::EType)0;	// 種類
 	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
-	m_infoCreate.col	 = XCOL_WHITE;			// 色
 	m_infoCreate.part	 = GRID2_ONE;			// 分割数
 	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
 	m_bSave				 = false;				// 保存状況
@@ -99,14 +97,14 @@ HRESULT CEditField::Init(void)
 	}
 
 	// フィールドの生成
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
+	D3DXCOLOR colField = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 地面色
 	m_pField = CField::Create
 	( // 引数
 		m_infoCreate.type,		// 種類
-		posEdit,				// 位置
-		VEC3_ZERO,				// 向き
+		GetVec3Position(),		// 位置
+		GetVec3Rotation(),		// 向き
 		m_infoCreate.size,		// 大きさ
-		m_infoCreate.col,		// 色
+		colField,				// 色
 		m_infoCreate.part,		// 分割数
 		m_infoCreate.texPart	// テクスチャ分割数
 	);
@@ -117,10 +115,6 @@ HRESULT CEditField::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 色を設定
-	D3DXCOLOR col = m_pField->GetColor();	// 元の色を取得
-	m_pField->SetColor(D3DXCOLOR(col.r, col.g, col.b, INIT_ALPHA));
 
 	// 成功を返す
 	return S_OK;
@@ -264,6 +258,18 @@ void CEditField::DrawDebugInfo(void)
 }
 
 //============================================================
+//	向き更新処理
+//============================================================
+void CEditField::UpdateRotation(void)
+{
+	// 向きの更新
+	CEditorObject::UpdateRotation();
+
+	// 向きを反映
+	m_pField->SetVec3Rotation(GetVec3Rotation());
+}
+
+//============================================================
 //	大きさの更新処理
 //============================================================
 void CEditField::UpdateSizing(void)
@@ -311,8 +317,8 @@ void CEditField::UpdateSizing(void)
 	}
 
 	// 大きさを補正
-	useful::LimitNum(m_infoCreate.size.x, INIT_SIZE.x, MAX_SIZE);
-	useful::LimitNum(m_infoCreate.size.y, INIT_SIZE.y, MAX_SIZE);
+	useful::LimitMinNum(m_infoCreate.size.x, INIT_SIZE.x);
+	useful::LimitMinNum(m_infoCreate.size.y, INIT_SIZE.y);
 
 	// 大きさを反映
 	m_pField->SetVec2Sizing(m_infoCreate.size);
@@ -381,10 +387,10 @@ void CEditField::CreateField(void)
 		m_pField = CField::Create
 		( // 引数
 			m_infoCreate.type,		// 種類
-			posEdit,				// 位置
-			VEC3_ZERO,				// 向き
+			GetVec3Position(),		// 位置
+			GetVec3Rotation(),		// 向き
 			m_infoCreate.size,		// 大きさ
-			m_infoCreate.col,		// 色
+			colField,				// 色
 			m_infoCreate.part,		// 分割数
 			m_infoCreate.texPart	// テクスチャ分割数
 		);
@@ -497,6 +503,9 @@ void CEditField::InitAllColorField(void)
 
 	for (auto& rList : listField)
 	{ // フィールド数分繰り返す
+
+		// 同じアドレスだった場合次へ
+		if (rList == m_pField) { continue; }
 
 		// 通常色を設定
 		rList->SetColor(XCOL_WHITE);

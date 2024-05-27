@@ -93,6 +93,8 @@ public:
 	// メンバ関数
 	void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }	// 目標向き設定
 	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
+	void SetMove(const D3DXVECTOR3& rMove)			{ m_move = rMove; }		// 移動量設定
+	D3DXVECTOR3 GetMove(void) const					{ return m_move; }		// 移動量取得
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	void SetSpawn(void);				// 出現設定
@@ -102,42 +104,39 @@ public:
 	float GetHeight(void) const;		// 縦幅取得
 
 	// メンバ関数 (金崎朋弥)
-	int GetTension() const; // 士気力の値を取得
-	float GetMove()const { return m_fMove; } // 移動量の取得
-	void RecoverCheckPoint(); // チェックポイントでの回復処理
-	void RecoverJust(); // ジャストアクションでの回復処理
-	void SetCheckPoint(CCheckPoint* checkpoint) { m_pCheckPoint = checkpoint; }// チェックポイントを取得する処理
-	D3DXVECTOR3 GetCenterPos() const { return m_posCenter; } // プレイヤーの中心座標を取得
-	D3DXVECTOR3 GetTargetPos() const; // 分身カーソルの位置を取得
+	int GetTension() const;		// 士気力の値を取得
+	void RecoverCheckPoint();	// チェックポイントでの回復処理
+	void RecoverJust();			// ジャストアクションでの回復処理
+	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
+	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
+	float GetScalar() const				{ return m_fScalar; }	// スカラーの取得
 
 private:
 	// メンバ関数
-	EMotion UpdateSpawn(void);		// スポーン状態時の更新
-	EMotion UpdateNormal(void);		// 通常状態時の更新
+	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
+	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
 
-	bool UpdateLanding(D3DXVECTOR3& rPos);				// 着地状況の更新
-	void UpdatePosition(D3DXVECTOR3& rPos);				// 位置の更新
-	void UpdateRotation(D3DXVECTOR3& rRot);				// 向きの更新
-	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
-	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
-	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
-
-	void CloneAngleUISetUp(void);	// 分身出す方向のUIのセットアップ処理
+	bool UpdateLanding(D3DXVECTOR3& rPos);							// 着地状況の更新
+	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
+	void UpdateRotation(D3DXVECTOR3& rRot);							// 向きの更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
+	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
+	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	void Move(); // 操作処理
-	void Inertial(); // 運動の第一法則
-	void LoadParameter(); // 定数値の読み込み
-	void ControlClone(); // 分身の処理
-	void SaveReset(); // 直前のチェックポイントに帰る
-	void CallClone(); // 分身を呼び戻す処理
+	void LoadParameter();	// 定数値の読み込み
+	void Inertial();		// 運動の第一法則
+	void ControlClone();	// 分身の処理
+	void SaveReset();		// 直前のチェックポイントに帰る
+	void CallClone();		// 分身を呼び戻す処理
 
 #ifdef _DEBUG
 
-	void KeyboardControl(void);		// キーボードの操作処理
+	void KeyboardControl(void);			// キーボードの操作処理
+	void KeyboardCloneControl(void);	// 分身のキーボード操作処理
 
 #endif // _DEBUG
 
@@ -154,21 +153,20 @@ private:
 	EState		m_state;			// 状態
 	int			m_nCounterState;	// 状態管理カウンター
 	bool		m_bJump;			// ジャンプ状況
-	float		m_fMove;			// 移動量
+	float		m_fScalar;			// 移動量
 
 	// メンバ変数 (金崎追加)
-	CGauge2D* m_pTensionGauge; // 士気力ゲージのポインタ
-	unsigned int m_nMaxTension; // 士気力の最大値
-	unsigned int m_nInitTension; // 士気力の初期値
-	unsigned int m_nSpeedTension; // 士気力ゲージの増減速度
-	int m_nMaxClone; // 一度に分身できる上限
-	unsigned int m_nRecover; // ジャストアクションでの回復量
-	CCheckPoint* m_pCheckPoint; // セーブしたチェックポイント
-	float m_fHeght; // 縦幅
-	D3DXVECTOR3 m_posCenter; // 中心座標
-	float m_fInertial; // 慣性力
-	CCloneAngleUI* m_pCloneAngleUI;	// 分身出す方向のUI
-	float m_fChargeTime; // ため時間
+	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
+	unsigned int m_nMaxTension;		// 士気力の最大値
+	unsigned int m_nInitTension;	// 士気力の初期値
+	unsigned int m_nSpeedTension;	// 士気力ゲージの増減速度
+	int m_nMaxClone;				// 一度に分身できる上限
+	unsigned int m_nRecover;		// ジャストアクションでの回復量
+	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
+	float m_fHeght;					// 縦幅
+	D3DXVECTOR3 m_posCenter;		// 中心座標
+	float m_fInertial;				// 慣性力
+	float m_fChargeTime;			// ため時間
 
 };
 
