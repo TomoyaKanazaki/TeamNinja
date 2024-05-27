@@ -56,7 +56,7 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
+	const float STEALTH_BORDER	= 16000.0f;	// 忍び足になる基準のスピード
 	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
 
@@ -280,7 +280,7 @@ void CPlayer::Update(const float fDeltaTime)
 	// デバッグ表示
 	DebugProc::Print(DebugProc::POINT_LEFT, "士気力 : %d\n", m_pTensionGauge->GetNum());
 
-#ifdef _DEBUG
+#ifndef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
@@ -586,20 +586,10 @@ CPlayer::EMotion CPlayer::UpdateSpawn(const float fDeltaTime)
 //============================================================
 CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 {
-	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-
-	// ポインタを宣言
-	CStage *pStage = CScene::GetStage();	// ステージ情報
-	if (pStage == nullptr)
-	{ // ステージが使用されていない場合
-
-		// 処理を抜ける
-		assert(false);
-		return MOTION_IDOL;
-	}
+	CStage *pStage = CScene::GetStage();		// ステージ情報
 
 	// 移動操作
 	currentMotion = UpdateMove();
@@ -649,44 +639,39 @@ void CPlayer::UpdateOldPosition(void)
 //============================================================
 CPlayer::EMotion CPlayer::UpdateMove(void)
 {
-	// 運動の第一法則
-	Inertial();
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
 	
-	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
-	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
+	// KANAZAKI：忍び足とダッシュの判定書き換えて
 
-	// 入力していないと抜ける
-#ifndef _DEBUG
-	if (!pPad->GetLStick()) { return; }
-#endif
+	// スティックの傾きから移動量を設定
+	float fSpeed = pPad->GetPressLStickTilt();
 	if (fSpeed >= STEALTH_BORDER)
 	{ // 通常速度の場合
 
 		// 速度を通常にする
 		fSpeed = NORMAL_MOVE;
+
+		// 歩行モーションにする
+		currentMotion = MOTION_DASH;
 	}
 	else
 	{ // 忍び足の場合
 
 		// 速度を忍び足にする
 		fSpeed = STEALTH_MOVE;
+
+		// 忍び足モーションにする
+		currentMotion = MOTION_STEALTHWALK;
 	}
 
-	// 向きにカメラの向きを加算する
-	fStickRot += CameraRot.y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
-
-	// 向きを設定
+	// 目標向きを設定
+	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);	// スティック向き
 	m_destRot.y = fStickRot;
-
-	// 向きの正規化
-	useful::NormalizeRot(m_destRot.y);
+	useful::NormalizeRot(m_destRot.y);	// 向きの正規化
 
 	// 移動量を設定する
 	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
@@ -703,8 +688,8 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	// 移動量をスカラー値に変換する
 	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 
-	// 待機モーションを返す
-	return MOTION_IDOL;
+	// モーションを返す
+	return currentMotion;
 }
 
 //============================================================
@@ -734,15 +719,15 @@ void CPlayer::UpdateSaveTeleport(void)
 //============================================================
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 {
-	// 変数を宣言
 	bool bLand = false;	// 着地状況
+	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// ジャンプしている状態にする
 	m_bJump = true;
 
 	// 地面・制限位置の着地判定
-	if (CScene::GetStage()->LandFieldPosition(rPos, m_move)
-	||  CScene::GetStage()->LandLimitPosition(rPos, m_move, 0.0f))
+	if (pStage->LandFieldPosition(rPos, m_move)
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
@@ -899,18 +884,6 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
-}
-
-//==========================================
-//  慣性の法則
-//==========================================
-void CPlayer::Inertial()
-{
-	// x軸方向の慣性
-	m_move.x += (0.0f - m_move.x) * m_fInertial;
-
-	// z軸方向の慣性
-	m_move.z += (0.0f - m_move.z) * m_fInertial;
 }
 
 //==========================================
