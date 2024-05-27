@@ -35,7 +35,6 @@ public:
 	{
 		CField::EType type;	// 種類
 		D3DXVECTOR2 size;	// 大きさ
-		D3DXCOLOR col;		// 色
 		POSGRID2 part;		// 分割数
 		POSGRID2 texPart;	// テクスチャ分割数
 	};
@@ -52,13 +51,15 @@ public:
 	void DrawDebugInfo(void) override;		// 情報表示描画
 
 private:
+	// オーバーライド関数
+	void UpdateRotation(void) override;	// 向き更新
+
 	// メンバ関数
 	void UpdateSizing(void);	// 大きさ更新
 	void UpdateTexPart(void);	// テクスチャ分割更新
 	void ChangeType(void);		// 種類変更
 	void CreateField(void);		// フィールド生成
 	void ReleaseField(void);	// フィールド破棄
-
 	void DeleteCollisionField(const bool bRelase);	// フィールドの削除判定
 	void InitAllColorField(void);					// フィールドの色全初期化
 

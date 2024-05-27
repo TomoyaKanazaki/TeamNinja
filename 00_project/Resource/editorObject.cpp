@@ -28,6 +28,19 @@
 #define KEY_DOWN	(DIK_Q)	// 下移動キー
 #define NAME_DOWN	("Q")	// 下移動表示
 
+#define KEY_ROTA_RIGHT	(DIK_Z)	// 右回転キー
+#define NAME_ROTA_RIGHT	("Z")	// 右回転表示
+#define KEY_ROTA_LEFT	(DIK_C)	// 左回転キー
+#define NAME_ROTA_LEFT	("C")	// 左回転表示
+
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const float ADD_ROT = 0.05f;	// 配置物の回転量
+}
+
 //************************************************************
 //	親クラス [CEditorObject] のメンバ関数
 //************************************************************
@@ -40,6 +53,8 @@ CEditorObject::CEditorObject()
 
 	// メンバ変数をクリア
 	m_pos = VEC3_ZERO;	// 位置
+	m_rot = VEC3_ZERO;	// 向き
+	m_angle = ANGLE_0;	// 角度
 
 #endif	// _DEBUG
 }
@@ -62,6 +77,8 @@ HRESULT CEditorObject::Init(void)
 
 	// メンバ変数を初期化
 	m_pos = VEC3_ZERO;	// 位置
+	m_rot = VEC3_ZERO;	// 向き
+	m_angle = ANGLE_0;	// 角度
 
 	// 成功を返す
 	return S_OK;
@@ -93,6 +110,9 @@ void CEditorObject::Update(void)
 	// 位置の更新
 	UpdatePosition();
 
+	// 向きの更新
+	UpdateRotation();
+
 #endif	// _DEBUG
 }
 
@@ -104,6 +124,7 @@ void CEditorObject::DrawDebugControl(void)
 #if _DEBUG
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "回転：[%s/%s]\n", NAME_ROTA_RIGHT, NAME_ROTA_LEFT);
 
 #endif	// _DEBUG
 }
@@ -116,6 +137,7 @@ void CEditorObject::DrawDebugInfo(void)
 #if _DEBUG
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[位置]\n", m_pos.x, m_pos.y, m_pos.z);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[向き]\n", m_rot.x, m_rot.y, m_rot.z);
 
 #endif	// _DEBUG
 }
@@ -257,4 +279,34 @@ void CEditorObject::UpdatePosition(void)
 			m_pos.y -= editstage::SIZE;
 		}
 	}
+}
+
+//============================================================
+//	向き更新処理
+//============================================================
+void CEditorObject::UpdateRotation(void)
+{
+	// 向きを変更
+	CInputKeyboard *m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
+	if (m_pKeyboard->IsTrigger(KEY_ROTA_RIGHT))
+	{
+		// 角度を左回転
+		m_angle = (EAngle)((m_angle + (ANGLE_MAX - 1)) % ANGLE_MAX);
+
+		// 現在の角度から向きを計算
+		int nTemp = ((m_angle - 1) + (ANGLE_MAX - 1)) % ANGLE_MAX;
+		m_rot.y = ((float)nTemp * HALF_PI) - D3DX_PI;
+	}
+	if (m_pKeyboard->IsTrigger(KEY_ROTA_LEFT))
+	{
+		// 角度を右回転
+		m_angle = (EAngle)((m_angle + 1) % ANGLE_MAX);
+
+		// 現在の角度から向きを計算
+		int nTemp = ((m_angle - 1) + (ANGLE_MAX - 1)) % ANGLE_MAX;
+		m_rot.y = ((float)nTemp * HALF_PI) - D3DX_PI;
+	}
+
+	// 向きを正規化
+	useful::NormalizeRot(m_rot);
 }
