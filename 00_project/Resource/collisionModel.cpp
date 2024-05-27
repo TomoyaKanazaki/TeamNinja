@@ -9,6 +9,8 @@
 //************************************************************
 #include "collisionModel.h"
 
+#include "collisionCylinder.h"
+
 //============================================================
 // コンストラクタ
 //============================================================
@@ -32,19 +34,4 @@ void CCollision::Uninit(void)
 {
 	// 自身を消す
 	delete this;
-}
-
-//============================================================
-// 生成処理
-//============================================================
-CCollision* CCollision::Create(const D3DXVECTOR3& rOffset)
-{
-	// 当たり判定の生成
-	CCollision* pColl = new CCollision;
-
-	// 生成出来ていない場合 nullptr を返す
-	if (pColl == nullptr) { return pColl; }
-
-	// 当たり判定を返す
-	return pColl;
 }
