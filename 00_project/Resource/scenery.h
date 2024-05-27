@@ -22,13 +22,13 @@
 class CScenery : public CObjectMeshCylinder
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
+	// 種類列挙
+	enum EType
 	{
-		TEXTURE_MOUNTAIN_SMALL_00 = 0,	// 山テクスチャ
-		TEXTURE_MOUNTAIN_SMALL_01,		// 山テクスチャ
-		TEXTURE_MOUNTAIN_BIG,			// 山テクスチャ
-		TEXTURE_MAX						// この列挙型の総数
+		TYPE_MOUNTAIN_SMALL_00 = 0,	// 山テクスチャ
+		TYPE_MOUNTAIN_SMALL_01,		// 山テクスチャ
+		TYPE_MOUNTAIN_BIG,			// 山テクスチャ
+		TYPE_MAX					// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -46,7 +46,7 @@ public:
 	// 静的メンバ関数
 	static CScenery *Create	// 生成
 	( // 引数
-		const ETexture texture,		// 種類
+		const EType type,			// 種類
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXCOLOR& rCol,		// 色
@@ -55,6 +55,19 @@ public:
 		const float fRadius,		// 半径
 		const float fHeight			// 縦幅
 	);
+	static CListManager<CScenery> *GetList(void);	// リスト取得
+
+	// メンバ関数
+	void SetType(const EType type);					// 種類設定
+	EType GetType(void) const { return m_type; }	// 種類取得
+
+private:
+	// 静的メンバ変数
+	static CListManager<CScenery> *m_pList;	// オブジェクトリスト
+
+	// メンバ変数
+	CListManager<CScenery>::AIterator m_iterator;	// イテレーター
+	EType m_type;	// 種類
 };
 
 #endif	// _SCENERY_H_

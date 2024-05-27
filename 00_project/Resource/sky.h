@@ -22,11 +22,11 @@
 class CSky : public CObjectMeshDome
 {
 public:
-	// テクスチャ列挙
-	enum ETexture
+	// 種類列挙
+	enum EType
 	{
-		TEXTURE_NORMAL = 0,	// 通常テクスチャ
-		TEXTURE_MAX			// この列挙型の総数
+		TYPE_NORMAL = 0,	// 通常テクスチャ
+		TYPE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -44,7 +44,7 @@ public:
 	// 静的メンバ関数
 	static CSky *Create	// 生成
 	( // 引数
-		const ETexture texture,		// 種類
+		const EType type,			// 種類
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
 		const D3DXCOLOR& rCol,		// 色
@@ -52,6 +52,19 @@ public:
 		const POSGRID2& rTexPart,	// テクスチャ分割数
 		const float fRadius			// 半径
 	);
+	static CListManager<CSky> *GetList(void);	// リスト取得
+
+	// メンバ関数
+	void SetType(const EType type);					// 種類設定
+	EType GetType(void) const { return m_type; }	// 種類取得
+
+private:
+	// 静的メンバ変数
+	static CListManager<CSky> *m_pList;	// オブジェクトリスト
+
+	// メンバ変数
+	CListManager<CSky>::AIterator m_iterator;	// イテレーター
+	EType m_type;	// 種類
 };
 
 #endif	// _SKY_H_

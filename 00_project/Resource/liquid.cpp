@@ -31,7 +31,12 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CLiquid::TYPE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CLiquid::TYPE_MAX, "ERROR : Type Count Mismatch");
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CLiquid> *CLiquid::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CLiquid] のメンバ関数
@@ -101,6 +106,23 @@ HRESULT CLiquid::Init(void)
 		m_apLiquid[nCntLiquid]->SetEnableDraw(false);
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CLiquid>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -115,6 +137,16 @@ void CLiquid::Uninit(void)
 
 		// 液体の終了
 		SAFE_UNINIT(m_apLiquid[nCntLiquid]);
+	}
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
 	}
 
 	// 自身のオブジェクトを破棄
@@ -298,6 +330,15 @@ CLiquid *CLiquid::Create
 		// 確保したアドレスを返す
 		return pLiquid;
 	}
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CLiquid> *CLiquid::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
 }
 
 //============================================================

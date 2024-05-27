@@ -28,8 +28,7 @@ END_LIMITSET
 #------------------------------------------------------------------------------
 STAGE_FIELDSET
 
-	# ínñ ÇÃëçêî
-	NUM = 0
+
 
 END_STAGE_FIELDSET
 
@@ -38,8 +37,7 @@ END_STAGE_FIELDSET
 #------------------------------------------------------------------------------
 STAGE_WALLSET
 
-	# ï«ÇÃëçêî
-	NUM = 0
+
 
 END_STAGE_WALLSET
 
@@ -48,51 +46,48 @@ END_STAGE_WALLSET
 #------------------------------------------------------------------------------
 STAGE_SCENERYSET
 
-	# åiêFÇÃëçêî
-	NUM = 4
-
 	SCENERYSET
-		TEXTURE_ID = 0
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		COL = 0.0 1.0 0.6 1.0
-		PART = 16 1
-    	TEXPART = 16 1
-		RADIUS = 8000.0
-		HEIGHT = 800.0
+		TYPE	= 0
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 0.0 0.0
+		COL		= 0.0 1.0 0.6 1.0
+		PART	= 16 1
+    	TEXPART	= 16 1
+		RADIUS	= 8000.0
+		HEIGHT	= 800.0
 	END_SCENERYSET
 	
 	SCENERYSET
-		TEXTURE_ID = 1
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 85.0 0.0
-		COL = 1.0 1.0 1.0 1.0
-		PART = 16 1
-    	TEXPART = 18 1
-		RADIUS = 8500.0
-		HEIGHT = 1400.0
+		TYPE	= 1
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 85.0 0.0
+		COL		= 1.0 1.0 1.0 1.0
+		PART	= 16 1
+    	TEXPART	= 18 1
+		RADIUS	= 8500.0
+		HEIGHT	= 1400.0
 	END_SCENERYSET
 	
 	SCENERYSET
-		TEXTURE_ID = 2
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		COL = 1.0 1.0 1.0 1.0
-		PART = 16 1
-    	TEXPART = 8 1
-		RADIUS = 10000.0
-		HEIGHT = 2600.0
+		TYPE	= 2
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 0.0 0.0
+		COL		= 1.0 1.0 1.0 1.0
+		PART	= 16 1
+    	TEXPART	= 8 1
+		RADIUS	= 10000.0
+		HEIGHT	= 2600.0
 	END_SCENERYSET
 	
 	SCENERYSET
-		TEXTURE_ID = 2
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 22.5 0.0
-		COL = 0.0 0.9 0.4 1.0
-		PART = 16 1
-    	TEXPART = 8 1
-		RADIUS = 11000.0
-		HEIGHT = 2600.0
+		TYPE	= 2
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 22.5 0.0
+		COL		= 0.0 0.9 0.4 1.0
+		PART	= 16 1
+    	TEXPART	= 8 1
+		RADIUS	= 11000.0
+		HEIGHT	= 2600.0
 	END_SCENERYSET
 
 END_STAGE_SCENERYSET
@@ -102,27 +97,24 @@ END_STAGE_SCENERYSET
 #------------------------------------------------------------------------------
 STAGE_SKYSET
 
-	# ãÛÇÃëçêî
-	NUM = 2
-	
 	SKYSET
-		TEXTURE_ID = 0
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 0.0 0.0
-		COL = 1.0 1.0 1.0 1.0
-    	PART = 32 32
-    	TEXPART = 1 1
-		RADIUS = 20000.0
+		TYPE	= 0
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 0.0 0.0
+		COL		= 1.0 1.0 1.0 1.0
+    	PART	= 32 32
+    	TEXPART	= 1 1
+		RADIUS	= 20000.0
 	END_SKYSET
 	
 	SKYSET
-		TEXTURE_ID = 0
-		POS = 0.0 0.0 0.0
-		ROT = 0.0 0.0 180.0
-		COL = 1.0 1.0 1.0 1.0
-		PART = 32 32
-    	TEXPART = 1 1
-		RADIUS = 20000.0
+		TYPE	= 0
+		POS		= 0.0 0.0 0.0
+		ROT		= 0.0 0.0 180.0
+		COL		= 1.0 1.0 1.0 1.0
+		PART	= 32 32
+    	TEXPART	= 1 1
+		RADIUS	= 20000.0
 	END_SKYSET
 
 END_STAGE_SKYSET
@@ -132,7 +124,6 @@ END_STAGE_SKYSET
 #------------------------------------------------------------------------------
 STAGE_LIQUIDSET
 
-	# âtëÃÇÃëçêî
-	NUM = 0
-	
+
+
 END_STAGE_LIQUIDSET

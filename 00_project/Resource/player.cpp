@@ -943,8 +943,9 @@ void CPlayer::Move()
 	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
 
 	// 入力していないと抜ける
+#ifndef _DEBUG
 	if (!pPad->GetLStick()) { return; }
-
+#endif
 	if (fSpeed >= STEALTH_BORDER)
 	{ // 通常速度の場合
 
@@ -976,7 +977,7 @@ void CPlayer::Move()
 
 	// ジャンプ
 #ifdef _DEBUG
-	if (pPad->IsTrigger(CInputPad::KEY_X))
+	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		m_move.y = JUMP;
 	}
@@ -1156,6 +1157,21 @@ void CPlayer::SaveReset()
 
 	// セーブした時点での士気力にする
 	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
+}
+
+//==========================================
+//  分身を呼び戻す
+//==========================================
+void CPlayer::CallClone()
+{
+	// パッドの入力情報を取得する
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// 右スティックの押し込みがなかった場合関数を抜ける
+	if (pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+
+	// 分身を追従する
+	CPlayerClone::CallBack();
 }
 
 #ifdef _DEBUG

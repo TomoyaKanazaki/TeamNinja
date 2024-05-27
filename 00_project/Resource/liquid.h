@@ -88,6 +88,7 @@ public:
 		const float fAddSinRot,		// 波打ち向き加算量
 		const float fAddVtxRot		// 隣波の向き加算量
 	);
+	static CListManager<CLiquid> *GetList(void);	// リスト取得
 
 	// メンバ関数
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
@@ -111,8 +112,12 @@ private:
 	// オーバーライド関数
 	void Release(void) override { CObject::Release(); }	// 破棄
 
+	// 静的メンバ変数
+	static CListManager<CLiquid> *m_pList;	// オブジェクトリスト
+
 	// メンバ変数
-	CScrollMeshField *m_apLiquid[LIQUID_MAX];	// 液体の情報
+	CListManager<CLiquid>::AIterator m_iterator;	// イテレーター
+	CScrollMeshField *m_apLiquid[LIQUID_MAX];		// 液体の情報
 	EType m_type;		// 種類
 	float m_fMaxUp;		// 波の最高上昇量
 	float m_fSinRot;	// 波打ち向き

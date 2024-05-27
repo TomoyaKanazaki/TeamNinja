@@ -64,7 +64,7 @@ CField::~CField()
 //============================================================
 HRESULT CField::Init(void)
 {
-	// メンバ変数をクリア
+	// メンバ変数を初期化
 	m_terrain	= TERRAIN_120x120;	// 地形
 	m_type		= TYPE_ASH;			// 種類
 

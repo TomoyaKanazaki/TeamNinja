@@ -38,6 +38,7 @@ CObjectMeshField::CObjectMeshField(const CObject::ELabel label, const CObject::E
 	m_pNorBuff		(nullptr),		// 法線バッファ
 	m_pNumNorBuff	(nullptr),		// 法線の使用数バッファ
 	m_part			(GRID2_ZERO),	// 分割数
+	m_texPart		(GRID2_ZERO),	// テクスチャ分割数
 	m_nNumVtx		(0),			// 必要頂点数
 	m_nNumIdx		(0),			// 必要インデックス数
 	m_nTextureID	(0)				// テクスチャインデックス
@@ -67,6 +68,7 @@ HRESULT CObjectMeshField::Init(void)
 	m_pNorBuff		= nullptr;		// 法線バッファ
 	m_pNumNorBuff	= nullptr;		// 法線の使用数バッファ
 	m_part			= GRID2_ZERO;	// 分割数
+	m_texPart		= GRID2_ZERO;	// テクスチャ分割数
 	m_nNumVtx		= 0;			// 必要頂点数
 	m_nNumIdx		= 0;			// 必要インデックス数
 	m_nTextureID	= NONE_IDX;		// テクスチャインデックス

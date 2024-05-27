@@ -29,7 +29,12 @@ namespace
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CSky::TEXTURE_MAX, "ERROR : Texture Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CSky::TYPE_MAX, "ERROR : Type Count Mismatch");
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CSky> *CSky::m_pList = nullptr;	// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CSky] のメンバ関数
@@ -37,7 +42,9 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CSky::TEXTURE_MAX, "ERROR : Texture Cou
 //============================================================
 //	コンストラクタ
 //============================================================
-CSky::CSky() : CObjectMeshDome(CObject::LABEL_SKY, CObject::DIM_3D, PRIORITY)
+CSky::CSky() : CObjectMeshDome(CObject::LABEL_SKY, CObject::DIM_3D, PRIORITY),
+	m_type	(TYPE_NORMAL)	// 種類
+
 {
 
 }
@@ -55,6 +62,9 @@ CSky::~CSky()
 //============================================================
 HRESULT CSky::Init(void)
 {
+	// メンバ変数を初期化
+	m_type = TYPE_NORMAL;	// 種類
+
 	// オブジェクトメッシュドームの初期化
 	if (FAILED(CObjectMeshDome::Init()))
 	{ // 初期化に失敗した場合
@@ -76,6 +86,23 @@ HRESULT CSky::Init(void)
 	// ライティングをOFFにする
 	pRenderState->SetLighting(false);
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CSky>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -85,6 +112,16 @@ HRESULT CSky::Init(void)
 //============================================================
 void CSky::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクトメッシュドームの終了
 	CObjectMeshDome::Uninit();
 }
@@ -121,7 +158,7 @@ void CSky::Draw(CShader *pShader)
 //============================================================
 CSky *CSky::Create
 (
-	const ETexture texture,		// 種類
+	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXCOLOR& rCol,		// 色
@@ -149,8 +186,8 @@ CSky *CSky::Create
 			return nullptr;
 		}
 
-		// テクスチャを登録・割当
-		pSky->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[texture]));
+		// 種類を設定
+		pSky->SetType(type);
 
 		// 位置を設定
 		pSky->SetVec3Position(rPos);
@@ -179,4 +216,30 @@ CSky *CSky::Create
 		// 確保したアドレスを返す
 		return pSky;
 	}
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CSky> *CSky::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
+}
+
+//============================================================
+//	種類の設定処理
+//============================================================
+void CSky::SetType(const EType type)
+{
+	if (type > NONE_IDX && type < TYPE_MAX)
+	{ // インデックスが範囲内の場合
+
+		// 種類を保存
+		m_type = type;
+
+		// テクスチャを登録・割当
+		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+	}
+	else { assert(false); }	// 範囲外
 }
