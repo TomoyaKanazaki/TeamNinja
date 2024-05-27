@@ -381,6 +381,9 @@
     <ClInclude Include="Resource\actor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\collisionModel.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\wall.cpp">
@@ -738,6 +741,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\actor.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionModel.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
