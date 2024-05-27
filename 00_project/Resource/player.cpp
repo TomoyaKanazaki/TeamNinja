@@ -19,8 +19,6 @@
 #include "texture.h"
 #include "collision.h"
 #include "fade.h"
-#include "deltaTime.h"
-
 #include "multiModel.h"
 #include "orbit.h"
 #include "shadow.h"
@@ -30,16 +28,10 @@
 #include "stage.h"
 #include "field.h"
 #include "cloneAngleUI.h"
-
-#include "effect3D.h"
-#include "particle3D.h"
-
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
-
 #include "gauge2D.h"
-#include "blur.h"
 
 //************************************************************
 //	定数宣言
@@ -108,7 +100,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fHeght			(0.0f),			// 立幅
 	m_fInertial			(0.0f),			// 慣性力
 	m_pCloneAngleUI		(nullptr),		// 分身出す方向のUI
-	m_fScalar				(0.0f),			// 移動量
+	m_fScalar			(0.0f),			// 移動量
 	m_fChargeTime		(0.0f)			// ため時間
 {
 
@@ -139,7 +131,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_pCloneAngleUI		= nullptr;		// 分身出す方向のUI
-	m_fScalar				= 0.0f;			// 移動量
+	m_fScalar			= 0.0f;			// 移動量
 
 	// 定数パラメータの読み込み
 	LoadParameter();
@@ -191,6 +183,17 @@ HRESULT CPlayer::Init(void)
 		return E_FAIL;
 	}
 
+	// 士気力ゲージを生成
+	m_pTensionGauge = CGauge2D::Create
+	(
+		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
+		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
+	);
+	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetLabel(LABEL_UI);
+
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 
@@ -207,27 +210,6 @@ HRESULT CPlayer::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
-
-	// 士気力ゲージを生成
-	m_pTensionGauge = CGauge2D::Create
-	(
-		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
-	);
-	m_pTensionGauge->SetNum(m_nInitTension);
-	m_pTensionGauge->SetLabel(LABEL_UI);
-
-	// ブラーの情報
-	D3DXMATERIAL mat = material::GlowCyan();	// ブラーマテリアル
-	//CBlur::Create
-	( // 引数
-		this,	// 親オブジェクト
-		mat,	// ブラーマテリアル
-		blurInfo::START_ALPHA,	// ブラー開始透明度
-		blurInfo::MAX_LENGTH	// 保持オブジェクト最大数
-	);
 
 	// プレイヤーを出現させる
 	SetSpawn();
@@ -287,15 +269,13 @@ void CPlayer::Update(const float fDeltaTime)
 	case STATE_SPAWN:
 
 		// スポーン状態時の更新
-		currentMotion = UpdateSpawn();
-
+		currentMotion = UpdateSpawn(fDeltaTime);
 		break;
 
 	case STATE_NORMAL:
 
 		// 通常状態の更新
-		currentMotion = UpdateNormal();
-
+		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
 	default:
@@ -325,7 +305,7 @@ void CPlayer::Update(const float fDeltaTime)
 	UpdateMotion(currentMotion, fDeltaTime);
 
 	// デバッグ表示
-	DebugProc::Print(DebugProc::POINT_RIGHT, "士気力 : %d\n", m_pTensionGauge->GetNum());
+	DebugProc::Print(DebugProc::POINT_LEFT, "士気力 : %d\n", m_pTensionGauge->GetNum());
 
 #ifdef _DEBUG
 
@@ -489,9 +469,6 @@ bool CPlayer::Hit(const int nDamage)
 //============================================================
 void CPlayer::SetSpawn(void)
 {
-	// 変数を宣言
-	D3DXVECTOR3 set = VEC3_ZERO;	// 引数設定用
-
 	// 情報を初期化
 	SetState(STATE_SPAWN);	// スポーン状態の設定
 	SetMotion(MOTION_IDOL);	// 待機モーションを設定
@@ -500,11 +477,13 @@ void CPlayer::SetSpawn(void)
 	m_nCounterState = 0;	// 状態管理カウンター
 
 	// 位置を設定
-	SetVec3Position(set);
+	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 500.0f, 0.0f);	// 位置
+	SetVec3Position(pos);
 
 	// 向きを設定
-	SetVec3Rotation(set);
-	m_destRot = set;
+	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 向き
+	SetVec3Rotation(rot);
+	m_destRot = rot;
 
 	// 移動量を初期化
 	m_move = VEC3_ZERO;
@@ -518,9 +497,9 @@ void CPlayer::SetSpawn(void)
 	// 描画を再開
 	SetEnableDraw(true);
 
-	// 追従カメラの目標位置の設定
+	// TPSカメラの目標位置の設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-	GET_MANAGER->GetCamera()->SetDestFollow();
+	GET_MANAGER->GetCamera()->SetDestTps();
 }
 
 //============================================================
@@ -617,7 +596,7 @@ D3DXVECTOR3 CPlayer::GetTargetPos() const
 //============================================================
 //	スポーン状態時の更新処理
 //============================================================
-CPlayer::EMotion CPlayer::UpdateSpawn(void)
+CPlayer::EMotion CPlayer::UpdateSpawn(const float fDeltaTime)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
@@ -637,7 +616,7 @@ CPlayer::EMotion CPlayer::UpdateSpawn(void)
 //============================================================
 //	通常状態時の更新処理
 //============================================================
-CPlayer::EMotion CPlayer::UpdateNormal(void)
+CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 {
 	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
@@ -661,7 +640,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(void)
 	UpdateGravity();
 
 	// 位置更新
-	UpdatePosition(posPlayer);
+	UpdatePosition(posPlayer, fDeltaTime);
 
 	// 着地判定
 	UpdateLanding(posPlayer);
@@ -746,10 +725,10 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 //============================================================
 //	位置の更新処理
 //============================================================
-void CPlayer::UpdatePosition(D3DXVECTOR3& rPos)
+void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 {
 	// 移動量を加算
-	rPos += m_move * GET_MANAGER->GetDeltaTime()->GetTime();
+	rPos += m_move * fDeltaTime;
 
 	// 移動量を減衰
 	if (m_bJump)
@@ -795,7 +774,7 @@ void CPlayer::UpdateRotation(D3DXVECTOR3& rRot)
 }
 
 //============================================================
-//	モーション・オブジェクトキャラクターの更新処理
+//	モーション・キャラクターの更新処理
 //============================================================
 void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 {
