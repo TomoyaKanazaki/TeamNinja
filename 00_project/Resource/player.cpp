@@ -966,7 +966,7 @@ void CPlayer::ControlClone()
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
-		GET_EFFECT->Create("data\\EFFEKSEER\\Laser01.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO, 15.0f);
 		return;
 	}
 
@@ -980,7 +980,7 @@ void CPlayer::ControlClone()
 
 	// •à‚­•ªg‚ðo‚·
 	CPlayerClone::Create(move);
-	GET_EFFECT->Create("data\\EFFEKSEER\\Laser01.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO, 15.0f);
 }
 
 //==========================================
