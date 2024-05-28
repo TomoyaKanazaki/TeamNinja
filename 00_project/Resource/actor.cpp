@@ -77,9 +77,6 @@ HRESULT CActor::Init(void)
 		}
 	}
 
-	// TODO：仮の当たり判定を一個追加
-	m_pCollisionList->AddList(CCollisionCylinder::Create(VEC3_ZERO, 40.0f, 50.0f));
-
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 
@@ -193,6 +190,9 @@ CActor* CActor::Create
 		// モデルの割り当て処理
 		pActor->BindModel(MODEL);
 
+		// TODO：仮の当たり判定を一個追加
+		pActor->m_pCollisionList->AddList(CCollisionCylinder::Create(rPos, 60.0f, 30.0f));
+
 		// 確保したアドレスを返す
 		return pActor;
 	}
@@ -210,7 +210,15 @@ CListManager<CActor>* CActor::GetList(void)
 //============================================================
 // 当たり判定処理
 //============================================================
-void CActor::Collision(D3DXVECTOR3& rPos, const float fRadius)
+void CActor::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump						// ジャンプ状況
+)
 {
 	// 当たり判定のリスト構造が無ければ抜ける
 	if (m_pCollisionList == nullptr) { return; }
@@ -221,6 +229,6 @@ void CActor::Collision(D3DXVECTOR3& rPos, const float fRadius)
 	for (auto collision : list)
 	{
 		// ヒット処理
-		collision->Hit(rPos, fRadius);
+		collision->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 }

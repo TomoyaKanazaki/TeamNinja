@@ -139,6 +139,8 @@ private:
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
 
+	void CollisionActor();	// アクターの当たり判定
+
 #ifdef _DEBUG
 
 	void DebugJumpControl(void);	// ジャンプ操作

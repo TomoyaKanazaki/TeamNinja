@@ -33,6 +33,7 @@
 #include "checkpoint.h"
 #include "gauge2D.h"
 #include "effect3D.h"
+#include "actor.h"
 
 //************************************************************
 //	定数宣言
@@ -270,6 +271,9 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
+	// アクターの当たり判定
+	CollisionActor();
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -282,7 +286,7 @@ void CPlayer::Update(const float fDeltaTime)
 	// デバッグ表示
 	DebugProc::Print(DebugProc::POINT_LEFT, "士気力 : %d\n", m_pTensionGauge->GetNum());
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
@@ -304,12 +308,6 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		RecoverJust();
 	}
-
-	// キーボード操作処理
-	KeyboardControl();
-
-	// 分身のキーボード操作処理
-	KeyboardCloneControl();
 
 #endif
 }
@@ -1009,6 +1007,35 @@ void CPlayer::CallClone()
 
 	// 分身を追従する
 	CPlayerClone::CallBack();
+}
+
+//==========================================
+// アクターの当たり判定
+//==========================================
+void CPlayer::CollisionActor()
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			pos,		// 位置
+			m_oldPos,	// 前回の位置
+			RADIUS,		// 半径
+			RADIUS,		// 高さ
+			m_move,		// 移動量
+			m_bJump		// ジャンプ状況
+		);
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
 }
 
 #ifdef _DEBUG
