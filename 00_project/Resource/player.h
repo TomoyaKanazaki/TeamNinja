@@ -101,6 +101,8 @@ public:
 	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
 	void SetMove(const D3DXVECTOR3& rMove)			{ m_move = rMove; }		// 移動量設定
 	D3DXVECTOR3 GetMove(void) const					{ return m_move; }		// 移動量取得
+	void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }	// ジャンプ状況設定
+	bool IsJump(void) const							{ return m_bJump; }		// ジャンプ状況設定
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	void SetSpawn(void);				// 出現設定

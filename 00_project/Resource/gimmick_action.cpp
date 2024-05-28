@@ -168,6 +168,9 @@ void CGimmickAction::CollisionPlayer(void)
 
 	for (auto player : list)
 	{
+		// プレイヤーがジャンプしてたら次のプレイヤーに
+		if (player->IsJump()) { continue; }
+
 		// 位置を取得
 		posPlayer = player->GetVec3Position();
 
@@ -189,6 +192,9 @@ void CGimmickAction::CollisionPlayer(void)
 
 			// 移動量を設定
 			player->SetMove(move);
+
+			// ジャンプ状況を true にする
+			player->SetEnableJump(true);
 		}
 	}
 }

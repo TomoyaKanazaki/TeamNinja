@@ -64,7 +64,7 @@ private:
 
 	// メンバ変数
 	CListManager<CActor>::AIterator m_iterator;	// イテレーター
-	CListManager<CCollision>* m_pCollisionList;	// 当たり判定のリスト
+	std::vector<CCollision*> m_collision;		// 当たり判定のリスト
 };
 
 #endif	// _ACTOR_H_

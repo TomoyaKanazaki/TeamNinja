@@ -80,7 +80,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), CGimmick::TYPE_JUMPTABLE);
 
 	// アクターを生成
-	CActor::Create(D3DXVECTOR3(-400.0f, 0.0f, 400.0f));
+	CActor::Create(VEC3_ZERO);
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }

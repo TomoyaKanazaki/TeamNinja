@@ -71,7 +71,7 @@ bool CCollisionCylinder::Hit
 	const float fRadius,			// 半径
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
-	bool& bJump						// ジャンプ状況
+	bool& rJump						// ジャンプ状況
 )
 {
 	// 変数を宣言
@@ -98,7 +98,7 @@ bool CCollisionCylinder::Hit
 			rMove.y = 0.0f;
 
 			// ジャンプしていない
-			bJump = false;
+			rJump = false;
 
 			// 真を返す
 			return true;
