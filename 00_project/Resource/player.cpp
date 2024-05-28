@@ -966,7 +966,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 		return;
 	}
 
@@ -980,7 +980,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 
 	// •à‚­•ªg‚ðo‚·
 	CPlayerClone::Create(move);
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 }
 
 //==========================================
