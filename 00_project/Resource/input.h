@@ -233,6 +233,8 @@ public:
 	bool GetReleaseRStick(int nPadID = 0); // リリース取得(Rスティック)
 	bool GetLStick(int nPadID = 0); // 入力フラグの取得(Lスティック)
 	bool GetRStick(int nPadID = 0); // 入力フラグの取得(Rスティック)
+	D3DXVECTOR3 GetStickRateL(float fDead, int nPadID = 0); // スティックの割合(Lスティック)
+	D3DXVECTOR3 GetStickRateR(float fDead, int nPadID = 0); // スティックの割合(Rスティック)
 
 private:
 	// メンバ関数
