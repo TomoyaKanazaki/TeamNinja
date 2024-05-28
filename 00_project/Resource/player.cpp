@@ -32,6 +32,7 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "gauge2D.h"
+#include "effect3D.h"
 
 //************************************************************
 //	定数宣言
@@ -41,6 +42,7 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
+	const int	BLEND_FRAME	= 5;			// モーションのブレンドフレーム
 	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
@@ -621,6 +623,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 保存位置の更新
 	UpdateSaveTeleport();
 
+	// TODO：エフェクト
+	CEffect3D::Create(posPlayer, 10.0f);
+
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -648,41 +653,49 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	// KANAZAKI：忍び足とダッシュの判定書き換えて
 
 	// スティックの傾きから移動量を設定
-	float fSpeed = pPad->GetPressLStickTilt();
-	if (fSpeed >= STEALTH_BORDER)
-	{ // 通常速度の場合
+	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
+	if (pad::DEAD_ZONE < fSpeed)
+	{ // デッドゾーン以上の場合
 
-		// 速度を通常にする
-		fSpeed = NORMAL_MOVE;
+		if (fSpeed >= STEALTH_BORDER)
+		{ // 通常速度の場合
 
-		// 歩行モーションにする
-		currentMotion = MOTION_DASH;
+			// 速度を通常にする
+			fSpeed = NORMAL_MOVE;
+
+			// 歩行モーションにする
+			currentMotion = MOTION_DASH;
+		}
+		else
+		{ // 忍び足の場合
+
+			// 速度を忍び足にする
+			fSpeed = STEALTH_MOVE;
+
+			// 忍び足モーションにする
+			currentMotion = MOTION_STEALTHWALK;
+		}
+
+		// スティック向きを取得
+		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
+
+		// 目標向きを設定
+		m_destRot.y = fStickRot;
+		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
+
+		// 移動量を設定する
+		m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
+		m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
 	}
-	else
-	{ // 忍び足の場合
 
-		// 速度を忍び足にする
-		fSpeed = STEALTH_MOVE;
-
-		// 忍び足モーションにする
-		currentMotion = MOTION_STEALTHWALK;
-	}
-
-	// 目標向きを設定
-	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);	// スティック向き
-	m_destRot.y = fStickRot;
-	useful::NormalizeRot(m_destRot.y);	// 向きの正規化
-
-	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
-	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
-
-	// ジャンプ
 #ifdef _DEBUG
-	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
-		m_move.y = JUMP;
-	}
+
+	// キーボードの移動操作
+	DebugMoveControl();
+
+	// ジャンプ操作
+	DebugJumpControl();
+
 #endif
 
 	// 移動量をスカラー値に変換する
@@ -724,6 +737,8 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 	// ジャンプしている状態にする
 	m_bJump = true;
+
+	// TODO：なんか変！
 
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_move)
@@ -813,7 +828,7 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion);
+				SetMotion(nMotion, BLEND_FRAME);
 			}
 		}
 	}
@@ -891,6 +906,8 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::ControlClone()
 {
+	// TODO：ここも確認！
+
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
@@ -997,100 +1014,128 @@ void CPlayer::CallClone()
 #ifdef _DEBUG
 
 //==========================================
-// キーボードの操作処理
+// ジャンプ操作処理
 //==========================================
-void CPlayer::KeyboardControl(void)
+void CPlayer::DebugJumpControl(void)
 {
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	D3DXVECTOR3 pos = GetVec3Position();
-	float fStickRot = 0.0f;
+	if (GET_INPUTPAD->IsTrigger(CInputPad::KEY_X)
+	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 上昇量を与えるよ
+		m_move.y = JUMP;
 
-	if (pKey->IsPress(DIK_W))
-	{ // 前関係移動
-		if (pKey->IsPress(DIK_A))
-		{
-			fStickRot = (D3DX_PI * 0.75f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else if (pKey->IsPress(DIK_D))
-		{
-			fStickRot = (D3DX_PI * -0.75f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else
-		{
-			fStickRot = D3DX_PI;
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
+		// ジャンプ中にするよ
+		m_bJump = true;
 	}
-	else if (pKey->IsPress(DIK_S))
-	{ // 後ろ関係移動
-		if (pKey->IsPress(DIK_A))
-		{
-			fStickRot = (D3DX_PI * 0.25f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else if (pKey->IsPress(DIK_D))
-		{
-			fStickRot = (D3DX_PI * -0.25f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else
-		{
-			fStickRot = 0.0f;
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-	}
-	else if (pKey->IsPress(DIK_A))
-	{ // 左関係移動
-		fStickRot = (D3DX_PI * 0.5f);
-
-		// 位置を設定
-		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-	}
-	else if (pKey->IsPress(DIK_D))
-	{ // 右関係移動
-		fStickRot = (D3DX_PI * -0.5f);
-
-		// 位置を設定
-		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-	}
-
-	// 向きを設定
-	m_destRot.y = fStickRot;
-
-	// 向きの正規化
-	useful::NormalizeRot(m_destRot.y);
-
-	// 位置を適用
-	SetVec3Position(pos);
-	SetVec3Rotation(m_destRot);
 }
 
 //==========================================
-// 分身のキーボード操作処理
+// キーボードの移動操作処理
 //==========================================
-void CPlayer::KeyboardCloneControl(void)
+void CPlayer::DebugMoveControl(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	float fMoveRot = 0.0f;	// 移動方向
+
+	if (pKey->IsPress(DIK_W))
+	{
+		if (pKey->IsPress(DIK_A))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * 0.75f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * -0.75f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			// 移動方向を設定
+			fMoveRot = D3DX_PI;
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_S))
+	{
+		if (pKey->IsPress(DIK_A))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * 0.25f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * -0.25f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+		else
+		{
+			// 移動方向を設定
+			fMoveRot = 0.0f;
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		}
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_A))
+	{
+		// 移動方向を設定
+		fMoveRot = (D3DX_PI * 0.5f);
+
+		// 位置を設定
+		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_D))
+	{
+		// 移動方向を設定
+		fMoveRot = (D3DX_PI * -0.5f);
+
+		// 位置を設定
+		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+}
+
+//==========================================
+// キーボードの分身操作処理
+//==========================================
+void CPlayer::DebugCloneControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
