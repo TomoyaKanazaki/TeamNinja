@@ -34,6 +34,16 @@ public:
 
 	void Uninit(void);			// 終了処理
 
+	bool Hit					// ヒット処理
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	) override;
+
 	// 静的メンバ関数
 	static CCollisionCylinder* Create(const D3DXVECTOR3& rOffset, const float fRadius, const float fHeight);		// 生成処理
 
@@ -48,8 +58,6 @@ private:
 	CObjectMeshTube* m_pTube;	// メッシュチューブ
 
 #endif // _DEBUG
-
-	// 
 };
 
 #endif	// _COLLISION_H_

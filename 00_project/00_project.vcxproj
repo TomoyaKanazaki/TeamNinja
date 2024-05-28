@@ -169,8 +169,10 @@
     <ClInclude Include="Resource\cinemaScope.h" />
     <ClInclude Include="Resource\cloneAngleUI.h" />
     <ClInclude Include="Resource\collision.h" />
+    <ClInclude Include="Resource\collisionCube.h" />
     <ClInclude Include="Resource\collisionCylinder.h" />
     <ClInclude Include="Resource\collisionModel.h" />
+    <ClInclude Include="Resource\collisionSphere.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
+    <ClInclude Include="Resource\editorCollision.h" />
     <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
     <ClInclude Include="Resource\effect2D.h" />
@@ -294,8 +297,10 @@
     <ClCompile Include="Resource\cinemaScope.cpp" />
     <ClCompile Include="Resource\cloneAngleUI.cpp" />
     <ClCompile Include="Resource\collision.cpp" />
+    <ClCompile Include="Resource\collisionCube.cpp" />
     <ClCompile Include="Resource\collisionCylinder.cpp" />
     <ClCompile Include="Resource\collisionModel.cpp" />
+    <ClCompile Include="Resource\collisionSphere.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
@@ -303,6 +308,7 @@
     <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editor.cpp" />
+    <ClCompile Include="Resource\editorCollision.cpp" />
     <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />

@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "model.h"
 
+#include "collisionCylinder.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -22,12 +24,18 @@ namespace
 }
 
 //************************************************************
+// 静的メンバ変数宣言
+//************************************************************
+CListManager<CActor>* CActor::m_pList = nullptr;		// リスト構造
+
+//************************************************************
 //	子クラス [CActor] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY)
+CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY),
+m_pCollisionList(nullptr)
 {
 
 }
@@ -54,6 +62,39 @@ HRESULT CActor::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pCollisionList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pCollisionList = CListManager<CCollision>::Create();
+
+		if (m_pCollisionList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CActor>::Create();
+
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -63,6 +104,28 @@ HRESULT CActor::Init(void)
 //============================================================
 void CActor::Uninit(void)
 {
+	// 総数を取得
+	int nNumColl = m_pCollisionList->GetNumAll();
+
+	for (int nCnt = 0; nCnt < nNumColl; nCnt++)
+	{
+		// 終了処理
+		(*m_pCollisionList->GetBegin())->Uninit();
+	}
+
+	// リストマネージャーの破棄
+	m_pCollisionList->Release(m_pCollisionList);
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクトモデルの終了
 	CObjectModel::Uninit();
 }
@@ -127,7 +190,45 @@ CActor* CActor::Create
 		// モデルの割り当て処理
 		pActor->BindModel(MODEL);
 
+		// TODO：仮の当たり判定を一個追加
+		pActor->m_pCollisionList->AddList(CCollisionCylinder::Create(rPos, 60.0f, 30.0f));
+
 		// 確保したアドレスを返す
 		return pActor;
+	}
+}
+
+//============================================================
+// リスト構造の取得処理
+//============================================================
+CListManager<CActor>* CActor::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
+}
+
+//============================================================
+// 当たり判定処理
+//============================================================
+void CActor::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump						// ジャンプ状況
+)
+{
+	// 当たり判定のリスト構造が無ければ抜ける
+	if (m_pCollisionList == nullptr) { return; }
+
+	std::list<CCollision*> list = m_pCollisionList->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+
+	for (auto collision : list)
+	{
+		// ヒット処理
+		collision->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 }

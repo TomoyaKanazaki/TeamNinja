@@ -15,18 +15,31 @@ class CCollision
 {
 public:
 
-	CCollision();		// コンストラクタ
-	~CCollision();		// デストラクタ
+	CCollision();				// コンストラクタ
+	virtual ~CCollision();		// デストラクタ
 
-	void Uninit(void);	// 終了処理
+	virtual void Uninit(void);	// 終了処理
+
+	virtual bool Hit			// ヒット処理
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	) = 0;
 
 	// セット・ゲット関係
+	void SetPos(const D3DXVECTOR3& rPos) { m_pos = rPos; }				// 位置の設定処理
+	D3DXVECTOR3 GetPos(void) const { return m_pos; }					// 位置の取得処理
 	void SetOffset(const D3DXVECTOR3& rOffset) { m_offset = rOffset; }	// オフセット座標の設定処理
 	D3DXVECTOR3 GetOffset(void) const { return m_offset; }				// オフセット座標の取得処理
 
 private:
 
 	// メンバ変数
+	D3DXVECTOR3 m_pos;		// 位置
 	D3DXVECTOR3 m_offset;	// オフセット座標
 };
 

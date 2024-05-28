@@ -14,7 +14,9 @@
 //============================================================
 // コンストラクタ
 //============================================================
-CCollision::CCollision() : m_offset(VEC3_ZERO)
+CCollision::CCollision() : 
+m_pos(VEC3_ZERO),
+m_offset(VEC3_ZERO)
 {
 
 }

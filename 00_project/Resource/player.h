@@ -139,10 +139,13 @@ private:
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
 
+	void CollisionActor();	// アクターの当たり判定
+
 #ifdef _DEBUG
 
-	void KeyboardControl(void);			// キーボードの操作処理
-	void KeyboardCloneControl(void);	// 分身のキーボード操作処理
+	void DebugJumpControl(void);	// ジャンプ操作
+	void DebugMoveControl(void);	// キーボードの移動操作
+	void DebugCloneControl(void);	// キーボードの分身操作
 
 #endif // _DEBUG
 

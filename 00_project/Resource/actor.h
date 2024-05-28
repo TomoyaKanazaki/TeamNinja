@@ -14,6 +14,8 @@
 //	インクルードファイル
 //************************************************************
 #include "objectModel.h"
+#include "listManager.h"
+#include "collisionModel.h"
 
 //************************************************************
 //	クラス定義
@@ -22,6 +24,7 @@
 class CActor : public CObjectModel
 {
 public:
+
 	// コンストラクタ
 	CActor();
 
@@ -34,6 +37,17 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
+	// メンバ関数
+	void Collision						// 当たり判定処理
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	);
+
 	// 静的メンバ関数
 	static CActor* Create	// 生成
 	( // 引数
@@ -41,6 +55,16 @@ public:
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXVECTOR3& rScale = VEC3_ONE	// 大きさ
 	);
+	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
+
+private:
+
+	// 静的メンバ変数
+	static CListManager<CActor>* m_pList;		// リスト構造
+
+	// メンバ変数
+	CListManager<CActor>::AIterator m_iterator;	// イテレーター
+	CListManager<CCollision>* m_pCollisionList;	// 当たり判定のリスト
 };
 
 #endif	// _ACTOR_H_

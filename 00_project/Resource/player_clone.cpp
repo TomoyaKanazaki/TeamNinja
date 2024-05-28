@@ -15,7 +15,6 @@
 #include "player.h"
 #include "orbit.h"
 #include "multiModel.h"
-#include "deltaTime.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -25,9 +24,10 @@
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player_clone.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
+	const int	BLEND_FRAME	= 5;		// モーションのブレンドフレーム
 	const float	MOVE		= 150.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
@@ -61,13 +61,13 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
-m_pShadow(nullptr),			// 影の情報
-m_pOrbit(nullptr),			// 軌跡の情報
-m_move(0.0f, 0.0f, 0.0f),	// 移動量
-m_Action(ACTION_CHASE),		// 行動
-m_fDeleteTimer(0.0f),		// 自動消滅タイマー
-m_fChargeTimer(0.0f),		// ため時間タイマー
-m_pGimmick(nullptr)			// ギミックのポインタ
+	m_pShadow		(nullptr),		// 影の情報
+	m_pOrbit		(nullptr),		// 軌跡の情報
+	m_move			(VEC3_ZERO),	// 移動量
+	m_Action		(ACTION_CHASE),	// 行動
+	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
+	m_fChargeTimer	(0.0f),			// ため時間タイマー
+	m_pGimmick		(nullptr)		// ギミックのポインタ
 {
 
 }
@@ -86,13 +86,13 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow = nullptr;		// 影の情報
-	m_pOrbit = nullptr;		// 軌跡の情報
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
-	m_Action = ACTION_CHASE; // 行動
-	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
-	m_fChargeTimer = 0.0f; // ため時間タイマー
-	m_pGimmick = nullptr; // ギミックのポインタ
+	m_pShadow		= nullptr;		// 影の情報
+	m_pOrbit		= nullptr;		// 軌跡の情報
+	m_move			= VEC3_ZERO;	// 移動量
+	m_Action		= ACTION_CHASE;	// 行動
+	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
+	m_fChargeTimer	= 0.0f;			// ため時間タイマー
+	m_pGimmick		= nullptr;		// ギミックのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -131,6 +131,15 @@ HRESULT CPlayerClone::Init(void)
 		return E_FAIL;
 	}
 
+	// マテリアルを変更
+	SetAllMaterial(material::Green());
+
+	// サイズを調整
+	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
+
+	// プレイヤー位置に出現
+	SetVec3Position(GET_PLAYER->GetVec3Position());
+
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 
@@ -147,15 +156,6 @@ HRESULT CPlayerClone::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
-
-	// マテリアルを変更
-	SetAllMaterial(material::Green());
-
-	// サイズを調整
-	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
-
-	// プレイヤー位置に出現
-	SetVec3Position(GET_PLAYER->GetVec3Position());
 
 	// 成功を返す
 	return S_OK;
@@ -192,7 +192,6 @@ void CPlayerClone::Uninit(void)
 //============================================================
 void CPlayerClone::Update(const float fDeltaTime)
 {
-	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 各種行動を起こす
@@ -200,14 +199,12 @@ void CPlayerClone::Update(const float fDeltaTime)
 	{
 	case ACTION_MOVE: // 歩行
 
-		// 移動
-		SetVec3Position(GetVec3Position() + (m_move * fDeltaTime));
+		// 移動行動時の更新 (移動以外のモーションなら破棄済み)
+		currentMotion = UpdateMove(fDeltaTime);
+		if (currentMotion != MOTION_DASH)
+		{ // 走りモーション以外 (破棄されてる)
 
-		// 消滅
-		m_fDeleteTimer -= fDeltaTime;
-		if (m_fDeleteTimer <= 0.0f)
-		{
-			Uninit();
+			// 関数を抜ける
 			return;
 		}
 
@@ -215,16 +212,19 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	case ACTION_CHASE: // 追従
 
-		// 一つ前を追いかける
-		ChasePrev();
+		// 追従行動時の更新
+		currentMotion = UpdateChase(fDeltaTime);
 
 		break;
 
 	case ACTION_WAIT: // ギミック待機
 
+
+
 		break;
 
 	default:
+		assert(false);
 		break;
 	}
 
@@ -364,6 +364,11 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 		return nullptr;
 	}
 
+	// 向きを設定
+	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
+	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
+	pPlayer->SetVec3Rotation(rot);		// 向き設定
+
 	// 移動量を設定
 	pPlayer->m_move = move;
 
@@ -474,23 +479,36 @@ void CPlayerClone::CallBack()
 }
 
 //============================================================
-//	通常状態時の更新処理
+//	移動行動時の更新処理
 //============================================================
-CPlayerClone::EMotion CPlayerClone::UpdateNormal(void)
+CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 {
-	// 変数を宣言
-	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
-	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
 
-	// 位置を反映
-	SetVec3Position(posPlayer);
+	// 移動
+	posPlayer += m_move * fDeltaTime;
 
-	// 向きを反映
-	SetVec3Rotation(rotPlayer);
+	// 消滅
+	m_fDeleteTimer -= fDeltaTime;
+	if (m_fDeleteTimer <= 0.0f)
+	{
+		Uninit();
+		return MOTION_IDOL;
+	}
 
-	// 現在のモーションを返す
-	return currentMotion;
+	SetVec3Position(posPlayer);	// 位置を反映
+
+	// 移動モーションを返す
+	return MOTION_DASH;
+}
+
+//============================================================
+//	追従行動時の更新処理
+//============================================================
+CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
+{
+	// 一つ前を追いかけて、その際のモーションを返す
+	return ChasePrev();
 }
 
 //============================================================
@@ -514,7 +532,7 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion);
+				SetMotion(nMotion, BLEND_FRAME);
 			}
 		}
 	}
@@ -590,7 +608,7 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 //==========================================
 //  前についていく処理
 //==========================================
-void CPlayerClone::ChasePrev()
+CPlayerClone::EMotion CPlayerClone::ChasePrev()
 {
 	// リストを取得する
 	std::list<CPlayerClone*> list = m_pList->GetList();
@@ -607,7 +625,7 @@ void CPlayerClone::ChasePrev()
 		if (*itr != this) { prev = *itr; continue; }
 
 		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
-		if (this == *itrBegin) { Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); return; }
+		if (this == *itrBegin) { return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); }
 
 		// 自身の追従する相手を選択する
 		while (1)
@@ -623,21 +641,23 @@ void CPlayerClone::ChasePrev()
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-				return;
+				return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける
-			Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
-			return;
+			return Chase(prev->GetVec3Position(), prev->GetVec3Rotation());
 		}
 	}
+
+	// ここに来たらバグすぎきもすぎわろたんぬ
+	assert(false);
+	return MOTION_IDOL;
 }
 
 //==========================================
 //  ついていく処理
 //==========================================
-void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CPlayerClone::EMotion CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 {
 	// 一つ前に対して後ろ移動
 	D3DXVECTOR3 posTarget = rPos + D3DXVECTOR3
@@ -661,6 +681,21 @@ void CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 
 	// 目標の方向を向く処理
 	ViewTarget(rPos);
+
+	// 移動量のスカラー値を産出
+	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.y * vecTarget.y + vecTarget.z * vecTarget.z);
+	if (fScalar > 30.0f)
+	{
+		return MOTION_DASH;
+	}
+	else if (fScalar > 1.0f)
+	{
+		return MOTION_STEALTHWALK;
+	}
+	else
+	{
+		return MOTION_IDOL;
+	}
 }
 
 //==========================================
