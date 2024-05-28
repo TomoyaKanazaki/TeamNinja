@@ -82,6 +82,19 @@ void CGimmickAction::Update(const float fDeltaTime)
 		m_bActive = true;
 	}
 
+	if (m_bActive)
+	{ // 発動待機中の場合
+
+		// プレイヤーとの当たり判定
+		CollisionPlayer();
+	}
+	else
+	{ // 上記以外
+
+		// 分身との当たり判定処理
+		CollisionClone();
+	}
+
 	// オブジェクト3Dの更新
 	CGimmick::Update(fDeltaTime);
 }
@@ -112,6 +125,9 @@ void CGimmickAction::CollisionClone(void)
 
 	for (auto clone : list)
 	{
+		// 追跡する分身だった場合次の分身にする
+		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
+
 		// 位置を取得
 		posClone = clone->GetVec3Position();
 
@@ -129,11 +145,6 @@ void CGimmickAction::CollisionClone(void)
 
 			// 分身の総数を加算する
 			nNumClone++;
-		}
-		else
-		{ // 入ってなかった場合
-
-			// TODO：外れた時にポインタを外す処理を入れる
 		}
 	}
 
@@ -171,7 +182,13 @@ void CGimmickAction::CollisionPlayer(void)
 		))
 		{ // 四角の中に入った場合
 
-			player;
+			// 移動量を取得
+			D3DXVECTOR3 move = player->GetMove();
+
+			move.y = 1260.0f;
+
+			// 移動量を設定
+			player->SetMove(move);
 		}
 	}
 }

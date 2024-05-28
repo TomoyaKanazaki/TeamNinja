@@ -91,7 +91,7 @@ namespace
 		const float	REV_ROT = 1.0f;			// カメラ向きの補正係数
 		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
 		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
-		const float	INIT_ROTX = 1.8f;		// 追従カメラの向きX初期値
+		const float	INIT_ROTX = 1.5f;		// 追従カメラの向きX初期値
 
 		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
@@ -429,7 +429,7 @@ void CCamera::SetDestTps(void)
 	//----------------------------------------------------
 	// 向きを設定
 	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = tps::INIT_ROTX;
-	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y = player->GetVec3Rotation().y + D3DX_PI;
+	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y = player->GetVec3Rotation().y;
 
 	// 向きを正規化
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
