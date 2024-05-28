@@ -133,11 +133,10 @@ private:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
+	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot);	// 分身の処理
 	void LoadParameter();	// 定数値の読み込み
-	void ControlClone();	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
-
 	void CollisionActor();	// アクターの当たり判定
 
 #ifdef _DEBUG

@@ -612,7 +612,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	pStage->LimitPosition(posPlayer, RADIUS);
 
 	// 分身の処理
-	ControlClone();
+	ControlClone(posPlayer, rotPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -904,7 +904,7 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 //  分身の処理
 //==========================================
-void CPlayer::ControlClone()
+void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
 	// TODO：ここも確認！
 
@@ -966,7 +966,7 @@ void CPlayer::ControlClone()
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO, 15.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 		return;
 	}
 
@@ -980,7 +980,7 @@ void CPlayer::ControlClone()
 
 	// 歩く分身を出す
 	CPlayerClone::Create(move);
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO, 15.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 }
 
 //==========================================
