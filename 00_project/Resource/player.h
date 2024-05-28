@@ -115,7 +115,6 @@ public:
 	void RecoverJust();			// ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
-	float GetScalar() const				{ return m_fScalar; }	// スカラーの取得
 
 private:
 	// メンバ関数

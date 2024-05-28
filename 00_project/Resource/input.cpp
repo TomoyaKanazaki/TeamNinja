@@ -1347,6 +1347,52 @@ bool CInputPad::GetRStick(int nPadID)
 	return m_bStickR[nPadID];
 }
 
+//==========================================
+//  スティックの割合(Lスティック)
+//==========================================
+D3DXVECTOR3 CInputPad::GetStickRateL(float fDead, int nPadID)
+{
+	//ローカル変数宣言
+	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	Stick.x = (float)m_aKeyStatePress[nPadID].Gamepad.sThumbLX / SHRT_MAX;
+	if (fabsf(Stick.x) < fDead)
+	{
+		Stick.x = 0.0f;
+	}
+
+	Stick.z = (float)m_aKeyStatePress[nPadID].Gamepad.sThumbLY / SHRT_MAX;
+	if (fabsf(Stick.z) < fDead)
+	{
+		Stick.z = 0.0f;
+	}
+
+	return Stick;
+}
+
+//==========================================
+//  スティックの割合(Rスティック)
+//==========================================
+D3DXVECTOR3 CInputPad::GetStickRateR(float fDead, int nPadID)
+{
+	//ローカル変数宣言
+	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	Stick.x = (float)m_aKeyStatePress[nPadID].Gamepad.sThumbRX / SHRT_MAX;
+	if (fabsf(Stick.x) < fDead)
+	{
+		Stick.x = 0.0f;
+	}
+
+	Stick.z = (float)m_aKeyStatePress[nPadID].Gamepad.sThumbRY / SHRT_MAX;
+	if (fabsf(Stick.z) < fDead)
+	{
+		Stick.z = 0.0f;
+	}
+
+	return Stick;
+}
+
 //============================================================
 //	生成処理
 //============================================================
