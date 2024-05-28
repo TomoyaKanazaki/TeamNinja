@@ -8,8 +8,11 @@
 //	インクルードファイル
 //************************************************************
 #include "collisionCylinder.h"
+#include "collision.h"
 
+#ifdef _DEBUG
 #include "objectMeshTube.h"
+#endif // _DEBUG
 
 //============================================================
 // コンストラクタ
@@ -45,9 +48,17 @@ void CCollisionCylinder::Uninit(void)
 
 #endif // _DEBUG
 
-
 	// 終了処理
 	CCollision::Uninit();
+}
+
+//============================================================
+// ヒット処理
+//============================================================
+bool CCollisionCylinder::Hit(D3DXVECTOR3& rPos, const float fRadius)
+{
+	// 当たり判定を返す
+	return collision::CirclePillar(rPos, GetPos(), fRadius, m_fRadius);
 }
 
 //============================================================
