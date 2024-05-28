@@ -34,6 +34,8 @@
 #include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -964,6 +966,7 @@ void CPlayer::ControlClone()
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
+		GET_EFFECT->Create("data\\EFFEKSEER\\Laser01.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO);
 		return;
 	}
 
@@ -977,6 +980,7 @@ void CPlayer::ControlClone()
 
 	// •à‚­•ªg‚ðo‚·
 	CPlayerClone::Create(move);
+	GET_EFFECT->Create("data\\EFFEKSEER\\Laser01.efkefc", GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation(), VEC3_ZERO);
 }
 
 //==========================================
