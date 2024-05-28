@@ -54,15 +54,22 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
+		MOTION_CAUTIOUS,	// 警戒モーション
+		MOTION_DASH,		// 歩行モーション
+		MOTION_STEALTHWALK,	// 忍び足モーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
+		MOTION_JUMP_IDOL,	// ジャンプ台モーション
+		MOTION_CATAPULT,	// 打ち上げモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
 	// 行動パターン
 	enum EAction
 	{
-		ACTION_CHASE, // 通常の行動
-		ACTION_MOVE, // 歩行
-		ACTION_WAIT, // ギミック待機
+		ACTION_CHASE = 0,	// 通常の行動
+		ACTION_MOVE,		// 歩行
+		ACTION_WAIT,		// ギミック待機
 		ACTION_MAX
 	};
 
@@ -80,11 +87,12 @@ public:
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 
-	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
-	bool Hit(const int nDamage);		// ヒット
-	EAction GetAction() const { return m_Action; } // 行動を取得
-	void SetAction(EAction action) { m_Action = action; } // 行動を設定
-	void SetGimmick(CGimmickAction* gimmick); // ギミックのポインタを受け取る
+	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);	// ノックバックヒット
+	bool Hit(const int nDamage);				// ヒット
+	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
+
+	EAction GetAction() const		{ return m_Action; }	// 行動を取得
+	void SetAction(EAction action)	{ m_Action = action; }	// 行動を設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
@@ -96,10 +104,10 @@ public:
 
 private:
 	// メンバ関数
-	EMotion UpdateNormal(void);		// 通常状態時の更新
+	EMotion UpdateNormal(void);	// 通常状態時の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
-	bool UpdateFadeOut(const float fAdd);				// フェードアウト状態時の更新
-	bool UpdateFadeIn(const float fSub);				// フェードイン状態時の更新
+	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
+	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
 	void ChasePrev(); // 前についていく処理
@@ -108,17 +116,17 @@ private:
 	void Wait(); // ギミック待機
 
 	// 静的メンバ変数
-	static CListManager<CPlayerClone>* m_pList;		// オブジェクトリスト
+	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
 
 	// メンバ変数
 	CListManager<CPlayerClone>::AIterator m_iterator;	// イテレーター
 	CShadow* m_pShadow;			// 影の情報
 	COrbit* m_pOrbit;			// 軌跡の情報
-	D3DXVECTOR3 m_move; // 移動量
-	EAction m_Action; // 行動
-	float m_fDeleteTimer; // 自動消滅タイマー
-	float m_fChargeTimer; // ため時間タイマー
-	CGimmickAction* m_pGimmick; // ギミックのポインタ
+	D3DXVECTOR3 m_move;			// 移動量
+	EAction m_Action;			// 行動
+	float m_fDeleteTimer;		// 自動消滅タイマー
+	float m_fChargeTimer;		// ため時間タイマー
+	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 
 };
 

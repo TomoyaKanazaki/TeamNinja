@@ -25,9 +25,10 @@
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\CHARACTER\\player_clone.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
+	const int	BLEND_FRAME	= 5;		// モーションのブレンドフレーム
 	const float	MOVE		= 150.0f;	// 移動量
 	const float	JUMP		= 21.0f;	// ジャンプ上昇量
 	const float	GRAVITY		= 1.0f;		// 重力
@@ -61,13 +62,13 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
-m_pShadow(nullptr),			// 影の情報
-m_pOrbit(nullptr),			// 軌跡の情報
-m_move(0.0f, 0.0f, 0.0f),	// 移動量
-m_Action(ACTION_CHASE),		// 行動
-m_fDeleteTimer(0.0f),		// 自動消滅タイマー
-m_fChargeTimer(0.0f),		// ため時間タイマー
-m_pGimmick(nullptr)			// ギミックのポインタ
+	m_pShadow		(nullptr),		// 影の情報
+	m_pOrbit		(nullptr),		// 軌跡の情報
+	m_move			(VEC3_ZERO),	// 移動量
+	m_Action		(ACTION_CHASE),	// 行動
+	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
+	m_fChargeTimer	(0.0f),			// ため時間タイマー
+	m_pGimmick		(nullptr)		// ギミックのポインタ
 {
 
 }
@@ -86,13 +87,13 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow = nullptr;		// 影の情報
-	m_pOrbit = nullptr;		// 軌跡の情報
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f); // 移動量
-	m_Action = ACTION_CHASE; // 行動
-	m_fDeleteTimer = 0.0f; // 自動消滅タイマー
-	m_fChargeTimer = 0.0f; // ため時間タイマー
-	m_pGimmick = nullptr; // ギミックのポインタ
+	m_pShadow		= nullptr;		// 影の情報
+	m_pOrbit		= nullptr;		// 軌跡の情報
+	m_move			= VEC3_ZERO;	// 移動量
+	m_Action		= ACTION_CHASE;	// 行動
+	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
+	m_fChargeTimer	= 0.0f;			// ため時間タイマー
+	m_pGimmick		= nullptr;		// ギミックのポインタ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -131,6 +132,15 @@ HRESULT CPlayerClone::Init(void)
 		return E_FAIL;
 	}
 
+	// マテリアルを変更
+	SetAllMaterial(material::Green());
+
+	// サイズを調整
+	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
+
+	// プレイヤー位置に出現
+	SetVec3Position(GET_PLAYER->GetVec3Position());
+
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 
@@ -147,15 +157,6 @@ HRESULT CPlayerClone::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
-
-	// マテリアルを変更
-	SetAllMaterial(material::Green());
-
-	// サイズを調整
-	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
-
-	// プレイヤー位置に出現
-	SetVec3Position(GET_PLAYER->GetVec3Position());
 
 	// 成功を返す
 	return S_OK;
@@ -210,6 +211,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 			Uninit();
 			return;
 		}
+
+		// 移動モーションにする
+		currentMotion = MOTION_DASH;
 
 		break;
 
@@ -364,6 +368,11 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 		return nullptr;
 	}
 
+	// 向きを設定
+	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
+	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
+	pPlayer->SetVec3Rotation(rot);		// 向き設定
+
 	// 移動量を設定
 	pPlayer->m_move = move;
 
@@ -514,7 +523,7 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion);
+				SetMotion(nMotion, BLEND_FRAME);
 			}
 		}
 	}
