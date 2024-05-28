@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "model.h"
 
-#include "collisionCube.h"
+#include "collisionSphere.h"
 
 //************************************************************
 //	定数宣言
@@ -175,7 +175,7 @@ CActor* CActor::Create
 		pActor->BindModel(MODEL);
 
 		// TODO：仮の当たり判定を一個追加
-		pActor->m_collision.push_back(CCollisionCube::Create(rPos, 40.0f, 80.0f, 40.0f));
+		pActor->m_collision.push_back(CCollisionSphere::Create(rPos, 40.0f));
 
 		// 確保したアドレスを返す
 		return pActor;
