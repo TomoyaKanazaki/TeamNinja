@@ -20,7 +20,15 @@ public:
 
 	virtual void Uninit(void);	// 終了処理
 
-	virtual bool Hit(D3DXVECTOR3& rPos, const float fRadius) = 0;	// ヒット処理
+	virtual bool Hit			// ヒット処理
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	) = 0;
 
 	// セット・ゲット関係
 	void SetPos(const D3DXVECTOR3& rPos) { m_pos = rPos; }				// 位置の設定処理
