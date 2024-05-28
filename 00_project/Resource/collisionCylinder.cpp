@@ -19,7 +19,7 @@
 //************************************************************
 namespace
 {
-	const int TUBE_PRIORITY = 1;			// チューブの優先順位
+	const int TUBE_PRIORITY = 5;			// チューブの優先順位
 	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);		// 色
 }
 
