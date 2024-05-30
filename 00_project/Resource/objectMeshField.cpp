@@ -772,7 +772,7 @@ void CObjectMeshField::NormalizeNormal(void)
 bool CObjectMeshField::LandPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 {
 	// 変数を宣言
-	float fLandHeight = GetPositionHeight(rPos);	// 着地位置
+	float fLandHeight = GetPositionRotateHeight(rPos);	// 着地位置
 
 	if (rPos.y < fLandHeight)
 	{ // 位置が地面より下の場合
@@ -894,10 +894,10 @@ bool CObjectMeshField::IsPositionRange(const D3DXVECTOR3&rPos)
 	D3DXVECTOR3 aVtxMtxPos[4];	// ポリゴンの位置・向き反映を行った頂点座標
 
 	// メッシュの頂点位置を設定
-	aVtxPos[0] = D3DXVECTOR3(m_meshField.pos.x - m_meshField.size.x * 0.5f, 0.0f, m_meshField.pos.z + m_meshField.size.y * 0.5f);	// 左上
-	aVtxPos[1] = D3DXVECTOR3(m_meshField.pos.x - m_meshField.size.x * 0.5f, 0.0f, m_meshField.pos.z - m_meshField.size.y * 0.5f);	// 左下
-	aVtxPos[2] = D3DXVECTOR3(m_meshField.pos.x + m_meshField.size.x * 0.5f, 0.0f, m_meshField.pos.z - m_meshField.size.y * 0.5f);	// 右下
-	aVtxPos[3] = D3DXVECTOR3(m_meshField.pos.x + m_meshField.size.x * 0.5f, 0.0f, m_meshField.pos.z + m_meshField.size.y * 0.5f);	// 右上
+	aVtxPos[0] = D3DXVECTOR3(-m_meshField.size.x * 0.5f, 0.0f, +m_meshField.size.y * 0.5f);	// 左上
+	aVtxPos[1] = D3DXVECTOR3(-m_meshField.size.x * 0.5f, 0.0f, -m_meshField.size.y * 0.5f);	// 左下
+	aVtxPos[2] = D3DXVECTOR3(+m_meshField.size.x * 0.5f, 0.0f, -m_meshField.size.y * 0.5f);	// 右下
+	aVtxPos[3] = D3DXVECTOR3(+m_meshField.size.x * 0.5f, 0.0f, +m_meshField.size.y * 0.5f);	// 右上
 
 	for (int nCntVtx = 0; nCntVtx < 4; nCntVtx++)
 	{ // 三角形ポリゴンの頂点数分繰り返す
@@ -1040,51 +1040,47 @@ float CObjectMeshField::GetPositionRotateHeight(const D3DXVECTOR3&rPos)
 				// ターゲット位置を設定
 				pos = rPos;
 
-				if (collision::CirclePillar(pos, GetMeshVertexPosition(nNumVtx), COLL_RADIUS, 0.0f))
-				{ // 頂点座標が近くにある場合
+				// ポリゴンの頂点位置を取得
+				aVtxPos[0] = GetMeshVertexPosition(nNumVtx);
+				aVtxPos[1] = GetMeshVertexPosition(nNumVtx - (1 * nNumCul));
+				aVtxPos[2] = GetMeshVertexPosition(nNumVtx + ((m_part.x + 1) * nNumCul));
 
-					// ポリゴンの頂点位置を取得
-					aVtxPos[0] = GetMeshVertexPosition(nNumVtx);
-					aVtxPos[1] = GetMeshVertexPosition(nNumVtx - (1 * nNumCul));
-					aVtxPos[2] = GetMeshVertexPosition(nNumVtx + ((m_part.x + 1) * nNumCul));
+				for (int nCntTriangle = 0; nCntTriangle < NUM_VTX_TRIANGLE; nCntTriangle++)
+				{ // 三角形ポリゴンの頂点数分繰り返す
 
-					for (int nCntTriangle = 0; nCntTriangle < NUM_VTX_TRIANGLE; nCntTriangle++)
-					{ // 三角形ポリゴンの頂点数分繰り返す
+					// 変数を宣言
+					D3DXMATRIX mtxWorld, mtxRot, mtxTrans;	// 計算用マトリックス
 
-						// 変数を宣言
-						D3DXMATRIX mtxWorld, mtxRot, mtxTrans;	// 計算用マトリックス
+					// ワールドマトリックスの初期化
+					D3DXMatrixIdentity(&mtxWorld);
 
-						// ワールドマトリックスの初期化
-						D3DXMatrixIdentity(&mtxWorld);
+					// 頂点位置を反映
+					D3DXMatrixTranslation(&mtxTrans, aVtxPos[nCntTriangle].x, aVtxPos[nCntTriangle].y, aVtxPos[nCntTriangle].z);
+					D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
 
-						// 頂点位置を反映
-						D3DXMatrixTranslation(&mtxTrans, aVtxPos[nCntTriangle].x, aVtxPos[nCntTriangle].y, aVtxPos[nCntTriangle].z);
-						D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+					// ポリゴン向きを反映
+					D3DXMatrixRotationYawPitchRoll(&mtxRot, m_meshField.rot.y, m_meshField.rot.x, m_meshField.rot.z);
+					D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
 
-						// ポリゴン向きを反映
-						D3DXMatrixRotationYawPitchRoll(&mtxRot, m_meshField.rot.y, m_meshField.rot.x, m_meshField.rot.z);
-						D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+					// ポリゴン位置を反映
+					D3DXMatrixTranslation(&mtxTrans, m_meshField.pos.x, m_meshField.pos.y, m_meshField.pos.z);
+					D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
 
-						// ポリゴン位置を反映
-						D3DXMatrixTranslation(&mtxTrans, m_meshField.pos.x, m_meshField.pos.y, m_meshField.pos.z);
-						D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+					// 計算したマトリックスから座標を設定
+					aVtxMtxPos[nCntTriangle] = D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+				}
 
-						// 計算したマトリックスから座標を設定
-						aVtxMtxPos[nCntTriangle] = D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
-					}
+				if (collision::TriangleOuterPillar(aVtxMtxPos[0], aVtxMtxPos[1], aVtxMtxPos[2], rPos))
+				{ // ポリゴンの範囲内にいる場合
 
-					if (collision::TriangleOuterPillar(aVtxMtxPos[0], aVtxMtxPos[1], aVtxMtxPos[2], rPos))
-					{ // ポリゴンの範囲内にいる場合
+					// 法線を求める
+					useful::NormalizeNormal(aVtxMtxPos[1], aVtxMtxPos[0], aVtxMtxPos[2], nor);
 
-						// 法線を求める
-						useful::NormalizeNormal(aVtxMtxPos[1], aVtxMtxPos[0], aVtxMtxPos[2], nor);
+					if (nor.y != 0.0f)
+					{ // 法線が設定されている場合
 
-						if (nor.y != 0.0f)
-						{ // 法線が設定されている場合
-
-							// プレイヤーの着地点を返す
-							return (((rPos.x - aVtxMtxPos[0].x) * nor.x + (-aVtxMtxPos[0].y) * nor.y + (rPos.z - aVtxMtxPos[0].z) * nor.z) * -1.0f) / nor.y;
-						}
+						// プレイヤーの着地点を返す
+						return (((rPos.x - aVtxMtxPos[0].x) * nor.x + (-aVtxMtxPos[0].y) * nor.y + (rPos.z - aVtxMtxPos[0].z) * nor.z) * -1.0f) / nor.y;
 					}
 				}
 			}

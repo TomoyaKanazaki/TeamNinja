@@ -616,9 +616,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 保存位置の更新
 	UpdateSaveTeleport();
 
-	// TODO：エフェクト
-	CEffect3D::Create(posPlayer, 10.0f);
-
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -721,8 +718,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 	// ジャンプしている状態にする
 	m_bJump = true;
-
-	// TODO：なんか変！
 
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_move)
