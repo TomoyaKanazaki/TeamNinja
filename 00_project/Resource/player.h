@@ -136,7 +136,6 @@ private:
 
 	// メンバ関数 (金崎追加)
 	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot);	// 分身の処理
-	void LoadParameter();	// 定数値の読み込み
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
 	void CollisionActor();	// アクターの当たり判定
@@ -166,16 +165,8 @@ private:
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
-	unsigned int m_nMaxTension;		// 士気力の最大値
-	unsigned int m_nInitTension;	// 士気力の初期値
-	unsigned int m_nSpeedTension;	// 士気力ゲージの増減速度
-	int m_nMaxClone;				// 一度に分身できる上限
-	unsigned int m_nRecover;		// ジャストアクションでの回復量
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
-	float m_fHeght;					// 縦幅
 	D3DXVECTOR3 m_posCenter;		// 中心座標
-	float m_fInertial;				// 慣性力
-	float m_fChargeTime;			// ため時間
 
 };
 
