@@ -477,6 +477,17 @@ void CPlayerClone::CallBack()
 
 		// 歩行中の場合は次に進む
 		if (pClone->GetAction() == ACTION_MOVE || pClone->GetAction() == ACTION_CHASE) { continue; }
+		
+		// ギミックの保有分身数を減らす
+		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+
+		// 保存しているギミックを初期化する
+		pClone->m_pGimmick = nullptr;
+
+#ifdef _DEBUG
+		// マテリアルを変更
+		pClone->SetAllMaterial(material::Green());
+#endif
 
 		// 追従状態にする
 		pClone->SetAction(ACTION_CHASE);
@@ -620,6 +631,9 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 	auto itrBegin = list.begin();
 	auto itrEnd = list.end();
 
+	// プレイヤー情報を取得
+	CPlayer *pPlayer = GET_PLAYER;
+
 	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
 
@@ -630,7 +644,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 		if (*itr != this) { prev = *itr; continue; }
 
 		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
-		if (this == *itrBegin) { return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); }
+		if (this == *itrBegin) { return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation()); }
 
 		// 自身の追従する相手を選択する
 		while (1)
@@ -646,7 +660,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+				return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける
@@ -730,6 +744,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait()
 
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
+
+#ifdef _DEBUG
+	// マテリアルカラーを変えてわかりやすくする
+	SetAllMaterial(material::Yellow());
+#endif
 
 	// ギミックがアクティブ状態なら
 	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
