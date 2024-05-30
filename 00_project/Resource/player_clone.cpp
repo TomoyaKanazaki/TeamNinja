@@ -631,6 +631,9 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 	auto itrBegin = list.begin();
 	auto itrEnd = list.end();
 
+	// プレイヤー情報を取得
+	CPlayer *pPlayer = GET_PLAYER;
+
 	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
 
@@ -641,7 +644,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 		if (*itr != this) { prev = *itr; continue; }
 
 		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
-		if (this == *itrBegin) { return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); }
+		if (this == *itrBegin) { return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation()); }
 
 		// 自身の追従する相手を選択する
 		while (1)
@@ -657,7 +660,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+				return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける

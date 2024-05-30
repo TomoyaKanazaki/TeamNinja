@@ -409,6 +409,6 @@ void CPause::EnableTimerStopAll(const bool bStop)
 	for (auto& rList : listTimer)
 	{ // ƒŠƒXƒg“à‚Ì—v‘f”•ªŒJ‚è•Ô‚·
 
-		rList->EnableStop(m_bPause);
+		rList->EnableStop(bStop);
 	}
 }
