@@ -30,6 +30,8 @@ public:
 		bool& rJump						// ジャンプ状況
 	) = 0;
 
+	virtual void OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx);	// オフセット設定処理
+
 	// セット・ゲット関係
 	void SetPos(const D3DXVECTOR3& rPos) { m_pos = rPos; }				// 位置の設定処理
 	D3DXVECTOR3 GetPos(void) const { return m_pos; }					// 位置の取得処理
@@ -38,6 +40,7 @@ private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_offset;	// オフセット座標
 };
 
 #endif	// _COLLISION_MODEL_H_

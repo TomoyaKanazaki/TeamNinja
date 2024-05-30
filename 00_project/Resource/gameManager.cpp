@@ -81,7 +81,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), CGimmick::TYPE_JUMPTABLE);
 
 	// アクターを生成
-	CActor::Create(VEC3_ZERO);
+	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);
 
 	CMapModel::Create(D3DXVECTOR3(-600.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
 

@@ -100,6 +100,14 @@ bool CCollisionCube::Hit
 }
 
 //============================================================
+// オフセット設定処理
+//============================================================
+void CCollisionCube::OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx)
+{
+	m_pCube->SetVec3Position(pos);
+}
+
+//============================================================
 // 生成処理
 //============================================================
 CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fWidth, const float fHeight, const float fDepth)

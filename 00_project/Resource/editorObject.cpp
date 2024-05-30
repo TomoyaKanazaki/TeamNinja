@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "editManager.h"
 #include "editField.h"
+#include "editActor.h"
 
 //************************************************************
 //	マクロ定義
@@ -165,6 +166,10 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 		pEditorObject = new CEditField;	// エディットフィールド
 		//pEditorObject = new CEditWall;	// エディットウォール
 
+		break;
+
+	case CEditStage::TYPE_ACTOR:
+		pEditorObject = new CEditActor;	// エディットアクター
 		break;
 
 	default:	// 例外処理

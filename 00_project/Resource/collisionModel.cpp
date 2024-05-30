@@ -13,7 +13,8 @@
 // コンストラクタ
 //============================================================
 CCollision::CCollision() : 
-m_pos(VEC3_ZERO)	// 位置
+m_pos(VEC3_ZERO),		// 位置
+m_offset(VEC3_ZERO)		// オフセット座標
 {
 
 }
@@ -33,4 +34,15 @@ void CCollision::Uninit(void)
 {
 	// 自身を消す
 	delete this;
+}
+
+//============================================================
+// オフセット設定処理
+//============================================================
+void CCollision::OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx)
+{
+	// 位置を設定する
+	m_pos.x = mtx._41;
+	m_pos.y = mtx._42;
+	m_pos.z = mtx._43;
 }

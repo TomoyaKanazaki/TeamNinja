@@ -138,7 +138,7 @@ void CEditActor::Uninit(void)
 	CEditorObject::Uninit();
 
 	// アクターの色の全初期化
-	InitAllColorActor();
+	//InitAllColorActor();
 
 	// アクターの終了
 	SAFE_UNINIT(m_pActor);
@@ -250,6 +250,18 @@ void CEditActor::DrawDebugInfo(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_infoCreate.scale.x, m_infoCreate.scale.y, m_infoCreate.scale.z);
 
 #endif	// _DEBUG
+}
+
+//============================================================
+// 位置更新
+//============================================================
+void CEditActor::UpdatePosition(void)
+{
+	// 位置の更新
+	CEditorObject::UpdatePosition();
+
+	// 位置を反映
+	m_pActor->SetVec3Position(GetVec3Position());
 }
 
 //============================================================
@@ -429,17 +441,17 @@ void CEditActor::DeleteCollisionActor(const bool bRelase)
 		D3DXVECTOR3 scaleOther = VEC3_ZERO;	// 対象の大きさ
 
 		// 自身の大きさを設定
-		D3DXVECTOR2 scaleThisActor = m_pActor->GetVec2Sizing();	// 自身の地面の大きさ
+		D3DXVECTOR3 scaleThisActor = m_pActor->GetVec3Scaling();	// 自身の地面の大きさ
 		scaleThis.x = scaleThisActor.x;	// 判定サイズXを設定
-		scaleThis.y = editstage::SIZE;	// 判定サイズYを設定
-		scaleThis.z = scaleThisActor.y;	// 判定サイズZを設定
+		scaleThis.y = scaleThisActor.y;	// 判定サイズYを設定
+		scaleThis.z = scaleThisActor.z;	// 判定サイズZを設定
 		scaleThis *= 0.5f;				// 判定サイズを半分に
 
 		// 対象の大きさを設定
-		D3DXVECTOR2 scaleOtherActor = rList->GetVec2Sizing();	// 対象の地面の大きさ
+		D3DXVECTOR3 scaleOtherActor = rList->GetVec3Scaling();		// 対象の地面の大きさ
 		scaleOther.x = scaleOtherActor.x;	// 判定サイズXを設定
-		scaleOther.y = editstage::SIZE;	// 判定サイズYを設定
-		scaleOther.z = scaleOtherActor.y;	// 判定サイズZを設定
+		scaleOther.y = scaleOtherActor.y;	// 判定サイズYを設定
+		scaleOther.z = scaleOtherActor.z;	// 判定サイズZを設定
 		scaleOther *= 0.5f;				// 判定サイズを半分に
 
 		// 矩形の当たり判定
@@ -488,6 +500,7 @@ void CEditActor::InitAllColorActor(void)
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CActor*> listActor = pListManager->GetList();	// アクターリスト情報
 
+	int nCnt = 0;
 	for (auto& rList : listActor)
 	{ // アクター数分繰り返す
 
@@ -496,6 +509,9 @@ void CEditActor::InitAllColorActor(void)
 
 		// 通常色を設定
 		rList->ResetMaterial();
+
+		nCnt++;
+
 	}
 }
 
