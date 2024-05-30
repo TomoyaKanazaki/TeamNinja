@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "model.h"
 
-#include "collisionCylinder.h"
+#include "collisionSphere.h"
 
 //************************************************************
 //	定数宣言
@@ -34,8 +34,7 @@ CListManager<CActor>* CActor::m_pList = nullptr;		// リスト構造
 //============================================================
 //	コンストラクタ
 //============================================================
-CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY),
-m_pCollisionList(nullptr)
+CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY)
 {
 
 }
@@ -60,21 +59,6 @@ HRESULT CActor::Init(void)
 		// 失敗を返す
 		assert(false);
 		return E_FAIL;
-	}
-
-	if (m_pCollisionList == nullptr)
-	{ // リストマネージャーが存在しない場合
-
-		// リストマネージャーの生成
-		m_pCollisionList = CListManager<CCollision>::Create();
-
-		if (m_pCollisionList == nullptr)
-		{ // 生成に失敗した場合
-
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
 	}
 
 	if (m_pList == nullptr)
@@ -105,16 +89,16 @@ HRESULT CActor::Init(void)
 void CActor::Uninit(void)
 {
 	// 総数を取得
-	int nNumColl = m_pCollisionList->GetNumAll();
+	int nNumColl = m_collision.size();
 
 	for (int nCnt = 0; nCnt < nNumColl; nCnt++)
 	{
 		// 終了処理
-		(*m_pCollisionList->GetBegin())->Uninit();
+		(*m_collision.begin())->Uninit();
 	}
 
-	// リストマネージャーの破棄
-	m_pCollisionList->Release(m_pCollisionList);
+	// 当たり判定情報の破棄
+	m_collision.clear();
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -191,7 +175,7 @@ CActor* CActor::Create
 		pActor->BindModel(MODEL);
 
 		// TODO：仮の当たり判定を一個追加
-		pActor->m_pCollisionList->AddList(CCollisionCylinder::Create(rPos, 60.0f, 30.0f));
+		pActor->m_collision.push_back(CCollisionSphere::Create(rPos, 40.0f));
 
 		// 確保したアドレスを返す
 		return pActor;
@@ -220,13 +204,9 @@ void CActor::Collision
 	bool& bJump						// ジャンプ状況
 )
 {
-	// 当たり判定のリスト構造が無ければ抜ける
-	if (m_pCollisionList == nullptr) { return; }
-
-	std::list<CCollision*> list = m_pCollisionList->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
-	for (auto collision : list)
+	for (auto collision : m_collision)
 	{
 		// ヒット処理
 		collision->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);

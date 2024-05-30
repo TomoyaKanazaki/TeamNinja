@@ -27,7 +27,7 @@ public:
 		const float fRadius,			// 半径
 		const float fHeight,			// 高さ
 		D3DXVECTOR3& rMove,				// 移動量
-		bool& bJump						// ジャンプ状況
+		bool& rJump						// ジャンプ状況
 	) = 0;
 
 	// セット・ゲット関係

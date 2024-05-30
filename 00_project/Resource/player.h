@@ -101,6 +101,8 @@ public:
 	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
 	void SetMove(const D3DXVECTOR3& rMove)			{ m_move = rMove; }		// 移動量設定
 	D3DXVECTOR3 GetMove(void) const					{ return m_move; }		// 移動量取得
+	void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }	// ジャンプ状況設定
+	bool IsJump(void) const							{ return m_bJump; }		// ジャンプ状況設定
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	void SetSpawn(void);				// 出現設定
@@ -133,11 +135,10 @@ private:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
+	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot);	// 分身の処理
 	void LoadParameter();	// 定数値の読み込み
-	void ControlClone();	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
-
 	void CollisionActor();	// アクターの当たり判定
 
 #ifdef _DEBUG
