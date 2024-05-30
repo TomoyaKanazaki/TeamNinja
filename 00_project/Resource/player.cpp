@@ -648,31 +648,29 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
 	
-	// KANAZAKI：忍び足とダッシュの判定書き換えて
-
 	// スティックの傾きから移動量を設定
 	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
 	if (pad::DEAD_ZONE < fSpeed)
 	{ // デッドゾーン以上の場合
 
-		if (fSpeed >= STEALTH_BORDER)
-		{ // 通常速度の場合
+		//if (fSpeed >= STEALTH_BORDER)
+		//{ // 通常速度の場合
 
-			// 速度を通常にする
-			fSpeed = NORMAL_MOVE;
+		//	// 速度を通常にする
+		//	fSpeed = NORMAL_MOVE;
 
-			// 歩行モーションにする
-			currentMotion = MOTION_DASH;
-		}
-		else
-		{ // 忍び足の場合
+		//	// 歩行モーションにする
+		//	currentMotion = MOTION_DASH;
+		//}
+		//else
+		//{ // 忍び足の場合
 
-			// 速度を忍び足にする
-			fSpeed = STEALTH_MOVE;
+		//	// 速度を忍び足にする
+		//	fSpeed = STEALTH_MOVE;
 
-			// 忍び足モーションにする
-			currentMotion = MOTION_STEALTHWALK;
-		}
+		//	// 忍び足モーションにする
+		//	currentMotion = MOTION_STEALTHWALK;
+		//}
 
 		// スティック向きを取得
 		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
@@ -682,8 +680,22 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
 
 		// 移動量を設定する
-		m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
-		m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+		D3DXVECTOR3 fRate = pPad->GetStickRateL(0.1f);
+		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fRate.x);
+		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fRate.z);
+
+		// 歩行モーションにする
+		currentMotion = MOTION_DASH;
+
+		// 移動量をスカラー値に変換する
+		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+
+		// 移動量が一定未満の場合忍び足モーションになる
+		if (m_fScalar <= STEALTH_MOVE)
+		{
+			// 忍び足モーションにする
+			currentMotion = MOTION_STEALTHWALK;
+		}
 	}
 
 #ifdef _DEBUG
@@ -695,9 +707,6 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
-
-	// 移動量をスカラー値に変換する
-	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 
 	// モーションを返す
 	return currentMotion;
