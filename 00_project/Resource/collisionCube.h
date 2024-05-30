@@ -44,16 +44,15 @@ public:
 		bool& rJump						// ジャンプ状況
 	) override;
 
-	void OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx) override;	// オフセット設定処理
-
 #ifdef _DEBUG
 
-	CObjectMeshCube* GetCube(void) const { return m_pCube; }		// キューブの取得処理
+	// セット・ゲット関係
+	CObjectMeshCube* GetCube(void) const { return m_pCube; }	// キューブの取得処理
 
 #endif // _DEBUG
 
 	// 静的メンバ関数
-	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fWidth, const float fHeight, const float fDepth);		// 生成処理
+	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth);		// 生成処理
 
 private:
 

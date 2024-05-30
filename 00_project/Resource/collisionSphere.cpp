@@ -80,7 +80,7 @@ bool CCollisionSphere::Hit
 //============================================================
 // 生成処理
 //============================================================
-CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fRadius)
+CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius)
 {
 	// 当たり判定の生成
 	CCollisionSphere* pColl = new CCollisionSphere();
@@ -88,16 +88,11 @@ CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const float 
 	// 生成出来ていない場合 nullptr を返す
 	if (pColl == nullptr) { return nullptr; }
 
-	// 位置
-	D3DXVECTOR3 pos = VEC3_ZERO;
-
-	// 位置を作成する
-	pos.x = rPos.x + sinf(fAngle) * fLength;
-	pos.y = rPos.y;
-	pos.z = rPos.z + cosf(fAngle) * fLength;
-
 	// 位置を設定する
-	pColl->SetPos(pos);
+	pColl->SetPos(rPos);
+
+	// オフセットの設定
+	pColl->SetOffset(rOffset);
 
 	// 半径を設定
 	pColl->m_fRadius = fRadius;
@@ -105,7 +100,7 @@ CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const float 
 #ifdef _DEBUG
 
 	// スフィアを生成
-	pColl->m_pSphere = CObjectMeshSphere::Create(pos, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius);
+	pColl->m_pSphere = CObjectMeshSphere::Create(rPos, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius);
 	pColl->m_pSphere->SetPriority(SPHERE_PRIORITY);
 
 #endif // _DEBUG

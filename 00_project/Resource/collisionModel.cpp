@@ -39,10 +39,28 @@ void CCollision::Uninit(void)
 //============================================================
 // オフセット設定処理
 //============================================================
-void CCollision::OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx)
+void CCollision::OffSet(const D3DXMATRIX& mtx)
 {
+	// 計算用マトリックス
+	D3DXMATRIX mtxTrans, mtxColl;
+
+	// マトリックスの初期化
+	D3DXMatrixIdentity(&mtxColl);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_offset.x, m_offset.y, m_offset.z);
+	D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
+
+	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+	D3DXMatrixMultiply
+	(
+		&mtxColl,
+		&mtxColl,
+		&mtx
+	);
+
 	// 位置を設定する
-	m_pos.x = mtx._41;
-	m_pos.y = mtx._42;
-	m_pos.z = mtx._43;
+	m_pos.x = mtxColl._41;
+	m_pos.y = mtxColl._42;
+	m_pos.z = mtxColl._43;
 }

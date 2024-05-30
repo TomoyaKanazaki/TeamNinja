@@ -144,19 +144,19 @@ void CActor::Update(const float fDeltaTime)
 	for (auto cube : m_cube)
 	{
 		// オフセット処理
-		cube->OffSet(GetVec3Position(), GetVec3Position(), GetVec3Position(), GetMtxWorld());
+		cube->OffSet(GetMtxWorld());
 	}
 
 	for (auto cylinder : m_cylinder)
 	{
 		// 終了処理
-		cylinder->OffSet(GetVec3Position(), GetVec3Position(), GetVec3Position(), GetMtxWorld());
+		cylinder->OffSet(GetMtxWorld());
 	}
 
 	for (auto sphere : m_sphere)
 	{
 		// 終了処理
-		sphere->OffSet(GetVec3Position(), GetVec3Position(), GetVec3Position(), GetMtxWorld());
+		sphere->OffSet(GetMtxWorld());
 	}
 
 	// オブジェクトモデルの更新
@@ -217,9 +217,6 @@ CActor* CActor::Create
 
 		// 種類を設定
 		pActor->m_type = type;
-
-		// TODO：ここで当たり判定を仮作成
-		pActor->m_cube.push_back(CCollisionCube::Create(rPos, 0.0f, 0.0f, 40.0f, 40.0f, 40.0f));
 
 		// 確保したアドレスを返す
 		return pActor;
