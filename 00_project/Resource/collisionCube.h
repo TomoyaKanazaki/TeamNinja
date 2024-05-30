@@ -44,8 +44,14 @@ public:
 		bool& rJump						// ジャンプ状況
 	) override;
 
+#ifdef _DEBUG
+
+	CObjectMeshCube* GetCube(void) const { return m_pCube; }		// キューブの取得処理
+
+#endif // _DEBUG
+
 	// 静的メンバ関数
-	static CCollisionCube* Create(const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth);		// 生成処理
+	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fWidth, const float fHeight, const float fDepth);		// 生成処理
 
 private:
 

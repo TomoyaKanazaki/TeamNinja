@@ -393,16 +393,19 @@
     <ClInclude Include="Resource\collisionCube.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorCollision.h">
+    <ClInclude Include="Resource\editCollision.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorCollisionCube.h">
+    <ClInclude Include="Resource\editCollCube.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorCollisionCylinder.h">
+    <ClInclude Include="Resource\editCollCylinder.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorCollisionSphere.h">
+    <ClInclude Include="Resource\editCollSphere.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editorCollShape.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -776,16 +779,19 @@
     <ClCompile Include="Resource\collisionCube.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorCollision.cpp">
+    <ClCompile Include="Resource\editCollision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorCollisionCube.cpp">
+    <ClCompile Include="Resource\editCollCube.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorCollisionCylinder.cpp">
+    <ClCompile Include="Resource\editCollCylinder.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorCollisionSphere.cpp">
+    <ClCompile Include="Resource\editCollSphere.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editorShape.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

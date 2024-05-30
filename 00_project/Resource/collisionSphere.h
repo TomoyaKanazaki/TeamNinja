@@ -45,7 +45,7 @@ public:
 	) override;
 
 	// Ã“Iƒƒ“ƒoŠÖ”
-	static CCollisionSphere* Create(const D3DXVECTOR3& rOffset, const float fRadius);		// ¶¬ˆ—
+	static CCollisionSphere* Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fRadius);		// ¶¬ˆ—
 
 private:
 

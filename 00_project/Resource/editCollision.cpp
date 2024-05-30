@@ -8,7 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "editorCollision.h"
+#include "editCollision.h"
 #include "editManager.h"
 
 #include "editorObject.h"
