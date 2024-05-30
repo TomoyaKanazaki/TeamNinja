@@ -477,6 +477,17 @@ void CPlayerClone::CallBack()
 
 		// 歩行中の場合は次に進む
 		if (pClone->GetAction() == ACTION_MOVE || pClone->GetAction() == ACTION_CHASE) { continue; }
+		
+		// ギミックの保有分身数を減らす
+		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+
+		// 保存しているギミックを初期化する
+		pClone->m_pGimmick = nullptr;
+
+#ifdef _DEBUG
+		// マテリアルを変更
+		pClone->SetAllMaterial(material::Green());
+#endif
 
 		// 追従状態にする
 		pClone->SetAction(ACTION_CHASE);
@@ -730,6 +741,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait()
 
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
+
+#ifdef _DEBUG
+	// マテリアルカラーを変えてわかりやすくする
+	SetAllMaterial(material::Yellow());
+#endif
 
 	// ギミックがアクティブ状態なら
 	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
