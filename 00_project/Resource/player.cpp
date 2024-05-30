@@ -61,11 +61,15 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float STEALTH_BORDER	= 16000.0f;	// 忍び足になる基準のスピード
-	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
+	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
 
-	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
+	const int MAX_TENSION = 10000; // 士気力の最大値
+	const int INIT_TENSION = 5000; // 士気力の初期値
+	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
+	const int MAX_CLONE = 10; // 分身の最大数
+	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
+	const float HEIGHT = 100.0f; // 身長
 
 	// ブラーの情報
 	namespace blurInfo
@@ -96,16 +100,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bJump				(false),		// ジャンプ状況
 	m_nCounterState		(0),			// 状態管理カウンター
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
-	m_nMaxTension		(0),			// 最大士気力
-	m_nInitTension		(0),			// 初期士気力
-	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
-	m_nMaxClone			(0),			// 一度に分身できる上限
-	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
-	m_fHeght			(0.0f),			// 立幅
-	m_fInertial			(0.0f),			// 慣性力
-	m_fScalar			(0.0f),			// 移動量
-	m_fChargeTime		(0.0f)			// ため時間
+	m_fScalar			(0.0f)			// 移動量
 {
 
 }
@@ -135,9 +131,6 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_fScalar			= 0.0f;			// 移動量
-
-	// 定数パラメータの読み込み
-	LoadParameter();
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -179,12 +172,12 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		MAX_TENSION, SPEED_TENSION, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
-	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetNum(INIT_TENSION);
 	m_pTensionGauge->SetLabel(LABEL_UI);
 
 	if (m_pList == nullptr)
@@ -518,7 +511,7 @@ float CPlayer::GetRadius(void) const
 float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
-	return m_fHeght;
+	return HEIGHT;
 }
 
 //==========================================
@@ -545,7 +538,7 @@ void CPlayer::RecoverCheckPoint()
 	if (nTension == -1) { return; }
 
 	// 最大値と現在値の差を求める
-	float fDiff = (float)(m_nMaxTension - nTension);
+	float fDiff = (float)(MAX_TENSION - nTension);
 
 	// 差分の半分の値で士気力を回復する
 	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
@@ -560,7 +553,7 @@ void CPlayer::RecoverJust()
 	if (m_pTensionGauge == nullptr) { return; }
 
 	// 固定値で士気力を回復する
-	m_pTensionGauge->AddNum(m_nRecover);
+	m_pTensionGauge->AddNum(JUST_RECOVER);
 }
 
 //============================================================
@@ -650,31 +643,10 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
 	
-	// KANAZAKI：忍び足とダッシュの判定書き換えて
-
 	// スティックの傾きから移動量を設定
 	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
 	if (pad::DEAD_ZONE < fSpeed)
 	{ // デッドゾーン以上の場合
-
-		if (fSpeed >= STEALTH_BORDER)
-		{ // 通常速度の場合
-
-			// 速度を通常にする
-			fSpeed = NORMAL_MOVE;
-
-			// 歩行モーションにする
-			currentMotion = MOTION_DASH;
-		}
-		else
-		{ // 忍び足の場合
-
-			// 速度を忍び足にする
-			fSpeed = STEALTH_MOVE;
-
-			// 忍び足モーションにする
-			currentMotion = MOTION_STEALTHWALK;
-		}
 
 		// スティック向きを取得
 		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
@@ -684,8 +656,23 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
 
 		// 移動量を設定する
-		m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
-		m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
+		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
+		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.x));
+		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.z));
+
+		// 歩行モーションにする
+		currentMotion = MOTION_DASH;
+
+		// 移動量をスカラー値に変換する
+		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "移動量ちゃん : %f", m_fScalar);
+
+		// 移動量が一定未満の場合忍び足モーションになる
+		if (m_fScalar <= STEALTH_MOVE)
+		{
+			// 忍び足モーションにする
+			currentMotion = MOTION_STEALTHWALK;
+		}
 	}
 
 #ifdef _DEBUG
@@ -697,9 +684,6 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
-
-	// 移動量をスカラー値に変換する
-	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 
 	// モーションを返す
 	return currentMotion;
@@ -780,7 +764,7 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 	// 中心座標の更新
 	m_posCenter = rPos;
-	m_posCenter.y += m_fHeght * 0.5f;
+	m_posCenter.y += HEIGHT * 0.5f;
 }
 
 //============================================================
@@ -921,6 +905,9 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 		}
 	}
 
+	// 分身を呼び戻す
+	CallClone();
+
 #ifdef _DEBUG
 
 	// 移動分身の削除
@@ -936,7 +923,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 #endif
 
 	// 分身の数が上限だった場合関数を抜ける
-	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
+	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return; }
 
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
@@ -1007,7 +994,7 @@ void CPlayer::CallClone()
 	CInputPad* pPad = GET_INPUTPAD;
 
 	// 右スティックの押し込みがなかった場合関数を抜ける
-	if (pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
 	// 分身を追従する
 	CPlayerClone::CallBack();
@@ -1265,77 +1252,6 @@ void CPlayer::DebugCloneControl(void)
 
 		// 歩く分身を出す
 		CPlayerClone::Create(move);
-	}
-}
-
-//==========================================
-//  定数読み込み
-//==========================================
-void CPlayer::LoadParameter()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(PARAM_FILE, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐処理
-		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxTension);
-		}
-		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nInitTension);
-		}
-		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nSpeedTension);
-		}
-		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxClone);
-		}
-		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nRecover);
-		}
-		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fHeght);
-		}
-		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fInertial);
-		}
-		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fChargeTime);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
 	}
 }
 

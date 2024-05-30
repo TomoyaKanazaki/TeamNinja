@@ -70,6 +70,7 @@ public:
 		ACTION_CHASE = 0,	// 通常の行動
 		ACTION_MOVE,		// 歩行
 		ACTION_WAIT,		// ギミック待機
+		ACTION_JUMPTABLE,	// ジャンプ台
 		ACTION_MAX
 	};
 
@@ -114,7 +115,7 @@ private:
 	CPlayerClone::EMotion ChasePrev(); // 前についていく処理
 	CPlayerClone::EMotion Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
 	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
-	void Wait(); // ギミック待機
+	EMotion UpdateWait(); // ギミック待機
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト

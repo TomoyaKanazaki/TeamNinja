@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "model.h"
 
+#include "collisionCube.h"
+#include "collisionCylinder.h"
 #include "collisionSphere.h"
 
 //************************************************************
@@ -88,17 +90,28 @@ HRESULT CActor::Init(void)
 //============================================================
 void CActor::Uninit(void)
 {
-	// 総数を取得
-	int nNumColl = m_collision.size();
-
-	for (int nCnt = 0; nCnt < nNumColl; nCnt++)
+	for (auto cube : m_cube)
 	{
 		// 終了処理
-		(*m_collision.begin())->Uninit();
+		cube->Uninit();
 	}
 
-	// 当たり判定情報の破棄
-	m_collision.clear();
+	for (auto cylinder : m_cylinder)
+	{
+		// 終了処理
+		cylinder->Uninit();
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// 終了処理
+		sphere->Uninit();
+	}
+
+	// クリア処理
+	m_cube.clear();
+	m_cylinder.clear();
+	m_sphere.clear();
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -175,7 +188,7 @@ CActor* CActor::Create
 		pActor->BindModel(MODEL);
 
 		// TODO：仮の当たり判定を一個追加
-		pActor->m_collision.push_back(CCollisionSphere::Create(rPos, 40.0f));
+		pActor->m_cube.push_back(CCollisionCube::Create(rPos, 40.0f, 40.0f, 40.0f));
 
 		// 確保したアドレスを返す
 		return pActor;
@@ -206,9 +219,21 @@ void CActor::Collision
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
-	for (auto collision : m_collision)
+	for (auto cube : m_cube)
 	{
 		// ヒット処理
-		collision->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// ヒット処理
+		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// ヒット処理
+		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 }
