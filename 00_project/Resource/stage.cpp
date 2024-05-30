@@ -122,6 +122,9 @@ void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
 {
 	switch (m_stageLimit.mode)
 	{ // 制限モードごとの処理
+	case LIMIT_NONE:	// 制限なし
+		break;
+
 	case LIMIT_BOX:		// 矩形範囲
 
 		// 角柱の内側制限
@@ -180,7 +183,6 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
-
 	CField *pCurField = nullptr;			// 着地予定の地面
 	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
 
@@ -191,7 +193,7 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 		if (rList->IsPositionRange(rPos))
 		{ // 地面の範囲内の場合
 
-			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
+			float fPosHeight = rList->GetPositionRotateHeight(rPos);	// 着地Y座標
 			if (fCurPos <= fPosHeight)
 			{ // 現在の着地予定Y座標より高い位置にある場合
 
@@ -251,9 +253,8 @@ float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
-
-	CField *pCurrentField = nullptr;			// 着地予定の地面
-	float fCurrentPos = m_stageLimit.fField;	// 着地予定のY座標
+	CField *pCurField = nullptr;			// 着地予定の地面
+	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
 
 	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す
@@ -262,24 +263,24 @@ float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
 		if (rList->IsPositionRange(rPos))
 		{ // 地面の範囲内の場合
 
-			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
-			if (fCurrentPos <= fPosHeight)
+			float fPosHeight = rList->GetPositionRotateHeight(rPos);	// 着地Y座標
+			if (fCurPos <= fPosHeight)
 			{ // 現在の着地予定Y座標より高い位置にある場合
 
 				// 着地予定の地面を更新
-				pCurrentField = rList;
+				pCurField = rList;
 
 				// 着地予定のY座標を更新
-				fCurrentPos = fPosHeight;
+				fCurPos = fPosHeight;
 			}
 		}
 	}
 
-	if (pCurrentField != nullptr)
+	if (pCurField != nullptr)
 	{ // 着地予定の地面が存在する場合
 
 		// 着地位置を返す
-		return fCurrentPos;
+		return fCurPos;
 	}
 	else
 	{ // 着地予定の地面が存在しない場合
@@ -466,6 +467,9 @@ HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
 	// ステージ範囲の設定
 	if (strcmp(pString, "LIMITSET") == 0)
 	{ // 読み込んだ文字列が LIMITSET の場合
+
+		// 制限モードを無しに設定
+		stageLimit.mode = LIMIT_NONE;
 
 		do
 		{ // 読み込んだ文字列が END_LIMITSET ではない場合ループ
