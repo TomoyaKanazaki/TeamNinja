@@ -52,9 +52,9 @@ CEditorObject::CEditorObject()
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pos = VEC3_ZERO;	// 位置
-	m_rot = VEC3_ZERO;	// 向き
-	m_angle = ANGLE_0;	// 角度
+	m_pos = VEC3_ZERO;			// 位置
+	m_rot = VEC3_ZERO;			// 向き
+	m_angle = CEditor::ANGLE_0;	// 角度
 
 #endif	// _DEBUG
 }
@@ -76,9 +76,9 @@ HRESULT CEditorObject::Init(void)
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_pos = VEC3_ZERO;	// 位置
-	m_rot = VEC3_ZERO;	// 向き
-	m_angle = ANGLE_0;	// 角度
+	m_pos = VEC3_ZERO;			// 位置
+	m_rot = VEC3_ZERO;			// 向き
+	m_angle = CEditor::ANGLE_0;	// 角度
 
 	// 成功を返す
 	return S_OK;
@@ -291,19 +291,19 @@ void CEditorObject::UpdateRotation(void)
 	if (m_pKeyboard->IsTrigger(KEY_ROTA_RIGHT))
 	{
 		// 角度を左回転
-		m_angle = (EAngle)((m_angle + (ANGLE_MAX - 1)) % ANGLE_MAX);
+		m_angle = (CEditor::EAngle)((m_angle + (CEditor::ANGLE_MAX - 1)) % CEditor::ANGLE_MAX);
 
 		// 現在の角度から向きを計算
-		int nTemp = ((m_angle - 1) + (ANGLE_MAX - 1)) % ANGLE_MAX;
+		int nTemp = ((m_angle - 1) + (CEditor::ANGLE_MAX - 1)) % CEditor::ANGLE_MAX;
 		m_rot.y = ((float)nTemp * HALF_PI) - D3DX_PI;
 	}
 	if (m_pKeyboard->IsTrigger(KEY_ROTA_LEFT))
 	{
 		// 角度を右回転
-		m_angle = (EAngle)((m_angle + 1) % ANGLE_MAX);
+		m_angle = (CEditor::EAngle)((m_angle + 1) % CEditor::ANGLE_MAX);
 
 		// 現在の角度から向きを計算
-		int nTemp = ((m_angle - 1) + (ANGLE_MAX - 1)) % ANGLE_MAX;
+		int nTemp = ((m_angle - 1) + (CEditor::ANGLE_MAX - 1)) % CEditor::ANGLE_MAX;
 		m_rot.y = ((float)nTemp * HALF_PI) - D3DX_PI;
 	}
 
