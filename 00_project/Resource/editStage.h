@@ -41,6 +41,7 @@ public:
 	{
 		TYPE_FIELD = 0,	// 地面
 		TYPE_WALL,		// 床
+		TYPE_ACTOR,		// アクター
 		TYPE_MAX		// この列挙型の総数
 	};
 

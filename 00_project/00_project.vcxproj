@@ -177,7 +177,6 @@
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
-    <ClInclude Include="Resource\editBlock.h" />
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
@@ -185,6 +184,7 @@
     <ClInclude Include="Resource\editCollCube.h" />
     <ClInclude Include="Resource\editCollCylinder.h" />
     <ClInclude Include="Resource\editCollSphere.h" />
+    <ClInclude Include="Resource\editActor.h" />
     <ClInclude Include="Resource\editorCollShape.h" />
     <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
@@ -316,6 +316,7 @@
     <ClCompile Include="Resource\editCollCube.cpp" />
     <ClCompile Include="Resource\editCollCylinder.cpp" />
     <ClCompile Include="Resource\editCollSphere.cpp" />
+    <ClCompile Include="Resource\editActor.cpp" />
     <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editorCollShape.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
