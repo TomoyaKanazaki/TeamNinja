@@ -102,7 +102,7 @@ bool CCollisionCube::Hit
 //============================================================
 // 生成処理
 //============================================================
-CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth)
+CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fWidth, const float fHeight, const float fDepth)
 {
 	// 当たり判定の生成
 	CCollisionCube* pColl = new CCollisionCube();
@@ -110,10 +110,16 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rOffset, const float f
 	// 生成出来ていない場合 nullptr を返す
 	if (pColl == nullptr) { return nullptr; }
 
-	pColl->SetPos(rOffset);
+	// 位置
+	D3DXVECTOR3 pos = VEC3_ZERO;
 
-	// オフセット位置を設定
-	pColl->SetOffset(rOffset);
+	// 位置を作成する
+	pos.x = rPos.x + sinf(fAngle) * fLength;
+	pos.y = rPos.y;
+	pos.z = rPos.z + cosf(fAngle) * fLength;
+
+	// 位置を設定
+	pColl->SetPos(pos);
 
 	// 半径を設定
 	pColl->m_fWidth = fWidth;
@@ -129,7 +135,7 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rOffset, const float f
 	// キューブを生成
 	pColl->m_pCube = CObjectMeshCube::Create
 	(
-		rOffset,
+		pos,
 		VEC3_ZERO,
 		D3DXVECTOR3(pColl->m_fWidth, pColl->m_fHeight / 2, pColl->m_fDepth),
 		COL,
