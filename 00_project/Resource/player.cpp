@@ -61,8 +61,7 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float STEALTH_BORDER	= 16000.0f;	// 忍び足になる基準のスピード
-	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
+	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
 
 	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
@@ -655,25 +654,6 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	if (pad::DEAD_ZONE < fSpeed)
 	{ // デッドゾーン以上の場合
 
-		//if (fSpeed >= STEALTH_BORDER)
-		//{ // 通常速度の場合
-
-		//	// 速度を通常にする
-		//	fSpeed = NORMAL_MOVE;
-
-		//	// 歩行モーションにする
-		//	currentMotion = MOTION_DASH;
-		//}
-		//else
-		//{ // 忍び足の場合
-
-		//	// 速度を忍び足にする
-		//	fSpeed = STEALTH_MOVE;
-
-		//	// 忍び足モーションにする
-		//	currentMotion = MOTION_STEALTHWALK;
-		//}
-
 		// スティック向きを取得
 		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
 
@@ -682,15 +662,16 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
 
 		// 移動量を設定する
-		D3DXVECTOR3 fRate = pPad->GetStickRateL(0.1f);
-		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fRate.x);
-		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fRate.z);
+		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
+		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.x));
+		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.z));
 
 		// 歩行モーションにする
 		currentMotion = MOTION_DASH;
 
 		// 移動量をスカラー値に変換する
 		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "移動量ちゃん : %f", m_fScalar);
 
 		// 移動量が一定未満の場合忍び足モーションになる
 		if (m_fScalar <= STEALTH_MOVE)
