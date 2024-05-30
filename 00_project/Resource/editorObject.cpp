@@ -161,7 +161,7 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 
 	case CEditStage::TYPE_WALL:
 
-		// TODO：エディットフィールドできたら置き換え
+		// TODO：エディットウォールできたら置き換え
 		pEditorObject = new CEditField;	// エディットフィールド
 		//pEditorObject = new CEditWall;	// エディットウォール
 

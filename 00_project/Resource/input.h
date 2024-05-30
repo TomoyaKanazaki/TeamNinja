@@ -21,8 +21,9 @@ namespace keyboard
 
 namespace pad
 {
-	const int	MAX_NUM		= 4;	// パッドの最大数
-	const float	DEAD_ZONE	= (float)USHRT_MAX * 0.1f;	// スティックの無視する傾き量
+	const int	MAX_NUM		= 4;		// パッドの最大数
+	const float DEAD_RATE	= 0.01f;	// 閾値の倍率
+	const float	DEAD_ZONE	= (float)USHRT_MAX * DEAD_RATE;	// スティックの無視する傾き量
 }
 
 //************************************************************
