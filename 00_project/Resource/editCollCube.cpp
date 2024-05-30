@@ -14,6 +14,11 @@
 //
 //#include "objectMeshCube.h"
 //
+// #define KEY_ROTA_RIGHT	(DIK_Z)	// 右回転キー
+// #define NAME_ROTA_RIGHT	("Z")	// 右回転表示
+// #define KEY_ROTA_LEFT	(DIK_C)	// 左回転キー
+// #define NAME_ROTA_LEFT	("C")	// 左回転表示
+// 
 ////************************************************************
 ////	マクロ定義
 ////************************************************************
