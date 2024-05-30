@@ -905,6 +905,9 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 		}
 	}
 
+	// 分身を呼び戻す
+	CallClone();
+
 #ifdef _DEBUG
 
 	// 移動分身の削除
@@ -991,7 +994,7 @@ void CPlayer::CallClone()
 	CInputPad* pPad = GET_INPUTPAD;
 
 	// 右スティックの押し込みがなかった場合関数を抜ける
-	if (pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
 	// 分身を追従する
 	CPlayerClone::CallBack();
