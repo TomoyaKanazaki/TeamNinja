@@ -79,15 +79,15 @@ public:
 
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);		// 座標のずれ設定
 	D3DXVECTOR3 GetGapPosition(const int nID);							// 座標のずれ取得
-	void NormalizeNormal(void);											// 法線の正規化
-	bool LandPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove);			// メッシュ着地
 	void SetMeshVertexPosition(const int nID, const D3DXVECTOR3& rPos);	// メッシュの頂点位置設定
 	void SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap);		// 地形設定
 
-	D3DXVECTOR3 GetMeshVertexPosition(const int nID);		// メッシュの頂点位置取得
-	bool IsPositionRange(const D3DXVECTOR3& rPos);			// メッシュの範囲内取得
-	float GetPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得 (回転非考慮)
-	float GetPositionRotateHeight(const D3DXVECTOR3& rPos);	// メッシュの着地位置取得 (回転考慮)
+	void NormalizeNormal(void);	// 法線の正規化
+	bool LandPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove);	// メッシュの着地
+
+	bool IsPositionRange(const D3DXVECTOR3& rPos);		// メッシュの範囲内取得
+	float GetPositionHeight(const D3DXVECTOR3& rPos);	// メッシュの着地位置取得
+	D3DXVECTOR3 GetMeshVertexPosition(const int nID);	// メッシュの頂点位置取得
 
 protected:
 	// メンバ関数
