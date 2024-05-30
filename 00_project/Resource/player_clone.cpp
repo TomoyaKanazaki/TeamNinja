@@ -219,7 +219,12 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	case ACTION_WAIT: // ギミック待機
 
+		// ギミック待機状態の更新
+		currentMotion = UpdateWait();
 
+		break;
+
+	case ACTION_JUMPTABLE: // ジャンプ台状態
 
 		break;
 
@@ -459,7 +464,7 @@ CListManager<CPlayerClone>* CPlayerClone::GetList(void)
 void CPlayerClone::CallBack()
 {
 	// リスト情報がない場合停止する
-	if (m_pList == nullptr) { assert(false); return; }
+	if (m_pList == nullptr) { return; }
 
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
@@ -472,6 +477,17 @@ void CPlayerClone::CallBack()
 
 		// 歩行中の場合は次に進む
 		if (pClone->GetAction() == ACTION_MOVE || pClone->GetAction() == ACTION_CHASE) { continue; }
+		
+		// ギミックの保有分身数を減らす
+		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+
+		// 保存しているギミックを初期化する
+		pClone->m_pGimmick = nullptr;
+
+#ifdef _DEBUG
+		// マテリアルを変更
+		pClone->SetAllMaterial(material::Green());
+#endif
 
 		// 追従状態にする
 		pClone->SetAction(ACTION_CHASE);
@@ -615,6 +631,9 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 	auto itrBegin = list.begin();
 	auto itrEnd = list.end();
 
+	// プレイヤー情報を取得
+	CPlayer *pPlayer = GET_PLAYER;
+
 	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
 
@@ -625,7 +644,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 		if (*itr != this) { prev = *itr; continue; }
 
 		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
-		if (this == *itrBegin) { return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation()); }
+		if (this == *itrBegin) { return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation()); }
 
 		// 自身の追従する相手を選択する
 		while (1)
@@ -641,7 +660,7 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				return Chase(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+				return Chase(pPlayer->GetVec3Position(), pPlayer->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける
@@ -718,30 +737,35 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 //==========================================
 //  ギミック待機
 //==========================================
-void CPlayerClone::Wait()
+CPlayerClone::EMotion CPlayerClone::UpdateWait()
 {
 	// ギミックがnullの場合関数を抜ける
-	if (m_pGimmick == nullptr) { return; }
+	if (m_pGimmick == nullptr) { return MOTION_IDOL; }
 
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
 
+#ifdef _DEBUG
+	// マテリアルカラーを変えてわかりやすくする
+	SetAllMaterial(material::Yellow());
+#endif
+
 	// ギミックがアクティブ状態なら
-	if (!m_pGimmick->IsActive()) { return; }
+	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
 
 	// ギミックに対応したステータスを適用する
 	switch (m_pGimmick->GetType())
 	{
 	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
-		/* jump台のモーション */
-#ifdef _DEBUG
-		// マテリアルを変更
-		SetAllMaterial(material::Blue());
-#endif
+
+		// ジャンプ台状態に変更
+		m_Action = ACTION_JUMPTABLE;
 
 		break;
 
 	default: // その他
 		break;
 	}
+
+	return MOTION_IDOL;
 }

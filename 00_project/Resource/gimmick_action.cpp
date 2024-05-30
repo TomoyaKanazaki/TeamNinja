@@ -81,6 +81,12 @@ void CGimmickAction::Update(const float fDeltaTime)
 		// 発動可能条件を true にする
 		m_bActive = true;
 	}
+	else
+	{ // 上記以外
+
+		// 発動可能条件を false にする
+		m_bActive = false;
+	}
 
 	if (m_bActive)
 	{ // 発動待機中の場合

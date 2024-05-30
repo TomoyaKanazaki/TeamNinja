@@ -105,7 +105,8 @@ void CEffekseer::Update()
 			// íœ
 			if (!m_vEffect[i]->m_bLoop)
 			{
-				m_vEffect.erase(m_vEffect.begin() + i);
+				delete m_vEffect[i];
+				m_vEffect.shrink_to_fit();
 
 			}
 			else
