@@ -219,7 +219,12 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	case ACTION_WAIT: // ギミック待機
 
+		// ギミック待機状態の更新
+		currentMotion = UpdateWait();
 
+		break;
+
+	case ACTION_JUMPTABLE: // ジャンプ台状態
 
 		break;
 
@@ -459,7 +464,7 @@ CListManager<CPlayerClone>* CPlayerClone::GetList(void)
 void CPlayerClone::CallBack()
 {
 	// リスト情報がない場合停止する
-	if (m_pList == nullptr) { assert(false); return; }
+	if (m_pList == nullptr) { return; }
 
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
@@ -718,30 +723,30 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPos)
 //==========================================
 //  ギミック待機
 //==========================================
-void CPlayerClone::Wait()
+CPlayerClone::EMotion CPlayerClone::UpdateWait()
 {
 	// ギミックがnullの場合関数を抜ける
-	if (m_pGimmick == nullptr) { return; }
+	if (m_pGimmick == nullptr) { return MOTION_IDOL; }
 
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
 
 	// ギミックがアクティブ状態なら
-	if (!m_pGimmick->IsActive()) { return; }
+	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
 
 	// ギミックに対応したステータスを適用する
 	switch (m_pGimmick->GetType())
 	{
 	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
-		/* jump台のモーション */
-#ifdef _DEBUG
-		// マテリアルを変更
-		SetAllMaterial(material::Blue());
-#endif
+
+		// ジャンプ台状態に変更
+		m_Action = ACTION_JUMPTABLE;
 
 		break;
 
 	default: // その他
 		break;
 	}
+
+	return MOTION_IDOL;
 }
