@@ -15,7 +15,13 @@
 //************************************************************
 #include "objectModel.h"
 #include "listManager.h"
-#include "collisionModel.h"
+
+//************************************************************
+// 前方宣言
+//************************************************************
+class CCollisionCube;		// キューブの当たり判定
+class CCollisionCylinder;	// シリンダーの当たり判定
+class CCollisionSphere;		// スフィアの当たり判定
 
 //************************************************************
 //	クラス定義
@@ -60,11 +66,13 @@ public:
 private:
 
 	// 静的メンバ変数
-	static CListManager<CActor>* m_pList;		// リスト構造
+	static CListManager<CActor>* m_pList;			// リスト構造
 
 	// メンバ変数
-	CListManager<CActor>::AIterator m_iterator;	// イテレーター
-	std::vector<CCollision*> m_collision;		// 当たり判定のリスト
+	CListManager<CActor>::AIterator m_iterator;		// イテレーター
+	std::vector<CCollisionCube*> m_cube;			// キューブの可変長配列
+	std::vector<CCollisionCylinder*> m_cylinder;	// シリンダーの可変長配列
+	std::vector<CCollisionSphere*> m_sphere;		// スフィアの可変長配列
 };
 
 #endif	// _ACTOR_H_
