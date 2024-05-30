@@ -122,7 +122,7 @@ bool CCollisionCylinder::Hit
 //============================================================
 // 生成処理
 //============================================================
-CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rOffset, const float fRadius, const float fHeight)
+CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rPos, const float fLength, const float fAngle, const float fRadius, const float fHeight)
 {
 	// 当たり判定の生成
 	CCollisionCylinder* pColl = new CCollisionCylinder();
@@ -130,10 +130,16 @@ CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rOffset, const
 	// 生成出来ていない場合 nullptr を返す
 	if (pColl == nullptr) { return nullptr; }
 
-	pColl->SetPos(rOffset);
+	// 位置
+	D3DXVECTOR3 pos = VEC3_ZERO;
 
-	// オフセット位置を設定
-	pColl->SetOffset(rOffset);
+	// 位置を作成する
+	pos.x = rPos.x + sinf(fAngle) * fLength;
+	pos.y = rPos.y;
+	pos.z = rPos.z + cosf(fAngle) * fLength;
+
+	// 位置を設定
+	pColl->SetPos(pos);
 
 	// 半径を設定
 	pColl->m_fRadius = fRadius;
@@ -144,7 +150,7 @@ CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rOffset, const
 #ifdef _DEBUG
 
 	// チューブを生成
-	pColl->m_pTube = CObjectMeshTube::Create(rOffset, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius, fHeight);
+	pColl->m_pTube = CObjectMeshTube::Create(pos, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius, fHeight);
 	pColl->m_pTube->SetPriority(TUBE_PRIORITY);
 
 #endif // _DEBUG

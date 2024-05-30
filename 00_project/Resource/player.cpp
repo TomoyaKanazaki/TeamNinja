@@ -63,6 +63,7 @@ namespace
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
+	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int MAX_TENSION = 10000; // 士気力の最大値
 	const int INIT_TENSION = 5000; // 士気力の初期値
@@ -955,9 +956,9 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		m_fScalar * cosf(-fRotStick),
+		CLONE_MOVE * cosf(-fRotStick),
 		0.0f,
-		m_fScalar * sinf(-fRotStick)
+		CLONE_MOVE * sinf(-fRotStick)
 	);
 
 	// 歩く分身を出す

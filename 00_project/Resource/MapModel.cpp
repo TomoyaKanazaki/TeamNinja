@@ -34,8 +34,13 @@ const char* CMapModel::mc_apModelFile[MODEL_TYPE_MAX] =				//モデルファイル名(い
 	"data\\MODEL\\Plant\\Plant000.x",								//4つしかつながっていない草
 	"data\\MODEL\\Plant\\Plant001.x",								//多くつながっている草
 	"data\\MODEL\\Plant\\Bush000.x",								//草むら
+	"data\\MODEL\\House\\House000.x",								//草むら
+	"data\\MODEL\\House\\House001.x",								//草むら
+	"data\\MODEL\\House\\House002.x",								//草むら
+	"data\\MODEL\\House\\House003.x",								//草むら
+	"data\\MODEL\\House\\House004.x",								//草むら
+	"data\\MODEL\\Lantern\\Lantern001.x",								//草むら
 };	
-
 //<**********************************************
 //名前宣言(使うかもしれないので)
 //<**********************************************
@@ -107,6 +112,8 @@ void CMapModel::Update(const float fDeltaTime)
 	//デバッグ専用のモデル変更処理
 	ChangeModel();
 
+	DebugRotate();
+
 	//親クラスの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -152,6 +159,21 @@ void CMapModel::ChangeModel(void)
 	BindModel(mc_apModelFile[m_nModelId]);
 
 #endif
+}
+//<==============================================
+//デバッグ用の回転処理
+//<==============================================
+void CMapModel::DebugRotate(void)
+{
+	// くるくるしてみる
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	//モデル番号を進める
+	if (GET_INPUTKEY->IsPress(DIK_F8)) { rot.y += 0.1f; }
+
+
+	SetVec3Rotation(rot);
+
 }
 //<==============================================
 //当たり判定(いったん作っておきます)

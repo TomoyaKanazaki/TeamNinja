@@ -31,6 +31,13 @@ class CActor : public CObjectModel
 {
 public:
 
+	// 種類列挙
+	enum EType
+	{
+		TYPE_ROCK_S = 0,		// 岩(小)
+		TYPE_MAX				// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CActor();
 
@@ -54,9 +61,14 @@ public:
 		bool& bJump						// ジャンプ状況
 	);
 
+	// セット・ゲット関数
+	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
+	EType GetType(void) const { return m_type; }			// 種類の取得処理
+
 	// 静的メンバ関数
 	static CActor* Create	// 生成
 	( // 引数
+		const EType type,						// 種類
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXVECTOR3& rScale = VEC3_ONE	// 大きさ
@@ -70,6 +82,7 @@ private:
 
 	// メンバ変数
 	CListManager<CActor>::AIterator m_iterator;		// イテレーター
+	EType m_type;									// 種類
 	std::vector<CCollisionCube*> m_cube;			// キューブの可変長配列
 	std::vector<CCollisionCylinder*> m_cylinder;	// シリンダーの可変長配列
 	std::vector<CCollisionSphere*> m_sphere;		// スフィアの可変長配列
