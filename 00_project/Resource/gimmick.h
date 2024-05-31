@@ -53,7 +53,7 @@ public:
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
 
 	// 当たり判定
-	virtual void CollisionClone() = 0;		// 分身との判定
+	virtual void CollisionClone() = 0;							// クローンとの当たり判定
 	virtual bool CollisionPlayer() { return false; }		// プレイヤーとの当たり判定
 
 	// 静的メンバ関数

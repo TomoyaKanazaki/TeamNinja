@@ -93,10 +93,10 @@ void CGimmickState::CollisionClone()
 	if (CPlayerClone::GetList() == nullptr) { return; }
 
 	std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();	// リストを取得
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
-	D3DXVECTOR3 posClone = VEC3_ZERO;		// 分身の位置
-	D3DXVECTOR3 sizeClone = CLONE_RADIUS;	// 分身のサイズ
+	D3DXVECTOR3 posClone = VEC3_ZERO;			// 分身の位置
+	D3DXVECTOR3 sizeClone = CLONE_RADIUS;		// 分身のサイズ
 
 	for (auto clone : list)
 	{
@@ -113,5 +113,8 @@ void CGimmickState::CollisionClone()
 			sizeClone	// 判定目標サイズ(左・下・前)
 		))
 		{ continue; }
+
+		// フラグを追加する
+		SetChar(clone);
 	}
 }
