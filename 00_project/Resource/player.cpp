@@ -45,7 +45,8 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
+	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
@@ -57,6 +58,7 @@ namespace
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
+	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
@@ -524,7 +526,7 @@ void CPlayer::GimmickHighJump(void)
 	if (m_bJump) { return; }
 
 	// 上移動量を与える
-	m_move.y = 2500.0f;
+	m_move.y = JUMP_HIGH;
 
 	// ジャンプ中にする
 	m_bJump = true;
@@ -533,7 +535,7 @@ void CPlayer::GimmickHighJump(void)
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
 	// ジャンプエフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 35.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 }
 
 //==========================================
@@ -731,28 +733,6 @@ void CPlayer::UpdateSaveTeleport(void)
 //============================================================
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 {
-#if 0
-	bool bLand = false;	// 着地状況
-	CStage *pStage = CScene::GetStage();	// ステージ情報
-
-	// ジャンプしている状態にする
-	m_bJump = true;
-
-	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move)
-	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
-	{ // プレイヤーが着地していた場合
-
-		// 着地している状態にする
-		bLand = true;
-
-		// ジャンプしていない状態にする
-		m_bJump = false;
-	}
-
-	// 着地状況を返す
-	return bLand;
-#else
 	bool bLand = false;	// 着地フラグ
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
@@ -797,7 +777,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 	// 着地フラグを返す
 	return bLand;
-#endif
 }
 
 //============================================================
@@ -1189,7 +1168,7 @@ void CPlayer::DebugJumpControl(void)
 	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		// 上昇量を与えるよ
-		m_move.y = JUMP;
+		m_move.y = JUMP_MINI;
 
 		// ジャンプ中にするよ
 		m_bJump = true;
