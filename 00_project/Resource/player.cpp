@@ -56,6 +56,7 @@ namespace
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
 	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
+	const int	CAUTIOUS_TRANS_LOOP	= 7;	// 警戒モーションに遷移する待機ループ数
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
@@ -857,7 +858,8 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 			switch (GetMotionType())
 			{ // モーションごとの処理
-			case MOTION_LANDING:	// 着地モーション：ループOFF
+			case MOTION_CAUTIOUS:	// 警戒モーション
+			case MOTION_LANDING:	// 着地モーション
 
 				if (nMotion != MOTION_IDOL)
 				{ // 待機モーション以外の場合
@@ -876,8 +878,30 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	switch (GetMotionType())
 	{ // モーションの種類ごとの処理
+	case MOTION_IDOL:	// 待機モーション
+
+		if (GetMotionNumLoop() >= CAUTIOUS_TRANS_LOOP)
+		{ // 待機モーションでしばらくいた場合
+
+			// 警戒モーションの設定
+			SetMotion(MOTION_CAUTIOUS, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_CAUTIOUS:	// 警戒モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+
 #if 0
-	case MOTION_MOVE:	// 移動モーション
+	case MOTION_DASH:	// 歩行モーション
 
 		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
 		{ // 足がついたタイミングの場合
@@ -899,6 +923,10 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 				break;
 			}
 		}
+
+		break;
+
+	case MOTION_STEALTHWALK:	// 忍び足モーション
 
 		break;
 #endif

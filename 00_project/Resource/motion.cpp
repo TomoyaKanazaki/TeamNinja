@@ -205,6 +205,7 @@ void CMotion::Set(const int nType, const int nBlendFrame)
 	m_info.nKey			 = 0;		// モーションキー番号
 	m_info.nKeyCounter	 = 0;		// モーションキーカウンター
 	m_info.nWholeCounter = 0;		// モーション全体カウンター
+	m_info.dwNumLoop	 = 0;		// モーションループ回数
 	m_info.bFinish		 = false;	// モーション終了状況
 
 	// ブレンド情報を初期化
@@ -519,6 +520,9 @@ void CMotion::UpdateMotion(void)
 
 				// 全体カウンターを初期化
 				m_info.nWholeCounter = 0;
+
+				// モーションループ回数を加算
+				m_info.dwNumLoop++;
 			}
 		}
 		else
