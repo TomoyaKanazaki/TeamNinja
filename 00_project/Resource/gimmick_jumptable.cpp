@@ -9,6 +9,7 @@
 //************************************************************
 #include "manager.h"
 #include "gimmick_jumptable.h"
+#include "player.h"
 
 //************************************************************
 //	子クラス [CGimmickJumpTable] のメンバ関数
@@ -64,7 +65,8 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 	// プレイヤーとの当たり判定
 	if (CollisionPlayer())
 	{
-		// TOCO : 藤田勇一をジャンプさせる
+		// プレイヤーを大ジャンプ！
+		GET_PLAYER->GimmickHighJump();
 	}
 
 	// 親クラスの更新

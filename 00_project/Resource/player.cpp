@@ -520,8 +520,11 @@ float CPlayer::GetHeight(void) const
 //============================================================
 void CPlayer::GimmickHighJump(void)
 {
+	// ジャンプ中は飛ばない
+	if (m_bJump) { return; }
+
 	// 上移動量を与える
-	m_move.y = 10000.0f;
+	m_move.y = 2500.0f;
 
 	// ジャンプ中にする
 	m_bJump = true;
@@ -919,6 +922,17 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 #endif
 
 	case MOTION_JUMP_MINI:	// 小ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_JUMP_HIGH:	// 大ジャンプモーション
 
 		if (!m_bJump)
 		{ // ジャンプ中ではない場合
