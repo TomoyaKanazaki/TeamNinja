@@ -134,6 +134,9 @@ void CGimmickAction::CollisionClone(void)
 
 			// 分身の総数を加算する
 			nNumClone++;
+
+			// 分身の総数が必要数に達したらループを抜ける
+			if (nNumClone >= m_nNumActive) { break; }
 		}
 	}
 
