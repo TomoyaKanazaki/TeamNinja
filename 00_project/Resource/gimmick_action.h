@@ -35,8 +35,8 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
-	void CollisionClone(void);		// クローンとの当たり判定
-	bool CollisionPlayer(void);		// プレイヤーとの当たり判定
+	void CollisionClone() override;			// クローンとの当たり判定
+	bool CollisionPlayer() override;		// プレイヤーとの当たり判定
 
 	// セット・ゲット関係
 	void SetNumClone(const int nNum) { m_nNumClone = nNum; }	// 分身の総数の設定処理

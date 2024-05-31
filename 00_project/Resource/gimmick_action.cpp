@@ -146,11 +146,14 @@ void CGimmickAction::CollisionClone(void)
 //============================================================
 bool CGimmickAction::CollisionPlayer(void)
 {
+	// 判定フラグ
+	bool bHit = false;
+
 	// 発動可能フラグがoffなら関数を抜ける
-	if (!m_bActive) { return false; }
+	if (!m_bActive) { return bHit; }
 
 	// プレイヤーのリスト構造が無ければ抜ける
-	if (CPlayer::GetList() == nullptr) { return false; }
+	if (CPlayer::GetList() == nullptr) { return bHit; }
 
 	std::list<CPlayer*> list = CPlayer::GetList()->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
@@ -173,9 +176,9 @@ bool CGimmickAction::CollisionPlayer(void)
 			sizePlayer	// 判定目標サイズ(左・下・前)
 		))
 		{ // 四角の中に入った場合
-			return true;
+			bHit = true;
 		}
 	}
 
-	return false;
+	return bHit;
 }
