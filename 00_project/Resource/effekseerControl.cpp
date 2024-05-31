@@ -74,7 +74,10 @@ void CEffekseer::Uninit()
 	int nSize = (int)m_vEffect.size();
 	for (int i = 0; i < nSize; i++)
 	{
-		delete m_vEffect[i];
+		if (m_vEffect[i] = NULL)
+		{
+			delete m_vEffect[i];
+		}	
 	}
 	m_vEffect.shrink_to_fit();
 	//onLostDevice();

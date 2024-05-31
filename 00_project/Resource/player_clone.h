@@ -67,10 +67,11 @@ public:
 	// 行動パターン
 	enum EAction
 	{
-		ACTION_CHASE = 0,	// 通常の行動
-		ACTION_MOVE,		// 歩行
-		ACTION_WAIT,		// ギミック待機
-		ACTION_JUMPTABLE,	// ジャンプ台
+		ACTION_CHASE = 0,		// 通常の行動
+		ACTION_MOVE,			// 歩行
+		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
+		ACTION_WAIT,			// ギミック待機
+		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_MAX
 	};
 
@@ -92,8 +93,9 @@ public:
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
 
-	EAction GetAction() const		{ return m_Action; }	// 行動を取得
-	void SetAction(EAction action)	{ m_Action = action; }	// 行動を設定
+	EAction GetAction() const			{ return m_Action; }	// 行動を取得
+	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
+	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
@@ -105,8 +107,12 @@ public:
 
 private:
 	// メンバ関数
-	EMotion UpdateMove(const float fDeltaTime);				// 移動行動時の更新
-	EMotion UpdateChase(const float fDeltaTime);			// 追従行動時の更新
+	EMotion UpdateMove(const float fDeltaTime);			// 移動行動時の更新
+	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
+	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
+	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
+	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
+
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
@@ -115,7 +121,6 @@ private:
 	CPlayerClone::EMotion ChasePrev(); // 前についていく処理
 	CPlayerClone::EMotion Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
 	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
-	EMotion UpdateWait(); // ギミック待機
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト

@@ -107,13 +107,16 @@ void CGimmickAction::CollisionClone(void)
 
 	std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
-	D3DXVECTOR3 size = GetVec3Sizing() / 2;	// サイズ
+	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
 	D3DXVECTOR3 posClone = VEC3_ZERO;		// 分身の位置
 	D3DXVECTOR3 sizeClone = CLONE_RADIUS;	// 分身のサイズ
 	int nNumClone = 0;						// 範囲内の分身の総数
 
 	for (auto clone : list)
 	{
+		// 分身の総数が必要数に達したらループを抜ける
+		if (nNumClone >= m_nNumActive) { break; }
+
 		// 追跡する分身だった場合次の分身にする
 		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
 
@@ -130,13 +133,15 @@ void CGimmickAction::CollisionClone(void)
 			sizeClone	// 判定目標サイズ(左・下・前)
 		))
 		{ // 四角の中に入った場合
-			clone->SetGimmick(this);
 
 			// 分身の総数を加算する
 			nNumClone++;
 
-			// 分身の総数が必要数に達したらループを抜ける
-			if (nNumClone >= m_nNumActive) { break; }
+			// もうギミックが設定済みなら次へ
+			if (clone->GetGimmick() == this) { continue; }
+
+			// 分身に自分の情報を渡す
+			clone->SetGimmick(this);
 		}
 	}
 

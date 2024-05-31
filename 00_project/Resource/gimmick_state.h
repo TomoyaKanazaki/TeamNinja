@@ -35,6 +35,8 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
+	void CollisionClone() override;			// クローンとの当たり判定
+
 private:
 
 };
