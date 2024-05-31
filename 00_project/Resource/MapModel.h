@@ -43,6 +43,12 @@ public:
 		MODEL_TYPE_PLANT1,				//4つしかつながっていない草
 		MODEL_TYPE_PLANT2,				//多くつながっている草
 		MODEL_TYPE_BUSH,				//草むら
+		MODEL_TYPE_HOUSE1,				//設置用
+		MODEL_TYPE_HOUSE2,				//設置用
+		MODEL_TYPE_HOUSE3,				//設置用
+		MODEL_TYPE_HOUSE4,				//設置用
+		MODEL_TYPE_HOUSE5,				//設置用
+		MODEL_TYPE_LANTERN1,
 		MODEL_TYPE_MAX
 	};
 
@@ -56,6 +62,7 @@ public:
 	void Draw(CShader* pShader = nullptr) override;		//描画
 
 	void ChangeModel(void);
+	void DebugRotate(void);
 
 	//静的メンバ関数
 	static CMapModel* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const int& nModelId,const D3DXVECTOR3& rSize=VEC3_ONE); //生成処理
@@ -64,12 +71,10 @@ private:
 	
 	void Collision(void);
 
-	void Rotate(void);
+	static int m_nNumAll;									//総数
+	static const char* mc_apModelFile[MODEL_TYPE_MAX];		//モデル定数
 
-	static int m_nNumAll;						//総数
-	static const char* mc_apModelFile[];		//モデル定数
-
-	int m_nModelId;								//モデル番号
+	int m_nModelId;											//モデル番号
 
 };
 

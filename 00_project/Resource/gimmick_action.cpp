@@ -75,27 +75,16 @@ void CGimmickAction::Uninit(void)
 //============================================================
 void CGimmickAction::Update(const float fDeltaTime)
 {
-	if (m_nNumActive <= m_nNumClone)
-	{ // 分身の総数が発動可能人数以上の場合
+	// 分身との当たり判定
+	CollisionClone();
 
-		// 発動可能条件を true にする
-		m_bActive = true;
-	}
+	// 発動可能条件を false にする
+	m_bActive = false;
 
-	if (m_bActive)
-	{ // 発動待機中の場合
+	// 必要な分身が揃っていればフラグをon
+	if (m_nNumActive <= m_nNumClone) { m_bActive = true; }
 
-		// プレイヤーとの当たり判定
-		CollisionPlayer();
-	}
-	else
-	{ // 上記以外
-
-		// 分身との当たり判定処理
-		CollisionClone();
-	}
-
-	// オブジェクト3Dの更新
+	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
 }
 
@@ -145,6 +134,9 @@ void CGimmickAction::CollisionClone(void)
 
 			// 分身の総数を加算する
 			nNumClone++;
+
+			// 分身の総数が必要数に達したらループを抜ける
+			if (nNumClone >= m_nNumActive) { break; }
 		}
 	}
 
@@ -155,16 +147,22 @@ void CGimmickAction::CollisionClone(void)
 //============================================================
 // プレイヤーとの当たり判定
 //============================================================
-void CGimmickAction::CollisionPlayer(void)
+bool CGimmickAction::CollisionPlayer(void)
 {
+	// 判定フラグ
+	bool bHit = false;
+
+	// 発動可能フラグがoffなら関数を抜ける
+	if (!m_bActive) { return bHit; }
+
 	// プレイヤーのリスト構造が無ければ抜ける
-	if (CPlayer::GetList() == nullptr) { return; }
+	if (CPlayer::GetList() == nullptr) { return bHit; }
 
 	std::list<CPlayer*> list = CPlayer::GetList()->GetList();	// リストを取得
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
-	D3DXVECTOR3 size = GetVec3Sizing() / 2;	// サイズ
-	D3DXVECTOR3 posPlayer = VEC3_ZERO;		// プレイヤーの位置
-	D3DXVECTOR3 sizePlayer = CLONE_RADIUS;	// プレイヤーのサイズ
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
+	D3DXVECTOR3 posPlayer = VEC3_ZERO;			// プレイヤーの位置
+	D3DXVECTOR3 sizePlayer = CLONE_RADIUS;		// プレイヤーのサイズ
 
 	for (auto player : list)
 	{
@@ -181,14 +179,9 @@ void CGimmickAction::CollisionPlayer(void)
 			sizePlayer	// 判定目標サイズ(左・下・前)
 		))
 		{ // 四角の中に入った場合
-
-			// 移動量を取得
-			D3DXVECTOR3 move = player->GetMove();
-
-			move.y = 1260.0f;
-
-			// 移動量を設定
-			player->SetMove(move);
+			bHit = true;
 		}
 	}
+
+	return bHit;
 }

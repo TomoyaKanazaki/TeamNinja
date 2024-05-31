@@ -21,8 +21,9 @@ namespace keyboard
 
 namespace pad
 {
-	const int	MAX_NUM		= 4;	// パッドの最大数
-	const float	DEAD_ZONE	= (float)USHRT_MAX * 0.1f;	// スティックの無視する傾き量
+	const int	MAX_NUM		= 4;		// パッドの最大数
+	const float DEAD_RATE	= 0.01f;	// 閾値の倍率
+	const float	DEAD_ZONE	= (float)USHRT_MAX * DEAD_RATE;	// スティックの無視する傾き量
 }
 
 //************************************************************
@@ -233,6 +234,8 @@ public:
 	bool GetReleaseRStick(int nPadID = 0); // リリース取得(Rスティック)
 	bool GetLStick(int nPadID = 0); // 入力フラグの取得(Lスティック)
 	bool GetRStick(int nPadID = 0); // 入力フラグの取得(Rスティック)
+	D3DXVECTOR3 GetStickRateL(float fDead, int nPadID = 0); // スティックの割合(Lスティック)
+	D3DXVECTOR3 GetStickRateR(float fDead, int nPadID = 0); // スティックの割合(Rスティック)
 
 private:
 	// メンバ関数

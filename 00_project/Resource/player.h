@@ -59,7 +59,13 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
-		MOTION_MOVE,		// 移動モーション
+		MOTION_CAUTIOUS,	// 警戒モーション
+		MOTION_DASH,		// 歩行モーション
+		MOTION_STEALTHWALK,	// 忍び足モーション
+		MOTION_JUMP_MINI,	// 小ジャンプモーション
+		MOTION_JUMP_HIGH,	// 大ジャンプモーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -95,6 +101,8 @@ public:
 	D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }	// 目標向き取得
 	void SetMove(const D3DXVECTOR3& rMove)			{ m_move = rMove; }		// 移動量設定
 	D3DXVECTOR3 GetMove(void) const					{ return m_move; }		// 移動量取得
+	void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }	// ジャンプ状況設定
+	bool IsJump(void) const							{ return m_bJump; }		// ジャンプ状況設定
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);		// ヒット
 	void SetSpawn(void);				// 出現設定
@@ -102,6 +110,7 @@ public:
 	EState GetState(void) const;		// 状態取得
 	float GetRadius(void) const;		// 半径取得
 	float GetHeight(void) const;		// 縦幅取得
+	void GimmickHighJump(void);			// ギミックのハイジャンプ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -109,7 +118,6 @@ public:
 	void RecoverJust();			// ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
-	float GetScalar() const				{ return m_fScalar; }	// スカラーの取得
 
 private:
 	// メンバ関数
@@ -118,6 +126,7 @@ private:
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
+	void UpdateSaveTeleport(void);	// 保存位置の更新
 
 	bool UpdateLanding(D3DXVECTOR3& rPos);							// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
@@ -127,16 +136,16 @@ private:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	void LoadParameter();	// 定数値の読み込み
-	void Inertial();		// 運動の第一法則
-	void ControlClone();	// 分身の処理
+	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot);	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
+	void CollisionActor();	// アクターの当たり判定
 
 #ifdef _DEBUG
 
-	void KeyboardControl(void);			// キーボードの操作処理
-	void KeyboardCloneControl(void);	// 分身のキーボード操作処理
+	void DebugJumpControl(void);	// ジャンプ操作
+	void DebugMoveControl(void);	// キーボードの移動操作
+	void DebugCloneControl(void);	// キーボードの分身操作
 
 #endif // _DEBUG
 
@@ -157,16 +166,8 @@ private:
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
-	unsigned int m_nMaxTension;		// 士気力の最大値
-	unsigned int m_nInitTension;	// 士気力の初期値
-	unsigned int m_nSpeedTension;	// 士気力ゲージの増減速度
-	int m_nMaxClone;				// 一度に分身できる上限
-	unsigned int m_nRecover;		// ジャストアクションでの回復量
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
-	float m_fHeght;					// 縦幅
 	D3DXVECTOR3 m_posCenter;		// 中心座標
-	float m_fInertial;				// 慣性力
-	float m_fChargeTime;			// ため時間
 
 };
 

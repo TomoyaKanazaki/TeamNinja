@@ -32,6 +32,10 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "gauge2D.h"
+#include "effect3D.h"
+#include "actor.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	定数宣言
@@ -41,7 +45,8 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
+	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
@@ -49,18 +54,25 @@ namespace
 	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
-
+	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
+	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float STEALTH_BORDER	= 15000.0f;	// 忍び足になる基準のスピード
-	const float	STEALTH_MOVE	= 100.0f;	// 忍び足の移動量
+	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
+	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
-	const char* PARAM_FILE = "data\\TXT\\PlayerParameter.txt";
+	const int MAX_TENSION = 10000; // 士気力の最大値
+	const int INIT_TENSION = 5000; // 士気力の初期値
+	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
+	const int MAX_CLONE = 10; // 分身の最大数
+	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
+	const float HEIGHT = 100.0f; // 身長
 
 	// ブラーの情報
 	namespace blurInfo
@@ -91,16 +103,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bJump				(false),		// ジャンプ状況
 	m_nCounterState		(0),			// 状態管理カウンター
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
-	m_nMaxTension		(0),			// 最大士気力
-	m_nInitTension		(0),			// 初期士気力
-	m_nSpeedTension		(0),			// 士気力ゲージの増減速度
-	m_nMaxClone			(0),			// 一度に分身できる上限
-	m_nRecover			(0),			// ジャストアクションでの回復量
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
-	m_fHeght			(0.0f),			// 立幅
-	m_fInertial			(0.0f),			// 慣性力
-	m_fScalar			(0.0f),			// 移動量
-	m_fChargeTime		(0.0f)			// ため時間
+	m_fScalar			(0.0f)			// 移動量
 {
 
 }
@@ -130,9 +134,6 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_fScalar			= 0.0f;			// 移動量
-
-	// 定数パラメータの読み込み
-	LoadParameter();
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -174,12 +175,12 @@ HRESULT CPlayer::Init(void)
 	// 士気力ゲージを生成
 	m_pTensionGauge = CGauge2D::Create
 	(
-		m_nMaxTension, m_nSpeedTension, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
+		MAX_TENSION, SPEED_TENSION, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
 		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
 		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
 	);
-	m_pTensionGauge->SetNum(m_nInitTension);
+	m_pTensionGauge->SetNum(INIT_TENSION);
 	m_pTensionGauge->SetLabel(LABEL_UI);
 
 	if (m_pList == nullptr)
@@ -268,14 +269,14 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
+	// アクターの当たり判定
+	CollisionActor();
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
-
-	// 分身の処理
-	ControlClone();
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -305,12 +306,6 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		RecoverJust();
 	}
-
-	// キーボード操作処理
-	KeyboardControl();
-
-	// 分身のキーボード操作処理
-	KeyboardCloneControl();
 
 #endif
 }
@@ -519,7 +514,28 @@ float CPlayer::GetRadius(void) const
 float CPlayer::GetHeight(void) const
 {
 	// 縦幅を返す
-	return m_fHeght;
+	return HEIGHT;
+}
+
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickHighJump(void)
+{
+	// ジャンプ中は飛ばない
+	if (m_bJump) { return; }
+
+	// 上移動量を与える
+	m_move.y = JUMP_HIGH;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
+
+	// ジャンプエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 }
 
 //==========================================
@@ -546,7 +562,7 @@ void CPlayer::RecoverCheckPoint()
 	if (nTension == -1) { return; }
 
 	// 最大値と現在値の差を求める
-	float fDiff = (float)(m_nMaxTension - nTension);
+	float fDiff = (float)(MAX_TENSION - nTension);
 
 	// 差分の半分の値で士気力を回復する
 	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
@@ -561,7 +577,7 @@ void CPlayer::RecoverJust()
 	if (m_pTensionGauge == nullptr) { return; }
 
 	// 固定値で士気力を回復する
-	m_pTensionGauge->AddNum(m_nRecover);
+	m_pTensionGauge->AddNum(JUST_RECOVER);
 }
 
 //============================================================
@@ -589,20 +605,9 @@ CPlayer::EMotion CPlayer::UpdateSpawn(const float fDeltaTime)
 //============================================================
 CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 {
-	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-
-	// ポインタを宣言
-	CStage *pStage = CScene::GetStage();	// ステージ情報
-	if (pStage == nullptr)
-	{ // ステージが使用されていない場合
-
-		// 処理を抜ける
-		assert(false);
-		return MOTION_IDOL;
-	}
 
 	// 移動操作
 	currentMotion = UpdateMove();
@@ -619,8 +624,8 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 向き更新
 	UpdateRotation(rotPlayer);
 
-	// ステージ範囲外の補正
-	pStage->LimitPosition(posPlayer, RADIUS);
+	// 分身の処理
+	ControlClone(posPlayer, rotPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -628,12 +633,8 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
 
-	// チェックポイントに帰る
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	if (pKey->IsTrigger(DIK_Q))
-	{
-		SaveReset();
-	}
+	// 保存位置の更新
+	UpdateSaveTeleport();
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -653,62 +654,56 @@ void CPlayer::UpdateOldPosition(void)
 //============================================================
 CPlayer::EMotion CPlayer::UpdateMove(void)
 {
-	// 運動の第一法則
-	Inertial();
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
 	
-	float fSpeed = pPad->GetPressLStickTilt();		// スティックの傾き
-	float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);		// スティックの向き
+	// スティックの傾きから移動量を設定
+	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
+	if (pad::DEAD_ZONE < fSpeed)
+	{ // デッドゾーン以上の場合
 
-	// 入力していないと抜ける
-#ifndef _DEBUG
-	if (!pPad->GetLStick()) { return; }
-#endif
-	if (fSpeed >= STEALTH_BORDER)
-	{ // 通常速度の場合
+		// スティック向きを取得
+		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
 
-		// 速度を通常にする
-		fSpeed = NORMAL_MOVE;
+		// 目標向きを設定
+		m_destRot.y = fStickRot;
+		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
+
+		// 移動量を設定する
+		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
+		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.x));
+		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.z));
+
+		// 歩行モーションにする
+		currentMotion = MOTION_DASH;
+
+		// 移動量をスカラー値に変換する
+		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "移動量ちゃん : %f", m_fScalar);
+
+		// 移動量が一定未満の場合忍び足モーションになる
+		if (m_fScalar <= STEALTH_MOVE)
+		{
+			// 忍び足モーションにする
+			currentMotion = MOTION_STEALTHWALK;
+		}
 	}
-	else
-	{ // 忍び足の場合
 
-		// 速度を忍び足にする
-		fSpeed = STEALTH_MOVE;
-	}
-
-	// 向きにカメラの向きを加算する
-	fStickRot += CameraRot.y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fStickRot);
-
-	// 向きを設定
-	m_destRot.y = fStickRot;
-
-	// 向きの正規化
-	useful::NormalizeRot(m_destRot.y);
-
-	// 移動量を設定する
-	m_move.x = sinf(fStickRot + D3DX_PI) * fSpeed;
-	m_move.z = cosf(fStickRot + D3DX_PI) * fSpeed;
-
-	// ジャンプ
 #ifdef _DEBUG
-	if (pPad->IsTrigger(CInputPad::KEY_X) || GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
-		m_move.y = JUMP;
-	}
+
+	// キーボードの移動操作
+	DebugMoveControl();
+
+	// ジャンプ操作
+	DebugJumpControl();
+
 #endif
 
-	// 移動量をスカラー値に変換する
-	m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-
-	// 待機モーションを返す
-	return MOTION_IDOL;
+	// モーションを返す
+	return currentMotion;
 }
 
 //============================================================
@@ -721,19 +716,32 @@ void CPlayer::UpdateGravity(void)
 }
 
 //============================================================
+//	保存位置の更新処理
+//============================================================
+void CPlayer::UpdateSaveTeleport(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	if (pKey->IsTrigger(DIK_Q))
+	{
+		// チェックポイントに帰る
+		SaveReset();
+	}
+}
+
+//============================================================
 //	着地状況の更新処理
 //============================================================
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 {
-	// 変数を宣言
-	bool bLand = false;	// 着地状況
+	bool bLand = false;	// 着地フラグ
+	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// ジャンプしている状態にする
 	m_bJump = true;
 
 	// 地面・制限位置の着地判定
-	if (CScene::GetStage()->LandFieldPosition(rPos, m_move)
-	||  CScene::GetStage()->LandLimitPosition(rPos, m_move, 0.0f))
+	if (pStage->LandFieldPosition(rPos, m_move)
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
@@ -743,7 +751,31 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 		m_bJump = false;
 	}
 
-	// 着地状況を返す
+	if (!m_bJump)
+	{ // 空中にいない場合
+
+		// 現在のモーション種類を取得
+		int nCurMotion = GetMotionType();
+
+		// ジャンプモーションのフラグを設定
+		bool bJump = nCurMotion == MOTION_JUMP_HIGH
+				  || nCurMotion == MOTION_JUMP_MINI;
+
+		// 落下モーションのフラグを設定
+		bool bFall = nCurMotion == MOTION_FALL;
+
+		if (bJump || bFall)
+		{ // モーションがジャンプ中、または落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+
+	// 着地フラグを返す
 	return bLand;
 }
 
@@ -771,7 +803,7 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 	// 中心座標の更新
 	m_posCenter = rPos;
-	m_posCenter.y += m_fHeght * 0.5f;
+	m_posCenter.y += HEIGHT * 0.5f;
 }
 
 //============================================================
@@ -806,26 +838,115 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	// 死んでたら抜ける
 	if (IsDeath()) { return; }
 
-	// 変数を宣言
 	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
-
 	if (nMotion != NONE_IDX)
 	{ // モーションが設定されている場合
 
 		if (IsMotionLoop())
-		{ // ループするモーションだった場合
+		{ // ループするモーション中の場合
 
 			if (nAnimMotion != nMotion)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion);
+				SetMotion(nMotion, BLEND_FRAME_OTHER);
+			}
+		}
+		else
+		{ // ループしないモーション中の場合
+
+			switch (GetMotionType())
+			{ // モーションごとの処理
+			case MOTION_LANDING:	// 着地モーション：ループOFF
+
+				if (nMotion != MOTION_IDOL)
+				{ // 待機モーション以外の場合
+
+					// 現在のモーションの設定
+					SetMotion(nMotion, BLEND_FRAME_OTHER);
+				}
+
+				break;
 			}
 		}
 	}
 
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
+
+	switch (GetMotionType())
+	{ // モーションの種類ごとの処理
+#if 0
+	case MOTION_MOVE:	// 移動モーション
+
+		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			switch (m_land)
+			{ // 着地物ごとの処理
+			case LAND_OBSTACLE:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
+
+				break;
+
+			default:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
+
+				break;
+			}
+		}
+
+		break;
+#endif
+
+	case MOTION_JUMP_MINI:	// 小ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_JUMP_HIGH:	// 大ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_FALL:	// 落下モーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_LANDING:	// 着地モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+	}
 }
 
 //============================================================
@@ -893,22 +1014,12 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-//  慣性の法則
-//==========================================
-void CPlayer::Inertial()
-{
-	// x軸方向の慣性
-	m_move.x += (0.0f - m_move.x) * m_fInertial;
-
-	// z軸方向の慣性
-	m_move.z += (0.0f - m_move.z) * m_fInertial;
-}
-
-//==========================================
 //  分身の処理
 //==========================================
-void CPlayer::ControlClone()
+void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
+	// TODO：ここも確認！
+
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
@@ -922,7 +1033,11 @@ void CPlayer::ControlClone()
 		}
 	}
 
+	// 分身を呼び戻す
+	CallClone();
+
 #ifdef _DEBUG
+
 	// 移動分身の削除
 	if (pPad->IsTrigger(CInputPad::KEY_LB))
 	{
@@ -932,17 +1047,20 @@ void CPlayer::ControlClone()
 			CPlayerClone::Delete(CPlayerClone::ACTION_MOVE);
 		}
 	}
+
 #endif
 
 	// 分身の数が上限だった場合関数を抜ける
-	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= m_nMaxClone) { return; }
+	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return; }
 
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
 
 #ifndef _DEBUG
+
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
+
 #endif
 
 	// プレイヤーの方向を取得
@@ -963,19 +1081,21 @@ void CPlayer::ControlClone()
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 		return;
 	}
 
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		m_fScalar * cosf(-fRotStick),
+		CLONE_MOVE * cosf(-fRotStick),
 		0.0f,
-		m_fScalar * sinf(-fRotStick)
+		CLONE_MOVE * sinf(-fRotStick)
 	);
 
 	// 歩く分身を出す
 	CPlayerClone::Create(move);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
 }
 
 //==========================================
@@ -1002,109 +1122,170 @@ void CPlayer::CallClone()
 	CInputPad* pPad = GET_INPUTPAD;
 
 	// 右スティックの押し込みがなかった場合関数を抜ける
-	if (pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
 	// 分身を追従する
 	CPlayerClone::CallBack();
 }
 
-#ifdef _DEBUG
-
 //==========================================
-// キーボードの操作処理
+// アクターの当たり判定
 //==========================================
-void CPlayer::KeyboardControl(void)
+void CPlayer::CollisionActor()
 {
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	D3DXVECTOR3 pos = GetVec3Position();
-	float fStickRot = 0.0f;
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
 
-	if (pKey->IsPress(DIK_W))
-	{ // 前関係移動
-		if (pKey->IsPress(DIK_A))
-		{
-			fStickRot = (D3DX_PI * 0.75f);
+	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else if (pKey->IsPress(DIK_D))
-		{
-			fStickRot = (D3DX_PI * -0.75f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else
-		{
-			fStickRot = D3DX_PI;
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			pos,		// 位置
+			m_oldPos,	// 前回の位置
+			RADIUS,		// 半径
+			RADIUS,		// 高さ
+			m_move,		// 移動量
+			m_bJump		// ジャンプ状況
+		);
 	}
-	else if (pKey->IsPress(DIK_S))
-	{ // 後ろ関係移動
-		if (pKey->IsPress(DIK_A))
-		{
-			fStickRot = (D3DX_PI * 0.25f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else if (pKey->IsPress(DIK_D))
-		{
-			fStickRot = (D3DX_PI * -0.25f);
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-		else
-		{
-			fStickRot = 0.0f;
-
-			// 位置を設定
-			pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-			pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-		}
-	}
-	else if (pKey->IsPress(DIK_A))
-	{ // 左関係移動
-		fStickRot = (D3DX_PI * 0.5f);
-
-		// 位置を設定
-		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-	}
-	else if (pKey->IsPress(DIK_D))
-	{ // 右関係移動
-		fStickRot = (D3DX_PI * -0.5f);
-
-		// 位置を設定
-		pos.x += sinf(fStickRot - D3DX_PI) * 7.0f;
-		pos.z += cosf(fStickRot - D3DX_PI) * 7.0f;
-	}
-
-	// 向きを設定
-	m_destRot.y = fStickRot;
-
-	// 向きの正規化
-	useful::NormalizeRot(m_destRot.y);
 
 	// 位置を適用
 	SetVec3Position(pos);
-	SetVec3Rotation(m_destRot);
+}
+
+#ifdef _DEBUG
+
+//==========================================
+// ジャンプ操作処理
+//==========================================
+void CPlayer::DebugJumpControl(void)
+{
+	if (GET_INPUTPAD->IsTrigger(CInputPad::KEY_X)
+	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 上昇量を与えるよ
+		m_move.y = JUMP_MINI;
+
+		// ジャンプ中にするよ
+		m_bJump = true;
+
+		// ジャンプモーションを設定
+		SetMotion(MOTION_JUMP_MINI);
+	}
 }
 
 //==========================================
-// 分身のキーボード操作処理
+// キーボードの移動操作処理
 //==========================================
-void CPlayer::KeyboardCloneControl(void)
+void CPlayer::DebugMoveControl(void)
+{
+	CInputKeyboard* pKey = GET_INPUTKEY;
+	float fMoveRot = 0.0f;	// 移動方向
+	const float MOVE = 60.0f;
+
+	if (pKey->IsPress(DIK_W))
+	{
+		if (pKey->IsPress(DIK_A))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * 0.75f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * -0.75f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+		else
+		{
+			// 移動方向を設定
+			fMoveRot = D3DX_PI;
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_S))
+	{
+		if (pKey->IsPress(DIK_A))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * 0.25f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+		else if (pKey->IsPress(DIK_D))
+		{
+			// 移動方向を設定
+			fMoveRot = (D3DX_PI * -0.25f);
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+		else
+		{
+			// 移動方向を設定
+			fMoveRot = 0.0f;
+
+			// 位置を設定
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+		}
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_A))
+	{
+		// 移動方向を設定
+		fMoveRot = (D3DX_PI * 0.5f);
+
+		// 位置を設定
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+	else if (pKey->IsPress(DIK_D))
+	{
+		// 移動方向を設定
+		fMoveRot = (D3DX_PI * -0.5f);
+
+		// 位置を設定
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
+
+		// 向きを設定
+		m_destRot.y = fMoveRot;
+	}
+
+	// 向きの正規化
+	useful::NormalizeRot(m_destRot.y);
+}
+
+//==========================================
+// キーボードの分身操作処理
+//==========================================
+void CPlayer::DebugCloneControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
@@ -1203,77 +1384,6 @@ void CPlayer::KeyboardCloneControl(void)
 
 		// 歩く分身を出す
 		CPlayerClone::Create(move);
-	}
-}
-
-//==========================================
-//  定数読み込み
-//==========================================
-void CPlayer::LoadParameter()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(PARAM_FILE, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐処理
-		if (strcmp(&aStr[0], "TENSION_MAX") == 0) // 士気ゲージの最大値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxTension);
-		}
-		if (strcmp(&aStr[0], "TENSION_INIT") == 0) // 士気ゲージの初期値
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nInitTension);
-		}
-		if (strcmp(&aStr[0], "GAUGE_SPEED") == 0) // 士気ゲージの増減速度
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nSpeedTension);
-		}
-		if (strcmp(&aStr[0], "MAX_CLONE") == 0) // 一度に分身できる上限
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nMaxClone);
-		}
-		if (strcmp(&aStr[0], "JUST_RECOVER") == 0) // ジャストアクションでの回復量
-		{
-			// データを格納
-			fscanf(pFile, "%d", &m_nRecover);
-		}
-		if (strcmp(&aStr[0], "HEIGHT") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fHeght);
-		}
-		if (strcmp(&aStr[0], "INERTIAL") == 0) // 立幅の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fInertial);
-		}
-		if (strcmp(&aStr[0], "CHARGE_TIME") == 0) // ため時間の取得
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fChargeTime);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
 	}
 }
 

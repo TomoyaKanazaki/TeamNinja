@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "editStage.h"
+#include "editor.h"
 
 //************************************************************
 //	前方宣言
@@ -60,20 +61,11 @@ protected:
 	virtual void UpdateRotation(void);	// 向き更新
 
 private:
-	// 角度列挙
-	enum EAngle
-	{
-		ANGLE_0 = 0,	// 角度：0度
-		ANGLE_90,		// 角度：90度
-		ANGLE_180,		// 角度：180度
-		ANGLE_270,		// 角度：270度
-		ANGLE_MAX		// この列挙型の総数
-	};
 
 	// メンバ変数
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
-	EAngle m_angle;		// 角度
+	CEditor::EAngle m_angle;		// 角度
 };
 
 #endif	// _EDITOR_OBJECT_H_

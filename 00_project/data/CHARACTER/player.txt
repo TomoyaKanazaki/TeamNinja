@@ -134,14 +134,11 @@ END_CHARACTERSET
 #------------------------------------------------------------------------------
 #	モーション情報
 #------------------------------------------------------------------------------
-MOTIONPASS = data\MOTION\PLAYER\idol.txt	# 待機モーション
-MOTIONPASS = data\MOTION\PLAYER\cautious.txt	# 警戒モーション
-MOTIONPASS = data\MOTION\PLAYER\dash.txt	# 歩行モーション
-MOTIONPASS = data\MOTION\PLAYER\stealthwalk.txt	# 忍び足モーション
-MOTIONPASS = data\MOTION\PLAYER\minijump.txt	# 小ジャンプモーション
-MOTIONPASS = data\MOTION\PLAYER\highjump.txt	# 大ジャンプモーション
-MOTIONPASS = data\MOTION\PLAYER\fall.txt	# 落下モーション
-MOTIONPASS = data\MOTION\PLAYER\randing.txt	# 着地モーション
-MOTIONPASS = data\MOTION\PLAYER\jump_standby.txt	# ジャンプ台モーション
-MOTIONPASS = data\MOTION\PLAYER\catapult.txt	# 打ち上げモーション
-
+MOTIONPASS = data\MOTION\PLAYER\idol.txt			# 待機モーション
+MOTIONPASS = data\MOTION\PLAYER\cautious.txt		# 警戒モーション
+MOTIONPASS = data\MOTION\PLAYER\dash.txt			# 歩行モーション
+MOTIONPASS = data\MOTION\PLAYER\stealthwalk.txt		# 忍び足モーション
+MOTIONPASS = data\MOTION\PLAYER\minijump.txt		# 小ジャンプモーション
+MOTIONPASS = data\MOTION\PLAYER\highjump.txt		# 大ジャンプモーション
+MOTIONPASS = data\MOTION\PLAYER\fall.txt			# 落下モーション
+MOTIONPASS = data\MOTION\PLAYER\landing.txt			# 着地モーション

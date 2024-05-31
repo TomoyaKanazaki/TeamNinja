@@ -25,7 +25,8 @@ public:
 	// §ŒÀ—ñ‹“
 	enum ELimit
 	{
-		LIMIT_BOX = 0,	// ‹éŒ`”ÍˆÍ
+		LIMIT_NONE = 0,	// ”ÍˆÍ§ŒÀ‚È‚µ
+		LIMIT_BOX,		// ‹éŒ`”ÍˆÍ
 		LIMIT_CIRCLE,	// ‰~”ÍˆÍ
 		LIMIT_MAX		// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};

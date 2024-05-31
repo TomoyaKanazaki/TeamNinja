@@ -1,1 +1,91 @@
-#pragma once
+//============================================================
+//
+//	アクターヘッダー [actor.h]
+//	Author：小原立暉
+//
+//============================================================
+//************************************************************
+//	二重インクルード防止
+//************************************************************
+#ifndef _ACTOR_H_
+#define _ACTOR_H_
+
+//************************************************************
+//	インクルードファイル
+//************************************************************
+#include "objectModel.h"
+#include "listManager.h"
+
+//************************************************************
+// 前方宣言
+//************************************************************
+class CCollisionCube;		// キューブの当たり判定
+class CCollisionCylinder;	// シリンダーの当たり判定
+class CCollisionSphere;		// スフィアの当たり判定
+
+//************************************************************
+//	クラス定義
+//************************************************************
+// アクタークラス
+class CActor : public CObjectModel
+{
+public:
+
+	// 種類列挙
+	enum EType
+	{
+		TYPE_ROCK_S = 0,		// 岩(小)
+		TYPE_MAX				// この列挙型の総数
+	};
+
+	// コンストラクタ
+	CActor();
+
+	// デストラクタ
+	virtual ~CActor() override;
+
+	// オーバーライド関数
+	virtual HRESULT Init(void) override;	// 初期化
+	virtual void Uninit(void) override;		// 終了
+	virtual void Update(const float fDeltaTime) override;	// 更新
+	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
+
+	// メンバ関数
+	void Collision						// 当たり判定処理
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	);
+
+	// セット・ゲット関数
+	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
+	EType GetType(void) const { return m_type; }			// 種類の取得処理
+
+	// 静的メンバ関数
+	static CActor* Create	// 生成
+	( // 引数
+		const EType type,						// 種類
+		const D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
+		const D3DXVECTOR3& rScale = VEC3_ONE	// 大きさ
+	);
+	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
+
+private:
+
+	// 静的メンバ変数
+	static CListManager<CActor>* m_pList;			// リスト構造
+
+	// メンバ変数
+	CListManager<CActor>::AIterator m_iterator;		// イテレーター
+	EType m_type;									// 種類
+	std::vector<CCollisionCube*> m_cube;			// キューブの可変長配列
+	std::vector<CCollisionCylinder*> m_cylinder;	// シリンダーの可変長配列
+	std::vector<CCollisionSphere*> m_sphere;		// スフィアの可変長配列
+};
+
+#endif	// _ACTOR_H_
