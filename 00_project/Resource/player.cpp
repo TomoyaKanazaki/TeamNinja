@@ -45,7 +45,6 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const int	BLEND_FRAME	= 5;			// モーションのブレンドフレーム
 	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
@@ -54,7 +53,8 @@ namespace
 	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
-
+	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 
@@ -515,6 +515,21 @@ float CPlayer::GetHeight(void) const
 	return HEIGHT;
 }
 
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickHighJump(void)
+{
+	// 上移動量を与える
+	m_move.y = 10000.0f;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
+}
+
 //==========================================
 //  士気力の値を取得
 //==========================================
@@ -585,7 +600,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-	CStage *pStage = CScene::GetStage();		// ステージ情報
 
 	// 移動操作
 	currentMotion = UpdateMove();
@@ -602,9 +616,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 向き更新
 	UpdateRotation(rotPlayer);
 
-	// ステージ範囲外の補正
-	pStage->LimitPosition(posPlayer, RADIUS);
-
 	// 分身の処理
 	ControlClone(posPlayer, rotPlayer);
 
@@ -616,9 +627,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 保存位置の更新
 	UpdateSaveTeleport();
-
-	// TODO：エフェクト
-	CEffect3D::Create(posPlayer, 10.0f);
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -717,13 +725,12 @@ void CPlayer::UpdateSaveTeleport(void)
 //============================================================
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 {
+#if 0
 	bool bLand = false;	// 着地状況
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// ジャンプしている状態にする
 	m_bJump = true;
-
-	// TODO：なんか変！
 
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_move)
@@ -739,6 +746,52 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 	// 着地状況を返す
 	return bLand;
+#else
+	bool bLand = false;	// 着地フラグ
+	CStage *pStage = CScene::GetStage();	// ステージ情報
+
+	// ジャンプしている状態にする
+	m_bJump = true;
+
+	// 地面・制限位置の着地判定
+	if (pStage->LandFieldPosition(rPos, m_move)
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// 着地している状態にする
+		bLand = true;
+
+		// ジャンプしていない状態にする
+		m_bJump = false;
+	}
+
+	if (!m_bJump)
+	{ // 空中にいない場合
+
+		// 現在のモーション種類を取得
+		int nCurMotion = GetMotionType();
+
+		// ジャンプモーションのフラグを設定
+		bool bJump = nCurMotion == MOTION_JUMP_HIGH
+				  || nCurMotion == MOTION_JUMP_MINI;
+
+		// 落下モーションのフラグを設定
+		bool bFall = nCurMotion == MOTION_FALL;
+
+		if (bJump || bFall)
+		{ // モーションがジャンプ中、または落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+
+	// 着地フラグを返す
+	return bLand;
+#endif
 }
 
 //============================================================
@@ -800,26 +853,104 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	// 死んでたら抜ける
 	if (IsDeath()) { return; }
 
-	// 変数を宣言
 	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
-
 	if (nMotion != NONE_IDX)
 	{ // モーションが設定されている場合
 
 		if (IsMotionLoop())
-		{ // ループするモーションだった場合
+		{ // ループするモーション中の場合
 
 			if (nAnimMotion != nMotion)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion, BLEND_FRAME);
+				SetMotion(nMotion, BLEND_FRAME_OTHER);
+			}
+		}
+		else
+		{ // ループしないモーション中の場合
+
+			switch (GetMotionType())
+			{ // モーションごとの処理
+			case MOTION_LANDING:	// 着地モーション：ループOFF
+
+				if (nMotion != MOTION_IDOL)
+				{ // 待機モーション以外の場合
+
+					// 現在のモーションの設定
+					SetMotion(nMotion, BLEND_FRAME_OTHER);
+				}
+
+				break;
 			}
 		}
 	}
 
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
+
+	switch (GetMotionType())
+	{ // モーションの種類ごとの処理
+#if 0
+	case MOTION_MOVE:	// 移動モーション
+
+		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			switch (m_land)
+			{ // 着地物ごとの処理
+			case LAND_OBSTACLE:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
+
+				break;
+
+			default:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
+
+				break;
+			}
+		}
+
+		break;
+#endif
+
+	case MOTION_JUMP_MINI:	// 小ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_FALL:	// 落下モーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_LANDING:	// 着地モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+	}
 }
 
 //============================================================
@@ -1045,6 +1176,9 @@ void CPlayer::DebugJumpControl(void)
 
 		// ジャンプ中にするよ
 		m_bJump = true;
+
+		// ジャンプモーションを設定
+		SetMotion(MOTION_JUMP_MINI);
 	}
 }
 

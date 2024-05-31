@@ -48,12 +48,13 @@ public:
 	virtual void Update(const float fDeltaTime) override;		// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;		// 描画
 
-	virtual void CollisionClone(void);		// クローンとの当たり判定
-	virtual void CollisionPlayer(void);		// プレイヤーとの当たり判定
-
 	// セット・ゲット関係
 	void SetType(const EType type) { m_type = type; }			// 種類の設定処理
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
+
+	// 当たり判定
+	virtual void CollisionClone() = 0;		// 分身との判定
+	virtual bool CollisionPlayer() { return false; }		// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
 	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成

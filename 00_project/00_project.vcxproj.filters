@@ -342,9 +342,6 @@
     <ClInclude Include="Resource\popupUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editBlock.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\editStage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -406,6 +403,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorCollShape.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editActor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -791,7 +791,10 @@
     <ClCompile Include="Resource\editCollSphere.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorShape.cpp">
+    <ClCompile Include="Resource\editorCollShape.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editActor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

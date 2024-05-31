@@ -21,9 +21,17 @@
 //************************************************************
 namespace
 {
-	const char* MODEL = "data\\MODEL\\Rock\\Moss-Rock000.x";	// モデルのパス
+	const char* MODEL[] =	// モデルのパス
+	{
+		"data\\MODEL\\Rock\\Moss-Rock000.x",		// 岩(小)
+	};
 	const int PRIORITY = 4;	// アクターの優先順位
 }
+
+//************************************************************
+//	スタティックアサート
+//************************************************************
+static_assert(NUM_ARRAY(MODEL) == CActor::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 // 静的メンバ変数宣言
@@ -36,7 +44,8 @@ CListManager<CActor>* CActor::m_pList = nullptr;		// リスト構造
 //============================================================
 //	コンストラクタ
 //============================================================
-CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY)
+CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY),
+m_type(TYPE_ROCK_S)		// 種類
 {
 
 }
@@ -132,6 +141,24 @@ void CActor::Uninit(void)
 //============================================================
 void CActor::Update(const float fDeltaTime)
 {
+	for (auto cube : m_cube)
+	{
+		// オフセット処理
+		cube->OffSet(GetMtxWorld());
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// 終了処理
+		cylinder->OffSet(GetMtxWorld());
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// 終了処理
+		sphere->OffSet(GetMtxWorld());
+	}
+
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -150,6 +177,7 @@ void CActor::Draw(CShader* pShader)
 //============================================================
 CActor* CActor::Create
 ( // 引数
+	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXVECTOR3& rScale	// 大きさ
@@ -185,10 +213,10 @@ CActor* CActor::Create
 		pActor->SetVec3Scaling(rScale);
 
 		// モデルの割り当て処理
-		pActor->BindModel(MODEL);
+		pActor->BindModel(MODEL[type]);
 
-		// TODO：仮の当たり判定を一個追加
-		pActor->m_cube.push_back(CCollisionCube::Create(rPos, 0.0f, 0.0f, 40.0f, 40.0f, 40.0f));
+		// 種類を設定
+		pActor->m_type = type;
 
 		// 確保したアドレスを返す
 		return pActor;

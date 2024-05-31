@@ -27,6 +27,7 @@
 
 #include "gimmick.h"
 #include "actor.h"
+#include "MapModel.h"
 
 //************************************************************
 //	定数宣言
@@ -80,7 +81,19 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), CGimmick::TYPE_JUMPTABLE);
 
 	// アクターを生成
-	CActor::Create(VEC3_ZERO);
+	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);
+
+	CMapModel::Create(D3DXVECTOR3(-600.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
+
+	CMapModel::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE2);
+
+	CMapModel::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE3);
+
+	CMapModel::Create(D3DXVECTOR3(300.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE4);
+
+	CMapModel::Create(D3DXVECTOR3(600.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
+
+	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }

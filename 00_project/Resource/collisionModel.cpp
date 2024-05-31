@@ -13,7 +13,8 @@
 // コンストラクタ
 //============================================================
 CCollision::CCollision() : 
-m_pos(VEC3_ZERO)	// 位置
+m_pos(VEC3_ZERO),		// 位置
+m_offset(VEC3_ZERO)		// オフセット座標
 {
 
 }
@@ -33,4 +34,33 @@ void CCollision::Uninit(void)
 {
 	// 自身を消す
 	delete this;
+}
+
+//============================================================
+// オフセット設定処理
+//============================================================
+void CCollision::OffSet(const D3DXMATRIX& mtx)
+{
+	// 計算用マトリックス
+	D3DXMATRIX mtxTrans, mtxColl;
+
+	// マトリックスの初期化
+	D3DXMatrixIdentity(&mtxColl);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_offset.x, m_offset.y, m_offset.z);
+	D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
+
+	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+	D3DXMatrixMultiply
+	(
+		&mtxColl,
+		&mtxColl,
+		&mtx
+	);
+
+	// 位置を設定する
+	m_pos.x = mtxColl._41;
+	m_pos.y = mtxColl._42;
+	m_pos.z = mtxColl._43;
 }
