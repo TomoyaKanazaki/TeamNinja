@@ -61,7 +61,13 @@ void CGimmickJumpTable::Uninit(void)
 //============================================================
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
-	// オブジェクト3Dの更新
+	// プレイヤーとの当たり判定
+	if (CollisionPlayer())
+	{
+		// TOCO : 藤田勇一をジャンプさせる
+	}
+
+	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
 
