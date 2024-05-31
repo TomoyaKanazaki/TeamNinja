@@ -531,6 +531,9 @@ void CPlayer::GimmickHighJump(void)
 
 	// モーションの設定
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
+
+	// ジャンプエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 35.0f);
 }
 
 //==========================================
@@ -1203,6 +1206,7 @@ void CPlayer::DebugMoveControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fMoveRot = 0.0f;	// 移動方向
+	const float MOVE = 60.0f;
 
 	if (pKey->IsPress(DIK_W))
 	{
@@ -1212,8 +1216,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * 0.75f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else if (pKey->IsPress(DIK_D))
 		{
@@ -1221,8 +1225,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * -0.75f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else
 		{
@@ -1230,8 +1234,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = D3DX_PI;
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 
 		// 向きを設定
@@ -1245,8 +1249,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * 0.25f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else if (pKey->IsPress(DIK_D))
 		{
@@ -1254,8 +1258,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * -0.25f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else
 		{
@@ -1263,8 +1267,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = 0.0f;
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 
 		// 向きを設定
@@ -1276,8 +1280,8 @@ void CPlayer::DebugMoveControl(void)
 		fMoveRot = (D3DX_PI * 0.5f);
 
 		// 位置を設定
-		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 
 		// 向きを設定
 		m_destRot.y = fMoveRot;
@@ -1288,8 +1292,8 @@ void CPlayer::DebugMoveControl(void)
 		fMoveRot = (D3DX_PI * -0.5f);
 
 		// 位置を設定
-		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 
 		// 向きを設定
 		m_destRot.y = fMoveRot;
