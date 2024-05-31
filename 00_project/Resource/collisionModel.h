@@ -30,11 +30,13 @@ public:
 		bool& rJump						// ジャンプ状況
 	) = 0;
 
-	virtual void OffSet(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const D3DXMATRIX& mtx);	// オフセット設定処理
+	void OffSet(const D3DXMATRIX& mtx);	// オフセット設定処理
 
 	// セット・ゲット関係
 	void SetPos(const D3DXVECTOR3& rPos) { m_pos = rPos; }				// 位置の設定処理
 	D3DXVECTOR3 GetPos(void) const { return m_pos; }					// 位置の取得処理
+	void SetOffset(const D3DXVECTOR3& rOffset) { m_offset = rOffset; }	// オフセットの設定処理
+	D3DXVECTOR3 GetOffset(void) const { return m_offset; }				// オフセットの取得処理
 
 private:
 

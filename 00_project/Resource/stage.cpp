@@ -123,6 +123,10 @@ void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
 	switch (m_stageLimit.mode)
 	{ // 制限モードごとの処理
 	case LIMIT_NONE:	// 制限なし
+
+		// 制限がない場合関数を呼び出す必要がない
+		assert(false);
+
 		break;
 
 	case LIMIT_BOX:		// 矩形範囲
@@ -193,7 +197,7 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 		if (rList->IsPositionRange(rPos))
 		{ // 地面の範囲内の場合
 
-			float fPosHeight = rList->GetPositionRotateHeight(rPos);	// 着地Y座標
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
 			if (fCurPos <= fPosHeight)
 			{ // 現在の着地予定Y座標より高い位置にある場合
 
@@ -263,7 +267,7 @@ float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
 		if (rList->IsPositionRange(rPos))
 		{ // 地面の範囲内の場合
 
-			float fPosHeight = rList->GetPositionRotateHeight(rPos);	// 着地Y座標
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
 			if (fCurPos <= fPosHeight)
 			{ // 現在の着地予定Y座標より高い位置にある場合
 

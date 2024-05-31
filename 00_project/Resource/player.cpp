@@ -585,7 +585,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-	CStage *pStage = CScene::GetStage();		// ステージ情報
 
 	// 移動操作
 	currentMotion = UpdateMove();
@@ -601,9 +600,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 向き更新
 	UpdateRotation(rotPlayer);
-
-	// ステージ範囲外の補正
-	pStage->LimitPosition(posPlayer, RADIUS);
 
 	// 分身の処理
 	ControlClone(posPlayer, rotPlayer);

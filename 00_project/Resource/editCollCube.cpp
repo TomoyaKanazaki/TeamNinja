@@ -11,13 +11,14 @@
 //#include "manager.h"
 //#include "editManager.h"
 //#include "editCollCube.h"
+//#include "collision.h"
 //
 //#include "objectMeshCube.h"
 //
-// #define KEY_ROTA_RIGHT	(DIK_Z)	// 右回転キー
+// #define KEY_ROTA_RIGHT	(DIK_Z)		// 右回転キー
 // #define NAME_ROTA_RIGHT	("Z")	// 右回転表示
-// #define KEY_ROTA_LEFT	(DIK_C)	// 左回転キー
-// #define NAME_ROTA_LEFT	("C")	// 左回転表示
+// #define KEY_ROTA_LEFT	(DIK_C)		// 左回転キー
+// #define NAME_ROTA_LEFT	("C")		// 左回転表示
 // 
 ////************************************************************
 ////	マクロ定義
@@ -48,23 +49,13 @@
 //namespace
 //{
 //	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_collisioncube.txt";	// セーブテキストパス
-//	const char* ANGLE_NAME[] =	// 向きの名前
-//	{
-//		"0度",		// 角度：0度
-//		"90度",		// 角度：90度
-//		"180度",	// 角度：180度
-//		"270度",	// 角度：270度
-//	};
-//
-//	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(30.0f, 30.0f, 30.0f);			// サイズ
-//	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
-//	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
+//	const float INIT_WIDTH = 30.0f;		// 初期の幅
+//	const float INIT_HEIGHT = 30.0f;	// 初期の高さ
+//	const float INIT_DEPTH = 30.0f;		// 初期の奥行
+//	const float SCALING = 0.01f;		// 拡縮率
+//	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
+//	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
 //}
-//
-////************************************************************
-////	スタティックアサート
-////************************************************************
-//static_assert(NUM_ARRAY(ANGLE_NAME) == CEditor::ANGLE_MAX, "ERROR : Angle Count Mismatch");
 //
 ////************************************************************
 ////	親クラス [CEditCollisionCube] のメンバ関数
@@ -78,10 +69,10 @@
 //
 //	// メンバ変数をクリア
 //	m_pCube = nullptr;							// キューブ情報
-//	m_infoCreate.angle = CEditor::ANGLE_0;		// フィールド配置情報
-//	m_infoCreate.size = INIT_SIZE;				// サイズ
-//	m_infoCreate.fLength = 0.0f;				// 長さ
-//	m_infoCreate.fAngle = 0.0f;					// 方向
+//	m_infoCreate.offset = VEC3_ZERO;			// オフセット座標
+//	m_infoCreate.fWidth = INIT_WIDTH;			// 幅
+//	m_infoCreate.fHeight = INIT_HEIGHT;			// 高さ
+//	m_infoCreate.fDepth = INIT_DEPTH;			// 奥行
 //	m_bSave = false;							// 保存状況
 //
 //#endif	// _DEBUG
@@ -105,10 +96,10 @@
 //
 //	// メンバ変数を初期化
 //	m_pCube = nullptr;							// キューブ情報
-//	m_infoCreate.angle = CEditor::ANGLE_0;		// フィールド配置情報
-//	m_infoCreate.size = INIT_SIZE;				// サイズ
-//	m_infoCreate.fLength = 0.0f;				// 長さ
-//	m_infoCreate.fAngle = 0.0f;					// 方向
+//	m_infoCreate.offset = VEC3_ZERO;			// オフセット座標
+//	m_infoCreate.fWidth = INIT_WIDTH;			// 幅
+//	m_infoCreate.fHeight = INIT_HEIGHT;			// 高さ
+//	m_infoCreate.fDepth = INIT_DEPTH;			// 奥行
 //	m_bSave = false;							// 保存状況
 //
 //	// 親クラスの初期化
@@ -124,12 +115,11 @@
 //	D3DXCOLOR colField = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 地面色
 //	m_pCube = CCollisionCube::Create
 //	( // 引数
-//		VEC3_ZERO,
-//		m_infoCreate.fLength,
-//		m_infoCreate.fAngle,
-//		m_infoCreate.size.x,
-//		m_infoCreate.size.y,
-//		m_infoCreate.size.z
+//		GetVec3Position(),		// 位置
+//		m_infoCreate.offset,	// オフセット座標
+//		m_infoCreate.fWidth,	// 幅
+//		m_infoCreate.fHeight,	// 高さ
+//		m_infoCreate.fDepth		// 奥行
 //	);
 //	if (m_pCube == nullptr)
 //	{ // 生成に失敗した場合
@@ -265,8 +255,7 @@
 //	// 情報表示の描画
 //	CEditorObject::DrawDebugInfo();
 //
-//	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[向きの種類]\n", ANGLE_NAME[m_infoCreate.angle]);
-//	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y * 2, m_infoCreate.size.y);
+//	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_infoCreate.fWidth, m_infoCreate.fHeight * 2, m_infoCreate.fDepth);
 //
 //#endif	// _DEBUG
 //}
@@ -307,64 +296,69 @@
 //	{
 //		if (pKeyboard->IsPress(KEY_UP_SIZE_X))
 //		{
-//			m_infoCreate.size.x += INIT_SIZE.x;
+//			m_infoCreate.fWidth += SCALING;
 //		}
 //		if (pKeyboard->IsPress(KEY_DOWN_SIZE_X))
 //		{
-//			m_infoCreate.size.x -= INIT_SIZE.x;
+//			m_infoCreate.fWidth -= SCALING;
 //		}
 //		if (pKeyboard->IsPress(KEY_UP_SIZE_Y))
 //		{
-//			m_infoCreate.size.y += INIT_SIZE.y;
+//			m_infoCreate.fHeight += SCALING;
 //		}
 //		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Y))
 //		{
-//			m_infoCreate.size.y -= INIT_SIZE.y;
+//			m_infoCreate.fHeight -= SCALING;
 //		}
 //		if (pKeyboard->IsPress(KEY_UP_SIZE_Z))
 //		{
-//			m_infoCreate.size.z += INIT_SIZE.z;
+//			m_infoCreate.fDepth += SCALING;
 //		}
 //		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Z))
 //		{
-//			m_infoCreate.size.z -= INIT_SIZE.z;
+//			m_infoCreate.fDepth -= SCALING;
 //		}
 //	}
 //	else
 //	{
 //		if (pKeyboard->IsTrigger(KEY_UP_SIZE_X))
 //		{
-//			m_infoCreate.size.x += INIT_SIZE.x;
+//			m_infoCreate.fWidth += SCALING;
 //		}
 //		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_X))
 //		{
-//			m_infoCreate.size.x -= INIT_SIZE.x;
+//			m_infoCreate.fWidth -= SCALING;
 //		}
 //		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Y))
 //		{
-//			m_infoCreate.size.y += INIT_SIZE.y;
+//			m_infoCreate.fHeight += SCALING;
 //		}
 //		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Y))
 //		{
-//			m_infoCreate.size.y -= INIT_SIZE.y;
+//			m_infoCreate.fHeight -= SCALING;
 //		}
 //		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Z))
 //		{
-//			m_infoCreate.size.z += INIT_SIZE.z;
+//			m_infoCreate.fDepth += SCALING;
 //		}
 //		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Z))
 //		{
-//			m_infoCreate.size.z -= INIT_SIZE.z;
+//			m_infoCreate.fDepth -= SCALING;
 //		}
 //	}
 //
 //	// 大きさを補正
-//	useful::LimitMinNum(m_infoCreate.size.x, INIT_SIZE.x);
-//	useful::LimitMinNum(m_infoCreate.size.y, INIT_SIZE.y);
-//	useful::LimitMinNum(m_infoCreate.size.z, INIT_SIZE.z);
+//	useful::LimitMinNum(m_infoCreate.fWidth, SCALING);
+//	useful::LimitMinNum(m_infoCreate.fHeight, SCALING);
+//	useful::LimitMinNum(m_infoCreate.fDepth, SCALING);
 //
 //	// 大きさを反映
-//	m_pCube->GetCube()->SetVec3Sizing(m_infoCreate.size);
+//	m_pCube->GetCube()->SetVec3Sizing(D3DXVECTOR3
+//	(
+//		m_infoCreate.fWidth,
+//		m_infoCreate.fHeight,
+//		m_infoCreate.fDepth
+//	));
 //}
 //
 ////============================================================
@@ -400,11 +394,10 @@
 //		m_pCube = CCollisionCube::Create
 //		( // 引数
 //			GetVec3Position(),
-//			m_infoCreate.fLength,
-//			m_infoCreate.fAngle,
-//			m_infoCreate.size.x,
-//			m_infoCreate.size.y,
-//			m_infoCreate.size.z
+//			m_infoCreate.offset,
+//			m_infoCreate.fWidth,
+//			m_infoCreate.fHeight,
+//			m_infoCreate.fDepth
 //		);
 //		assert(m_pCube != nullptr);
 //
@@ -577,27 +570,12 @@
 //		// 同じアドレスだった場合次へ
 //		if (rList == m_pCube) { continue; }
 //
-//		// 書き出す情報を取得
-//		CField::EType type = rList->GetType();			// 種類
-//		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
-//		D3DXVECTOR3 rot = rList->GetVec3Rotation();	// 向き
-//		D3DXVECTOR2 size = rList->GetVec2Sizing();	// 大きさ
-//		D3DXCOLOR col = rList->GetColor();		// 色
-//		POSGRID2 part = rList->GetPattern();		// 分割数
-//		POSGRID2 texPart = rList->GetTexPattern();	// テクスチャ分割数
-//
-//		// 向きを360度に変換
-//		D3DXToDegree(rot);
-//
 //		// 情報を書き出し
 //		file << "	CUBESET" << std::endl;
-//		file << "		TYPE	= " << type << std::endl;
-//		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-//		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
+//		file << "		OFFSET		= " << m_infoCreate.offset.x << " " << m_infoCreate.offset.y << " " << m_infoCreate.offset.z << std::endl;
+//		file << "		WIDTH	= " << size.x << std::endl;
 //		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
-//		file << "		COL		= " << col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
-//		file << "		PART	= " << part.x << " " << part.y << std::endl;
-//		file << "		TEXPART	= " << texPart.x << " " << texPart.y << std::endl;
+//		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
 //		file << "	END_CUBESET\n" << std::endl;
 //	}
 //

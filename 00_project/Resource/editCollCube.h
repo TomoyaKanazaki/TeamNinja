@@ -29,10 +29,10 @@ public:
 	// キューブ情報構造体
 	struct SInfo
 	{
-		CEditor::EAngle angle;	// 向きの種類
-		D3DXVECTOR3 size;		// 大きさ
-		float fLength;			// 長さ
-		float fAngle;			// 方向
+		D3DXVECTOR3 offset;		// オフセット座標
+		float fWidth;			// 幅
+		float fHeight;			// 高さ
+		float fDepth;			// 奥行
 	};
 
 	// コンストラクタ

@@ -570,6 +570,99 @@ D3DXVECTOR3 CObjectMeshField::GetGapPosition(const int nID)
 }
 
 //============================================================
+//	メッシュの頂点位置の設定処理
+//============================================================
+void CObjectMeshField::SetMeshVertexPosition(const int nID, const D3DXVECTOR3& rPos)
+{
+	// ポインタを宣言
+	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
+
+	if (m_pVtxBuff != nullptr)
+	{ // 使用中の場合
+
+		if (nID < (m_part.x + 1) * (m_part.y + 1))
+		{ // インデックスが使用可能な場合
+
+			// 頂点バッファをロックし、頂点情報へのポインタを取得
+			m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+			// 頂点データのポインタを引数分進める
+			pVtx += nID;
+
+			// 頂点座標の設定
+			pVtx[0].pos = rPos;
+
+			// 頂点バッファをアンロックする
+			m_pVtxBuff->Unlock();
+		}
+	}
+}
+
+//============================================================
+//	地形の設定処理
+//============================================================
+void CObjectMeshField::SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap)
+{
+	if (rPart != m_part)
+	{ // 分割数が違う場合
+
+		// 分割数を設定
+		SetPattern(rPart);
+	}
+
+	if (m_pPosGapBuff != nullptr && rPart == m_part)
+	{ // 座標のずれバッファが使用中且つ、同じ分割数の場合
+
+		for (int nCntVtx = 0; nCntVtx < m_nNumVtx; nCntVtx++, pPosGap++)
+		{ // 頂点数分繰り返す
+
+			// 引数の座標のずれ量を設定
+			m_pPosGapBuff[nCntVtx] = *pPosGap;
+		}
+	}
+	else { assert(false); }	// 非使用中
+
+	// 頂点・インデックス情報の設定
+	SetVtx(true);
+	SetIdx();
+}
+
+//============================================================
+//	メッシュの頂点位置の設定処理
+//============================================================
+D3DXVECTOR3 CObjectMeshField::GetMeshVertexPosition(const int nID)
+{
+	// 変数を宣言
+	D3DXVECTOR3 pos;	// 頂点座標の代入用
+
+	// ポインタを宣言
+	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
+
+	if (m_pVtxBuff != nullptr)
+	{ // 使用中の場合
+
+		if (nID < (m_part.x + 1) * (m_part.y + 1))
+		{ // インデックスが使用可能な場合
+
+			// 頂点バッファをロックし、頂点情報へのポインタを取得
+			m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+			// 頂点データのポインタを引数分進める
+			pVtx += nID;
+
+			// 頂点座標を代入
+			pos = pVtx[0].pos;
+
+			// 頂点バッファをアンロックする
+			m_pVtxBuff->Unlock();
+		}
+	}
+
+	// 引数のインデックスの頂点座標を返す
+	return pos;
+}
+
+//============================================================
 //	法線の正規化処理
 //============================================================
 void CObjectMeshField::NormalizeNormal(void)
@@ -772,7 +865,7 @@ void CObjectMeshField::NormalizeNormal(void)
 bool CObjectMeshField::LandPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 {
 	// 変数を宣言
-	float fLandHeight = GetPositionRotateHeight(rPos);	// 着地位置
+	float fLandHeight = GetPositionHeight(rPos);	// 着地位置
 
 	if (rPos.y < fLandHeight)
 	{ // 位置が地面より下の場合
@@ -789,99 +882,6 @@ bool CObjectMeshField::LandPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
 
 	// 着地していない状況を返す
 	return false;
-}
-
-//============================================================
-//	メッシュの頂点位置の設定処理
-//============================================================
-void CObjectMeshField::SetMeshVertexPosition(const int nID, const D3DXVECTOR3& rPos)
-{
-	// ポインタを宣言
-	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
-
-	if (m_pVtxBuff != nullptr)
-	{ // 使用中の場合
-
-		if (nID < (m_part.x + 1) * (m_part.y + 1))
-		{ // インデックスが使用可能な場合
-
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-			// 頂点データのポインタを引数分進める
-			pVtx += nID;
-
-			// 頂点座標の設定
-			pVtx[0].pos = rPos;
-
-			// 頂点バッファをアンロックする
-			m_pVtxBuff->Unlock();
-		}
-	}
-}
-
-//============================================================
-//	地形の設定処理
-//============================================================
-void CObjectMeshField::SetTerrain(const POSGRID2& rPart, D3DXVECTOR3 *pPosGap)
-{
-	if (rPart != m_part)
-	{ // 分割数が違う場合
-
-		// 分割数を設定
-		SetPattern(rPart);
-	}
-
-	if (m_pPosGapBuff != nullptr && rPart == m_part)
-	{ // 座標のずれバッファが使用中且つ、同じ分割数の場合
-
-		for (int nCntVtx = 0; nCntVtx < m_nNumVtx; nCntVtx++, pPosGap++)
-		{ // 頂点数分繰り返す
-
-			// 引数の座標のずれ量を設定
-			m_pPosGapBuff[nCntVtx] = *pPosGap;
-		}
-	}
-	else { assert(false); }	// 非使用中
-
-	// 頂点・インデックス情報の設定
-	SetVtx(true);
-	SetIdx();
-}
-
-//============================================================
-//	メッシュの頂点位置の設定処理
-//============================================================
-D3DXVECTOR3 CObjectMeshField::GetMeshVertexPosition(const int nID)
-{
-	// 変数を宣言
-	D3DXVECTOR3 pos;	// 頂点座標の代入用
-
-	// ポインタを宣言
-	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
-
-	if (m_pVtxBuff != nullptr)
-	{ // 使用中の場合
-
-		if (nID < (m_part.x + 1) * (m_part.y + 1))
-		{ // インデックスが使用可能な場合
-
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-			// 頂点データのポインタを引数分進める
-			pVtx += nID;
-
-			// 頂点座標を代入
-			pos = pVtx[0].pos;
-
-			// 頂点バッファをアンロックする
-			m_pVtxBuff->Unlock();
-		}
-	}
-
-	// 引数のインデックスの頂点座標を返す
-	return pos;
 }
 
 //============================================================
@@ -929,88 +929,9 @@ bool CObjectMeshField::IsPositionRange(const D3DXVECTOR3&rPos)
 }
 
 //============================================================
-//	メッシュの着地位置の取得処理 (回転非考慮)
+//	メッシュの着地位置の取得処理
 //============================================================
 float CObjectMeshField::GetPositionHeight(const D3DXVECTOR3& rPos)
-{
-	// 変数を宣言
-	int nWidth  = (int)(( rPos.x + m_meshField.size.x * 0.5f) / (m_meshField.size.x / m_part.x));	// 横の分割位置
-	int nHeight = (int)((-rPos.z + m_meshField.size.y * 0.5f) / (m_meshField.size.y / m_part.y));	// 縦の分割位置
-	int nNumVtx = nWidth + (nHeight * (m_part.x + 1));	// 分割位置の左上頂点番号
-	D3DXVECTOR3 nor;	// 法線ベクトル
-
-	// 変数配列を宣言
-	D3DXVECTOR3 aVtxPos[4];	// ポリゴンの頂点座標
-
-	for (int nCntHeight = 0; nCntHeight < 3; nCntHeight++)
-	{ // 縦の判定確認数分繰り返す
-
-		// 変数を宣言
-		int nColl = -(m_part.x + 2) + (nCntHeight * (m_part.x + 1));	// 判定する頂点番号の変更用
-
-		for (int nCntWidth = 0; nCntWidth < 3; nCntWidth++)
-		{ // 横の判定確認数分繰り返す
-
-			// 変数配列を宣言
-			int aVtxNum[4] =	// 頂点番号
-			{ // 初期化
-				nColl + nNumVtx + m_part.x + 1,	// 左下
-				nColl + nNumVtx,				// 左上
-				nColl + nNumVtx + m_part.x + 2,	// 右下
-				nColl + nNumVtx + 1				// 右上
-			};
-
-			if (aVtxNum[1] >= 0 && aVtxNum[2] <= (m_part.x + 1) * (m_part.y + 1) - 1)
-			{ // 頂点番号が範囲内の場合
-
-				// ポリゴンの頂点位置を取得
-				aVtxPos[0] = m_meshField.pos + GetMeshVertexPosition(aVtxNum[0]);
-				aVtxPos[1] = m_meshField.pos + GetMeshVertexPosition(aVtxNum[1]);
-				aVtxPos[2] = m_meshField.pos + GetMeshVertexPosition(aVtxNum[2]);
-				aVtxPos[3] = m_meshField.pos + GetMeshVertexPosition(aVtxNum[3]);
-
-				if (collision::TriangleOuterPillar(aVtxPos[0], aVtxPos[2], aVtxPos[1], rPos))
-				{ // ポリゴンの範囲内にいる場合
-
-					// 法線を求める
-					useful::NormalizeNormal(aVtxPos[1], aVtxPos[0], aVtxPos[2], nor);
-
-					if (nor.y != 0.0f)
-					{ // 法線が設定されている場合
-
-						// プレイヤーの着地点を返す
-						return (((rPos.x - aVtxPos[0].x) * nor.x + (-aVtxPos[0].y) * nor.y + (rPos.z - aVtxPos[0].z) * nor.z) * -1.0f) / nor.y;
-					}
-				}
-
-				if (collision::TriangleOuterPillar(aVtxPos[3], aVtxPos[1], aVtxPos[2], rPos))
-				{ // ポリゴンの範囲内にいる場合
-
-					// 法線を求める
-					useful::NormalizeNormal(aVtxPos[2], aVtxPos[3], aVtxPos[1], nor);
-
-					if (nor.y != 0.0f)
-					{ // 法線が設定されている場合
-
-						// プレイヤーの着地点を返す
-						return (((rPos.x - aVtxPos[3].x) * nor.x + (-aVtxPos[3].y) * nor.y + (rPos.z - aVtxPos[3].z) * nor.z) * -1.0f) / nor.y;
-					}
-				}
-			}
-
-			// 判定する頂点番号を隣に変更
-			nColl++;
-		}
-	}
-
-	// 着地範囲外の場合現在のy座標を返す
-	return rPos.y;
-}
-
-//============================================================
-//	メッシュの着地位置の取得処理 (回転考慮)
-//============================================================
-float CObjectMeshField::GetPositionRotateHeight(const D3DXVECTOR3&rPos)
 {
 	// 変数を宣言
 	int nNumCul;		// 法線ベクトル用の頂点計算用
