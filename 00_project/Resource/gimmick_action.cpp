@@ -114,6 +114,9 @@ void CGimmickAction::CollisionClone(void)
 
 	for (auto clone : list)
 	{
+		// 分身の総数が必要数に達したらループを抜ける
+		if (nNumClone >= m_nNumActive) { break; }
+
 		// 追跡する分身だった場合次の分身にする
 		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
 
@@ -140,9 +143,6 @@ void CGimmickAction::CollisionClone(void)
 			// 分身に自分の情報を渡す
 			clone->SetGimmick(this);
 		}
-
-		// 分身の総数が必要数に達したらループを抜ける
-		if (nNumClone >= m_nNumActive) { break; }
 	}
 
 	// 分身の総数を設定する
