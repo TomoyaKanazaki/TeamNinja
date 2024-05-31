@@ -19,7 +19,7 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\field000.png",	// 火山灰テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
@@ -46,7 +46,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::DIM_3D, PRIORITY),
 	m_terrain	(TERRAIN_120x120),	// 地形
-	m_type		(TYPE_ASH)			// 種類
+	m_type		(TYPE_NORMAL)		// 種類
 {
 
 }
@@ -66,7 +66,7 @@ HRESULT CField::Init(void)
 {
 	// メンバ変数を初期化
 	m_terrain	= TERRAIN_120x120;	// 地形
-	m_type		= TYPE_ASH;			// 種類
+	m_type		= TYPE_NORMAL;		// 種類
 
 	// オブジェクトメッシュフィールドの初期化
 	if (FAILED(CObjectMeshField::Init()))

@@ -25,8 +25,8 @@ public:
 	// 種類列挙
 	enum EType
 	{
-		TYPE_ASH = 0,	// 火山灰テクスチャ
-		TYPE_MAX		// この列挙型の総数
+		TYPE_NORMAL = 0,	// 通常テクスチャ
+		TYPE_MAX			// この列挙型の総数
 	};
 
 	// 地形列挙
