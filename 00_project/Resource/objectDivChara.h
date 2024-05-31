@@ -99,15 +99,16 @@ public:
 	void SetEnableMotionUpdate(const bool bUpdate);	// 更新状況設定
 	void AddMotionInfo(const EBody bodyID, const CMotion::SMotion& rInfo);	// モーション情報追加
 
-	int  GetMotionType(const EBody bodyID) const;			// モーション種類取得
-	int  GetMotionNumType(const EBody bodyID) const;		// モーション種類総数取得
-	int  GetMotionKey(const EBody bodyID) const;			// モーションキー番号取得
-	int  GetMotionNumKey(const EBody bodyID) const;			// モーションキー総数取得
-	int  GetMotionKeyCounter(const EBody bodyID) const;		// モーションキーカウンター取得
-	int  GetMotionWholeCounter(const EBody bodyID) const;	// モーション全体カウンター取得
-	int  GetMotionWholeFrame(const EBody bodyID) const;		// モーション全体フレーム数取得
-	int  GetMotionCancelFrame(const EBody bodyID) const;	// モーションキャンセルフレーム取得
-	int  GetMotionComboFrame(const EBody bodyID) const;		// モーションコンボフレーム取得
+	int GetMotionType(const EBody bodyID) const;			// モーション種類取得
+	int GetMotionNumType(const EBody bodyID) const;			// モーション種類総数取得
+	int GetMotionKey(const EBody bodyID) const;				// モーションキー番号取得
+	int GetMotionNumKey(const EBody bodyID) const;			// モーションキー総数取得
+	int GetMotionKeyCounter(const EBody bodyID) const;		// モーションキーカウンター取得
+	int GetMotionWholeCounter(const EBody bodyID) const;	// モーション全体カウンター取得
+	DWORD GetMotionNumLoop(const EBody bodyID) const;		// モーションループ回数取得
+	int GetMotionWholeFrame(const EBody bodyID) const;		// モーション全体フレーム数取得
+	int GetMotionCancelFrame(const EBody bodyID) const;		// モーションキャンセルフレーム取得
+	int GetMotionComboFrame(const EBody bodyID) const;		// モーションコンボフレーム取得
 	bool IsMotionFinish(const EBody bodyID) const;			// モーション終了取得
 	bool IsMotionLoop(const EBody bodyID) const;			// モーションループ取得
 	bool IsMotionCancel(const EBody bodyID) const;			// モーションキャンセル取得

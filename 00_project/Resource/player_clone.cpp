@@ -593,7 +593,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 {
-	return EMotion();
+	return MOTION_JUMP_IDOL;
 }
 
 //============================================================

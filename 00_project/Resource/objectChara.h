@@ -93,6 +93,7 @@ public:
 	int GetMotionNumKey(void) const			{ return m_pMotion->GetNumKey(m_pMotion->GetType()); }		// モーションキー総数取得
 	int GetMotionKeyCounter(void) const		{ return m_pMotion->GetKeyCounter(); }						// モーションキーカウンター取得
 	int GetMotionWholeCounter(void) const	{ return m_pMotion->GetWholeCounter(); }					// モーション全体カウンター取得
+	DWORD GetMotionNumLoop(void) const		{ return m_pMotion->GetNumLoop(); }							// モーションループ回数取得
 	int GetMotionWholeFrame(void) const		{ return m_pMotion->GetWholeFrame(m_pMotion->GetType()); }	// モーション全体フレーム数取得
 	int GetMotionCancelFrame(void) const	{ return m_pMotion->GetCancelFrame(m_pMotion->GetType()); }	// モーションキャンセルフレーム取得
 	int GetMotionComboFrame(void) const		{ return m_pMotion->GetComboFrame(m_pMotion->GetType()); }	// モーションコンボフレーム取得
