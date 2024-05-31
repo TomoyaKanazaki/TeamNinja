@@ -131,15 +131,18 @@ void CGimmickAction::CollisionClone(void)
 		))
 		{ // 四角の中に入った場合
 
-			// 分身に自分の情報を渡す
-			clone->SetGimmick(this);
-
 			// 分身の総数を加算する
 			nNumClone++;
 
-			// 分身の総数が必要数に達したらループを抜ける
-			if (nNumClone >= m_nNumActive) { break; }
+			// もうギミックが設定済みなら次へ
+			if (clone->GetGimmick() == this) { continue; }
+
+			// 分身に自分の情報を渡す
+			clone->SetGimmick(this);
 		}
+
+		// 分身の総数が必要数に達したらループを抜ける
+		if (nNumClone >= m_nNumActive) { break; }
 	}
 
 	// 分身の総数を設定する

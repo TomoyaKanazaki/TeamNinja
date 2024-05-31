@@ -93,8 +93,9 @@ public:
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
 
-	EAction GetAction() const		{ return m_Action; }	// 行動を取得
-	void SetAction(EAction action)	{ m_Action = action; }	// 行動を設定
+	EAction GetAction() const			{ return m_Action; }	// 行動を取得
+	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
+	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
