@@ -71,13 +71,12 @@ void CEffekseer::Init()
 void CEffekseer::Uninit()
 {
 	m_EfkManager->StopAllEffects();
+	m_vEffect.shrink_to_fit();
 	int nSize = (int)m_vEffect.size();
 	for (int i = 0; i < nSize; i++)
 	{
-		if (m_vEffect[i] = NULL)
-		{
-			delete m_vEffect[i];
-		}	
+			delete m_vEffect[0];
+			
 	}
 	m_vEffect.shrink_to_fit();
 	//onLostDevice();
@@ -102,7 +101,7 @@ void CEffekseer::Update()
 		}
 	}
 
-
+	m_vEffect.shrink_to_fit();
 	for (int i = 0; i < (int)m_vEffect.size(); i++)
 	{
 		Effekseer::Handle loacalhandle = m_vEffect[i]->handle;
@@ -115,7 +114,7 @@ void CEffekseer::Update()
 			if (!m_vEffect[i]->m_bLoop)
 			{
 				delete m_vEffect[i];
-				m_vEffect.shrink_to_fit();
+				
 
 			}
 			else
