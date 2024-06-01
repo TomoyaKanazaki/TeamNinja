@@ -17,10 +17,7 @@
 
 #ifdef _DEBUG
 
-//-----------------------------------
-// 前方宣言
-//-----------------------------------
-class CObjectMeshCube;		// メッシュキューブ
+#include "objectMeshCube.h"
 
 #endif // _DEBUG
 
@@ -43,6 +40,11 @@ public:
 		D3DXVECTOR3& rMove,				// 移動量
 		bool& rJump						// ジャンプ状況
 	) override;
+
+	// セット・ゲット関係
+	float GetWidth(void) const { return m_fWidth; }		// 幅の取得処理
+	float GetHeight(void) const { return m_fHeight; }	// 高さの取得処理
+	float GetDepth(void) const { return m_fDepth; }		// 奥行の取得処理
 
 #ifdef _DEBUG
 

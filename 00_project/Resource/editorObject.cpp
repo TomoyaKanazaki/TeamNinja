@@ -10,8 +10,10 @@
 #include "editorObject.h"
 #include "manager.h"
 #include "editManager.h"
+
 #include "editField.h"
 #include "editActor.h"
+#include "editCollCube.h"
 
 //************************************************************
 //	É}ÉNÉçíËã`

@@ -138,7 +138,7 @@ void CEditActor::Uninit(void)
 	CEditorObject::Uninit();
 
 	// アクターの色の全初期化
-	//InitAllColorActor();
+	InitAllColorActor();
 
 	// アクターの終了
 	SAFE_UNINIT(m_pActor);

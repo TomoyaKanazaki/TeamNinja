@@ -17,10 +17,7 @@
 
 #ifdef _DEBUG
 
-//-----------------------------------
-// 前方宣言
-//-----------------------------------
-class CObjectMeshSphere;		// メッシュスフィア
+#include "objectMeshSphere.h"
 
 #endif // _DEBUG
 
@@ -43,6 +40,15 @@ public:
 		D3DXVECTOR3& rMove,				// 移動量
 		bool& rJump						// ジャンプ状況
 	) override;
+
+	// セット・ゲット関係
+	float GetRadius(void) const { return m_fRadius; }	//半径の取得処理
+
+#ifdef _DEBUG
+
+	CObjectMeshSphere* GetSphere(void) const { return m_pSphere; }	// メッシュスフィアの取得処理
+
+#endif // _DEBUG
 
 	// 静的メンバ関数
 	static CCollisionSphere* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius);		// 生成処理

@@ -10,7 +10,9 @@
 #include "editor.h"
 #include "manager.h"
 #include "editManager.h"
+
 #include "editStage.h"
+#include "editCollision.h"
 
 //************************************************************
 //	親クラス [CEditor] のメンバ関数
@@ -51,15 +53,11 @@ CEditor *CEditor::Create(CEditManager *pEditManager, EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_STAGE:
-		pEditor = new CEditStage(pEditManager);	// エディットステージ
+		pEditor = new CEditStage(pEditManager);		// エディットステージ
 		break;
 
 	case TYPE_COLLISION:
-
-		// TODO：エディット当たり判定できたら置き換え
-		//pEditor = new CEditCollision(pEditManager);	// エディット当たり判定
-		pEditor = new CEditStage(pEditManager);	// エディットステージ
-
+		pEditor = new CEditCollision(pEditManager);	// エディット当たり判定
 		break;
 
 	default:	// 例外処理

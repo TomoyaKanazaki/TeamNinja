@@ -10,10 +10,6 @@
 #include "collisionCube.h"
 #include "collision.h"
 
-#ifdef _DEBUG
-#include "objectMeshCube.h"
-#endif // _DEBUG
-
 //************************************************************
 // ’è”’è‹`
 //************************************************************
