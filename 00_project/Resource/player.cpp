@@ -45,8 +45,8 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const int	BLEND_FRAME	= 5;			// モーションのブレンドフレーム
-	const float	JUMP		= 1260.0f;		// ジャンプ上昇量
+	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
@@ -54,9 +54,12 @@ namespace
 	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
 	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
-
+	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
+	const int	CAUTIOUS_TRANS_LOOP	= 7;	// 警戒モーションに遷移する待機ループ数
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
+	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
@@ -515,6 +518,27 @@ float CPlayer::GetHeight(void) const
 	return HEIGHT;
 }
 
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickHighJump(void)
+{
+	// ジャンプ中は飛ばない
+	if (m_bJump) { return; }
+
+	// 上移動量を与える
+	m_move.y = JUMP_HIGH;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
+
+	// ジャンプエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+}
+
 //==========================================
 //  士気力の値を取得
 //==========================================
@@ -585,7 +609,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;		// 現在のモーション
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-	CStage *pStage = CScene::GetStage();		// ステージ情報
 
 	// 移動操作
 	currentMotion = UpdateMove();
@@ -601,9 +624,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 向き更新
 	UpdateRotation(rotPlayer);
-
-	// ステージ範囲外の補正
-	pStage->LimitPosition(posPlayer, RADIUS);
 
 	// 分身の処理
 	ControlClone(posPlayer, rotPlayer);
@@ -714,7 +734,7 @@ void CPlayer::UpdateSaveTeleport(void)
 //============================================================
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 {
-	bool bLand = false;	// 着地状況
+	bool bLand = false;	// 着地フラグ
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// ジャンプしている状態にする
@@ -732,7 +752,31 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 		m_bJump = false;
 	}
 
-	// 着地状況を返す
+	if (!m_bJump)
+	{ // 空中にいない場合
+
+		// 現在のモーション種類を取得
+		int nCurMotion = GetMotionType();
+
+		// ジャンプモーションのフラグを設定
+		bool bJump = nCurMotion == MOTION_JUMP_HIGH
+				  || nCurMotion == MOTION_JUMP_MINI;
+
+		// 落下モーションのフラグを設定
+		bool bFall = nCurMotion == MOTION_FALL;
+
+		if (bJump || bFall)
+		{ // モーションがジャンプ中、または落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+
+	// 着地フラグを返す
 	return bLand;
 }
 
@@ -795,26 +839,142 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	// 死んでたら抜ける
 	if (IsDeath()) { return; }
 
-	// 変数を宣言
 	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
-
 	if (nMotion != NONE_IDX)
 	{ // モーションが設定されている場合
 
 		if (IsMotionLoop())
-		{ // ループするモーションだった場合
+		{ // ループするモーション中の場合
 
 			if (nAnimMotion != nMotion)
 			{ // 現在のモーションが再生中のモーションと一致しない場合
 
 				// 現在のモーションの設定
-				SetMotion(nMotion, BLEND_FRAME);
+				SetMotion(nMotion, BLEND_FRAME_OTHER);
+			}
+		}
+		else
+		{ // ループしないモーション中の場合
+
+			switch (GetMotionType())
+			{ // モーションごとの処理
+			case MOTION_CAUTIOUS:	// 警戒モーション
+			case MOTION_LANDING:	// 着地モーション
+
+				if (nMotion != MOTION_IDOL)
+				{ // 待機モーション以外の場合
+
+					// 現在のモーションの設定
+					SetMotion(nMotion, BLEND_FRAME_OTHER);
+				}
+
+				break;
 			}
 		}
 	}
 
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
+
+	switch (GetMotionType())
+	{ // モーションの種類ごとの処理
+	case MOTION_IDOL:	// 待機モーション
+
+		if (GetMotionNumLoop() >= CAUTIOUS_TRANS_LOOP)
+		{ // 待機モーションでしばらくいた場合
+
+			// 警戒モーションの設定
+			SetMotion(MOTION_CAUTIOUS, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_CAUTIOUS:	// 警戒モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+
+#if 0
+	case MOTION_DASH:	// 歩行モーション
+
+		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			switch (m_land)
+			{ // 着地物ごとの処理
+			case LAND_OBSTACLE:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
+
+				break;
+
+			default:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
+
+				break;
+			}
+		}
+
+		break;
+
+	case MOTION_STEALTHWALK:	// 忍び足モーション
+
+		break;
+#endif
+
+	case MOTION_JUMP_MINI:	// 小ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_JUMP_HIGH:	// 大ジャンプモーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_FALL:	// 落下モーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_LANDING:	// 着地モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+	}
 }
 
 //============================================================
@@ -1036,10 +1196,13 @@ void CPlayer::DebugJumpControl(void)
 	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		// 上昇量を与えるよ
-		m_move.y = JUMP;
+		m_move.y = JUMP_MINI;
 
 		// ジャンプ中にするよ
 		m_bJump = true;
+
+		// ジャンプモーションを設定
+		SetMotion(MOTION_JUMP_MINI);
 	}
 }
 
@@ -1050,6 +1213,7 @@ void CPlayer::DebugMoveControl(void)
 {
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fMoveRot = 0.0f;	// 移動方向
+	const float MOVE = 60.0f;
 
 	if (pKey->IsPress(DIK_W))
 	{
@@ -1059,8 +1223,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * 0.75f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else if (pKey->IsPress(DIK_D))
 		{
@@ -1068,8 +1232,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * -0.75f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else
 		{
@@ -1077,8 +1241,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = D3DX_PI;
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 
 		// 向きを設定
@@ -1092,8 +1256,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * 0.25f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else if (pKey->IsPress(DIK_D))
 		{
@@ -1101,8 +1265,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = (D3DX_PI * -0.25f);
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 		else
 		{
@@ -1110,8 +1274,8 @@ void CPlayer::DebugMoveControl(void)
 			fMoveRot = 0.0f;
 
 			// 位置を設定
-			m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-			m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+			m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+			m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 		}
 
 		// 向きを設定
@@ -1123,8 +1287,8 @@ void CPlayer::DebugMoveControl(void)
 		fMoveRot = (D3DX_PI * 0.5f);
 
 		// 位置を設定
-		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 
 		// 向きを設定
 		m_destRot.y = fMoveRot;
@@ -1135,8 +1299,8 @@ void CPlayer::DebugMoveControl(void)
 		fMoveRot = (D3DX_PI * -0.5f);
 
 		// 位置を設定
-		m_move.x += sinf(fMoveRot - D3DX_PI) * 7.0f;
-		m_move.z += cosf(fMoveRot - D3DX_PI) * 7.0f;
+		m_move.x += sinf(fMoveRot - D3DX_PI) * MOVE;
+		m_move.z += cosf(fMoveRot - D3DX_PI) * MOVE;
 
 		// 向きを設定
 		m_destRot.y = fMoveRot;

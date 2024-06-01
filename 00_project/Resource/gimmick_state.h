@@ -15,6 +15,11 @@
 //************************************************************
 #include "gimmick.h"
 
+//===========================================
+//  前方宣言
+//===========================================
+class CPlayerClone;
+
 //************************************************************
 //	クラス定義
 //************************************************************
@@ -34,6 +39,13 @@ public:
 	virtual void Uninit(void) override;		// 終了
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
+
+	void CollisionClone() override;			// クローンとの当たり判定
+
+protected:
+
+	// 純粋仮想関数
+	virtual void SetChar(CPlayerClone* pClone) = 0; // 文字列を追加
 
 private:
 

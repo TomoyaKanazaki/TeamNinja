@@ -107,6 +107,7 @@ public:
 	{
 		// コンストラクタ
 		SInfo() :
+			dwNumLoop		(0),	// モーションループ回数
 			nType			(0),	// モーション種類
 			nKey			(0),	// モーションキー番号
 			nKeyCounter		(0),	// モーションキーカウンター
@@ -123,11 +124,12 @@ public:
 		// メンバ変数
 		std::vector<SMotion> vecMotion;		// モーション情報
 		std::vector<SParts> vecOriginParts;	// パーツ原点情報
-		int  nType;			// モーション種類
-		int  nKey;			// モーションキー番号
-		int  nKeyCounter;	// モーションキーカウンター
-		int  nWholeCounter;	// モーション全体カウンター
-		bool bFinish;		// モーション終了状況
+		int		nType;			// モーション種類
+		int		nKey;			// モーションキー番号
+		int		nKeyCounter;	// モーションキーカウンター
+		int		nWholeCounter;	// モーション全体カウンター
+		DWORD	dwNumLoop;		// モーションループ回数
+		bool	bFinish;		// モーション終了状況
 	};
 
 	// ブレンド情報構造体
@@ -174,6 +176,7 @@ public:
 	int GetKey(void) const			{ return m_info.nKey; }				// キー番号取得
 	int GetKeyCounter(void) const	{ return m_info.nKeyCounter; }		// モーションキーカウンター取得
 	int GetWholeCounter(void) const	{ return m_info.nWholeCounter; }	// モーション全体カウンター取得
+	DWORD GetNumLoop(void) const	{ return m_info.dwNumLoop; }		// モーションループ回数取得
 	bool IsFinish(void) const		{ return m_info.bFinish; }			// 終了取得
 	bool IsLoop(const int nType) const			{ return m_info.vecMotion[nType].bLoop; }			// ループ取得
 	bool IsWeaponDisp(const int nType) const	{ return m_info.vecMotion[nType].bWeaponDisp; }		// 武器表示取得
