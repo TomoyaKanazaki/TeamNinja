@@ -10,7 +10,7 @@
 #include "editStage.h"
 #include "manager.h"
 #include "editManager.h"
-#include "editField.h"
+#include "editorObject.h"
 
 //************************************************************
 //	マクロ定義
@@ -28,6 +28,7 @@ namespace
 		"地面",
 		"壁",
 		"アクター",
+		"ギミック",
 	};
 }
 

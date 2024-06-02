@@ -78,7 +78,7 @@ HRESULT CGameManager::Init(void)
 
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
 
-	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), CGimmick::TYPE_JUMPTABLE);
+	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE);
 
 	// アクターを生成
 	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);

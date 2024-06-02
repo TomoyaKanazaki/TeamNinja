@@ -18,7 +18,6 @@
 namespace
 {
 	const int	PRIORITY = 2;			// ギミック範囲ポリゴンの優先順位
-	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(200.0f, 0.0f, 50.0f);		// 半径(サイズ)
 }
 
 //************************************************************
@@ -121,7 +120,7 @@ void CGimmick::Draw(CShader* pShader)
 //============================================================
 //	生成処理
 //============================================================
-CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const EType type)
+CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type)
 {
 	// 分身のUIの生成
 	CGimmick* pGimmick = nullptr;
@@ -163,7 +162,7 @@ CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const EType type)
 		pGimmick->SetVec3Position(rPos);
 
 		// サイズを設定
-		pGimmick->SetVec3Sizing(RADIUS);
+		pGimmick->SetVec3Sizing(rSize);
 
 		// 種類を設定
 		pGimmick->SetType(type);

@@ -57,7 +57,7 @@ public:
 	virtual bool CollisionPlayer() { return false; }		// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
-	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成
+	static CGimmick* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type);	// 生成
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
 
 private:
