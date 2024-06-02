@@ -208,6 +208,7 @@
     <ClInclude Include="Resource\gauge3D.h" />
     <ClInclude Include="Resource\gimmick.h" />
     <ClInclude Include="Resource\gimmick_action.h" />
+    <ClInclude Include="Resource\gimmick_gravel.h" />
     <ClInclude Include="Resource\gimmick_jumptable.h" />
     <ClInclude Include="Resource\gimmick_state.h" />
     <ClInclude Include="Resource\goal.h" />
@@ -341,6 +342,7 @@
     <ClCompile Include="Resource\gauge3D.cpp" />
     <ClCompile Include="Resource\gimmick.cpp" />
     <ClCompile Include="Resource\gimmick_action.cpp" />
+    <ClCompile Include="Resource\gimmick_gravel.cpp" />
     <ClCompile Include="Resource\gimmick_jumptable.cpp" />
     <ClCompile Include="Resource\gimmick_state.cpp" />
     <ClCompile Include="Resource\goal.cpp" />

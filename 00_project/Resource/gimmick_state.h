@@ -45,7 +45,7 @@ public:
 protected:
 
 	// ƒˆ‰¼‘zŠÖ”
-	virtual void SetChar(CPlayerClone* pClone) = 0; // •¶š—ñ‚ğ’Ç‰Á
+	virtual void SetChar(CPlayerClone* pClone) = 0; // •¶š—ñ(ƒtƒ‰ƒO)‚ğ’Ç‰Á
 
 private:
 
