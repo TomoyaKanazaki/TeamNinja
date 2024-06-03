@@ -54,7 +54,6 @@ CEditorCollShape::CEditorCollShape(const int nIdx)
 
 	// メンバ変数をクリア
 	m_offset = VEC3_ZERO;		// オフセット座標
-	m_nIdx = nIdx;				// インデックス
 
 #endif	// _DEBUG
 }

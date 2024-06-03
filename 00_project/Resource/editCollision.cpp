@@ -234,12 +234,7 @@ void CEditCollision::Update(void)
 
 		// 生成処理
 		m_pEditor->Create();
-
-		// インデックスを設定
-		m_pEditor->SetIdx(nIdx);
 	}
-
-	DebugProc::Print(DebugProc::EPoint::POINT_CENTER, "現在のインデックス：%d", m_pEditor->GetIdx());
 
 #endif	// _DEBUG
 }
@@ -279,23 +274,20 @@ HRESULT CEditCollision::Save(void)
 	file << "STAGE_COLLISIONSET\n" << std::endl;
 
 	// アクターの種類を書き出し
-	file << "TYPE = " << m_actorType << std::endl;
+	file << "ACTOR_TYPE = " << m_actorType << std::endl;
 
 //============================================================
 //	キューブの当たり判定
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "CUBE_COLLISIONSET\n" << std::endl;
+	file << "CUBE_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nCUBE_NUM	= " << m_cube.size() << std::endl;
+	file << "\nCUBE_NUM	= " << m_cube.size() << "\n" << std::endl;
 
 	for (const auto& rCube : m_cube)
 	{ // キューブの総数分繰り返す
-
-		// 同じインデックスだった場合次へ
-		if (rCube.GetIdx() == m_pEditor->GetIdx()) { continue; }
 
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
@@ -314,16 +306,13 @@ HRESULT CEditCollision::Save(void)
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "CYLINDER_COLLISIONSET\n" << std::endl;
+	file << "CYLINDER_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nCYLINDER_NUM	= " << m_cylinder.size() << std::endl;
+	file << "\nCYLINDER_NUM	= " << m_cylinder.size() << "\n" << std::endl;
 
 	for (const auto& rCylinder : m_cylinder)
 	{ // シリンダーの総数分繰り返す
-
-		// 同じインデックスだった場合次へ
-		if (rCylinder.GetIdx() == m_pEditor->GetIdx()) { continue; }
 
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
@@ -341,16 +330,13 @@ HRESULT CEditCollision::Save(void)
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "SPHERE_COLLISIONSET\n" << std::endl;
+	file << "SPHERE_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nSPHERE_NUM	= " << m_sphere.size() << std::endl;
+	file << "\nSPHERE_NUM	= " << m_sphere.size() << "\n" << std::endl;
 
 	for (const auto& rSphere : m_sphere)
 	{ // スフィアの総数分繰り返す
-
-		// 同じインデックスだった場合次へ
-		if (rSphere.GetIdx() == m_pEditor->GetIdx()) { continue; }
 
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
@@ -508,11 +494,12 @@ void CEditCollision::InitAllColorCollCube(void)
 	for (auto& rCube : m_cube)
 	{ // コリジョンキューブ数分繰り返す
 
-		// 同じインデックスだった場合次へ
-		if (rCube.GetIdx() == m_pEditor->GetIdx()) { continue; }
+#ifdef _DEBUG
 
 		// 通常色を設定
 		rCube.GetCube()->GetCube()->SetCubeColor(XCOL_WHITE);
+
+#endif // _DEBUG
 	}
 }
 
@@ -524,11 +511,12 @@ void CEditCollision::InitAllColorCollCylinder(void)
 	for (auto& rCylinder : m_cylinder)
 	{ // コリジョンシリンダー数分繰り返す
 
-		// 同じインデックスだった場合次へ
-		if (rCylinder.GetIdx() == m_pEditor->GetIdx()) { continue; }
+#ifdef _DEBUG
 
 		// 通常色を設定
 		rCylinder.GetCylinder()->GetTube()->SetColor(XCOL_WHITE);
+
+#endif // _DEBUG
 	}
 }
 
@@ -540,10 +528,11 @@ void CEditCollision::InitAllColorCollSphere(void)
 	for (auto& rSphere : m_sphere)
 	{ // コリジョンスフィア数分繰り返す
 
-		// 同じインデックスだった場合次へ
-		if (rSphere.GetIdx() == m_pEditor->GetIdx()) { continue; }
+#ifdef _DEBUG
 
 		// 通常色を設定
 		rSphere.GetSphere()->GetSphere()->SetColor(XCOL_WHITE);
+
+#endif // _DEBUG
 	}
 }

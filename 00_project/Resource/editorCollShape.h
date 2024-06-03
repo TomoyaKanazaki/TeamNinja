@@ -58,8 +58,6 @@ public:
 
 	// メンバ関数
 	D3DXVECTOR3 GetVec3OffSet(void) const	{ return m_offset; }	// オフセット座標取得
-	void SetIdx(const int nIdx)				{ m_nIdx = nIdx; }		// インデックスの設定
-	int GetIdx(void) const					{ return m_nIdx; }		// インデックスの取得
 
 protected:
 	// 仮想関数
@@ -69,7 +67,6 @@ private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_offset;				// オフセット座標
-	int m_nIdx;							// インデックス(vectorの確認で必要)
 };
 
 #endif	// _EDITOR_COLL_SHAPE_H_
