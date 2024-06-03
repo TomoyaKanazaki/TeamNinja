@@ -30,7 +30,8 @@ namespace
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// 範囲に入っている分身の数
 m_nNumActive(INIT_NUM_ACTIVE),	// 発動可能な分身の数
-m_bActive(false)				// 発動状況
+m_bActive(false),				// 発動状況
+m_bMoment(false)				// 発動中
 {
 
 }
@@ -137,7 +138,7 @@ void CGimmickAction::CollisionClone(void)
 			// 分身の総数を加算する
 			nNumClone++;
 
-			// もうギミックが設定済みなら次へ
+			// 既にギミックが設定済みなら次へ
 			if (clone->GetGimmick() == this) { continue; }
 
 			// 分身に自分の情報を渡す

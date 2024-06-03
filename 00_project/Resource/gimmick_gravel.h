@@ -25,4 +25,8 @@ public:
 
 private:
 
+	// メンバ関数
+	void SetChar(CPlayerClone* pClone) override; // 文字列(フラグ)を追加
+	void DeleteChar(CPlayerClone* pClone) override; // 文字列(フラグ)を削除
+
 };

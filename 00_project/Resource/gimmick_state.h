@@ -46,6 +46,7 @@ protected:
 
 	// 純粋仮想関数
 	virtual void SetChar(CPlayerClone* pClone) = 0; // 文字列(フラグ)を追加
+	virtual void DeleteChar(CPlayerClone* pClone) = 0; // 文字列(フラグ)を削除
 
 private:
 

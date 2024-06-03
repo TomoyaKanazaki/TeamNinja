@@ -242,7 +242,6 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(const float fDeltaTime)
 {
-	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 過去位置の更新
@@ -521,10 +520,10 @@ float CPlayer::GetHeight(void) const
 //============================================================
 //	ギミックのハイジャンプ処理
 //============================================================
-void CPlayer::GimmickHighJump(void)
+bool CPlayer::GimmickHighJump(void)
 {
 	// ジャンプ中は飛ばない
-	if (m_bJump) { return; }
+	if (m_bJump) { return false; }
 
 	// 上移動量を与える
 	m_move.y = JUMP_HIGH;
@@ -537,6 +536,8 @@ void CPlayer::GimmickHighJump(void)
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	return true;
 }
 
 //==========================================
