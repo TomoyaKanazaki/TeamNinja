@@ -343,7 +343,7 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-void CPlayerClone::AddFrag(const char cFrag)
+void CPlayerClone::AddFrags(const char cFrag)
 {
 	// 文字列内を検索に同じ文字が存在したら関数を抜ける
 	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
@@ -355,7 +355,7 @@ void CPlayerClone::AddFrag(const char cFrag)
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CPlayerClone::SabFrag(const char cFrag)
+void CPlayerClone::SabFrags(const char cFrag)
 {
 	// 文字列内を検索し番号を取得する
 	size_t nIdx = m_sFrags.find(cFrag);
@@ -370,7 +370,7 @@ void CPlayerClone::SabFrag(const char cFrag)
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-bool CPlayerClone::GetFrag(const char cFrag)
+bool CPlayerClone::GetFrags(const char cFrag)
 {
 	// 文字列内を検索した結果を返す
 	return m_sFrags.find(cFrag) != std::string::npos;
