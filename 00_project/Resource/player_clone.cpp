@@ -499,11 +499,8 @@ void CPlayerClone::Delete(const EAction act)
 	// フラグの立っている分身を削除する
 	for (int i = nNum - 1; i >= 0; --i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
-
 		// 削除
-		if (bDelete[i]) { pAvatar->Uninit(); }
+		if (bDelete[i]) { Delete(i); }
 	}
 
 	// 削除フラグを削除
