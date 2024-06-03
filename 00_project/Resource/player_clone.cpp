@@ -18,6 +18,8 @@
 
 #include "collision.h"
 #include "gimmick_action.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	定数宣言
@@ -458,6 +460,9 @@ void CPlayerClone::Delete(const int nNum)
 
 	// 分身を取得
 	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
+
+	// 消去のエフェクトを生成する
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	pAvatar->Uninit();
