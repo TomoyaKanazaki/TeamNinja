@@ -251,7 +251,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 #ifdef _DEBUG
 	if (GetFrag(GRAVEL_FRAG))
 	{
-		DebugProc::Print(DebugProc::POINT_CENTER, "çªóòìπON");
+		DebugProc::Print(DebugProc::POINT_CENTER, "çªóòìπÇ§ÇÈÇ≥Ç¢");
 	}
 #endif
 
