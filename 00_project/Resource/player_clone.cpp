@@ -599,11 +599,27 @@ CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
 
+	// TODO：Gimmick移動どうしよかね
+#if 1
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
 
 	// ギミック待機状態にする
 	m_Action = ACTION_WAIT;
+#else
+	int nNumAct = m_pGimmick->GetNumActive();
+	float fRate = (D3DX_PI * 2.0f) / nNumAct;
+
+	D3DXVECTOR3 posOrigin = m_pGimmick->GetVec3Position();
+	posOrigin.x += sinf(fRate * 1 + HALF_PI) * 80.0f;
+	posOrigin.z += cosf(fRate * 1 + HALF_PI) * 80.0f;
+
+	// ギミックの位置に移動する
+	SetVec3Position(posOrigin);
+
+	// ギミック待機状態にする
+	m_Action = ACTION_WAIT;
+#endif
 
 	// 移動モーションを返す
 	return MOTION_DASH;
