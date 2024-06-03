@@ -96,6 +96,9 @@ public:
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
 	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
+	void AddFrag(const char cFrag);								// 文字列(フラグ)の追加
+	void SabFrag(const char cFrag);								// 文字列(フラグ)の削除
+	bool GetFrag(const char cFrag);								// 文字列(フラグ)の取得
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
@@ -134,6 +137,7 @@ private:
 	float m_fDeleteTimer;		// 自動消滅タイマー
 	float m_fChargeTimer;		// ため時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
+	std::string m_sFrags;		// ギミックフラグの文字列
 
 };
 

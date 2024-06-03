@@ -10,10 +10,6 @@
 #include "collisionSphere.h"
 #include "collision.h"
 
-#ifdef _DEBUG
-#include "objectMeshSphere.h"
-#endif // _DEBUG
-
 //************************************************************
 // ’è”’è‹`
 //************************************************************

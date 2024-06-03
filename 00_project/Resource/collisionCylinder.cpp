@@ -10,10 +10,6 @@
 #include "collisionCylinder.h"
 #include "collision.h"
 
-#ifdef _DEBUG
-#include "objectMeshTube.h"
-#endif // _DEBUG
-
 //************************************************************
 // ’è”’è‹`
 //************************************************************

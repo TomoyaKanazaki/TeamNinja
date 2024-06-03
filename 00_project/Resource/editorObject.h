@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "editStage.h"
+#include "editCollision.h"
 #include "editor.h"
 
 //************************************************************
@@ -48,8 +49,8 @@ public:
 	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
-	static CEditorObject *Create(CEditStage::EType type);	// 生成
-	static void Release(CEditorObject *&prEditorObject);	// 破棄
+	static CEditorObject* Create(CEditStage::EType type);		// 生成
+	static void Release(CEditorObject *&prEditorObject);		// 破棄
 
 	// メンバ関数
 	D3DXVECTOR3 GetVec3Position(void) const { return m_pos; }	// 位置取得

@@ -45,8 +45,11 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.0f, -10.0f, 0.0f), XCOL_GREEN);	// オフセット情報
 	const int ORBIT_PART = 10;	// 分割数
 
-	const float DISTANCE = 75.0f; // プレイヤーとの距離
+	const float DISTANCE = 60.0f; // プレイヤーとの距離
 	const float TIMER = 10.0f; // 自動消滅タイマー
+
+	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
+
 }
 
 //************************************************************
@@ -67,7 +70,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_Action		(ACTION_CHASE),	// 行動
 	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
 	m_fChargeTimer	(0.0f),			// ため時間タイマー
-	m_pGimmick		(nullptr)		// ギミックのポインタ
+	m_pGimmick		(nullptr),		// ギミックのポインタ
+	m_sFrags		({})		// ギミックフラグの文字列
 {
 
 }
@@ -93,6 +97,7 @@ HRESULT CPlayerClone::Init(void)
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
 	m_fChargeTimer	= 0.0f;			// ため時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
+	m_sFrags		= {};			// ギミックフラグの文字列
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -243,6 +248,13 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
+#ifdef _DEBUG
+	if (GetFrag(GRAVEL_FRAG))
+	{
+		DebugProc::Print(DebugProc::POINT_CENTER, "砂利道うるさい");
+	}
+#endif
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -326,6 +338,42 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CPlayerClone::AddFrag(const char cFrag)
+{
+	// 文字列内を検索に同じ文字が存在したら関数を抜ける
+	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
+
+	// 文字列に受け取ったフラグを追加する
+	m_sFrags += cFrag;
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CPlayerClone::SabFrag(const char cFrag)
+{
+	// 文字列内を検索し番号を取得する
+	size_t nIdx = m_sFrags.find(cFrag);
+
+	// 文字列内にフラグが存在しなかった場合関数を抜ける
+	if (nIdx == std::string::npos) { return; }
+
+	// 文字列からフラグを削除する
+	m_sFrags.erase(nIdx);
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+bool CPlayerClone::GetFrag(const char cFrag)
+{
+	// 文字列内を検索した結果を返す
+	return m_sFrags.find(cFrag) != std::string::npos;
 }
 
 //============================================================

@@ -33,6 +33,7 @@ public:
 	enum EType
 	{
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
+		TYPE_GRAVEL,			// 砂利道
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -53,11 +54,11 @@ public:
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
 
 	// 当たり判定
-	virtual void CollisionClone() = 0;		// 分身との判定
+	virtual void CollisionClone() = 0;							// クローンとの当たり判定
 	virtual bool CollisionPlayer() { return false; }		// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
-	static CGimmick* Create(const D3DXVECTOR3& rPos, const EType type);	// 生成
+	static CGimmick* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type);	// 生成
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
 
 private:

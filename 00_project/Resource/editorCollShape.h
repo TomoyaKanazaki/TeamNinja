@@ -13,14 +13,17 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "editStage.h"
 #include "editor.h"
+#include "editCollision.h"
 
 //************************************************************
 //	前方宣言
 //************************************************************
-class CEditManager;	// エディットマネージャークラス
-class CActor;		// アクター
+class CEditManager;			// エディットマネージャークラス
+class CActor;				// アクター
+class CEditCollCube;		// キューブ当たり判定
+class CEditCollCylinder;	// シリンダー当たり判定
+class CEditCollSphere;		// スフィア当たり判定
 
 //************************************************************
 //	クラス定義
@@ -30,16 +33,17 @@ class CEditorCollShape
 {
 public:
 	// コンストラクタ
-	CEditorCollShape();
+	CEditorCollShape(const int nIdx);
 
 	// デストラクタ
 	virtual ~CEditorCollShape();
 
 	// 純粋仮想関数
-	virtual HRESULT Save(void) = 0;	// 保存
-	virtual bool IsSave(void) = 0;	// 保存状況取得
+	virtual bool IsSave(void) = 0;		// 保存状況取得
 	virtual void SaveInfo(void) = 0;	// 情報保存
 	virtual void LoadInfo(void) = 0;	// 情報読込
+
+	virtual void Create(void) = 0;		// 生成処理
 
 	// 仮想関数
 	virtual HRESULT Init(void);	// 初期化
@@ -49,22 +53,20 @@ public:
 	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
-	static CEditorCollShape* Create(CEditStage::EType type);	// 生成
-	static void Release(CEditorCollShape*& prEditorObject);		// 破棄
+	static CEditorCollShape* Create(CEditCollision::EType type, const int nIdx);	// 生成
+	static void Release(CEditorCollShape*& prEditorObject);			// 破棄
 
 	// メンバ関数
-	CActor* GetActor(void) const { return m_pActor; }		// アクターの取得処理
+	D3DXVECTOR3 GetVec3OffSet(void) const	{ return m_offset; }	// オフセット座標取得
 
 protected:
 	// 仮想関数
-	virtual void UpdatePosition(void);	// 位置更新
-	virtual void UpdateRotation(void);	// 向き更新
+	virtual void UpdateOffset(void);	// オフセット座標更新
 
 private:
 
 	// メンバ変数
-	CActor* m_pActor;				// アクター
-	CEditor::EAngle m_angle;		// 角度
+	D3DXVECTOR3 m_offset;				// オフセット座標
 };
 
-#endif	// _EDITOR_OBJECT_H_
+#endif	// _EDITOR_COLL_SHAPE_H_

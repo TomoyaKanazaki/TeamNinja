@@ -64,6 +64,9 @@ public:
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
+	std::vector<CCollisionCube*> GetCube(void) const { return m_cube; }					// キューブの情報の取得処理
+	std::vector<CCollisionCylinder*> GetCylinder (void) const { return m_cylinder; }	// シリンダーの情報の取得処理
+	std::vector<CCollisionSphere*> GetSphere(void) const { return m_sphere; }			// スフィアの情報の取得処理
 
 	// 静的メンバ関数
 	static CActor* Create	// 生成
