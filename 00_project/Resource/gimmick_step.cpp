@@ -69,7 +69,7 @@ void CGimmickStep::Update(const float fDeltaTime)
 	CPlayer* player = GET_PLAYER;
 
 	// プレイヤーの座標が上昇限界じゃない場合判定を取る
-	if (player->GetVec3Position().y >= GetVec3Position().y + CLIMB_MAX)
+	if (player->GetVec3Position().y <= GetVec3Position().y + CLIMB_MAX)
 	{
 		// プレイヤーとの当たり判定
 		if (CollisionPlayer())
