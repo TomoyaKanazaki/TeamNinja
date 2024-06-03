@@ -4,8 +4,8 @@ Format Text Ver 1.0
 Scene {
 	pos -190.4311 -1417.2694 40265.3242
 	lookat 0.0000 0.0000 0.0000
-	head -1.5536
-	pich -0.0264
+	head -0.5436
+	pich 0.3336
 	bank 0.0000
 	ortho 0
 	zoom2 0.1862
@@ -20,7 +20,7 @@ Scene {
 Material 4 {
 	"Black" col(0.044 0.044 0.044 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"DarkGreen" col(0.043 0.073 0.030 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"Green" col(0.070 0.122 0.048 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"Green" col(0.310 0.424 0.231 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"White" col(0.524 0.549 0.501 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
 Object "obj1" {
