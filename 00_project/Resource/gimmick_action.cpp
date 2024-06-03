@@ -30,7 +30,8 @@ namespace
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// ”ÍˆÍ‚É“ü‚Á‚Ä‚¢‚é•ªg‚Ì”
 m_nNumActive(INIT_NUM_ACTIVE),	// ”­“®‰Â”\‚È•ªg‚Ì”
-m_bActive(false)				// ”­“®ó‹µ
+m_bActive(false),				// ”­“®ó‹µ
+m_bMoment(false)				// ”­“®’†
 {
 
 }

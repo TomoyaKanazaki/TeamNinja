@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_JUMPTABLE = 0,		// ƒWƒƒƒ“ƒv‘ä
 		TYPE_GRAVEL,			// »—˜“¹
+		TYPE_STEP,				// “¥‚Ý‘ä
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
