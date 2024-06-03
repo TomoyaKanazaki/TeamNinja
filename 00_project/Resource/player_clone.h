@@ -138,6 +138,7 @@ private:
 	float m_fChargeTimer;		// ため時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
+	int m_nIdxGimmick;			// ギミック内の管理番号
 
 };
 

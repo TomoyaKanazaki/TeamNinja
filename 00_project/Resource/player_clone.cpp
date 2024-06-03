@@ -73,7 +73,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
 	m_fChargeTimer	(0.0f),			// ため時間タイマー
 	m_pGimmick		(nullptr),		// ギミックのポインタ
-	m_sFrags		({})		// ギミックフラグの文字列
+	m_sFrags		({}),			// ギミックフラグの文字列
+	m_nIdxGimmick	(-1)			// ギミック内の管理番号
 {
 
 }
@@ -99,7 +100,8 @@ HRESULT CPlayerClone::Init(void)
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
 	m_fChargeTimer	= 0.0f;			// ため時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
-	m_sFrags		= {};			// ギミックフラグの文字列
+	m_sFrags		= {};			// ギミックフラグの文字列]
+	m_nIdxGimmick	= -1;			// ギミック内の管理番号
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -250,13 +252,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
-#ifdef _DEBUG
-	if (GetFrag(GRAVEL_FRAG))
-	{
-		DebugProc::Print(DebugProc::POINT_CENTER, "砂利道うるさい");
-	}
-#endif
-
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -337,6 +332,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
+
+	// ギミック内での管理番号を取得する
+	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
 
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
@@ -546,6 +544,9 @@ void CPlayerClone::CallBack()
 
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
+
+		// ギミック内管理番号をリセットする
+		pClone->m_nIdxGimmick = -1;
 
 #ifdef _DEBUG
 		// マテリアルを変更
