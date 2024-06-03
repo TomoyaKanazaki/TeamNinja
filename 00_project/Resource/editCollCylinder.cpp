@@ -16,9 +16,6 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_RELEASE		(DIK_9)	// 破棄キー
-#define NAME_RELEASE	("9")	// 破棄表示
-
 #define KEY_UP_RADIUS		(DIK_T)	// 半径拡大キー
 #define NAME_UP_RADIUS		("T")	// 半径拡大表示
 #define KEY_DOWN_RADIUS		(DIK_G)	// 半径縮小キー
@@ -206,7 +203,6 @@ void CEditCollCylinder::DrawDebugControl(void)
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "半径：[%s/%s+%s]\n", NAME_UP_RADIUS, NAME_DOWN_RADIUS, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "高さ：[%s/%s+%s]\n", NAME_UP_HEIGHT, NAME_DOWN_HEIGHT, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }
