@@ -229,7 +229,7 @@ void CEditCollSphere::UpdateOffset(void)
 #if _DEBUG
 
 	// 向きを反映
-	m_pSphere->GetSphere()->SetVec3Rotation(GetVec3OffSet());
+	m_pSphere->GetSphere()->SetVec3Position(GetVec3OffSet());
 
 #endif	// _DEBUG
 }
@@ -268,8 +268,12 @@ void CEditCollSphere::UpdateSizing(void)
 	// 大きさを補正
 	useful::LimitMinNum(m_infoCreate.fRadius, SCALING);
 
+#ifdef _DEBUG
+
 	// 大きさを反映
 	m_pSphere->GetSphere()->SetRadius(m_infoCreate.fRadius);
+
+#endif // _DEBUG
 }
 
 //============================================================
@@ -277,6 +281,8 @@ void CEditCollSphere::UpdateSizing(void)
 //============================================================
 void CEditCollSphere::Create(void)
 {
+#ifdef _DEBUG
+
 	//----------------------------------------------------
 	//	コリジョンスフィアの情報を配置用に変更
 	//----------------------------------------------------
@@ -284,6 +290,8 @@ void CEditCollSphere::Create(void)
 	m_pSphere->GetSphere()->SetEnableUpdate(true);
 	m_pSphere->GetSphere()->SetEnableDraw(true);
 	m_pSphere->GetSphere()->SetLabel(CObject::LABEL_DEBUG);
+
+#endif // _DEBUG
 
 	// 未保存を設定
 	m_bSave = false;
