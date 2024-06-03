@@ -4,8 +4,8 @@ Format Text Ver 1.0
 Scene {
 	pos -17.9551 -372.5686 40265.3359
 	lookat 0.0000 0.0000 0.0000
-	head 1.5264
-	pich 0.0536
+	head -1.6236
+	pich 0.3036
 	bank 0.0000
 	ortho 0
 	zoom2 0.1862
@@ -18,7 +18,7 @@ Scene {
 	}
 }
 Material 2 {
-	"DarkGreen" col(0.043 0.073 0.030 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"DarkGreen" col(0.329 0.561 0.392 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"Wood" col(0.122 0.056 0.048 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
 Object "obj1" {
