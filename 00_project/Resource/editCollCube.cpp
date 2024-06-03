@@ -241,6 +241,8 @@ void CEditCollCube::DrawDebugInfo(void)
 //============================================================
 void CEditCollCube::Create(void)
 {
+#ifdef _DEBUG
+
 	//----------------------------------------------------
 	//	コリジョンキューブの情報を配置用に変更
 	//----------------------------------------------------
@@ -248,6 +250,8 @@ void CEditCollCube::Create(void)
 	m_pCube->GetCube()->SetEnableUpdate(true);
 	m_pCube->GetCube()->SetEnableDraw(true);
 	m_pCube->GetCube()->SetLabel(CObject::LABEL_DEBUG);
+
+#endif // _DEBUG
 
 	// 未保存を設定
 	m_bSave = false;
@@ -278,7 +282,7 @@ void CEditCollCube::UpdateOffset(void)
 #if _DEBUG
 
 	// 向きを反映
-	m_pCube->GetCube()->SetVec3Rotation(GetVec3OffSet());
+	m_pCube->GetCube()->SetVec3Position(GetVec3OffSet());
 
 #endif	// _DEBUG
 }
@@ -351,6 +355,8 @@ void CEditCollCube::UpdateSizing(void)
 	useful::LimitMinNum(m_infoCreate.fHeight, SCALING);
 	useful::LimitMinNum(m_infoCreate.fDepth, SCALING);
 
+#ifdef _DEBUG
+
 	// 大きさを反映
 	m_pCube->GetCube()->SetVec3Sizing(D3DXVECTOR3
 	(
@@ -358,6 +364,8 @@ void CEditCollCube::UpdateSizing(void)
 		m_infoCreate.fHeight,
 		m_infoCreate.fDepth
 	));
+
+#endif // _DEBUG
 }
 
 #endif

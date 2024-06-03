@@ -5,6 +5,15 @@
 // 
 //==========================================
 #include "gimmick_gravel.h"
+#include "player_clone.h"
+
+//===========================================
+//  定数定義
+//===========================================
+namespace
+{
+	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
+}
 
 //==========================================
 //  コンストラクタ
@@ -65,4 +74,22 @@ void CGimmickGravel::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmickState::Draw(pShader);
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CGimmickGravel::SetChar(CPlayerClone* pClone)
+{
+	// 分身に文字列を渡す
+	pClone->AddChar(GRAVEL_FRAG);
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CGimmickGravel::DeleteChar(CPlayerClone* pClone)
+{
+	// 分身に文字列を渡す
+	pClone->AddChar(GRAVEL_FRAG);
 }
