@@ -10,8 +10,10 @@
 #include "editorObject.h"
 #include "manager.h"
 #include "editManager.h"
+
 #include "editField.h"
 #include "editActor.h"
+#include "editGimmick.h"
 
 //************************************************************
 //	マクロ定義
@@ -157,7 +159,7 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case CEditStage::TYPE_FIELD:
-		pEditorObject = new CEditField;	// エディットフィールド
+		pEditorObject = new CEditField;		// エディットフィールド
 		break;
 
 	case CEditStage::TYPE_WALL:
@@ -169,7 +171,11 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 		break;
 
 	case CEditStage::TYPE_ACTOR:
-		pEditorObject = new CEditActor;	// エディットアクター
+		pEditorObject = new CEditActor;		// エディットアクター
+		break;
+
+	case CEditStage::TYPE_GIMMICK:
+		pEditorObject = new CEditGimmick;	// エディットギミック
 		break;
 
 	default:	// 例外処理

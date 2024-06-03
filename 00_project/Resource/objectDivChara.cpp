@@ -443,6 +443,23 @@ int CObjectDivChara::GetMotionWholeCounter(const EBody bodyID) const
 }
 
 //============================================================
+//	モーションループ回数取得処理
+//============================================================
+DWORD CObjectDivChara::GetMotionNumLoop(const EBody bodyID) const
+{
+	if (bodyID > NONE_IDX && bodyID < BODY_MAX)
+	{ // 正規インデックスの場合
+
+		// 引数インデックスのモーションループ回数を返す
+		return m_apBody[bodyID]->GetMotionNumLoop();
+	}
+
+	// インデックスエラー
+	assert(false);
+	return 0;
+}
+
+//============================================================
 //	モーション全体フレーム数取得処理
 //============================================================
 int CObjectDivChara::GetMotionWholeFrame(const EBody bodyID) const
