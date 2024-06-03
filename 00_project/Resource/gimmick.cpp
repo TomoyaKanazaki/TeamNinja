@@ -11,6 +11,9 @@
 #include "gimmick.h"
 
 #include "gimmick_jumptable.h"
+#include "gimmick_step.h"
+
+#include "gimmick_gravel.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -130,6 +133,18 @@ CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, co
 	case CGimmick::TYPE_JUMPTABLE:		// ƒWƒƒƒ“ƒv‘ä
 
 		pGimmick = new CGimmickJumpTable;
+
+		break;
+
+	case CGimmick::TYPE_GRAVEL:		// »—˜“¹
+
+		pGimmick = new CGimmickGravel;
+
+		break;
+
+	case CGimmick::TYPE_STEP:		// “¥‚İ‘ä
+
+		pGimmick = new CGimmickStep;
 
 		break;
 
