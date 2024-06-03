@@ -33,4 +33,8 @@ private:
 	// メンバ関数
 	void Climb(CPlayer* player); // 登る
 
+	// メンバ変数
+	float m_fSummit; // 登頂位置
+	bool m_bSummit; // 登頂フラグ
+
 };

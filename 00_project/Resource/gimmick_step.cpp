@@ -20,7 +20,9 @@ namespace
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickStep::CGimmickStep() : CGimmickAction()
+CGimmickStep::CGimmickStep() : CGimmickAction(),
+m_fSummit(0.0f), //登頂位置
+m_bSummit(false) // 登頂フラグ
 {
 
 }
@@ -47,6 +49,9 @@ HRESULT CGimmickStep::Init(void)
 		return E_FAIL;
 	}
 
+	//登頂判定位置を設定
+	m_fSummit = GetVec3Position().y + CLIMB_MAX;
+
 	// 成功を返す
 	return S_OK;
 }
@@ -68,8 +73,8 @@ void CGimmickStep::Update(const float fDeltaTime)
 	// プレイヤーの座標を取得
 	CPlayer* player = GET_PLAYER;
 
-	// プレイヤーの座標が上昇限界じゃない場合判定を取る
-	if (player->GetVec3Position().y <= GetVec3Position().y + CLIMB_MAX)
+	// プレイヤーの座標が登頂位置を下回っている場合場合判定を取る
+	if (player->GetVec3Position().y <= m_fSummit && !m_bSummit)
 	{
 		// プレイヤーとの当たり判定
 		if (CollisionPlayer())
@@ -78,6 +83,18 @@ void CGimmickStep::Update(const float fDeltaTime)
 			Climb(player);
 		}
 	}
+
+	// プレイヤーが登頂位置を上回っている場合フラグをon
+	if (player->GetVec3Position().y > m_fSummit)
+	{
+		DebugProc::Print(DebugProc::POINT_CENTER, "登れる\n");
+		m_bSummit = true;
+	}
+	else
+	{
+		m_bSummit = false;
+	}
+
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);

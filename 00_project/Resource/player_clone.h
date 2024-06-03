@@ -97,9 +97,9 @@ public:
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
 	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
-	void AddFrag(const char cFrag);								// 文字列(フラグ)の追加
-	void SabFrag(const char cFrag);								// 文字列(フラグ)の削除
-	bool GetFrag(const char cFrag);								// 文字列(フラグ)の取得
+	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
+	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
+	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();							// 生成
@@ -143,6 +143,7 @@ private:
 	float m_fChargeTimer;		// ため時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
+	int m_nIdxGimmick;			// ギミック内の管理番号
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置

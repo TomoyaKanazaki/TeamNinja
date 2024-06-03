@@ -76,6 +76,7 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_fChargeTimer	(0.0f),			// ため時間タイマー
 	m_pGimmick		(nullptr),		// ギミックのポインタ
 	m_sFrags		({}),			// ギミックフラグの文字列
+	m_nIdxGimmick	(-1),			// ギミック内の管理番号
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_bJump			(false)			// ジャンプ状況
 {
@@ -103,7 +104,8 @@ HRESULT CPlayerClone::Init(void)
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
 	m_fChargeTimer	= 0.0f;			// ため時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
-	m_sFrags		= {};			// ギミックフラグの文字列
+	m_sFrags		= {};			// ギミックフラグの文字列]
+	m_nIdxGimmick	= -1;			// ギミック内の管理番号
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_bJump			= true;			// ジャンプ状況
 
@@ -259,13 +261,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
-#ifdef _DEBUG
-	if (GetFrag(GRAVEL_FRAG))
-	{
-		DebugProc::Print(DebugProc::POINT_CENTER, "砂利道うるさい");
-	}
-#endif
-
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -347,6 +342,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
+	// ギミック内での管理番号を取得する
+	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
+
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
 }
@@ -354,7 +352,7 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-void CPlayerClone::AddFrag(const char cFrag)
+void CPlayerClone::AddFrags(const char cFrag)
 {
 	// 文字列内を検索に同じ文字が存在したら関数を抜ける
 	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
@@ -366,7 +364,7 @@ void CPlayerClone::AddFrag(const char cFrag)
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CPlayerClone::SabFrag(const char cFrag)
+void CPlayerClone::SabFrags(const char cFrag)
 {
 	// 文字列内を検索し番号を取得する
 	size_t nIdx = m_sFrags.find(cFrag);
@@ -381,7 +379,7 @@ void CPlayerClone::SabFrag(const char cFrag)
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-bool CPlayerClone::GetFrag(const char cFrag)
+bool CPlayerClone::GetFrags(const char cFrag)
 {
 	// 文字列内を検索した結果を返す
 	return m_sFrags.find(cFrag) != std::string::npos;
@@ -510,11 +508,8 @@ void CPlayerClone::Delete(const EAction act)
 	// フラグの立っている分身を削除する
 	for (int i = nNum - 1; i >= 0; --i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
-
 		// 削除
-		if (bDelete[i]) { pAvatar->Uninit(); }
+		if (bDelete[i]) { Delete(i); }
 	}
 
 	// 削除フラグを削除
@@ -555,6 +550,9 @@ void CPlayerClone::CallBack()
 
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
+
+		// ギミック内管理番号をリセットする
+		pClone->m_nIdxGimmick = -1;
 
 #ifdef _DEBUG
 		// マテリアルを変更

@@ -138,7 +138,7 @@ void CGimmickAction::CollisionClone(void)
 			// 分身の総数を加算する
 			nNumClone++;
 
-			// もうギミックが設定済みなら次へ
+			// 既にギミックが設定済みなら次へ
 			if (clone->GetGimmick() == this) { continue; }
 
 			// 分身に自分の情報を渡す
