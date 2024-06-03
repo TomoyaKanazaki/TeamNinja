@@ -82,7 +82,7 @@ void CGimmickGravel::Draw(CShader* pShader)
 void CGimmickGravel::SetChar(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
-	pClone->AddChar(GRAVEL_FRAG);
+	pClone->AddFrag(GRAVEL_FRAG);
 }
 
 //=========================================
@@ -90,6 +90,6 @@ void CGimmickGravel::SetChar(CPlayerClone* pClone)
 //===========================================
 void CGimmickGravel::DeleteChar(CPlayerClone* pClone)
 {
-	// 分身に文字列を渡す
-	pClone->AddChar(GRAVEL_FRAG);
+	// 分身からフラグを削除する
+	pClone->SabFrag(GRAVEL_FRAG);
 }

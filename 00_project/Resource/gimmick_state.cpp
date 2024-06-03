@@ -71,6 +71,9 @@ void CGimmickState::Uninit(void)
 //============================================================
 void CGimmickState::Update(const float fDeltaTime)
 {
+	// 分身との当たり判定
+	CollisionClone();
+
 	// オブジェクト3Dの更新
 	CGimmick::Update(fDeltaTime);
 }
@@ -103,6 +106,7 @@ void CGimmickState::CollisionClone()
 		// 位置を取得
 		posClone = clone->GetVec3Position();
 
+		// 当たってない場合フラグを削除して次に進む
 		if (!collision::Box2D
 		(
 			pos,		// 判定位置
@@ -112,7 +116,7 @@ void CGimmickState::CollisionClone()
 			sizeClone,	// 判定目標サイズ(右・上・後)
 			sizeClone	// 判定目標サイズ(左・下・前)
 		))
-		{ continue; }
+		{ DeleteChar(clone); continue; }
 
 		// フラグを追加する
 		SetChar(clone);
