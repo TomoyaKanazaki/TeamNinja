@@ -2,6 +2,7 @@
 //
 //	プレイヤーの分身ヘッダー [player_clone.h]
 //	Author：小原立暉
+//	Adder ：藤田勇一
 //
 //============================================================
 //************************************************************
@@ -116,6 +117,10 @@ private:
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
+	void UpdateOldPosition(void);	// 過去位置の更新
+	void UpdateGravity(void);		// 重力の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos);	// 着地状況の更新
+
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
@@ -139,6 +144,9 @@ private:
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
 
+	// メンバ変数 (藤田追加)
+	D3DXVECTOR3	m_oldPos;	// 過去位置
+	bool m_bJump;			// ジャンプ状況
 };
 
 #endif	// _PLAYER_H_

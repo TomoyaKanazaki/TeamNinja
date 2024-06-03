@@ -242,7 +242,6 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(const float fDeltaTime)
 {
-	// 変数を宣言
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 過去位置の更新
