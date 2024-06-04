@@ -29,6 +29,7 @@
 #define HALF_PI	(D3DX_PI * 0.5f)	// 二分の一の円周率 (π/２)
 #define QRTR_PI	(D3DX_PI * 0.25f)	// 四分の一の円周率 (π/４)
 
+#define MY_ASSERT(s, b)	(assert((s, !b)))	// TRUEで止まるアサート
 #define NUM_ARRAY(a)	(sizeof((a)) / sizeof((a)[0]))	// 配列の要素数計算
 
 // メモリ開放マクロ
