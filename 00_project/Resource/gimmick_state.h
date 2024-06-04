@@ -44,9 +44,17 @@ public:
 
 protected:
 
+	// 各ギミックのフラグ
+	enum EFrag
+	{
+		GRAVEL = 'g', // 砂利道
+		BOOB = 'b', // ドブ
+		MAX
+	};
+
 	// 純粋仮想関数
-	virtual void SetChar(CPlayerClone* pClone) = 0; // 文字列(フラグ)を追加
-	virtual void DeleteChar(CPlayerClone* pClone) = 0; // 文字列(フラグ)を削除
+	virtual void HitClone(CPlayerClone* pClone) = 0; // 分身に当たっていた時の処理
+	virtual void MissClone(CPlayerClone* pClone) = 0; // 分身に当たっていない場合の処理
 
 private:
 

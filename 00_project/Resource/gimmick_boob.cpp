@@ -1,16 +1,16 @@
 //==========================================
 //
-//  砂利道ギミック(gimmick_gravel.cpp)
+//  ドブギミック(gimmick_boob.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_gravel.h"
+#include "gimmick_boob.h"
 #include "player_clone.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickGravel::CGimmickGravel() : CGimmickState()
+CGimmickBoob::CGimmickBoob() : CGimmickState()
 {
 
 }
@@ -18,7 +18,7 @@ CGimmickGravel::CGimmickGravel() : CGimmickState()
 //==========================================
 //  デストラクタ
 //==========================================
-CGimmickGravel::~CGimmickGravel()
+CGimmickBoob::~CGimmickBoob()
 {
 
 }
@@ -26,7 +26,7 @@ CGimmickGravel::~CGimmickGravel()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CGimmickGravel::Init(void)
+HRESULT CGimmickBoob::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CGimmickState::Init()))
@@ -44,7 +44,7 @@ HRESULT CGimmickGravel::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CGimmickGravel::Uninit(void)
+void CGimmickBoob::Uninit(void)
 {
 	// 親クラスの終了
 	CGimmickState::Uninit();
@@ -53,7 +53,7 @@ void CGimmickGravel::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CGimmickGravel::Update(const float fDeltaTime)
+void CGimmickBoob::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CGimmickState::Update(fDeltaTime);
@@ -62,26 +62,25 @@ void CGimmickGravel::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CGimmickGravel::Draw(CShader* pShader)
+void CGimmickBoob::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmickState::Draw(pShader);
 }
 
 //===========================================
-//  
+//  文字列(フラグ)の追加
 //===========================================
-void CGimmickGravel::HitClone(CPlayerClone* pClone)
+void CGimmickBoob::HitClone(CPlayerClone* pClone)
 {
-	// 分身に文字列を渡す
-	pClone->AddFrags(GRAVEL);
+
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickGravel::MissClone(CPlayerClone* pClone)
+void CGimmickBoob::MissClone(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
-	pClone->SabFrags(GRAVEL);
+	pClone->SabFrags(BOOB);
 }
