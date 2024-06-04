@@ -1,16 +1,16 @@
 //==========================================
 //
-//  ドブギミック(gimmick_boob.cpp)
+//  水場ギミック(gimmick_water.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_boob.h"
+#include "gimmick_water.h"
 #include "player_clone.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickBoob::CGimmickBoob() : CGimmickState()
+CGimmickWater::CGimmickWater() : CGimmickState()
 {
 
 }
@@ -18,7 +18,7 @@ CGimmickBoob::CGimmickBoob() : CGimmickState()
 //==========================================
 //  デストラクタ
 //==========================================
-CGimmickBoob::~CGimmickBoob()
+CGimmickWater::~CGimmickWater()
 {
 
 }
@@ -26,7 +26,7 @@ CGimmickBoob::~CGimmickBoob()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CGimmickBoob::Init(void)
+HRESULT CGimmickWater::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CGimmickState::Init()))
@@ -44,7 +44,7 @@ HRESULT CGimmickBoob::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CGimmickBoob::Uninit(void)
+void CGimmickWater::Uninit(void)
 {
 	// 親クラスの終了
 	CGimmickState::Uninit();
@@ -53,7 +53,7 @@ void CGimmickBoob::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CGimmickBoob::Update(const float fDeltaTime)
+void CGimmickWater::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CGimmickState::Update(fDeltaTime);
@@ -62,7 +62,7 @@ void CGimmickBoob::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CGimmickBoob::Draw(CShader* pShader)
+void CGimmickWater::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmickState::Draw(pShader);
@@ -71,16 +71,20 @@ void CGimmickBoob::Draw(CShader* pShader)
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-void CGimmickBoob::HitClone(CPlayerClone* pClone)
+void CGimmickWater::HitClone(CPlayerClone* pClone)
 {
 	// 分身にフラグを追加する
-	pClone->AddFrags(BOOB);
+	pClone->AddFrags(WATER);
+
+	// ドブフラグを削除する
+	pClone->SabFrags(BOOB);
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickBoob::MissClone(CPlayerClone* pClone)
+void CGimmickWater::MissClone(CPlayerClone* pClone)
 {
-
+	// 分身からフラグを削除する
+	pClone->SabFrags(WATER);
 }

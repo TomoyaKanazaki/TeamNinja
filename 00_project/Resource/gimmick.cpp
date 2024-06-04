@@ -14,6 +14,8 @@
 #include "gimmick_step.h"
 
 #include "gimmick_gravel.h"
+#include "gimmick_boob.h"
+#include "gimmick_water.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -144,15 +146,27 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_GRAVEL:		// »—˜“¹
+	case CGimmick::TYPE_STEP:			// “¥‚İ‘ä
+
+		pGimmick = new CGimmickStep;
+
+		break;
+
+	case CGimmick::TYPE_GRAVEL:			// »—˜“¹
 
 		pGimmick = new CGimmickGravel;
 
 		break;
 
-	case CGimmick::TYPE_STEP:		// “¥‚İ‘ä
+	case CGimmick::TYPE_BOOB:			// ƒhƒu
 
-		pGimmick = new CGimmickStep;
+		pGimmick = new CGimmickBoob;
+
+		break;
+
+	case CGimmick::TYPE_WATER:			// …ê
+
+		pGimmick = new CGimmickWater;
 
 		break;
 

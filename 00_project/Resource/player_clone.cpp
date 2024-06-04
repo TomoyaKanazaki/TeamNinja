@@ -55,8 +55,6 @@ namespace
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
 
-	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
-
 }
 
 //************************************************************
@@ -271,6 +269,10 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
+
+#ifdef _DEBUG
+	DebugProc::Print(DebugProc::POINT_CENTER, m_sFrags.c_str());
+#endif
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);

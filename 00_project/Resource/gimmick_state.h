@@ -49,6 +49,7 @@ protected:
 	{
 		GRAVEL = 'g', // »—˜“¹
 		BOOB = 'b', // ƒhƒu
+		WATER = 'w', // …ê
 		MAX
 	};
 
