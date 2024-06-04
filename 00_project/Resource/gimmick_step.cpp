@@ -14,7 +14,7 @@
 namespace
 {
 	const float CLIMB_MAX = 300.0f; // “o‚ê‚éŒÀŠE‚Ì‚‚³
-	const float CLIMB_SPEED = 150.0f; // 1•bŠÔ‚É“o‚é‘¬“x
+	const float CLIMB_SPEED = 200.0f; // 1•bŠÔ‚É“o‚é‘¬“x
 }
 
 //=========================================

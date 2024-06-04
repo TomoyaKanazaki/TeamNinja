@@ -102,12 +102,13 @@ public:
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
 
 	// 静的メンバ関数
-	static CPlayerClone* Create();							// 生成
-	static CPlayerClone* Create(const D3DXVECTOR3& move);	// 生成(歩行型)
-	static void Delete(const int nNum);						// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);	// 全消去処理 (金崎追加)
-	static CListManager<CPlayerClone>* GetList(void);		// リスト取得
-	static void CallBack();									// 分身を呼び戻す
+	static CPlayerClone* Create();													// 生成
+	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
+	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
+	static void Delete(const int nNum);												// 消去処理
+	static void Delete(const EAction act = ACTION_CHASE);							// 全消去処理 (金崎追加)
+	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
+	static void CallBack();															// 分身を呼び戻す
 
 private:
 	// メンバ関数

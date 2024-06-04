@@ -72,6 +72,7 @@ namespace
 	const int INIT_TENSION = 5000; // 士気力の初期値
 	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
 	const int MAX_CLONE = 10; // 分身の最大数
+	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float HEIGHT = 100.0f; // 身長
 
@@ -1106,11 +1107,19 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	float fRot = fRotPlayer - fTemp;
 	useful::NormalizeRot(fRot);
 
+	// 分身の位置を算出
+	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
+	(
+		DISTANCE_CLONE * cosf(-fRotStick),
+		0.0f,
+		DISTANCE_CLONE * sinf(-fRotStick)
+	);
+
 	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, rRot, VEC3_ZERO, 15.0f);
 		return;
 	}
 
@@ -1123,8 +1132,8 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	);
 
 	// 歩く分身を出す
-	CPlayerClone::Create(move);
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+	CPlayerClone::Create(pos, move);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, rRot, VEC3_ZERO, 15.0f);
 }
 
 //==========================================
