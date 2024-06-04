@@ -76,10 +76,10 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create();
 
-	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_CHASE);
+	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 
-	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE);
-	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP);
+	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
 
 	// アクターを生成
 	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);
@@ -287,7 +287,7 @@ HRESULT CGameManager::MapLoad()
 			fscanf(pFile, "%f", &rot.z);
 
 			// チェックポイントを生成
-			CCheckPoint::Create(pos, rot);
+			CCheckPoint::Create(pos);
 		}
 		if (strcmp(&aStr[0], "GOAL") == 0) // チェックポイントの生成
 		{

@@ -52,6 +52,9 @@ namespace
 	const float DISTANCE = 45.0f; // プレイヤーとの距離
 	const float TIMER = 10.0f; // 自動消滅タイマー
 
+	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
+	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
+
 	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
 
 }
@@ -154,7 +157,7 @@ HRESULT CPlayerClone::Init(void)
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 
-	// プレイヤー位置に出現
+	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
 
 	if (m_pList == nullptr)
@@ -454,6 +457,47 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	return pPlayer;
 }
 
+//==========================================
+//  生成処理(歩行)
+//==========================================
+CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 位置を設定
+	pPlayer->SetVec3Position(pos);
+
+	// 向きを設定
+	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
+	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
+	pPlayer->SetVec3Rotation(rot);		// 向き設定
+
+	// 移動量を設定
+	pPlayer->m_move = move;
+
+	// 行動を設定
+	pPlayer->m_Action = ACTION_MOVE;
+
+	// 自動消滅タイマーを設定
+	pPlayer->m_fDeleteTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer;
+}
+
 //============================================================
 // 消去処理
 //============================================================
@@ -588,6 +632,8 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	m_fDeleteTimer -= fDeltaTime;
 	if (m_fDeleteTimer <= 0.0f)
 	{
+		// 消去のエフェクトを生成する
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return MOTION_IDOL;
 	}
@@ -1057,11 +1103,11 @@ CPlayerClone::EMotion CPlayerClone::Chase
 
 	// 移動量のスカラー値を産出
 	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z);
-	if (fScalar > 30.0f)
+	if (fScalar > DASH_SPEED)
 	{
 		return MOTION_DASH;
 	}
-	else if (fScalar > 1.0f)
+	else if (fScalar > STEALTH_SPEED)
 	{
 		return MOTION_STEALTHWALK;
 	}

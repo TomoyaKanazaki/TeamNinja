@@ -17,11 +17,6 @@
 #include "motion.h"
 
 //************************************************************
-// 前方宣言
-//************************************************************
-class CEnemyState;			// 敵の状態の基盤
-
-//************************************************************
 // クラス定義
 //************************************************************
 // 敵クラス
@@ -32,12 +27,12 @@ public:
 	// 種類
 	enum EType
 	{
-		TYPE_CHASE = 0,		// 追跡敵
+		TYPE_STALK = 0,		// しつこい敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
-	explicit CEnemy(const EType type);
+	CEnemy();
 
 	// デストラクタ
 	virtual ~CEnemy();
@@ -65,10 +60,6 @@ public:
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
 
-	// 小原追加のやつ
-	CEnemyState* GetState(void) const { return m_pState; }		// 状態の取得処理
-	void ChangeState(CEnemyState* pNext);						// 状態の設定処理
-
 protected:
 
 private:
@@ -82,7 +73,6 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	EType m_type;					// 種類
-	CEnemyState* m_pState;			// 状態
 };
 
 #endif	// _ENEMY_H_

@@ -14,7 +14,7 @@
 namespace
 {
 	const float CLIMB_MAX = 300.0f; // 登れる限界の高さ
-	const float CLIMB_SPEED = 150.0f; // 1秒間に登る速度
+	const float CLIMB_SPEED = 200.0f; // 1秒間に登る速度
 }
 
 //=========================================
@@ -73,28 +73,30 @@ void CGimmickStep::Update(const float fDeltaTime)
 	// プレイヤーの座標を取得
 	CPlayer* player = GET_PLAYER;
 
-	// プレイヤーの座標が登頂位置を下回っている場合場合判定を取る
-	if (player->GetVec3Position().y <= m_fSummit && !m_bSummit)
+	// プレイヤーとの当たり判定
+	if (CollisionPlayer())
 	{
-		// プレイヤーとの当たり判定
-		if (CollisionPlayer())
+		if (!m_bSummit) // 登頂済みでない場合
 		{
 			// 登る
 			Climb(player);
+
+			// プレイヤーの高さを比較
+			if (player->GetVec3Position().y > m_fSummit)
+			{
+				player->GimmickLowJump();
+				m_bSummit = true;
+			}
+		}
+		else
+		{
+			// プレイヤーの高さを比較
+			if (player->GetVec3Position().y < m_fSummit)
+			{
+				m_bSummit = false;
+			}
 		}
 	}
-
-	// プレイヤーが登頂位置を上回っている場合フラグをon
-	if (player->GetVec3Position().y > m_fSummit)
-	{
-		DebugProc::Print(DebugProc::POINT_CENTER, "登れる\n");
-		m_bSummit = true;
-	}
-	else
-	{
-		m_bSummit = false;
-	}
-
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);

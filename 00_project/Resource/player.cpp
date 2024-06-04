@@ -45,7 +45,7 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_LOW	= 1260.0f;		// 小ジャンプ上昇量
 	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
@@ -72,6 +72,7 @@ namespace
 	const int INIT_TENSION = 5000; // 士気力の初期値
 	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
 	const int MAX_CLONE = 10; // 分身の最大数
+	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float HEIGHT = 100.0f; // 身長
 
@@ -538,6 +539,21 @@ bool CPlayer::GimmickHighJump(void)
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	return true;
+}
+
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickLowJump(void)
+{
+	// 上移動量を与える
+	m_move.y = JUMP_LOW;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 }
 
 //==========================================
@@ -1113,11 +1129,19 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	float fRot = fRotPlayer - fTemp;
 	useful::NormalizeRot(fRot);
 
+	// 分身の位置を算出
+	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
+	(
+		DISTANCE_CLONE * cosf(-fRotStick),
+		0.0f,
+		DISTANCE_CLONE * sinf(-fRotStick)
+	);
+
 	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
 	if (fabsf(fRot) >= D3DX_PI * 0.875f)
 	{
 		CPlayerClone::Create();
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, rRot, VEC3_ZERO, 15.0f);
 		return;
 	}
 
@@ -1130,8 +1154,8 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	);
 
 	// 歩く分身を出す
-	CPlayerClone::Create(move);
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", rPos, rRot, VEC3_ZERO, 15.0f);
+	CPlayerClone::Create(pos, move);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, rRot, VEC3_ZERO, 15.0f);
 }
 
 //==========================================
@@ -1204,7 +1228,7 @@ void CPlayer::DebugJumpControl(void)
 	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		// 上昇量を与えるよ
-		m_move.y = JUMP_MINI;
+		m_move.y = JUMP_LOW;
 
 		// ジャンプ中にするよ
 		m_bJump = true;
