@@ -10,14 +10,18 @@
 #include "player_clone.h"
 #include "shadow.h"
 #include "input.h"
+#include "sound.h"
 #include "manager.h"
 #include "useful.h"
 #include "player.h"
 #include "orbit.h"
 #include "multiModel.h"
+#include "stage.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	定数宣言
@@ -29,15 +33,15 @@ namespace
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
 	const int	BLEND_FRAME	= 5;		// モーションのブレンドフレーム
 	const float	MOVE		= 150.0f;	// 移動量
-	const float	JUMP		= 21.0f;	// ジャンプ上昇量
-	const float	GRAVITY		= 1.0f;		// 重力
-	const float	RADIUS		= 20.0f;	// 半径
-	const float	HEIGHT		= 100.0f;	// 縦幅
+	const float	GRAVITY		= 60.0f;	// 重力
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV	= 0.16f;	// 通常状態時の地上の移動量の減衰係数
-	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
+	const int	BLEND_FRAME_OTHER	= 5;		// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;		// モーション着地のブレンドフレーム
+	const int	CAUTIOUS_TRANS_LOOP	= 7;		// 警戒モーションに遷移する待機ループ数
+	const float	SPAWN_ADD_ALPHA		= 0.03f;	// スポーン状態時の透明度の加算量
 
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
@@ -45,8 +49,14 @@ namespace
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.0f, -10.0f, 0.0f), XCOL_GREEN);	// オフセット情報
 	const int ORBIT_PART = 10;	// 分割数
 
-	const float DISTANCE = 75.0f; // プレイヤーとの距離
+	const float DISTANCE = 60.0f; // プレイヤーとの距離
 	const float TIMER = 10.0f; // 自動消滅タイマー
+
+	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
+	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
+
+	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
+
 }
 
 //************************************************************
@@ -67,7 +77,11 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_Action		(ACTION_CHASE),	// 行動
 	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
 	m_fChargeTimer	(0.0f),			// ため時間タイマー
-	m_pGimmick		(nullptr)		// ギミックのポインタ
+	m_pGimmick		(nullptr),		// ギミックのポインタ
+	m_sFrags		({}),			// ギミックフラグの文字列
+	m_nIdxGimmick	(-1),			// ギミック内の管理番号
+	m_oldPos		(VEC3_ZERO),	// 過去位置
+	m_bJump			(false)			// ジャンプ状況
 {
 
 }
@@ -93,6 +107,10 @@ HRESULT CPlayerClone::Init(void)
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
 	m_fChargeTimer	= 0.0f;			// ため時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
+	m_sFrags		= {};			// ギミックフラグの文字列]
+	m_nIdxGimmick	= -1;			// ギミック内の管理番号
+	m_oldPos		= VEC3_ZERO;	// 過去位置
+	m_bJump			= true;			// ジャンプ状況
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -137,7 +155,7 @@ HRESULT CPlayerClone::Init(void)
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 
-	// プレイヤー位置に出現
+	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
 
 	if (m_pList == nullptr)
@@ -193,6 +211,9 @@ void CPlayerClone::Uninit(void)
 void CPlayerClone::Update(const float fDeltaTime)
 {
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 過去位置の更新
+	UpdateOldPosition();
 
 	// 各種行動を起こす
 	switch (m_Action)
@@ -324,8 +345,47 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
+	// ギミック内での管理番号を取得する
+	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
+
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CPlayerClone::AddFrags(const char cFrag)
+{
+	// 文字列内を検索に同じ文字が存在したら関数を抜ける
+	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
+
+	// 文字列に受け取ったフラグを追加する
+	m_sFrags += cFrag;
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CPlayerClone::SabFrags(const char cFrag)
+{
+	// 文字列内を検索し番号を取得する
+	size_t nIdx = m_sFrags.find(cFrag);
+
+	// 文字列内にフラグが存在しなかった場合関数を抜ける
+	if (nIdx == std::string::npos) { return; }
+
+	// 文字列からフラグを削除する
+	m_sFrags.erase(nIdx);
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+bool CPlayerClone::GetFrags(const char cFrag)
+{
+	// 文字列内を検索した結果を返す
+	return m_sFrags.find(cFrag) != std::string::npos;
 }
 
 //============================================================
@@ -397,6 +457,47 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	return pPlayer;
 }
 
+//==========================================
+//  生成処理(歩行)
+//==========================================
+CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 位置を設定
+	pPlayer->SetVec3Position(pos);
+
+	// 向きを設定
+	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
+	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
+	pPlayer->SetVec3Rotation(rot);		// 向き設定
+
+	// 移動量を設定
+	pPlayer->m_move = move;
+
+	// 行動を設定
+	pPlayer->m_Action = ACTION_MOVE;
+
+	// 自動消滅タイマーを設定
+	pPlayer->m_fDeleteTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer;
+}
+
 //============================================================
 // 消去処理
 //============================================================
@@ -410,6 +511,9 @@ void CPlayerClone::Delete(const int nNum)
 
 	// 分身を取得
 	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
+
+	// 消去のエフェクトを生成する
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	pAvatar->Uninit();
@@ -448,11 +552,8 @@ void CPlayerClone::Delete(const EAction act)
 	// フラグの立っている分身を削除する
 	for (int i = nNum - 1; i >= 0; --i)
 	{
-		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
-
 		// 削除
-		if (bDelete[i]) { pAvatar->Uninit(); }
+		if (bDelete[i]) { Delete(i); }
 	}
 
 	// 削除フラグを削除
@@ -494,6 +595,9 @@ void CPlayerClone::CallBack()
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
 
+		// ギミック内管理番号をリセットする
+		pClone->m_nIdxGimmick = -1;
+
 #ifdef _DEBUG
 		// マテリアルを変更
 		pClone->SetAllMaterial(material::Green());
@@ -514,10 +618,18 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	// 移動
 	posPlayer += m_move * fDeltaTime;
 
+	// 重力の更新
+	UpdateGravity();
+
+	// 着地判定
+	UpdateLanding(posPlayer);
+
 	// 消滅
 	m_fDeleteTimer -= fDeltaTime;
 	if (m_fDeleteTimer <= 0.0f)
 	{
+		// 消去のエフェクトを生成する
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return MOTION_IDOL;
 	}
@@ -545,11 +657,27 @@ CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
 
+	// TODO：Gimmick移動どうしよかね
+#if 1
 	// ギミックの位置に移動する
 	SetVec3Position(m_pGimmick->GetVec3Position());
 
 	// ギミック待機状態にする
 	m_Action = ACTION_WAIT;
+#else
+	int nNumAct = m_pGimmick->GetNumActive();
+	float fRate = (D3DX_PI * 2.0f) / nNumAct;
+
+	D3DXVECTOR3 posOrigin = m_pGimmick->GetVec3Position();
+	posOrigin.x += sinf(fRate * 1 + HALF_PI) * 80.0f;
+	posOrigin.z += cosf(fRate * 1 + HALF_PI) * 80.0f;
+
+	// ギミックの位置に移動する
+	SetVec3Position(posOrigin);
+
+	// ギミック待機状態にする
+	m_Action = ACTION_WAIT;
+#endif
 
 	// 移動モーションを返す
 	return MOTION_DASH;
@@ -593,7 +721,68 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 {
+	if (m_pGimmick->GetMoment()) { return MOTION_CATAPULT; }
+
 	return MOTION_JUMP_IDOL;
+}
+
+//============================================================
+//	過去位置の更新処理
+//============================================================
+void CPlayerClone::UpdateOldPosition(void)
+{
+	// 過去位置を更新
+	m_oldPos = GetVec3Position();
+}
+
+//============================================================
+//	重力の更新処理
+//============================================================
+void CPlayerClone::UpdateGravity(void)
+{
+	// 重力を加算
+	m_move.y -= GRAVITY;
+}
+
+//============================================================
+//	着地状況の更新処理
+//============================================================
+bool CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos)
+{
+	bool bLand = false;	// 着地フラグ
+	CStage *pStage = CScene::GetStage();	// ステージ情報
+
+	// ジャンプしている状態にする
+	m_bJump = true;
+
+	// 地面・制限位置の着地判定
+	if (pStage->LandFieldPosition(rPos, m_move)
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// 着地している状態にする
+		bLand = true;
+
+		// ジャンプしていない状態にする
+		m_bJump = false;
+	}
+
+	if (!m_bJump)
+	{ // 空中にいない場合
+
+		if (GetMotionType() == MOTION_FALL)
+		{ // モーションが落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+
+	// 着地フラグを返す
+	return bLand;
 }
 
 //============================================================
@@ -624,6 +813,84 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	// オブジェクトキャラクターの更新
 	CObjectChara::Update(fDeltaTime);
+
+	switch (GetMotionType())
+	{ // モーションの種類ごとの処理
+	case MOTION_IDOL:	// 待機モーション
+
+		if (GetMotionNumLoop() >= CAUTIOUS_TRANS_LOOP)
+		{ // 待機モーションでしばらくいた場合
+
+			// 警戒モーションの設定
+			SetMotion(MOTION_CAUTIOUS, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_CAUTIOUS:	// 警戒モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+
+#if 0
+	case MOTION_DASH:	// 歩行モーション
+
+		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			switch (m_land)
+			{ // 着地物ごとの処理
+			case LAND_OBSTACLE:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
+
+				break;
+
+			default:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
+
+				break;
+			}
+		}
+
+		break;
+
+	case MOTION_STEALTHWALK:	// 忍び足モーション
+
+		break;
+#endif
+
+	case MOTION_FALL:	// 落下モーション
+
+		if (!m_bJump)
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_LANDING:	// 着地モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+	}
 }
 
 //============================================================
@@ -772,11 +1039,11 @@ CPlayerClone::EMotion CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVEC
 
 	// 移動量のスカラー値を産出
 	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.y * vecTarget.y + vecTarget.z * vecTarget.z);
-	if (fScalar > 30.0f)
+	if (fScalar > DASH_SPEED)
 	{
 		return MOTION_DASH;
 	}
-	else if (fScalar > 1.0f)
+	else if (fScalar > STEALTH_SPEED)
 	{
 		return MOTION_STEALTHWALK;
 	}

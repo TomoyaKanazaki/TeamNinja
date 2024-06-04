@@ -16,9 +16,6 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_RELEASE		(DIK_9)	// 破棄キー
-#define NAME_RELEASE	("9")	// 破棄表示
-
 #define KEY_UP_WIDTH		(DIK_T)	// 幅拡大キー
 #define NAME_UP_WIDTH		("T")	// 幅拡大表示
 #define KEY_DOWN_WIDTH		(DIK_G)	// 幅縮小キー
@@ -214,7 +211,6 @@ void CEditCollCube::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "幅：[%s/%s+%s]\n", NAME_UP_WIDTH, NAME_DOWN_WIDTH, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "高さ：[%s/%s+%s]\n", NAME_UP_HEIGHT, NAME_DOWN_HEIGHT, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "奥行：[%s/%s+%s]\n", NAME_UP_DEPTH, NAME_DOWN_DEPTH, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }
@@ -241,6 +237,8 @@ void CEditCollCube::DrawDebugInfo(void)
 //============================================================
 void CEditCollCube::Create(void)
 {
+#ifdef _DEBUG
+
 	//----------------------------------------------------
 	//	コリジョンキューブの情報を配置用に変更
 	//----------------------------------------------------
@@ -248,6 +246,8 @@ void CEditCollCube::Create(void)
 	m_pCube->GetCube()->SetEnableUpdate(true);
 	m_pCube->GetCube()->SetEnableDraw(true);
 	m_pCube->GetCube()->SetLabel(CObject::LABEL_DEBUG);
+
+#endif // _DEBUG
 
 	// 未保存を設定
 	m_bSave = false;
@@ -278,7 +278,7 @@ void CEditCollCube::UpdateOffset(void)
 #if _DEBUG
 
 	// 向きを反映
-	m_pCube->GetCube()->SetVec3Rotation(GetVec3OffSet());
+	m_pCube->GetCube()->SetVec3Position(GetVec3OffSet());
 
 #endif	// _DEBUG
 }
@@ -351,6 +351,8 @@ void CEditCollCube::UpdateSizing(void)
 	useful::LimitMinNum(m_infoCreate.fHeight, SCALING);
 	useful::LimitMinNum(m_infoCreate.fDepth, SCALING);
 
+#ifdef _DEBUG
+
 	// 大きさを反映
 	m_pCube->GetCube()->SetVec3Sizing(D3DXVECTOR3
 	(
@@ -358,6 +360,8 @@ void CEditCollCube::UpdateSizing(void)
 		m_infoCreate.fHeight,
 		m_infoCreate.fDepth
 	));
+
+#endif // _DEBUG
 }
 
 #endif

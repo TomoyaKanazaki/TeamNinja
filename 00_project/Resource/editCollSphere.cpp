@@ -16,9 +16,6 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_RELEASE		(DIK_9)	// 破棄キー
-#define NAME_RELEASE	("9")	// 破棄表示
-
 #define KEY_UP_RADIUS		(DIK_T)	// 半径拡大キー
 #define NAME_UP_RADIUS		("T")	// 半径拡大表示
 #define KEY_DOWN_RADIUS		(DIK_G)	// 半径縮小キー
@@ -198,7 +195,6 @@ void CEditCollSphere::DrawDebugControl(void)
 	CEditorCollShape::DrawDebugControl();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "半径：[%s/%s+%s]\n", NAME_UP_RADIUS, NAME_DOWN_RADIUS, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }
@@ -229,7 +225,7 @@ void CEditCollSphere::UpdateOffset(void)
 #if _DEBUG
 
 	// 向きを反映
-	m_pSphere->GetSphere()->SetVec3Rotation(GetVec3OffSet());
+	m_pSphere->GetSphere()->SetVec3Position(GetVec3OffSet());
 
 #endif	// _DEBUG
 }
@@ -268,8 +264,12 @@ void CEditCollSphere::UpdateSizing(void)
 	// 大きさを補正
 	useful::LimitMinNum(m_infoCreate.fRadius, SCALING);
 
+#ifdef _DEBUG
+
 	// 大きさを反映
 	m_pSphere->GetSphere()->SetRadius(m_infoCreate.fRadius);
+
+#endif // _DEBUG
 }
 
 //============================================================
@@ -277,6 +277,8 @@ void CEditCollSphere::UpdateSizing(void)
 //============================================================
 void CEditCollSphere::Create(void)
 {
+#ifdef _DEBUG
+
 	//----------------------------------------------------
 	//	コリジョンスフィアの情報を配置用に変更
 	//----------------------------------------------------
@@ -284,6 +286,8 @@ void CEditCollSphere::Create(void)
 	m_pSphere->GetSphere()->SetEnableUpdate(true);
 	m_pSphere->GetSphere()->SetEnableDraw(true);
 	m_pSphere->GetSphere()->SetLabel(CObject::LABEL_DEBUG);
+
+#endif // _DEBUG
 
 	// 未保存を設定
 	m_bSave = false;

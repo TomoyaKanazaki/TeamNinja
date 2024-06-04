@@ -16,9 +16,6 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_RELEASE		(DIK_9)	// 破棄キー
-#define NAME_RELEASE	("9")	// 破棄表示
-
 #define KEY_UP_RADIUS		(DIK_T)	// 半径拡大キー
 #define NAME_UP_RADIUS		("T")	// 半径拡大表示
 #define KEY_DOWN_RADIUS		(DIK_G)	// 半径縮小キー
@@ -206,7 +203,6 @@ void CEditCollCylinder::DrawDebugControl(void)
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "半径：[%s/%s+%s]\n", NAME_UP_RADIUS, NAME_DOWN_RADIUS, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "高さ：[%s/%s+%s]\n", NAME_UP_HEIGHT, NAME_DOWN_HEIGHT, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }
@@ -238,7 +234,7 @@ void CEditCollCylinder::UpdateOffset(void)
 #if _DEBUG
 
 	// 向きを反映
-	m_pCylinder->GetTube()->SetVec3Rotation(GetVec3OffSet());
+	m_pCylinder->GetTube()->SetVec3Position(GetVec3OffSet());
 
 #endif	// _DEBUG
 }
@@ -294,9 +290,13 @@ void CEditCollCylinder::UpdateSizing(void)
 	useful::LimitMinNum(m_infoCreate.fRadius, SCALING);
 	useful::LimitMinNum(m_infoCreate.fHeight, SCALING);
 
+#ifdef _DEBUG
+
 	// 大きさを反映
 	m_pCylinder->GetTube()->SetRadius(m_infoCreate.fRadius);
 	m_pCylinder->GetTube()->SetHeight(m_infoCreate.fHeight);
+
+#endif // _DEBUG
 }
 
 //============================================================
@@ -304,6 +304,8 @@ void CEditCollCylinder::UpdateSizing(void)
 //============================================================
 void CEditCollCylinder::Create(void)
 {
+#ifdef _DEBUG
+
 	//----------------------------------------------------
 	//	コリジョンシリンダーの情報を配置用に変更
 	//----------------------------------------------------
@@ -311,6 +313,8 @@ void CEditCollCylinder::Create(void)
 	m_pCylinder->GetTube()->SetEnableUpdate(true);
 	m_pCylinder->GetTube()->SetEnableDraw(true);
 	m_pCylinder->GetTube()->SetLabel(CObject::LABEL_DEBUG);
+
+#endif // _DEBUG
 
 	// 未保存を設定
 	m_bSave = false;

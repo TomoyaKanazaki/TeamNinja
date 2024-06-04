@@ -77,6 +77,8 @@ CMapModel* CMapModel::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, c
 	//中身と初期化チェック
 	assert(pMapModel && pMapModel->Init()==S_OK);
 
+	//if (nModelId < NONE_IDX && )
+
 	pMapModel->SetVec3Position(rPos);				//位置情報
 	pMapModel->SetVec3Rotation(rRot);				//向き情報
 	pMapModel->SetVec3Scaling(rSize);				//サイズ情報

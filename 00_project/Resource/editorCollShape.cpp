@@ -19,20 +19,23 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_FAR		(DIK_W)	// 奥移動キー
-#define NAME_FAR	("W")	// 奥移動表示
-#define KEY_NEAR	(DIK_S)	// 手前移動キー
-#define NAME_NEAR	("S")	// 手前移動表示
-#define KEY_RIGHT	(DIK_D)	// 右移動キー
-#define NAME_RIGHT	("D")	// 右移動表示
-#define KEY_LEFT	(DIK_A)	// 左移動キー
-#define NAME_LEFT	("A")	// 左移動表示
-#define KEY_UP		(DIK_E)	// 上移動キー
-#define NAME_UP		("E")	// 上移動表示
-#define KEY_DOWN	(DIK_Q)	// 下移動キー
-#define NAME_DOWN	("Q")	// 下移動表示
-#define KEY_CREATE	(DIK_0)	// 生成キー
-#define NAME_CREATE	("0")	// 生成表示
+#define KEY_CREATE		(DIK_0)	// 生成キー
+#define NAME_CREATE		("0")	// 生成表示
+#define KEY_RELEASE		(DIK_9)	// 破棄キー
+#define NAME_RELEASE	("9")	// 破棄表示
+
+#define KEY_FAR			(DIK_W)	// 奥移動キー
+#define NAME_FAR		("W")	// 奥移動表示
+#define KEY_NEAR		(DIK_S)	// 手前移動キー
+#define NAME_NEAR		("S")	// 手前移動表示
+#define KEY_RIGHT		(DIK_D)	// 右移動キー
+#define NAME_RIGHT		("D")	// 右移動表示
+#define KEY_LEFT		(DIK_A)	// 左移動キー
+#define NAME_LEFT		("A")	// 左移動表示
+#define KEY_UP			(DIK_E)	// 上移動キー
+#define NAME_UP			("E")	// 上移動表示
+#define KEY_DOWN		(DIK_Q)	// 下移動キー
+#define NAME_DOWN		("Q")	// 下移動表示
 
 //************************************************************
 //	定数宣言
@@ -54,7 +57,6 @@ CEditorCollShape::CEditorCollShape(const int nIdx)
 
 	// メンバ変数をクリア
 	m_offset = VEC3_ZERO;		// オフセット座標
-	m_nIdx = nIdx;				// インデックス
 
 #endif	// _DEBUG
 }
@@ -120,6 +122,7 @@ void CEditorCollShape::DrawDebugControl(void)
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }

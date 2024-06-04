@@ -66,7 +66,12 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 	if (CollisionPlayer())
 	{
 		// プレイヤーを大ジャンプ！
-		GET_PLAYER->GimmickHighJump();
+		SetMoment(GET_PLAYER->GimmickHighJump());
+	}
+	else
+	{
+		// ジャンプしていない場合false
+		SetMoment(false);
 	}
 
 	// 親クラスの更新

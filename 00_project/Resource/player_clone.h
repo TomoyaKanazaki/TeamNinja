@@ -2,6 +2,7 @@
 //
 //	プレイヤーの分身ヘッダー [player_clone.h]
 //	Author：小原立暉
+//	Adder ：藤田勇一
 //
 //============================================================
 //************************************************************
@@ -96,14 +97,18 @@ public:
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
 	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
+	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
+	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
+	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
 
 	// 静的メンバ関数
-	static CPlayerClone* Create();							// 生成
-	static CPlayerClone* Create(const D3DXVECTOR3& move);	// 生成(歩行型)
-	static void Delete(const int nNum);						// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);	// 全消去処理 (金崎追加)
-	static CListManager<CPlayerClone>* GetList(void);		// リスト取得
-	static void CallBack();									// 分身を呼び戻す
+	static CPlayerClone* Create();													// 生成
+	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
+	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
+	static void Delete(const int nNum);												// 消去処理
+	static void Delete(const EAction act = ACTION_CHASE);							// 全消去処理 (金崎追加)
+	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
+	static void CallBack();															// 分身を呼び戻す
 
 private:
 	// メンバ関数
@@ -112,6 +117,10 @@ private:
 	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
+
+	void UpdateOldPosition(void);	// 過去位置の更新
+	void UpdateGravity(void);		// 重力の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos);	// 着地状況の更新
 
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
@@ -134,7 +143,12 @@ private:
 	float m_fDeleteTimer;		// 自動消滅タイマー
 	float m_fChargeTimer;		// ため時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
+	std::string m_sFrags;		// ギミックフラグの文字列
+	int m_nIdxGimmick;			// ギミック内の管理番号
 
+	// メンバ変数 (藤田追加)
+	D3DXVECTOR3	m_oldPos;	// 過去位置
+	bool m_bJump;			// ジャンプ状況
 };
 
 #endif	// _PLAYER_H_
