@@ -177,6 +177,7 @@
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
+    <ClInclude Include="Resource\editCheckPoint.h" />
     <ClInclude Include="Resource\editEvent.h" />
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editorGimmick.h" />
@@ -197,7 +198,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyState.h" />
     <ClInclude Include="Resource\enemyStateAttack.h" />
-    <ClInclude Include="Resource\enemyChase.h" />
+    <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\field.h" />
@@ -313,6 +314,7 @@
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
+    <ClCompile Include="Resource\editCheckPoint.cpp" />
     <ClCompile Include="Resource\editEvent.cpp" />
     <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editorGimmick.cpp" />
@@ -333,7 +335,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyState.cpp" />
     <ClCompile Include="Resource\enemyStateAttack.cpp" />
-    <ClCompile Include="Resource\enemyChase.cpp" />
+    <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\field.cpp" />

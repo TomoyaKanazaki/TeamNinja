@@ -13,6 +13,7 @@
 
 #include "editField.h"
 #include "editActor.h"
+#include "editCheckPoint.h"
 
 //************************************************************
 //	マクロ定義
@@ -158,23 +159,26 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 	switch (type)
 	{ // 種類ごとの処理
 	case CEditStage::TYPE_FIELD:
-		pEditorObject = new CEditField;		// エディットフィールド
+		pEditorObject = new CEditField;			// エディットフィールド
 		break;
 
 	case CEditStage::TYPE_WALL:
 
 		// TODO：エディットウォールできたら置き換え
 		pEditorObject = new CEditField;	// エディットフィールド
-		//pEditorObject = new CEditWall;	// エディットウォール
-
+		//pEditorObject = new CEditWall;		// エディットウォール
 		break;
 
 	case CEditStage::TYPE_ACTOR:
-		pEditorObject = new CEditActor;		// エディットアクター
+		pEditorObject = new CEditActor;			// エディットアクター
+		break;
+
+	case CEditStage::TYPE_CHECKPOINT:
+		pEditorObject = new CEditCheckPoint;	// エディットチェックポイント
 		break;
 
 	case CEditStage::TYPE_GIMMICK:
-		pEditorObject = new CEditActor;	// エディットギミック TODO：
+		pEditorObject = new CEditActor;			// エディットギミック TODO：あとでやる
 		break;
 
 	default:	// 例外処理
