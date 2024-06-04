@@ -2,6 +2,7 @@
 //
 //  チェックポイント(checkpoint.h)
 //  Author : Tomoya Kanazaki
+//  Adder：Ritsuki Obara
 //
 //==========================================
 #pragma once
@@ -26,7 +27,8 @@ public:
 	int GetSaveTension() const { return m_nSaveTension; } // セーブ時の士気力取得
 
 	// 静的メンバ関数
-	static CCheckPoint* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // 生成処理
+	static CCheckPoint* Create(const D3DXVECTOR3& rPos); // 生成処理
+	static CListManager<CCheckPoint>* GetList(void);	 // リスト取得
 
 private:
 
@@ -35,6 +37,7 @@ private:
 	void Load(); // 外部情報の読み込み
 
 	// メンバ変数
+	CListManager<CCheckPoint>::AIterator m_iterator;	// イテレーター
 	bool m_bSave; // セーブフラグ
 	float m_fRadius; // 当たり判定半径
 	int m_nSaveTension; // セーブ時の士気力
@@ -42,5 +45,5 @@ private:
 
 	// 静的メンバ変数
 	static int m_nNumAll;
-
+	static CListManager<CCheckPoint>* m_pList;	// オブジェクトリスト
 };

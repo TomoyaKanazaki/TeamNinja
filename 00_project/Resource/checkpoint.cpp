@@ -23,6 +23,7 @@ namespace
 //  静的メンバ変数宣言
 //==========================================
 int CCheckPoint::m_nNumAll = 0;
+CListManager<CCheckPoint>* CCheckPoint::m_pList = nullptr;	// オブジェクトリスト
 
 //==========================================
 //  コンストラクタ
@@ -81,6 +82,23 @@ HRESULT CCheckPoint::Init(void)
 	// マテリアルを変更
 	SetAllMaterial(material::GlowCyan());
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CCheckPoint>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	return S_OK;
 }
 
@@ -89,6 +107,16 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// 親クラスの終了
 	CObjectModel::Uninit();
 }
@@ -122,7 +150,7 @@ void CCheckPoint::Draw(CShader* pShader)
 //==========================================
 //  生成処理
 //==========================================
-CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 {
 	// ポインタを宣言
 	CCheckPoint* pSavePoint = new CCheckPoint;	// セーブポイント生成用
@@ -143,11 +171,17 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRo
 	// 位置を設定
 	pSavePoint->SetVec3Position(rPos);
 
-	// 向きを設定
-	pSavePoint->SetVec3Rotation(rRot);
-
 	// 確保したアドレスを返す
 	return pSavePoint;
+}
+
+//==========================================
+// リスト取得
+//==========================================
+CListManager<CCheckPoint>* CCheckPoint::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
 }
 
 //==========================================

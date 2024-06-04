@@ -287,7 +287,7 @@ HRESULT CGameManager::MapLoad()
 			fscanf(pFile, "%f", &rot.z);
 
 			// チェックポイントを生成
-			CCheckPoint::Create(pos, rot);
+			CCheckPoint::Create(pos);
 		}
 		if (strcmp(&aStr[0], "GOAL") == 0) // チェックポイントの生成
 		{
