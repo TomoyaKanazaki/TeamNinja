@@ -23,15 +23,12 @@ namespace
 {
 	const char *TEX_LOGO_FILE[] =	// ロゴテクスチャファイル
 	{
-		"data\\TEXTURE\\title000.png",	// NEVERテクスチャ
-		"data\\TEXTURE\\title001.png",	// GIVEテクスチャ
-		"data\\TEXTURE\\title002.png",	// UP!テクスチャ
+		"data\\TEXTURE\\npn_title.png",	// タイトルテクスチャ
 	};
 
-	const char *TEX_SELECT_FILE[] =	// 選択項目テクスチャファイル
+	const char *TEX_START_FILE[] =	// スタートテクスチャファイル
 	{
 		"data\\TEXTURE\\title003.png",	// STARTテクスチャ
-		"data\\TEXTURE\\title004.png",	// MANUALテクスチャ
 	};
 
 	const int PRIORITY = 5;	// タイトルの優先順位
@@ -45,20 +42,18 @@ namespace
 
 	namespace logo
 	{
-		const D3DXVECTOR3 POS_NEVER	= D3DXVECTOR3(340.0f,  140.0f, 0.0f);	// タイトルロゴの位置 (NEVER)
-		const D3DXVECTOR3 POS_GIVE	= D3DXVECTOR3(710.0f,  310.0f, 0.0f);	// タイトルロゴの位置 (GIVE)
-		const D3DXVECTOR3 POS_UP	= D3DXVECTOR3(1050.0f, 320.0f, 0.0f);	// タイトルロゴの位置 (UP!)
+		const D3DXVECTOR3 POS = D3DXVECTOR3(1100.0f,  290.0f, 0.0f);	// タイトルロゴの位置
+		const D3DXVECTOR3 STOP_POS = D3DXVECTOR3(130.0f, 290.0f, 0.0f);	// タイトルロゴの位置
 
-		const D3DXVECTOR3 POS[] =	// 位置配列
-		{
-			POS_NEVER,	// NEVERの位置
-			POS_GIVE,	// GIVEの位置
-			POS_UP,		// UP!の位置
-		};
+		const D3DXVECTOR3 SIZE = D3DXVECTOR3(450.0f, 600.0f, 0.0f);	// タイトルロゴの大きさ
+		const D3DXVECTOR3 INIT_SIZE = SIZE * 0.0f;	// タイトルロゴの初期の大きさ
 
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(666.0f, 290.0f, 0.0f) * 0.8f;	// タイトルロゴの大きさ
-		const float	INIT_SCALE	= 15.0f;	// タイトルロゴの初期拡大率
-		const float	SUB_SCALE	= 0.65f;	// タイトルロゴ拡大率の減算量
+		const D3DXCOLOR COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// タイトルロゴの色
+
+		const float		  MOVE  = 10.0f;	// タイトルロゴの移動量
+		const float	INIT_SCALE	= 0.0f;		// タイトルロゴの初期拡大率
+		const float	SUB_SCALE	= 0.1f;		// タイトルロゴ拡大率の加算量
+		const int WAIT_TIME		= 40;		// タイトルロゴ移動までの待機時間
 	}
 
 	namespace select
@@ -71,20 +66,26 @@ namespace
 		const D3DXCOLOR DEFAULT_COL	= D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);	// 非選択中カラー
 	}
 
-	namespace selectBG
+	namespace start
 	{
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(640.0f, 560.0f, 0.0f);				// 選択背景の位置
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3((float)SCREEN_WIDTH, 120.0f, 0.0f);	// 選択背景の大きさ
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(640.0f, 600.0f, 0.0f);	// スタートの位置
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(500.0f, 120.0f, 0.0f);	// スタートの大きさ
 
-		const D3DXCOLOR COL = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f);	// 選択背景の色
+		const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// スタートの初期色
+		const D3DXCOLOR COL      = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// スタートの色
+
+		const float INIT_ALPHA = 0.0f;	// 透明度の初期値
+		const float SUB_ALPHA = 0.016f;	// 透明度の加算量
+
+		const float	SUB_SCALE = 0.2f;	// スタートの拡大率の加算量
 	}
 }
 
 //************************************************************
 //	スタティックアサート
 //************************************************************
-static_assert(NUM_ARRAY(TEX_LOGO_FILE)   == CTitleManager::LOGO_MAX,   "ERROR : LogoTexture Count Mismatch");
-static_assert(NUM_ARRAY(TEX_SELECT_FILE) == CTitleManager::SELECT_MAX, "ERROR : SelectTexture Count Mismatch");
+//static_assert(NUM_ARRAY(TEX_LOGO_FILE)   == CTitleManager::LOGO_MAX,   "ERROR : LogoTexture Count Mismatch");
+//static_assert(NUM_ARRAY(TEX_START_FILE)	 == CTitleManager::SELECT_MAX, "ERROR : SelectTexture Count Mismatch");
 
 //************************************************************
 //	親クラス [CTitleManager] のメンバ関数
@@ -93,16 +94,18 @@ static_assert(NUM_ARRAY(TEX_SELECT_FILE) == CTitleManager::SELECT_MAX, "ERROR : 
 //	コンストラクタ
 //============================================================
 CTitleManager::CTitleManager() :
+	m_pLogo			(nullptr),		// タイトル表示の情報
 	m_pFade			(nullptr),		// フェードの情報
-	m_pSelectBG		(nullptr),		// 選択背景の情報
+	m_pStart		(nullptr),		// スタートの情報
 	m_state			(STATE_NONE),	// 状態
+	m_startState	(STARTSTATE_NONE),	// スタート状態
 	m_fScale		(0.0f),			// タイトル拡大率
 	m_nSelect		(0),			// 現在の選択
-	m_nOldSelect	(0)				// 前回の選択
+	m_nOldSelect	(0),			// 前回の選択
+	m_nWaitCounter	(0)				// タイトル移動までの待機時間
 {
 	// メンバ変数をクリア
-	memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
-	memset(&m_apSelect[0],	0, sizeof(m_apSelect));	// 選択表示の情報
+	//memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
 }
 
 //============================================================
@@ -122,27 +125,27 @@ HRESULT CTitleManager::Init(void)
 	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
 
 	// メンバ変数を初期化
-	memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
-	memset(&m_apSelect[0],	0, sizeof(m_apSelect));	// 選択表示の情報
+	m_pLogo			= nullptr;			// タイトル表示の情報
 	m_pFade			= nullptr;			// フェードの情報
-	m_pSelectBG		= nullptr;			// 選択背景の情報
+	m_pStart		= nullptr;			// スタートの情報
 	m_state			= STATE_FADEOUT;	// 状態
+	m_startState    = STARTSTATE_APPEAR;// スタート状態
 	m_fScale		= logo::INIT_SCALE;	// タイトル拡大率
+	m_fMove			= logo::MOVE;		// タイトルロゴの移動量
 	m_nSelect		= 0;				// 現在の選択
 	m_nOldSelect	= 0;				// 前回の選択
+	m_nWaitCounter  = 0;				// タイトル移動までの待機時間
 
 	//--------------------------------------------------------
-	//	選択背景の生成・設定
+	//	タイトルロゴの生成・設定
 	//--------------------------------------------------------
-	// 選択背景の生成
-	m_pSelectBG = CObject2D::Create
+	// タイトルロゴの生成
+	m_pLogo = CObject2D::Create
 	( // 引数
-		selectBG::POS,	// 位置
-		selectBG::SIZE,	// 大きさ
-		VEC3_ZERO,		// 向き
-		selectBG::COL	// 色
+		logo::POS,			// 位置
+		logo::INIT_SIZE		// 初期の大きさ
 	);
-	if (m_pSelectBG == nullptr)
+	if (m_pLogo == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
@@ -150,73 +153,42 @@ HRESULT CTitleManager::Init(void)
 		return E_FAIL;
 	}
 
+	// テクスチャを登録・割当
+	m_pLogo->BindTexture(pTexture->Regist(TEX_LOGO_FILE[0]));
+
 	// 優先順位を設定
-	m_pSelectBG->SetPriority(PRIORITY);
+	m_pLogo->SetPriority(PRIORITY);
 
 	// 描画をしない設定にする
-	m_pSelectBG->SetEnableDraw(false);
+	m_pLogo->SetEnableDraw(false);
 
 	//--------------------------------------------------------
-	//	選択表示の生成・設定
+	//	スタートの生成・設定
 	//--------------------------------------------------------
-	for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
-	{ // 選択項目の総数分繰り返す
+	// スタートの生成
+	m_pStart = CObject2D::Create
+	( // 引数
+		start::POS,		// 位置
+		start::SIZE,	// 大きさ
+		VEC3_ZERO,		// 向き
+		start::INIT_COL	// 色
+	);
+	if (m_pStart == nullptr)
+	{ // 生成に失敗した場合
 
-		// 選択表示の生成
-		m_apSelect[nCntTitle] = CObject2D::Create
-		( // 引数
-			select::POS + (select::SPACE * (float)nCntTitle),	// 位置
-			select::SIZE,			// 大きさ
-			VEC3_ZERO,				// 向き
-			select::DEFAULT_COL		// 色
-		);
-		if (m_apSelect[nCntTitle] == nullptr)
-		{ // 生成に失敗した場合
-
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
-
-		// テクスチャを登録・割当
-		m_apSelect[nCntTitle]->BindTexture(pTexture->Regist(TEX_SELECT_FILE[nCntTitle]));
-
-		// 優先順位を設定
-		m_apSelect[nCntTitle]->SetPriority(PRIORITY);
-
-		// 描画をしない設定にする
-		m_apSelect[nCntTitle]->SetEnableDraw(false);
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
 	}
 
-	//--------------------------------------------------------
-	//	タイトルロゴの生成・設定
-	//--------------------------------------------------------
-	for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-	{ // タイトルロゴの総数分繰り返す
+	// テクスチャを登録・割当
+	m_pStart->BindTexture(pTexture->Regist(TEX_START_FILE[0]));
 
-		// タイトルロゴの生成
-		m_apLogo[nCntTitle] = CObject2D::Create
-		( // 引数
-			logo::POS[nCntTitle],	// 位置
-			logo::SIZE				// 大きさ
-		);
-		if (m_apLogo[nCntTitle] == nullptr)
-		{ // 生成に失敗した場合
+	// 優先順位を設定
+	m_pStart->SetPriority(PRIORITY);
 
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
-
-		// テクスチャを登録・割当
-		m_apLogo[nCntTitle]->BindTexture(pTexture->Regist(TEX_LOGO_FILE[nCntTitle]));
-
-		// 優先順位を設定
-		m_apLogo[nCntTitle]->SetPriority(PRIORITY);
-
-		// 描画をしない設定にする
-		m_apLogo[nCntTitle]->SetEnableDraw(false);
-	}
+	// 描画をしない設定にする
+	m_pStart->SetEnableDraw(false);
 
 	//--------------------------------------------------------
 	//	フェードの生成・設定
@@ -249,25 +221,14 @@ HRESULT CTitleManager::Init(void)
 //============================================================
 void CTitleManager::Uninit(void)
 {
-	for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-	{ // タイトルロゴの総数分繰り返す
-
-		// タイトルロゴの終了
-		SAFE_UNINIT(m_apLogo[nCntTitle]);
-	}
-
-	for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
-	{ // 選択項目の総数分繰り返す
-
-		// 選択表示の終了
-		SAFE_UNINIT(m_apSelect[nCntTitle]);
-	}
+	// タイトルロゴの終了
+	SAFE_UNINIT(m_pLogo);
 
 	// フェードの終了
 	SAFE_UNINIT(m_pFade);
 
-	// 選択背景の終了
-	SAFE_UNINIT(m_pSelectBG);
+	// スタートの終了
+	SAFE_UNINIT(m_pStart);
 }
 
 //============================================================
@@ -293,7 +254,14 @@ void CTitleManager::Update(const float fDeltaTime)
 
 		break;
 
-	case STATE_MOVE:	// タイトル縮小状態
+	case STATE_SCALE:	// タイトル縮小状態
+
+		// タイトル移動の更新
+		UpdateScale();
+
+		break;
+
+	case STATE_MOVE:	// タイトル移動状態
 
 		// タイトル移動の更新
 		UpdateMove();
@@ -302,8 +270,15 @@ void CTitleManager::Update(const float fDeltaTime)
 
 	case STATE_WAIT:	// 遷移待機状態
 
-		// 選択操作
-		ActSelect();
+		// スタート点滅
+		UpdateBlink();
+
+		break;
+
+	case STATE_TRANS:	// 遷移状態
+
+		// 遷移
+		UpdateTrans();
 
 		break;
 
@@ -312,25 +287,14 @@ void CTitleManager::Update(const float fDeltaTime)
 		break;
 	}
 
-	for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-	{ // タイトルロゴの総数分繰り返す
-
-		// タイトルロゴの更新
-		m_apLogo[nCntTitle]->Update(fDeltaTime);
-	}
-
-	for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
-	{ // 選択項目の総数分繰り返す
-
-		// 選択表示の更新
-		m_apSelect[nCntTitle]->Update(fDeltaTime);
-	}
+	// タイトルロゴの更新
+	m_pLogo->Update(fDeltaTime);
 
 	// フェードの更新
 	m_pFade->Update(fDeltaTime);
 
-	// 選択背景の更新
-	m_pSelectBG->Update(fDeltaTime);
+	// スタートの更新
+	m_pStart->Update(fDeltaTime);
 }
 
 //============================================================
@@ -395,25 +359,14 @@ void CTitleManager::UpdateFade(void)
 		// 透明度を補正
 		colFade.a = 0.0f;
 
-		for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-		{ // タイトルロゴの総数分繰り返す
+		// 描画をする設定にする
+		m_pLogo->SetEnableDraw(true);
 
-			// 描画をする設定にする
-			m_apLogo[nCntTitle]->SetEnableDraw(true);
-		}
-
-		for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
-		{ // 選択項目の総数分繰り返す
-
-			// 選択表示を描画する設定にする
-			m_apSelect[nCntTitle]->SetEnableDraw(true);
-		}
-
-		// 選択背景を描画する設定にする
-		m_pSelectBG->SetEnableDraw(true);
+		// スタートを描画する設定にする
+		m_pStart->SetEnableDraw(true);
 
 		// 状態を変更
-		m_state = STATE_MOVE;	// タイトル移動状態
+		m_state = STATE_SCALE;	// タイトル縮小状態
 	}
 
 	// 透明度を反映
@@ -421,36 +374,73 @@ void CTitleManager::UpdateFade(void)
 }
 
 //============================================================
+// タイトル拡大
+//============================================================
+void CTitleManager::UpdateScale(void)
+{
+	if (m_fScale < 1.0f)
+	{ // 拡大率が最大値より小さい場合
+
+		// 拡大率を加算
+		m_fScale += logo::SUB_SCALE;
+
+		// タイトルロゴの大きさを設定
+		m_pLogo->SetVec3Sizing(logo::SIZE * m_fScale);
+	}
+	else
+	{ // 拡大率が最大値以上の場合
+
+		if (m_nWaitCounter >= logo::WAIT_TIME)
+		{ // 一定時間経った場合
+
+			// タイトル移動の待機時間を初期化
+			m_nWaitCounter = 0;
+
+			// 拡大率を補正
+			m_fScale = 1.0f;
+
+			// タイトルロゴの大きさを設定
+			m_pLogo->SetVec3Sizing(logo::SIZE);
+
+			// 状態を変更
+			m_state = STATE_MOVE;	// タイトル移動状態
+
+			// カメラの更新を再開
+			GET_MANAGER->GetCamera()->SetEnableUpdate(true);
+
+			// サウンドの再生
+			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_001);	// 決定音01
+		}
+		else
+		{ // 一定時間経ってない場合
+
+			// タイトル移動の待機時間加算
+			m_nWaitCounter++;
+		}
+	}
+}
+
+//============================================================
 //	タイトル移動の更新処理
 //============================================================
 void CTitleManager::UpdateMove(void)
 {
-	if (m_fScale > 1.0f)
-	{ // 拡大率が最小値より大きい場合
+	D3DXVECTOR3 pos;		// 位置
 
-		// 拡大率を減算
-		m_fScale -= logo::SUB_SCALE;
+	// 位置取得
+	pos = m_pLogo->GetVec3Position();
 
-		for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-		{ // タイトルロゴの総数分繰り返す
+	if (pos.x >= 130.0f)
+	{ // 特定の位置に到達するまで
 
-			// タイトルロゴの大きさを設定
-			m_apLogo[nCntTitle]->SetVec3Sizing(logo::SIZE * m_fScale);
-		}
+		// 位置更新
+		pos.x -= m_fMove;
+
+		// 位置を設定
+		m_pLogo->SetVec3Position(pos);
 	}
 	else
-	{ // 拡大率が最小値以下の場合
-
-		// 拡大率を補正
-		m_fScale = 1.0f;
-
-		for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-		{ // タイトルロゴの総数分繰り返す
-
-			// タイトルロゴの大きさを設定
-			m_apLogo[nCntTitle]->SetVec3Sizing(logo::SIZE);
-		}
-
+	{
 		// 状態を変更
 		m_state = STATE_WAIT;	// 遷移待機状態
 
@@ -479,8 +469,8 @@ void CTitleManager::UpdateStart(void)
 	||  pPad->IsTrigger(CInputPad::KEY_Y)
 	||  pPad->IsTrigger(CInputPad::KEY_START))
 	{
-		if (m_state != STATE_WAIT)
-		{ // 遷移待機状態ではない場合
+		if (m_state != STATE_WAIT && m_state != STATE_TRANS)
+		{ // 遷移待機 && 遷移状態ではない場合
 
 			// 演出スキップ
 			SkipStaging();
@@ -488,83 +478,104 @@ void CTitleManager::UpdateStart(void)
 			// サウンドの再生
 			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_001);	// 決定音01
 		}
-		else
+		else if(m_state != STATE_TRANS)
 		{ // 遷移待機状態の場合
 
-			if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
-			{ // フェード中ではない場合
-
-				switch (m_nSelect)
-				{ // 選択ごとの処理
-				case SELECT_GAME:
-
-					// シーンの設定
-					GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
-
-					break;
-
-				case SELECT_TUTORIAL:
-
-					// シーンの設定
-					GET_MANAGER->SetScene(CScene::MODE_TUTORIAL);	// チュートリアル画面
-
-					break;
-
-				default:
-					assert(false);
-					break;
-				}
-
-				// サウンドの再生
-				GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_000);	// 決定音00
-			}
+			// 遷移状態にする
+			m_state = STATE_TRANS;
 		}
 	}
 }
 
 //============================================================
-//	選択操作処理
+// スタート点滅
 //============================================================
-void CTitleManager::ActSelect(void)
+void CTitleManager::UpdateBlink(void)
 {
-	// ポインタを宣言
-	CInputKeyboard	*pKeyboard	= GET_INPUTKEY;	// キーボード
-	CInputPad		*pPad		= GET_INPUTPAD;		// パッド
+	D3DXCOLOR col;		// 色
 
 	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
 	{ // フェード中ではない場合
 
-		if (pKeyboard->IsTrigger(DIK_A)
-		||  pKeyboard->IsTrigger(DIK_LEFT)
-		||  pPad->IsTrigger(CInputPad::KEY_LEFT))
-		{ // 左移動の操作が行われた場合
+		// 色取得
+		col = m_pStart->GetColor();
 
-			// 左に選択をずらす
-			m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX;
+		if (m_startState == STARTSTATE_APPEAR)
+		{ // 出現状態の場合
+
+			// 透明度加算
+			col.a += start::SUB_ALPHA;
+
+			if (col.a >= 1.0f)
+			{ // 完全に不透明の場合
+
+				// 透明度補正
+				col.a = 1.0f;
+
+				// 消滅状態にする
+				m_startState = STARTSTATE_DISAPPEAR;
+			}
+		}
+		else if (m_startState == STARTSTATE_DISAPPEAR)
+		{ // 消滅状態の場合
+
+			// 透明度加算
+			col.a -= start::SUB_ALPHA;
+
+			if (col.a <= 0.0f)
+			{ // 完全に透明の場合
+
+				// 透明度補正
+				col.a = 0.0f;
+
+				// 消滅状態にする
+				m_startState = STARTSTATE_APPEAR;
+			}
+		}
+		
+		// 色設定
+		m_pStart->SetColor(col);
+	}
+}
+
+//============================================================
+// 遷移
+//============================================================
+void CTitleManager::UpdateTrans(void)
+{
+	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
+	{ // フェード中ではない場合
+
+		D3DXCOLOR col;	// 色
+
+		// スタートの色を取得
+		col = m_pStart->GetColor();
+
+		if (col.a >= 0.0f)
+		{ // 透明じゃない場合
+
+			// 拡大率を加算
+			m_fScale += start::SUB_SCALE;
+			col.a -= start::SUB_ALPHA;
+
+			// スタートの大きさを設定
+			m_pStart->SetVec3Sizing(start::SIZE * m_fScale);
+
+			// スタートの色を設定
+			m_pStart->SetColor(col);
+		}
+		else
+		{ // 透明の場合
+
+			// 状態を変更
+			m_state = STATE_NONE;	// 何もしない状態
+
+			// シーンの設定
+			GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
 
 			// サウンドの再生
-			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
+			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_000);	// 決定音00
 		}
-		if (pKeyboard->IsTrigger(DIK_D)
-		||  pKeyboard->IsTrigger(DIK_RIGHT)
-		||  pPad->IsTrigger(CInputPad::KEY_RIGHT))
-		{ // 右移動の操作が行われた場合
-
-			// 右に選択をずらす
-			m_nSelect = (m_nSelect + 1) % SELECT_MAX;
-
-			// サウンドの再生
-			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
-		}
-
-		// 前回の選択要素の色を黒に設定
-		m_apSelect[m_nOldSelect]->SetColor(select::DEFAULT_COL);
-
-		// 現在の選択要素の色を白に設定
-		m_apSelect[m_nSelect]->SetColor(select::CHOICE_COL);
-
-		// 現在の選択要素を代入
-		m_nOldSelect = m_nSelect;
 	}
 }
 
@@ -573,29 +584,20 @@ void CTitleManager::ActSelect(void)
 //============================================================
 void CTitleManager::SkipStaging(void)
 {
-	// タイトルロゴを表示状態に設定・大きさを正規化
-	for (int nCntTitle = 0; nCntTitle < LOGO_MAX; nCntTitle++)
-	{ // タイトルロゴの総数分繰り返す
+	// タイトルロゴの大きさを設定
+	m_pLogo->SetVec3Sizing(logo::SIZE);
 
-		// タイトルロゴの大きさを設定
-		m_apLogo[nCntTitle]->SetVec3Sizing(logo::SIZE);
+	// タイトルロゴの位置を設定
+	m_pLogo->SetVec3Position(logo::STOP_POS);
 
-		// 描画をする設定にする
-		m_apLogo[nCntTitle]->SetEnableDraw(true);
-	}
-
-	// 選択表示を描画する設定にする
-	for (int nCntTitle = 0; nCntTitle < SELECT_MAX; nCntTitle++)
-	{ // 選択項目の総数分繰り返す
-
-		m_apSelect[nCntTitle]->SetEnableDraw(true);
-	}
+	// 描画をする設定にする
+	m_pLogo->SetEnableDraw(true);
 
 	// フェードを透明にする
 	m_pFade->SetColor(XCOL_ABLACK);
 
-	// 選択背景を描画する設定にする
-	m_pSelectBG->SetEnableDraw(true);
+	// スタートを描画する設定にする
+	m_pStart->SetEnableDraw(true);
 
 	// カメラの更新を再開
 	GET_MANAGER->GetCamera()->SetEnableUpdate(true);
@@ -603,3 +605,4 @@ void CTitleManager::SkipStaging(void)
 	// 状態を変更
 	m_state = STATE_WAIT;	// 遷移待機状態
 }
+

@@ -111,6 +111,7 @@ public:
 	float GetRadius(void) const;		// 半径取得
 	float GetHeight(void) const;		// 縦幅取得
 	bool GimmickHighJump(void);			// ギミックのハイジャンプ
+	void GimmickLowJump(void);			// ギミックの小ジャンプ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
