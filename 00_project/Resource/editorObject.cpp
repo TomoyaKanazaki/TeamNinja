@@ -13,7 +13,6 @@
 
 #include "editField.h"
 #include "editActor.h"
-#include "editGimmick.h"
 
 //************************************************************
 //	マクロ定義
@@ -175,7 +174,7 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 		break;
 
 	case CEditStage::TYPE_GIMMICK:
-		pEditorObject = new CEditGimmick;	// エディットギミック
+		pEditorObject = new CEditActor;	// エディットギミック TODO：
 		break;
 
 	default:	// 例外処理
