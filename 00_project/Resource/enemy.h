@@ -64,6 +64,10 @@ protected:
 
 private:
 
+	// メンバ関数
+	void Gravity(void);		// 重力処理
+	void Landing(void);		// 着地処理
+
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト
 
@@ -73,6 +77,7 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	EType m_type;					// 種類
+	bool m_bJump;					// 着地状況
 };
 
 #endif	// _ENEMY_H_

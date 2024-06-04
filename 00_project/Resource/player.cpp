@@ -754,9 +754,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 	bool bLand = false;	// 着地フラグ
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
-	// ジャンプしている状態にする
-	m_bJump = true;
-
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_move)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
@@ -769,20 +766,20 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 		m_bJump = false;
 	}
 
+	// 現在のモーション種類を取得
+	int nCurMotion = GetMotionType();
+
+	// ジャンプモーションのフラグを設定
+	bool bTypeJump = nCurMotion == MOTION_JUMP_HIGH
+				  || nCurMotion == MOTION_JUMP_MINI;
+
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
+
 	if (!m_bJump)
 	{ // 空中にいない場合
 
-		// 現在のモーション種類を取得
-		int nCurMotion = GetMotionType();
-
-		// ジャンプモーションのフラグを設定
-		bool bJump = nCurMotion == MOTION_JUMP_HIGH
-				  || nCurMotion == MOTION_JUMP_MINI;
-
-		// 落下モーションのフラグを設定
-		bool bFall = nCurMotion == MOTION_FALL;
-
-		if (bJump || bFall)
+		if (bTypeJump || bTypeFall)
 		{ // モーションがジャンプ中、または落下中の場合
 
 			// 着地モーションを指定
@@ -790,6 +787,16 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 			// 着地音の再生
 			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+	else
+	{ // 空中にいる場合
+
+		if (!bTypeJump)
+		{ // モーションがジャンプ中ではない場合
+
+			// 落下モーションを指定
+			SetMotion(MOTION_FALL);
 		}
 	}
 
