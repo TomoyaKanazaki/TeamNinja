@@ -18,7 +18,6 @@
 namespace
 {
 	const D3DXVECTOR3 CLONE_RADIUS = D3DXVECTOR3(20.0f, 0.0f, 20.0f);	// 半径
-	const int INIT_NUM_ACTIVE = 2;			// 発動可能人数の初期値(TODO：後でデータ書き出し化する予定)
 }
 
 //************************************************************
@@ -29,7 +28,6 @@ namespace
 //============================================================
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// 範囲に入っている分身の数
-m_nNumActive(INIT_NUM_ACTIVE),	// 発動可能な分身の数
 m_bActive(false),				// 発動状況
 m_bMoment(false)				// 発動中
 {
@@ -83,7 +81,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	m_bActive = false;
 
 	// 必要な分身が揃っていればフラグをon
-	if (m_nNumActive <= m_nNumClone) { m_bActive = true; }
+	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -116,7 +114,7 @@ void CGimmickAction::CollisionClone(void)
 	for (auto clone : list)
 	{
 		// 分身の総数が必要数に達したらループを抜ける
-		if (nNumClone >= m_nNumActive) { break; }
+		if (nNumClone >= GetNumActive()) { break; }
 
 		// 追跡する分身だった場合次の分身にする
 		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
@@ -138,7 +136,7 @@ void CGimmickAction::CollisionClone(void)
 			// 分身の総数を加算する
 			nNumClone++;
 
-			// もうギミックが設定済みなら次へ
+			// 既にギミックが設定済みなら次へ
 			if (clone->GetGimmick() == this) { continue; }
 
 			// 分身に自分の情報を渡す

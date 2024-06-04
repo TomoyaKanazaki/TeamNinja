@@ -16,9 +16,6 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_RELEASE		(DIK_9)	// 破棄キー
-#define NAME_RELEASE	("9")	// 破棄表示
-
 #define KEY_UP_WIDTH		(DIK_T)	// 幅拡大キー
 #define NAME_UP_WIDTH		("T")	// 幅拡大表示
 #define KEY_DOWN_WIDTH		(DIK_G)	// 幅縮小キー
@@ -214,7 +211,6 @@ void CEditCollCube::DrawDebugControl(void)
 	DebugProc::Print(DebugProc::POINT_RIGHT, "幅：[%s/%s+%s]\n", NAME_UP_WIDTH, NAME_DOWN_WIDTH, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "高さ：[%s/%s+%s]\n", NAME_UP_HEIGHT, NAME_DOWN_HEIGHT, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "奥行：[%s/%s+%s]\n", NAME_UP_DEPTH, NAME_DOWN_DEPTH, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 
 #endif	// _DEBUG
 }

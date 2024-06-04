@@ -1,4 +1,4 @@
-#if 1
+#if 0
 //============================================================
 //
 //	エディットギミック処理 [editGimmick.cpp]
@@ -100,7 +100,8 @@ HRESULT CEditGimmick::Init(void)
 	( // 引数
 		GetVec3Position(),		// 位置
 		m_infoCreate.size,		// 大きさ
-		m_infoCreate.type		// 種類
+		m_infoCreate.type,		// 種類
+		2		// MN
 	);
 	if (m_pGimmick == nullptr)
 	{ // 生成に失敗した場合
@@ -364,7 +365,8 @@ void CEditGimmick::CreateGimmick(void)
 		( // 引数
 			GetVec3Position(),		// 位置
 			m_infoCreate.size,		// 大きさ
-			m_infoCreate.type		// 種類
+			m_infoCreate.type,		// 種類
+			2
 		);
 		assert(m_pGimmick != nullptr);
 

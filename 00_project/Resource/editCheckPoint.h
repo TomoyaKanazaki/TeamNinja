@@ -1,41 +1,34 @@
 #if 1
 //============================================================
 //
-//	エディットギミックヘッダー [editGimmick.h]
+//	エディットチェックポイントヘッダー [editCheckPoint.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _EDIT_GIMMICK_H_
-#define _EDIT_GIMMICK_H_
+#ifndef _EDIT_CHECKPOINT_H_
+#define _EDIT_CHECKPOINT_H_
 
 //************************************************************
 //	インクルードファイル
 //************************************************************
 #include "editorObject.h"
-#include "gimmick.h"
+#include "checkpoint.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// エディットギミッククラス
-class CEditGimmick : public CEditorObject
+// エディットチェックポイントクラス
+class CEditCheckPoint : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditGimmick();
+	CEditCheckPoint();
 
 	// デストラクタ
-	~CEditGimmick() override;
-
-	// ギミック情報構造体
-	struct SInfo
-	{
-		CGimmick::EType type;	// 種類
-		D3DXVECTOR3 size;		// 大きさ
-	};
+	~CEditCheckPoint() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -50,19 +43,16 @@ public:
 
 private:
 	// オーバーライド関数
-	void UpdateRotation(void) override;		// 向き更新
+	void UpdatePosition(void) override;		// 位置更新
 
 	// メンバ関数
-	void UpdateSize(void);		// 大きさ更新
-	void ChangeType(void);		// 種類更新
-	void CreateGimmick(void);		// ギミック生成
-	void ReleaseGimmick(void);	// ギミック破棄
-	void DeleteCollisionGimmick(const bool bRelase);	// ギミックの削除判定
-	void InitAllColorGimmick(void);					// ギミックの色全初期化
+	void CreateCheckPoint(void);		// チェックポイント生成
+	void ReleaseCheckPoint(void);		// チェックポイント破棄
+	void DeleteCollisionCheckPoint(const bool bRelase);	// チェックポイントの削除判定
+	void InitAllColorCheckPoint(void);	// チェックポイントの色全初期化
 
 	// メンバ変数
-	CGimmick* m_pGimmick;	// ギミック情報
-	SInfo m_infoCreate;		// ギミック配置情報
+	CCheckPoint* m_pPoint;	// ポイント情報
 	bool m_bSave;			// 保存状況
 };
 

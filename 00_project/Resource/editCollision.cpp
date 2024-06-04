@@ -11,6 +11,8 @@
 #include "editCollision.h"
 #include "actor.h"
 #include "editManager.h"
+#include "collision.h"
+#include "effect3D.h"
 
 #include "editCollCube.h"
 #include "editCollCylinder.h"
@@ -21,6 +23,8 @@
 //************************************************************
 #define KEY_CREATE			(DIK_0)	// 生成キー
 #define NAME_CREATE			("0")	// 生成表示
+#define KEY_RELEASE			(DIK_9)	// 破棄キー
+#define NAME_RELEASE		("9")	// 破棄表示
 #define KEY_CHANGE_OBJECT	(DIK_2)	// オブジェクトタイプ変更キー
 #define NAME_CHANGE_OBJECT	("2")	// オブジェクトタイプ変更表示
 
@@ -37,7 +41,9 @@ namespace
 		"シリンダー",		// シリンダー
 		"スフィア",			// スフィア
 	};
-	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
+	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
+	const float DELETE_RANGE = 30.0f;	// 消去する範囲
+	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);			// 色
 }
 
 //************************************************************
@@ -172,69 +178,11 @@ void CEditCollision::Update(void)
 	assert(m_pEditor != nullptr);
 	m_pEditor->Update();
 
-	if (GET_INPUTKEY->IsTrigger(KEY_CREATE))
-	{ // 生成キーを押した場合
+	// 生成処理
+	Create();
 
-		CEditCollCube* pCube = nullptr;
-		CEditCollCylinder* pCylinder = nullptr;
-		CEditCollSphere* pSphere = nullptr;
-		int nIdx = NONE_IDX;
-
-		switch (m_type)
-		{
-		case CEditCollision::TYPE_CUBE:
-
-			pCube = dynamic_cast<CEditCollCube*>(m_pEditor);
-
-			if (pCube != nullptr)
-			{ // キューブが NULL じゃない場合
-
-				// 追加処理
-				m_cube.push_back(*pCube);
-
-				// インデックスを設定
-				nIdx = m_cube.size();
-			}
-
-			break;
-		case CEditCollision::TYPE_CYLINDER:
-
-			pCylinder = dynamic_cast<CEditCollCylinder*>(m_pEditor);
-
-			if (pCylinder != nullptr)
-			{ // キューブが NULL じゃない場合
-
-				// 追加処理
-				m_cylinder.push_back(*pCylinder);
-
-				// インデックスを設定
-				nIdx = m_cylinder.size();
-			}
-
-			break;
-		case CEditCollision::TYPE_SPHERE:
-
-			pSphere = dynamic_cast<CEditCollSphere*>(m_pEditor);
-
-			if (pSphere != nullptr)
-			{ // キューブが NULL じゃない場合
-
-				// 追加処理
-				m_sphere.push_back(*pSphere);
-
-				// インデックスを設定
-				nIdx = m_sphere.size();
-			}
-
-			break;
-		default:		// 例外処理
-			assert(false);
-			break;
-		}
-
-		// 生成処理
-		m_pEditor->Create();
-	}
+	// 消去処理
+	Delete();
 
 #endif	// _DEBUG
 }
@@ -487,6 +435,109 @@ void CEditCollision::ChangeObjectType(void)
 }
 
 //============================================================
+// 生成処理
+//============================================================
+void CEditCollision::Create(void)
+{
+	if (GET_INPUTKEY->IsTrigger(KEY_CREATE))
+	{ // 生成キーを押した場合
+
+		CEditCollCube* pCube = nullptr;
+		CEditCollCylinder* pCylinder = nullptr;
+		CEditCollSphere* pSphere = nullptr;
+
+		switch (m_type)
+		{
+		case CEditCollision::TYPE_CUBE:
+
+			pCube = dynamic_cast<CEditCollCube*>(m_pEditor);
+
+			if (pCube != nullptr)
+			{ // キューブが NULL じゃない場合
+
+				// 追加処理
+				m_cube.push_back(*pCube);
+			}
+
+			break;
+		case CEditCollision::TYPE_CYLINDER:
+
+			pCylinder = dynamic_cast<CEditCollCylinder*>(m_pEditor);
+
+			if (pCylinder != nullptr)
+			{ // キューブが NULL じゃない場合
+
+				// 追加処理
+				m_cylinder.push_back(*pCylinder);
+			}
+
+			break;
+		case CEditCollision::TYPE_SPHERE:
+
+			pSphere = dynamic_cast<CEditCollSphere*>(m_pEditor);
+
+			if (pSphere != nullptr)
+			{ // キューブが NULL じゃない場合
+
+				// 追加処理
+				m_sphere.push_back(*pSphere);
+			}
+
+			break;
+		default:		// 例外処理
+			assert(false);
+			break;
+		}
+
+		// 生成処理
+		m_pEditor->Create();
+	}
+}
+
+//============================================================
+// 消去処理
+//============================================================
+void CEditCollision::Delete(void)
+{
+	bool bRelease = false;
+
+	if (GET_INPUTKEY->IsTrigger(KEY_RELEASE))
+	{ // 消去キーを押した場合
+
+		// 消去判定を通す
+		bRelease = true;
+	}
+
+	switch (m_type)
+	{
+	case CEditCollision::TYPE_CUBE:
+
+		// キューブの消去処理
+		DeleteCollCube(bRelease);
+
+		break;
+
+	case CEditCollision::TYPE_CYLINDER:
+
+		// シリンダーの消去処理
+		DeleteCollCylinder(bRelease);
+
+		break;
+
+	case CEditCollision::TYPE_SPHERE:
+
+		// スフィアの消去処理
+		DeleteCollSphere(bRelease);
+
+		break;
+
+	default:		// 例外処理
+		assert(false);
+		break;
+	}
+}
+
+//============================================================
 //	コリジョンキューブの色の全初期化処理
 //============================================================
 void CEditCollision::InitAllColorCollCube(void)
@@ -497,7 +548,7 @@ void CEditCollision::InitAllColorCollCube(void)
 #ifdef _DEBUG
 
 		// 通常色を設定
-		rCube.GetCube()->GetCube()->SetCubeColor(XCOL_WHITE);
+		rCube.GetCube()->GetCube()->SetCubeColor(COL);
 
 #endif // _DEBUG
 	}
@@ -514,7 +565,7 @@ void CEditCollision::InitAllColorCollCylinder(void)
 #ifdef _DEBUG
 
 		// 通常色を設定
-		rCylinder.GetCylinder()->GetTube()->SetColor(XCOL_WHITE);
+		rCylinder.GetCylinder()->GetTube()->SetColor(COL);
 
 #endif // _DEBUG
 	}
@@ -531,8 +582,218 @@ void CEditCollision::InitAllColorCollSphere(void)
 #ifdef _DEBUG
 
 		// 通常色を設定
-		rSphere.GetSphere()->GetSphere()->SetColor(XCOL_WHITE);
+		rSphere.GetSphere()->GetSphere()->SetColor(COL);
 
 #endif // _DEBUG
+	}
+}
+
+//============================================================
+// キューブの消去処理
+//============================================================
+void CEditCollision::DeleteCollCube(const bool bRelease)
+{
+	D3DXVECTOR3 posEdit = m_pEditor->GetVec3OffSet();	// エディットの位置
+	CEffect3D::Create(posEdit, DELETE_RANGE);			// エフェクトを生成
+
+	for (auto cube = m_cube.begin(); cube != m_cube.end(); cube++)
+	{ // フィールド数分繰り返す
+
+		D3DXVECTOR3 posOther = cube->GetVec3OffSet();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
+
+		// 自身の大きさを設定
+		sizeThis.x = DELETE_RANGE;		// 判定サイズXを設定
+		sizeThis.y = DELETE_RANGE;		// 判定サイズYを設定
+		sizeThis.z = DELETE_RANGE;		// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
+
+		// 対象の大きさを設定
+		sizeOther.x = cube->GetCube()->GetWidth();	// 判定サイズXを設定
+		sizeOther.y = cube->GetCube()->GetHeight();	// 判定サイズYを設定
+		sizeOther.z = cube->GetCube()->GetDepth();	// 判定サイズZを設定
+		sizeOther *= 0.5f;				// 判定サイズを半分に
+
+		// 矩形の当たり判定
+		if (collision::Box3D
+		( // 引数
+			posEdit,	// 判定位置
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
+		))
+		{ // 判定内だった場合
+
+			if (bRelease)
+			{ // 破棄する場合
+
+				// 終了処理
+				cube->Uninit();
+
+				// 消去処理
+				m_cube.erase(cube);
+
+				// 抜け出す
+				break;
+			}
+			else
+			{ // 破棄しない場合
+
+				// 青を設定
+				cube->GetCube()->GetCube()->SetCubeColor(XCOL_BLUE);
+
+				// 抜け出す
+				break;
+			}
+		}
+		else
+		{ // 判定外だった場合
+
+			// 通常色を設定
+			cube->GetCube()->GetCube()->SetCubeColor(COL);
+		}
+	}
+}
+
+//============================================================
+// シリンダーの消去処理
+//============================================================
+void CEditCollision::DeleteCollCylinder(const bool bRelease)
+{
+	D3DXVECTOR3 posEdit = m_pEditor->GetVec3OffSet();	// エディットの位置
+	CEffect3D::Create(posEdit, DELETE_RANGE);			// エフェクトを生成
+
+	for (auto cylinder = m_cylinder.begin(); cylinder != m_cylinder.end(); cylinder++)
+	{ // フィールド数分繰り返す
+
+		D3DXVECTOR3 posOther = cylinder->GetVec3OffSet();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
+
+		// 自身の大きさを設定
+		sizeThis.x = DELETE_RANGE;		// 判定サイズXを設定
+		sizeThis.y = DELETE_RANGE;		// 判定サイズYを設定
+		sizeThis.z = DELETE_RANGE;		// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
+
+		// 対象の大きさを設定
+		sizeOther.x = cylinder->GetCylinder()->GetRadius();	// 判定サイズXを設定
+		sizeOther.y = cylinder->GetCylinder()->GetHeight();	// 判定サイズYを設定
+		sizeOther.z = cylinder->GetCylinder()->GetRadius();	// 判定サイズZを設定
+		sizeOther *= 0.5f;				// 判定サイズを半分に
+
+		// 矩形の当たり判定
+		if (collision::Box3D
+		( // 引数
+			posEdit,	// 判定位置
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
+		))
+		{ // 判定内だった場合
+
+			if (bRelease)
+			{ // 破棄する場合
+
+				// 終了処理
+				cylinder->Uninit();
+
+				// 消去処理
+				m_cylinder.erase(cylinder);
+
+				// 抜け出す
+				break;
+			}
+			else
+			{ // 破棄しない場合
+
+				// 青を設定
+				cylinder->GetCylinder()->GetTube()->SetColor(XCOL_BLUE);
+
+				// 抜け出す
+				break;
+			}
+		}
+		else
+		{ // 判定外だった場合
+
+			// 通常色を設定
+			cylinder->GetCylinder()->GetTube()->SetColor(COL);
+		}
+	}
+}
+
+//============================================================
+// スフィアの消去処理
+//============================================================
+void CEditCollision::DeleteCollSphere(const bool bRelease)
+{
+	D3DXVECTOR3 posEdit = m_pEditor->GetVec3OffSet();	// エディットの位置
+	CEffect3D::Create(posEdit, DELETE_RANGE);			// エフェクトを生成
+
+	for (auto sphere = m_sphere.begin(); sphere != m_sphere.end(); sphere++)
+	{ // フィールド数分繰り返す
+
+		D3DXVECTOR3 posOther = sphere->GetVec3OffSet();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
+
+		// 自身の大きさを設定
+		sizeThis.x = DELETE_RANGE;		// 判定サイズXを設定
+		sizeThis.y = DELETE_RANGE;		// 判定サイズYを設定
+		sizeThis.z = DELETE_RANGE;		// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
+
+		// 対象の大きさを設定
+		sizeOther.x = sphere->GetSphere()->GetRadius();	// 判定サイズXを設定
+		sizeOther.y = sphere->GetSphere()->GetRadius();	// 判定サイズYを設定
+		sizeOther.z = sphere->GetSphere()->GetRadius();	// 判定サイズZを設定
+		sizeOther *= 0.5f;				// 判定サイズを半分に
+
+		// 矩形の当たり判定
+		if (collision::Box3D
+		( // 引数
+			posEdit,	// 判定位置
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
+		))
+		{ // 判定内だった場合
+
+			if (bRelease)
+			{ // 破棄する場合
+
+				// 終了処理
+				sphere->Uninit();
+
+				// 消去処理
+				m_sphere.erase(sphere);
+
+				// 抜け出す
+				break;
+			}
+			else
+			{ // 破棄しない場合
+
+				// 青を設定
+				sphere->GetSphere()->GetSphere()->SetColor(XCOL_BLUE);
+
+				// 抜け出す
+				break;
+			}
+		}
+		else
+		{ // 判定外だった場合
+
+			// 通常色を設定
+			sphere->GetSphere()->GetSphere()->SetColor(COL);
+		}
 	}
 }

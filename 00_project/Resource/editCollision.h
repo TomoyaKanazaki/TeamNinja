@@ -62,10 +62,15 @@ private:
 
 	// メンバ関数
 	void ChangeObjectType(void);	// オブジェクトタイプ変更
+	void Create(void);				// 生成処理
+	void Delete(void);				// 消去処理
 
-	void InitAllColorCollCube(void);		// キューブの色全初期化
-	void InitAllColorCollCylinder(void);	// シリンダーの色全初期化
-	void InitAllColorCollSphere(void);		// スフィアの色全初期化
+	void InitAllColorCollCube(void);				// キューブの色全初期化
+	void InitAllColorCollCylinder(void);			// シリンダーの色全初期化
+	void InitAllColorCollSphere(void);				// スフィアの色全初期化
+	void DeleteCollCube(const bool bRelease);		// キューブの消去処理
+	void DeleteCollCylinder(const bool bRelease);	// シリンダーの消去処理
+	void DeleteCollSphere(const bool bRelease);		// スフィアの消去処理
 
 	// メンバ変数
 	CEditorCollShape* m_pEditor;	// エディター情報
