@@ -45,7 +45,7 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_LOW	= 1260.0f;		// 小ジャンプ上昇量
 	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
@@ -539,6 +539,21 @@ bool CPlayer::GimmickHighJump(void)
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	return true;
+}
+
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickLowJump(void)
+{
+	// 上移動量を与える
+	m_move.y = JUMP_LOW;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 }
 
 //==========================================
@@ -1206,7 +1221,7 @@ void CPlayer::DebugJumpControl(void)
 	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		// 上昇量を与えるよ
-		m_move.y = JUMP_MINI;
+		m_move.y = JUMP_LOW;
 
 		// ジャンプ中にするよ
 		m_bJump = true;

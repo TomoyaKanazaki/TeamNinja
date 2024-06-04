@@ -628,6 +628,8 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	m_fDeleteTimer -= fDeltaTime;
 	if (m_fDeleteTimer <= 0.0f)
 	{
+		// 消去のエフェクトを生成する
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return MOTION_IDOL;
 	}
