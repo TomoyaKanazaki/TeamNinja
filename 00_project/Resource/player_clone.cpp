@@ -270,10 +270,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
 
-#ifdef _DEBUG
-	DebugProc::Print(DebugProc::POINT_CENTER, m_sFrags.c_str());
-#endif
-
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 }
