@@ -20,7 +20,8 @@
 //************************************************************
 namespace
 {
-	const int	PRIORITY = 2;			// ギミック範囲ポリゴンの優先順位
+	const int PRIORITY = 2;				// ギミック範囲ポリゴンの優先順位
+	const int INIT_NUM_ACTIVE = -1;		// 発動可能人数の初期値
 }
 
 //************************************************************
@@ -35,7 +36,8 @@ CListManager<CGimmick>* CGimmick::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_JUMPTABLE)
+m_type(TYPE_JUMPTABLE),			// 種類
+m_nNumActive(INIT_NUM_ACTIVE)	// 発動可能な分身の数
 {
 
 }
@@ -123,7 +125,13 @@ void CGimmick::Draw(CShader* pShader)
 //============================================================
 //	生成処理
 //============================================================
-CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type)
+CGimmick* CGimmick::Create
+(
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rSize,		// サイズ
+	const EType type,				// 種類
+	const int nNumActive			// 発動可能な分身の数
+)
 {
 	// 分身のUIの生成
 	CGimmick* pGimmick = nullptr;
@@ -180,7 +188,10 @@ CGimmick* CGimmick::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, co
 		pGimmick->SetVec3Sizing(rSize);
 
 		// 種類を設定
-		pGimmick->SetType(type);
+		pGimmick->m_type = type;
+
+		// 発動可能な分身の数を設定
+		pGimmick->m_nNumActive = nNumActive;
 
 #ifdef _DEBUG
 

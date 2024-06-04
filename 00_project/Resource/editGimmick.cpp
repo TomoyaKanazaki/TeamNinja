@@ -100,7 +100,8 @@ HRESULT CEditGimmick::Init(void)
 	( // ˆø”
 		GetVec3Position(),		// ˆÊ’u
 		m_infoCreate.size,		// ‘å‚«‚³
-		m_infoCreate.type		// í—Ş
+		m_infoCreate.type,		// í—Ş
+		2		// MN
 	);
 	if (m_pGimmick == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
@@ -364,7 +365,8 @@ void CEditGimmick::CreateGimmick(void)
 		( // ˆø”
 			GetVec3Position(),		// ˆÊ’u
 			m_infoCreate.size,		// ‘å‚«‚³
-			m_infoCreate.type		// í—Ş
+			m_infoCreate.type,		// í—Ş
+			2
 		);
 		assert(m_pGimmick != nullptr);
 
