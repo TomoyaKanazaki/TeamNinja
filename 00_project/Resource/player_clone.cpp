@@ -152,7 +152,7 @@ HRESULT CPlayerClone::Init(void)
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 
-	// プレイヤー位置に出現
+	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
 
 	if (m_pList == nullptr)
@@ -435,6 +435,47 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 		SAFE_DELETE(pPlayer);
 		return nullptr;
 	}
+
+	// 向きを設定
+	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
+	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
+	pPlayer->SetVec3Rotation(rot);		// 向き設定
+
+	// 移動量を設定
+	pPlayer->m_move = move;
+
+	// 行動を設定
+	pPlayer->m_Action = ACTION_MOVE;
+
+	// 自動消滅タイマーを設定
+	pPlayer->m_fDeleteTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer;
+}
+
+//==========================================
+//  生成処理(歩行)
+//==========================================
+CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 位置を設定
+	pPlayer->SetVec3Position(pos);
 
 	// 向きを設定
 	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
@@ -968,8 +1009,6 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev()
 //==========================================
 CPlayerClone::EMotion CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 {
-	MY_ASSERT("入ったら止まるよ～", true);
-
 	// 一つ前に対して後ろ移動
 	D3DXVECTOR3 posTarget = rPos + D3DXVECTOR3
 	(
