@@ -12,6 +12,7 @@
 #include "renderer.h"
 
 #include "enemyStalk.h"
+#include "stage.h"
 
 //************************************************************
 //	定数宣言
@@ -37,7 +38,8 @@ CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY)
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(CEnemy::TYPE_STALK)	// 種類
+m_type(TYPE_STALK),			// 種類
+m_bJump(false)				// 着地状況
 {
 
 }
@@ -111,6 +113,12 @@ void CEnemy::Update(const float fDeltaTime)
 {
 	// オブジェクトキャラクターの更新
 	//CObjectChara::Update(fDeltaTime);
+
+	// 重力処理
+	Gravity();
+
+	// 着地処理
+	Landing();
 }
 
 //============================================================
@@ -182,4 +190,37 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// 重力処理
+//============================================================
+void CEnemy::Gravity(void)
+{
+	// 重力を加算する
+	m_move.y -= GRAVITY;
+}
+
+//============================================================
+// 着地処理
+//============================================================
+void CEnemy::Landing(void)
+{
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	CStage* pStage = CScene::GetStage();	// ステージ情報
+
+	// ジャンプしている状態にする
+	m_bJump = true;
+
+	// 地面・制限位置の着地判定
+	if (pStage->LandFieldPosition(pos, m_move)
+		|| pStage->LandLimitPosition(pos, m_move, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// ジャンプしていない状態にする
+		m_bJump = false;
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
 }
