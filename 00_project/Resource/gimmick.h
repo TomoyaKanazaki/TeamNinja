@@ -56,7 +56,7 @@ public:
 
 	// 当たり判定
 	virtual void CollisionClone() = 0;							// クローンとの当たり判定
-	virtual bool CollisionPlayer() { return false; }		// プレイヤーとの当たり判定
+	virtual bool CollisionPlayer() { return false; }			// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
 	static CGimmick* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type);	// 生成
