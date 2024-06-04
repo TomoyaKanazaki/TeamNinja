@@ -117,18 +117,25 @@ private:
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
-	void UpdateOldPosition(void);	// 過去位置の更新
-	void UpdateGravity(void);		// 重力の更新
-	bool UpdateLanding(D3DXVECTOR3& rPos);	// 着地状況の更新
+	void UpdateOldPosition(void);			// 過去位置の更新
+	void UpdateGravity(void);				// 重力の更新
+	void UpdateRotation(D3DXVECTOR3& rRot);	// 向きの更新
+	void UpdateLanding(D3DXVECTOR3& rPos, EMotion& rCurMotion);	// 着地状況の更新
 
-	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);		// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	CPlayerClone::EMotion ChasePrev(); // 前についていく処理
-	CPlayerClone::EMotion Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
-	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
+	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
+	CPlayerClone::EMotion Chase	// ついていく処理
+	( // 引数
+		D3DXVECTOR3* pPosThis,			// 自身の位置
+		D3DXVECTOR3* pRotThis,			// 自身の向き
+		const D3DXVECTOR3& rPosPrev,	// ついていくやつの位置
+		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
+	);
+	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosPrev); // 目標の方向を向く処理
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -147,6 +154,7 @@ private:
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置
+	D3DXVECTOR3	m_destRot;	// 目標向き
 	bool m_bJump;			// ジャンプ状況
 };
 
