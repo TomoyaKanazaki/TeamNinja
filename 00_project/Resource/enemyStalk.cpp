@@ -8,14 +8,13 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "enemyChase.h"
+#include "enemyStalk.h"
 #include "renderer.h"
 #include "deltaTime.h"
 #include "collision.h"
 
 #include "player.h"
 #include "player_clone.h"
-#include "enemyStateAttack.h"
 
 //************************************************************
 //	定数宣言
@@ -23,19 +22,19 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
-	const float MOVE = -420.0f;								// 移動量
+	const float MOVE = -350.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
 	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
 	const float VIEW_RANGE = 400.0f;						// 視界の範囲
 }
 
 //************************************************************
-//	子クラス [CEnemyChase] のメンバ関数
+//	子クラス [CEnemyStalk] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyChase::CEnemyChase(const EType type) : CEnemy(type),
+CEnemyStalk::CEnemyStalk() : CEnemy(),
 m_state(STATE_PLAYER)			// 状態
 {
 
@@ -44,7 +43,7 @@ m_state(STATE_PLAYER)			// 状態
 //============================================================
 //	デストラクタ
 //============================================================
-CEnemyChase::~CEnemyChase()
+CEnemyStalk::~CEnemyStalk()
 {
 
 }
@@ -52,7 +51,7 @@ CEnemyChase::~CEnemyChase()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CEnemyChase::Init(void)
+HRESULT CEnemyStalk::Init(void)
 {
 	// 敵の初期化
 	if (FAILED(CEnemy::Init()))
@@ -76,7 +75,7 @@ HRESULT CEnemyChase::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CEnemyChase::Uninit(void)
+void CEnemyStalk::Uninit(void)
 {
 	// 敵の終了
 	CEnemy::Uninit();
@@ -85,7 +84,7 @@ void CEnemyChase::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEnemyChase::Update(const float fDeltaTime)
+void CEnemyStalk::Update(const float fDeltaTime)
 {
 	// 過去位置更新
 	UpdateOldPosition();
@@ -100,7 +99,7 @@ void CEnemyChase::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CEnemyChase::Draw(CShader* pShader)
+void CEnemyStalk::Draw(CShader* pShader)
 {
 	// 敵の描画
 	CEnemy::Draw(pShader);
@@ -109,13 +108,13 @@ void CEnemyChase::Draw(CShader* pShader)
 //============================================================
 // 標的選択処理
 //============================================================
-void CEnemyChase::TargetSelect(void)
+void CEnemyStalk::TargetSelect(void)
 {
 	D3DXVECTOR3 posTarget = VEC3_ZERO;		// 標的の位置
 
 	switch (m_state)
 	{
-	case CEnemyChase::STATE_PLAYER:
+	case CEnemyStalk::STATE_PLAYER:
 
 		// プレイヤーの位置を取得する
 		posTarget = CScene::GetPlayer()->GetVec3Position();
@@ -139,7 +138,7 @@ void CEnemyChase::TargetSelect(void)
 
 		break;
 
-	case CEnemyChase::STATE_CLONE:
+	case CEnemyStalk::STATE_CLONE:
 
 		// 分身のリストが無い場合抜け出す
 		if (CPlayerClone::GetList() == nullptr ||
@@ -179,7 +178,7 @@ void CEnemyChase::TargetSelect(void)
 //============================================================
 // 探索処理
 //============================================================
-bool CEnemyChase::Search(const D3DXVECTOR3& posTarget)
+bool CEnemyStalk::Search(const D3DXVECTOR3& posTarget)
 {
 	float fRot = GetVec3Rotation().y + D3DX_PI;
 
@@ -193,7 +192,7 @@ bool CEnemyChase::Search(const D3DXVECTOR3& posTarget)
 //============================================================
 // 追跡処理
 //============================================================
-void CEnemyChase::Chase(const D3DXVECTOR3& posTarget)
+void CEnemyStalk::Chase(const D3DXVECTOR3& posTarget)
 {
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
@@ -233,7 +232,7 @@ void CEnemyChase::Chase(const D3DXVECTOR3& posTarget)
 //============================================================
 // 接近処理
 //============================================================
-bool CEnemyChase::Approach(const D3DXVECTOR3& posTarget)
+bool CEnemyStalk::Approach(const D3DXVECTOR3& posTarget)
 {
 	float fDistance = 0.0f;					// 距離
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
@@ -243,9 +242,6 @@ bool CEnemyChase::Approach(const D3DXVECTOR3& posTarget)
 
 	if (fDistance <= ATTACK_DISTANCE)
 	{ // 一定の距離に入った場合
-
-		// 攻撃状態にする
-		ChangeState(new CEnemyStateAttack(this));
 
 		// 接近した
 		return true;
