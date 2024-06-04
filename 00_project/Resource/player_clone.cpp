@@ -52,6 +52,9 @@ namespace
 	const float DISTANCE = 60.0f; // プレイヤーとの距離
 	const float TIMER = 10.0f; // 自動消滅タイマー
 
+	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
+	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
+
 	const char GRAVEL_FRAG = 'g'; // 砂利道のフラグ
 
 }
@@ -1034,11 +1037,11 @@ CPlayerClone::EMotion CPlayerClone::Chase(const D3DXVECTOR3& rPos, const D3DXVEC
 
 	// 移動量のスカラー値を産出
 	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.y * vecTarget.y + vecTarget.z * vecTarget.z);
-	if (fScalar > 30.0f)
+	if (fScalar > DASH_SPEED)
 	{
 		return MOTION_DASH;
 	}
-	else if (fScalar > 1.0f)
+	else if (fScalar > STEALTH_SPEED)
 	{
 		return MOTION_STEALTHWALK;
 	}
