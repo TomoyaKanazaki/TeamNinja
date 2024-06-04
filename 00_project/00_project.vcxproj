@@ -212,6 +212,7 @@
     <ClInclude Include="Resource\gimmick_action.h" />
     <ClInclude Include="Resource\gimmick_boob.h" />
     <ClInclude Include="Resource\gimmick_cleen.h" />
+    <ClInclude Include="Resource\gimmick_fall.h" />
     <ClInclude Include="Resource\gimmick_gravel.h" />
     <ClInclude Include="Resource\gimmick_jumptable.h" />
     <ClInclude Include="Resource\gimmick_state.h" />
@@ -352,6 +353,7 @@
     <ClCompile Include="Resource\gimmick_action.cpp" />
     <ClCompile Include="Resource\gimmick_boob.cpp" />
     <ClCompile Include="Resource\gimmick_cleen.cpp" />
+    <ClCompile Include="Resource\gimmick_fall.cpp" />
     <ClCompile Include="Resource\gimmick_gravel.cpp" />
     <ClCompile Include="Resource\gimmick_jumptable.cpp" />
     <ClCompile Include="Resource\gimmick_state.cpp" />
