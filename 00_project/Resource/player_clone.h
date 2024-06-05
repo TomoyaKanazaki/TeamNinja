@@ -72,6 +72,7 @@ public:
 		ACTION_MOVE,			// 歩行
 		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
 		ACTION_WAIT,			// ギミック待機
+		ACTION_FALL,			// 落とし穴警戒
 		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_MAX
 	};
@@ -116,12 +117,13 @@ private:
 	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
+	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴警戒
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
 	void UpdateGravity(void);				// 重力の更新
 	void UpdateRotation(D3DXVECTOR3& rRot);	// 向きの更新
-	void UpdateLanding(D3DXVECTOR3& rPos, EMotion& rCurMotion);	// 着地状況の更新
+	void UpdateLanding(D3DXVECTOR3& rPos, EMotion* rCurMotion = nullptr);	// 着地状況の更新
 
 	void UpdateMotion(int nMotion, const float fDeltaTime);		// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新

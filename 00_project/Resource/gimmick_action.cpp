@@ -81,6 +81,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	m_bActive = false;
 
 	// 必要な分身が揃っていればフラグをon
+	int n = GetNumActive();
 	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// 親クラスの更新

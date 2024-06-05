@@ -54,7 +54,8 @@ namespace
 
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
-
+	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
+	const float FALL = 150.0f; // 落とし穴による落下
 }
 
 //************************************************************
@@ -249,6 +250,13 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		// ギミック待機状態の更新
 		currentMotion = UpdateWait(fDeltaTime);
+
+		break;
+
+	case ACTION_FALL: // 落とし穴警戒
+
+		// ギミック待機状態の更新
+		currentMotion = UpdateFall(fDeltaTime);
 
 		break;
 
@@ -621,7 +629,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	UpdateGravity();
 
 	// 着地判定
-	UpdateLanding(posClone, currentMotion);
+	UpdateLanding(posClone, &currentMotion);
 
 	// 移動
 	posClone += m_move * fDeltaTime;
@@ -659,7 +667,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	currentMotion = ChasePrev(&posClone, &rotClone);
 
 	// 着地判定
-	UpdateLanding(posClone, currentMotion);
+	UpdateLanding(posClone, &currentMotion);
 
 	// 移動
 	posClone += m_move * fDeltaTime;
@@ -684,6 +692,18 @@ CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 {
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
+
+	// ギミックが落とし穴だった場合関数を抜ける
+	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL)
+	{
+		// 移動量を減少させる
+		m_move.x *= FALL_SPEED;
+		m_move.z *= FALL_SPEED;
+
+		// 落とし穴警戒状態にする
+		m_Action = ACTION_FALL;
+		return MOTION_STEALTHWALK; 
+	}
 
 	// TODO：Gimmick移動どうしよかね
 #if 1
@@ -744,6 +764,37 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 	return MOTION_IDOL;
 }
 
+//===========================================
+//  落とし穴警戒時の更新処理
+//===========================================
+CPlayerClone::EMotion CPlayerClone::UpdateFall(const float fDeltaTime)
+{
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 位置の適用
+	SetVec3Position(pos);
+
+	// アクティブ状態になったら落下して関数を抜ける
+	if (m_pGimmick->IsActive())
+	{
+		// 移動量を減少
+		m_move.y -= FALL;
+
+		// 落下
+		return MOTION_FALL;
+	}
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 忍び足
+	return MOTION_STEALTHWALK;
+}
+
 //============================================================
 //	ジャンプ台行動時の更新処理
 //============================================================
@@ -799,7 +850,7 @@ void CPlayerClone::UpdateRotation(D3DXVECTOR3& rRot)
 //============================================================
 //	着地状況の更新処理
 //============================================================
-void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion& rCurMotion)
+void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
@@ -826,7 +877,8 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion& rCurMotion)
 	{ // 空中にいる場合
 
 		// 落下モーションを指定
-		rCurMotion = MOTION_FALL;
+		if (pCurMotion == nullptr) { return; }
+		*pCurMotion = MOTION_FALL;
 	}
 }
 
