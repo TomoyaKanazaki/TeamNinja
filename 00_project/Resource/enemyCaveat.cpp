@@ -107,5 +107,22 @@ void CEnemyCaveat::Draw(CShader* pShader)
 //============================================================
 void CEnemyCaveat::State(void)
 {
+	switch (m_state)
+	{
+	case CEnemyCaveat::STATE_CRAWL:
 
+
+
+		break;
+
+	case CEnemyCaveat::STATE_CAVEAT:
+
+
+
+		break;
+
+	default:		// —áŠOˆ—
+		assert(false);
+		break;
+	}
 }
