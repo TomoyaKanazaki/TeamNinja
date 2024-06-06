@@ -1070,8 +1070,6 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
-	// TODO：ここも確認！
-
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
