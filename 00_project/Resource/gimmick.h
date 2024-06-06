@@ -80,7 +80,7 @@ private:
 	// メンバ変数
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
 	EType m_type;		// 種類
-	int m_nNumActive;	// 発動可能な分身の数
+	int m_nNumActive;	// 発動可能な数
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト
