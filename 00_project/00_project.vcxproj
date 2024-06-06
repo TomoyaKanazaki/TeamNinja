@@ -243,6 +243,7 @@
     <ClInclude Include="Resource\object3D.h" />
     <ClInclude Include="Resource\objectBillboard.h" />
     <ClInclude Include="Resource\objectChara.h" />
+    <ClInclude Include="Resource\objectCircle2D.h" />
     <ClInclude Include="Resource\objectDivChara.h" />
     <ClInclude Include="Resource\objectMeshCircle.h" />
     <ClInclude Include="Resource\objectMeshCube.h" />
@@ -388,6 +389,7 @@
     <ClCompile Include="Resource\object3D.cpp" />
     <ClCompile Include="Resource\objectBillboard.cpp" />
     <ClCompile Include="Resource\objectChara.cpp" />
+    <ClCompile Include="Resource\objectCircle2D.cpp" />
     <ClCompile Include="Resource\objectDivChara.cpp" />
     <ClCompile Include="Resource\objectMeshCircle.cpp" />
     <ClCompile Include="Resource\objectMeshCube.cpp" />
