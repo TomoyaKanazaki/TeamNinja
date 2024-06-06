@@ -35,6 +35,7 @@ public:
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
 		TYPE_STEP,				// 踏み台
 		TYPE_FALL,				// 落とし穴
+		TYPE_POST,				// 設置
 		TYPE_GRAVEL,			// 砂利道
 		TYPE_BOOB,				// ドブ
 		TYPE_WATER,				// 水場

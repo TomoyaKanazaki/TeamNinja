@@ -13,6 +13,7 @@
 #include "gimmick_jumptable.h"
 #include "gimmick_step.h"
 #include "gimmick_fall.h"
+#include "gimmick_post.h"
 
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
@@ -157,6 +158,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_FALL:			// óéÇ∆Çµåä
 
 		pGimmick = new CGimmickFall;
+
+		break;
+
+	case CGimmick::TYPE_POST:			// ê›íu
+
+		pGimmick = new CGimmickPost;
 
 		break;
 
