@@ -28,6 +28,7 @@ public:
 	enum EType
 	{
 		TYPE_STALK = 0,		// ‚µ‚Â‚±‚¢“G
+		TYPE_CAVEAT,		// Œx“G
 		TYPE_MAX			// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
