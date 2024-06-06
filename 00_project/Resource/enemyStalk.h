@@ -1,14 +1,14 @@
 //============================================================
 //
-//	追跡敵ヘッダー [enemy_chase.h]
+//	しつこい敵ヘッダー [enemyStalk.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _ENEMY_CHASE_H_
-#define _ENEMY_CHASE_H_
+#ifndef _ENEMY_STALK_H_
+#define _ENEMY_STALK_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,24 +18,32 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// 追跡敵クラス
-class CEnemyChase : public CEnemy
+// しつこい敵クラス
+class CEnemyStalk : public CEnemy
 {
 public:
+
+	// ターゲット
+	enum ETarget
+	{
+		TARGET_PLAYER = 0,	// プレイヤーターゲット
+		TARGET_CLONE,		// 分身ターゲット
+		TARGET_MAX			// この列挙型の総数
+	};
 
 	// 状態
 	enum EState
 	{
-		STATE_PLAYER = 0,	// プレイヤー追跡状態
-		STATE_CLONE,		// 分身追跡状態
+		STATE_CRAWL = 0,	// 巡回状態
+		STATE_STALK,		// 追跡状態
 		STATE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
-	explicit CEnemyChase(const EType type);
+	CEnemyStalk();
 
 	// デストラクタ
-	~CEnemyChase() override;
+	~CEnemyStalk() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -46,13 +54,16 @@ public:
 private:
 
 	// メンバ関数
-	void TargetSelect(void);		// 標的選択処理
-	bool Search(const D3DXVECTOR3& posTarget);		// 探索処理
-	void Chase(const D3DXVECTOR3& posTarget);		// 追跡処理
-	bool Approach(const D3DXVECTOR3& posTarget);	// 接近処理
+	void State(void);		// 状態処理
+	void Crawl(void);		// 巡回処理
+	void Stalk(void);		// 追跡処理
+	void Move(void);		// 移動処理
+	bool Approach(void);	// 接近処理
 
 	// メンバ変数
-	EState m_state;			// 状態
+	D3DXVECTOR3 m_posTarget;	// 目標の位置
+	ETarget m_target;			// 目標
+	EState m_state;				// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

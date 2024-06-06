@@ -72,6 +72,8 @@ public:
 		ACTION_MOVE,			// 歩行
 		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
 		ACTION_WAIT,			// ギミック待機
+		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
+		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_MAX
 	};
@@ -106,7 +108,7 @@ public:
 	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static void Delete(const int nNum);												// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);							// 全消去処理 (金崎追加)
+	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static void CallBack();															// 分身を呼び戻す
 
@@ -116,20 +118,29 @@ private:
 	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
+	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
+	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
-	void UpdateOldPosition(void);	// 過去位置の更新
-	void UpdateGravity(void);		// 重力の更新
-	bool UpdateLanding(D3DXVECTOR3& rPos);	// 着地状況の更新
+	void UpdateOldPosition(void);			// 過去位置の更新
+	void UpdateGravity(void);				// 重力の更新
+	void UpdateRotation(D3DXVECTOR3& rRot);	// 向きの更新
+	void UpdateLanding(D3DXVECTOR3& rPos, EMotion* rCurMotion = nullptr);	// 着地状況の更新
 
-	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・オブジェクトキャラクターの更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);		// モーション・オブジェクトキャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	CPlayerClone::EMotion ChasePrev(); // 前についていく処理
-	CPlayerClone::EMotion Chase(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // ついていく処理
-	void ViewTarget(const D3DXVECTOR3& rPos); // 目標の方向を向く処理
+	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
+	CPlayerClone::EMotion Chase	// ついていく処理
+	( // 引数
+		D3DXVECTOR3* pPosThis,			// 自身の位置
+		D3DXVECTOR3* pRotThis,			// 自身の向き
+		const D3DXVECTOR3& rPosPrev,	// ついていくやつの位置
+		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
+	);
+	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosPrev); // 目標の方向を向く処理
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -145,10 +156,12 @@ private:
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
+	float m_fFallStart;			// 落とし穴の落ちる前の高さ
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置
+	D3DXVECTOR3	m_destRot;	// 目標向き
 	bool m_bJump;			// ジャンプ状況
 };
 
-#endif	// _PLAYER_H_
+#endif	// _PLAYER_CLONE_H_

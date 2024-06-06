@@ -116,9 +116,9 @@ void CGimmickState::CollisionClone()
 			sizeClone,	// 判定目標サイズ(右・上・後)
 			sizeClone	// 判定目標サイズ(左・下・前)
 		))
-		{ DeleteChar(clone); continue; }
+		{ MissClone(clone); continue; }
 
 		// フラグを追加する
-		SetChar(clone);
+		HitClone(clone);
 	}
 }

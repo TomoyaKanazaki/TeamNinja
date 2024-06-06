@@ -11,10 +11,8 @@
 #include "manager.h"
 #include "renderer.h"
 
-#include "enemyChase.h"
-
-#include "enemyState.h"
-#include "enemyStateNone.h"
+#include "enemyStalk.h"
+#include "stage.h"
 
 //************************************************************
 //	定数宣言
@@ -36,12 +34,12 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemy::CEnemy(const EType type) : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
+CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(type),				// 種類
-m_pState(nullptr)			// 状態
+m_type(TYPE_STALK),			// 種類
+m_bJump(false)				// 着地状況
 {
 
 }
@@ -85,9 +83,6 @@ HRESULT CEnemy::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
-	// 敵の状態を生成
-	ChangeState(new CEnemyStateNone(this));
-
 	// 成功を返す
 	return S_OK;
 }
@@ -97,14 +92,6 @@ HRESULT CEnemy::Init(void)
 //============================================================
 void CEnemy::Uninit(void)
 {
-	if (m_pState != nullptr)
-	{ // 状態が NULL じゃない場合
-
-		// 状態の破棄
-		m_pState->Uninit();
-		m_pState = nullptr;
-	}
-
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -124,15 +111,14 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	if (m_pState != nullptr)
-	{ // 状態が NULL じゃない場合
-
-		// 状態処理
-		m_pState->Process();
-	}
-
 	// オブジェクトキャラクターの更新
 	//CObjectChara::Update(fDeltaTime);
+
+	// 重力処理
+	Gravity();
+
+	// 着地処理
+	Landing();
 }
 
 //============================================================
@@ -154,10 +140,10 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 	switch (type)
 	{
-	case TYPE_CHASE:
+	case TYPE_STALK:
 
 		// 追跡敵を生成
-		pEnemy = new CEnemyChase(type);
+		pEnemy = new CEnemyStalk;
 
 		break;
 
@@ -189,6 +175,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 		// 向きを設定
 		pEnemy->SetVec3Rotation(rRot);
 
+		// 種類を設定
+		pEnemy->m_type = type;
+
 		// 確保したアドレスを返す
 		return pEnemy;
 	}
@@ -204,18 +193,34 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 }
 
 //============================================================
-// 状態の設定処理
+// 重力処理
 //============================================================
-void CEnemy::ChangeState(CEnemyState* pNext)
+void CEnemy::Gravity(void)
 {
-	if (m_pState != nullptr)
-	{ // 状態が NULL じゃない場合
+	// 重力を加算する
+	m_move.y -= GRAVITY;
+}
 
-		// 終了処理
-		m_pState->Uninit();
-		m_pState = nullptr;
+//============================================================
+// 着地処理
+//============================================================
+void CEnemy::Landing(void)
+{
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	CStage* pStage = CScene::GetStage();	// ステージ情報
+
+	// ジャンプしている状態にする
+	m_bJump = true;
+
+	// 地面・制限位置の着地判定
+	if (pStage->LandFieldPosition(pos, m_move)
+		|| pStage->LandLimitPosition(pos, m_move, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// ジャンプしていない状態にする
+		m_bJump = false;
 	}
 
-	// 状態を設定する
-	m_pState = pNext;
+	// 位置を適用
+	SetVec3Position(pos);
 }

@@ -1,7 +1,7 @@
 #pragma once
 //==========================================
 //
-//  砂利道ギミック(gimmick_gravel.h)
+//  水場ギミック(gimmick_water.h)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
@@ -10,13 +10,13 @@
 //==========================================
 //  クラス定義
 //==========================================
-class CGimmickGravel : public CGimmickState
+class CGimmickWater : public CGimmickState
 {
 public:
 
 	// メンバ関数
-	CGimmickGravel();
-	~CGimmickGravel() override;
+	CGimmickWater();
+	~CGimmickWater() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;

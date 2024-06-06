@@ -1,7 +1,7 @@
 #pragma once
 //==========================================
 //
-//  砂利道ギミック(gimmick_gravel.h)
+//  ドブギミック(gimmick_boob.h)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
@@ -10,13 +10,13 @@
 //==========================================
 //  クラス定義
 //==========================================
-class CGimmickGravel : public CGimmickState
+class CGimmickBoob : public CGimmickState
 {
 public:
 
 	// メンバ関数
-	CGimmickGravel();
-	~CGimmickGravel() override;
+	CGimmickBoob();
+	~CGimmickBoob() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;

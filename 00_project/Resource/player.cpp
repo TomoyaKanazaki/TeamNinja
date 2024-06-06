@@ -45,7 +45,7 @@ namespace
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP_MINI	= 1260.0f;		// 小ジャンプ上昇量
+	const float	JUMP_LOW	= 1260.0f;		// 小ジャンプ上昇量
 	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
@@ -538,7 +538,25 @@ bool CPlayer::GimmickHighJump(void)
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
+	// 追従している分身を消す
+	CPlayerClone::Delete();
+
 	return true;
+}
+
+//============================================================
+//	ギミックのハイジャンプ処理
+//============================================================
+void CPlayer::GimmickLowJump(void)
+{
+	// 上移動量を与える
+	m_move.y = JUMP_LOW;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 }
 
 //==========================================
@@ -739,9 +757,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 	bool bLand = false;	// 着地フラグ
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
-	// ジャンプしている状態にする
-	m_bJump = true;
-
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_move)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
@@ -754,20 +769,20 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 		m_bJump = false;
 	}
 
+	// 現在のモーション種類を取得
+	int nCurMotion = GetMotionType();
+
+	// ジャンプモーションのフラグを設定
+	bool bTypeJump = nCurMotion == MOTION_JUMP_HIGH
+				  || nCurMotion == MOTION_JUMP_MINI;
+
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
+
 	if (!m_bJump)
 	{ // 空中にいない場合
 
-		// 現在のモーション種類を取得
-		int nCurMotion = GetMotionType();
-
-		// ジャンプモーションのフラグを設定
-		bool bJump = nCurMotion == MOTION_JUMP_HIGH
-				  || nCurMotion == MOTION_JUMP_MINI;
-
-		// 落下モーションのフラグを設定
-		bool bFall = nCurMotion == MOTION_FALL;
-
-		if (bJump || bFall)
+		if (bTypeJump || bTypeFall)
 		{ // モーションがジャンプ中、または落下中の場合
 
 			// 着地モーションを指定
@@ -775,6 +790,16 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 
 			// 着地音の再生
 			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+	}
+	else
+	{ // 空中にいる場合
+
+		if (!bTypeJump)
+		{ // モーションがジャンプ中ではない場合
+
+			// 落下モーションを指定
+			SetMotion(MOTION_FALL);
 		}
 	}
 
@@ -1048,8 +1073,6 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
-	// TODO：ここも確認！
-
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
@@ -1206,7 +1229,7 @@ void CPlayer::DebugJumpControl(void)
 	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
 	{
 		// 上昇量を与えるよ
-		m_move.y = JUMP_MINI;
+		m_move.y = JUMP_LOW;
 
 		// ジャンプ中にするよ
 		m_bJump = true;
