@@ -139,17 +139,5 @@ void CEnemyCaveat::State(void)
 //============================================================
 void CEnemyCaveat::Caveat(void)
 {
-	D3DXVECTOR3 pos = GetVec3Position();
-	D3DXVECTOR3 rot = GetVec3Rotation();
 
-	pos.x += sinf(rot.y) * 100.0f;
-	pos.y += cosf(rot.y) * 100.0f;
-	pos.z += cosf(rot.y) * 100.0f;
-
-	rot.y += 0.01f;
-
-	useful::NormalizeRot(rot.y);
-
-	SetVec3Position(pos);
-	SetVec3Rotation(rot);
 }
