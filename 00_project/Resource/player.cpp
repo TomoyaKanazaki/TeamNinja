@@ -661,6 +661,14 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	return currentMotion;
 }
 
+//===========================================
+//  のぼる↑の更新
+//===========================================
+CPlayer::EMotion CPlayer::UpdateClimb(const float fDeltaTime)
+{
+	return EMotion();
+}
+
 //============================================================
 //	過去位置の更新処理
 //============================================================
