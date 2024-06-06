@@ -26,8 +26,8 @@ public:
 	// ターゲット
 	enum ETarget
 	{
-		TARGET_PLAYER = 0,	// プレイヤーターゲット
-		TARGET_CLONE,		// 分身ターゲット
+		TARGET_PLAYER = 0,	// プレイヤー
+		TARGET_CLONE,		// 分身
 		TARGET_MAX			// この列挙型の総数
 	};
 
@@ -36,6 +36,7 @@ public:
 	{
 		STATE_CRAWL = 0,	// 巡回状態
 		STATE_STALK,		// 追跡状態
+		STATE_ATTACK,		// 攻撃状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -62,8 +63,9 @@ private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
-	ETarget m_target;			// 目標
+	ETarget m_target;			// 標的
 	EState m_state;				// 状態
+	float m_fSpeed;				// 速度
 };
 
 #endif	// _ENEMY_CHASE_H_

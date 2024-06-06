@@ -14,19 +14,19 @@
 //	インクルードファイル
 //************************************************************
 #include "scene.h"
-
-//************************************************************
-//	前方宣言
-//************************************************************
-class CObject2D;	// オブジェクト2Dクラス
+#include "object2D.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // フェードクラス
-class CFade
+class CFade : public CObject2D
 {
 public:
+	// 定数
+	static constexpr int	PRIORITY = 7;	// フェード優先順位
+	static constexpr float	LEVEL = 1.0f;	// フェードα値加減量
+
 	// フェード状態列挙
 	enum EFade
 	{
@@ -34,6 +34,7 @@ public:
 		FADE_WAIT,		// フェード余韻状態
 		FADE_IN,		// フェードイン状態
 		FADE_OUT,		// フェードアウト状態
+		FADE_IRISOUT,	// アイリスアウト状態
 		FADE_MAX		// この列挙型の総数
 	};
 
@@ -43,24 +44,47 @@ public:
 	// デストラクタ
 	~CFade();
 
-	// メンバ関数
-	HRESULT Init(void);	// 初期化
-	void Uninit(void);	// 終了
-	void Update(const float fDeltaTime);	// 更新
-	void Draw(void);	// 描画
-	void Set(const CScene::EMode mode, const int nWait);	// 次シーンへのフェード設定
-	EFade GetState(void) const;	// フェード状態取得
+	// オーバーライド関数
+	HRESULT Init(void) override;	// 初期化
+	void Uninit(void) override;		// 終了
+	void Update(const float fDeltaTime) override;	// 更新
+	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CFade *Create(void);			// 生成
-	static void Release(CFade *&pFade);	// 破棄
+	static CFade *Create(void);	// 生成
+
+	// メンバ関数
+	EFade GetState(void) const { return m_fade; }	// フェード状態取得
+
+	void SetFade	// フェード開始設定
+	( // 引数
+		const float fAddOut	= LEVEL,	// アウトのα値増加量
+		const float fSubIn	= LEVEL,	// インのα値減少量
+		const int nPriority	= PRIORITY	// 優先順位
+	);
+	void SetModeFade	// 次シーン設定 (フェードのみ)
+	( // 引数
+		const CScene::EMode mode,			// 次シーン
+		const float fWaitTime	= 0.0f,		// 余韻時間
+		const float fAddOut		= LEVEL,	// アウトのα値増加量
+		const float fSubIn		= LEVEL		// インのα値減少量
+	);
+	void SetLoadFade	// 次シーン設定 (ロード画面付き)
+	( // 引数
+		const CScene::EMode mode,			// 次シーン
+		const float fWaitTime	= 0.0f,		// 余韻時間
+		const float fAddOut		= LEVEL,	// アウトのα値増加量
+		const float fSubIn		= LEVEL		// インのα値減少量
+	);
 
 private:
 	// メンバ変数
-	CObject2D *m_pObject2D;		// フェード表示の情報
-	EFade m_fade;				// フェード状態
-	CScene::EMode m_modeNext;	// 次のシーンモード
-	int m_nCounterWait;			// 余韻管理カウンター
+	std::function<HRESULT(CScene::EMode)> m_pFuncSetMode;	// モード設定関数ポインタ
+	CScene::EMode m_modeNext;	// 次シーン
+	EFade m_fade;		// フェード状態
+	float m_fWaitTime;	// 現在の余韻時間
+	float m_fSubIn;		// インのα値減少量
+	float m_fAddOut;	// アウトのα値増加量
 };
 
 #endif	// _FADE_H_

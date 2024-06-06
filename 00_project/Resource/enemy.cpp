@@ -10,17 +10,22 @@
 #include "enemy.h"
 #include "manager.h"
 #include "renderer.h"
+#include "collision.h"
+
+#include "player.h"
+#include "player_clone.h"
+#include "stage.h"
 
 #include "enemyStalk.h"
-#include "stage.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const int	PRIORITY = 3;		// 敵の優先順位
-	const float	GRAVITY = 1.0f;		// 重力
+	const int	PRIORITY = 3;			// 敵の優先順位
+	const float	GRAVITY = 1.0f;			// 重力
+	const float VIEW_RANGE = 400.0f;	// 視界の範囲
 }
 
 //************************************************************
@@ -190,6 +195,97 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// プレイヤーの探索処理
+//============================================================
+bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;				// 位置
+	float fRot = GetVec3Rotation().y + D3DX_PI;	// 向き
+
+	// 向きを正規化
+	useful::NormalizeRot(fRot);
+
+	// 位置を取得する
+	pos = CScene::GetPlayer()->GetVec3Position();
+
+	if (collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI))
+	{ // 視界内に入った場合
+
+		// プレイヤーの位置を取得する
+		if (pPos != nullptr) { *pPos = pos; }
+
+		// true を返す
+		return true;
+	}
+	else
+	{
+		int n = 0;
+	}
+
+	// false を返す
+	return false;
+}
+
+//============================================================
+// 分身の探索処理
+//============================================================
+bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
+	D3DXVECTOR3 posEnemy = GetVec3Position();		// 敵の位置
+	float fRot = GetVec3Rotation().y + D3DX_PI;		// 向き
+	float fLength = FLT_MAX;						// 距離
+	float fLengthComp = FLT_MAX;					// 比較する距離
+	int nIdx = INT_MAX;								// 追わせるインデックス
+
+	// 向きを正規化
+	useful::NormalizeRot(fRot);
+
+	if (CPlayerClone::GetList() == nullptr ||
+		*CPlayerClone::GetList()->GetBegin() == nullptr)
+	{ // 分身のリストが無い場合
+
+		// falseを返す
+		return false;
+	}
+
+	for (int nCnt = 0; nCnt < CPlayerClone::GetList()->GetNumAll(); nCnt++)
+	{
+		// 分身の位置を取得する
+		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+
+		// 距離を測る
+		fLengthComp = sqrtf((posEnemy.x - pos.x) * (posEnemy.x - pos.x) + (posEnemy.z - pos.z) * (posEnemy.z - pos.z));
+
+		if (fLength >= fLengthComp)
+		{ // 比較した距離の方が短い場合
+
+			// 距離を更新する
+			fLength = fLengthComp;
+
+			// インデックスを設定する
+			nIdx = nCnt;
+		}
+	}
+
+	// 位置を設定する
+	pos = (*CPlayerClone::GetList()->GetIndex(nIdx))->GetVec3Position();
+
+	if (collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI))
+	{ // 視界内に入った場合
+
+		// プレイヤーの位置を取得する
+		if (pPos != nullptr) { *pPos = pos; }
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
 }
 
 //============================================================
