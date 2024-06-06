@@ -41,6 +41,7 @@ namespace
 	const float GAMEEND_WAITTIME = 2.0f;	// リザルト画面への遷移余韻フレーム
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
+	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
 }
 
 //************************************************************
@@ -74,7 +75,7 @@ HRESULT CGameManager::Init(void)
 	m_pGoal = nullptr;		// ゴールのポインタ
 
 	// スタートUIを生成
-	CPopUpUI::Create();
+	CPopUpUI::Create(START_TEXTURE);
 
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 
