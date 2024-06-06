@@ -12,7 +12,8 @@
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickMalti::CGimmickMalti() : CGimmick()
+CGimmickMalti::CGimmickMalti() : CGimmick(),
+m_pGimmick (nullptr) // 管理するギミック
 {
 
 }
@@ -38,6 +39,9 @@ HRESULT CGimmickMalti::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// 設置ギミックを生成
+	m_pGimmick = new CGimmick [GetNumActive()];
 
 	// 成功を返す
 	return S_OK;
