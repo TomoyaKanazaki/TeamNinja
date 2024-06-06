@@ -7,6 +7,7 @@
 #include "gimmick_step.h"
 #include "manager.h"
 #include "player.h"
+#include "player_clone.h"
 
 //===========================================
 //  定数定義
@@ -76,26 +77,13 @@ void CGimmickStep::Update(const float fDeltaTime)
 	// プレイヤーとの当たり判定
 	if (CollisionPlayer())
 	{
-		if (!m_bSummit) // 登頂済みでない場合
-		{
-			// 登る
-			Climb(player);
-
-			// プレイヤーの高さを比較
-			if (player->GetVec3Position().y > m_fSummit)
-			{
-				player->GimmickLowJump();
-				m_bSummit = true;
-			}
-		}
-		else
-		{
-			// プレイヤーの高さを比較
-			if (player->GetVec3Position().y < m_fSummit)
-			{
-				m_bSummit = false;
-			}
-		}
+		// 登る
+		Climb(player, fDeltaTime);
+	}
+	else
+	{
+		// 分身の操作を可能にする
+		player->SetClone(true);
 	}
 
 	// 親クラスの更新
@@ -114,8 +102,12 @@ void CGimmickStep::Draw(CShader* pShader)
 //===========================================
 //  登る
 //===========================================
-void CGimmickStep::Climb(CPlayer* player)
+void CGimmickStep::Climb(CPlayer* player, const float fDeltaTime)
 {
+	// 登頂している高さなら関数を抜ける
+	float fHeight = player->GetVec3Position().y;
+	if (fHeight > m_fSummit) { return; }
+
 	// プレイヤーの移動量を取得
 	D3DXVECTOR3 movePlasyer = player->GetMove();
 
@@ -124,4 +116,21 @@ void CGimmickStep::Climb(CPlayer* player)
 
 	// 移動量を適用する
 	player->SetMove(movePlasyer);
+
+	// 登頂できる移動量ならジャンプして関数を抜ける
+	if (fHeight + (movePlasyer.y * fDeltaTime) > m_fSummit)
+	{
+		// 分身の操作を可能にする
+		player->SetClone(true);
+
+		// ジャンプ
+		player->GimmickLowJump();
+		return;
+	}
+
+	// 分身の操作を不可能にする
+	player->SetClone(false);
+
+	// 分身を削除する
+	CPlayerClone::Delete();
 }
