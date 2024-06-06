@@ -1,40 +1,33 @@
 #pragma once
 //=========================================
 //
-//  踏み台ギミック (gimmick_step.h)
+//  設置ギミック (gimmick_post.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
 #include "gimmick_action.h"
 
-//===========================================
-//  前方宣言
-//===========================================
-class CPlayer;
-
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickStep : public CGimmickAction
+class CGimmickPost : public CGimmickAction
 {
 public:
 
 	// メンバ関数
-	CGimmickStep();
-	~CGimmickStep() override;
+	CGimmickPost();
+	~CGimmickPost() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	bool IsSet() { return m_bPost; } // 設置フラグの取得
+
 private:
 
-	// メンバ関数
-	void Climb(CPlayer* player, const float fDeltaTime); // 登る
-
 	// メンバ変数
-	float m_fSummit; // 登頂位置
-	bool m_bSummit; // 登頂フラグ
+	bool m_bPost; // 設置フラグ
 
 };

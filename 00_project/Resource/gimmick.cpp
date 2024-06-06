@@ -13,10 +13,12 @@
 #include "gimmick_jumptable.h"
 #include "gimmick_step.h"
 #include "gimmick_fall.h"
+#include "gimmick_post.h"
 
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
 #include "gimmick_water.h"
+#include "gimmick_jumpoff.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -159,6 +161,12 @@ CGimmick* CGimmick::Create
 
 		break;
 
+	case CGimmick::TYPE_POST:			// İ’u
+
+		pGimmick = new CGimmickPost;
+
+		break;
+
 	case CGimmick::TYPE_GRAVEL:			// »—˜“¹
 
 		pGimmick = new CGimmickGravel;
@@ -174,6 +182,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_WATER:			// …ê
 
 		pGimmick = new CGimmickWater;
+
+		break;
+
+	case CGimmick::TYPE_JUMPOFF:			// ”ò‚Ñ~‚è
+
+		pGimmick = new CGimmickJumpOff;
 
 		break;
 

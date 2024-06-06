@@ -113,19 +113,20 @@ public:
 	float GetHeight(void) const;		// 縦幅取得
 	bool GimmickHighJump(void);			// ギミックのハイジャンプ
 	void GimmickLowJump(void);			// ギミックの小ジャンプ
+	bool GimmickLand(void);				// ギミックの飛び降り着地
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
 	void RecoverJust();			// ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
-	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
+	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
+	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
 
 private:
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
-	EMotion UpdateClimb(const float fDeltaTime);	// のぼる↑状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
@@ -171,6 +172,7 @@ private:
 	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;		// 中心座標
+	bool m_bClone;					// 分身操作可能フラグ
 
 };
 
