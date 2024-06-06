@@ -161,4 +161,4 @@ private:
 	bool m_bJump;			// ƒWƒƒƒ“ƒvó‹µ
 };
 
-#endif	// _PLAYER_H_
+#endif	// _PLAYER_CLONE_H_
