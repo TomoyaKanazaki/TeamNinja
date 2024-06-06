@@ -57,6 +57,9 @@ void CGimmickPost::Uninit(void)
 //=========================================
 void CGimmickPost::Update(const float fDeltaTime)
 {
+	// アクティブ状態になっていたら設置フラグをon
+	m_bPost = IsActive();
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }

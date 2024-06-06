@@ -23,6 +23,11 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	bool IsSet() { return m_bPost; } // 設置フラグの取得
+
 private:
+
+	// メンバ変数
+	bool m_bPost; // 設置フラグ
 
 };
