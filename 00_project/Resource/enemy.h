@@ -62,6 +62,10 @@ public:
 
 protected:
 
+	// メンバ関数
+	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);		// プレイヤーの探索処理
+	bool SearchClone(D3DXVECTOR3* pPos = nullptr);		// 分身の探索処理
+
 private:
 
 	// メンバ関数
