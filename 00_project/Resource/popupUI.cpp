@@ -16,7 +16,7 @@
 //************************************************************
 namespace
 {
-	const int PRIORITY = 6;			// スタートUIの優先順位
+	const int PRIORITY = 5;			// スタートUIの優先順位
 	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(1600.0f, 400.0f, 0.0f);		// サイズ
 
 	// ズーム状態の定数

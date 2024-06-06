@@ -701,7 +701,7 @@ void CRankingManager::UpdateTransition(void)
 			{ // フェード中ではない場合
 
 				// シーンの設定
-				GET_MANAGER->SetScene(CScene::MODE_TITLE);	// タイトル画面
+				GET_MANAGER->SetLoadScene(CScene::MODE_TITLE);	// タイトル画面
 
 				// サウンドの再生
 				PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00

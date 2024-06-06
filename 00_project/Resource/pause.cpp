@@ -372,14 +372,14 @@ void CPause::Select(void)
 		case SELECT_RETRY:	// リトライ
 		{
 			// シーンの設定
-			GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
+			GET_MANAGER->SetLoadScene(CScene::MODE_GAME);	// ゲーム画面
 
 			break;
 		}
 		case SELECT_EXIT:	// 終了
 		{
 			// シーンの設定
-			GET_MANAGER->SetScene(CScene::MODE_TITLE);	// タイトル画面
+			GET_MANAGER->SetLoadScene(CScene::MODE_TITLE);	// タイトル画面
 
 			break;
 		}

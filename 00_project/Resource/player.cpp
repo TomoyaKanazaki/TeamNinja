@@ -106,7 +106,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_nCounterState		(0),			// 状態管理カウンター
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
-	m_fScalar			(0.0f)			// 移動量
+	m_fScalar			(0.0f),			// 移動量
+	m_bClone			(true)			// 分身操作可能フラグ
 {
 
 }
@@ -136,6 +137,7 @@ HRESULT CPlayer::Init(void)
 	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_fScalar			= 0.0f;			// 移動量
+	m_bClone			= true;			// 分身操作可能フラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -537,6 +539,9 @@ bool CPlayer::GimmickHighJump(void)
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// 追従している分身を消す
+	CPlayerClone::Delete();
 
 	return true;
 }
@@ -1081,7 +1086,8 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
-	// TODO：ここも確認！
+	// 操作可能フラグを確認
+	if (!m_bClone) { return; }
 
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;

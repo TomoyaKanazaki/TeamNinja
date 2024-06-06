@@ -31,7 +31,7 @@ public:
 private:
 
 	// ƒƒ“ƒoŠÖ”
-	void Climb(CPlayer* player); // “o‚é
+	void Climb(CPlayer* player, const float fDeltaTime); // “o‚é
 
 	// ƒƒ“ƒo•Ï”
 	float m_fSummit; // “o’¸ˆÊ’u
