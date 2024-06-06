@@ -14,7 +14,6 @@
 #include "sound.h"
 #include "camera.h"
 #include "light.h"
-#include "fade.h"
 #include "loading.h"
 #include "texture.h"
 #include "model.h"
@@ -416,8 +415,8 @@ void CManager::Uninit(void)
 	// シーンの破棄
 	SAFE_REF_RELEASE(m_pScene);
 
-	// フェードの破棄
-	SAFE_REF_RELEASE(m_pFade);
+	// フェードの終了
+	SAFE_UNINIT(m_pFade);
 
 	// ライトの破棄
 	SAFE_REF_RELEASE(m_pLight);
@@ -578,21 +577,9 @@ void CManager::ReleaseWindow(void)
 }
 
 //============================================================
-//	シーンの設定処理
+//	シーンの初期化処理
 //============================================================
-void CManager::SetScene(const CScene::EMode mode, const int nWait)
-{
-	// インスタンス未使用
-	assert(m_pFade != nullptr);
-
-	// 次のシーンを設定
-	m_pFade->Set(mode, nWait);
-}
-
-//============================================================
-//	モードの初期化処理
-//============================================================
-HRESULT CManager::InitMode(const CScene::EMode mode)
+HRESULT CManager::InitScene(const CScene::EMode mode)
 {
 	// シーンの生成
 	assert(m_pScene == nullptr);
@@ -647,15 +634,129 @@ HRESULT CManager::InitMode(const CScene::EMode mode)
 }
 
 //============================================================
-//	モードの設定処理
+//	シーンの設定処理 (フェード･ロード：OFF)
 //============================================================
-HRESULT CManager::SetMode(const CScene::EMode mode)
+HRESULT CManager::SetScene(const CScene::EMode mode)
 {
 	// サウンドを停止
 	assert(m_pSound != nullptr);
 	m_pSound->Stop();
 
 	// シーンを破棄
+	SAFE_REF_RELEASE(m_pScene);
+
+	// オブジェクトの全破棄
+	CObject::ReleaseAll();
+
+	// シーンの生成
+	assert(m_pScene == nullptr);
+	m_pScene = CScene::Create(mode);
+	if (m_pScene == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// シーンの初期化
+	if (FAILED(m_pScene->Init()))
+	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	シーンの設定処理 (フェード：ON, ロード：OFF)
+//============================================================
+void CManager::SetFadeScene
+(
+	const CScene::EMode mode,	// 次シーン
+	const float fWaitTime,		// 余韻時間
+	const float fAddOut,		// アウトのα値増加量
+	const float fSubIn			// インのα値減少量
+)
+{
+	// インスタンス未使用
+	assert(m_pFade != nullptr);
+
+	// 次のシーンを設定
+	m_pFade->SetModeFade(mode, fWaitTime, fAddOut, fSubIn);
+}
+
+//============================================================
+//	シーンの設定処理 (フェード･ロード：ON)
+//============================================================
+void CManager::SetLoadScene
+(
+	const CScene::EMode mode,	// 次シーン
+	const float fWaitTime,		// 余韻時間
+	const float fAddOut,		// アウトのα値増加量
+	const float fSubIn			// インのα値減少量
+)
+{
+	// インスタンス未使用
+	assert(m_pFade != nullptr);
+
+	// 次のシーンを設定
+	m_pFade->SetLoadFade(mode, fWaitTime, fAddOut, fSubIn);
+}
+
+//============================================================
+//	モードの設定処理 (ロード：OFF)
+//============================================================
+HRESULT CManager::SetMode(const CScene::EMode mode)
+{
+	// サウンドの停止
+	assert(m_pSound != nullptr);
+	m_pSound->Stop();
+
+	// シーンの破棄
+	SAFE_REF_RELEASE(m_pScene);
+
+	// オブジェクトの全破棄
+	CObject::ReleaseAll();
+
+	// シーンの生成
+	assert(m_pScene == nullptr);
+	m_pScene = CScene::Create(mode);
+	if (m_pScene == nullptr)
+	{ // 非使用中の場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// シーンの初期化
+	if (FAILED(m_pScene->Init()))
+	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	モードの設定処理 (ロード：ON)
+//============================================================
+HRESULT CManager::SetLoadMode(const CScene::EMode mode)
+{
+	// サウンドの停止
+	assert(m_pSound != nullptr);
+	m_pSound->Stop();
+
+	// シーンの破棄
 	SAFE_REF_RELEASE(m_pScene);
 
 	// オブジェクトの全破棄
@@ -706,7 +807,7 @@ HRESULT CManager::SetMode(const CScene::EMode mode)
 }
 
 //============================================================
-//	モードの取得処理
+//	モード取得処理
 //============================================================
 CScene::EMode CManager::GetMode(void)
 {
