@@ -56,6 +56,7 @@ namespace
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
 	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
 	const float FALL = 150.0f; // 落とし穴による落下
+	const float FALL_DELETE = 250.0f; // 落とし穴に落ちて消えるまでの距離
 }
 
 //************************************************************
@@ -81,7 +82,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_nIdxGimmick	(-1),			// ギミック内の管理番号
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_destRot		(VEC3_ZERO),	// 目標向き
-	m_bJump			(false)			// ジャンプ状況
+	m_bJump			(false),		// ジャンプ状況
+	m_fFallStart	(0.0f)			// 落とし穴の落ちる前の高さ
 {
 
 }
@@ -592,9 +594,11 @@ void CPlayerClone::CallBack()
 		// 分身を取得
 		CPlayerClone* pClone = *m_pList->GetIndex(i);
 
-		// 歩行中の場合は次に進む
-		if (pClone->GetAction() == ACTION_MOVE || pClone->GetAction() == ACTION_CHASE) { continue; }
-		
+		// 追従させたくない場合は次に進む
+		if (pClone->GetAction() == ACTION_MOVE) { continue; }
+		if (pClone->GetAction() == ACTION_CHASE) { continue; }
+		if (pClone->GetAction() == ACTION_FALL) { continue; }
+
 		// ギミックの保有分身数を減らす
 		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
 
@@ -790,6 +794,9 @@ CPlayerClone::EMotion CPlayerClone::UpdateFall(const float fDeltaTime)
 
 	// 着地判定
 	UpdateLanding(pos);
+
+	// 落ちる前の高さを保存
+	m_fFallStart = pos.y;
 
 	// 忍び足
 	return MOTION_STEALTHWALK;

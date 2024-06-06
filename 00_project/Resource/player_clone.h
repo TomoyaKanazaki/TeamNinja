@@ -154,6 +154,7 @@ private:
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
+	float m_fFallStart;			// 落とし穴の落ちる前の高さ
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置
