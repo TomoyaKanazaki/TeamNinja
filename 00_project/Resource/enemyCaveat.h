@@ -47,6 +47,7 @@ private:
 
 	// ƒƒ“ƒoŠÖ”
 	void State(void);		// ó‘Ôˆ—
+	void Caveat(void);		// Œxˆ—
 
 	// ƒƒ“ƒo•Ï”
 	EState m_state;			// ó‘Ô

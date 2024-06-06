@@ -111,13 +111,20 @@ void CEnemyCaveat::State(void)
 	{
 	case CEnemyCaveat::STATE_CRAWL:
 
+		if (SearchPlayer() ||
+			SearchClone())
+		{ // ‹ŠE“à‚ÉƒvƒŒƒCƒ„[‚©•ªg‚ª“ü‚Á‚½ê‡
 
+			// Œxó‘Ô‚É‚·‚é
+			m_state = STATE_CAVEAT;
+		}
 
 		break;
 
 	case CEnemyCaveat::STATE_CAVEAT:
 
-
+		// Œxˆ—
+		Caveat();
 
 		break;
 
@@ -125,4 +132,24 @@ void CEnemyCaveat::State(void)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+// Œxˆ—
+//============================================================
+void CEnemyCaveat::Caveat(void)
+{
+	D3DXVECTOR3 pos = GetVec3Position();
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	pos.x += sinf(rot.y) * 100.0f;
+	pos.y += cosf(rot.y) * 100.0f;
+	pos.z += cosf(rot.y) * 100.0f;
+
+	rot.y += 0.01f;
+
+	useful::NormalizeRot(rot.y);
+
+	SetVec3Position(pos);
+	SetVec3Rotation(rot);
 }
