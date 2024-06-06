@@ -37,8 +37,8 @@ namespace
 	const D3DXVECTOR3 POS_NAME	 = D3DXVECTOR3(0.0f, 60.0f, 400.0f);	// 名前の表示位置
 	const D3DXVECTOR3 POS_SKIP	 = D3DXVECTOR3(1092.0f, 673.0f, 0.0f);	// スキップ操作の表示位置
 	const D3DXVECTOR3 SIZE_SKIP	 = D3DXVECTOR3(381.0f, 77.0f, 0.0f);	// スキップ操作の表示大きさ
-	const int CHANGE_UI_PRIORITY = 5;	// シネマスコープ終了時のUI優先順位
-	const int GAMEEND_WAIT_FRAME = 120;	// リザルト画面への遷移余韻フレーム
+	const int CHANGE_UI_PRIORITY = 5;		// シネマスコープ終了時のUI優先順位
+	const float GAMEEND_WAITTIME = 2.0f;	// リザルト画面への遷移余韻フレーム
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 }
@@ -81,11 +81,13 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 2);
 	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
 
+	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_BOOB, 2);
+	CGimmick::Create(D3DXVECTOR3(-600.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_GRAVEL, 2);
+	CGimmick::Create(D3DXVECTOR3(-800.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_WATER, 2);
+
 	// アクターを生成
 	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);
 
-	// TODO：なぜかバグる！
-#if 1
 	CMapModel::Create(D3DXVECTOR3(-800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
 
 	CMapModel::Create(D3DXVECTOR3(-400.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE2);
@@ -97,7 +99,6 @@ HRESULT CGameManager::Init(void)
 	CMapModel::Create(D3DXVECTOR3(800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
-#endif
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }
@@ -181,7 +182,7 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
 
 	// リザルト画面に遷移
-	GET_MANAGER->SetScene(CScene::MODE_RESULT, GAMEEND_WAIT_FRAME);
+	GET_MANAGER->SetLoadScene(CScene::MODE_RESULT, GAMEEND_WAITTIME);
 
 	if (win == CRetentionManager::WIN_CLEAR)
 	{ // 勝利していた場合

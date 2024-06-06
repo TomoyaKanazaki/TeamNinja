@@ -1,7 +1,7 @@
 #pragma once
 //==========================================
 //
-//  砂利道ギミック(gimmick_gravel.h)
+//  掃除したての床ギミック(gimmick_cleen.h)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
@@ -10,13 +10,13 @@
 //==========================================
 //  クラス定義
 //==========================================
-class CGimmickGravel : public CGimmickState
+class CGimmickCleen : public CGimmickState
 {
 public:
 
 	// メンバ関数
-	CGimmickGravel();
-	~CGimmickGravel() override;
+	CGimmickCleen();
+	~CGimmickCleen() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;

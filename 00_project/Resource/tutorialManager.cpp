@@ -63,8 +63,8 @@ namespace
 		0,		// レッスン05：終了			終了時の余韻カウント
 	};
 
-	const int PRIORITY			= 6;	// チュートリアルの優先順位
-	const int TITLE_WAIT_CNT	= 20;	// タイトル遷移の余韻フレーム
+	const int	PRIORITY		= 6;	// チュートリアルの優先順位
+	const float	TITLE_WAITTIME	= 0.5f;	// タイトル遷移の余韻フレーム
 
 	const D3DXVECTOR3 POS_GUIDE		= D3DXVECTOR3(1020.0f, 585.0f, 0.0f);	// 小説明表示の位置
 	const D3DXVECTOR3 POS_CONTROL	= D3DXVECTOR3(260.0f, 585.0f, 0.0f);	// 操作方法表示の位置
@@ -308,7 +308,7 @@ void CTutorialManager::Update(const float fDeltaTime)
 	case STATE_END:			// 終了状態
 
 		// シーンの設定
-		GET_MANAGER->SetScene(CScene::MODE_TITLE, TITLE_WAIT_CNT);	// タイトル画面
+		GET_MANAGER->SetLoadScene(CScene::MODE_TITLE, TITLE_WAITTIME);	// タイトル画面
 
 		break;
 

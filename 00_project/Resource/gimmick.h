@@ -33,8 +33,11 @@ public:
 	enum EType
 	{
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
-		TYPE_GRAVEL,			// 砂利道
 		TYPE_STEP,				// 踏み台
+		TYPE_FALL,				// 落とし穴
+		TYPE_GRAVEL,			// 砂利道
+		TYPE_BOOB,				// ドブ
+		TYPE_WATER,				// 水場
 		TYPE_MAX				// この列挙型の総数
 	};
 

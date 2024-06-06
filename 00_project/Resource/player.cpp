@@ -538,6 +538,9 @@ bool CPlayer::GimmickHighJump(void)
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
+	// 追従している分身を消す
+	CPlayerClone::Delete();
+
 	return true;
 }
 
@@ -656,6 +659,14 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
+}
+
+//===========================================
+//  のぼる↑の更新
+//===========================================
+CPlayer::EMotion CPlayer::UpdateClimb(const float fDeltaTime)
+{
+	return EMotion();
 }
 
 //============================================================
@@ -1070,8 +1081,6 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 {
-	// TODO：ここも確認！
-
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
 
