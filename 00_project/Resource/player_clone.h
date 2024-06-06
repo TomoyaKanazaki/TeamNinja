@@ -75,6 +75,7 @@ public:
 		ACTION_FALL_TO_WAIT,	// —Ž‚Æ‚µŒŠŒx‰ú
 		ACTION_FALL,			// —Ž‚Æ‚µŒŠ—Ž‰º
 		ACTION_JUMPTABLE,		// ƒWƒƒƒ“ƒv‘ä
+		ACTION_JUMPOFF,			// ”ò‚Ñ~‚è
 		ACTION_MAX
 	};
 
