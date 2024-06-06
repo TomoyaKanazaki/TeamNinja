@@ -72,7 +72,8 @@ public:
 		ACTION_MOVE,			// 歩行
 		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
 		ACTION_WAIT,			// ギミック待機
-		ACTION_FALL,			// 落とし穴警戒
+		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
+		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_MAX
 	};
@@ -117,7 +118,8 @@ private:
 	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
-	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴警戒
+	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
+	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
