@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "loading.h"
+#include "objectCircle2D.h"
 
 //************************************************************
 //	定数宣言
@@ -67,7 +68,7 @@ HRESULT CFade::Init(void)
 	m_fade			= FADE_IN;		// フェード状態
 	m_fWaitTime		= 0.0f;			// 現在の余韻時間
 	m_fSubIn		= 0.0f;		// インのα値減少量	// TODO
-	m_fAddOut		= LEVEL;		// アウトのα値増加量
+	m_fAddOut		= 0.0f;		// アウトのα値増加量
 
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -94,7 +95,7 @@ HRESULT CFade::Init(void)
 	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
 
 	// アイリスアウト切り抜き型の生成
-	m_pCircle = CObject2D::Create(SCREEN_CENT, VEC3_ONE * 100.0f, VEC3_ZERO);
+	m_pCircle = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, POSGRID2(128, 2), 300.0f);
 	if (m_pCircle == nullptr)
 	{ // 生成に失敗した場合
 
@@ -102,9 +103,6 @@ HRESULT CFade::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 円のテクスチャを割当
-	m_pCircle->BindTexture("data\\TEXTURE\\circle000.png");
 
 	// 自動更新・自動描画を停止させる
 	m_pCircle->SetEnableUpdate(false);
@@ -255,7 +253,7 @@ void CFade::Draw(CShader *pShader)
 	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
 
 	// ステンシル比較関数を指定する
-	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_NOTEQUAL);
 
 	// ステンシル結果に対しての反映設定
 	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト成功
