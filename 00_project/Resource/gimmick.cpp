@@ -17,6 +17,7 @@
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
 #include "gimmick_water.h"
+#include "gimmick_jumpoff.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -174,6 +175,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_WATER:			// …ê
 
 		pGimmick = new CGimmickWater;
+
+		break;
+
+	case CGimmick::TYPE_JUMPOFF:			// ”ò‚Ñ~‚è
+
+		pGimmick = new CGimmickJumpOff;
 
 		break;
 

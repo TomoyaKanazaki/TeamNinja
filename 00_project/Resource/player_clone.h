@@ -74,6 +74,7 @@ public:
 		ACTION_WAIT,			// ギミック待機
 		ACTION_FALL,			// 落とし穴警戒
 		ACTION_JUMPTABLE,		// ジャンプ台
+		ACTION_JUMPOFF,			// 飛び降り
 		ACTION_MAX
 	};
 

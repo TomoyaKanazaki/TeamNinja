@@ -214,6 +214,7 @@
     <ClInclude Include="Resource\gimmick_cleen.h" />
     <ClInclude Include="Resource\gimmick_fall.h" />
     <ClInclude Include="Resource\gimmick_gravel.h" />
+    <ClInclude Include="Resource\gimmick_jumpoff.h" />
     <ClInclude Include="Resource\gimmick_jumptable.h" />
     <ClInclude Include="Resource\gimmick_state.h" />
     <ClInclude Include="Resource\gimmick_step.h" />
@@ -355,6 +356,7 @@
     <ClCompile Include="Resource\gimmick_cleen.cpp" />
     <ClCompile Include="Resource\gimmick_fall.cpp" />
     <ClCompile Include="Resource\gimmick_gravel.cpp" />
+    <ClCompile Include="Resource\gimmick_jumpoff.cpp" />
     <ClCompile Include="Resource\gimmick_jumptable.cpp" />
     <ClCompile Include="Resource\gimmick_state.cpp" />
     <ClCompile Include="Resource\gimmick_step.cpp" />

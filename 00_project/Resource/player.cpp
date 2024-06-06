@@ -556,6 +556,17 @@ void CPlayer::GimmickLowJump(void)
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 }
 
+//============================================================
+// ギミックの飛び降り着地
+//============================================================
+bool CPlayer::GimmickLand(void)
+{
+	// 着地音の再生
+	PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+
+	return true;
+}
+
 //==========================================
 //  士気力の値を取得
 //==========================================
