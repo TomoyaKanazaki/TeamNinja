@@ -438,6 +438,9 @@
     <ClInclude Include="Resource\gimmick_jumpoff.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\enemyCaveat.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Resource\gimmick_post.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -858,6 +861,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_jumpoff.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyCaveat.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_post.cpp">
