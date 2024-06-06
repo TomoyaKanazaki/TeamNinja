@@ -72,7 +72,8 @@ public:
 		ACTION_MOVE,			// 歩行
 		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
 		ACTION_WAIT,			// ギミック待機
-		ACTION_FALL,			// 落とし穴警戒
+		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
+		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_MAX
 	};
@@ -107,7 +108,7 @@ public:
 	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static void Delete(const int nNum);												// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);							// 全消去処理 (金崎追加)
+	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static void CallBack();															// 分身を呼び戻す
 
@@ -117,7 +118,8 @@ private:
 	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
 	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
-	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴警戒
+	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
+	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
@@ -154,6 +156,7 @@ private:
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
+	float m_fFallStart;			// 落とし穴の落ちる前の高さ
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置
