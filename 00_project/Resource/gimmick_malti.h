@@ -25,4 +25,7 @@ public:
 
 private:
 
+	// メンバ変数
+	CGimmick* m_pGimmick; // 管理するギミック
+
 };

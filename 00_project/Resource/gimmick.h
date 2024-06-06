@@ -62,7 +62,7 @@ public:
 	int GetNumActive(void) const { return m_nNumActive; }		// 発動可能人数の取得処理
 
 	// 当たり判定
-	virtual void CollisionClone() = 0;							// クローンとの当たり判定
+	virtual void CollisionClone() {}							// クローンとの当たり判定
 	virtual bool CollisionPlayer() { return false; }			// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
