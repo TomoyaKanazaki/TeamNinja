@@ -17,6 +17,7 @@
 #include "stage.h"
 
 #include "enemyStalk.h"
+#include "enemyCaveat.h"
 
 //************************************************************
 //	定数宣言
@@ -152,6 +153,13 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		break;
 
+	case TYPE_CAVEAT:
+
+		// 警告敵を生成
+		pEnemy = new CEnemyCaveat;
+
+		break;
+
 	default:	// 例外処理
 		assert(false);
 		break;
@@ -211,22 +219,14 @@ bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
 	// 位置を取得する
 	pos = CScene::GetPlayer()->GetVec3Position();
 
-	if (collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI))
-	{ // 視界内に入った場合
+	// 視界内に居なかった場合 false を返す
+	if (!collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI)) { return false; }
 
-		// プレイヤーの位置を取得する
-		if (pPos != nullptr) { *pPos = pos; }
+	// プレイヤーの位置を取得する
+	if (pPos != nullptr) { *pPos = pos; }
 
-		// true を返す
-		return true;
-	}
-	else
-	{
-		int n = 0;
-	}
-
-	// false を返す
-	return false;
+	// true を返す
+	return true;
 }
 
 //============================================================
@@ -260,32 +260,27 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
 		// 距離を測る
 		fLengthComp = sqrtf((posEnemy.x - pos.x) * (posEnemy.x - pos.x) + (posEnemy.z - pos.z) * (posEnemy.z - pos.z));
 
-		if (fLength >= fLengthComp)
-		{ // 比較した距離の方が短い場合
+		// 比較した距離の方が長い場合、次に進む
+		if (fLength < fLengthComp) { continue; }
 
-			// 距離を更新する
-			fLength = fLengthComp;
+		// 距離を更新する
+		fLength = fLengthComp;
 
-			// インデックスを設定する
-			nIdx = nCnt;
-		}
+		// インデックスを設定する
+		nIdx = nCnt;
 	}
 
 	// 位置を設定する
 	pos = (*CPlayerClone::GetList()->GetIndex(nIdx))->GetVec3Position();
 
-	if (collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI))
-	{ // 視界内に入った場合
+	// 視界内に居なかった場合 false を返す
+	if (!collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI)) { return false; }
 
-		// プレイヤーの位置を取得する
-		if (pPos != nullptr) { *pPos = pos; }
+	// プレイヤーの位置を取得する
+	if (pPos != nullptr) { *pPos = pos; }
 
-		// true を返す
-		return true;
-	}
-
-	// false を返す
-	return false;
+	// true を返す
+	return true;
 }
 
 //============================================================

@@ -35,6 +35,7 @@ public:
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
 		TYPE_STEP,				// 踏み台
 		TYPE_FALL,				// 落とし穴
+		TYPE_POST,				// 設置
 		TYPE_GRAVEL,			// 砂利道
 		TYPE_BOOB,				// ドブ
 		TYPE_WATER,				// 水場
@@ -61,7 +62,7 @@ public:
 	int GetNumActive(void) const { return m_nNumActive; }		// 発動可能人数の取得処理
 
 	// 当たり判定
-	virtual void CollisionClone() = 0;							// クローンとの当たり判定
+	virtual void CollisionClone() {}							// クローンとの当たり判定
 	virtual bool CollisionPlayer() { return false; }			// プレイヤーとの当たり判定
 
 	// 静的メンバ関数
@@ -79,7 +80,7 @@ private:
 	// メンバ変数
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
 	EType m_type;		// 種類
-	int m_nNumActive;	// 発動可能な分身の数
+	int m_nNumActive;	// 発動可能な数
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト

@@ -85,6 +85,8 @@ private:
 	float m_fWaitTime;	// 現在の余韻時間
 	float m_fSubIn;		// インのα値減少量
 	float m_fAddOut;	// アウトのα値増加量
+
+	CObject2D *m_pCircle;	// アイリスアウト切り抜き型
 };
 
 #endif	// _FADE_H_

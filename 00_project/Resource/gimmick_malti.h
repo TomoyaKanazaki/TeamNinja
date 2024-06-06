@@ -1,27 +1,22 @@
 #pragma once
 //=========================================
 //
-//  踏み台ギミック (gimmick_step.h)
+//  複数管理ギミック (gimmick_malti.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
-#include "gimmick_action.h"
-
-//===========================================
-//  前方宣言
-//===========================================
-class CPlayer;
+#include "gimmick.h"
 
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickStep : public CGimmickAction
+class CGimmickMalti : public CGimmick
 {
 public:
 
 	// メンバ関数
-	CGimmickStep();
-	~CGimmickStep() override;
+	CGimmickMalti();
+	~CGimmickMalti() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -30,11 +25,7 @@ public:
 
 private:
 
-	// メンバ関数
-	void Climb(CPlayer* player, const float fDeltaTime); // 登る
-
 	// メンバ変数
-	float m_fSummit; // 登頂位置
-	bool m_bSummit; // 登頂フラグ
+	CGimmick* m_pGimmick; // 管理するギミック
 
 };

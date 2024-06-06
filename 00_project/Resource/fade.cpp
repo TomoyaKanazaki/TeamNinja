@@ -66,7 +66,7 @@ HRESULT CFade::Init(void)
 	m_modeNext		= INIT_SCENE;	// 次シーン
 	m_fade			= FADE_IN;		// フェード状態
 	m_fWaitTime		= 0.0f;			// 現在の余韻時間
-	m_fSubIn		= LEVEL;		// インのα値減少量
+	m_fSubIn		= 0.0f;		// インのα値減少量	// TODO
 	m_fAddOut		= LEVEL;		// アウトのα値増加量
 
 	// オブジェクト2Dの初期化
@@ -93,6 +93,23 @@ HRESULT CFade::Init(void)
 	// ラベル指定なしにする
 	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
 
+	// アイリスアウト切り抜き型の生成
+	m_pCircle = CObject2D::Create(SCREEN_CENT, VEC3_ONE * 100.0f, VEC3_ZERO);
+	if (m_pCircle == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 円のテクスチャを割当
+	m_pCircle->BindTexture("data\\TEXTURE\\circle000.png");
+
+	// 自動更新・自動描画を停止させる
+	m_pCircle->SetEnableUpdate(false);
+	m_pCircle->SetEnableDraw(false);
+
 	// シーンの初期化
 	if (FAILED(GET_MANAGER->InitScene(m_modeNext)))
 	{ // 初期化に失敗した場合
@@ -111,6 +128,9 @@ HRESULT CFade::Init(void)
 //============================================================
 void CFade::Uninit(void)
 {
+	// アイリスアウト切り抜き型の終了
+	SAFE_UNINIT(m_pCircle);
+
 	// オブジェクト2Dの終了
 	CObject2D::Uninit();
 }
@@ -192,6 +212,9 @@ void CFade::Update(const float fDeltaTime)
 	// 色を反映
 	SetColor(colFade);
 
+	// アイリスアウト切り抜き型の更新
+	m_pCircle->Update(fDeltaTime);
+
 	// オブジェクト2Dの更新
 	CObject2D::Update(fDeltaTime);
 }
@@ -201,8 +224,51 @@ void CFade::Update(const float fDeltaTime)
 //============================================================
 void CFade::Draw(CShader *pShader)
 {
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ステンシルテストを有効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+
+	// 比較参照値を設定する
+	pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+	// ステンシルマスクを指定する 
+	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+	// ステンシル比較関数を指定する
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+
+	// ステンシル結果に対しての反映設定
+	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);	// Zテスト・ステンシルテスト成功
+	pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);		// Zテスト・ステンシルテスト失敗
+	pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);		// Zテスト失敗・ステンシルテスト成功
+
+	// アイリスアウト切り抜き型の描画
+	m_pCircle->Draw();
+
+
+
+	// 比較参照値を設定する
+	pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+	// ステンシルマスクを指定する 
+	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+	// ステンシル比較関数を指定する
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+
+	// ステンシル結果に対しての反映設定
+	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト成功
+	pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト失敗
+	pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);	// Zテスト失敗・ステンシルテスト成功
+
 	// オブジェクト2Dの描画
 	CObject2D::Draw(pShader);
+
+
+
+	// ステンシルテストを無効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 //============================================================
