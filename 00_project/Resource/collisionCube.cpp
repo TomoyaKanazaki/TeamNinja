@@ -98,7 +98,7 @@ bool CCollisionCube::Hit
 //============================================================
 // 生成処理
 //============================================================
-CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth)
+CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth, const float fRot)
 {
 	// 当たり判定の生成
 	CCollisionCube* pColl = new CCollisionCube();
@@ -112,14 +112,11 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR
 	// オフセットの設定
 	pColl->SetOffset(rOffset);
 
-	// 半径を設定
-	pColl->m_fWidth = fWidth;
+	// 向きによる変換処理
+	pColl->Convert(fWidth, fDepth, fRot);
 
 	// 高さを設定
 	pColl->m_fHeight = fHeight;
-
-	// 奥行を設定
-	pColl->m_fDepth = fDepth;
 
 #ifdef _DEBUG
 
@@ -143,4 +140,30 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR
 
 	// 当たり判定を返す
 	return pColl;
+}
+
+//============================================================
+// 向きによる変換処理
+//============================================================
+void CCollisionCube::Convert(const float fWidth, const float fDepth, const float fRot)
+{
+	if ((fRot >= D3DX_PI * -0.75f && fRot <= D3DX_PI * -0.25f) ||
+		(fRot >= D3DX_PI * 0.25f && fRot <= D3DX_PI * 0.75f))
+	{ // 90度、270度の場合
+
+		// 半径を設定
+		m_fWidth = fDepth;
+
+		// 奥行を設定
+		m_fDepth = fWidth;
+	}
+	else
+	{ // 上記以外
+
+		// 半径を設定
+		m_fWidth = fWidth;
+
+		// 奥行を設定
+		m_fDepth = fDepth;
+	}
 }
