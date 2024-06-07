@@ -11,7 +11,8 @@
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickFall::CGimmickFall() : CGimmickAction()
+CGimmickFall::CGimmickFall() : CGimmickAction(),
+m_bFall(false) // 落下フラグ
 {
 
 }
@@ -56,6 +57,9 @@ void CGimmickFall::Uninit(void)
 //=========================================
 void CGimmickFall::Update(const float fDeltaTime)
 {
+	// アクティブフラグを落下フラグに代入
+	m_bFall = IsActive();
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }

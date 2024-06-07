@@ -23,6 +23,11 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	bool IsFall() override { return m_bFall; } // 落下フラグの取得
+
 private:
+
+	// メンバ変数
+	bool m_bFall; // 落下フラグ
 
 };

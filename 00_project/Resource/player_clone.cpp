@@ -375,8 +375,8 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
 
-	// ギミックが落とし穴だった場合関数を抜ける
-	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL)
+	// ギミックが落とし穴だった場合
+	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL || m_pGimmick->GetType() == CGimmick::TYPE_DECAED)
 	{
 		// 移動量を減少させる
 		m_move.x *= FALL_SPEED;
@@ -781,7 +781,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 	SetVec3Position(pos);
 
 	// アクティブ状態になったら落下して関数を抜ける
-	if (m_pGimmick->IsActive())
+	if (m_pGimmick->IsFall())
 	{
 		// 落とし穴落下に変更
 		m_Action = ACTION_FALL;

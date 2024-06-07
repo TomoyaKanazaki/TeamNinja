@@ -45,7 +45,8 @@ public:
 	bool IsActive(void) const { return m_bActive; }				// 発動条件の取得処理
 	bool GetMoment() const { return m_bMoment; }				// 発動中フラグの取得
 	void SetMoment(bool moment) { m_bMoment = moment; }			// 発動中フラグの設定
-
+	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
+ 
 private:
 
 	// メンバ変数
