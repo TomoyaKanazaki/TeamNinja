@@ -23,7 +23,7 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
-	bool IsFall() { return m_bFall; } // 床抜けフラグの取得
+	bool IsFall() override { return m_bFall; } // 床抜けフラグの取得
 
 private:
 
