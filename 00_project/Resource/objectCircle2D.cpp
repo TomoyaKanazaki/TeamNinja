@@ -1,14 +1,14 @@
-#if 0
+#if 1
 //============================================================
 //
-//	オブジェクトメッシュサークル処理 [objectMeshCircle.cpp]
+//	オブジェクトサークル2D処理 [objectCircle2D.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "objectMeshCircle.h"
+#include "objectCircle2D.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -22,12 +22,12 @@ namespace
 }
 
 //************************************************************
-//	子クラス [CObjectMeshCircle] のメンバ関数
+//	子クラス [CObjectCircle2D] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectMeshCircle::CObjectMeshCircle(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectCircle2D::CObjectCircle2D(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
 	m_pVtxBuff		(nullptr),		// 頂点バッファ
 	m_pIdxBuff		(nullptr),		// インデックスバッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報
@@ -43,7 +43,7 @@ CObjectMeshCircle::CObjectMeshCircle(const CObject::ELabel label, const CObject:
 //============================================================
 //	デストラクタ
 //============================================================
-CObjectMeshCircle::~CObjectMeshCircle()
+CObjectCircle2D::~CObjectCircle2D()
 {
 
 }
@@ -51,7 +51,7 @@ CObjectMeshCircle::~CObjectMeshCircle()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CObjectMeshCircle::Init(void)
+HRESULT CObjectCircle2D::Init(void)
 {
 	// メンバ変数を初期化
 	m_pVtxBuff		= nullptr;	// 頂点バッファ
@@ -92,7 +92,7 @@ HRESULT CObjectMeshCircle::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CObjectMeshCircle::Uninit(void)
+void CObjectCircle2D::Uninit(void)
 {
 	// 頂点バッファの破棄
 	SAFE_RELEASE(m_pVtxBuff);
@@ -103,22 +103,23 @@ void CObjectMeshCircle::Uninit(void)
 	// レンダーステートの破棄
 	SAFE_REF_RELEASE(m_pRenderState);
 
-	// オブジェクトメッシュサークルを破棄
+	// オブジェクトサークル2Dを破棄
 	Release();
 }
 
 //============================================================
 //	更新処理
 //============================================================
-void CObjectMeshCircle::Update(const float fDeltaTime)
+void CObjectCircle2D::Update(const float fDeltaTime)
 {
-
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CObjectMeshCircle::Draw(CShader *pShader)
+void CObjectCircle2D::Draw(CShader *pShader)
 {
 	// 変数を宣言
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
@@ -129,41 +130,39 @@ void CObjectMeshCircle::Draw(CShader *pShader)
 	// レンダーステートを設定
 	m_pRenderState->Set();
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_meshCircle.mtxWorld);
-
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_meshCircle.rot.y, m_meshCircle.rot.x, m_meshCircle.rot.z);
-	D3DXMatrixMultiply(&m_meshCircle.mtxWorld, &m_meshCircle.mtxWorld, &mtxRot);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_meshCircle.pos.x, m_meshCircle.pos.y, m_meshCircle.pos.z);
-	D3DXMatrixMultiply(&m_meshCircle.mtxWorld, &m_meshCircle.mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_meshCircle.mtxWorld);
-
 	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
 
 	// インデックスバッファをデータストリームに設定
 	pDevice->SetIndices(m_pIdxBuff);
 
 	// 頂点フォーマットの設定
-	pDevice->SetFVF(object::FVF_VERTEX_3D);
+	pDevice->SetFVF(object::FVF_VERTEX_2D);
 
-	if (pShader == nullptr)
-	{ // シェーダーが使用されていない場合
+	// テクスチャの設定
+	pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(m_nTextureID));
 
-		// 通常描画
-		DrawNormal();
-	}
-	else
-	{ // シェーダーが使用されている場合
+	// 外周ポリゴンの描画
+	pDevice->DrawIndexedPrimitive
+	( // 引数
+		D3DPT_TRIANGLESTRIP,	// プリミティブの種類
+		0,
+		0,
+		m_nNumVtx - 1,						// 使用する頂点数
+		0,									// インデックスバッファの開始地点
+		(m_nNumIdx - (m_part.x + 1)) - 3	// プリミティブ (ポリゴン) 数
+	);
 
-		// シェーダー描画
-		DrawShader(pShader);
-	}
+	// 内円ポリゴンの描画
+	pDevice->DrawIndexedPrimitive
+	( // 引数
+		D3DPT_TRIANGLEFAN,	// プリミティブの種類
+		0,
+		0,
+		m_part.x + 1,				// 使用する頂点数
+		m_nNumIdx - (m_part.x + 2),	// インデックスバッファの開始地点
+		m_part.x					// プリミティブ (ポリゴン) 数
+	);
 
 	// レンダーステートを再設定
 	m_pRenderState->Reset();
@@ -172,28 +171,34 @@ void CObjectMeshCircle::Draw(CShader *pShader)
 //============================================================
 //	位置の設定処理
 //============================================================
-void CObjectMeshCircle::SetVec3Position(const D3DXVECTOR3& rPos)
+void CObjectCircle2D::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshCircle.pos = rPos;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
 //	向きの設定処理
 //============================================================
-void CObjectMeshCircle::SetVec3Rotation(const D3DXVECTOR3& rRot)
+void CObjectCircle2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 {
 	// 引数の向きを設定
 	m_meshCircle.rot = rRot;
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshCircle.rot);
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
 //	生成処理
 //============================================================
-CObjectMeshCircle *CObjectMeshCircle::Create
+CObjectCircle2D *CObjectCircle2D::Create
 (
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
@@ -202,8 +207,8 @@ CObjectMeshCircle *CObjectMeshCircle::Create
 	const float fRadius			// 半径
 )
 {
-	// オブジェクトメッシュサークルの生成
-	CObjectMeshCircle *pMeshCircle = new CObjectMeshCircle;
+	// オブジェクトサークル2Dの生成
+	CObjectCircle2D *pMeshCircle = new CObjectCircle2D;
 	if (pMeshCircle == nullptr)
 	{ // 生成に失敗した場合
 
@@ -212,11 +217,11 @@ CObjectMeshCircle *CObjectMeshCircle::Create
 	else
 	{ // 生成に成功した場合
 
-		// オブジェクトメッシュサークルの初期化
+		// オブジェクトサークル2Dの初期化
 		if (FAILED(pMeshCircle->Init()))
 		{ // 初期化に失敗した場合
 
-			// オブジェクトメッシュサークルの破棄
+			// オブジェクトサークル2Dの破棄
 			SAFE_DELETE(pMeshCircle);
 			return nullptr;
 		}
@@ -237,7 +242,7 @@ CObjectMeshCircle *CObjectMeshCircle::Create
 		if (FAILED(pMeshCircle->SetPattern(rPart)))
 		{ // 分割数の設定に失敗した場合
 
-			// オブジェクトメッシュサークルの破棄
+			// オブジェクトサークル2Dの破棄
 			SAFE_DELETE(pMeshCircle);
 			return nullptr;
 		}
@@ -250,7 +255,7 @@ CObjectMeshCircle *CObjectMeshCircle::Create
 //============================================================
 //	レンダーステート情報の取得処理
 //============================================================
-CRenderState *CObjectMeshCircle::GetRenderState(void)
+CRenderState *CObjectCircle2D::GetRenderState(void)
 {
 	// インスタンス未使用
 	assert(m_pRenderState != nullptr);
@@ -262,7 +267,7 @@ CRenderState *CObjectMeshCircle::GetRenderState(void)
 //============================================================
 //	テクスチャ割当処理 (インデックス)
 //============================================================
-void CObjectMeshCircle::BindTexture(const int nTextureID)
+void CObjectCircle2D::BindTexture(const int nTextureID)
 {
 	if (nTextureID >= NONE_IDX)
 	{ // テクスチャインデックスが使用可能な場合
@@ -276,7 +281,7 @@ void CObjectMeshCircle::BindTexture(const int nTextureID)
 //============================================================
 //	テクスチャ割当処理 (パス)
 //============================================================
-void CObjectMeshCircle::BindTexture(const char *pTexturePass)
+void CObjectCircle2D::BindTexture(const char *pTexturePass)
 {
 	// ポインタを宣言
 	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
@@ -298,7 +303,7 @@ void CObjectMeshCircle::BindTexture(const char *pTexturePass)
 //============================================================
 //	色の設定処理
 //============================================================
-void CObjectMeshCircle::SetColor(const D3DXCOLOR& rCol)
+void CObjectCircle2D::SetColor(const D3DXCOLOR& rCol)
 {
 	// 引数の色を設定
 	m_meshCircle.col = rCol;
@@ -310,7 +315,7 @@ void CObjectMeshCircle::SetColor(const D3DXCOLOR& rCol)
 //============================================================
 //	半径の設定処理
 //============================================================
-void CObjectMeshCircle::SetRadius(const float fRadius)
+void CObjectCircle2D::SetRadius(const float fRadius)
 {
 	// 引数の半径を設定
 	m_meshCircle.fRadius = fRadius;
@@ -322,7 +327,7 @@ void CObjectMeshCircle::SetRadius(const float fRadius)
 //============================================================
 //	分割数の設定処理
 //============================================================
-HRESULT CObjectMeshCircle::SetPattern(const POSGRID2& rPart)
+HRESULT CObjectCircle2D::SetPattern(const POSGRID2& rPart)
 {
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
@@ -345,9 +350,9 @@ HRESULT CObjectMeshCircle::SetPattern(const POSGRID2& rPart)
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer
 	( // 引数
-		sizeof(VERTEX_3D) * m_nNumVtx,	// 必要頂点数
+		sizeof(VERTEX_2D) * m_nNumVtx,	// 必要頂点数
 		D3DUSAGE_WRITEONLY,		// 使用方法
-		object::FVF_VERTEX_3D,	// 頂点フォーマット
+		object::FVF_VERTEX_2D,	// 頂点フォーマット
 		D3DPOOL_MANAGED,		// メモリの指定
 		&m_pVtxBuff,			// 頂点バッファへのポインタ
 		nullptr
@@ -391,10 +396,10 @@ HRESULT CObjectMeshCircle::SetPattern(const POSGRID2& rPart)
 //============================================================
 //	頂点情報の設定処理
 //============================================================
-void CObjectMeshCircle::SetVtx(void)
+void CObjectCircle2D::SetVtx(void)
 {
 	// ポインタを宣言
-	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
+	VERTEX_2D *pVtx;	// 頂点情報へのポインタ
 
 	if (m_pVtxBuff != nullptr)
 	{ // 使用中の場合
@@ -417,15 +422,15 @@ void CObjectMeshCircle::SetVtx(void)
 				D3DXVECTOR3 vecPos = D3DXVECTOR3
 				( // 引数
 					sinf(fRotWidth) * fDisHeight,	// x
-					0.0f,							// y
-					cosf(fRotWidth) * fDisHeight 	// z
+					cosf(fRotWidth) * -fDisHeight,	// y
+					0.0f							// z
 				);
 
 				// 頂点座標の設定
-				pVtx[0].pos = vecPos;
+				pVtx[0].pos = m_meshCircle.pos + vecPos;
 
-				// 法線ベクトルの設定
-				pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+				// rhw の設定
+				pVtx[0].rhw = 1.0f;
 
 				// 頂点カラーの設定
 				pVtx[0].col = m_meshCircle.col;
@@ -450,7 +455,7 @@ void CObjectMeshCircle::SetVtx(void)
 //============================================================
 //	インデックス情報の設定処理
 //============================================================
-void CObjectMeshCircle::SetIdx(void)
+void CObjectCircle2D::SetIdx(void)
 {
 	// ポインタを宣言
 	WORD *pIdx;	// インデックス情報へのポインタ
@@ -505,94 +510,4 @@ void CObjectMeshCircle::SetIdx(void)
 	}
 }
 
-//============================================================
-//	通常描画処理
-//============================================================
-void CObjectMeshCircle::DrawNormal(void)
-{
-	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
-
-	// テクスチャの設定
-	pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(m_nTextureID));
-
-	// 外周ポリゴンの描画
-	pDevice->DrawIndexedPrimitive
-	( // 引数
-		D3DPT_TRIANGLESTRIP,	// プリミティブの種類
-		0,
-		0,
-		m_nNumVtx - 1,						// 使用する頂点数
-		0,									// インデックスバッファの開始地点
-		(m_nNumIdx - (m_part.x + 1)) - 3	// プリミティブ (ポリゴン) 数
-	);
-
-	// 内円ポリゴンの描画
-	pDevice->DrawIndexedPrimitive
-	( // 引数
-		D3DPT_TRIANGLEFAN,	// プリミティブの種類
-		0,
-		0,
-		m_part.x + 1,				// 使用する頂点数
-		m_nNumIdx - (m_part.x + 2),	// インデックスバッファの開始地点
-		m_part.x					// プリミティブ (ポリゴン) 数
-	);
-}
-
-//============================================================
-//	シェーダー描画処理
-//============================================================
-void CObjectMeshCircle::DrawShader(CShader *pShader)
-{
-	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
-
-	// 描画開始
-	pShader->Begin();
-	pShader->BeginPass(0);
-
-	// マトリックス情報を設定
-	pShader->SetMatrix(&m_meshCircle.mtxWorld);
-
-	// ライト方向を設定
-	pShader->SetLightDirect(&m_meshCircle.mtxWorld, 0);
-
-	// 拡散光を設定
-	pShader->SetOnlyDiffuse(m_meshCircle.col);
-
-	// テクスチャを設定
-	pShader->SetTexture(m_nTextureID);
-
-	// 状態変更の伝達
-	pShader->CommitChanges();
-
-	// テクスチャの設定
-	pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(m_nTextureID));
-
-	// 外周ポリゴンの描画
-	pDevice->DrawIndexedPrimitive
-	( // 引数
-		D3DPT_TRIANGLESTRIP,	// プリミティブの種類
-		0,
-		0,
-		m_nNumVtx - 1,						// 使用する頂点数
-		0,									// インデックスバッファの開始地点
-		(m_nNumIdx - (m_part.x + 1)) - 3	// プリミティブ (ポリゴン) 数
-	);
-
-	// 内円ポリゴンの描画
-	pDevice->DrawIndexedPrimitive
-	( // 引数
-		D3DPT_TRIANGLEFAN,	// プリミティブの種類
-		0,
-		0,
-		m_part.x + 1,				// 使用する頂点数
-		m_nNumIdx - (m_part.x + 2),	// インデックスバッファの開始地点
-		m_part.x					// プリミティブ (ポリゴン) 数
-	);
-
-	// 描画終了
-	pShader->EndPass();
-	pShader->End();
-}
 #endif
