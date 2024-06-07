@@ -17,6 +17,7 @@
 #include "gimmick_malti.h"
 #include "gimmick_decayed.h"
 #include "gimmick_jumpoff.h"
+#include "gimmick_heavydoor.h"
 
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
@@ -203,6 +204,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_JUMPOFF:			// îÚÇ—ç~ÇË
 
 		pGimmick = new CGimmickJumpOff;
+
+		break;
+
+	case CGimmick::TYPE_HEAVYDOOR:			// èdÇ¢î‡
+
+		pGimmick = new CGimmickHeavyDoor;
 
 		break;
 

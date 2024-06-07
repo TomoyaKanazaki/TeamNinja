@@ -611,6 +611,36 @@ D3DXVECTOR3 CCamera::CalcPlayerPos()
 	return screenPos;
 }
 
+//===========================================
+//  ワールド座標をスクリーン座標に変換する
+//=========================================
+D3DXVECTOR3 CCamera::CalcWorldToScreen(const D3DXVECTOR3& pos)
+{
+	//ビューポートの設定
+	D3DVIEWPORT9 vp = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f };
+
+	//計算用変数宣言
+	D3DXMATRIX mtxWorld; //ワールドマトリックス
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	//スクリーン座標を算出
+	D3DXVECTOR3 screenPos;
+	D3DXVec3Project
+	(
+		&screenPos,
+		&pos,
+		&vp,
+		&m_aCamera[TYPE_MAIN].mtxProjection,
+		&m_aCamera[TYPE_MAIN].mtxView,
+		&mtxWorld
+	);
+
+	// スクリーン座標を返す
+	return screenPos;
+}
+
 //============================================================
 //	生成処理
 //============================================================

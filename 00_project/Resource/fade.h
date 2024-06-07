@@ -19,7 +19,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObjectCircle2D;	// オブジェクトサークル2Dクラス
+class CFadeState;	// フェード状態クラス
 
 //************************************************************
 //	クラス定義
@@ -59,6 +59,7 @@ public:
 	static CFade *Create(void);	// 生成
 
 	// メンバ関数
+	HRESULT ChangeState(CFadeState *pState);		// 状態変更
 	EFade GetState(void) const { return m_fade; }	// フェード状態取得
 
 	void SetFade	// フェード開始設定
@@ -85,13 +86,12 @@ public:
 private:
 	// メンバ変数
 	std::function<HRESULT(CScene::EMode)> m_pFuncSetMode;	// モード設定関数ポインタ
+	CFadeState *m_pState;		// 状態
 	CScene::EMode m_modeNext;	// 次シーン
 	EFade m_fade;		// フェード状態
 	float m_fWaitTime;	// 現在の余韻時間
 	float m_fSubIn;		// インのα値減少量
 	float m_fAddOut;	// アウトのα値増加量
-
-	CObjectCircle2D *m_pCircle;	// アイリスアウト切り抜き型
 };
 
 #endif	// _FADE_H_
