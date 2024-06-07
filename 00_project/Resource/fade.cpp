@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "loading.h"
 #include "objectCircle2D.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -67,8 +68,8 @@ HRESULT CFade::Init(void)
 	m_modeNext		= INIT_SCENE;	// 次シーン
 	m_fade			= FADE_IN;		// フェード状態
 	m_fWaitTime		= 0.0f;			// 現在の余韻時間
-	m_fSubIn		= 0.0f;		// インのα値減少量	// TODO
-	m_fAddOut		= 0.0f;		// アウトのα値増加量
+	m_fSubIn		= LEVEL;		// インのα値減少量		// TODO
+	m_fAddOut		= LEVEL;		// アウトのα値増加量	// TODO
 
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -215,6 +216,17 @@ void CFade::Update(const float fDeltaTime)
 
 	// オブジェクト2Dの更新
 	CObject2D::Update(fDeltaTime);
+
+	if (GET_PLAYER != nullptr)
+	{
+		D3DXVECTOR3 pos = GET_MANAGER->GetCamera()->CalcPlayerPos();
+
+		DebugProc::Print(DebugProc::POINT_CENTER, "%f %f %f", pos.x, pos.y, pos.z);
+		pos.z = 0.0f;
+
+		// アイリスアウト切り抜き型の生成
+		m_pCircle->SetVec3Position(pos);
+	}
 }
 
 //============================================================
@@ -222,6 +234,7 @@ void CFade::Update(const float fDeltaTime)
 //============================================================
 void CFade::Draw(CShader *pShader)
 {
+#if 0
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
 	// ステンシルテストを有効にする
@@ -263,10 +276,12 @@ void CFade::Draw(CShader *pShader)
 	// オブジェクト2Dの描画
 	CObject2D::Draw(pShader);
 
-
-
 	// ステンシルテストを無効にする
 	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+#else
+	// オブジェクト2Dの描画
+	CObject2D::Draw(pShader);
+#endif
 }
 
 //============================================================

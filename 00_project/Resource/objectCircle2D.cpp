@@ -112,7 +112,8 @@ void CObjectCircle2D::Uninit(void)
 //============================================================
 void CObjectCircle2D::Update(const float fDeltaTime)
 {
-
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -174,6 +175,9 @@ void CObjectCircle2D::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_meshCircle.pos = rPos;
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
@@ -186,6 +190,9 @@ void CObjectCircle2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 
 	// 向きの正規化
 	useful::NormalizeRot(m_meshCircle.rot);
+
+	// 頂点情報の設定
+	SetVtx();
 }
 
 //============================================================
