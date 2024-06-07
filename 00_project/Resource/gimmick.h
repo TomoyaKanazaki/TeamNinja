@@ -42,6 +42,7 @@ public:
 		TYPE_BOOB,				// ƒhƒu
 		TYPE_WATER,				// …ê
 		TYPE_JUMPOFF,			// ”ò‚Ñ~‚è
+		TYPE_HEAVYDOOR,			// d‚¢”à
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
