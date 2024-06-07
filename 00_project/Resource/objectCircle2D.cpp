@@ -421,9 +421,9 @@ void CObjectCircle2D::SetVtx(void)
 				float fDisHeight = (((m_meshCircle.fRadius / (float)m_part.y) * -(nCntHeight - m_part.y)));	// 頂点位置の設定距離
 				D3DXVECTOR3 vecPos = D3DXVECTOR3
 				( // 引数
-					sinf(fRotWidth) * fDisHeight,	// x
-					cosf(fRotWidth) * -fDisHeight,	// y
-					0.0f							// z
+					sinf(fRotWidth + m_meshCircle.rot.z) * fDisHeight,	// x
+					cosf(fRotWidth + m_meshCircle.rot.z) * -fDisHeight,	// y
+					0.0f	// z
 				);
 
 				// 頂点座標の設定

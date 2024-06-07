@@ -96,7 +96,7 @@ HRESULT CFade::Init(void)
 	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
 
 	// アイリスアウト切り抜き型の生成
-	m_pCircle = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, POSGRID2(128, 2), 300.0f);
+	m_pCircle = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, POSGRID2(64, 2), 300.0f);
 	if (m_pCircle == nullptr)
 	{ // 生成に失敗した場合
 
@@ -222,10 +222,14 @@ void CFade::Update(const float fDeltaTime)
 		D3DXVECTOR3 pos = GET_MANAGER->GetCamera()->CalcPlayerPos();
 
 		DebugProc::Print(DebugProc::POINT_CENTER, "%f %f %f", pos.x, pos.y, pos.z);
-		pos.z = 0.0f;
 
-		// アイリスアウト切り抜き型の生成
-		m_pCircle->SetVec3Position(pos);
+		if (pos.z < 1.0f)
+		{
+			pos.z = 0.0f;
+
+			// アイリスアウト切り抜き型の生成
+			m_pCircle->SetVec3Position(pos);
+		}
 	}
 }
 
