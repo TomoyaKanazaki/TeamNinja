@@ -238,7 +238,7 @@ void CFade::Update(const float fDeltaTime)
 //============================================================
 void CFade::Draw(CShader *pShader)
 {
-#if 1
+#if 0
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
 	// ステンシルテストを有効にする
