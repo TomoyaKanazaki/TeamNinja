@@ -11,7 +11,8 @@
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickDecaed::CGimmickDecaed() : CGimmickAction()
+CGimmickDecaed::CGimmickDecaed() : CGimmickAction(),
+m_bFall(false) // 落ちるフラグ
 {
 
 }
@@ -61,6 +62,8 @@ void CGimmickDecaed::Update(const float fDeltaTime)
 	{
 		m_bFall = true;
 	}
+
+	if (m_bFall) { DebugProc::Print(DebugProc::POINT_CENTER, "落ちるon\n"); }
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
