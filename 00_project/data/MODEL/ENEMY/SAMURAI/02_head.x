@@ -644,7 +644,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\samurai_Tex_New.png";
+    "data\\TEXTURE\\ENEMY\\SAMURAI\\samurai_Tex_New.png";
    }
   }
   Material {
