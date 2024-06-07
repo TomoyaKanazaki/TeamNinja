@@ -23,9 +23,16 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	bool IsActive() { return m_bActive; }
+
 private:
 
+	// メンバ関数
+	HRESULT Create(); // 設置ギミックの生成
+
 	// メンバ変数
-	CGimmick* m_pGimmick; // 管理するギミック
+	bool m_bActive; // アクティブフラグ
+	CListManager<CGimmick>::AIterator m_iterator; // イテレーター
+	CListManager<CGimmick>* m_pGimmick; // オブジェクトリスト
 
 };

@@ -11,6 +11,13 @@
 #include "manager.h"
 #include "player.h"
 
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const float CLONE_HEIGHT = 80.0f;		// クローンの高さ
+}
 //============================================================
 //	コンストラクタ
 //============================================================
@@ -63,24 +70,29 @@ void CGimmickJumpOff::Update(const float fDeltaTime)
 	{ // プレイヤーがジャンプしている場合
 
 		// プレイヤーとの当たり判定
-		if (CollisionPlayer() && GetMoment() == false)
-		{ // ギミック発動してない場合
+		if (CollisionPlayer())
+		{
+			if (GetMoment() == false)
+			{ // ギミック発動してない場合
 
-			if (GET_PLAYER->GetVec3Position().y <= 100.0f)
-			{
-				// 発動中
-				SetMoment(GET_PLAYER->GimmickLand());
+				D3DXVECTOR3 pos = GetVec3Position();		// 発動位置
+
+				if ((GET_PLAYER->GetVec3Position().y - (pos.y + CLONE_HEIGHT)) <= 10.0f)
+				{ // 特定の高さまで下がった場合
+
+					// 発動中
+					SetMoment(GET_PLAYER->GimmickLand());
+				}
 			}
+		}
+		else
+		{ // 範囲内じゃない場合
 
+			// 発動しない
+			SetMoment(false);
 		}
 	}
-	else
-	{ // プレイヤーがジャンプしていない場合
-
-		// 発動してない
-		SetMoment(false);
-	}
-
+	
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
 }
