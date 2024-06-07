@@ -642,8 +642,12 @@ void CEditCollision::DeleteCollCube(const bool bRelease)
 			else
 			{ // 破棄しない場合
 
+#ifdef _DEBUG
+
 				// 青を設定
 				cube->GetCube()->GetCube()->SetCubeColor(XCOL_BLUE);
+
+#endif // _DEBUG
 
 				// 抜け出す
 				break;
@@ -652,8 +656,12 @@ void CEditCollision::DeleteCollCube(const bool bRelease)
 		else
 		{ // 判定外だった場合
 
+#ifdef _DEBUG
+
 			// 通常色を設定
 			cube->GetCube()->GetCube()->SetCubeColor(COL);
+
+#endif // _DEBUG
 		}
 	}
 }
@@ -712,8 +720,12 @@ void CEditCollision::DeleteCollCylinder(const bool bRelease)
 			else
 			{ // 破棄しない場合
 
+#ifdef _DEBUG
+
 				// 青を設定
 				cylinder->GetCylinder()->GetTube()->SetColor(XCOL_BLUE);
+
+#endif // _DEBUG
 
 				// 抜け出す
 				break;
@@ -722,8 +734,12 @@ void CEditCollision::DeleteCollCylinder(const bool bRelease)
 		else
 		{ // 判定外だった場合
 
+#ifdef _DEBUG
+
 			// 通常色を設定
 			cylinder->GetCylinder()->GetTube()->SetColor(COL);
+
+#endif // _DEBUG
 		}
 	}
 }
@@ -782,8 +798,12 @@ void CEditCollision::DeleteCollSphere(const bool bRelease)
 			else
 			{ // 破棄しない場合
 
+#ifdef _DEBUG
+
 				// 青を設定
 				sphere->GetSphere()->GetSphere()->SetColor(XCOL_BLUE);
+
+#endif // _DEBUG
 
 				// 抜け出す
 				break;
@@ -792,8 +812,12 @@ void CEditCollision::DeleteCollSphere(const bool bRelease)
 		else
 		{ // 判定外だった場合
 
+#ifdef _DEBUG
+
 			// 通常色を設定
 			sphere->GetSphere()->GetSphere()->SetColor(COL);
+
+#endif // _DEBUG
 		}
 	}
 }

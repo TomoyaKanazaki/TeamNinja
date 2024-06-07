@@ -566,8 +566,18 @@ void CPlayer::GimmickLowJump(void)
 //============================================================
 bool CPlayer::GimmickLand(void)
 {
-	// 着地音の再生
-	PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+	if (m_bJump)
+	{ // ジャンプ状態の場合
+
+		// 上昇量を与える
+		m_move.y = 500.0f;
+
+		// ジャンプモーションを設定
+		SetMotion(MOTION_JUMP_MINI);
+
+		// 着地音の再生
+		PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+	}
 
 	return true;
 }
