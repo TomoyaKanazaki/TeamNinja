@@ -47,6 +47,7 @@ namespace
 	const int	PRIORITY	= 3;			// プレイヤーの優先順位
 	const float	JUMP_LOW	= 1260.0f;		// 小ジャンプ上昇量
 	const float	JUMP_HIGH	= 1850.0f;		// 大ジャンプ上昇量
+	const float REBOUND		= 500.0f;		// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
@@ -566,18 +567,14 @@ void CPlayer::GimmickLowJump(void)
 //============================================================
 bool CPlayer::GimmickLand(void)
 {
-	if (m_bJump)
-	{ // ジャンプ状態の場合
+	// 上昇量を与える
+	m_move.y = REBOUND;
 
-		// 上昇量を与える
-		m_move.y = 500.0f;
+	// ジャンプモーションを設定
+	SetMotion(MOTION_JUMP_MINI);
 
-		// ジャンプモーションを設定
-		SetMotion(MOTION_JUMP_MINI);
-
-		// 着地音の再生
-		PLAY_SOUND(CSound::LABEL_SE_LAND_S);
-	}
+	// 着地音の再生
+	PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 
 	return true;
 }
