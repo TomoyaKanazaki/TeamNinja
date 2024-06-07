@@ -494,7 +494,7 @@ void CTitleManager::UpdateBlink(void)
 {
 	D3DXCOLOR col;		// 色
 
-	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
+	if (!GET_MANAGER->GetFade()->IsFade())
 	{ // フェード中ではない場合
 
 		// 色取得
@@ -543,7 +543,7 @@ void CTitleManager::UpdateBlink(void)
 //============================================================
 void CTitleManager::UpdateTrans(void)
 {
-	if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
+	if (!GET_MANAGER->GetFade()->IsFade())
 	{ // フェード中ではない場合
 
 		D3DXCOLOR col;	// 色

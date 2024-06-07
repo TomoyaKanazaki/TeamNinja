@@ -9,6 +9,8 @@
 //************************************************************
 #include "fadeStateIn.h"
 #include "fade.h"
+#include "manager.h"
+#include "loading.h"
 
 //************************************************************
 //	子クラス [CFadeStateIn] のメンバ関数
@@ -52,5 +54,14 @@ void CFadeStateIn::Uninit(void)
 //============================================================
 void CFadeStateIn::Update(const float fDeltaTime)
 {
+	// ロードが完了していない場合抜ける
+	if (GET_MANAGER->GetLoading()->GetState() != CLoading::LOAD_NONE) { return; }
 
+	// 透明にしていく
+	if (m_pContext->SubAlpha(fDeltaTime))
+	{ // 透明になった場合
+
+		// 何もしない状態にする
+		m_pContext->ChangeState(new CFadeStateNone);
+	}
 }

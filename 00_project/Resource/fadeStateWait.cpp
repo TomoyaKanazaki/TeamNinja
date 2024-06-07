@@ -16,7 +16,9 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CFadeStateWait::CFadeStateWait()
+CFadeStateWait::CFadeStateWait(const float fWaitTime, CFadeState* pNextState) :
+	m_pNextState	(pNextState),	// 遷移先の状態
+	m_fWaitTime		(fWaitTime)		// 現在の余韻時間
 {
 
 }
@@ -52,5 +54,15 @@ void CFadeStateWait::Uninit(void)
 //============================================================
 void CFadeStateWait::Update(const float fDeltaTime)
 {
+	// 余韻時刻を減らす
+	m_fWaitTime -= fDeltaTime;
+	if (m_fWaitTime <= 0.0f)
+	{ // 余韻終了した場合
 
+		// 余韻時間を初期化
+		m_fWaitTime = 0.0f;
+
+		// 予約済みの遷移を設定
+		m_pContext->ChangeState(m_pNextState);
+	}
 }

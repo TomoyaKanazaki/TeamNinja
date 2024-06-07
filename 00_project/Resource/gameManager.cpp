@@ -179,7 +179,7 @@ CGameManager::EState CGameManager::GetState(void) const
 void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 {
 	// フェード中の場合抜ける
-	if (GET_MANAGER->GetFade()->GetState() != CFade::FADE_NONE) { return; }
+	if (GET_MANAGER->GetFade()->IsFade()) { return; }
 
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();

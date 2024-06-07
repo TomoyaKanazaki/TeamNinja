@@ -52,5 +52,14 @@ void CFadeStateOut::Uninit(void)
 //============================================================
 void CFadeStateOut::Update(const float fDeltaTime)
 {
+	// 不透明にしていく
+	if (m_pContext->AddAlpha(fDeltaTime))
+	{ // 不透明になった場合
 
+		// 次シーンへ遷移する
+		m_pContext->TransNextMode();
+
+		// フェードイン状態にする
+		m_pContext->ChangeState(new CFadeStateIn);
+	}
 }

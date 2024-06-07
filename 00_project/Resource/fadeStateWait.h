@@ -23,7 +23,7 @@ class CFadeStateWait : public CFadeState
 {
 public:
 	// コンストラクタ
-	CFadeStateWait();
+	CFadeStateWait(const float fWaitTime, CFadeState* pNextState);
 
 	// デストラクタ
 	~CFadeStateWait() override;
@@ -32,6 +32,11 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
+
+private:
+	// メンバ変数
+	CFadeState* m_pNextState;	// 遷移先の状態
+	float m_fWaitTime;			// 現在の余韻時間
 };
 
 #endif	// _FADE_STATE_WAIT_H_

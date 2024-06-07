@@ -40,9 +40,8 @@ namespace
 //============================================================
 CFade::CFade() :
 	m_pFuncSetMode	(nullptr),		// モード設定関数ポインタ
+	m_pState		(nullptr),		// 状態
 	m_modeNext		(INIT_SCENE),	// 次シーン
-	m_fade			(FADE_NONE),	// フェード状態
-	m_fWaitTime		(0.0f),			// 現在の余韻時間
 	m_fSubIn		(LEVEL),		// インのα値減少量
 	m_fAddOut		(LEVEL)			// アウトのα値増加量
 {
@@ -64,11 +63,13 @@ HRESULT CFade::Init(void)
 {
 	// メンバ変数を初期化
 	m_pFuncSetMode	= nullptr;		// モード設定関数ポインタ
+	m_pState		= nullptr;		// 状態
 	m_modeNext		= INIT_SCENE;	// 次シーン
-	m_fade			= FADE_IN;		// フェード状態
-	m_fWaitTime		= 0.0f;			// 現在の余韻時間
 	m_fSubIn		= LEVEL;		// インのα値減少量
 	m_fAddOut		= LEVEL;		// アウトのα値増加量
+
+	// フェードイン状態にする
+	ChangeState(new CFadeStateIn);
 
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -112,6 +113,9 @@ HRESULT CFade::Init(void)
 //============================================================
 void CFade::Uninit(void)
 {
+	// 状態の終了
+	SAFE_UNINIT(m_pState);
+
 	// オブジェクト2Dの終了
 	CObject2D::Uninit();
 }
@@ -122,79 +126,11 @@ void CFade::Uninit(void)
 void CFade::Update(const float fDeltaTime)
 {
 	// フェードしていない場合抜ける
-	if (m_fade == FADE_NONE) { return; }
+	if (!IsFade()) { return; }
 
-	// TODO：これで状態の取得ができるらしい...？ほんとか？
-	if (typeid(*m_pState) == typeid(CFadeStateNone)) { return; }
-
-	D3DXCOLOR colFade = GetColor();	// フェード色
-	switch (m_fade)
-	{ // フェード状態ごとの処理
-	case FADE_WAIT:	// フェード余韻状態
-
-		// 余韻時刻を減らす
-		m_fWaitTime -= fDeltaTime;
-		if (m_fWaitTime <= 0.0f)
-		{ // 余韻終了した場合
-
-			// 余韻時間を初期化
-			m_fWaitTime = 0.0f;
-
-			// フェードアウト状態にする
-			m_fade = FADE_OUT;
-		}
-
-		break;
-
-	case FADE_IN:	// フェードイン状態
-
-		// ロードが完了していない場合抜ける
-		if (GET_MANAGER->GetLoading()->GetState() != CLoading::LOAD_NONE) { break; }
-
-		// 透明にしていく
-		colFade.a -= m_fSubIn * fDeltaTime;
-		if (colFade.a <= 0.0f)
-		{ // 透明になった場合
-
-			// α値を補正
-			colFade.a = 0.0f;
-
-			// 何もしない状態にする
-			m_fade = FADE_NONE;
-		}
-
-		break;
-
-	case FADE_OUT:	// フェードアウト状態
-
-		// 不透明にしていく
-		colFade.a += m_fAddOut * fDeltaTime;
-		if (colFade.a >= 1.0f)
-		{ // 不透明になった場合
-
-			// α値を補正
-			colFade.a = 1.0f;
-
-			// フェードイン状態にする
-			m_fade = FADE_IN;
-
-			if (m_pFuncSetMode != nullptr)
-			{ // モード設定関数が指定されている場合
-
-				// モードの設定
-				m_pFuncSetMode(m_modeNext);
-			}
-		}
-
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
-
-	// 色を反映
-	SetColor(colFade);
+	// 状態ごとの更新
+	assert(m_pState != nullptr);
+	m_pState->Update(fDeltaTime);
 
 	// オブジェクト2Dの更新
 	CObject2D::Update(fDeltaTime);
@@ -210,6 +146,83 @@ void CFade::Draw(CShader *pShader)
 }
 
 //============================================================
+//	次シーン遷移処理
+//============================================================
+void CFade::TransNextMode(void)
+{
+	if (m_pFuncSetMode != nullptr)
+	{ // モード設定関数が指定されている場合
+
+		// モードの設定
+		m_pFuncSetMode(m_modeNext);
+	}
+}
+
+//============================================================
+//	フェード中かの判定取得処理
+//============================================================
+bool CFade::IsFade(void)
+{
+	// フェード中かの判定を返す
+	assert(m_pState != nullptr);
+	return (typeid(*m_pState) != typeid(CFadeStateNone));
+}
+
+//============================================================
+//	α値減少処理
+//============================================================
+bool CFade::SubAlpha(const float fDeltaTime)
+{
+	D3DXCOLOR colFade = GetColor();	// フェード色
+	bool bComplete = false;	// 完了状況
+
+	// 透明にしていく
+	colFade.a -= m_fSubIn * fDeltaTime;
+	if (colFade.a <= 0.0f)
+	{ // 透明になった場合
+
+		// α値を補正
+		colFade.a = 0.0f;
+
+		// フェード完了を保存
+		bComplete = true;
+	}
+
+	// 色を反映
+	SetColor(colFade);
+
+	// フェード完了状況を返す
+	return bComplete;
+}
+
+//============================================================
+//	α値増加処理
+//============================================================
+bool CFade::AddAlpha(const float fDeltaTime)
+{
+	D3DXCOLOR colFade = GetColor();	// フェード色
+	bool bComplete = false;	// 完了状況
+
+	// 不透明にしていく
+	colFade.a += m_fAddOut * fDeltaTime;
+	if (colFade.a >= 1.0f)
+	{ // 不透明になった場合
+
+		// α値を補正
+		colFade.a = 1.0f;
+
+		// フェード完了を保存
+		bComplete = true;
+	}
+
+	// 色を反映
+	SetColor(colFade);
+
+	// フェード完了状況を返す
+	return bComplete;
+}
+
+//============================================================
 //	フェードの開始処理
 //============================================================
 void CFade::SetFade
@@ -220,7 +233,7 @@ void CFade::SetFade
 )
 {
 	// フェード中の場合抜ける
-	if (m_fade != FADE_NONE) { return; }
+	if (IsFade()) { return; }
 
 	// α値加減量を設定
 	m_fSubIn  = fSubIn;
@@ -233,7 +246,7 @@ void CFade::SetFade
 	m_pFuncSetMode = nullptr;
 
 	// フェードアウト状態にする
-	m_fade = FADE_OUT;
+	ChangeState(new CFadeStateOut);
 }
 
 //============================================================
@@ -248,16 +261,13 @@ void CFade::SetModeFade
 )
 {
 	// フェード中の場合抜ける
-	if (m_fade != FADE_NONE) { return; }
+	if (IsFade()) { return; }
 
 	// 余韻フレームオーバー
 	assert(fWaitTime >= 0.0f);
 
 	// 引数のモードを設定
 	m_modeNext = mode;
-
-	// 余韻時間を設定
-	m_fWaitTime = fWaitTime;
 
 	// α値加減量を設定
 	m_fSubIn  = fSubIn;
@@ -269,17 +279,17 @@ void CFade::SetModeFade
 	// ロード画面を挟まないモード設定関数を設定
 	m_pFuncSetMode = std::bind(&CManager::SetMode, GET_MANAGER, std::placeholders::_1);
 
-	if (m_fWaitTime <= 0.0f)
+	if (fWaitTime <= 0.0f)
 	{ // カウンターが未設定の場合
 
 		// フェードアウト状態にする
-		m_fade = FADE_OUT;
+		ChangeState(new CFadeStateOut);
 	}
 	else
 	{ // カウンターが設定された場合
 
 		// フェード余韻状態にする
-		m_fade = FADE_WAIT;
+		ChangeState(new CFadeStateWait(fWaitTime, new CFadeStateOut));
 	}
 }
 
@@ -295,16 +305,13 @@ void CFade::SetLoadFade
 )
 {
 	// フェード中の場合抜ける
-	if (m_fade != FADE_NONE) { return; }
+	if (IsFade()) { return; }
 
 	// 余韻フレームオーバー
 	assert(fWaitTime >= 0.0f);
 
 	// 引数のモードを設定
 	m_modeNext = mode;
-
-	// 余韻時間を設定
-	m_fWaitTime = fWaitTime;
 
 	// α値加減量を設定
 	m_fSubIn  = fSubIn;
@@ -316,17 +323,17 @@ void CFade::SetLoadFade
 	// ロード画面を挟むモード設定関数を設定
 	m_pFuncSetMode = std::bind(&CManager::SetLoadMode, GET_MANAGER, std::placeholders::_1);
 
-	if (m_fWaitTime <= 0.0f)
+	if (fWaitTime <= 0.0f)
 	{ // カウンターが未設定の場合
 
 		// フェードアウト状態にする
-		m_fade = FADE_OUT;
+		ChangeState(new CFadeStateOut);
 	}
 	else
 	{ // カウンターが設定された場合
 
 		// フェード余韻状態にする
-		m_fade = FADE_WAIT;
+		ChangeState(new CFadeStateWait(fWaitTime, new CFadeStateOut));
 	}
 }
 
