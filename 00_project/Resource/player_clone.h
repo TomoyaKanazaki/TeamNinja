@@ -76,6 +76,7 @@ public:
 		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
 		ACTION_JUMPOFF,			// 飛び降り
+		ACTION_HEAVYDOOR,		// 重い扉
 		ACTION_MAX
 	};
 
@@ -122,6 +123,7 @@ private:
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
+	void UpdatePushHeavyDoor(const float fDeltaTime);	// 重い扉押してる時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
 	void UpdateGravity(void);				// 重力の更新
