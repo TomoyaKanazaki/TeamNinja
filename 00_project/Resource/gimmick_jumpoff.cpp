@@ -66,8 +66,9 @@ void CGimmickJumpOff::Update(const float fDeltaTime)
 		if (CollisionPlayer() && GetMoment() == false)
 		{ // ƒMƒ~ƒbƒN”­“®‚µ‚Ä‚È‚¢ê‡
 
-			if (GET_PLAYER->GetVec3Position().y <= 100.0f)
-			{
+			//if (GET_PLAYER->GetVec3Position().y <= 100.0f)
+			{ // “Á’è‚Ì‚‚³‚Ü‚Å‰º‚ª‚Á‚½ê‡
+
 				// ”­“®’†
 				SetMoment(GET_PLAYER->GimmickLand());
 			}
