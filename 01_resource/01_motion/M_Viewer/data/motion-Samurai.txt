@@ -9,7 +9,7 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 13
+NUM_MODEL = 14
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -27,7 +27,7 @@ MODEL_FILENAME = data/MODEL/Samurai/05_00_LShigs.x			# [9]左腿
 MODEL_FILENAME = data/MODEL/Samurai/05_01_LLeg.x			# [10]左足
 MODEL_FILENAME = data/MODEL/Samurai/06_00_RShigs.x			# [11]右腿
 MODEL_FILENAME = data/MODEL/Samurai/06_01_RLeg.x			# [12]右足
-
+MODEL_FILENAME = data/MODEL/Samurai/07_Katana.x
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -36,7 +36,7 @@ CHARACTERSET
 	MOVE = 3.0						# 移動量
 	JUMP = 10.25					# ジャンプ量
 	RADIUS = 20.0					# 半径
-	NUM_PARTS = 13					# パーツ数
+	NUM_PARTS = 14					# パーツ数
 
 	PARTSSET
 		INDEX = 0					# 体
@@ -128,7 +128,13 @@ CHARACTERSET
 		POS = -4.0 -20.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
-	
+	PARTSSET
+		INDEX = 13					# 刀
+		PARENT = 8					# 右手
+		POS = 0.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
+
 	
 END_CHARACTERSET
 

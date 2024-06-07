@@ -1,15 +1,15 @@
-#if 0
+#if 1
 //============================================================
 //
-//	オブジェクトメッシュサークルヘッダー [objectMeshCircle.h]
+//	オブジェクトサークル2Dヘッダー [objectCircle2D.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _OBJECT_MESHCIRCLE_H_
-#define _OBJECT_MESHCIRCLE_H_
+#ifndef _OBJECT_CIRCLE2D_H_
+#define _OBJECT_CIRCLE2D_H_
 
 //************************************************************
 //	インクルードファイル
@@ -20,18 +20,18 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// オブジェクトメッシュサークルクラス
-class CObjectMeshCircle : public CObject
+// オブジェクトサークル2Dクラス
+class CObjectCircle2D : public CObject
 {
 public:
 	// コンストラクタ
-	explicit CObjectMeshCircle(const CObject::ELabel label = LABEL_NONE, const CObject::EDim dimension = DIM_3D, const int nPriority = object::DEFAULT_PRIO);
+	explicit CObjectCircle2D(const CObject::ELabel label = LABEL_NONE, const CObject::EDim dimension = DIM_2D, const int nPriority = object::DEFAULT_PRIO);
 
 	// デストラクタ
-	~CObjectMeshCircle() override;
+	~CObjectCircle2D() override;
 
-	// メッシュサークル構造体
-	struct SMeshCircle
+	// サークル構造体
+	struct SCircle
 	{
 		D3DXVECTOR3	pos;		// 位置
 		D3DXVECTOR3	rot;		// 向き
@@ -53,7 +53,7 @@ public:
 	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCircle.mtxWorld; }	// マトリックス取得
 
 	// 静的メンバ関数
-	static CObjectMeshCircle *Create	// 生成
+	static CObjectCircle2D *Create	// 生成
 	( // 引数
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
@@ -83,21 +83,17 @@ private:
 	// オーバーライド関数
 	void Release(void) override { CObject::Release(); }	// 破棄
 
-	// メンバ関数
-	void DrawNormal(void);	// 通常描画
-	void DrawShader(CShader *pShader);	// シェーダー描画
-
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;	// インデックスバッファへのポインタ
 	CRenderState *m_pRenderState;		// レンダーステートの情報
 
-	SMeshCircle m_meshCircle;	// メッシュサークルの情報
+	SCircle m_meshCircle;	// サークルの情報
 	POSGRID2 m_part;	// 分割数
 	int m_nNumVtx;		// 必要頂点数
 	int m_nNumIdx;		// 必要インデックス数
 	int m_nTextureID;	// テクスチャインデックス
 };
 
-#endif	// _OBJECT_MESHCIRCLE_H_
+#endif	// _OBJECT_CIRCLE2D_H_
 #endif
