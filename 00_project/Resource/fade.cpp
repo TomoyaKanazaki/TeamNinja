@@ -68,7 +68,7 @@ HRESULT CFade::Init(void)
 	m_modeNext		= INIT_SCENE;	// 次シーン
 	m_fade			= FADE_IN;		// フェード状態
 	m_fWaitTime		= 0.0f;			// 現在の余韻時間
-	m_fSubIn		= LEVEL;		// インのα値減少量		// TODO
+	m_fSubIn		= 0.0f;		// インのα値減少量		// TODO
 	m_fAddOut		= LEVEL;		// アウトのα値増加量	// TODO
 
 	// オブジェクト2Dの初期化
@@ -96,7 +96,7 @@ HRESULT CFade::Init(void)
 	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
 
 	// アイリスアウト切り抜き型の生成
-	m_pCircle = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, POSGRID2(128, 2), 300.0f);
+	m_pCircle = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, POSGRID2(64, 2), 300.0f);
 	if (m_pCircle == nullptr)
 	{ // 生成に失敗した場合
 
@@ -222,10 +222,14 @@ void CFade::Update(const float fDeltaTime)
 		D3DXVECTOR3 pos = GET_MANAGER->GetCamera()->CalcPlayerPos();
 
 		DebugProc::Print(DebugProc::POINT_CENTER, "%f %f %f", pos.x, pos.y, pos.z);
-		pos.z = 0.0f;
 
-		// アイリスアウト切り抜き型の生成
-		m_pCircle->SetVec3Position(pos);
+		if (pos.z < 1.0f)
+		{
+			pos.z = 0.0f;
+
+			// アイリスアウト切り抜き型の生成
+			m_pCircle->SetVec3Position(pos);
+		}
 	}
 }
 

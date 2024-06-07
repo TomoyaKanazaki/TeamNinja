@@ -36,7 +36,6 @@ public:
 		D3DXVECTOR3	pos;		// 位置
 		D3DXVECTOR3	rot;		// 向き
 		D3DXCOLOR	col;		// 色
-		D3DXMATRIX	mtxWorld;	// ワールドマトリックス
 		float		fRadius;	// 半径
 	};
 
@@ -47,10 +46,8 @@ public:
 	void Draw(CShader *pShader = nullptr) override;			// 描画
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
-	D3DXVECTOR3 GetVec3Position(void) const override	{ return m_meshCircle.pos; }		// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const override	{ return m_meshCircle.rot; }		// 向き取得
-	D3DXMATRIX *GetPtrMtxWorld(void) override			{ return &m_meshCircle.mtxWorld; }	// マトリックスポインタ取得
-	D3DXMATRIX GetMtxWorld(void) const override			{ return m_meshCircle.mtxWorld; }	// マトリックス取得
+	D3DXVECTOR3 GetVec3Position(void) const override { return m_meshCircle.pos; }	// 位置取得
+	D3DXVECTOR3 GetVec3Rotation(void) const override { return m_meshCircle.rot; }	// 向き取得
 
 	// 静的メンバ関数
 	static CObjectCircle2D *Create	// 生成
@@ -69,10 +66,10 @@ public:
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	void SetRadius(const float fRadius);		// 半径設定
 	HRESULT SetPattern(const POSGRID2& rPart);	// 分割数設定
-	int GetTextureIndex(void) const		{ return m_nTextureID; }			// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const		{ return m_meshCircle.col; }		// 色取得
-	float GetRadius(void) const			{ return m_meshCircle.fRadius; }	// 半径取得
-	POSGRID2 GetPattern(void) const		{ return m_part; }					// 分割数取得
+	int GetTextureIndex(void) const	{ return m_nTextureID; }			// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const	{ return m_meshCircle.col; }		// 色取得
+	float GetRadius(void) const		{ return m_meshCircle.fRadius; }	// 半径取得
+	POSGRID2 GetPattern(void) const	{ return m_part; }					// 分割数取得
 
 protected:
 	// メンバ関数
@@ -87,12 +84,11 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;	// インデックスバッファへのポインタ
 	CRenderState *m_pRenderState;		// レンダーステートの情報
-
 	SCircle m_meshCircle;	// サークルの情報
-	POSGRID2 m_part;	// 分割数
-	int m_nNumVtx;		// 必要頂点数
-	int m_nNumIdx;		// 必要インデックス数
-	int m_nTextureID;	// テクスチャインデックス
+	POSGRID2 m_part;		// 分割数
+	int m_nNumVtx;			// 必要頂点数
+	int m_nNumIdx;			// 必要インデックス数
+	int m_nTextureID;		// テクスチャインデックス
 };
 
 #endif	// _OBJECT_CIRCLE2D_H_
