@@ -35,6 +35,7 @@ public:
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
 		TYPE_STEP,				// 踏み台
 		TYPE_FALL,				// 落とし穴
+		TYPE_MALTI,				// 複数管理
 		TYPE_POST,				// 設置
 		TYPE_GRAVEL,			// 砂利道
 		TYPE_BOOB,				// ドブ
@@ -60,6 +61,7 @@ public:
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
 	void SetNumActive(const int nNum) { m_nNumActive = nNum; }	// 発動可能人数の設定処理
 	int GetNumActive(void) const { return m_nNumActive; }		// 発動可能人数の取得処理
+	virtual bool IsSet() { return bool(); }						// 設置ギミックのフラグ取得用
 
 	// 当たり判定
 	virtual void CollisionClone() {}							// クローンとの当たり判定
