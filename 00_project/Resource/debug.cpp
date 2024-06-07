@@ -478,7 +478,7 @@ void CDebug::ResultTrans(void)
 	if (GET_INPUTKEY->IsTrigger(KEY_RESULT_TRANS))
 	{
 		// ƒŠƒUƒ‹ƒg‰æ–Ê‚É‘JˆÚ
-		GET_MANAGER->SetScene(CScene::MODE_RESULT);
+		GET_MANAGER->SetLoadScene(CScene::MODE_RESULT);
 	}
 }
 

@@ -17,6 +17,7 @@
 namespace
 {
 	const char* PARAM_FILE = "data\\TXT\\Goal.txt"; // パラメータが保存されたパス
+	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
 }
 
 //==========================================
@@ -152,7 +153,7 @@ void CGoal::CollisionPlayer(void)
 	{ return; }
 
 	// ゴール時のUIを表示する
-	CPopUpUI::Create();
+	CPopUpUI::Create(GOAL_TEXTURE);
 
 	// クリアフラグをオンにする
 	m_bClear = true;

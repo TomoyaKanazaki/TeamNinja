@@ -1,14 +1,14 @@
 //============================================================
 //
-//	しつこい敵ヘッダー [enemyStalk.h]
+//	警告敵ヘッダー [enemyCaveat.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _ENEMY_STALK_H_
-#define _ENEMY_STALK_H_
+#ifndef _ENEMY_CAVEAT_H_
+#define _ENEMY_CAVEAT_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,33 +18,24 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// しつこい敵クラス
-class CEnemyStalk : public CEnemy
+// 警告敵クラス
+class CEnemyCaveat : public CEnemy
 {
 public:
-
-	// ターゲット
-	enum ETarget
-	{
-		TARGET_PLAYER = 0,	// プレイヤー
-		TARGET_CLONE,		// 分身
-		TARGET_MAX			// この列挙型の総数
-	};
 
 	// 状態
 	enum EState
 	{
 		STATE_CRAWL = 0,	// 巡回状態
-		STATE_STALK,		// 追跡状態
-		STATE_ATTACK,		// 攻撃状態
+		STATE_CAVEAT,		// 警告状態
 		STATE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
-	CEnemyStalk();
+	CEnemyCaveat();
 
 	// デストラクタ
-	~CEnemyStalk() override;
+	~CEnemyCaveat() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -56,16 +47,10 @@ private:
 
 	// メンバ関数
 	void State(void);		// 状態処理
-	void Crawl(void);		// 巡回処理
-	void Stalk(void);		// 追跡処理
-	void Move(void);		// 移動処理
-	bool Approach(void);	// 接近処理
+	void Caveat(void);		// 警告処理
 
 	// メンバ変数
-	D3DXVECTOR3 m_posTarget;	// 目標の位置
-	ETarget m_target;			// 標的
-	EState m_state;				// 状態
-	float m_fSpeed;				// 速度
+	EState m_state;			// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

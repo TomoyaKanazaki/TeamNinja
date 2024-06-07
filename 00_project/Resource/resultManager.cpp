@@ -773,14 +773,14 @@ void CResultManager::UpdateTransition(void)
 				case SELECT_YES:
 
 					// シーンの設定
-					GET_MANAGER->SetScene(CScene::MODE_GAME);	// ゲーム画面
+					GET_MANAGER->SetLoadScene(CScene::MODE_GAME);	// ゲーム画面
 
 					break;
 
 				case SELECT_NO:
 
 					// シーンの設定
-					GET_MANAGER->SetScene(CScene::MODE_RANKING);	// ランキング画面
+					GET_MANAGER->SetLoadScene(CScene::MODE_RANKING);	// ランキング画面
 
 					break;
 				}

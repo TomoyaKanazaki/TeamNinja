@@ -11,25 +11,24 @@
 #include "manager.h"
 #include "renderer.h"
 #include "loading.h"
-#include "object2D.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const int	PRIORITY	= 7;		// フェードの優先順位
-	const float	FADE_LEVEL	= 0.05f;	// フェードのα値の加減量
-
 #ifdef _DEBUG
 
-	const CScene::EMode INIT_SCENE = CScene::MODE_TITLE;	// 初期シーン
+	const CScene::EMode INIT_SCENE = CScene::MODE_GAME;		// 初期シーン
 
 #else	// NDEBUG
 
 	const CScene::EMode INIT_SCENE = CScene::MODE_TITLE;	// 初期シーン
 
 #endif	// _DEBUG
+
+	const int	PRIORITY = 7;		// フェードの優先順位
+	const float	LEVEL	 = 5.0f;	// フェードのα値加減量
 }
 
 //************************************************************
@@ -39,10 +38,12 @@ namespace
 //	コンストラクタ
 //============================================================
 CFade::CFade() :
-	m_pObject2D		(nullptr),				// フェード表示の情報
-	m_fade			(FADE_NONE),			// フェード状態
-	m_modeNext		(CScene::MODE_TITLE),	// 次のシーンモード
-	m_nCounterWait	(0)						// 余韻管理カウンター
+	m_pFuncSetMode	(nullptr),		// モード設定関数ポインタ
+	m_modeNext		(INIT_SCENE),	// 次シーン
+	m_fade			(FADE_NONE),	// フェード状態
+	m_fWaitTime		(0.0f),			// 現在の余韻時間
+	m_fSubIn		(LEVEL),		// インのα値減少量
+	m_fAddOut		(LEVEL)			// アウトのα値増加量
 {
 
 }
@@ -61,20 +62,40 @@ CFade::~CFade()
 HRESULT CFade::Init(void)
 {
 	// メンバ変数を初期化
-	m_pObject2D = nullptr;		// フェード表示の情報
-	m_fade		= FADE_IN;		// フェード状態
-	m_modeNext	= INIT_SCENE;	// 次のシーンモード
-	m_nCounterWait = 0;			// 余韻管理カウンター
+	m_pFuncSetMode	= nullptr;		// モード設定関数ポインタ
+	m_modeNext		= INIT_SCENE;	// 次シーン
+	m_fade			= FADE_IN;		// フェード状態
+	m_fWaitTime		= 0.0f;			// 現在の余韻時間
+	m_fSubIn		= 0.0f;		// インのα値減少量	// TODO
+	m_fAddOut		= LEVEL;		// アウトのα値増加量
 
-	// オブジェクト2Dの生成
-	m_pObject2D = CObject2D::Create
-	( // 引数
-		SCREEN_CENT,	// 位置
-		SCREEN_SIZE,	// 大きさ
-		VEC3_ZERO,		// 向き
-		XCOL_BLACK		// 色
-	);
-	if (m_pObject2D == nullptr)
+	// オブジェクト2Dの初期化
+	if (FAILED(CObject2D::Init()))
+	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 位置をスクリーン中央にする
+	SetVec3Position(SCREEN_CENT);
+
+	// 大きさをスクリーンサイズにする
+	SetVec3Sizing(SCREEN_SIZE);
+
+	// 色を黒にする
+	SetColor(XCOL_BLACK);
+
+	// 優先順位を一番上にする
+	SetPriority(PRIORITY);
+
+	// ラベル指定なしにする
+	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
+
+	// アイリスアウト切り抜き型の生成
+	m_pCircle = CObject2D::Create(SCREEN_CENT, VEC3_ONE * 100.0f, VEC3_ZERO);
+	if (m_pCircle == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
@@ -82,15 +103,16 @@ HRESULT CFade::Init(void)
 		return E_FAIL;
 	}
 
-	// 優先順位の設定
-	m_pObject2D->SetPriority(PRIORITY);
+	// 円のテクスチャを割当
+	m_pCircle->BindTexture("data\\TEXTURE\\circle000.png");
 
-	// ラベル指定なしに設定
-	m_pObject2D->SetLabel(CObject::LABEL_NONE);
+	// 自動更新・自動描画を停止させる
+	m_pCircle->SetEnableUpdate(false);
+	m_pCircle->SetEnableDraw(false);
 
-	// モードの初期化
-	if (FAILED(GET_MANAGER->InitMode(m_modeNext)))
-	{ // モードの設定に失敗した場合
+	// シーンの初期化
+	if (FAILED(GET_MANAGER->InitScene(m_modeNext)))
+	{ // 初期化に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -106,8 +128,11 @@ HRESULT CFade::Init(void)
 //============================================================
 void CFade::Uninit(void)
 {
+	// アイリスアウト切り抜き型の終了
+	SAFE_UNINIT(m_pCircle);
+
 	// オブジェクト2Dの終了
-	SAFE_UNINIT(m_pObject2D);
+	CObject2D::Uninit();
 }
 
 //============================================================
@@ -115,143 +140,256 @@ void CFade::Uninit(void)
 //============================================================
 void CFade::Update(const float fDeltaTime)
 {
-	if (m_fade != FADE_NONE)
-	{ // 何もしない状態ではない場合
+	// フェードしていない場合抜ける
+	if (m_fade == FADE_NONE) { return; }
 
-		D3DXCOLOR colFade = m_pObject2D->GetColor();	// フェード色
-		switch (m_fade)
-		{ // フェード状態ごとの処理
-		case FADE_WAIT:	// フェード余韻状態
+	D3DXCOLOR colFade = GetColor();	// フェード色
+	switch (m_fade)
+	{ // フェード状態ごとの処理
+	case FADE_WAIT:	// フェード余韻状態
 
-			if (m_nCounterWait > 0)
-			{ // カウンターが 0より大きい場合
+		// 余韻時刻を減らす
+		m_fWaitTime -= fDeltaTime;
+		if (m_fWaitTime <= 0.0f)
+		{ // 余韻終了した場合
 
-				// カウンターを減算
-				m_nCounterWait--;
-			}
-			else
-			{ // カウンターが 0以下の場合
+			// 余韻時間を初期化
+			m_fWaitTime = 0.0f;
 
-				// フェード状態を設定
-				m_fade = FADE_OUT;	// フェードアウト状態
-			}
-
-			break;
-
-		case FADE_IN:	// フェードイン状態
-
-			if (GET_MANAGER->GetLoading()->GetState() == CLoading::LOAD_NONE)
-			{ // ロードしていない場合
-
-				// α値を減算
-				colFade.a -= FADE_LEVEL;
-				if (colFade.a <= 0.0f)
-				{ // α値が 0.0fを下回った場合
-
-					// α値を補正
-					colFade.a = 0.0f;
-
-					// フェード状態を設定
-					m_fade = FADE_NONE;	// 何もしない状態
-				}
-			}
-
-			break;
-
-		case FADE_OUT:	// フェードアウト状態
-
-			// α値を加算
-			colFade.a += FADE_LEVEL;
-			if (colFade.a >= 1.0f)
-			{ // α値が 1.0f を上回った場合
-
-				// α値を補正
-				colFade.a = 1.0f;
-
-				// フェード状態を設定
-				m_fade = FADE_IN;	// フェードイン状態
-
-				// モードの設定
-				if (FAILED(GET_MANAGER->SetMode(m_modeNext)))
-				{ // モードの設定に失敗した場合
-
-					// ウインドウを破棄する
-					CManager::ReleaseWindow();
-				}
-			}
-
-			break;
-
-		default:	// 例外処理
-			assert(false);
-			break;
+			// フェードアウト状態にする
+			m_fade = FADE_OUT;
 		}
 
-		// 色の更新
-		m_pObject2D->SetColor(colFade);
+		break;
 
-		// オブジェクト2Dの更新
-		m_pObject2D->Update(fDeltaTime);
+	case FADE_IN:	// フェードイン状態
+
+		// ロードが完了していない場合抜ける
+		if (GET_MANAGER->GetLoading()->GetState() != CLoading::LOAD_NONE) { break; }
+
+		// 透明にしていく
+		colFade.a -= m_fSubIn * fDeltaTime;
+		if (colFade.a <= 0.0f)
+		{ // 透明になった場合
+
+			// α値を補正
+			colFade.a = 0.0f;
+
+			// 何もしない状態にする
+			m_fade = FADE_NONE;
+		}
+
+		break;
+
+	case FADE_OUT:	// フェードアウト状態
+
+		// 不透明にしていく
+		colFade.a += m_fAddOut * fDeltaTime;
+		if (colFade.a >= 1.0f)
+		{ // 不透明になった場合
+
+			// α値を補正
+			colFade.a = 1.0f;
+
+			// フェードイン状態にする
+			m_fade = FADE_IN;
+
+			if (m_pFuncSetMode != nullptr)
+			{ // モード設定関数が指定されている場合
+
+				// モードの設定
+				m_pFuncSetMode(m_modeNext);
+			}
+		}
+
+		break;
+
+	default:	// 例外処理
+		assert(false);
+		break;
 	}
+
+	// 色を反映
+	SetColor(colFade);
+
+	// アイリスアウト切り抜き型の更新
+	m_pCircle->Update(fDeltaTime);
+
+	// オブジェクト2Dの更新
+	CObject2D::Update(fDeltaTime);
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CFade::Draw(void)
+void CFade::Draw(CShader *pShader)
 {
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
-	// サンプラーステートを設定
-	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);	// U方向のラッピングを無効化
-	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);	// V方向のラッピングを無効化
+	// ステンシルテストを有効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+
+	// 比較参照値を設定する
+	pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+	// ステンシルマスクを指定する 
+	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+	// ステンシル比較関数を指定する
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+
+	// ステンシル結果に対しての反映設定
+	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);	// Zテスト・ステンシルテスト成功
+	pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);		// Zテスト・ステンシルテスト失敗
+	pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);		// Zテスト失敗・ステンシルテスト成功
+
+	// アイリスアウト切り抜き型の描画
+	m_pCircle->Draw();
+
+
+
+	// 比較参照値を設定する
+	pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+	// ステンシルマスクを指定する 
+	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+	// ステンシル比較関数を指定する
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
+
+	// ステンシル結果に対しての反映設定
+	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト成功
+	pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト失敗
+	pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);	// Zテスト失敗・ステンシルテスト成功
 
 	// オブジェクト2Dの描画
-	m_pObject2D->Draw();
+	CObject2D::Draw(pShader);
 
-	// サンプラーステートを設定
-	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);	// U方向のラッピングを有効化
-	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);	// V方向のラッピングを有効化
+
+
+	// ステンシルテストを無効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 //============================================================
-//	次シーンへのフェード設定処理
+//	フェードの開始処理
 //============================================================
-void CFade::Set(const CScene::EMode mode, const int nWait)
+void CFade::SetFade
+(
+	const float fAddOut,	// アウトのα値増加量
+	const float fSubIn,		// インのα値減少量
+	const int nPriority		// 優先順位
+)
 {
-	// 例外処理
-	assert(nWait >= 0);	// 余韻フレームオーバー
+	// フェード中の場合抜ける
+	if (m_fade != FADE_NONE) { return; }
 
-	if (m_fade == FADE_NONE)
-	{ // フェードが行われていない場合
+	// α値加減量を設定
+	m_fSubIn  = fSubIn;
+	m_fAddOut = fAddOut;
 
-		// 引数のモードを設定
-		m_modeNext = mode;
+	// 優先順位を設定
+	SetPriority(nPriority);
 
-		// 余韻管理カウンターを設定
-		m_nCounterWait = nWait;
+	// モード設定関数ポインタを初期化
+	m_pFuncSetMode = nullptr;
 
-		// フェード状態を設定
-		if (m_nCounterWait <= 0)
-		{ // カウンターが 0以下の場合
+	// フェードアウト状態にする
+	m_fade = FADE_OUT;
+}
 
-			m_fade = FADE_OUT;	// フェードアウト状態
-		}
-		else
-		{ // カウンターが 0より大きい場合
+//============================================================
+//	次シーンの設定処理 (フェードのみ)
+//============================================================
+void CFade::SetModeFade
+(
+	const CScene::EMode mode,	// 次シーン
+	const float fWaitTime,		// 余韻時間
+	const float fAddOut,		// アウトのα値増加量
+	const float fSubIn			// インのα値減少量
+)
+{
+	// フェード中の場合抜ける
+	if (m_fade != FADE_NONE) { return; }
 
-			m_fade = FADE_WAIT;	// フェード余韻状態
-		}
+	// 余韻フレームオーバー
+	assert(fWaitTime >= 0.0f);
+
+	// 引数のモードを設定
+	m_modeNext = mode;
+
+	// 余韻時間を設定
+	m_fWaitTime = fWaitTime;
+
+	// α値加減量を設定
+	m_fSubIn  = fSubIn;
+	m_fAddOut = fAddOut;
+
+	// 優先順位を設定
+	SetPriority(PRIORITY);
+
+	// ロード画面を挟まないモード設定関数を設定
+	m_pFuncSetMode = std::bind(&CManager::SetMode, GET_MANAGER, std::placeholders::_1);
+
+	if (m_fWaitTime <= 0.0f)
+	{ // カウンターが未設定の場合
+
+		// フェードアウト状態にする
+		m_fade = FADE_OUT;
+	}
+	else
+	{ // カウンターが設定された場合
+
+		// フェード余韻状態にする
+		m_fade = FADE_WAIT;
 	}
 }
 
 //============================================================
-//	フェード状態取得処理
+//	次シーンの設定処理 (ロード画面付き)
 //============================================================
-CFade::EFade CFade::GetState(void) const
+void CFade::SetLoadFade
+(
+	const CScene::EMode mode,	// 次シーン
+	const float fWaitTime,		// 余韻時間
+	const float fAddOut,		// アウトのα値増加量
+	const float fSubIn			// インのα値減少量
+)
 {
-	// 現在のフェード状態を返す
-	return m_fade;
+	// フェード中の場合抜ける
+	if (m_fade != FADE_NONE) { return; }
+
+	// 余韻フレームオーバー
+	assert(fWaitTime >= 0.0f);
+
+	// 引数のモードを設定
+	m_modeNext = mode;
+
+	// 余韻時間を設定
+	m_fWaitTime = fWaitTime;
+
+	// α値加減量を設定
+	m_fSubIn  = fSubIn;
+	m_fAddOut = fAddOut;
+
+	// 優先順位を設定
+	SetPriority(PRIORITY);
+
+	// ロード画面を挟むモード設定関数を設定
+	m_pFuncSetMode = std::bind(&CManager::SetLoadMode, GET_MANAGER, std::placeholders::_1);
+
+	if (m_fWaitTime <= 0.0f)
+	{ // カウンターが未設定の場合
+
+		// フェードアウト状態にする
+		m_fade = FADE_OUT;
+	}
+	else
+	{ // カウンターが設定された場合
+
+		// フェード余韻状態にする
+		m_fade = FADE_WAIT;
+	}
 }
 
 //============================================================
@@ -281,17 +419,4 @@ CFade *CFade::Create(void)
 		// 確保したアドレスを返す
 		return pFade;
 	}
-}
-
-//============================================================
-//	破棄処理
-//============================================================
-void CFade::Release(CFade *&prFade)
-{
-	// フェードの終了
-	assert(prFade != nullptr);
-	prFade->Uninit();
-
-	// メモリ開放
-	SAFE_DELETE(prFade);
 }

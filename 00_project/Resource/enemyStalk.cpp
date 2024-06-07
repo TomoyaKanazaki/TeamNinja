@@ -11,7 +11,6 @@
 #include "enemyStalk.h"
 #include "renderer.h"
 #include "deltaTime.h"
-#include "collision.h"
 
 #include "player.h"
 #include "player_clone.h"
@@ -25,7 +24,6 @@ namespace
 	const float MOVE = -300.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
 	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
-	const float VIEW_RANGE = 400.0f;						// 視界の範囲
 }
 
 //************************************************************
@@ -36,8 +34,9 @@ namespace
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemy(),
 m_posTarget(VEC3_ZERO),		// 目標の位置
-m_target(TARGET_PLAYER),	// 目標
-m_state(STATE_CRAWL)		// 状態
+m_target(TARGET_PLAYER),	// 標的
+m_state(STATE_CRAWL),		// 状態
+m_fSpeed(0.0f)				// 速度
 {
 
 }
@@ -91,9 +90,6 @@ void CEnemyStalk::Update(const float fDeltaTime)
 	// 過去位置更新
 	UpdateOldPosition();
 
-	// 巡回処理
-	Crawl();
-
 	// 状態処理
 	State();
 
@@ -119,12 +115,19 @@ void CEnemyStalk::State(void)
 	{
 	case CEnemyStalk::STATE_CRAWL:
 
+		// 巡回処理
+		Crawl();
+
 		break;
 
 	case CEnemyStalk::STATE_STALK:
 
 		// 追跡処理
 		Stalk();
+
+		break;
+
+	case CEnemyStalk::STATE_ATTACK:
 
 		break;
 
@@ -139,46 +142,27 @@ void CEnemyStalk::State(void)
 //============================================================
 void CEnemyStalk::Crawl(void)
 {
-	float fRot = GetVec3Rotation().y + D3DX_PI;
-
-	switch (m_target)
-	{
-	case CEnemyStalk::TARGET_PLAYER:
-
-		// プレイヤーの位置を取得する
-		m_posTarget = CScene::GetPlayer()->GetVec3Position();
-
-		break;
-
-	case CEnemyStalk::TARGET_CLONE:
-
-		// 分身のリストが無い場合抜け出す
-		if (CPlayerClone::GetList() == nullptr ||
-			*CPlayerClone::GetList()->GetBegin() == nullptr)
-		{
-			return;
-		}
-
-		// 分身の位置を取得する
-		m_posTarget = (*CPlayerClone::GetList()->GetBegin())->GetVec3Position();
-
-		break;
-
-	default:		// 例外処理
-		assert(false);
-		break;
-	}
-
-	// 向きを正規化
-	useful::NormalizeRot(fRot);
-
-	if (collision::Sector(GetVec3Position(), m_posTarget, fRot, VIEW_RANGE, D3DX_PI))
-	{ // 視界内に入った場合
+	if (SearchClone(&m_posTarget))
+	{ // 分身が目に入った場合
 
 		// 追跡状態にする
 		m_state = STATE_STALK;
 
-		// 関数を抜ける
+		// 標的を分身にする
+		m_target = TARGET_CLONE;
+
+		return;
+	}
+
+	if (SearchPlayer(&m_posTarget))
+	{ // 分身が目に入った場合
+
+		// 追跡状態にする
+		m_state = STATE_STALK;
+
+		// 標的をプレイヤーにする
+		m_target = TARGET_PLAYER;
+
 		return;
 	}
 
@@ -191,11 +175,17 @@ void CEnemyStalk::Crawl(void)
 //============================================================
 void CEnemyStalk::Stalk(void)
 {
+	// 巡回処理
+	Crawl();
+
 	// 移動処理
 	Move();
 
 	if (Approach())
 	{ // 接近した場合
+
+		// 攻撃状態にする
+		m_state = STATE_ATTACK;
 
 		switch (m_target)
 		{
@@ -220,7 +210,7 @@ void CEnemyStalk::Stalk(void)
 	}
 
 	// デバッグ
-	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!");
+	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", m_posTarget.x, m_posTarget.y, m_posTarget.z);
 }
 
 //============================================================
@@ -272,7 +262,7 @@ bool CEnemyStalk::Approach(void)
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
 	// 距離を測る
-	fDistance = sqrtf((m_posTarget.x - pos.x) * (m_posTarget.x - pos.x) + (m_posTarget.z - pos.z) * (m_posTarget.z - pos.z));
+	fDistance = sqrtf((pos.x - m_posTarget.x) * (pos.x - m_posTarget.x) + (pos.z - m_posTarget.z) * (pos.z - m_posTarget.z));
 
 	if (fDistance <= ATTACK_DISTANCE)
 	{ // 一定の距離に入った場合

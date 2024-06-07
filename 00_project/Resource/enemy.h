@@ -28,6 +28,7 @@ public:
 	enum EType
 	{
 		TYPE_STALK = 0,		// しつこい敵
+		TYPE_CAVEAT,		// 警告敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -61,6 +62,10 @@ public:
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
 
 protected:
+
+	// メンバ関数
+	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);		// プレイヤーの探索処理
+	bool SearchClone(D3DXVECTOR3* pPos = nullptr);		// 分身の探索処理
 
 private:
 

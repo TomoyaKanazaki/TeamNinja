@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "scene.h"
+#include "fade.h"
 
 //************************************************************
 //	前方宣言
@@ -30,7 +31,6 @@ class CTexture;				// テクスチャクラス
 class CModel;				// モデルクラス
 class CFont;				// フォントクラス
 class CCharacter;			// キャラクタークラス
-class CFade;				// フェードクラス
 class CLoading;				// ローディングクラス
 class CEffekseerManager;	// エフェクシアマネージャークラス
 class CRetentionManager;	// データ保存マネージャークラス
@@ -63,10 +63,27 @@ public:
 	static void ReleaseWindow(void);			// ウインドウ破棄
 
 	// メンバ関数
-	void SetScene(const CScene::EMode mode, const int nWait = 0);	// シーン設定
-	HRESULT InitMode(const CScene::EMode mode);	// モード初期化
-	HRESULT SetMode(const CScene::EMode mode);	// モード設定
-	CScene::EMode GetMode(void);				// モード取得
+	HRESULT InitScene(const CScene::EMode mode);	// シーン初期化
+	HRESULT SetScene(const CScene::EMode mode);		// シーン設定 (フェード･ロード：OFF)
+
+	void SetFadeScene	// シーン設定 (フェード：ON, ロード：OFF)
+	( // 引数
+		const CScene::EMode mode,				// 次シーン
+		const float fWaitTime	= 0.0f,			// 余韻時間
+		const float fAddOut		= CFade::LEVEL,	// アウトのα値増加量
+		const float fSubIn		= CFade::LEVEL	// インのα値減少量
+	);
+	void SetLoadScene	// シーン設定 (フェード･ロード：ON)
+	( // 引数
+		const CScene::EMode mode,				// 次シーン
+		const float fWaitTime	= 0.0f,			// 余韻時間
+		const float fAddOut		= CFade::LEVEL,	// アウトのα値増加量
+		const float fSubIn		= CFade::LEVEL	// インのα値減少量
+	);
+
+	HRESULT SetMode(const CScene::EMode mode);		// モード設定 (ロード：OFF)
+	HRESULT SetLoadMode(const CScene::EMode mode);	// モード設定 (ロード：ON)
+	CScene::EMode GetMode(void);					// モード取得
 
 	CDeltaTime			*GetDeltaTime(void);	// デルタタイム取得
 	CRenderer			*GetRenderer(void);		// レンダラー取得
