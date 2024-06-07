@@ -1,17 +1,17 @@
 //=========================================
 //
-//  落とし穴ギミック (gimmick_fall.cpp)
+//  朽ちた床ギミック (gimmick_decayed.cpp)
 //  Author : Tomoya kanazaki
 //
 //=========================================
-#include "gimmick_fall.h"
+#include "gimmick_decayed.h"
 #include "manager.h"
 #include "player.h"
 
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickFall::CGimmickFall() : CGimmickAction()
+CGimmickDecaed::CGimmickDecaed() : CGimmickAction()
 {
 
 }
@@ -19,7 +19,7 @@ CGimmickFall::CGimmickFall() : CGimmickAction()
 //=========================================
 //  デストラクタ
 //=========================================
-CGimmickFall::~CGimmickFall()
+CGimmickDecaed::~CGimmickDecaed()
 {
 
 }
@@ -27,7 +27,7 @@ CGimmickFall::~CGimmickFall()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickFall::Init(void)
+HRESULT CGimmickDecaed::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CGimmickAction::Init()))
@@ -45,7 +45,7 @@ HRESULT CGimmickFall::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickFall::Uninit(void)
+void CGimmickDecaed::Uninit(void)
 {
 	// 親クラスの終了
 	CGimmickAction::Uninit();
@@ -54,7 +54,7 @@ void CGimmickFall::Uninit(void)
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickFall::Update(const float fDeltaTime)
+void CGimmickDecaed::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -63,7 +63,7 @@ void CGimmickFall::Update(const float fDeltaTime)
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickFall::Draw(CShader* pShader)
+void CGimmickDecaed::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmickAction::Draw(pShader);

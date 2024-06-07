@@ -15,11 +15,13 @@
 #include "gimmick_fall.h"
 #include "gimmick_post.h"
 #include "gimmick_malti.h"
+#include "gimmick_decayed.h"
+#include "gimmick_jumpoff.h"
 
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
 #include "gimmick_water.h"
-#include "gimmick_jumpoff.h"
+#include "gimmick_cleen.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -171,6 +173,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_MALTI:			// •¡”ŠÇ—
 
 		pGimmick = new CGimmickMalti;
+
+		break;
+
+	case CGimmick::TYPE_DECAED:			// ‹€‚¿‚½°
+
+		pGimmick = new CGimmickDecaed;
 
 		break;
 
