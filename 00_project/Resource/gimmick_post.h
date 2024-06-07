@@ -23,7 +23,7 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
-	bool IsSet() { return m_bPost; } // 設置フラグの取得
+	bool IsSet() override { return m_bPost; } // 設置フラグの取得
 
 private:
 

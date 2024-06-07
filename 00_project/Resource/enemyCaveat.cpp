@@ -111,13 +111,20 @@ void CEnemyCaveat::State(void)
 	{
 	case CEnemyCaveat::STATE_CRAWL:
 
+		if (SearchPlayer() ||
+			SearchClone())
+		{ // ‹ŠE“à‚ÉƒvƒŒƒCƒ„[‚©•ªg‚ª“ü‚Á‚½ê‡
 
+			// Œxó‘Ô‚É‚·‚é
+			m_state = STATE_CAVEAT;
+		}
 
 		break;
 
 	case CEnemyCaveat::STATE_CAVEAT:
 
-
+		// Œxˆ—
+		Caveat();
 
 		break;
 
@@ -125,4 +132,12 @@ void CEnemyCaveat::State(void)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+// Œxˆ—
+//============================================================
+void CEnemyCaveat::Caveat(void)
+{
+
 }

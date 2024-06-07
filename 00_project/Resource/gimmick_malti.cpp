@@ -42,6 +42,10 @@ HRESULT CGimmickMalti::Init(void)
 
 	// 設置ギミックを生成
 	m_pGimmick = new CGimmick [GetNumActive()];
+	for (int i = 0; i < GetNumActive(); ++i)
+	{
+		m_pGimmick[i] = *CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, -500 + -500.0f * i), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_POST, 1);
+	}
 
 	// 成功を返す
 	return S_OK;
