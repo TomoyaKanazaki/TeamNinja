@@ -202,6 +202,11 @@
     <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\fade.h" />
+    <ClInclude Include="Resource\fadeState.h" />
+    <ClInclude Include="Resource\fadeStateIn.h" />
+    <ClInclude Include="Resource\fadeStateNone.h" />
+    <ClInclude Include="Resource\fadeStateOut.h" />
+    <ClInclude Include="Resource\fadeStateWait.h" />
     <ClInclude Include="Resource\field.h" />
     <ClInclude Include="Resource\flash.h" />
     <ClInclude Include="Resource\font.h" />
@@ -348,6 +353,11 @@
     <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
+    <ClCompile Include="Resource\fadeState.cpp" />
+    <ClCompile Include="Resource\fadeStateIn.cpp" />
+    <ClCompile Include="Resource\fadeStateNone.cpp" />
+    <ClCompile Include="Resource\fadeStateOut.cpp" />
+    <ClCompile Include="Resource\fadeStateWait.cpp" />
     <ClCompile Include="Resource\field.cpp" />
     <ClCompile Include="Resource\flash.cpp" />
     <ClCompile Include="Resource\font.cpp" />
