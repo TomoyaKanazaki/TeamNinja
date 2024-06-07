@@ -1,13 +1,13 @@
 //============================================================
 //
-// 飛び降り [gimmick_jumpoff.cpp]
+// 重い扉の処理 [gimmick_heavydoor.cpp]
 // Author：佐藤根詩音
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "gimmick_jumpoff.h"
+#include "gimmick_heavydoor.h"
 #include "manager.h"
 #include "player.h"
 
@@ -16,12 +16,12 @@
 //************************************************************
 namespace
 {
-	const float CLONE_HEIGHT = 80.0f;		// クローンの高さ
+	//const float CLONE_HEIGHT = 80.0f;		// クローンの高さ
 }
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmickJumpOff::CGimmickJumpOff() : CGimmickAction()
+CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction()
 {
 
 }
@@ -29,7 +29,7 @@ CGimmickJumpOff::CGimmickJumpOff() : CGimmickAction()
 //============================================================
 //	デストラクタ
 //============================================================
-CGimmickJumpOff::~CGimmickJumpOff()
+CGimmickHeavyDoor::~CGimmickHeavyDoor()
 {
 
 }
@@ -37,7 +37,7 @@ CGimmickJumpOff::~CGimmickJumpOff()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CGimmickJumpOff::Init(void)
+HRESULT CGimmickHeavyDoor::Init(void)
 {
 	// ギミックアクションの初期化
 	if (FAILED(CGimmickAction::Init()))
@@ -55,7 +55,7 @@ HRESULT CGimmickJumpOff::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CGimmickJumpOff::Uninit(void)
+void CGimmickHeavyDoor::Uninit(void)
 {
 	// ギミックアクションの終了
 	CGimmickAction::Uninit();
@@ -64,34 +64,9 @@ void CGimmickJumpOff::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CGimmickJumpOff::Update(const float fDeltaTime)
+void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
-	if (GET_PLAYER->IsJump())
-	{ // プレイヤーがジャンプしている場合
-
-		// プレイヤーとの当たり判定
-		if (CollisionPlayer())
-		{
-			if (GetMoment() == false)
-			{ // ギミック発動してない場合
-
-				D3DXVECTOR3 pos = GetVec3Position();		// 発動位置
-
-				if ((GET_PLAYER->GetVec3Position().y - (pos.y + CLONE_HEIGHT)) <= 10.0f)
-				{ // 特定の高さまで下がった場合
-
-					// 発動中
-					SetMoment(GET_PLAYER->GimmickLand());
-				}
-			}
-		}
-		else
-		{ // 範囲内じゃない場合
-
-			// 発動しない
-			SetMoment(false);
-		}
-	}
+	
 	
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -100,7 +75,7 @@ void CGimmickJumpOff::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CGimmickJumpOff::Draw(CShader* pShader)
+void CGimmickHeavyDoor::Draw(CShader* pShader)
 {
 	// ギミックアクションの描画
 	CGimmickAction::Draw(pShader);

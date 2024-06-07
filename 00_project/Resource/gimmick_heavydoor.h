@@ -1,14 +1,14 @@
 //============================================================
 //
-// 飛び降りヘッダー [gimmick_jumpoff.h]
+// 重い扉ヘッダー [gimmick_heavydoor.h]
 // Author：佐藤根詩音
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _GIMMICK_JUMPOFF_H_
-#define _GIMMICK_JUMPOFF_H_
+#ifndef _GIMMICK_HEAVYDOOR_H_
+#define _GIMMICK_HEAVYDOOR_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,11 +18,11 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-class CGimmickJumpOff : public CGimmickAction
+class CGimmickHeavyDoor : public CGimmickAction
 {
 public:
-	CGimmickJumpOff();
-	~CGimmickJumpOff();
+	CGimmickHeavyDoor();
+	~CGimmickHeavyDoor();
 
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);		// 終了

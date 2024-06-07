@@ -450,6 +450,12 @@
     <ClInclude Include="Resource\objectCircle2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\gimmick_decayed.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_heavydoor.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Resource\fadeState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -894,6 +900,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\objectCircle2D.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_decayed.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_heavydoor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\fadeState.cpp">

@@ -68,7 +68,7 @@ HRESULT CFade::Init(void)
 	m_modeNext		= INIT_SCENE;	// 次シーン
 	m_fade			= FADE_IN;		// フェード状態
 	m_fWaitTime		= 0.0f;			// 現在の余韻時間
-	m_fSubIn		= LEVEL;		// インのα値減少量		// TODO
+	m_fSubIn		= 0.0f;		// インのα値減少量		// TODO
 	m_fAddOut		= LEVEL;		// アウトのα値増加量	// TODO
 
 	// オブジェクト2Dの初期化
@@ -238,7 +238,7 @@ void CFade::Update(const float fDeltaTime)
 //============================================================
 void CFade::Draw(CShader *pShader)
 {
-#if 0
+#if 1
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
 	// ステンシルテストを有効にする

@@ -15,11 +15,14 @@
 #include "gimmick_fall.h"
 #include "gimmick_post.h"
 #include "gimmick_malti.h"
+#include "gimmick_decayed.h"
+#include "gimmick_jumpoff.h"
+#include "gimmick_heavydoor.h"
 
 #include "gimmick_gravel.h"
 #include "gimmick_boob.h"
 #include "gimmick_water.h"
-#include "gimmick_jumpoff.h"
+#include "gimmick_cleen.h"
 
 //************************************************************
 //	íËêîêÈåæ
@@ -174,6 +177,12 @@ CGimmick* CGimmick::Create
 
 		break;
 
+	case CGimmick::TYPE_DECAED:			// ãÄÇøÇΩè∞
+
+		pGimmick = new CGimmickDecaed;
+
+		break;
+
 	case CGimmick::TYPE_GRAVEL:			// çªóòìπ
 
 		pGimmick = new CGimmickGravel;
@@ -193,6 +202,12 @@ CGimmick* CGimmick::Create
 		break;
 
 	case CGimmick::TYPE_JUMPOFF:			// îÚÇ—ç~ÇË
+
+		pGimmick = new CGimmickJumpOff;
+
+		break;
+
+	case CGimmick::TYPE_HEAVYDOOR:			// èdÇ¢î‡
 
 		pGimmick = new CGimmickJumpOff;
 
