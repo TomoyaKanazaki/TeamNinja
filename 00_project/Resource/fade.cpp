@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "loading.h"
+#include "objectCircle2D.h"
 #include "fadeState.h"
 
 //************************************************************
@@ -30,6 +31,8 @@ namespace
 
 	const int	PRIORITY = 7;		// フェードの優先順位
 	const float	LEVEL	 = 5.0f;	// フェードのα値加減量
+
+	const POSGRID2 PART_CIRCLE = POSGRID2(64, 2);	// 切り抜き型の分割数
 }
 
 //************************************************************
@@ -40,6 +43,7 @@ namespace
 //============================================================
 CFade::CFade() :
 	m_pFuncSetMode	(nullptr),		// モード設定関数ポインタ
+	m_pCrop			(nullptr),		// 切り抜き型情報
 	m_pState		(nullptr),		// 状態
 	m_modeNext		(INIT_SCENE),	// 次シーン
 	m_fSubIn		(LEVEL),		// インのα値減少量
@@ -63,6 +67,7 @@ HRESULT CFade::Init(void)
 {
 	// メンバ変数を初期化
 	m_pFuncSetMode	= nullptr;		// モード設定関数ポインタ
+	m_pCrop			= nullptr;		// 切り抜き型情報
 	m_pState		= nullptr;		// 状態
 	m_modeNext		= INIT_SCENE;	// 次シーン
 	m_fSubIn		= LEVEL;		// インのα値減少量
@@ -95,6 +100,20 @@ HRESULT CFade::Init(void)
 	// ラベル指定なしにする
 	SetLabel(CObject::LABEL_NONE);	// 自動破棄・更新を停止する
 
+	// 切り抜き型の生成
+	m_pCrop = CObjectCircle2D::Create(SCREEN_CENT, VEC3_ZERO, XCOL_AWHITE, PART_CIRCLE, 0.0f);
+	if (m_pCrop == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 自動更新・自動描画を停止させる
+	m_pCrop->SetEnableUpdate(false);
+	m_pCrop->SetEnableDraw(false);
+
 	// シーンの初期化
 	if (FAILED(GET_MANAGER->InitScene(m_modeNext)))
 	{ // 初期化に失敗した場合
@@ -113,6 +132,9 @@ HRESULT CFade::Init(void)
 //============================================================
 void CFade::Uninit(void)
 {
+	// 切り抜き型の終了
+	SAFE_UNINIT(m_pCrop);
+
 	// 状態の終了
 	SAFE_UNINIT(m_pState);
 
@@ -141,8 +163,52 @@ void CFade::Update(const float fDeltaTime)
 //============================================================
 void CFade::Draw(CShader *pShader)
 {
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ステンシルテストを有効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+
+	if (typeid(*m_pState) == typeid(CFadeStateIrisIn)
+	||  typeid(*m_pState) == typeid(CFadeStateIrisOut))
+	{ // アイリスイン・アウト状態の場合
+
+		// 比較参照値を設定する
+		pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+		// ステンシルマスクを指定する 
+		pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+		// ステンシル比較関数を指定する
+		pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+
+		// ステンシル結果に対しての反映設定
+		pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);	// Zテスト・ステンシルテスト成功
+		pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);		// Zテスト・ステンシルテスト失敗
+		pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);		// Zテスト失敗・ステンシルテスト成功
+
+		// 切り抜き型の描画
+		m_pCrop->Draw();
+	}
+
+	// 比較参照値を設定する
+	pDevice->SetRenderState(D3DRS_STENCILREF, 1);
+
+	// ステンシルマスクを指定する 
+	pDevice->SetRenderState(D3DRS_STENCILMASK, 255);
+
+	// ステンシル比較関数を指定する
+	pDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_NOTEQUAL);
+
+	// ステンシル結果に対しての反映設定
+	pDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト成功
+	pDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);	// Zテスト・ステンシルテスト失敗
+	pDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);	// Zテスト失敗・ステンシルテスト成功
+
 	// オブジェクト2Dの描画
 	CObject2D::Draw(pShader);
+
+	// ステンシルテストを無効にする
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 }
 
 //============================================================

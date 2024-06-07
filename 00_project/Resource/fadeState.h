@@ -34,7 +34,7 @@ public:
 	virtual void Update(const float fDeltaTime) = 0;	// 更新
 
 	// 仮想関数
-	virtual void SetContext(CFade *pContext) { m_pContext = pContext; }	// コンテキスト設定
+	virtual void SetContext(CFade* pContext) { m_pContext = pContext; }	// コンテキスト設定
 
 protected:
 	// メンバ変数
@@ -48,9 +48,7 @@ protected:
 #include "fadeStateWait.h"
 #include "fadeStateOut.h"
 #include "fadeStateIn.h"
-
-// TODO：今までのFadeができ次第FadeIrisIn, FadeIrisOutを作成する
-//		 InOutでは位置取得関数ポインタをコンストラクタで入れられるようにして、
-//		 nullptrなら世界の中心、ポインタがあるなら取得した位置で円が縮むようにする
+#include "fadeStateIrisOut.h"
+#include "fadeStateIrisIn.h"
 
 #endif	// _FADE_STATE_H_

@@ -19,7 +19,8 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CFadeState;	// フェード状態クラス
+class CObjectCircle2D;	// オブジェクトサークル2Dクラス
+class CFadeState;		// フェード状態クラス
 
 //************************************************************
 //	クラス定義
@@ -75,9 +76,10 @@ public:
 		const float fSubIn		= LEVEL		// インのα値減少量
 	);
 
-private:
+//private:	// TODO
 	// メンバ変数
 	std::function<HRESULT(CScene::EMode)> m_pFuncSetMode;	// モード設定関数ポインタ
+	CObjectCircle2D *m_pCrop;	// 切り抜き型情報
 	CFadeState *m_pState;		// 状態
 	CScene::EMode m_modeNext;	// 次シーン
 	float m_fSubIn;		// インのα値減少量
