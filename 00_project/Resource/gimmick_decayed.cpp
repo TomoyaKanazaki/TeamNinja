@@ -56,6 +56,12 @@ void CGimmickDecaed::Uninit(void)
 //=========================================
 void CGimmickDecaed::Update(const float fDeltaTime)
 {
+	// 1度でもアクティブになったら常にアクティブ
+	if (!m_bFall && IsActive())
+	{
+		m_bFall = true;
+	}
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
