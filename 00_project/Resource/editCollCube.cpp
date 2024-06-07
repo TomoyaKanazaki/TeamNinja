@@ -98,7 +98,8 @@ HRESULT CEditCollCube::Init(void)
 		GetVec3OffSet(),		// オフセット座標
 		m_infoCreate.fWidth,	// 幅
 		m_infoCreate.fHeight,	// 高さ
-		m_infoCreate.fDepth		// 奥行
+		m_infoCreate.fDepth,	// 奥行
+		0.0f					// 向き
 	);
 	if (m_pCube == nullptr)
 	{ // 生成に失敗した場合
@@ -262,7 +263,8 @@ void CEditCollCube::Create(void)
 		GetVec3OffSet(),		// オフセット座標
 		m_infoCreate.fWidth,	// 半径
 		m_infoCreate.fHeight,	// 高さ
-		m_infoCreate.fDepth		// 奥行
+		m_infoCreate.fDepth,	// 奥行
+		0.0f					// 向き
 	);
 	assert(m_pCube != nullptr);
 }

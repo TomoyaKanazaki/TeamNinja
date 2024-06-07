@@ -54,9 +54,12 @@ public:
 #endif // _DEBUG
 
 	// 静的メンバ関数
-	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth);		// 生成処理
+	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth, const float fRot);		// 生成処理
 
 private:
+
+	// メンバ関数
+	void Convert(const float fWidth, const float fDepth, const float fRot);		// 向きによる変換処理
 
 	// メンバ変数
 	float m_fWidth;		// 幅
