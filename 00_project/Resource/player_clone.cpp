@@ -283,6 +283,13 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
+	case ACTION_HEAVYDOOR: // 重い扉状態
+
+		// 扉押してる状態の更新
+		UpdatePushHeavyDoor(fDeltaTime);
+
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -829,6 +836,18 @@ CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 	if (m_pGimmick->GetMoment()) { return MOTION_CATAPULT; }
 
 	return MOTION_JUMP_IDOL;
+}
+
+//============================================================
+// 重い扉押してる時の更新
+//============================================================
+void CPlayerClone::UpdatePushHeavyDoor(const float fDeltaTime)
+{
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 位置更新
+	pos.z += m_move.z * fDeltaTime;
 }
 
 //============================================================

@@ -209,7 +209,7 @@ CGimmick* CGimmick::Create
 
 	case CGimmick::TYPE_HEAVYDOOR:			// èdÇ¢î‡
 
-		pGimmick = new CGimmickJumpOff;
+		pGimmick = new CGimmickHeavyDoor;
 
 		break;
 

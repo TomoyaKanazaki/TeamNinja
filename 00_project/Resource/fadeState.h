@@ -45,5 +45,12 @@ protected:
 //	インクルードファイル
 //************************************************************
 #include "fadeStateNone.h"
+#include "fadeStateWait.h"
+#include "fadeStateOut.h"
+#include "fadeStateIn.h"
+
+// TODO：今までのFadeができ次第FadeIrisIn, FadeIrisOutを作成する
+//		 InOutでは位置取得関数ポインタをコンストラクタで入れられるようにして、
+//		 nullptrなら世界の中心、ポインタがあるなら取得した位置で円が縮むようにする
 
 #endif	// _FADE_STATE_H_
