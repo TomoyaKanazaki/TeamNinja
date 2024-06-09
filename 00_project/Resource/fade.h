@@ -19,7 +19,8 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CFadeState;	// フェード状態クラス
+class CObjectCircle2D;	// オブジェクトサークル2Dクラス
+class CFadeState;		// フェード状態クラス
 
 //************************************************************
 //	クラス定義
@@ -31,17 +32,6 @@ public:
 	// 定数
 	static constexpr int	PRIORITY = 7;	// フェード優先順位
 	static constexpr float	LEVEL = 1.0f;	// フェードα値加減量
-
-	// フェード状態列挙
-	enum EFade
-	{
-		FADE_NONE = 0,	// 何もしていない状態
-		FADE_WAIT,		// フェード余韻状態
-		FADE_IN,		// フェードイン状態
-		FADE_OUT,		// フェードアウト状態
-		FADE_IRISOUT,	// アイリスアウト状態
-		FADE_MAX		// この列挙型の総数
-	};
 
 	// コンストラクタ
 	CFade();
@@ -59,8 +49,11 @@ public:
 	static CFade *Create(void);	// 生成
 
 	// メンバ関数
-	HRESULT ChangeState(CFadeState *pState);		// 状態変更
-	EFade GetState(void) const { return m_fade; }	// フェード状態取得
+	HRESULT ChangeState(CFadeState *pState);	// 状態変更
+	bool SubAlpha(const float fDeltaTime);		// α値減少
+	bool AddAlpha(const float fDeltaTime);		// α値増加
+	void TransNextMode(void);	// 次シーン遷移
+	bool IsFade(void);			// フェード中かの判定取得
 
 	void SetFade	// フェード開始設定
 	( // 引数
@@ -83,13 +76,12 @@ public:
 		const float fSubIn		= LEVEL		// インのα値減少量
 	);
 
-private:
+//private:	// TODO
 	// メンバ変数
 	std::function<HRESULT(CScene::EMode)> m_pFuncSetMode;	// モード設定関数ポインタ
+	CObjectCircle2D *m_pCrop;	// 切り抜き型情報
 	CFadeState *m_pState;		// 状態
 	CScene::EMode m_modeNext;	// 次シーン
-	EFade m_fade;		// フェード状態
-	float m_fWaitTime;	// 現在の余韻時間
 	float m_fSubIn;		// インのα値減少量
 	float m_fAddOut;	// アウトのα値増加量
 };

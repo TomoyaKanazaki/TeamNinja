@@ -697,7 +697,7 @@ void CRankingManager::UpdateTransition(void)
 		else
 		{ // 遷移待機状態の場合
 
-			if (GET_MANAGER->GetFade()->GetState() == CFade::FADE_NONE)
+			if (!GET_MANAGER->GetFade()->IsFade())
 			{ // フェード中ではない場合
 
 				// シーンの設定

@@ -1,24 +1,22 @@
 //============================================================
 //
-//	余韻管理状態処理 [fadeStateWait.cpp]
+//	アイリスイン状態処理 [fadeStateIrisIn.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "fadeStateWait.h"
+#include "fadeStateIrisIn.h"
 #include "fade.h"
 
 //************************************************************
-//	子クラス [CFadeStateWait] のメンバ関数
+//	子クラス [CFadeStateIrisIn] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CFadeStateWait::CFadeStateWait(const float fWaitTime, CFadeState* pNextState) :
-	m_pNextState	(pNextState),	// 遷移先の状態
-	m_fWaitTime		(fWaitTime)		// 現在の余韻時間
+CFadeStateIrisIn::CFadeStateIrisIn()
 {
 
 }
@@ -26,7 +24,7 @@ CFadeStateWait::CFadeStateWait(const float fWaitTime, CFadeState* pNextState) :
 //============================================================
 //	デストラクタ
 //============================================================
-CFadeStateWait::~CFadeStateWait()
+CFadeStateIrisIn::~CFadeStateIrisIn()
 {
 
 }
@@ -34,7 +32,7 @@ CFadeStateWait::~CFadeStateWait()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CFadeStateWait::Init(void)
+HRESULT CFadeStateIrisIn::Init(void)
 {
 	// 成功を返す
 	return S_OK;
@@ -43,7 +41,7 @@ HRESULT CFadeStateWait::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CFadeStateWait::Uninit(void)
+void CFadeStateIrisIn::Uninit(void)
 {
 	// 自身の破棄
 	delete this;
@@ -52,17 +50,7 @@ void CFadeStateWait::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CFadeStateWait::Update(const float fDeltaTime)
+void CFadeStateIrisIn::Update(const float fDeltaTime)
 {
-	// 余韻時刻を減らす
-	m_fWaitTime -= fDeltaTime;
-	if (m_fWaitTime <= 0.0f)
-	{ // 余韻終了した場合
 
-		// 余韻時間を初期化
-		m_fWaitTime = 0.0f;
-
-		// 予約済みの遷移を設定
-		m_pContext->ChangeState(m_pNextState);
-	}
 }

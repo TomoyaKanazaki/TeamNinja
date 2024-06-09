@@ -1,14 +1,14 @@
 //============================================================
 //
-//	余韻管理状態ヘッダー [fadeStateWait.h]
+//	アイリスイン状態ヘッダー [fadeStateIrisIn.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _FADE_STATE_WAIT_H_
-#define _FADE_STATE_WAIT_H_
+#ifndef _FADE_STATE_IRISIN_H_
+#define _FADE_STATE_IRISIN_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,25 +18,20 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// 余韻管理状態クラス
-class CFadeStateWait : public CFadeState
+// アイリスイン状態クラス
+class CFadeStateIrisIn : public CFadeState
 {
 public:
 	// コンストラクタ
-	CFadeStateWait(const float fWaitTime, CFadeState* pNextState);
+	CFadeStateIrisIn();
 
 	// デストラクタ
-	~CFadeStateWait() override;
+	~CFadeStateIrisIn() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
-
-private:
-	// メンバ変数
-	CFadeState* m_pNextState;	// 遷移先の状態
-	float m_fWaitTime;			// 現在の余韻時間
 };
 
-#endif	// _FADE_STATE_WAIT_H_
+#endif	// _FADE_STATE_IRISIN_H_
