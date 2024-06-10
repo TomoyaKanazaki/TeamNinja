@@ -89,7 +89,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(-800.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_WATER, 2);
 
 	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
-	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -200.0f), D3DXVECTOR3(200.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
+	CGimmick::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
 
 	CMapModel::Create(D3DXVECTOR3(-800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
 
@@ -102,6 +102,8 @@ HRESULT CGameManager::Init(void)
 	CMapModel::Create(D3DXVECTOR3(800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
+
+	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR);
 
 	// É}ÉbÉvÇê∂ê¨
 	if (FAILED(MapLoad())) { return E_FAIL; }

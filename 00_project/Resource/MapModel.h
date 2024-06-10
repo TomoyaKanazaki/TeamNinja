@@ -49,6 +49,7 @@ public:
 		MODEL_TYPE_HOUSE4,				//設置用
 		MODEL_TYPE_HOUSE5,				//設置用
 		MODEL_TYPE_LANTERN1,
+		MODEL_TYPE_DOOR,				//重い扉
 		MODEL_TYPE_MAX
 	};
 

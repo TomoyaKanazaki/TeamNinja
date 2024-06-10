@@ -181,7 +181,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
   Material {
@@ -190,7 +190,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
   Material {
@@ -199,7 +199,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
  }
