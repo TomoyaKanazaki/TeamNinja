@@ -459,6 +459,9 @@ CPlayerClone* CPlayerClone::Create(void)
 		// ギミック受付時間を設定する
 		pPlayer->m_fGimmickTimer = GIMMICK_TIME;
 
+		// 位置を設定する
+		pPlayer->SetVec3Position(pPlayer->CalcStartPos());
+
 		// 確保したアドレスを返す
 		return pPlayer->Block();
 	}
@@ -1263,4 +1266,76 @@ CPlayerClone* CPlayerClone::Block()
 	// ヒットしていなければ生成できる
 	return this;
 #endif
+}
+
+//===========================================
+//  初期位置を算出する処理
+//===========================================
+D3DXVECTOR3 CPlayerClone::CalcStartPos() const
+{
+	// リストを取得する
+	std::list<CPlayerClone*> list = m_pList->GetList();
+	auto itrBegin = list.begin();
+	auto itrEnd = list.end();
+
+	// プレイヤー位置・向きを取得する
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation();	// プレイヤー向き
+
+	// 一つ前のポインタを保存する変数
+	CPlayerClone* prev = *itrBegin;
+
+	// 自身のポインタを走査する
+	for (auto itr = itrBegin; itr != itrEnd; ++itr)
+	{
+		// 自身ではない場合一つ前を保存して次に進む
+		if (*itr != this) { prev = *itr; continue; }
+
+		// 自身が先頭だった場合プレイヤーの後ろの位置を返す
+		if (this == *itrBegin)
+		{
+			return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
+			(
+				sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
+				0.0f,
+				cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
+			);
+		}
+
+		// 自身の追従する相手を選択する
+		while (1)
+		{
+			// 一つ前のポインタを保存する
+			--itr;
+			prev = *itr;
+
+			// 前が追従していない場合
+			if (prev->GetAction() != ACTION_CHASE)
+			{
+				// 一つ前が先頭でない場合次に進む
+				if (prev != *itrBegin) { continue; }
+
+				// プレイヤーに追従し関数を抜ける
+				return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
+				(
+					sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
+					0.0f,
+					cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
+				);
+			}
+
+			// 一つ前に追従し関数を抜ける
+			return prev->GetVec3Position() + D3DXVECTOR3
+			(
+				sinf(prev->GetVec3Rotation().y) * DISTANCE,
+				0.0f,
+				cosf(prev->GetVec3Rotation().y) * DISTANCE
+			);
+		}
+	}
+
+	// ここには来ない
+	assert(false);
+	return D3DXVECTOR3();
 }
