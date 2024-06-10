@@ -74,6 +74,22 @@ bool CCollisionSphere::Hit
 }
 
 //============================================================
+// オフセット設定処理
+//============================================================
+void CCollisionSphere::OffSet(const D3DXMATRIX& mtx)
+{
+	// オフセット処理
+	CCollision::OffSet(mtx);
+
+#ifdef _DEBUG
+
+	// スフィアの位置を設定
+	m_pSphere->SetVec3Position(GetPos());
+
+#endif // _DEBUG
+}
+
+//============================================================
 // 生成処理
 //============================================================
 CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius)

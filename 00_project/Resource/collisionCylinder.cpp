@@ -116,6 +116,22 @@ bool CCollisionCylinder::Hit
 }
 
 //============================================================
+// オフセット設定処理
+//============================================================
+void CCollisionCylinder::OffSet(const D3DXMATRIX& mtx)
+{
+	// オフセット処理
+	CCollision::OffSet(mtx);
+
+#ifdef _DEBUG
+
+	// チューブの位置を設定
+	m_pTube->SetVec3Position(GetPos());
+
+#endif // _DEBUG
+}
+
+//============================================================
 // 生成処理
 //============================================================
 CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius, const float fHeight)

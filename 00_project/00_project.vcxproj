@@ -173,6 +173,7 @@
     <ClInclude Include="Resource\collisionCylinder.h" />
     <ClInclude Include="Resource\collisionModel.h" />
     <ClInclude Include="Resource\collisionSphere.h" />
+    <ClInclude Include="Resource\collManager.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="Resource\collisionCylinder.cpp" />
     <ClCompile Include="Resource\collisionModel.cpp" />
     <ClCompile Include="Resource\collisionSphere.cpp" />
+    <ClCompile Include="Resource\collManager.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />

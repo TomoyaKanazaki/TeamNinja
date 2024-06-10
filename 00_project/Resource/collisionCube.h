@@ -41,6 +41,8 @@ public:
 		bool& rJump						// ジャンプ状況
 	) override;
 
+	void OffSet(const D3DXMATRIX& mtx) override;		// オフセット設定処理
+
 	// セット・ゲット関係
 	float GetWidth(void) const { return m_fWidth; }		// 幅の取得処理
 	float GetHeight(void) const { return m_fHeight; }	// 高さの取得処理
