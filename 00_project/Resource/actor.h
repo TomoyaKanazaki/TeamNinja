@@ -58,7 +58,8 @@ public:
 		const float fRadius,			// 半径
 		const float fHeight,			// 高さ
 		D3DXVECTOR3& rMove,				// 移動量
-		bool& bJump						// ジャンプ状況
+		bool& bJump,					// ジャンプ状況
+		bool* pHit = nullptr			// 当たったかどうかの判定
 	);
 
 	// セット・ゲット関数

@@ -242,7 +242,8 @@ void CActor::Collision
 	const float fRadius,			// 半径
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
-	bool& bJump						// ジャンプ状況
+	bool& bJump,					// ジャンプ状況
+	bool* pHit						// 当たったかどうかの判定
 )
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
@@ -251,17 +252,38 @@ void CActor::Collision
 	{
 		// ヒット処理
 		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
 	}
 
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
 	}
 
 	for (auto sphere : m_sphere)
 	{
 		// ヒット処理
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
 	}
 }
