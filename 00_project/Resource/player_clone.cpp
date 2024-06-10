@@ -59,6 +59,7 @@ namespace
 	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
+	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
 }
 
 //************************************************************
@@ -78,14 +79,15 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_move			(VEC3_ZERO),	// 移動量
 	m_Action		(ACTION_CHASE),	// 行動
 	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
-	m_fChargeTimer	(0.0f),			// ため時間タイマー
+	m_fGimmickTimer	(0.0f),			// ギミック受付時間タイマー
 	m_pGimmick		(nullptr),		// ギミックのポインタ
 	m_sFrags		({}),			// ギミックフラグの文字列
 	m_nIdxGimmick	(-1),			// ギミック内の管理番号
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_destRot		(VEC3_ZERO),	// 目標向き
 	m_bJump			(false),		// ジャンプ状況
-	m_fFallStart	(0.0f)			// 落とし穴の落ちる前の高さ
+	m_fFallStart	(0.0f),			// 落とし穴の落ちる前の高さ
+	m_bGimmick		(true)			// ギミックフラグ
 {
 
 }
@@ -109,13 +111,14 @@ HRESULT CPlayerClone::Init(void)
 	m_move			= VEC3_ZERO;	// 移動量
 	m_Action		= ACTION_CHASE;	// 行動
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
-	m_fChargeTimer	= 0.0f;			// ため時間タイマー
+	m_fGimmickTimer = 0.0f;			// ギミック受付時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
 	m_sFrags		= {};			// ギミックフラグの文字列
 	m_nIdxGimmick	= -1;			// ギミック内の管理番号
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_destRot		= VEC3_ZERO;	// 目標向き
 	m_bJump			= true;			// ジャンプ状況
+	m_bGimmick		= true;			// ギミックフラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -368,6 +371,10 @@ bool CPlayerClone::Hit(const int nDamage)
 //==========================================
 void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
+	// ギミック受付をリセットする
+	//m_fGimmickTimer = 0.0f;
+	//m_bGimmick = false;
+
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
@@ -448,6 +455,9 @@ CPlayerClone* CPlayerClone::Create(void)
 			SAFE_DELETE(pPlayer);
 			return nullptr;
 		}
+
+		// ギミック受付時間を設定する
+		pPlayer->m_fGimmickTimer = GIMMICK_TIME;
 
 		// 確保したアドレスを返す
 		return pPlayer->Block();
@@ -626,6 +636,10 @@ void CPlayerClone::CallBack()
 		if (pClone->GetAction() == ACTION_CHASE) { continue; }
 		if (pClone->GetAction() == ACTION_FALL) { continue; }
 
+		// ギミックフラグをリセット
+		pClone->m_fGimmickTimer = 0.0f;
+		pClone->m_bGimmick = false;
+
 		// ギミックの保有分身数を減らす
 		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
 
@@ -690,6 +704,20 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	D3DXVECTOR3 posClone = GetVec3Position();	// クローン位置
 	D3DXVECTOR3 rotClone = GetVec3Rotation();	// クローン向き
 	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
+
+	// ギミック受付時間を更新
+	if (m_fGimmickTimer > 0.0f)
+	{
+		// 減算
+		m_fGimmickTimer -= fDeltaTime;
+
+		// 0未満になった場合フラグをoff
+		if (m_fGimmickTimer <= 0.0f)
+		{
+			m_bGimmick = false;
+			m_fGimmickTimer = 0.0f;
+		}
+	}
 
 	// 重力の更新
 	UpdateGravity();

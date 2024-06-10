@@ -116,8 +116,8 @@ void CGimmickAction::CollisionClone(void)
 		// 分身の総数が必要数に達したらループを抜ける
 		if (nNumClone >= GetNumActive()) { break; }
 
-		// 追跡する分身だった場合次の分身にする
-		if (clone->GetAction() == CPlayerClone::ACTION_CHASE) { continue; }
+		// ギミックフラグがoffなら次に進む
+		if (!clone->GetGimmickFrag()) { continue; }
 
 		// 位置を取得
 		posClone = clone->GetVec3Position();

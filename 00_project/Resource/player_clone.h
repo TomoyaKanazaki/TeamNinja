@@ -104,6 +104,7 @@ public:
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
+	bool GetGimmickFrag() const { return m_bGimmick; }			// ギミックフラグの取得
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
@@ -155,11 +156,12 @@ private:
 	D3DXVECTOR3 m_move;			// 移動量
 	EAction m_Action;			// 行動
 	float m_fDeleteTimer;		// 自動消滅タイマー
-	float m_fChargeTimer;		// ため時間タイマー
+	float m_fGimmickTimer;		// ギミック受付時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
 	float m_fFallStart;			// 落とし穴の落ちる前の高さ
+	bool m_bGimmick;			// ギミックフラグ
 
 	// メンバ変数 (藤田追加)
 	D3DXVECTOR3	m_oldPos;	// 過去位置
