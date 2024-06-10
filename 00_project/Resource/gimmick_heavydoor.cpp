@@ -68,7 +68,10 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
-	
+
+	// ジャンプしていない場合false
+	SetMoment(false);
+
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
 }
