@@ -68,9 +68,10 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
-	// ドア押す
-	PushDoor();
-	
+
+	// ジャンプしていない場合false
+	SetMoment(false);
+
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -82,13 +83,4 @@ void CGimmickHeavyDoor::Draw(CShader* pShader)
 {
 	// ギミックアクションの描画
 	CGimmickAction::Draw(pShader);
-}
-
-//============================================================
-// ドア押す
-//============================================================
-void CGimmickHeavyDoor::PushDoor(void)
-{
-	// 発動中にする
-	SetMoment(true);
 }

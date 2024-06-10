@@ -123,7 +123,6 @@ private:
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
-	void UpdatePushHeavyDoor(const float fDeltaTime);	// 重い扉押してる時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
 	void UpdateGravity(void);				// 重力の更新

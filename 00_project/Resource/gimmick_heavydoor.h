@@ -30,7 +30,6 @@ public:
 	void Draw(CShader* pShader = nullptr);	// •`‰æ
 
 private:
-	void PushDoor(void);		// ƒhƒA‰Ÿ‚·
 
 };
 
