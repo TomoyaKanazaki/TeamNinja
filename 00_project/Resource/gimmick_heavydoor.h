@@ -31,6 +31,8 @@ public:
 
 private:
 
+	int m_nOpenCounter;		// 扉が開くまでのカウンター
+
 };
 
 #endif
