@@ -40,7 +40,9 @@ const char* CMapModel::mc_apModelFile[MODEL_TYPE_MAX] =				//モデルファイル名(い
 	"data\\MODEL\\House\\House003.x",								//草むら
 	"data\\MODEL\\House\\House004.x",								//草むら
 	"data\\MODEL\\Lantern\\Lantern001.x",								//草むら
-	"data\\MODEL\\DOOR\\gate000.x",									//重い扉
+	"data\\MODEL\\DOOR\\gate000.x",									//重い扉(屋根)
+	"data\\MODEL\\DOOR\\gate001.x",									//重い扉(扉)
+
 };	
 //<**********************************************
 //名前宣言(使うかもしれないので)

@@ -68,9 +68,19 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
+	if (IsActive())
+	{ // 必要な人数が揃ってる場合
 
-	// ジャンプしていない場合false
-	SetMoment(false);
+		// 扉開けてる
+		SetMoment(GET_PLAYER->GimmickLand());
+	}
+	else
+	{ // 必要な人数が揃ってない場合
+
+		// 扉開けてない
+		SetMoment(false);
+	}
+
 
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
