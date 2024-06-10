@@ -31,6 +31,17 @@ public:
 		STATE_MAX			// この列挙型の総数
 	};
 
+	// モーション列挙
+	enum EMotion
+	{
+		MOTION_IDOL = 0,	// 待機モーション
+		MOTION_WALK,		// 歩行モーション
+		MOTION_FOUND,		// 発見モーション
+		MOTION_ATTACK,		// 攻撃モーション
+		MOTION_UPSET,		// 動揺モーション
+		MOTION_MAX			// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CEnemyCaveat();
 
