@@ -70,6 +70,9 @@ CEditCollision::CEditCollision(CEditManager* pEditManager) : CEditor(pEditManage
 	m_cylinder = {};					// シリンダーの可変長配列
 	m_sphere = {};						// スフィアの可変長配列
 
+	// オブジェクトの描画関係処理
+	DispObject(false);
+
 #endif	// _DEBUG
 }
 
@@ -79,6 +82,10 @@ CEditCollision::CEditCollision(CEditManager* pEditManager) : CEditor(pEditManage
 CEditCollision::~CEditCollision()
 {
 #if _DEBUG
+
+	// オブジェクトの描画関係処理
+	DispObject(true);
+
 #endif	// _DEBUG
 }
 
@@ -387,6 +394,64 @@ void CEditCollision::DrawDebugInfo(void)
 	m_pEditor->DrawDebugInfo();
 
 #endif	// _DEBUG
+}
+
+//============================================================
+// オブジェクトの描画関係処理
+//============================================================
+void CEditCollision::DispObject(const bool bDisp)
+{
+	for (int nCntDim = 0; nCntDim < CObject::DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
+
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
+
+			// オブジェクトの先頭を代入
+			CObject* pObject = CObject::GetTop(static_cast<CObject::EDim>(nCntDim), nCntPri);
+
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
+
+				// 次のオブジェクトを代入
+				CObject* pObjectNext = pObject->GetNext();
+
+				if (pObject->GetLabel() == CObject::LABEL_NONE)
+				{ // 自動破棄しないラベルの場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+				if (pObject->IsDeath())
+				{ // 死亡している場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+				if (pObject->GetLabel() == CObject::LABEL_PLAYER)
+				{ // プレイヤーの場合
+
+					// 更新状況を変化する
+					pObject->SetEnableUpdate(bDisp);
+				}
+
+				if (pObject->GetLabel() != CObject::LABEL_DEBUG &&
+					pObject->GetLabel() != CObject::LABEL_FIELD)
+				{ // デバッグラベル、フィールドラベル以外
+
+					// オブジェクトを見えなくする
+					pObject->SetEnableDebugDisp(bDisp);
+				}
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+			}
+		}
+	}
 }
 
 //============================================================

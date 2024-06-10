@@ -61,9 +61,10 @@ public:
 private:
 
 	// メンバ関数
-	void ChangeObjectType(void);	// オブジェクトタイプ変更
-	void Create(void);				// 生成処理
-	void Delete(void);				// 消去処理
+	void DispObject(const bool bDisp);		// オブジェクトの描画関係処理
+	void ChangeObjectType(void);			// オブジェクトタイプ変更
+	void Create(void);						// 生成処理
+	void Delete(void);						// 消去処理
 
 	void InitAllColorCollCube(void);				// キューブの色全初期化
 	void InitAllColorCollCylinder(void);			// シリンダーの色全初期化
