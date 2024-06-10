@@ -22,24 +22,22 @@ public:
 	virtual ~CDebugObject() override;
 
 	// オーバーライド関数
-	virtual HRESULT Init() override;	// 初期化
-	virtual void Uninit() override;		// 終了
-	virtual void Update(const float fDeltaTime) override;		// 更新
-	virtual void Draw(CShader* pShader = nullptr) override;		// 描画
+	virtual HRESULT Init() override; // 初期化
+	virtual void Uninit() override; // 終了
+	virtual void Update(const float fDeltaTime) override; // 更新
+	virtual void Draw(CShader* pShader = nullptr) override; // 描画
+
+	bool Hit(const D3DXVECTOR3& rPos);
 
 	// 静的メンバ関数
-	static CDebugObject* Create				// 生成
-	(
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rSize		// サイズ
-	);
-	static CListManager<CDebugObject>* GetList();	// リスト取得
+	static CDebugObject* Create(); // 生成処理
+	static CListManager<CDebugObject>* GetList(); // リスト取得
 
 private:
 
 	// メンバ変数
-	CListManager<CDebugObject>::AIterator m_iterator;	// イテレーター
+	CListManager<CDebugObject>::AIterator m_iterator; // イテレーター
 
 	// 静的メンバ変数
-	static CListManager<CDebugObject>* m_pList;			// オブジェクトリスト
+	static CListManager<CDebugObject>* m_pList; // オブジェクトリスト
 };

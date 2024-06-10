@@ -29,6 +29,8 @@
 #include "actor.h"
 #include "MapModel.h"
 
+#include "debug_object.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -102,6 +104,12 @@ HRESULT CGameManager::Init(void)
 	CMapModel::Create(D3DXVECTOR3(800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
+
+	// デバッグ専用オブジェクトを生成する(絶対にデバッグ以外で生成するなゴミカス)
+#ifdef _DEBUG
+	// きしょきしょおぶじぇくとしねしねしねしね
+	CDebugObject::Create();
+#endif
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }

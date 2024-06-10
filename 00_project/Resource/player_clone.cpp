@@ -24,6 +24,8 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 
+#include "debug_object.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -448,7 +450,7 @@ CPlayerClone* CPlayerClone::Create(void)
 		}
 
 		// 確保したアドレスを返す
-		return pPlayer;
+		return pPlayer->Block();
 	}
 }
 
@@ -487,7 +489,7 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	pPlayer->m_fDeleteTimer = TIMER;
 
 	// 確保したアドレスを返す
-	return pPlayer;
+	return pPlayer->Block();
 }
 
 //==========================================
@@ -528,7 +530,7 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 	pPlayer->m_fDeleteTimer = TIMER;
 
 	// 確保したアドレスを返す
-	return pPlayer;
+	return pPlayer->Block();
 }
 
 //============================================================
@@ -1206,4 +1208,31 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rP
 
 	// 目標向きを設定
 	m_destRot.y = fRot;
+}
+
+//===========================================
+//  生成をブロックする処理
+//===========================================
+CPlayerClone* CPlayerClone::Block()
+{
+#ifdef _DEBUG
+	std::list<CDebugObject*> debuglist = CDebugObject::GetList()->GetList();
+
+	for (auto debug : debuglist)
+	{
+		// ヒットしていたら生成したものを削除する
+		if (debug->Hit(GetVec3Position()))
+		{
+			GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+			Uninit();
+			return nullptr;
+		}
+	}
+
+	// エフェクトを生成
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 15.0f);
+
+	// ヒットしていなければ生成できる
+	return this;
+#endif
 }
