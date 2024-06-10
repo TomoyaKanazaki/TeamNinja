@@ -473,11 +473,7 @@ void CPlayer::SetSpawn(void)
 	SetAlpha(0.0f);
 
 	// 描画を再開
-	SetEnableDraw(true);
-
-	// TPSカメラの目標位置の設定
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-	GET_MANAGER->GetCamera()->SetDestTps();
+	SetEnableDraw(true);		
 }
 
 //============================================================
@@ -723,7 +719,6 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 
 		// 移動量をスカラー値に変換する
 		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-		DebugProc::Print(DebugProc::POINT_CENTER, "移動量ちゃん : %f", m_fScalar);
 
 		// 移動量が一定未満の場合忍び足モーションになる
 		if (m_fScalar <= STEALTH_MOVE)
