@@ -18,12 +18,13 @@
 //************************************************************
 namespace
 {
-	//const float CLONE_HEIGHT = 80.0f;		// クローンの高さ
+	const int OPEN_DOOR = 60 * 2;		// ドアが開くまでの時間
 }
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction()
+CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction(),
+m_nOpenCounter(0)		// 扉が開くまでのカウンター
 {
 
 }
@@ -68,9 +69,30 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
+	if (IsActive())
+	{ // 必要な人数が揃ってる場合
 
-	// ジャンプしていない場合false
-	SetMoment(false);
+		if (m_nOpenCounter >= OPEN_DOOR)
+		{ // 一定時間経ったら
+
+			// 扉全開！！
+			SetMoment(GET_PLAYER->GimmickLand());
+		}
+		else
+		{ // 時間経ってない場合
+
+			m_nOpenCounter++;
+		}
+	}
+	else
+	{ // 必要な人数が揃ってない場合
+
+		// 扉開けてない
+		SetMoment(false);
+
+		m_nOpenCounter = 0;		// カウンター初期化
+	}
+
 
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
