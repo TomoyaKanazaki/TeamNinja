@@ -20,7 +20,7 @@
 //************************************************************
 namespace
 {
-	const char* SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
+	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
 	const float MOVE = -300.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
 	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
@@ -65,9 +65,6 @@ HRESULT CEnemyStalk::Init(void)
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
-
-	// マテリアルの設定処理
-	SetAllMaterial(material::DamageRed());
 
 	// 成功を返す
 	return S_OK;

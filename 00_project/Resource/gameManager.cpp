@@ -146,7 +146,6 @@ void CGameManager::Update(const float fDeltaTime)
 			}
 		}
 
-
 		break;
 
 	default:	// 例外処理
@@ -296,7 +295,7 @@ HRESULT CGameManager::MapLoad()
 			// チェックポイントを生成
 			CCheckPoint::Create(pos);
 		}
-		if (strcmp(&aStr[0], "GOAL") == 0) // チェックポイントの生成
+		if (strcmp(&aStr[0], "GOAL") == 0) // ゴールの生成
 		{
 			// データの取得用変数
 			D3DXVECTOR3 pos, rot;
