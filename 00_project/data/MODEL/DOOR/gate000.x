@@ -2051,7 +2051,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2060,7 +2060,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2069,7 +2069,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2078,7 +2078,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2087,7 +2087,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2096,7 +2096,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\hasi.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\hasi.jpg";
    }
   }
   Material {
@@ -2105,7 +2105,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\kawara001.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\kawara001.jpg";
    }
   }
   Material {
@@ -2114,7 +2114,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\kawara001.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\kawara001.jpg";
    }
   }
   Material {
@@ -2123,7 +2123,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\kawara001.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\kawara001.jpg";
    }
   }
   Material {
@@ -2132,7 +2132,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\kawara002.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\kawara002.jpg";
    }
   }
   Material {
@@ -2141,7 +2141,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
   Material {
@@ -2150,7 +2150,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
   Material {
@@ -2159,7 +2159,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\DOOR\\metal000.jpg";
+    "data\\TEXTURE\\MODEL\\DOOR\\metal000.jpg";
    }
   }
  }
