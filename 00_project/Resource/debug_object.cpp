@@ -8,6 +8,7 @@
 #include "debug_object.h"
 
 #include "collision.h"
+#include "gimmick.h"
 
 //=========================================
 //  定数定義
@@ -82,6 +83,12 @@ HRESULT CDebugObject::Init(void)
 	SetColor(XCOL_AWHITE);
 
 #endif // _DEBUG
+
+	// ジャンプ台設置
+	CGimmick::Create(D3DXVECTOR3(DEBUGPOS.x, 0.2f, DEBUGPOS.z + DEBUGSIZE.z * 0.5f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(DEBUGPOS.x, 0.2f, DEBUGPOS.z - DEBUGSIZE.z * 0.5f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(DEBUGPOS.x + DEBUGSIZE.x * 0.5f, 0.2f, DEBUGPOS.z), D3DXVECTOR3(150.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(DEBUGPOS.x - DEBUGSIZE.x * 0.5f, 0.2f, DEBUGPOS.z), D3DXVECTOR3(150.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 2);
 
 	// 成功を返す
 	return S_OK;
