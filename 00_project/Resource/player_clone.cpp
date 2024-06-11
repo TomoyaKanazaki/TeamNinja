@@ -19,6 +19,7 @@
 #include "multiModel.h"
 #include "stage.h"
 #include "field.h"
+#include "actor.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -37,6 +38,7 @@ namespace
 	const int	PRIORITY	= 3;		// プレイヤーの優先順位
 	const int	BLEND_FRAME	= 5;		// モーションのブレンドフレーム
 	const float	GRAVITY		= 60.0f;	// 重力
+	const float	RADIUS		= 20.0f;	// 半径
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
@@ -297,6 +299,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+
+	// アクターの当たり判定
+	(void)CollisionActor();
 
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
@@ -1306,13 +1311,21 @@ CPlayerClone* CPlayerClone::Block()
 			return nullptr;
 		}
 	}
+#endif
+
+	// アクターに衝突した場合生成したものを削除する
+	if (CollisionActor())
+	{
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+		Uninit();
+		return nullptr;
+	}
 
 	// エフェクトを生成
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 15.0f);
 
 	// ヒットしていなければ生成できる
 	return this;
-#endif
 }
 
 //===========================================
@@ -1383,4 +1396,38 @@ D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3
 		0.0f,
 		cosf(rot.y) * DISTANCE
 	);
+}
+
+//==========================================
+// アクターの当たり判定
+//==========================================
+bool CPlayerClone::CollisionActor()
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return false; }
+
+	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	bool bHit = false; // 衝突判定
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			pos,		// 位置
+			m_oldPos,	// 前回の位置
+			RADIUS,		// 半径
+			RADIUS,		// 高さ
+			m_move,		// 移動量
+			m_bJump,	// ジャンプ状況
+			&bHit		// 衝突判定
+		);
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
+
+	// 衝突判定を返す
+	return bHit;
 }
