@@ -1298,15 +1298,18 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rP
 //===========================================
 CPlayerClone* CPlayerClone::Block()
 {
+	// 自身の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
 #ifdef _DEBUG
 	std::list<CDebugObject*> debuglist = CDebugObject::GetList()->GetList();
 
 	for (auto debug : debuglist)
 	{
 		// ヒットしていたら生成したものを削除する
-		if (debug->Hit(GetVec3Position()))
+		if (debug->Hit(pos))
 		{
-			GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+			GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 			Uninit();
 			return nullptr;
 		}
@@ -1316,13 +1319,13 @@ CPlayerClone* CPlayerClone::Block()
 	// アクターに衝突した場合生成したものを削除する
 	if (CollisionActor())
 	{
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return nullptr;
 	}
 
 	// エフェクトを生成
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 15.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
 
 	// ヒットしていなければ生成できる
 	return this;
