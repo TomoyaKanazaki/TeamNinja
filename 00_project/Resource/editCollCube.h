@@ -51,6 +51,7 @@ public:
 
 	// セット・ゲット関係
 	CCollisionCube* GetCube(void) const { return m_pCube; }		// キューブの取得処理
+	SInfo GetInfo(void) const { return m_infoCreate; }			// 情報の取得処理
 
 private:
 	// オーバーライド関数

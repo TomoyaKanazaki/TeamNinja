@@ -117,6 +117,7 @@ HRESULT CEditCollision::Init(void)
 
 	// アクターの生成
 	m_pActor = CActor::Create(m_actorType, VEC3_ZERO, VEC3_ZERO, VEC3_ONE);
+	m_pActor->ClearCollision();
 
 	// 成功を返す
 	return S_OK;
@@ -220,16 +221,13 @@ HRESULT CEditCollision::Save(void)
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
+	file << "# この行から下をコピーし [Collision.txt] に張り付け\n" << std::endl;
 
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
 	// 読み込み開始文字列を書き出し
 	file << "STAGE_COLLISIONSET\n" << std::endl;
-
-	// アクターの種類を書き出し
-	file << "ACTOR_TYPE = " << m_actorType << std::endl;
 
 //============================================================
 //	キューブの当たり判定
@@ -247,9 +245,9 @@ HRESULT CEditCollision::Save(void)
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
 		file << "		OFFSET	= " << rCube.GetVec3OffSet().x << " " << rCube.GetVec3OffSet().y << " " << rCube.GetVec3OffSet().z << std::endl;
-		file << "		WIDTH	= " << rCube.GetCube()->GetWidth() << std::endl;
-		file << "		HEIGHT	= " << rCube.GetCube()->GetHeight() << std::endl;
-		file << "		DEPTH	= " << rCube.GetCube()->GetDepth() << std::endl;
+		file << "		WIDTH	= " << rCube.GetInfo().fWidth << std::endl;
+		file << "		HEIGHT	= " << rCube.GetInfo().fHeight << std::endl;
+		file << "		DEPTH	= " << rCube.GetInfo().fDepth << std::endl;
 		file << "	END_COLLISIONSET\n" << std::endl;
 	}
 
@@ -272,8 +270,8 @@ HRESULT CEditCollision::Save(void)
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
 		file << "		OFFSET	= " << rCylinder.GetVec3OffSet().x << " " << rCylinder.GetVec3OffSet().y << " " << rCylinder.GetVec3OffSet().z << std::endl;
-		file << "		RADIUS	= " << rCylinder.GetCylinder()->GetRadius() << std::endl;
-		file << "		HEIGHT	= " << rCylinder.GetCylinder()->GetHeight() << std::endl;
+		file << "		RADIUS	= " << rCylinder.GetInfo().fRadius << std::endl;
+		file << "		HEIGHT	= " << rCylinder.GetInfo().fHeight << std::endl;
 		file << "	END_COLLISIONSET\n" << std::endl;
 	}
 
@@ -296,7 +294,7 @@ HRESULT CEditCollision::Save(void)
 		// 情報を書き出し
 		file << "	COLLISIONSET" << std::endl;
 		file << "		OFFSET	= " << rSphere.GetVec3OffSet().x << " " << rSphere.GetVec3OffSet().y << " " << rSphere.GetVec3OffSet().z << std::endl;
-		file << "		RADIUS	= " << rSphere.GetSphere()->GetRadius() << std::endl;
+		file << "		RADIUS	= " << rSphere.GetInfo().fRadius << std::endl;
 		file << "	END_COLLISIONSET\n" << std::endl;
 	}
 

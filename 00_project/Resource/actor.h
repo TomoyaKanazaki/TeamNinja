@@ -61,6 +61,7 @@ public:
 		bool& bJump,					// ジャンプ状況
 		bool* pHit = nullptr			// 当たったかどうかの判定
 	);
+	void ClearCollision(void);			// 当たり判定の消去処理
 
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
