@@ -447,15 +447,15 @@ void CEditWall::DeleteCollisionWall(const bool bRelase)
 		// 自身の大きさを設定
 		D3DXVECTOR2 sizeThisWall = m_pWall->GetVec2Sizing();	// 自身の壁の大きさ
 		sizeThis.x = sizeThisWall.x;	// 判定サイズXを設定
-		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeThis.z = sizeThisWall.y;	// 判定サイズZを設定
+		sizeThis.y = sizeThisWall.y;	// 判定サイズYを設定
+		sizeThis.z = editstage::SIZE;	// 判定サイズZを設定
 		sizeThis *= 0.5f;				// 判定サイズを半分に
 
 		// 対象の大きさを設定
 		D3DXVECTOR2 sizeOtherWall = rList->GetVec2Sizing();	// 対象の壁の大きさ
 		sizeOther.x = sizeOtherWall.x;	// 判定サイズXを設定
-		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeOther.z = sizeOtherWall.y;	// 判定サイズZを設定
+		sizeOther.y = sizeOtherWall.y;	// 判定サイズYを設定
+		sizeOther.z = editstage::SIZE;	// 判定サイズZを設定
 		sizeOther *= 0.5f;				// 判定サイズを半分に
 
 		// 矩形の当たり判定
@@ -578,7 +578,7 @@ HRESULT CEditWall::Save(void)
 		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
 
 		// 向きを360度に変換
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
 		file << "	WALLSET" << std::endl;
