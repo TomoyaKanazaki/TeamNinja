@@ -1423,7 +1423,7 @@ bool CPlayerClone::CollisionActor()
 			pos, m_oldPos,		// 座標
 			RADIUS, RADIUS,		// 判定範囲
 			m_move, m_bJump,	// 移動情報
-			&bTemp				// 衝突判定
+			bTemp				// 衝突判定
 		);
 
 		// 一時保存フラグがfalseまたは衝突フラグがtrueの場合次に進む
