@@ -79,8 +79,8 @@ bool CCollisionCylinder::Hit
 		+ (rPos.z - posColl.z) * (rPos.z - posColl.z);
 
 	if (fLength < (fRadius + m_fRadius) * (fRadius + m_fRadius) &&
-		rPos.y <= posColl.y + m_fHeight &&
-		rPos.y + fHeight >= posColl.y)
+		rPos.y < posColl.y + m_fHeight &&
+		rPos.y + fHeight > posColl.y)
 	{ // ”»’è“à‚Ìê‡
 
 		if (rPosOld.y >= posColl.y + m_fHeight &&
