@@ -146,6 +146,7 @@ private:
 	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosPrev); // 目標の方向を向く処理
 	CPlayerClone* Block();				// 分身出させないよの処理
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
+	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト

@@ -1193,12 +1193,7 @@ CPlayerClone::EMotion CPlayerClone::Chase
 )
 {
 	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 posTarget = rPosPrev + D3DXVECTOR3
-	(
-		sinf(rRotPrev.y) * DISTANCE,
-		0.0f,
-		cosf(rRotPrev.y) * DISTANCE
-	);
+	D3DXVECTOR3 posTarget = CalcPrevBack(rPosPrev, rRotPrev);
 
 	// 目標地点へのベクトルを求める
 	D3DXVECTOR3 vecTarget = posTarget - *pPosThis;
@@ -1295,12 +1290,7 @@ D3DXVECTOR3 CPlayerClone::CalcStartPos() const
 		// 自身が先頭だった場合プレイヤーの後ろの位置を返す
 		if (this == *itrBegin)
 		{
-			return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
-			(
-				sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
-				0.0f,
-				cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
-			);
+			return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 		}
 
 		// 自身の追従する相手を選択する
@@ -1317,25 +1307,28 @@ D3DXVECTOR3 CPlayerClone::CalcStartPos() const
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
-				(
-					sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
-					0.0f,
-					cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
-				);
+				return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける
-			return prev->GetVec3Position() + D3DXVECTOR3
-			(
-				sinf(prev->GetVec3Rotation().y) * DISTANCE,
-				0.0f,
-				cosf(prev->GetVec3Rotation().y) * DISTANCE
-			);
+			return CalcPrevBack(prev->GetVec3Position(), prev->GetVec3Rotation());
 		}
 	}
 
 	// ここには来ない
 	assert(false);
 	return D3DXVECTOR3();
+}
+
+//=========================================
+//  一つ前の対象の後ろを算出
+//===========================================
+D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const
+{
+	return pos + D3DXVECTOR3
+	(
+		sinf(rot.y) * DISTANCE,
+		0.0f,
+		cosf(rot.y) * DISTANCE
+	);
 }
