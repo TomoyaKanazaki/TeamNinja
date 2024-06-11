@@ -21,7 +21,8 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
-class CGimmickAction;	//　ギミッククラス
+class CField;	// 地面クラス
+class CGimmickAction;	// アクションギミッククラス
 
 //************************************************************
 //	クラス定義
@@ -110,6 +111,7 @@ public:
 	static CPlayerClone* Create();													// 生成
 	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
+	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
 	static void Delete(const int nNum);												// 消去処理
 	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
@@ -146,6 +148,7 @@ private:
 	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosPrev); // 目標の方向を向く処理
 	CPlayerClone* Block();				// 分身出させないよの処理
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
+	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -165,6 +168,8 @@ private:
 	bool m_bGimmick;			// ギミックフラグ
 
 	// メンバ変数 (藤田追加)
+	CField *m_pCurField;	// 現在の地面
+	CField *m_pOldField;	// 過去の地面
 	D3DXVECTOR3	m_oldPos;	// 過去位置
 	D3DXVECTOR3	m_destRot;	// 目標向き
 	bool m_bJump;			// ジャンプ状況

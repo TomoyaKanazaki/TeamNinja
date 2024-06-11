@@ -16,6 +16,11 @@
 #include "scene.h"
 
 //************************************************************
+//	前方宣言
+//************************************************************
+class CField;	// 地面クラス
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // ステージクラス
@@ -58,10 +63,10 @@ public:
 	void SetStageLimit(const SStageLimit& rLimit);	// ステージ範囲設定
 	SStageLimit GetStageLimit(void) const;			// ステージ範囲取得
 
-	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);	// 範囲外の着地判定
+	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);				// 範囲外の着地判定
+	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地 (回転考慮)
 	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);		// 位置補正
 	bool CollisionKillY(const D3DXVECTOR3& rPos);					// キルY座標との当たり判定
-	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove);	// 地面着地 (回転考慮)
 	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);				// メッシュの範囲内取得 (回転考慮)
 	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);			// メッシュの着地位置取得 (回転考慮)
 

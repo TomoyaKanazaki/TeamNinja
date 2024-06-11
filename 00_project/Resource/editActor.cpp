@@ -15,6 +15,10 @@
 #include "useful.h"
 #include "stage.h"
 
+#include "collisionCube.h"
+#include "collisionCylinder.h"
+#include "collisionSphere.h"
+
 //************************************************************
 //	マクロ定義
 //************************************************************
@@ -547,11 +551,11 @@ HRESULT CEditActor::Save(void)
 	// 見出しを書き出し
 	file << "#==============================================================================" << std::endl;
 	file << "#" << std::endl;
-	file << "#	ステージ地面配置のセーブデータ [save_actor.txt]" << std::endl;
+	file << "#	アクター配置のセーブデータ [save_actor.txt]" << std::endl;
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
+	file << "# この行から下をコピーし [actor.txt] に張り付け\n" << std::endl;
 
 	// アクターの色の全初期化
 	InitAllColorActor();
@@ -570,9 +574,9 @@ HRESULT CEditActor::Save(void)
 
 		// 書き出す情報を取得
 		CActor::EType type = rList->GetType();			// 種類
-		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
-		D3DXVECTOR3 rot = rList->GetVec3Rotation();	// 向き
-		D3DXVECTOR2 scale = rList->GetVec2Sizing();	// 大きさ
+		D3DXVECTOR3 pos = rList->GetVec3Position();		// 位置
+		D3DXVECTOR3 rot = rList->GetVec3Rotation();		// 向き
+		D3DXVECTOR3 scale = rList->GetVec3Scaling();	// 大きさ
 
 		// 向きを360度に変換
 		D3DXToDegree(rot);
@@ -582,7 +586,7 @@ HRESULT CEditActor::Save(void)
 		file << "		TYPE	= " << type << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
-		file << "		SIZE	= " << scale.x << " " << scale.y << std::endl;
+		file << "		SCALE	= " << scale.x << " " << scale.y << " " << scale.z << std::endl;
 		file << "	END_ACTORSET\n" << std::endl;
 	}
 

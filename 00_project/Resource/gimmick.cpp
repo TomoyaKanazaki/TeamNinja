@@ -19,11 +19,6 @@
 #include "gimmick_jumpoff.h"
 #include "gimmick_heavydoor.h"
 
-#include "gimmick_gravel.h"
-#include "gimmick_boob.h"
-#include "gimmick_water.h"
-#include "gimmick_cleen.h"
-
 //************************************************************
 //	’è”éŒ¾
 //************************************************************
@@ -180,24 +175,6 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_DECAED:			// ‹€‚¿‚½°
 
 		pGimmick = new CGimmickDecaed;
-
-		break;
-
-	case CGimmick::TYPE_GRAVEL:			// »—˜“¹
-
-		pGimmick = new CGimmickGravel;
-
-		break;
-
-	case CGimmick::TYPE_BOOB:			// ƒhƒu
-
-		pGimmick = new CGimmickBoob;
-
-		break;
-
-	case CGimmick::TYPE_WATER:			// …ê
-
-		pGimmick = new CGimmickWater;
 
 		break;
 

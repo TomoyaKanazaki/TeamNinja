@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "gimmick_gravel.h"
 
 //************************************************************
 //	定数宣言
@@ -20,6 +21,18 @@ namespace
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
 		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 砂利テクスチャ
+	};
+	const char FLAG[] =	// フラグ配列
+	{
+		' ',	// 草フラグ
+		'g',	// 砂利フラグ
+		'b',	// 泥
+		'c',	// 掃除床
+		'w'		// 水
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
@@ -37,6 +50,7 @@ CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
 //	スタティックアサート
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -160,7 +174,18 @@ CField *CField::Create
 )
 {
 	// 地面の生成
-	CField *pField = new CField;
+	CField *pField = nullptr;	// 地面
+	switch (type)
+	{ // 種類ごとの処理
+	case TYPE_GRAVEL:
+		pField = new CGimmickGravel;
+		break;
+
+	default:
+		pField = new CField;
+		break;
+	}
+
 	if (pField == nullptr)
 	{ // 生成に失敗した場合
 
@@ -251,6 +276,41 @@ void CField::SetType(const EType type)
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 	}
 	else { assert(false); }	// 範囲外
+}
+
+//============================================================
+//	分身に当たっていた時の処理
+//============================================================
+void CField::Hit(CPlayerClone* pClone)
+{
+
+}
+
+//============================================================
+//	分身に当たっていない時の処理
+//============================================================
+void CField::Miss(CPlayerClone* pClone)
+{
+
+}
+
+//============================================================
+//	自身のフラグ取得処理
+//============================================================
+const char CField::GetFlag(void) const
+{
+	// フラグを返す
+	return FLAG[m_type];
+}
+
+//=========================================
+//  指定のフラグ取得
+//===========================================
+const char CField::GetFlag(EType type) const
+{
+	// フラグを返す
+	return FLAG[type];
+
 }
 
 //============================================================

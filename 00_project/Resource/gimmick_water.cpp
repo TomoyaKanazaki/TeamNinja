@@ -10,7 +10,7 @@
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickWater::CGimmickWater() : CGimmickState()
+CGimmickWater::CGimmickWater() : CField()
 {
 
 }
@@ -29,7 +29,7 @@ CGimmickWater::~CGimmickWater()
 HRESULT CGimmickWater::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickState::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -47,7 +47,7 @@ HRESULT CGimmickWater::Init(void)
 void CGimmickWater::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickState::Uninit();
+	CField::Uninit();
 }
 
 //==========================================
@@ -56,7 +56,7 @@ void CGimmickWater::Uninit(void)
 void CGimmickWater::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
-	CGimmickState::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //==========================================
@@ -65,26 +65,26 @@ void CGimmickWater::Update(const float fDeltaTime)
 void CGimmickWater::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickState::Draw(pShader);
+	CField::Draw(pShader);
 }
 
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-void CGimmickWater::HitClone(CPlayerClone* pClone)
+void CGimmickWater::Hit(CPlayerClone* pClone)
 {
 	// 分身にフラグを追加する
-	pClone->AddFrags(WATER);
+	pClone->AddFrags(GetFlag());
 
-	// ドブフラグを削除する
-	pClone->SabFrags(BOOB);
+	// 泥フラグを削除する
+	pClone->SabFrags(GetFlag(TYPE_BOOB));
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickWater::MissClone(CPlayerClone* pClone)
+void CGimmickWater::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
-	pClone->SabFrags(WATER);
+	pClone->SabFrags(GetFlag());
 }

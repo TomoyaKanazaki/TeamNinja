@@ -18,6 +18,7 @@
 #include "orbit.h"
 #include "multiModel.h"
 #include "stage.h"
+#include "field.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -83,6 +84,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_pGimmick		(nullptr),		// ギミックのポインタ
 	m_sFrags		({}),			// ギミックフラグの文字列
 	m_nIdxGimmick	(-1),			// ギミック内の管理番号
+	m_pCurField		(nullptr),		// 現在の地面
+	m_pOldField		(nullptr),		// 過去の地面
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_destRot		(VEC3_ZERO),	// 目標向き
 	m_bJump			(false),		// ジャンプ状況
@@ -115,6 +118,8 @@ HRESULT CPlayerClone::Init(void)
 	m_pGimmick		= nullptr;		// ギミックのポインタ
 	m_sFrags		= {};			// ギミックフラグの文字列
 	m_nIdxGimmick	= -1;			// ギミック内の管理番号
+	m_pCurField		= nullptr;		// 現在の地面
+	m_pOldField		= nullptr;		// 過去の地面
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_destRot		= VEC3_ZERO;	// 目標向き
 	m_bJump			= true;			// ジャンプ状況
@@ -371,10 +376,6 @@ bool CPlayerClone::Hit(const int nDamage)
 //==========================================
 void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
-	// ギミック受付をリセットする
-	//m_fGimmickTimer = 0.0f;
-	//m_bGimmick = false;
-
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
@@ -546,6 +547,33 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 	return pPlayer->Block();
 }
 
+//===========================================
+//  生成(直接ギミック)
+//=========================================
+CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
+{
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 受け取ったギミックを割り当てる
+	pPlayer->SetGimmick(gimmick);
+
+	// 確保したアドレスを返す
+	return pPlayer->Block();
+}
+
 //============================================================
 // 消去処理
 //============================================================
@@ -676,11 +704,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	// 重力の更新
 	UpdateGravity();
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 消滅
 	m_fDeleteTimer -= fDeltaTime;
@@ -728,11 +756,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	// 一つ前を追いかけて、その際のモーションを返す
 	currentMotion = ChasePrev(&posClone, &rotClone);
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 向きの更新
 	UpdateRotation(rotClone);
@@ -913,13 +941,34 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+
+	if (m_pCurField != nullptr)
+	{ // 現在地面に着地している場合
+
+		// 当たっている状態にする
+		m_pCurField->Hit(this);
+	}
+
+	if (m_pCurField != m_pOldField)
+	{ // 前回と違う地面の場合
+
+		if (m_pOldField != nullptr)
+		{ // 前回地面に着地している場合
+
+			// 当たっていない状態にする
+			m_pOldField->Miss(this);
+		}
 	}
 
 	if (!m_bJump)
@@ -1193,12 +1242,7 @@ CPlayerClone::EMotion CPlayerClone::Chase
 )
 {
 	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 posTarget = rPosPrev + D3DXVECTOR3
-	(
-		sinf(rRotPrev.y) * DISTANCE,
-		0.0f,
-		cosf(rRotPrev.y) * DISTANCE
-	);
+	D3DXVECTOR3 posTarget = CalcPrevBack(rPosPrev, rRotPrev);
 
 	// 目標地点へのベクトルを求める
 	D3DXVECTOR3 vecTarget = posTarget - *pPosThis;
@@ -1295,12 +1339,7 @@ D3DXVECTOR3 CPlayerClone::CalcStartPos() const
 		// 自身が先頭だった場合プレイヤーの後ろの位置を返す
 		if (this == *itrBegin)
 		{
-			return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
-			(
-				sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
-				0.0f,
-				cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
-			);
+			return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 		}
 
 		// 自身の追従する相手を選択する
@@ -1317,25 +1356,28 @@ D3DXVECTOR3 CPlayerClone::CalcStartPos() const
 				if (prev != *itrBegin) { continue; }
 
 				// プレイヤーに追従し関数を抜ける
-				return GET_PLAYER->GetVec3Position() + D3DXVECTOR3
-				(
-					sinf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE,
-					0.0f,
-					cosf(GET_PLAYER->GetVec3Rotation().y) * DISTANCE
-				);
+				return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
 			}
 
 			// 一つ前に追従し関数を抜ける
-			return prev->GetVec3Position() + D3DXVECTOR3
-			(
-				sinf(prev->GetVec3Rotation().y) * DISTANCE,
-				0.0f,
-				cosf(prev->GetVec3Rotation().y) * DISTANCE
-			);
+			return CalcPrevBack(prev->GetVec3Position(), prev->GetVec3Rotation());
 		}
 	}
 
 	// ここには来ない
 	assert(false);
 	return D3DXVECTOR3();
+}
+
+//=========================================
+//  一つ前の対象の後ろを算出
+//===========================================
+D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const
+{
+	return pos + D3DXVECTOR3
+	(
+		sinf(rot.y) * DISTANCE,
+		0.0f,
+		cosf(rot.y) * DISTANCE
+	);
 }

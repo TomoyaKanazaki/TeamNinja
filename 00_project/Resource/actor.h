@@ -61,6 +61,7 @@ public:
 		bool& bJump,					// ジャンプ状況
 		bool* pHit = nullptr			// 当たったかどうかの判定
 	);
+	void ClearCollision(void);			// 当たり判定の消去処理
 
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
@@ -75,9 +76,10 @@ public:
 		const EType type,						// 種類
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
-		const D3DXVECTOR3& rScale = VEC3_ONE	// 大きさ
+		const D3DXVECTOR3& rScale = VEC3_ONE	// 拡大率
 	);
 	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
+	static HRESULT LoadSetup(void);	// セットアップ
 
 private:
 
