@@ -118,6 +118,31 @@ HRESULT CEditCollision::Init(void)
 	// アクターの生成
 	m_pActor = CActor::Create(m_actorType, VEC3_ZERO, VEC3_ZERO, VEC3_ONE);
 
+	{ // 当たり判定を全て消失させる
+
+		for (auto cube : m_pActor->GetCube())
+		{
+			// 終了処理
+			cube->Uninit();
+		}
+
+		for (auto cylinder : m_pActor->GetCylinder())
+		{
+			// 終了処理
+			cylinder->Uninit();
+		}
+
+		for (auto sphere : m_pActor->GetSphere())
+		{
+			// 終了処理
+			sphere->Uninit();
+		}
+
+		m_pActor->GetCube().clear();
+		m_pActor->GetCylinder().clear();
+		m_pActor->GetSphere().clear();
+	}
+
 	// 成功を返す
 	return S_OK;
 
