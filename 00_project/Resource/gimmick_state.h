@@ -32,7 +32,7 @@ public:
 	enum EFrag
 	{
 		GRAVEL = 'g', // »—˜“¹
-		BOOB = 'b', // ƒhƒu
+		BOOB = 'b', // “D
 		WATER = 'w', // …ê
 		CLEEN = 'c', // ‘|œ‚µ‚½‚Ä‚Ì°
 		MAX

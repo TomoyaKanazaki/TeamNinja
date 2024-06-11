@@ -32,6 +32,9 @@ public:
 	{
 		TYPE_NORMAL = 0,	// 通常テクスチャ
 		TYPE_GRAVEL,		// 砂利道
+		TYPE_BOOB,			// 泥
+		TYPE_CLEEN,			// 掃除床
+		TYPE_WATER,			// 水
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -87,7 +90,8 @@ public:
 
 protected:
 	// メンバ関数
-	const char GetFlag(void) const;	// フラグ取得
+	const char GetFlag(void) const;	// 自身のフラグ取得
+	const char GetFlag(EType type) const;	// 指定のフラグ取得
 
 private:
 	// 静的メンバ変数

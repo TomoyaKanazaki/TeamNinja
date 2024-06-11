@@ -1,6 +1,6 @@
 //==========================================
 //
-//  ドブギミック(gimmick_boob.cpp)
+//  泥ギミック(gimmick_boob.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
@@ -10,7 +10,7 @@
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickBoob::CGimmickBoob() : CGimmickState()
+CGimmickBoob::CGimmickBoob() : CField()
 {
 
 }
@@ -29,7 +29,7 @@ CGimmickBoob::~CGimmickBoob()
 HRESULT CGimmickBoob::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickState::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -47,7 +47,7 @@ HRESULT CGimmickBoob::Init(void)
 void CGimmickBoob::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickState::Uninit();
+	CField::Uninit();
 }
 
 //==========================================
@@ -56,7 +56,7 @@ void CGimmickBoob::Uninit(void)
 void CGimmickBoob::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
-	CGimmickState::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //==========================================
@@ -65,22 +65,22 @@ void CGimmickBoob::Update(const float fDeltaTime)
 void CGimmickBoob::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickState::Draw(pShader);
+	CField::Draw(pShader);
 }
 
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
-void CGimmickBoob::HitClone(CPlayerClone* pClone)
+void CGimmickBoob::Hit(CPlayerClone* pClone)
 {
 	// 分身にフラグを追加する
-	pClone->AddFrags(BOOB);
+	pClone->AddFrags(GetFlag());
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickBoob::MissClone(CPlayerClone* pClone)
+void CGimmickBoob::Miss(CPlayerClone* pClone)
 {
 
 }
