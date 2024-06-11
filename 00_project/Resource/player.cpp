@@ -79,6 +79,7 @@ namespace
 	const float HEIGHT = 100.0f; // 身長
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
+	const float GIMMICK_SET_DISTANCE = 10000.0f; // 直接ギミック分身の生成可能範囲
 
 	// ブラーの情報
 	namespace blurInfo
@@ -1278,7 +1279,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			if (pGimmick == nullptr)
 			{
 				pGimmick = gimmick;
-				D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
+				D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
 				fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
 				continue;
 			}
@@ -1296,10 +1297,14 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			fTempDistance = fDistance;
 		}
 
-		// 直接ギミックになる分身を必要分生成
-		for (int i = 0; i < pGimmick->GetNumActive(); ++i)
+		// 距離が近い場合
+		if (fTempDistance < GIMMICK_SET_DISTANCE)
 		{
-			CPlayerClone::Create(pGimmick);
+			// 直接ギミックになる分身を必要分生成
+			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
+			{
+				CPlayerClone::Create(pGimmick);
+			}
 		}
 
 		// フラグをリセットし関数を抜ける
