@@ -1409,23 +1409,28 @@ bool CPlayerClone::CollisionActor()
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return false; }
 
-	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	std::list<CActor*> list = CActor::GetList()->GetList(); // リストを取得
+	D3DXVECTOR3 pos = GetVec3Position(); // 位置
 	bool bHit = false; // 衝突判定
 
+	// 全てのアクターと判定を取る
 	for (auto actor : list)
 	{
 		// 当たり判定処理
+		bool bTemp = false; // 一時保存フラグ
 		actor->Collision
 		(
-			pos,		// 位置
-			m_oldPos,	// 前回の位置
-			RADIUS,		// 半径
-			RADIUS,		// 高さ
-			m_move,		// 移動量
-			m_bJump,	// ジャンプ状況
-			&bHit		// 衝突判定
+			pos, m_oldPos,		// 座標
+			RADIUS, RADIUS,		// 判定範囲
+			m_move, m_bJump,	// 移動情報
+			bTemp				// 衝突判定
 		);
+
+		// 一時保存フラグがfalseまたは衝突フラグがtrueの場合次に進む
+		if (!bTemp || bHit) { continue; }
+
+		// 衝突判定をtrueにする
+		bHit = true;
 	}
 
 	// 位置を適用
