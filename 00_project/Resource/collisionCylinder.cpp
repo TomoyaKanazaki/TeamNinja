@@ -84,7 +84,7 @@ bool CCollisionCylinder::Hit
 	{ // ”»’è“à‚Ìê‡
 
 		if (rPosOld.y >= posColl.y + m_fHeight &&
-			rPos.y <= posColl.y + m_fHeight)
+			rPos.y < posColl.y + m_fHeight)
 		{ // ã‚©‚ç‚Ì“–‚½‚è”»’è
 
 			// ˆÊ’u‚ð•â³‚·‚é
