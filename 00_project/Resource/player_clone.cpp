@@ -1195,9 +1195,9 @@ CPlayerClone::EMotion CPlayerClone::ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3
 	auto itrEnd = list.end();
 
 	// プレイヤー位置・向きを取得する
-	CPlayer *pPlayer = GET_PLAYER;	// プレイヤー情報
-	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
-	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation();	// プレイヤー向き
+	CPlayer *pPlayer = GET_PLAYER; // プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position(); // プレイヤー位置
+	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation(); // プレイヤー向き
 
 	// 一つ前のポインタを保存する変数
 	CPlayerClone* prev = *itrBegin;
@@ -1388,9 +1388,9 @@ D3DXVECTOR3 CPlayerClone::CalcStartPos() const
 	return D3DXVECTOR3();
 }
 
-//=========================================
+//==========================================
 //  一つ前の対象の後ろを算出
-//===========================================
+//==========================================
 D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const
 {
 	return pos + D3DXVECTOR3

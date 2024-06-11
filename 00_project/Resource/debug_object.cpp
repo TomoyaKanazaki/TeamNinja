@@ -136,15 +136,15 @@ void CDebugObject::Draw(CShader* pShader)
 //==========================================
 bool CDebugObject::Hit(const D3DXVECTOR3& rPos)
 {
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
 
 	if (collision::Box2D
 	(
-		pos,		// 判定位置
-		rPos,	// 判定目標位置
-		size,		// 判定サイズ(右・上・後)
-		size,		// 判定サイズ(左・下・前)
+		pos,			// 判定位置
+		rPos,			// 判定目標位置
+		size,			// 判定サイズ(右・上・後)
+		size,			// 判定サイズ(左・下・前)
 		CLONE_RADIUS,	// 判定目標サイズ(右・上・後)
 		CLONE_RADIUS	// 判定目標サイズ(左・下・前)
 	))
