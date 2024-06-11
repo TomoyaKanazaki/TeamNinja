@@ -55,9 +55,6 @@ public:
 
 private:
 
-	// メンバ関数
-	HRESULT MapLoad(); // マップの生成
-
 	// メンバ変数
 	EState m_state;	// 状態
 	CGoal* m_pGoal; // ゴールオブジェクトのポインタ

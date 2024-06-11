@@ -149,6 +149,7 @@ private:
 	CPlayerClone* Block();				// 分身出させないよの処理
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
+	bool CollisionActor();				// アクターとの当たり判定
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
