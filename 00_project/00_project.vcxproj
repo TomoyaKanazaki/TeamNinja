@@ -193,6 +193,7 @@
     <ClInclude Include="Resource\editorCollShape.h" />
     <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
+    <ClInclude Include="Resource\editWall.h" />
     <ClInclude Include="Resource\effect2D.h" />
     <ClInclude Include="Resource\effect3D.h" />
     <ClInclude Include="Resource\effekseerControl.h" />
@@ -350,6 +351,7 @@
     <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editorCollShape.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
+    <ClCompile Include="Resource\editWall.cpp" />
     <ClCompile Include="Resource\effect2D.cpp" />
     <ClCompile Include="Resource\effect3D.cpp" />
     <ClCompile Include="Resource\effekseerControl.cpp" />

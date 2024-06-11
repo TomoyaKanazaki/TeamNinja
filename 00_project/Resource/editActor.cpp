@@ -276,6 +276,27 @@ void CEditActor::UpdateRotation(void)
 	// 向きの更新
 	CEditorObject::UpdateRotation();
 
+	for (auto& rCube : m_pActor->GetCube())
+	{ // コリジョンキューブ数分繰り返す
+
+		// 終了処理
+		rCube->GetCube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rCylinder : m_pActor->GetCylinder())
+	{ // コリジョンシリンダー数分繰り返す
+
+		// 終了処理
+		rCylinder->GetTube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rSphere : m_pActor->GetSphere())
+	{ // コリジョンスフィア数分繰り返す
+
+		// 終了処理
+		rSphere->GetSphere()->SetVec3Rotation(GetVec3Rotation());
+	}
+
 	// 向きを反映
 	m_pActor->SetVec3Rotation(GetVec3Rotation());
 }
@@ -375,7 +396,6 @@ void CEditActor::ChangeType(void)
 void CEditActor::CreateActor(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
 	// アクターを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
@@ -398,10 +418,13 @@ void CEditActor::CreateActor(void)
 		( // 引数
 			m_infoCreate.type,		// 種類
 			GetVec3Position(),		// 位置
-			GetVec3Rotation(),		// 向き
+			VEC3_ZERO,				// 向き
 			m_infoCreate.scale		// 拡大率
 		);
 		assert(m_pActor != nullptr);
+
+		// 向きを設定する
+		m_pActor->SetVec3Rotation(GetVec3Rotation());
 	}
 }
 
@@ -504,7 +527,6 @@ void CEditActor::InitAllColorActor(void)
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CActor*> listActor = pListManager->GetList();	// アクターリスト情報
 
-	int nCnt = 0;
 	for (auto& rList : listActor)
 	{ // アクター数分繰り返す
 
@@ -513,9 +535,6 @@ void CEditActor::InitAllColorActor(void)
 
 		// 通常色を設定
 		rList->ResetMaterial();
-
-		nCnt++;
-
 	}
 }
 
@@ -579,7 +598,7 @@ HRESULT CEditActor::Save(void)
 		D3DXVECTOR3 scale = rList->GetVec3Scaling();	// 大きさ
 
 		// 向きを360度に変換
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
 		file << "	ACTORSET" << std::endl;

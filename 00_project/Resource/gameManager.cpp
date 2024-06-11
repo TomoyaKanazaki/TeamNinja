@@ -79,8 +79,6 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
-	CActor::Create(CActor::TYPE_ROCK_S, D3DXVECTOR3(300.0f, 0.0f, -500.0f));
-
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
 
@@ -256,85 +254,4 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
-}
-
-//==========================================
-//  マップの生成
-//==========================================
-HRESULT CGameManager::MapLoad()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(MAP_TXT, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return E_FAIL; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐
-		if (strcmp(&aStr[0], "CHECKPOINT") == 0) // チェックポイントの生成
-		{
-			// データの取得用変数
-			D3DXVECTOR3 pos, rot;
-
-			// 文字列読み込み (POS)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &pos.x);
-			fscanf(pFile, "%f", &pos.y);
-			fscanf(pFile, "%f", &pos.z);
-
-			// 文字列読み込み (ROT)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &rot.x);
-			fscanf(pFile, "%f", &rot.y);
-			fscanf(pFile, "%f", &rot.z);
-
-			// チェックポイントを生成
-			CCheckPoint::Create(pos);
-		}
-		if (strcmp(&aStr[0], "GOAL") == 0) // ゴールの生成
-		{
-			// データの取得用変数
-			D3DXVECTOR3 pos, rot;
-
-			// 文字列読み込み (POS)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &pos.x);
-			fscanf(pFile, "%f", &pos.y);
-			fscanf(pFile, "%f", &pos.z);
-
-			// 文字列読み込み (ROT)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &rot.x);
-			fscanf(pFile, "%f", &rot.y);
-			fscanf(pFile, "%f", &rot.z);
-
-			// チェックポイントを生成
-			m_pGoal = CGoal::Create(pos, rot);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
-	}
-
-	return S_OK;
 }
