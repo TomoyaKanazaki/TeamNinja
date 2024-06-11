@@ -58,7 +58,8 @@ public:
 		const float fRadius,			// 半径
 		const float fHeight,			// 高さ
 		D3DXVECTOR3& rMove,				// 移動量
-		bool& bJump						// ジャンプ状況
+		bool& bJump,					// ジャンプ状況
+		bool* pHit = nullptr			// 当たったかどうかの判定
 	);
 
 	// セット・ゲット関数
@@ -79,6 +80,9 @@ public:
 	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
 
 private:
+
+	// メンバ関数
+	void BindCollision(void);						// 当たり判定の割り当て処理
 
 	// 静的メンバ変数
 	static CListManager<CActor>* m_pList;			// リスト構造

@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "model.h"
 
+#include "sceneGame.h"
+#include "collManager.h"
 #include "collisionCube.h"
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
@@ -218,6 +220,9 @@ CActor* CActor::Create
 		// 種類を設定
 		pActor->m_type = type;
 
+		// 当たり判定の割り当て処理
+		pActor->BindCollision();
+
 		// 確保したアドレスを返す
 		return pActor;
 	}
@@ -242,7 +247,8 @@ void CActor::Collision
 	const float fRadius,			// 半径
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
-	bool& bJump						// ジャンプ状況
+	bool& bJump,					// ジャンプ状況
+	bool* pHit						// 当たったかどうかの判定
 )
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
@@ -251,17 +257,84 @@ void CActor::Collision
 	{
 		// ヒット処理
 		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
 	}
 
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
 	}
 
 	for (auto sphere : m_sphere)
 	{
 		// ヒット処理
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+
+		if (pHit != nullptr)
+		{ // ヒット状況が NULL じゃない場合
+
+			// ヒット状況を true にする
+			*pHit = true;
+		}
+	}
+}
+
+//============================================================
+// 当たり判定の割り当て処理
+//============================================================
+void CActor::BindCollision(void)
+{
+	// 当たり判定を取得
+	CCollManager::SCollision coll = CSceneGame::GetCollManager()->GetCollInfo(m_type);
+
+	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_cube.size()); nCnt++)
+	{
+		// キューブの情報を追加する
+		m_cube.push_back(CCollisionCube::Create
+		(
+			GetVec3Position(),				// 位置
+			coll.m_cube[nCnt].offset,		// オフセット座標
+			coll.m_cube[nCnt].fWidth,		// 幅
+			coll.m_cube[nCnt].fHeight,		// 高さ
+			coll.m_cube[nCnt].fDepth,		// 奥行
+			GetVec3Rotation().y)			// 向き
+		);
+	}
+
+	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_cylinder.size()); nCnt++)
+	{
+		// シリンダーの情報を追加する
+		m_cylinder.push_back(CCollisionCylinder::Create
+		(
+			GetVec3Position(),				// 位置
+			coll.m_cylinder[nCnt].offset,	// オフセット座標
+			coll.m_cylinder[nCnt].fRadius,	// 半径
+			coll.m_cylinder[nCnt].fHeight	// 高さ
+		));
+	}
+
+	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_sphere.size()); nCnt++)
+	{
+		// スフィアの情報を追加する
+		m_sphere.push_back(CCollisionSphere::Create
+		(
+			GetVec3Position(),				// 位置
+			coll.m_sphere[nCnt].offset,		// オフセット座標
+			coll.m_sphere[nCnt].fRadius		// 半径
+		));
 	}
 }

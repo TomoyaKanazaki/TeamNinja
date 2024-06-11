@@ -74,7 +74,7 @@ bool CCollisionCube::Hit
 	// サイズ
 	D3DXVECTOR3 centerSizeUp = D3DXVECTOR3(fRadius, fHeight, fRadius);
 	D3DXVECTOR3 centerSizeDown = D3DXVECTOR3(fRadius, 0.0f, fRadius);
-	D3DXVECTOR3 targetSizeUp = D3DXVECTOR3(m_fWidth, m_fHeight, m_fDepth);
+	D3DXVECTOR3 targetSizeUp = D3DXVECTOR3(m_fWidth, m_fHeight * 2.0f, m_fDepth);
 	D3DXVECTOR3 targetSizeDown = D3DXVECTOR3(m_fWidth, 0.0f, m_fDepth);
 	D3DXVECTOR3 posOld = rPosOld;
 	D3DXVECTOR3 move = rMove;
@@ -93,6 +93,22 @@ bool CCollisionCube::Hit
 
 	// false を返す
 	return false;
+}
+
+//============================================================
+// オフセット設定処理
+//============================================================
+void CCollisionCube::OffSet(const D3DXMATRIX& mtx)
+{
+	// オフセット処理
+	CCollision::OffSet(mtx);
+
+#ifdef _DEBUG
+
+	// キューブの位置を設定
+	m_pCube->SetVec3Position(GetPos());
+
+#endif // _DEBUG
 }
 
 //============================================================
@@ -125,7 +141,7 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR
 	(
 		rPos,
 		VEC3_ZERO,
-		D3DXVECTOR3(pColl->m_fWidth, pColl->m_fHeight / 2, pColl->m_fDepth),
+		D3DXVECTOR3(pColl->m_fWidth, pColl->m_fHeight, pColl->m_fDepth),
 		COL,
 		XCOL_BLACK,
 		CObjectMeshCube::BORDER_OFF,

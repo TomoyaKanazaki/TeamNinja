@@ -173,8 +173,10 @@
     <ClInclude Include="Resource\collisionCylinder.h" />
     <ClInclude Include="Resource\collisionModel.h" />
     <ClInclude Include="Resource\collisionSphere.h" />
+    <ClInclude Include="Resource\collManager.h" />
     <ClInclude Include="Resource\debug.h" />
     <ClInclude Include="Resource\debugproc.h" />
+    <ClInclude Include="Resource\debug_object.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
     <ClInclude Include="Resource\editCheckPoint.h" />
@@ -328,8 +330,10 @@
     <ClCompile Include="Resource\collisionCylinder.cpp" />
     <ClCompile Include="Resource\collisionModel.cpp" />
     <ClCompile Include="Resource\collisionSphere.cpp" />
+    <ClCompile Include="Resource\collManager.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
     <ClCompile Include="Resource\debugproc.cpp" />
+    <ClCompile Include="Resource\debug_object.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
     <ClCompile Include="Resource\editCheckPoint.cpp" />

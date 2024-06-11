@@ -29,6 +29,8 @@
 #include "actor.h"
 #include "MapModel.h"
 
+#include "debug_object.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -77,6 +79,8 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
+	CActor::Create(CActor::TYPE_ROCK_S, D3DXVECTOR3(300.0f, 0.0f, -500.0f));
+
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
 
@@ -88,10 +92,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(-800.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_WATER, 2);
 
 	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
-	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -200.0f), D3DXVECTOR3(200.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
-
-	// アクターを生成
-	CActor::Create(CActor::TYPE_ROCK_S, VEC3_ZERO);
+	CGimmick::Create(D3DXVECTOR3(-1400.0f, 0.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
 
 	CMapModel::Create(D3DXVECTOR3(-800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
 
@@ -105,8 +106,22 @@ HRESULT CGameManager::Init(void)
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
 
+	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR00);
+	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR01);
+
+
+	// デバッグ専用オブジェクトを生成する(絶対にデバッグ以外で生成するなゴミカス)
+#ifdef _DEBUG
+	// きしょきしょおぶじぇくとしねしねしねしね
+	CDebugObject::Create();
+#endif
+
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }
+
+	// TPSカメラの目標位置の設定
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+	GET_MANAGER->GetCamera()->SetDestTps();
 
 	// 成功を返す
 	return S_OK;

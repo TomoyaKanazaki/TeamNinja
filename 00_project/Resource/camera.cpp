@@ -215,6 +215,7 @@ void CCamera::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_LEFT, "[注視点]：%f %f %f\n", m_aCamera[TYPE_MAIN].posR.x, m_aCamera[TYPE_MAIN].posR.y, m_aCamera[TYPE_MAIN].posR.z);
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 向き ]：%f %f %f\n", m_aCamera[TYPE_MAIN].rot.x, m_aCamera[TYPE_MAIN].rot.y, m_aCamera[TYPE_MAIN].rot.z);
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 距離 ]：%f\n", m_aCamera[TYPE_MAIN].fDis);
+	DebugProc::Print(DebugProc::POINT_LEFT, "[ 状態 ]：%d\n", m_state);
 
 	// 更新を止めている場合抜ける
 	if (!m_bUpdate) { return; }
