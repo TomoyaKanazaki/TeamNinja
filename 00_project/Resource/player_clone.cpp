@@ -18,6 +18,7 @@
 #include "orbit.h"
 #include "multiModel.h"
 #include "stage.h"
+#include "field.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -80,6 +81,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_pGimmick		(nullptr),		// ギミックのポインタ
 	m_sFrags		({}),			// ギミックフラグの文字列
 	m_nIdxGimmick	(-1),			// ギミック内の管理番号
+	m_pCurField		(nullptr),		// 現在の地面
+	m_pOldField		(nullptr),		// 過去の地面
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_destRot		(VEC3_ZERO),	// 目標向き
 	m_bJump			(false),		// ジャンプ状況
@@ -111,6 +114,8 @@ HRESULT CPlayerClone::Init(void)
 	m_pGimmick		= nullptr;		// ギミックのポインタ
 	m_sFrags		= {};			// ギミックフラグの文字列
 	m_nIdxGimmick	= -1;			// ギミック内の管理番号
+	m_pCurField		= nullptr;		// 現在の地面
+	m_pOldField		= nullptr;		// 過去の地面
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_destRot		= VEC3_ZERO;	// 目標向き
 	m_bJump			= true;			// ジャンプ状況
@@ -657,11 +662,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	// 重力の更新
 	UpdateGravity();
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 消滅
 	m_fDeleteTimer -= fDeltaTime;
@@ -695,11 +700,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	// 一つ前を追いかけて、その際のモーションを返す
 	currentMotion = ChasePrev(&posClone, &rotClone);
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 向きの更新
 	UpdateRotation(rotClone);
@@ -880,13 +885,34 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+
+	if (m_pCurField != nullptr)
+	{ // 現在地面に着地している場合
+
+		// 当たっている状態にする
+		m_pCurField->Hit(this);
+	}
+
+	if (m_pCurField != m_pOldField)
+	{ // 前回と違う地面の場合
+
+		if (m_pOldField != nullptr)
+		{ // 前回地面に着地している場合
+
+			// 当たっていない状態にする
+			m_pOldField->Miss(this);
+		}
 	}
 
 	if (!m_bJump)

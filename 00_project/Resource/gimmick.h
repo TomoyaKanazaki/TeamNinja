@@ -38,7 +38,6 @@ public:
 		TYPE_MALTI,				// •¡”ŠÇ—
 		TYPE_POST,				// Ý’u
 		TYPE_DECAED,			// ‹€‚¿‚½°
-		TYPE_GRAVEL,			// »—˜“¹
 		TYPE_BOOB,				// ƒhƒu
 		TYPE_WATER,				// …ê
 		TYPE_JUMPOFF,			// ”ò‚Ñ~‚è

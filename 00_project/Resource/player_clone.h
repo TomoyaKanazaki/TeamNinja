@@ -21,7 +21,8 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
-class CGimmickAction;	//　ギミッククラス
+class CField;	// 地面クラス
+class CGimmickAction;	// ギミッククラス
 
 //************************************************************
 //	クラス定義
@@ -161,6 +162,8 @@ private:
 	float m_fFallStart;			// 落とし穴の落ちる前の高さ
 
 	// メンバ変数 (藤田追加)
+	CField *m_pCurField;	// 現在の地面
+	CField *m_pOldField;	// 過去の地面
 	D3DXVECTOR3	m_oldPos;	// 過去位置
 	D3DXVECTOR3	m_destRot;	// 目標向き
 	bool m_bJump;			// ジャンプ状況

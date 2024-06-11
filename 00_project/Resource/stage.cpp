@@ -116,6 +116,69 @@ bool CStage::LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const floa
 }
 
 //============================================================
+//	地面の着地処理 (回転考慮)
+//============================================================
+bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField)
+{
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+	CField *pCurField = nullptr;			// 着地予定の地面
+	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
+	bool bLand = false;	// 地面の着地判定
+
+	for (auto& rList : listField)
+	{ // 地面の総数分繰り返す
+
+		assert(rList != nullptr);
+		if (rList->IsPositionRange(rPos))
+		{ // 地面の範囲内の場合
+
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
+			if (fCurPos <= fPosHeight)
+			{ // 現在の着地予定Y座標より高い位置にある場合
+
+				// 着地予定の地面を更新
+				pCurField = rList;
+
+				// 着地予定のY座標を更新
+				fCurPos = fPosHeight;
+			}
+		}
+	}
+
+	if (pCurField == nullptr)
+	{ // 着地予定の地面が存在しない場合抜ける
+
+		if (ppCollField != nullptr)
+		{ // 地面の保存アドレスがある場合
+
+			// 地面無しを保存
+			*ppCollField = pCurField;
+		}
+	}
+	else
+	{ // 着地予定の地面が存在しない場合抜ける
+
+		// メッシュの着地状況を保存
+		bLand = pCurField->LandPosition(rPos, rMove);
+		if (ppCollField != nullptr)
+		{ // 地面の保存アドレスがある場合
+
+			if (bLand)
+			{ // 着地している場合
+
+				// 着地した地面を保存
+				*ppCollField = pCurField;
+			}
+		}
+	}
+
+	// 着地判定を返す
+	return bLand;
+}
+
+//============================================================
 //	位置の補正処理
 //============================================================
 void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
@@ -177,51 +240,6 @@ bool CStage::CollisionKillY(const D3DXVECTOR3& rPos)
 
 	// 死亡していない状況を返す
 	return false;
-}
-
-//============================================================
-//	地面の着地処理 (回転考慮)
-//============================================================
-bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove)
-{
-	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
-	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
-	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
-	CField *pCurField = nullptr;			// 着地予定の地面
-	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
-
-	for (auto& rList : listField)
-	{ // 地面の総数分繰り返す
-
-		assert(rList != nullptr);
-		if (rList->IsPositionRange(rPos))
-		{ // 地面の範囲内の場合
-
-			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
-			if (fCurPos <= fPosHeight)
-			{ // 現在の着地予定Y座標より高い位置にある場合
-
-				// 着地予定の地面を更新
-				pCurField = rList;
-
-				// 着地予定のY座標を更新
-				fCurPos = fPosHeight;
-			}
-		}
-	}
-
-	if (pCurField != nullptr)
-	{ // 着地予定の地面が存在する場合
-
-		// メッシュの着地
-		return pCurField->LandPosition(rPos, rMove);
-	}
-	else
-	{ // 着地予定の地面が存在しない場合
-
-		// 着地していない状態を返す
-		return false;
-	}
 }
 
 //============================================================
