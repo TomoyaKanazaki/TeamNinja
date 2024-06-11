@@ -10,7 +10,7 @@
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickCleen::CGimmickCleen() : CGimmickState()
+CGimmickCleen::CGimmickCleen() : CField()
 {
 
 }
@@ -29,7 +29,7 @@ CGimmickCleen::~CGimmickCleen()
 HRESULT CGimmickCleen::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickState::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -47,7 +47,7 @@ HRESULT CGimmickCleen::Init(void)
 void CGimmickCleen::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickState::Uninit();
+	CField::Uninit();
 }
 
 //==========================================
@@ -56,7 +56,7 @@ void CGimmickCleen::Uninit(void)
 void CGimmickCleen::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
-	CGimmickState::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //==========================================
@@ -65,23 +65,23 @@ void CGimmickCleen::Update(const float fDeltaTime)
 void CGimmickCleen::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickState::Draw(pShader);
+	CField::Draw(pShader);
 }
 
 //===========================================
 //  
 //===========================================
-void CGimmickCleen::HitClone(CPlayerClone* pClone)
+void CGimmickCleen::Hit(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
-	pClone->AddFrags(CLEEN);
+	pClone->AddFrags(GetFlag());
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickCleen::MissClone(CPlayerClone* pClone)
+void CGimmickCleen::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
-	pClone->SabFrags(CLEEN);
+	pClone->SabFrags(GetFlag());
 }

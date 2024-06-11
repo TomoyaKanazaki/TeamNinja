@@ -21,12 +21,18 @@ namespace
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
 		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
+		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
 		"data\\TEXTURE\\lava000.png",	// 砂利テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
 		' ',	// 草フラグ
 		'g',	// 砂利フラグ
+		'b',	// 泥
+		'c',	// 掃除床
+		'w'		// 水
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
@@ -289,12 +295,22 @@ void CField::Miss(CPlayerClone* pClone)
 }
 
 //============================================================
-//	フラグ取得処理
+//	自身のフラグ取得処理
 //============================================================
 const char CField::GetFlag(void) const
 {
 	// フラグを返す
 	return FLAG[m_type];
+}
+
+//=========================================
+//  指定のフラグ取得
+//===========================================
+const char CField::GetFlag(EType type) const
+{
+	// フラグを返す
+	return FLAG[type];
+
 }
 
 //============================================================
