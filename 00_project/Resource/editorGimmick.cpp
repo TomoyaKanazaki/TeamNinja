@@ -547,7 +547,7 @@ HRESULT CEditGimmick::Save(void)
 		D3DXCOLOR col = rList->GetColor();		// F
 
 		// Œü‚«‚ğ360“x‚É•ÏŠ·
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// î•ñ‚ğ‘‚«o‚µ
 		file << "	GIMMICKSET" << std::endl;

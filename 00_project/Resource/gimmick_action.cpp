@@ -21,6 +21,11 @@ namespace
 }
 
 //************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CGimmickAction>* CGimmickAction::m_pList = nullptr;	// オブジェクトリスト
+
+//************************************************************
 //	子クラス [CGimmickAction] のメンバ関数
 //************************************************************
 //============================================================
@@ -56,6 +61,23 @@ HRESULT CGimmickAction::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CGimmickAction>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -65,6 +87,16 @@ HRESULT CGimmickAction::Init(void)
 //============================================================
 void CGimmickAction::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクト3Dの終了
 	CGimmick::Uninit();
 }
@@ -188,4 +220,13 @@ bool CGimmickAction::CollisionPlayer(void)
 	}
 
 	return bHit;
+}
+
+//==========================================
+//	リスト取得処理
+//==========================================
+CListManager<CGimmickAction>* CGimmickAction::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
 }

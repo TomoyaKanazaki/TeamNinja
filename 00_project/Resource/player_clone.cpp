@@ -376,10 +376,6 @@ bool CPlayerClone::Hit(const int nDamage)
 //==========================================
 void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
-	// ギミック受付をリセットする
-	//m_fGimmickTimer = 0.0f;
-	//m_bGimmick = false;
-
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
@@ -549,6 +545,36 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 
 	// 確保したアドレスを返す
 	return pPlayer->Block();
+}
+
+//===========================================
+//  生成(直接ギミック)
+//=========================================
+CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
+{
+	// ギミックがnullの場合nullを返す
+	if (gimmick == nullptr) { return nullptr; }
+
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 受け取ったギミックを割り当てる
+	pPlayer->SetGimmick(gimmick);
+
+	// 確保したアドレスを返す
+	return pPlayer;
 }
 
 //============================================================

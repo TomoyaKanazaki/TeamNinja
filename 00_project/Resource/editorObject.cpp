@@ -12,6 +12,7 @@
 #include "editManager.h"
 
 #include "editField.h"
+#include "editWall.h"
 #include "editActor.h"
 #include "editCheckPoint.h"
 
@@ -163,10 +164,7 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 		break;
 
 	case CEditStage::TYPE_WALL:
-
-		// TODO：エディットウォールできたら置き換え
-		pEditorObject = new CEditField;	// エディットフィールド
-		//pEditorObject = new CEditWall;		// エディットウォール
+		pEditorObject = new CEditWall;			// エディットウォール
 		break;
 
 	case CEditStage::TYPE_ACTOR:

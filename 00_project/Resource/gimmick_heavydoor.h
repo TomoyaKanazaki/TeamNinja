@@ -16,11 +16,28 @@
 #include "gimmick_action.h"
 
 //************************************************************
+//	前方宣言
+//************************************************************
+class CMapModel;		// マップモデルクラス
+class CStage;			// ステージクラス
+
+//************************************************************
 //	クラス定義
 //************************************************************
 class CGimmickHeavyDoor : public CGimmickAction
 {
 public:
+
+	// 扉の状態列挙
+	enum EState
+	{
+		STATE_NONE = 0,		// 何もしてない
+		STATE_CLOSE,		// 扉閉じてる
+		STATE_OPEN,			// 扉上げてる
+		STATE_FULLY,		// 扉全開
+		STATE_MAX
+	};
+
 	CGimmickHeavyDoor();
 	~CGimmickHeavyDoor();
 
@@ -31,7 +48,17 @@ public:
 
 private:
 
-	int m_nOpenCounter;		// 扉が開くまでのカウンター
+	void OpenTheDoor(void);	// 扉を上げる
+	void CloseTheDoor(void);	// 扉を下げる
+
+	// メンバ変数
+	CMapModel* m_pMapModel;	// マップモデルの情報
+	CStage* m_pStage;		// ステージの情報
+
+	D3DXVECTOR3 m_move;		// 移動量
+	int m_nDoorCounter;		// 扉の開閉カウンター
+
+	EState m_state;			// 扉の状態
 
 };
 
