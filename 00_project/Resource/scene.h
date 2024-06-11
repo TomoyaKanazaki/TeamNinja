@@ -13,8 +13,9 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CStage;	// ステージクラス
-class CPlayer;	// プレイヤークラス
+class CCollManager;	// 当たり判定マネージャークラス
+class CStage;		// ステージクラス
+class CPlayer;		// プレイヤークラス
 
 //************************************************************
 //	クラス定義
@@ -49,7 +50,8 @@ public:
 	static CScene *Create(EMode mode);		// 生成
 	static void Release(CScene *&prScene);	// 破棄
 
-	static CStage  *GetStage(void);		// ステージ取得
+	static CCollManager *GetCollManager(void);	// 当たり判定マネージャー取得
+	static CStage *GetStage(void);		// ステージ取得
 	static CPlayer *GetPlayer(void);	// プレイヤー取得
 
 	// メンバ関数
@@ -58,7 +60,8 @@ public:
 
 private:
 	// 静的メンバ変数
-	static CStage *m_pStage;	// ステージの情報
+	static CCollManager *m_pCollManager;	// 当たり判定マネージャー
+	static CStage *m_pStage;	// ステージ情報
 
 	// メンバ変数
 	EMode m_mode;	// モード

@@ -18,6 +18,7 @@
 #include "scenery.h"
 #include "sky.h"
 #include "liquid.h"
+#include "actor.h"
 
 //************************************************************
 //	定数宣言
@@ -54,6 +55,15 @@ HRESULT CStage::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
+
+	// アクターのセットアップ
+	if (FAILED(CActor::LoadSetup()))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// 成功を返す
 	return S_OK;
