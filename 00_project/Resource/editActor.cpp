@@ -29,18 +29,10 @@
 #define KEY_TYPE		(DIK_3)	// 種類変更キー
 #define NAME_TYPE		("3")	// 種類変更表示
 
-#define KEY_UP_SIZE_X		(DIK_T)	// X軸拡大キー
-#define NAME_UP_SIZE_X		("T")	// X軸拡大表示
-#define KEY_DOWN_SIZE_X		(DIK_G)	// X軸縮小キー
-#define NAME_DOWN_SIZE_X	("G")	// X軸縮小表示
-#define KEY_UP_SIZE_Y		(DIK_Y)	// Y軸拡大キー
-#define NAME_UP_SIZE_Y		("Y")	// Y軸拡大表示
-#define KEY_DOWN_SIZE_Y		(DIK_H)	// Y軸縮小キー
-#define NAME_DOWN_SIZE_Y	("H")	// Y軸縮小表示
-#define KEY_UP_SIZE_Z		(DIK_U)	// Z軸拡大キー
-#define NAME_UP_SIZE_Z		("U")	// Z軸拡大表示
-#define KEY_DOWN_SIZE_Z		(DIK_J)	// Z軸縮小キー
-#define NAME_DOWN_SIZE_Z	("J")	// Z軸縮小表示
+#define KEY_UP_SIZE		(DIK_T)	// 拡大キー
+#define NAME_UP_SIZE	("T")	// 拡大表示
+#define KEY_DOWN_SIZE	(DIK_G)	// 縮小キー
+#define NAME_DOWN_SIZE	("G")	// 縮小表示
 
 //************************************************************
 //	定数宣言
@@ -232,7 +224,7 @@ void CEditActor::DrawDebugControl(void)
 	// 操作表示の描画
 	CEditorObject::DrawDebugControl();
 
-	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_UP_SIZE_Z, NAME_DOWN_SIZE_Z, NAME_TRIGGER);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s+%s]\n", NAME_UP_SIZE, NAME_DOWN_SIZE, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
@@ -276,6 +268,27 @@ void CEditActor::UpdateRotation(void)
 	// 向きの更新
 	CEditorObject::UpdateRotation();
 
+	for (auto& rCube : m_pActor->GetCube())
+	{ // コリジョンキューブ数分繰り返す
+
+		// 終了処理
+		rCube->GetCube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rCylinder : m_pActor->GetCylinder())
+	{ // コリジョンシリンダー数分繰り返す
+
+		// 終了処理
+		rCylinder->GetTube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rSphere : m_pActor->GetSphere())
+	{ // コリジョンスフィア数分繰り返す
+
+		// 終了処理
+		rSphere->GetSphere()->SetVec3Rotation(GetVec3Rotation());
+	}
+
 	// 向きを反映
 	m_pActor->SetVec3Rotation(GetVec3Rotation());
 }
@@ -290,56 +303,24 @@ void CEditActor::UpdateScaling(void)
 	// 拡大率を変更
 	if (!pKeyboard->IsPress(KEY_TRIGGER))
 	{
-		if (pKeyboard->IsPress(KEY_UP_SIZE_X))
+		if (pKeyboard->IsPress(KEY_UP_SIZE))
 		{
-			m_infoCreate.scale.x += SCALING.x;
+			m_infoCreate.scale += SCALING;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_SIZE_X))
+		if (pKeyboard->IsPress(KEY_DOWN_SIZE))
 		{
-			m_infoCreate.scale.x -= SCALING.x;
-		}
-		if (pKeyboard->IsPress(KEY_UP_SIZE_Y))
-		{
-			m_infoCreate.scale.y += SCALING.y;
-		}
-		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Y))
-		{
-			m_infoCreate.scale.y -= SCALING.y;
-		}
-		if (pKeyboard->IsPress(KEY_UP_SIZE_Z))
-		{
-			m_infoCreate.scale.z += SCALING.z;
-		}
-		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Z))
-		{
-			m_infoCreate.scale.z -= SCALING.z;
+			m_infoCreate.scale -= SCALING;
 		}
 	}
 	else
 	{
-		if (pKeyboard->IsTrigger(KEY_UP_SIZE_X))
+		if (pKeyboard->IsTrigger(KEY_UP_SIZE))
 		{
-			m_infoCreate.scale.x += SCALING.x;
+			m_infoCreate.scale += SCALING;
 		}
-		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_X))
+		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE))
 		{
-			m_infoCreate.scale.x -= SCALING.x;
-		}
-		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Y))
-		{
-			m_infoCreate.scale.y += SCALING.y;
-		}
-		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Y))
-		{
-			m_infoCreate.scale.y -= SCALING.y;
-		}
-		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Z))
-		{
-			m_infoCreate.scale.z += SCALING.z;
-		}
-		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Z))
-		{
-			m_infoCreate.scale.z -= SCALING.z;
+			m_infoCreate.scale -= SCALING;
 		}
 	}
 
@@ -347,6 +328,33 @@ void CEditActor::UpdateScaling(void)
 	useful::LimitMinNum(m_infoCreate.scale.x, SCALING.x);
 	useful::LimitMinNum(m_infoCreate.scale.y, SCALING.y);
 	useful::LimitMinNum(m_infoCreate.scale.z, SCALING.z);
+
+	for (auto& rCube : m_pActor->GetCube())
+	{ // コリジョンキューブ数分繰り返す
+
+		// 拡大率を適用する
+		rCube->GetCube()->SetVec3Sizing(D3DXVECTOR3
+		(
+			rCube->GetWidth() * m_infoCreate.scale.x,
+			rCube->GetHeight() * m_infoCreate.scale.y,
+			rCube->GetDepth() * m_infoCreate.scale.z
+		));
+	}
+
+	for (auto& rCylinder : m_pActor->GetCylinder())
+	{ // コリジョンシリンダー数分繰り返す
+
+		// 拡大率を適用する
+		rCylinder->GetTube()->SetRadius(rCylinder->GetRadius() * m_infoCreate.scale.x);
+		rCylinder->GetTube()->SetHeight(rCylinder->GetHeight() * m_infoCreate.scale.y);
+	}
+
+	for (auto& rSphere : m_pActor->GetSphere())
+	{ // コリジョンスフィア数分繰り返す
+
+		// 拡大率を適用する
+		rSphere->GetSphere()->SetRadius(rSphere->GetRadius() * m_infoCreate.scale.x);
+	}
 
 	// 拡大率を反映
 	m_pActor->SetVec3Scaling(m_infoCreate.scale);
@@ -375,7 +383,6 @@ void CEditActor::ChangeType(void)
 void CEditActor::CreateActor(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
 	// アクターを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
@@ -398,10 +405,13 @@ void CEditActor::CreateActor(void)
 		( // 引数
 			m_infoCreate.type,		// 種類
 			GetVec3Position(),		// 位置
-			GetVec3Rotation(),		// 向き
+			VEC3_ZERO,				// 向き
 			m_infoCreate.scale		// 拡大率
 		);
 		assert(m_pActor != nullptr);
+
+		// 向きを設定する
+		m_pActor->SetVec3Rotation(GetVec3Rotation());
 	}
 }
 
@@ -504,7 +514,6 @@ void CEditActor::InitAllColorActor(void)
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CActor*> listActor = pListManager->GetList();	// アクターリスト情報
 
-	int nCnt = 0;
 	for (auto& rList : listActor)
 	{ // アクター数分繰り返す
 
@@ -513,9 +522,6 @@ void CEditActor::InitAllColorActor(void)
 
 		// 通常色を設定
 		rList->ResetMaterial();
-
-		nCnt++;
-
 	}
 }
 
@@ -579,7 +585,7 @@ HRESULT CEditActor::Save(void)
 		D3DXVECTOR3 scale = rList->GetVec3Scaling();	// 大きさ
 
 		// 向きを360度に変換
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
 		file << "	ACTORSET" << std::endl;

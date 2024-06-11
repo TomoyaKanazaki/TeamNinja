@@ -319,9 +319,9 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_cube[nCnt].offset,		// オフセット座標
-			coll.m_cube[nCnt].fWidth,		// 幅
-			coll.m_cube[nCnt].fHeight,		// 高さ
-			coll.m_cube[nCnt].fDepth,		// 奥行
+			coll.m_cube[nCnt].fWidth * GetVec3Scaling().x,		// 幅
+			coll.m_cube[nCnt].fHeight * GetVec3Scaling().y,		// 高さ
+			coll.m_cube[nCnt].fDepth * GetVec3Scaling().z,		// 奥行
 			GetVec3Rotation().y)			// 向き
 		);
 	}
@@ -333,8 +333,8 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_cylinder[nCnt].offset,	// オフセット座標
-			coll.m_cylinder[nCnt].fRadius,	// 半径
-			coll.m_cylinder[nCnt].fHeight	// 高さ
+			coll.m_cylinder[nCnt].fRadius * GetVec3Scaling().x,	// 半径
+			coll.m_cylinder[nCnt].fHeight * GetVec3Scaling().y	// 高さ
 		));
 	}
 
@@ -345,7 +345,7 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_sphere[nCnt].offset,		// オフセット座標
-			coll.m_sphere[nCnt].fRadius		// 半径
+			coll.m_sphere[nCnt].fRadius * GetVec3Scaling().x		// 半径
 		));
 	}
 }
