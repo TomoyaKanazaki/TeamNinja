@@ -377,7 +377,7 @@ HRESULT CStage::LoadSetup(const CScene::EMode /*mode*/, CStage *pStage)
 	// ポインタを宣言
 	FILE *pFile;	// ファイルポインタ
 
-	// チュートリアルファイルを読み込み形式で開く
+	// ファイルを読み込み形式で開く
 	pFile = fopen(SETUP_TXT, "r");
 
 	if (pFile != nullptr)
