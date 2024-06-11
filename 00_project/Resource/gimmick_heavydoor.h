@@ -55,6 +55,7 @@ private:
 	CMapModel* m_pMapModel;	// マップモデルの情報
 	CStage* m_pStage;		// ステージの情報
 
+	D3DXVECTOR3 m_posSave;	// 位置保存用
 	D3DXVECTOR3 m_move;		// 移動量
 	int m_nDoorCounter;		// 扉の開閉カウンター
 	int m_nNumBound;		// 跳ねた回数
