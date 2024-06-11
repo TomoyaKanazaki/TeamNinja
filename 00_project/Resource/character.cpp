@@ -285,7 +285,13 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 						// 文字列を読み込む
 						file >> str;
 
-						if (str == "INDEX")
+						if (str.front() == '#')
+						{ // コメントアウトされている場合
+
+							// 一行全て読み込む
+							std::getline(file, str);
+						}
+						else if (str == "INDEX")
 						{
 							file >> str;	// ＝を読込
 							file >> nID;	// モデルのインデックスを読込

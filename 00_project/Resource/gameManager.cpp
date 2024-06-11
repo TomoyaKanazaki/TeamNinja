@@ -29,6 +29,8 @@
 #include "actor.h"
 #include "MapModel.h"
 
+#include "debug_object.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -84,12 +86,8 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_FALL, 2);
 	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
 
-	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_BOOB, 2);
-	CGimmick::Create(D3DXVECTOR3(-600.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_GRAVEL, 2);
-	CGimmick::Create(D3DXVECTOR3(-800.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_WATER, 2);
-
 	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
-	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -200.0f), D3DXVECTOR3(200.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
+	CGimmick::Create(D3DXVECTOR3(-1400.0f, 0.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
 
 	CMapModel::Create(D3DXVECTOR3(-800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
 
@@ -102,6 +100,16 @@ HRESULT CGameManager::Init(void)
 	CMapModel::Create(D3DXVECTOR3(800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
+
+	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR00);
+	//CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR01);
+
+
+	// デバッグ専用オブジェクトを生成する(絶対にデバッグ以外で生成するなゴミカス)
+#ifdef _DEBUG
+	// きしょきしょおぶじぇくとしねしねしねしね
+	CDebugObject::Create();
+#endif
 
 	// マップを生成
 	if (FAILED(MapLoad())) { return E_FAIL; }
@@ -246,85 +254,4 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
-}
-
-//==========================================
-//  マップの生成
-//==========================================
-HRESULT CGameManager::MapLoad()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(MAP_TXT, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return E_FAIL; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐
-		if (strcmp(&aStr[0], "CHECKPOINT") == 0) // チェックポイントの生成
-		{
-			// データの取得用変数
-			D3DXVECTOR3 pos, rot;
-
-			// 文字列読み込み (POS)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &pos.x);
-			fscanf(pFile, "%f", &pos.y);
-			fscanf(pFile, "%f", &pos.z);
-
-			// 文字列読み込み (ROT)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &rot.x);
-			fscanf(pFile, "%f", &rot.y);
-			fscanf(pFile, "%f", &rot.z);
-
-			// チェックポイントを生成
-			CCheckPoint::Create(pos);
-		}
-		if (strcmp(&aStr[0], "GOAL") == 0) // ゴールの生成
-		{
-			// データの取得用変数
-			D3DXVECTOR3 pos, rot;
-
-			// 文字列読み込み (POS)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &pos.x);
-			fscanf(pFile, "%f", &pos.y);
-			fscanf(pFile, "%f", &pos.z);
-
-			// 文字列読み込み (ROT)
-			fscanf(pFile, "%s", &aStr[0]);
-
-			// データ取得
-			fscanf(pFile, "%f", &rot.x);
-			fscanf(pFile, "%f", &rot.y);
-			fscanf(pFile, "%f", &rot.z);
-
-			// チェックポイントを生成
-			m_pGoal = CGoal::Create(pos, rot);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
-	}
-
-	return S_OK;
 }

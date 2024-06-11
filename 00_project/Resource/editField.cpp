@@ -174,6 +174,9 @@ void CEditField::Update(void)
 	// 位置を反映
 	m_pField->SetVec3Position(GetVec3Position());
 
+	// 向きを反映
+	m_pField->SetVec3Rotation(GetVec3Rotation());
+
 #endif	// _DEBUG
 }
 
@@ -575,7 +578,7 @@ HRESULT CEditField::Save(void)
 		POSGRID2 texPart	= rList->GetTexPattern();	// テクスチャ分割数
 
 		// 向きを360度に変換
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
 		file << "	FIELDSET" << std::endl;

@@ -30,7 +30,7 @@ public:
 		bool& rJump						// ジャンプ状況
 	) = 0;
 
-	void OffSet(const D3DXMATRIX& mtx);	// オフセット設定処理
+	virtual void OffSet(const D3DXMATRIX& mtx);			// オフセット設定処理
 
 	// セット・ゲット関係
 	void SetPos(const D3DXVECTOR3& rPos) { m_pos = rPos; }				// 位置の設定処理

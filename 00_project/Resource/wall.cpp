@@ -19,7 +19,7 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		nullptr,	// 通常テクスチャ
+		"data\\TEXTURE\\warning000.png",	// 通常テクスチャ
 	};
 
 	const int PRIORITY = 0;	// 壁の優先順位

@@ -1,0 +1,34 @@
+#==============================================================================
+#
+#	当たり判定のデータ [Collision.txt]
+#	Author : 小原 立暉
+#
+#==============================================================================
+STAGE_COLLISIONSET
+
+CUBE_COLLISIONSET
+
+CUBE_NUM	= 1
+
+	COLLISIONSET
+		OFFSET	= 0.00 0.00 -72.00
+		WIDTH	= 140.00
+		HEIGHT	= 20.00
+		DEPTH	= 20.00
+	END_COLLISIONSET
+
+END_CUBE_COLLISIONSET
+
+CYLINDER_COLLISIONSET
+
+CYLINDER_NUM	= 0
+
+END_CYLINDER_COLLISIONSET
+
+SPHERE_COLLISIONSET
+
+SPHERE_NUM	= 0
+
+END_SPHERE_COLLISIONSET
+
+END_STAGE_COLLISIONSET

@@ -19,12 +19,14 @@
 #include "sceneResult.h"
 #include "sceneRanking.h"
 
+#include "collManager.h"
 #include "stage.h"
 #include "player.h"
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
+CCollManager* CScene::m_pCollManager = nullptr;	// 当たり判定マネージャー
 CStage *CScene::m_pStage = nullptr;	// ステージの情報
 
 //************************************************************
@@ -51,6 +53,16 @@ CScene::~CScene()
 //============================================================
 HRESULT CScene::Init(void)
 {
+	// 当たり判定の生成
+	m_pCollManager = CCollManager::Create();
+	if (m_pCollManager == nullptr)
+	{ // 生成に生成した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// ステージの生成
 	m_pStage = CStage::Create(m_mode);
 	if (m_pStage == nullptr)
@@ -73,6 +85,9 @@ HRESULT CScene::Init(void)
 //============================================================
 void CScene::Uninit(void)
 {
+	// 当たり判定の終了
+	SAFE_UNINIT(m_pCollManager);
+
 	// ステージの破棄
 	SAFE_REF_RELEASE(m_pStage);
 }
@@ -160,6 +175,18 @@ void CScene::Release(CScene *&prScene)
 
 	// メモリ開放
 	SAFE_DELETE(prScene);
+}
+
+//============================================================
+//	当たり判定マネージャー取得
+//============================================================
+CCollManager *CScene::GetCollManager(void)
+{
+	// インスタンス未使用
+	assert(m_pCollManager != nullptr);
+
+	// 当たり判定マネージャーのポインタを返す
+	return m_pCollManager;
 }
 
 //============================================================

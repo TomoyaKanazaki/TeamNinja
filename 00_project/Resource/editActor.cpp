@@ -15,6 +15,10 @@
 #include "useful.h"
 #include "stage.h"
 
+#include "collisionCube.h"
+#include "collisionCylinder.h"
+#include "collisionSphere.h"
+
 //************************************************************
 //	マクロ定義
 //************************************************************
@@ -272,6 +276,27 @@ void CEditActor::UpdateRotation(void)
 	// 向きの更新
 	CEditorObject::UpdateRotation();
 
+	for (auto& rCube : m_pActor->GetCube())
+	{ // コリジョンキューブ数分繰り返す
+
+		// 終了処理
+		rCube->GetCube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rCylinder : m_pActor->GetCylinder())
+	{ // コリジョンシリンダー数分繰り返す
+
+		// 終了処理
+		rCylinder->GetTube()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rSphere : m_pActor->GetSphere())
+	{ // コリジョンスフィア数分繰り返す
+
+		// 終了処理
+		rSphere->GetSphere()->SetVec3Rotation(GetVec3Rotation());
+	}
+
 	// 向きを反映
 	m_pActor->SetVec3Rotation(GetVec3Rotation());
 }
@@ -371,7 +396,6 @@ void CEditActor::ChangeType(void)
 void CEditActor::CreateActor(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
 	// アクターを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
@@ -394,10 +418,13 @@ void CEditActor::CreateActor(void)
 		( // 引数
 			m_infoCreate.type,		// 種類
 			GetVec3Position(),		// 位置
-			GetVec3Rotation(),		// 向き
+			VEC3_ZERO,				// 向き
 			m_infoCreate.scale		// 拡大率
 		);
 		assert(m_pActor != nullptr);
+
+		// 向きを設定する
+		m_pActor->SetVec3Rotation(GetVec3Rotation());
 	}
 }
 
@@ -500,7 +527,6 @@ void CEditActor::InitAllColorActor(void)
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
 	std::list<CActor*> listActor = pListManager->GetList();	// アクターリスト情報
 
-	int nCnt = 0;
 	for (auto& rList : listActor)
 	{ // アクター数分繰り返す
 
@@ -509,9 +535,6 @@ void CEditActor::InitAllColorActor(void)
 
 		// 通常色を設定
 		rList->ResetMaterial();
-
-		nCnt++;
-
 	}
 }
 
@@ -547,11 +570,11 @@ HRESULT CEditActor::Save(void)
 	// 見出しを書き出し
 	file << "#==============================================================================" << std::endl;
 	file << "#" << std::endl;
-	file << "#	ステージ地面配置のセーブデータ [save_actor.txt]" << std::endl;
+	file << "#	アクター配置のセーブデータ [save_actor.txt]" << std::endl;
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
+	file << "# この行から下をコピーし [actor.txt] に張り付け\n" << std::endl;
 
 	// アクターの色の全初期化
 	InitAllColorActor();
@@ -570,19 +593,19 @@ HRESULT CEditActor::Save(void)
 
 		// 書き出す情報を取得
 		CActor::EType type = rList->GetType();			// 種類
-		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
-		D3DXVECTOR3 rot = rList->GetVec3Rotation();	// 向き
-		D3DXVECTOR2 scale = rList->GetVec2Sizing();	// 大きさ
+		D3DXVECTOR3 pos = rList->GetVec3Position();		// 位置
+		D3DXVECTOR3 rot = rList->GetVec3Rotation();		// 向き
+		D3DXVECTOR3 scale = rList->GetVec3Scaling();	// 大きさ
 
 		// 向きを360度に変換
-		D3DXToDegree(rot);
+		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
 		file << "	ACTORSET" << std::endl;
 		file << "		TYPE	= " << type << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
-		file << "		SIZE	= " << scale.x << " " << scale.y << std::endl;
+		file << "		SCALE	= " << scale.x << " " << scale.y << " " << scale.z << std::endl;
 		file << "	END_ACTORSET\n" << std::endl;
 	}
 

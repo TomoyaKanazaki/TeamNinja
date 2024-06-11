@@ -38,9 +38,6 @@ public:
 		TYPE_MALTI,				// 複数管理
 		TYPE_POST,				// 設置
 		TYPE_DECAED,			// 朽ちた床
-		TYPE_GRAVEL,			// 砂利道
-		TYPE_BOOB,				// ドブ
-		TYPE_WATER,				// 水場
 		TYPE_JUMPOFF,			// 飛び降り
 		TYPE_HEAVYDOOR,			// 重い扉
 		TYPE_MAX				// この列挙型の総数

@@ -18,11 +18,14 @@
 #include "orbit.h"
 #include "multiModel.h"
 #include "stage.h"
+#include "field.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+
+#include "debug_object.h"
 
 //************************************************************
 //	定数宣言
@@ -57,6 +60,7 @@ namespace
 	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
+	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
 }
 
 //************************************************************
@@ -76,14 +80,17 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_
 	m_move			(VEC3_ZERO),	// 移動量
 	m_Action		(ACTION_CHASE),	// 行動
 	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
-	m_fChargeTimer	(0.0f),			// ため時間タイマー
+	m_fGimmickTimer	(0.0f),			// ギミック受付時間タイマー
 	m_pGimmick		(nullptr),		// ギミックのポインタ
 	m_sFrags		({}),			// ギミックフラグの文字列
 	m_nIdxGimmick	(-1),			// ギミック内の管理番号
+	m_pCurField		(nullptr),		// 現在の地面
+	m_pOldField		(nullptr),		// 過去の地面
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_destRot		(VEC3_ZERO),	// 目標向き
 	m_bJump			(false),		// ジャンプ状況
-	m_fFallStart	(0.0f)			// 落とし穴の落ちる前の高さ
+	m_fFallStart	(0.0f),			// 落とし穴の落ちる前の高さ
+	m_bGimmick		(true)			// ギミックフラグ
 {
 
 }
@@ -107,13 +114,16 @@ HRESULT CPlayerClone::Init(void)
 	m_move			= VEC3_ZERO;	// 移動量
 	m_Action		= ACTION_CHASE;	// 行動
 	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
-	m_fChargeTimer	= 0.0f;			// ため時間タイマー
+	m_fGimmickTimer = 0.0f;			// ギミック受付時間タイマー
 	m_pGimmick		= nullptr;		// ギミックのポインタ
 	m_sFrags		= {};			// ギミックフラグの文字列
 	m_nIdxGimmick	= -1;			// ギミック内の管理番号
+	m_pCurField		= nullptr;		// 現在の地面
+	m_pOldField		= nullptr;		// 過去の地面
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_destRot		= VEC3_ZERO;	// 目標向き
 	m_bJump			= true;			// ジャンプ状況
+	m_bGimmick		= true;			// ギミックフラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -447,8 +457,14 @@ CPlayerClone* CPlayerClone::Create(void)
 			return nullptr;
 		}
 
+		// ギミック受付時間を設定する
+		pPlayer->m_fGimmickTimer = GIMMICK_TIME;
+
+		// 位置を設定する
+		pPlayer->SetVec3Position(pPlayer->CalcStartPos());
+
 		// 確保したアドレスを返す
-		return pPlayer;
+		return pPlayer->Block();
 	}
 }
 
@@ -487,7 +503,7 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
 	pPlayer->m_fDeleteTimer = TIMER;
 
 	// 確保したアドレスを返す
-	return pPlayer;
+	return pPlayer->Block();
 }
 
 //==========================================
@@ -526,6 +542,36 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 
 	// 自動消滅タイマーを設定
 	pPlayer->m_fDeleteTimer = TIMER;
+
+	// 確保したアドレスを返す
+	return pPlayer->Block();
+}
+
+//===========================================
+//  生成(直接ギミック)
+//=========================================
+CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
+{
+	// ギミックがnullの場合nullを返す
+	if (gimmick == nullptr) { return nullptr; }
+
+	// ポインタを宣言
+	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
+
+	// 生成に失敗した場合nullを返す
+	if (pPlayer == nullptr) { return nullptr; }
+
+	// プレイヤーの初期化
+	if (FAILED(pPlayer->Init()))
+	{ // 初期化に失敗した場合
+
+		// プレイヤーの破棄
+		SAFE_DELETE(pPlayer);
+		return nullptr;
+	}
+
+	// 受け取ったギミックを割り当てる
+	pPlayer->SetGimmick(gimmick);
 
 	// 確保したアドレスを返す
 	return pPlayer;
@@ -624,6 +670,10 @@ void CPlayerClone::CallBack()
 		if (pClone->GetAction() == ACTION_CHASE) { continue; }
 		if (pClone->GetAction() == ACTION_FALL) { continue; }
 
+		// ギミックフラグをリセット
+		pClone->m_fGimmickTimer = 0.0f;
+		pClone->m_bGimmick = false;
+
 		// ギミックの保有分身数を減らす
 		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
 
@@ -657,11 +707,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	// 重力の更新
 	UpdateGravity();
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 消滅
 	m_fDeleteTimer -= fDeltaTime;
@@ -689,17 +739,31 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	D3DXVECTOR3 rotClone = GetVec3Rotation();	// クローン向き
 	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
 
+	// ギミック受付時間を更新
+	if (m_fGimmickTimer > 0.0f)
+	{
+		// 減算
+		m_fGimmickTimer -= fDeltaTime;
+
+		// 0未満になった場合フラグをoff
+		if (m_fGimmickTimer <= 0.0f)
+		{
+			m_bGimmick = false;
+			m_fGimmickTimer = 0.0f;
+		}
+	}
+
 	// 重力の更新
 	UpdateGravity();
 
 	// 一つ前を追いかけて、その際のモーションを返す
 	currentMotion = ChasePrev(&posClone, &rotClone);
 
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
 	// 移動
 	posClone += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(posClone, &currentMotion);
 
 	// 向きの更新
 	UpdateRotation(rotClone);
@@ -880,13 +944,34 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+
+	if (m_pCurField != nullptr)
+	{ // 現在地面に着地している場合
+
+		// 当たっている状態にする
+		m_pCurField->Hit(this);
+	}
+
+	if (m_pCurField != m_pOldField)
+	{ // 前回と違う地面の場合
+
+		if (m_pOldField != nullptr)
+		{ // 前回地面に着地している場合
+
+			// 当たっていない状態にする
+			m_pOldField->Miss(this);
+		}
 	}
 
 	if (!m_bJump)
@@ -1160,12 +1245,7 @@ CPlayerClone::EMotion CPlayerClone::Chase
 )
 {
 	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 posTarget = rPosPrev + D3DXVECTOR3
-	(
-		sinf(rRotPrev.y) * DISTANCE,
-		0.0f,
-		cosf(rRotPrev.y) * DISTANCE
-	);
+	D3DXVECTOR3 posTarget = CalcPrevBack(rPosPrev, rRotPrev);
 
 	// 目標地点へのベクトルを求める
 	D3DXVECTOR3 vecTarget = posTarget - *pPosThis;
@@ -1206,4 +1286,101 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rP
 
 	// 目標向きを設定
 	m_destRot.y = fRot;
+}
+
+//===========================================
+//  生成をブロックする処理
+//===========================================
+CPlayerClone* CPlayerClone::Block()
+{
+#ifdef _DEBUG
+	std::list<CDebugObject*> debuglist = CDebugObject::GetList()->GetList();
+
+	for (auto debug : debuglist)
+	{
+		// ヒットしていたら生成したものを削除する
+		if (debug->Hit(GetVec3Position()))
+		{
+			GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+			Uninit();
+			return nullptr;
+		}
+	}
+
+	// エフェクトを生成
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 15.0f);
+
+	// ヒットしていなければ生成できる
+	return this;
+#endif
+}
+
+//===========================================
+//  初期位置を算出する処理
+//===========================================
+D3DXVECTOR3 CPlayerClone::CalcStartPos() const
+{
+	// リストを取得する
+	std::list<CPlayerClone*> list = m_pList->GetList();
+	auto itrBegin = list.begin();
+	auto itrEnd = list.end();
+
+	// プレイヤー位置・向きを取得する
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation();	// プレイヤー向き
+
+	// 一つ前のポインタを保存する変数
+	CPlayerClone* prev = *itrBegin;
+
+	// 自身のポインタを走査する
+	for (auto itr = itrBegin; itr != itrEnd; ++itr)
+	{
+		// 自身ではない場合一つ前を保存して次に進む
+		if (*itr != this) { prev = *itr; continue; }
+
+		// 自身が先頭だった場合プレイヤーの後ろの位置を返す
+		if (this == *itrBegin)
+		{
+			return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+		}
+
+		// 自身の追従する相手を選択する
+		while (1)
+		{
+			// 一つ前のポインタを保存する
+			--itr;
+			prev = *itr;
+
+			// 前が追従していない場合
+			if (prev->GetAction() != ACTION_CHASE)
+			{
+				// 一つ前が先頭でない場合次に進む
+				if (prev != *itrBegin) { continue; }
+
+				// プレイヤーに追従し関数を抜ける
+				return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
+			}
+
+			// 一つ前に追従し関数を抜ける
+			return CalcPrevBack(prev->GetVec3Position(), prev->GetVec3Rotation());
+		}
+	}
+
+	// ここには来ない
+	assert(false);
+	return D3DXVECTOR3();
+}
+
+//=========================================
+//  一つ前の対象の後ろを算出
+//===========================================
+D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const
+{
+	return pos + D3DXVECTOR3
+	(
+		sinf(rot.y) * DISTANCE,
+		0.0f,
+		cosf(rot.y) * DISTANCE
+	);
 }
