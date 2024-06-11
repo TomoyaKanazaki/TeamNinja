@@ -26,8 +26,6 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 
-#include "debug_object.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -1303,21 +1301,6 @@ CPlayerClone* CPlayerClone::Block()
 
 	// 前回座標を生成座標に設定する
 	m_oldPos = pos;
-
-#ifdef _DEBUG
-	std::list<CDebugObject*> debuglist = CDebugObject::GetList()->GetList();
-
-	for (auto debug : debuglist)
-	{
-		// ヒットしていたら生成したものを削除する
-		if (debug->Hit(pos))
-		{
-			GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
-			Uninit();
-			return nullptr;
-		}
-	}
-#endif
 
 	// アクターに衝突した場合生成したものを削除する
 	if (CollisionActor())
