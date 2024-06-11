@@ -85,7 +85,7 @@ bool CCollisionCube::Hit
 
 		// ˆÚ“®—Ê‚ÆƒWƒƒƒ“ƒvó‹µ‚ğİ’è‚·‚é
 		rMove = move;
-		rJump = bJump;
+		rJump = !bJump;
 
 		// true ‚ğ•Ô‚·
 		return true;
