@@ -46,10 +46,15 @@ public:
 	bool GetMoment() const { return m_bMoment; }				// 発動中フラグの取得
 	void SetMoment(bool moment) { m_bMoment = moment; }			// 発動中フラグの設定
 	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
+	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
  
 private:
 
+	// 静的メンバ変数
+	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト
+
 	// メンバ変数
+	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
 	int m_nNumClone;	// 範囲に入っている分身の数
 	bool m_bActive;		// 発動状況
 	bool m_bMoment;		// 発動中フラグ

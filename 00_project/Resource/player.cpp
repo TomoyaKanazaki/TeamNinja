@@ -36,6 +36,7 @@
 #include "actor.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "gimmick_action.h"
 
 //************************************************************
 //	定数宣言
@@ -76,6 +77,9 @@ namespace
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float HEIGHT = 100.0f; // 身長
+	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
+	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
+	const float GIMMICK_SET_DISTANCE = 10000.0f; // 直接ギミック分身の生成可能範囲
 
 	// ブラーの情報
 	namespace blurInfo
@@ -108,7 +112,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
 	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
 	m_fScalar			(0.0f),			// 移動量
-	m_bClone			(true)			// 分身操作可能フラグ
+	m_bClone			(true),			// 分身操作可能フラグ
+	m_bGimmickClone		(false),		// ギミッククローンの生成フラグ
+	m_fGimmickTimer		(0.0f),			// ギミッククローンの生成タイマー
+	m_fTempStick		(0.0f)			// スティックの入力角を保存する変数
 {
 
 }
@@ -139,6 +146,9 @@ HRESULT CPlayer::Init(void)
 	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
 	m_fScalar			= 0.0f;			// 移動量
 	m_bClone			= true;			// 分身操作可能フラグ
+	m_bGimmickClone		= false;		// ギミッククローンの生成フラグ
+	m_fGimmickTimer		= 0.0f;			// ギミッククローンの生成タイマー
+	m_fTempStick		= 0.0f;			// スティックの入力角を保存する変数
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -662,7 +672,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer);
 
 	// 分身の処理
-	ControlClone(posPlayer, rotPlayer);
+	ControlClone(posPlayer, rotPlayer, fDeltaTime);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -1086,7 +1096,7 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 //  分身の処理
 //==========================================
-void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
+void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	// 操作可能フラグを確認
 	if (!m_bClone) { return; }
@@ -1106,6 +1116,9 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 
 	// 分身を呼び戻す
 	CallClone();
+
+	// ギミックの直接生成ができる場合関数を抜ける
+	if (CreateGimmick(fDeltaTime)) { return; }
 
 #ifdef _DEBUG
 
@@ -1157,9 +1170,15 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	);
 
 	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
-	if (fabsf(fRot) >= D3DX_PI * 0.875f)
+	if (fabsf(fRot) >= STICK_ERROR)
 	{
-		CPlayerClone::Create();
+		// 生成に失敗していた場合ギミック生成待機になる
+		if (CPlayerClone::Create() == nullptr)
+		{
+			m_bGimmickClone = true;
+			m_fGimmickTimer = 0.0f;
+			m_fTempStick = fRotStick;
+		}
 		return;
 	}
 
@@ -1172,7 +1191,12 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot)
 	);
 
 	// 歩く分身を出す
-	CPlayerClone::Create(pos, move);
+	if(CPlayerClone::Create(pos, move) == nullptr)
+	{
+		m_bGimmickClone = true;
+		m_fGimmickTimer = 0.0f;
+		m_fTempStick = fRotStick;
+	}
 }
 
 //==========================================
@@ -1203,6 +1227,93 @@ void CPlayer::CallClone()
 
 	// 分身を追従する
 	CPlayerClone::CallBack();
+}
+
+//===========================================
+//  直接ギミックを生成する処理
+//===========================================
+bool CPlayer::CreateGimmick(const float fDeltaTime)
+{
+	// 生成フラグがoffの場合関数を抜ける
+	if (!m_bGimmickClone) { return false; }
+
+	// タイマーが上限を超えていた場合関数を抜ける
+	if (m_fGimmickTimer >= GIMMICK_TIMER)
+	{
+		m_fGimmickTimer = 0.0f;
+		m_bGimmickClone = false;
+		return false;
+	}
+
+	// タイマーを加算する
+	m_fGimmickTimer += fDeltaTime;
+
+	// 入力情報の取得
+	CInputPad* pPad = GET_INPUTPAD;
+
+	// スティック入力があった場合
+	if (pPad->GetTriggerRStick())
+	{
+		// 前回入力との誤差が許容範囲外の場合関数を抜ける
+		if (m_fTempStick - pPad->GetPressRStickRot() > STICK_ERROR)
+		{
+			m_fGimmickTimer = 0.0f;
+			m_bGimmickClone = false;
+			return false;
+		}
+
+		// 分身のリスト構造が無ければ抜ける
+		if (CGimmickAction::GetList() == nullptr) { assert(false); return false; }
+
+		// ギミックのリストを取得
+		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
+
+		// プレイヤーから最も近いギミックを取得する変数
+		CGimmickAction* pGimmick = nullptr;
+		float fTempDistance = 0.0f; // 最も近いギミックまでの距離の2乗
+
+		// 最も近いギミックを走査する
+		for (auto gimmick : list)
+		{
+			// 保存してるギミックがnullの場合保存して次に進む
+			if (pGimmick == nullptr)
+			{
+				pGimmick = gimmick;
+				D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
+				fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+				continue;
+			}
+
+			// プレイヤーと対象ギミックを結ぶベクトルの算出
+			D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
+
+			// 距離の2乗が保存された数値よりも大きい場合次に進む
+			float fDistance = vecToGimmick.x* vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+			if (fTempDistance < fDistance)
+			{ continue; }
+
+			// 対象ギミックを保存する
+			pGimmick = gimmick;
+			fTempDistance = fDistance;
+		}
+
+		// 距離が近い場合
+		if (fTempDistance < GIMMICK_SET_DISTANCE)
+		{
+			// 直接ギミックになる分身を必要分生成
+			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
+			{
+				CPlayerClone::Create(pGimmick);
+			}
+		}
+
+		// フラグをリセットし関数を抜ける
+		m_fGimmickTimer = 0.0f;
+		m_bGimmickClone = false;
+		return true;
+	}
+
+	return true;
 }
 
 //==========================================
