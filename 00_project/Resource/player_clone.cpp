@@ -552,6 +552,9 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 //=========================================
 CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 {
+	// ギミックがnullの場合nullを返す
+	if (gimmick == nullptr) { return nullptr; }
+
 	// ポインタを宣言
 	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
 
@@ -571,7 +574,7 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	pPlayer->SetGimmick(gimmick);
 
 	// 確保したアドレスを返す
-	return pPlayer->Block();
+	return pPlayer;
 }
 
 //============================================================

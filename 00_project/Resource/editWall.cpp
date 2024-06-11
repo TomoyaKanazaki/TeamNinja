@@ -1,14 +1,14 @@
 #if 1
 //============================================================
 //
-//	エディットフィールド処理 [editField.cpp]
+//	エディットウォール処理 [editWall.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "editField.h"
+#include "editWall.h"
 #include "editManager.h"
 #include "manager.h"
 #include "collision.h"
@@ -38,7 +38,7 @@
 //************************************************************
 namespace
 {
-	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_field.txt";	// セーブテキストパス
+	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_wall.txt";	// セーブテキストパス
 
 	const D3DXVECTOR2 INIT_SIZE = D3DXVECTOR2(editstage::SIZE, editstage::SIZE);	// 大きさ
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
@@ -46,19 +46,19 @@ namespace
 }
 
 //************************************************************
-//	親クラス [CEditField] のメンバ関数
+//	親クラス [CEditWall] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditField::CEditField()
+CEditWall::CEditWall()
 {
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pField = nullptr;	// フィールド情報
+	m_pWall = nullptr;	// ウォール情報
 	m_bSave = false;	// 保存状況
-	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// フィールド配置情報
+	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// ウォール配置情報
 
 #endif	// _DEBUG
 }
@@ -66,7 +66,7 @@ CEditField::CEditField()
 //============================================================
 //	デストラクタ
 //============================================================
-CEditField::~CEditField()
+CEditWall::~CEditWall()
 {
 #if _DEBUG
 #endif	// _DEBUG
@@ -75,13 +75,13 @@ CEditField::~CEditField()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CEditField::Init(void)
+HRESULT CEditWall::Init(void)
 {
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_pField			 = nullptr;				// 情報
-	m_infoCreate.type	 = (CField::EType)0;	// 種類
+	m_pWall				 = nullptr;				// 情報
+	m_infoCreate.type	 = (CWall::EType)0;		// 種類
 	m_infoCreate.size	 = INIT_SIZE;			// 大きさ
 	m_infoCreate.part	 = GRID2_ONE;			// 分割数
 	m_infoCreate.texPart = GRID2_ONE;			// テクスチャ分割数
@@ -96,19 +96,19 @@ HRESULT CEditField::Init(void)
 		return E_FAIL;
 	}
 
-	// フィールドの生成
-	D3DXCOLOR colField = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 地面色
-	m_pField = CField::Create
+	// ウォールの生成
+	D3DXCOLOR colWall = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 壁色
+	m_pWall = CWall::Create
 	( // 引数
 		m_infoCreate.type,		// 種類
 		GetVec3Position(),		// 位置
 		GetVec3Rotation(),		// 向き
 		m_infoCreate.size,		// 大きさ
-		colField,				// 色
+		colWall,				// 色
 		m_infoCreate.part,		// 分割数
 		m_infoCreate.texPart	// テクスチャ分割数
 	);
-	if (m_pField == nullptr)
+	if (m_pWall == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
@@ -130,18 +130,18 @@ HRESULT CEditField::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CEditField::Uninit(void)
+void CEditWall::Uninit(void)
 {
 #if _DEBUG
 
 	// 親クラスの終了
 	CEditorObject::Uninit();
 
-	// フィールドの色の全初期化
-	InitAllColorField();
+	// ウォールの色の全初期化
+	InitAllColorWall();
 
-	// フィールドの終了
-	SAFE_UNINIT(m_pField);
+	// ウォールの終了
+	SAFE_UNINIT(m_pWall);
 
 #endif	// _DEBUG
 }
@@ -149,7 +149,7 @@ void CEditField::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEditField::Update(void)
+void CEditWall::Update(void)
 {
 #if _DEBUG
 
@@ -165,17 +165,17 @@ void CEditField::Update(void)
 	// 種類の変更
 	ChangeType();
 
-	// フィールドの生成
-	CreateField();
+	// ウォールの生成
+	CreateWall();
 
-	// フィールドの破棄
-	ReleaseField();
+	// ウォールの破棄
+	ReleaseWall();
 
 	// 位置を反映
-	m_pField->SetVec3Position(GetVec3Position());
+	m_pWall->SetVec3Position(GetVec3Position());
 
 	// 向きを反映
-	m_pField->SetVec3Rotation(GetVec3Rotation());
+	m_pWall->SetVec3Rotation(GetVec3Rotation());
 
 #endif	// _DEBUG
 }
@@ -183,7 +183,7 @@ void CEditField::Update(void)
 //============================================================
 //	保存状況取得処理
 //============================================================
-bool CEditField::IsSave(void)
+bool CEditWall::IsSave(void)
 {
 #if _DEBUG
 
@@ -201,7 +201,7 @@ bool CEditField::IsSave(void)
 //============================================================
 //	情報保存処理
 //============================================================
-void CEditField::SaveInfo(void)
+void CEditWall::SaveInfo(void)
 {
 #if _DEBUG
 
@@ -214,7 +214,7 @@ void CEditField::SaveInfo(void)
 //============================================================
 //	情報読込処理
 //============================================================
-void CEditField::LoadInfo(void)
+void CEditWall::LoadInfo(void)
 {
 #if _DEBUG
 
@@ -227,7 +227,7 @@ void CEditField::LoadInfo(void)
 //============================================================
 //	操作表示の描画処理
 //============================================================
-void CEditField::DrawDebugControl(void)
+void CEditWall::DrawDebugControl(void)
 {
 #if _DEBUG
 
@@ -245,7 +245,7 @@ void CEditField::DrawDebugControl(void)
 //============================================================
 //	情報表示の描画処理
 //============================================================
-void CEditField::DrawDebugInfo(void)
+void CEditWall::DrawDebugInfo(void)
 {
 #if _DEBUG
 
@@ -263,19 +263,19 @@ void CEditField::DrawDebugInfo(void)
 //============================================================
 //	向き更新処理
 //============================================================
-void CEditField::UpdateRotation(void)
+void CEditWall::UpdateRotation(void)
 {
 	// 向きの更新
 	CEditorObject::UpdateRotation();
 
 	// 向きを反映
-	m_pField->SetVec3Rotation(GetVec3Rotation());
+	m_pWall->SetVec3Rotation(GetVec3Rotation());
 }
 
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditField::UpdateSizing(void)
+void CEditWall::UpdateSizing(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 
@@ -324,138 +324,138 @@ void CEditField::UpdateSizing(void)
 	useful::LimitMinNum(m_infoCreate.size.y, INIT_SIZE.y);
 
 	// 大きさを反映
-	m_pField->SetVec2Sizing(m_infoCreate.size);
+	m_pWall->SetVec2Sizing(m_infoCreate.size);
 }
 
 //============================================================
 //	テクスチャ分割の更新処理
 //============================================================
-void CEditField::UpdateTexPart(void)
+void CEditWall::UpdateTexPart(void)
 {
 	// テクスチャ分割数を設定
 	m_infoCreate.texPart.x = (int)(m_infoCreate.size.x / INIT_SIZE.x);
 	m_infoCreate.texPart.y = (int)(m_infoCreate.size.y / INIT_SIZE.y);
 
 	// テクスチャ分割数を設定
-	m_pField->SetTexPattern(m_infoCreate.texPart);
+	m_pWall->SetTexPattern(m_infoCreate.texPart);
 }
 
 //============================================================
 //	種類変更の更新処理
 //============================================================
-void CEditField::ChangeType(void)
+void CEditWall::ChangeType(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 
 	// 種類を変更
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
-		m_infoCreate.type = (CField::EType)((m_infoCreate.type + 1) % CField::TYPE_MAX);
+		m_infoCreate.type = (CWall::EType)((m_infoCreate.type + 1) % CWall::TYPE_MAX);
 	}
 
 	// 種類を反映
-	m_pField->SetType(m_infoCreate.type);
+	m_pWall->SetType(m_infoCreate.type);
 }
 
 //============================================================
-//	フィールドの生成処理
+//	ウォールの生成処理
 //============================================================
-void CEditField::CreateField(void)
+void CEditWall::CreateWall(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	D3DXCOLOR colField = XCOL_WHITE;			// 色保存用
+	D3DXCOLOR colWall = XCOL_WHITE;			// 色保存用
 
-	// フィールドを配置
+	// ウォールを配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
 	{
 		//----------------------------------------------------
-		//	フィールドの情報を配置用に変更
+		//	ウォールの情報を配置用に変更
 		//----------------------------------------------------
 		// 自動更新・自動描画をONにする
-		m_pField->SetEnableUpdate(true);
-		m_pField->SetEnableDraw(true);
+		m_pWall->SetEnableUpdate(true);
+		m_pWall->SetEnableDraw(true);
 
 		// 色を設定
-		colField = m_pField->GetColor();	// 元の色を取得
-		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, 1.0f));
+		colWall = m_pWall->GetColor();	// 元の色を取得
+		m_pWall->SetColor(D3DXCOLOR(colWall.r, colWall.g, colWall.b, 1.0f));
 
 		// 未保存を設定
 		m_bSave = false;
 
 		//----------------------------------------------------
-		//	新しいフィールドの生成
+		//	新しいウォールの生成
 		//----------------------------------------------------
-		// フィールドの生成
-		m_pField = CField::Create
+		// ウォールの生成
+		m_pWall = CWall::Create
 		( // 引数
 			m_infoCreate.type,		// 種類
 			GetVec3Position(),		// 位置
 			GetVec3Rotation(),		// 向き
 			m_infoCreate.size,		// 大きさ
-			colField,				// 色
+			colWall,				// 色
 			m_infoCreate.part,		// 分割数
 			m_infoCreate.texPart	// テクスチャ分割数
 		);
-		assert(m_pField != nullptr);
+		assert(m_pWall != nullptr);
 
 		// 色を設定
-		colField = m_pField->GetColor();	// 元の色を取得
-		m_pField->SetColor(D3DXCOLOR(colField.r, colField.g, colField.b, INIT_ALPHA));
+		colWall = m_pWall->GetColor();	// 元の色を取得
+		m_pWall->SetColor(D3DXCOLOR(colWall.r, colWall.g, colWall.b, INIT_ALPHA));
 	}
 }
 
 //============================================================
-//	フィールドの破棄処理
+//	ウォールの破棄処理
 //============================================================
-void CEditField::ReleaseField(void)
+void CEditWall::ReleaseWall(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	bool bRelease = false;	// 破棄状況
 
-	// フィールドを削除
+	// ウォールを削除
 	if (pKeyboard->IsTrigger(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
 		bRelease = true;
 	}
 
-	// フィールドの削除判定
-	DeleteCollisionField(bRelease);
+	// ウォールの削除判定
+	DeleteCollisionWall(bRelease);
 }
 
 //============================================================
-//	フィールドの削除判定
+//	ウォールの削除判定
 //============================================================
-void CEditField::DeleteCollisionField(const bool bRelase)
+void CEditWall::DeleteCollisionWall(const bool bRelase)
 {
-	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	CListManager<CWall> *pListManager = CWall::GetList();	// ウォールリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+	std::list<CWall*> listWall = pListManager->GetList();	// ウォールリスト情報
 
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	for (auto& rList : listField)
-	{ // フィールド数分繰り返す
+	for (auto& rList : listWall)
+	{ // ウォール数分繰り返す
 
 		// 同じアドレスだった場合次へ
-		if (rList == m_pField) { continue; }
+		if (rList == m_pWall) { continue; }
 
-		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
+		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の壁位置
 		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
 		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
 
 		// 自身の大きさを設定
-		D3DXVECTOR2 sizeThisField = m_pField->GetVec2Sizing();	// 自身の地面の大きさ
-		sizeThis.x = sizeThisField.x;	// 判定サイズXを設定
-		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeThis.z = sizeThisField.y;	// 判定サイズZを設定
+		D3DXVECTOR2 sizeThisWall = m_pWall->GetVec2Sizing();	// 自身の壁の大きさ
+		sizeThis.x = sizeThisWall.x;	// 判定サイズXを設定
+		sizeThis.y = sizeThisWall.y;	// 判定サイズYを設定
+		sizeThis.z = editstage::SIZE;	// 判定サイズZを設定
 		sizeThis *= 0.5f;				// 判定サイズを半分に
 
 		// 対象の大きさを設定
-		D3DXVECTOR2 sizeOtherField = rList->GetVec2Sizing();	// 対象の地面の大きさ
-		sizeOther.x = sizeOtherField.x;	// 判定サイズXを設定
-		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeOther.z = sizeOtherField.y;	// 判定サイズZを設定
+		D3DXVECTOR2 sizeOtherWall = rList->GetVec2Sizing();	// 対象の壁の大きさ
+		sizeOther.x = sizeOtherWall.x;	// 判定サイズXを設定
+		sizeOther.y = sizeOtherWall.y;	// 判定サイズYを設定
+		sizeOther.z = editstage::SIZE;	// 判定サイズZを設定
 		sizeOther *= 0.5f;				// 判定サイズを半分に
 
 		// 矩形の当たり判定
@@ -496,19 +496,19 @@ void CEditField::DeleteCollisionField(const bool bRelase)
 }
 
 //============================================================
-//	フィールドの色の全初期化処理
+//	ウォールの色の全初期化処理
 //============================================================
-void CEditField::InitAllColorField(void)
+void CEditWall::InitAllColorWall(void)
 {
-	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	CListManager<CWall> *pListManager = CWall::GetList();	// ウォールリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+	std::list<CWall*> listWall = pListManager->GetList();	// ウォールリスト情報
 
-	for (auto& rList : listField)
-	{ // フィールド数分繰り返す
+	for (auto& rList : listWall)
+	{ // ウォール数分繰り返す
 
 		// 同じアドレスだった場合次へ
-		if (rList == m_pField) { continue; }
+		if (rList == m_pWall) { continue; }
 
 		// 通常色を設定
 		rList->SetColor(XCOL_WHITE);
@@ -518,18 +518,18 @@ void CEditField::InitAllColorField(void)
 //============================================================
 //	保存処理
 //============================================================
-HRESULT CEditField::Save(void)
+HRESULT CEditWall::Save(void)
 {
 #if _DEBUG
 
-	// 地面のリストを取得
-	CListManager<CField> *pListManager = CField::GetList();	// リストマネージャー
-	std::list<CField*> listField;	// 地面リスト
+	// 壁のリストを取得
+	CListManager<CWall> *pListManager = CWall::GetList();	// リストマネージャー
+	std::list<CWall*> listWall;	// 壁リスト
 	if (pListManager != nullptr)
 	{ // リストマネージャーが生成されている場合
 
 		// リストを取得
-		listField = pListManager->GetList();
+		listWall = pListManager->GetList();
 	}
 
 	// ファイルを開く
@@ -538,7 +538,7 @@ HRESULT CEditField::Save(void)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, "ステージ壁配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
@@ -547,29 +547,29 @@ HRESULT CEditField::Save(void)
 	// 見出しを書き出し
 	file << "#==============================================================================" << std::endl;
 	file << "#" << std::endl;
-	file << "#	ステージ地面配置のセーブデータ [save_field.txt]" << std::endl;
+	file << "#	ステージ壁配置のセーブデータ [save_wall.txt]" << std::endl;
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
 	file << "# この行から下をコピーし [stage.txt] に張り付け\n" << std::endl;
 
-	// フィールドの色の全初期化
-	InitAllColorField();
+	// ウォールの色の全初期化
+	InitAllColorWall();
 
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
 	// 読み込み開始文字列を書き出し
-	file << "STAGE_FIELDSET\n" << std::endl;
+	file << "STAGE_WALLSET\n" << std::endl;
 
-	for (const auto& rList : listField)
-	{ // 地面の総数分繰り返す
+	for (const auto& rList : listWall)
+	{ // 壁の総数分繰り返す
 
 		// 同じアドレスだった場合次へ
-		if (rList == m_pField) { continue; }
+		if (rList == m_pWall) { continue; }
 
 		// 書き出す情報を取得
-		CField::EType type	= rList->GetType();			// 種類
+		CWall::EType type	= rList->GetType();			// 種類
 		D3DXVECTOR3 pos		= rList->GetVec3Position();	// 位置
 		D3DXVECTOR3 rot		= rList->GetVec3Rotation();	// 向き
 		D3DXVECTOR2 size	= rList->GetVec2Sizing();	// 大きさ
@@ -581,7 +581,7 @@ HRESULT CEditField::Save(void)
 		rot = D3DXToDegree(rot);
 
 		// 情報を書き出し
-		file << "	FIELDSET" << std::endl;
+		file << "	WALLSET" << std::endl;
 		file << "		TYPE	= " << type << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 		file << "		ROT		= " << rot.x << " " << rot.y << " " << rot.z << std::endl;
@@ -589,14 +589,14 @@ HRESULT CEditField::Save(void)
 		file << "		COL		= " << col.r << " " << col.g << " " << col.b << " " << col.a << std::endl;
 		file << "		PART	= " << part.x << " " << part.y << std::endl;
 		file << "		TEXPART	= " << texPart.x << " " << texPart.y << std::endl;
-		file << "	END_FIELDSET\n" << std::endl;
+		file << "	END_WALLSET\n" << std::endl;
 	}
 
 	// 読み込み終了文字列を書き出し
-	file << "END_STAGE_FIELDSET" << std::endl;
+	file << "END_STAGE_WALLSET" << std::endl;
 
-	// フィールドの削除判定
-	DeleteCollisionField(false);
+	// ウォールの削除判定
+	DeleteCollisionWall(false);
 
 	// 保存済みにする
 	m_bSave = true;
