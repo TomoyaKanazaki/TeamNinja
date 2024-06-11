@@ -57,6 +57,7 @@ private:
 
 	D3DXVECTOR3 m_move;		// 移動量
 	int m_nDoorCounter;		// 扉の開閉カウンター
+	int m_nNumBound;		// 跳ねた回数
 
 	EState m_state;			// 扉の状態
 
