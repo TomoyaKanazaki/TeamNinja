@@ -6,11 +6,12 @@
 // 
 //==========================================
 #include "gimmick_state.h"
+#include "field.h"
 
 //==========================================
 //  クラス定義
 //==========================================
-class CGimmickGravel : public CGimmickState
+class CGimmickGravel : public CField
 {
 public:
 
@@ -18,15 +19,12 @@ public:
 	CGimmickGravel();
 	~CGimmickGravel() override;
 
+	// オーバーライド関数
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
-
-private:
-
-	// メンバ関数
-	void HitClone(CPlayerClone* pClone) override; // 分身に当たっていた時の処理
-	void MissClone(CPlayerClone* pClone) override; // 分身に当たっていない場合の処理
+	void Hit(CPlayerClone* pClone) override;	// 分身に当たっていた時の処理
+	void Miss(CPlayerClone* pClone) override;	// 分身に当たっていない時の処理
 
 };

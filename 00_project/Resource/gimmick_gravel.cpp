@@ -10,7 +10,7 @@
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickGravel::CGimmickGravel() : CGimmickState()
+CGimmickGravel::CGimmickGravel()
 {
 
 }
@@ -29,7 +29,7 @@ CGimmickGravel::~CGimmickGravel()
 HRESULT CGimmickGravel::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickState::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -47,7 +47,7 @@ HRESULT CGimmickGravel::Init(void)
 void CGimmickGravel::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickState::Uninit();
+	CField::Uninit();
 }
 
 //==========================================
@@ -56,7 +56,7 @@ void CGimmickGravel::Uninit(void)
 void CGimmickGravel::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
-	CGimmickState::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //==========================================
@@ -65,23 +65,23 @@ void CGimmickGravel::Update(const float fDeltaTime)
 void CGimmickGravel::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickState::Draw(pShader);
+	CField::Draw(pShader);
 }
 
 //===========================================
-//  
+//  文字列(フラグ)の追加
 //===========================================
-void CGimmickGravel::HitClone(CPlayerClone* pClone)
+void CGimmickGravel::Hit(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
-	pClone->AddFrags(GRAVEL);
+	pClone->AddFrags(GetFlag());
 }
 
 //=========================================
 //  文字列(フラグ)の削除
 //===========================================
-void CGimmickGravel::MissClone(CPlayerClone* pClone)
+void CGimmickGravel::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
-	pClone->SabFrags(GRAVEL);
+	pClone->SabFrags(GetFlag());
 }

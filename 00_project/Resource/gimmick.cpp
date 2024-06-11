@@ -183,12 +183,6 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_GRAVEL:			// çªóòìπ
-
-		pGimmick = new CGimmickGravel;
-
-		break;
-
 	case CGimmick::TYPE_BOOB:			// ÉhÉu
 
 		pGimmick = new CGimmickBoob;

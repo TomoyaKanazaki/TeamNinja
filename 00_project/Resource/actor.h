@@ -81,6 +81,9 @@ public:
 
 private:
 
+	// 静的メンバ関数
+	static HRESULT LoadSetup(void);	// セットアップ
+
 	// メンバ関数
 	void BindCollision(void);						// 当たり判定の割り当て処理
 

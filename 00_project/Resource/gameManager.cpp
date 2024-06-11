@@ -89,7 +89,6 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
 
 	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_BOOB, 2);
-	CGimmick::Create(D3DXVECTOR3(-600.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_GRAVEL, 2);
 	CGimmick::Create(D3DXVECTOR3(-800.0f, 0.0f, -700.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_WATER, 2);
 
 	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
