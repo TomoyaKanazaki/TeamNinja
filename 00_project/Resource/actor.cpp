@@ -101,28 +101,8 @@ HRESULT CActor::Init(void)
 //============================================================
 void CActor::Uninit(void)
 {
-	for (auto cube : m_cube)
-	{
-		// 終了処理
-		cube->Uninit();
-	}
-
-	for (auto cylinder : m_cylinder)
-	{
-		// 終了処理
-		cylinder->Uninit();
-	}
-
-	for (auto sphere : m_sphere)
-	{
-		// 終了処理
-		sphere->Uninit();
-	}
-
-	// クリア処理
-	m_cube.clear();
-	m_cylinder.clear();
-	m_sphere.clear();
+	// 当たり判定の消去処理
+	ClearCollision();
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -291,6 +271,35 @@ void CActor::Collision
 			*pHit = true;
 		}
 	}
+}
+
+//============================================================
+// 当たり判定の消去処理
+//============================================================
+void CActor::ClearCollision(void)
+{
+	for (auto cube : m_cube)
+	{
+		// 終了処理
+		cube->Uninit();
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// 終了処理
+		cylinder->Uninit();
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// 終了処理
+		sphere->Uninit();
+	}
+
+	// クリア処理
+	m_cube.clear();
+	m_cylinder.clear();
+	m_sphere.clear();
 }
 
 //============================================================

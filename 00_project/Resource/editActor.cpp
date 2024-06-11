@@ -15,6 +15,10 @@
 #include "useful.h"
 #include "stage.h"
 
+#include "collisionCube.h"
+#include "collisionCylinder.h"
+#include "collisionSphere.h"
+
 //************************************************************
 //	マクロ定義
 //************************************************************
@@ -167,6 +171,27 @@ void CEditActor::Update(void)
 
 	// アクターの破棄
 	ReleaseActor();
+
+	for (auto cube : m_pActor->GetCube())
+	{
+		// オフセット処理
+		cube->OffSet(m_pActor->GetMtxWorld());
+		cube->GetCube()->SetVec3Rotation(m_pActor->GetVec3Rotation());
+	}
+
+	for (auto cylinder : m_pActor->GetCylinder())
+	{
+		// 終了処理
+		cylinder->OffSet(m_pActor->GetMtxWorld());
+		cylinder->GetTube()->SetVec3Rotation(m_pActor->GetVec3Rotation());
+	}
+
+	for (auto sphere : m_pActor->GetSphere())
+	{
+		// 終了処理
+		sphere->OffSet(m_pActor->GetMtxWorld());
+		sphere->GetSphere()->SetVec3Rotation(m_pActor->GetVec3Rotation());
+	}
 
 	// 位置を反映
 	m_pActor->SetVec3Position(GetVec3Position());
