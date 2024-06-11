@@ -76,7 +76,7 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_AVATAR, CObject::DIM_3D, PRIORITY),
+CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
 	m_pShadow		(nullptr),		// 影の情報
 	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_move			(VEC3_ZERO),	// 移動量
@@ -1300,6 +1300,9 @@ CPlayerClone* CPlayerClone::Block()
 {
 	// 自身の座標を取得
 	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 前回座標を生成座標に設定する
+	m_oldPos = pos;
 
 #ifdef _DEBUG
 	std::list<CDebugObject*> debuglist = CDebugObject::GetList()->GetList();
