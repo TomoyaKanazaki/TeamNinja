@@ -81,6 +81,9 @@ public:
 
 private:
 
+	// メンバ関数
+	void BindCollision(void);						// 当たり判定の割り当て処理
+
 	// 静的メンバ変数
 	static CListManager<CActor>* m_pList;			// リスト構造
 
