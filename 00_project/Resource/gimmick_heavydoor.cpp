@@ -14,6 +14,7 @@
 #include "debugproc.h"
 #include "MapModel.h"
 #include "stage.h"
+#include "scene.h"
 
 //************************************************************
 //	定数宣言
@@ -31,6 +32,7 @@ namespace
 //============================================================
 CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction(),
 m_pMapModel(nullptr),		// マップモデルの情報
+m_pStage(nullptr),			// ステージの情報
 m_move(VEC3_ZERO),			// 移動量
 m_nDoorCounter(0),			// 扉の開閉カウンター
 m_state(STATE_NONE)			// 扉の状態
@@ -53,6 +55,7 @@ HRESULT CGimmickHeavyDoor::Init(void)
 {
 	// 変数初期化
 	m_pMapModel = nullptr;	// マップモデルの情報
+	m_pStage = CManager::GetInstance()->GetScene()->GetStage();		// ステージの情報
 	m_move = VEC3_ZERO;		// 移動量
 	m_nDoorCounter = 0;		// 扉の開閉カウンター
 	m_state = STATE_CLOSE;	// 扉の状態
@@ -85,6 +88,9 @@ void CGimmickHeavyDoor::Uninit(void)
 {
 	// マップモデルの終了
 	SAFE_UNINIT(m_pMapModel);
+
+	// ステージの終了
+	SAFE_UNINIT(m_pStage);
 
 	// ギミックアクションの終了
 	CGimmickAction::Uninit();
@@ -169,7 +175,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 	{ // 一定時間経ったら
 
 		m_state = STATE_FULLY;		// 扉全開状態
-		//m_nDoorCounter = 0;			// カウンター初期化
+		m_nDoorCounter = 0;			// カウンター初期化
 		m_move = MOVEDOWN;			// 移動量
 
 	}
@@ -193,24 +199,19 @@ void CGimmickHeavyDoor::CloseTheDoor(void)
 	// 位置更新
 	pos += m_move;
 
-	// 位置設定
-	m_pMapModel->SetVec3Position(pos);
-
-	// 重力
-	m_move.y -= GRAVITY;
-
-	if (m_nDoorCounter <= 0)
-	{ // 一定時間経ったら
-
+	// 範囲外の着地判定
+	if (m_pStage->LandLimitPosition(pos, m_move, 0.0f))
+	{
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
 		m_nDoorCounter = 0;		// カウンター初期化
 
 		// 扉開けてない
 		SetMoment(false);
 	}
-	else
-	{ // 時間経ってない場合
 
-		m_nDoorCounter--;
-	}
+	// 位置設定
+	m_pMapModel->SetVec3Position(pos);
+
+	// 重力
+	m_move.y -= GRAVITY;
 }

@@ -52,7 +52,6 @@ CPause			*CSceneGame::m_pPause		= nullptr;	// ポーズ
 CHitStop		*CSceneGame::m_pHitStop		= nullptr;	// ヒットストップ
 CFlash			*CSceneGame::m_pFlash		= nullptr;	// フラッシュ
 CEditManager	*CSceneGame::m_pEditManager	= nullptr;	// エディットマネージャー
-CCollManager	*CSceneGame::m_pCollManager = nullptr;	// 当たり判定マネージャー
 
 //************************************************************
 //	子クラス [CSceneGame] のメンバ関数
