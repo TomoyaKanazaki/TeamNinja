@@ -27,6 +27,8 @@ namespace
 	{
 		"data\\MODEL\\Rock\\Moss-Rock000.x",		// 岩(小)
 	};
+
+	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// アクターの優先順位
 }
 
@@ -101,28 +103,8 @@ HRESULT CActor::Init(void)
 //============================================================
 void CActor::Uninit(void)
 {
-	for (auto cube : m_cube)
-	{
-		// 終了処理
-		cube->Uninit();
-	}
-
-	for (auto cylinder : m_cylinder)
-	{
-		// 終了処理
-		cylinder->Uninit();
-	}
-
-	for (auto sphere : m_sphere)
-	{
-		// 終了処理
-		sphere->Uninit();
-	}
-
-	// クリア処理
-	m_cube.clear();
-	m_cylinder.clear();
-	m_sphere.clear();
+	// 当たり判定の消去処理
+	ClearCollision();
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -182,7 +164,7 @@ CActor* CActor::Create
 	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
-	const D3DXVECTOR3& rScale	// 大きさ
+	const D3DXVECTOR3& rScale	// 拡大率
 )
 {
 	// モデルUIの生成
@@ -294,12 +276,41 @@ void CActor::Collision
 }
 
 //============================================================
+// 当たり判定の消去処理
+//============================================================
+void CActor::ClearCollision(void)
+{
+	for (auto cube : m_cube)
+	{
+		// 終了処理
+		cube->Uninit();
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// 終了処理
+		cylinder->Uninit();
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// 終了処理
+		sphere->Uninit();
+	}
+
+	// クリア処理
+	m_cube.clear();
+	m_cylinder.clear();
+	m_sphere.clear();
+}
+
+//============================================================
 // 当たり判定の割り当て処理
 //============================================================
 void CActor::BindCollision(void)
 {
 	// 当たり判定を取得
-	CCollManager::SCollision coll = CSceneGame::GetCollManager()->GetCollInfo(m_type);
+	CCollManager::SCollision coll = CScene::GetCollManager()->GetCollInfo(m_type);
 
 	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_cube.size()); nCnt++)
 	{
@@ -344,5 +355,108 @@ void CActor::BindCollision(void)
 //============================================================
 HRESULT CActor::LoadSetup(void)
 {
+	int nType = 0;					// 種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
+	D3DXVECTOR3 scale = VEC3_ONE;	// 拡大率の代入用
+
+	// ファイルを開く
+	std::ifstream file(SETUP_TXT);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "アクターセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_ACTORSET")
+		{
+			do
+			{ // END_STAGE_ACTORSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "ACTORSET")
+				{
+					do
+					{ // END_ACTORSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "TYPE")
+						{
+							file >> str;	// ＝を読込
+
+							// 種類を読込
+							file >> nType;
+						}
+						else if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+						else if (str == "ROT")
+						{
+							file >> str;	// ＝を読込
+
+							// 向きを読込
+							file >> rot.x;
+							file >> rot.y;
+							file >> rot.z;
+						}
+						else if (str == "SCALE")
+						{
+							file >> str;	// ＝を読込
+
+							// 拡大率を読込
+							file >> scale.x;
+							file >> scale.y;
+							file >> scale.z;
+						}
+					} while (str != "END_ACTORSET");	// END_ACTORSETを読み込むまでループ
+
+					// アクターオブジェクトの生成
+					if (CActor::Create((EType)nType, pos, D3DXToRadian(rot), scale) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_ACTORSET");	// END_STAGE_ACTORSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
 	return S_OK;
 }
