@@ -327,6 +327,12 @@ CCollManager* CCollManager::Create(void)
 		return nullptr;
 	}
 
+	if (FAILED(pColl->Load()))
+	{ // 読込に失敗した場合
+
+		return nullptr;
+	}
+
 	// 確保したアドレスを返す
 	return pColl;
 }

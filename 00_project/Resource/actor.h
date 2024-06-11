@@ -75,14 +75,12 @@ public:
 		const EType type,						// 種類
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
-		const D3DXVECTOR3& rScale = VEC3_ONE	// 大きさ
+		const D3DXVECTOR3& rScale = VEC3_ONE	// 拡大率
 	);
 	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
+	static HRESULT LoadSetup(void);	// セットアップ
 
 private:
-
-	// 静的メンバ関数
-	static HRESULT LoadSetup(void);	// セットアップ
 
 	// メンバ関数
 	void BindCollision(void);						// 当たり判定の割り当て処理

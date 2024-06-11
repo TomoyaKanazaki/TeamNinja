@@ -19,7 +19,6 @@
 #include "hitStop.h"
 #include "flash.h"
 #include "editManager.h"
-#include "collManager.h"
 
 #include "stage.h"
 #include "player.h"
@@ -144,22 +143,6 @@ HRESULT CSceneGame::Init(void)
 		return E_FAIL;
 	}
 
-	// 当たり判定の生成
-	m_pCollManager = CCollManager::Create();
-	if (m_pCollManager == nullptr)
-	{ // 生成に生成した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-	else
-	{ // 上記以外
-
-		// ロード処理
-		m_pCollManager->Load();
-	}
-
 	// ゲームマネージャーの生成
 	m_pGameManager = CGameManager::Create();
 	if (m_pGameManager == nullptr)
@@ -215,9 +198,6 @@ void CSceneGame::Uninit(void)
 
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
-
-	// 当たり判定の破棄
-	SAFE_UNINIT(m_pCollManager);
 
 #if _DEBUG
 
@@ -379,16 +359,4 @@ CEditManager *CSceneGame::GetEditManager(void)
 
 	// エディターマネージャーのポインタを返す
 	return m_pEditManager;
-}
-
-//============================================================
-// 当たり判定マネージャー取得
-//============================================================
-CCollManager *CSceneGame::GetCollManager(void)
-{
-	// インスタンス未使用
-	assert(m_pCollManager != nullptr);
-
-	// 当たり判定マネージャーのポインタを返す
-	return m_pCollManager;
 }

@@ -25,7 +25,6 @@ class CPause;		// ポーズクラス
 class CHitStop;		// ヒットストップクラス
 class CFlash;		// フラッシュクラス
 class CEditManager;	// エディットマネージャークラス
-class CCollManager;	// 当たり判定マネージャー
 
 //************************************************************
 //	クラス定義
@@ -53,7 +52,6 @@ public:
 	static CHitStop		*GetHitStop(void);		// ヒットストップ取得
 	static CFlash		*GetFlash(void);		// フラッシュ取得
 	static CEditManager	*GetEditManager(void);	// エディターマネージャー取得
-	static CCollManager *GetCollManager(void);	// 当たり判定マネージャー取得
 
 private:
 	// 静的メンバ変数
@@ -64,7 +62,6 @@ private:
 	static CHitStop		*m_pHitStop;		// ヒットストップ
 	static CFlash		*m_pFlash;			// フラッシュ
 	static CEditManager *m_pEditManager;	// エディターマネージャー
-	static CCollManager *m_pCollManager;	// 当たり判定マネージャー
 };
 
 #endif	// _SCENE_GAME_H_
