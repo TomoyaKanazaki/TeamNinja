@@ -140,9 +140,12 @@ private:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
 	// メンバ関数 (金崎追加)
-	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot);	// 分身の処理
+	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
+	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
+
+	// メンバ関数 (小原追加)
 	void CollisionActor();	// アクターの当たり判定
 
 #ifdef _DEBUG
@@ -167,6 +170,9 @@ private:
 	int			m_nCounterState;	// 状態管理カウンター
 	bool		m_bJump;			// ジャンプ状況
 	float		m_fScalar;			// 移動量
+	bool		m_bGimmickClone;	// ギミッククローンの生成フラグ
+	float		m_fGimmickTimer;	// ギミッククローンの生成タイマー
+	float		m_fTempStick;		// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
 	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
