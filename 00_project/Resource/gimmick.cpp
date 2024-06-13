@@ -166,25 +166,19 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_MALTI:			// ï°êîä«óù
-
-		pGimmick = new CGimmickMalti;
-
-		break;
-
 	case CGimmick::TYPE_DECAED:			// ãÄÇøÇΩè∞
 
 		pGimmick = new CGimmickDecaed;
 
 		break;
 
-	case CGimmick::TYPE_JUMPOFF:			// îÚÇ—ç~ÇË
+	case CGimmick::TYPE_JUMPOFF:		// îÚÇ—ç~ÇË
 
 		pGimmick = new CGimmickJumpOff;
 
 		break;
 
-	case CGimmick::TYPE_HEAVYDOOR:			// èdÇ¢î‡
+	case CGimmick::TYPE_HEAVYDOOR:		// èdÇ¢î‡
 
 		pGimmick = new CGimmickHeavyDoor;
 
