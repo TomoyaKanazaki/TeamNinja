@@ -310,6 +310,8 @@ void CEditActor::UpdateRotation(void)
 		CEditorObject::UpdateRotation();
 	}
 
+#ifdef _DEBUG
+
 	for (auto& rCube : m_pActor->GetCube())
 	{ // ƒRƒŠƒWƒ‡ƒ“ƒLƒ…[ƒu”•ªŒJ‚è•Ô‚·
 
@@ -330,6 +332,8 @@ void CEditActor::UpdateRotation(void)
 		// I—¹ˆ—
 		rSphere->GetSphere()->SetVec3Rotation(GetVec3Rotation());
 	}
+
+#endif // _DEBUG
 
 	// Œü‚«‚ð”½‰f
 	m_pActor->SetVec3Rotation(GetVec3Rotation());
@@ -371,6 +375,8 @@ void CEditActor::UpdateScaling(void)
 	useful::LimitMinNum(m_infoCreate.scale.y, SCALING.y);
 	useful::LimitMinNum(m_infoCreate.scale.z, SCALING.z);
 
+#ifdef _DEBUG
+
 	for (auto& rCube : m_pActor->GetCube())
 	{ // ƒRƒŠƒWƒ‡ƒ“ƒLƒ…[ƒu”•ªŒJ‚è•Ô‚·
 
@@ -397,6 +403,8 @@ void CEditActor::UpdateScaling(void)
 		// Šg‘å—¦‚ð“K—p‚·‚é
 		rSphere->GetSphere()->SetRadius(rSphere->GetRadius() * m_infoCreate.scale.x);
 	}
+
+#endif // _DEBUG
 
 	// Šg‘å—¦‚ð”½‰f
 	m_pActor->SetVec3Scaling(m_infoCreate.scale);

@@ -74,6 +74,8 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 		SetMoment(false);
 	}
 
+	DebugProc::Print(DebugProc::POINT_CENTER, "\n人数 : %d\n", GetNumClone());
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }

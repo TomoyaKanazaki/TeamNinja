@@ -129,58 +129,6 @@ void CGimmickAction::Draw(CShader* pShader)
 }
 
 //============================================================
-// クローンとの当たり判定
-//============================================================
-void CGimmickAction::CollisionClone(void)
-{
-	// 分身のリスト構造が無ければ抜ける
-	if (CPlayerClone::GetList() == nullptr) { m_nNumClone = 0; return; }
-
-	std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();	// リストを取得
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
-	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
-	D3DXVECTOR3 posClone = VEC3_ZERO;		// 分身の位置
-	D3DXVECTOR3 sizeClone = CLONE_RADIUS;	// 分身のサイズ
-	int nNumClone = 0;						// 範囲内の分身の総数
-
-	for (auto clone : list)
-	{
-		// 分身の総数が必要数に達したらループを抜ける
-		if (nNumClone >= GetNumActive()) { break; }
-
-		// ギミックフラグがoffなら次に進む
-		if (!clone->GetGimmickFrag()) { continue; }
-
-		// 位置を取得
-		posClone = clone->GetVec3Position();
-
-		if (collision::Box2D
-		(
-			pos,		// 判定位置
-			posClone,	// 判定目標位置
-			size,		// 判定サイズ(右・上・後)
-			size,		// 判定サイズ(左・下・前)
-			sizeClone,	// 判定目標サイズ(右・上・後)
-			sizeClone	// 判定目標サイズ(左・下・前)
-		))
-		{ // 四角の中に入った場合
-
-			// 分身の総数を加算する
-			nNumClone++;
-
-			// 既にギミックが設定済みなら次へ
-			if (clone->GetGimmick() == this) { continue; }
-
-			// 分身に自分の情報を渡す
-			clone->SetGimmick(this);
-		}
-	}
-
-	// 分身の総数を設定する
-	m_nNumClone = nNumClone;
-}
-
-//============================================================
 // プレイヤーとの当たり判定
 //============================================================
 bool CGimmickAction::CollisionPlayer(void)

@@ -437,6 +437,8 @@ void CEditCollision::DispObject(const bool bDisp)
 					pObject->SetEnableUpdate(bDisp);
 				}
 
+#ifdef _DEBUG
+
 				if (pObject->GetLabel() != CObject::LABEL_DEBUG &&
 					pObject->GetLabel() != CObject::LABEL_FIELD)
 				{ // デバッグラベル、フィールドラベル以外
@@ -444,6 +446,8 @@ void CEditCollision::DispObject(const bool bDisp)
 					// オブジェクトを見えなくする
 					pObject->SetEnableDebugDisp(bDisp);
 				}
+
+#endif // _DEBUG
 
 				// 次のオブジェクトへのポインタを代入
 				pObject = pObjectNext;
