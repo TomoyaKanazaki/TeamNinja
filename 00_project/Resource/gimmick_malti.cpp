@@ -24,7 +24,8 @@ namespace
 CGimmickMalti::CGimmickMalti() : CGimmick(),
 m_bActive (true) // アクティブフラグ
 {
-
+	// ボタン動的配列をクリア
+	m_vecButton.clear();
 }
 
 //=========================================
@@ -58,6 +59,9 @@ HRESULT CGimmickMalti::Init(void)
 //=========================================
 void CGimmickMalti::Uninit(void)
 {
+	// ボタン動的配列をクリア
+	m_vecButton.clear();
+
 	// 親クラスの終了
 	CGimmick::Uninit();
 }

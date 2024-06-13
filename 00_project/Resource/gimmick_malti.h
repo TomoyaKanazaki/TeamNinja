@@ -48,6 +48,6 @@ private:
 	HRESULT CreateButton(std::vector<SButton> vecButton);	// ボタン情報生成
 
 	// メンバ変数
-	bool m_bActive; // アクティブフラグ
 	std::vector<CGimmick*> m_vecButton; // ボタン動的配列
+	bool m_bActive; // アクティブフラグ
 };
