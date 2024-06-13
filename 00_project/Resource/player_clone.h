@@ -81,6 +81,15 @@ public:
 		ACTION_MAX
 	};
 
+	// ギミック対応状態
+	enum EGimmick
+	{
+		GIMMICK_IGNORE = 0, // ギミックを無視する状態
+		GIMMICK_REACTION, // ギミックに反応する状態
+		GIMMICK_ACTION, // ギミックに反応した状態
+		GIMMICK_MAX
+	};
+
 	// コンストラクタ
 	CPlayerClone();
 
@@ -98,6 +107,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);	// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
+	void DeleteGimmick() { m_pGimmick = nullptr; } // 所持しているギミックを削除
 
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
@@ -105,7 +115,8 @@ public:
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
-	bool GetGimmickFrag() const { return m_bGimmick; }			// ギミックフラグの取得
+	EGimmick IsGimmickFrag() const { return m_eGimmick; }			// ギミックフラグの取得
+	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; } //ギミックフラグの設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
@@ -136,6 +147,10 @@ private:
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
+	void UpdateIgnore(); // 無視する状態での更新
+	void UpdateReAction(); // 反応する状態での更新
+	void UpdateAction(); // 反応した状態での更新
+
 	// メンバ関数 (金崎追加)
 	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
 	CPlayerClone::EMotion Chase	// ついていく処理
@@ -150,6 +165,7 @@ private:
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 	bool CollisionActor();				// アクターとの当たり判定
+	void CheckGimmick();			// ギミックとの当たり判定
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -166,7 +182,9 @@ private:
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
 	float m_fFallStart;			// 落とし穴の落ちる前の高さ
-	bool m_bGimmick;			// ギミックフラグ
+	EGimmick m_eGimmick;		// ギミックフラグ
+	bool m_bFind;				// 発見フラグ
+	D3DXVECTOR3 m_size;			// サイズ
 
 	// メンバ変数 (藤田追加)
 	CField *m_pCurField;	// 現在の地面
