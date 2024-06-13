@@ -19,7 +19,9 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\warning000.png",	// 通常テクスチャ
+		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
+		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
 	};
 
 	const int PRIORITY = 0;	// 壁の優先順位
@@ -42,7 +44,7 @@ CListManager<CWall> *CWall::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::DIM_3D, PRIORITY),
-	m_type	(TYPE_NORMAL)	// 種類
+	m_type	(TYPE_SOIL)	// 種類
 {
 
 }
@@ -61,7 +63,7 @@ CWall::~CWall()
 HRESULT CWall::Init(void)
 {
 	// メンバ変数を初期化
-	m_type = TYPE_NORMAL;	// 種類
+	m_type = TYPE_SOIL;	// 種類
 
 	// オブジェクトメッシュウォールの初期化
 	if (FAILED(CObjectMeshWall::Init()))

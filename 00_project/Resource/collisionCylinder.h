@@ -44,8 +44,10 @@ public:
 	void OffSet(const D3DXMATRIX& mtx) override;		// オフセット設定処理
 
 	// セット・ゲット関係
-	float GetRadius(void) const { return m_fRadius; }	// 半径の取得処理
-	float GetHeight(void) const { return m_fHeight; }	// 高さの取得処理
+	void SetRadius(const float fRadius) { m_fRadius = fRadius; }	// 半径の設定処理
+	float GetRadius(void) const { return m_fRadius; }				// 半径の取得処理
+	void SetHeight(const float fHeight) { m_fHeight = fHeight; }	// 高さの設定処理
+	float GetHeight(void) const { return m_fHeight; }				// 高さの取得処理
 
 #ifdef _DEBUG
 

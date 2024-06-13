@@ -16,7 +16,9 @@
 //==========================================
 namespace
 {
-	const char* PARAM_FILE = "data\\TXT\\CheckPoint.txt"; // パラメータが保存されたパス
+	const char *SETUP_TXT	= "data\\TXT\\checkpoint.txt";	// セットアップテキスト相対パス
+	const float RADIUS		= 50.0f;	// 半径
+	const float ROT_SPEED	= 0.01f;	// 回る速度
 }
 
 //==========================================
@@ -30,9 +32,7 @@ CListManager<CCheckPoint>* CCheckPoint::m_pList = nullptr;	// オブジェクトリスト
 //==========================================
 CCheckPoint::CCheckPoint():
 	m_bSave(false),
-	m_fRadius(0.0f),
-	m_nSaveTension(0),
-	m_fRotSpeed(0.0f)
+	m_nSaveTension(0)
 {
 	// 総数を加算
 	++m_nNumAll;
@@ -54,9 +54,7 @@ HRESULT CCheckPoint::Init(void)
 {
 	// 値の初期化
 	m_bSave = false;
-	m_fRadius = 0.0f;
 	m_nSaveTension = 0;
-	m_fRotSpeed = 0.0f;
 
 	// 親クラスの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -72,9 +70,6 @@ HRESULT CCheckPoint::Init(void)
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
-
-	// 定数パラメータの読み込み
-	Load();
 
 	// サイズを調整
 	SetVec3Scaling(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
@@ -131,7 +126,7 @@ void CCheckPoint::Update(const float fDeltaTime)
 
 	// くるくるしてみる
 	D3DXVECTOR3 rot = GetVec3Rotation();
-	rot.y += m_fRotSpeed;
+	rot.y += ROT_SPEED;
 	SetVec3Rotation(rot);
 
 	// 親クラスの更新
@@ -199,7 +194,7 @@ void CCheckPoint::CollisionPlayer(void)
 	CPlayer* Player = GET_PLAYER; // 座標
 
 	// 当たっていない場合関数を抜ける
-	if (!collision::CirclePillar(pos, Player->GetVec3Position(), m_fRadius, Player->GetRadius()))
+	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
 	{ return; }
 
 	// プレイヤーを回復する
@@ -221,43 +216,86 @@ void CCheckPoint::CollisionPlayer(void)
 	CPopUpUI::Create();
 }
 
-//==========================================
-//  外部情報の読み込み
-//==========================================
-void CCheckPoint::Load()
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CCheckPoint::LoadSetup(void)
 {
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
-	//ファイルを読み取り専用で開く
-	pFile = fopen(PARAM_FILE, "r");
+	// ファイルを開く
+	std::ifstream file(SETUP_TXT);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
 
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return; }
+		// エラーメッセージボックス
+		MessageBox(nullptr, "チェックポイントセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
 
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
+		// 失敗を返す
+		return E_FAIL;
+	}
 
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
 
-		// 条件分岐
-		if (strcmp(&aStr[0], "RADIUS") == 0) // 当たり判定の半径の設定
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fRadius);
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
 		}
-		if (strcmp(&aStr[0], "ROT_SPEED") == 0) // 回る速度
+		else if (str == "STAGE_POINTSET")
 		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fRotSpeed);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
+			do
+			{ // END_STAGE_POINTSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "POINTSET")
+				{
+					do
+					{ // END_POINTSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+					} while (str != "END_POINTSET");	// END_POINTSETを読み込むまでループ
+
+					// チェックポイントの生成
+					if (CCheckPoint::Create(pos) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_POINTSET");	// END_STAGE_POINTSETを読み込むまでループ
 		}
 	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
