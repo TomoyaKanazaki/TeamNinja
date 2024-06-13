@@ -17,6 +17,7 @@ namespace
 {
 	const int CUBE_PRIORITY = 5;			// キューブの優先順位
 	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);		// 色
+	const float ROT_TOLERANCE = 0.02f;		// 向きの許容範囲
 }
 
 //============================================================
@@ -162,7 +163,14 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR
 // 向きによる変換処理
 //============================================================
 void CCollisionCube::Convert(const float fWidth, const float fDepth, const float fRot)
-{
+{	
+#ifdef _DEBUG
+
+	// 向きの警告処理
+	RotWarning(fRot);
+
+#endif // _DEBUG
+
 	if ((fRot >= D3DX_PI * -0.75f && fRot <= D3DX_PI * -0.25f) ||
 		(fRot >= D3DX_PI * 0.25f && fRot <= D3DX_PI * 0.75f))
 	{ // 90度、270度の場合
@@ -183,3 +191,64 @@ void CCollisionCube::Convert(const float fWidth, const float fDepth, const float
 		m_fDepth = fDepth;
 	}
 }
+
+#ifdef _DEBUG
+//============================================================
+// 向きの警告処理
+//============================================================
+void CCollisionCube::RotWarning(const float fRot)
+{
+	bool bOver = false;		// 範囲外の向き
+
+	if (fRot >= -D3DX_PI * 0.25f &&
+		fRot <= D3DX_PI * 0.25f)
+	{ // 0度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else if (fRot >= D3DX_PI * 0.25f &&
+		fRot <= D3DX_PI * 0.75f)
+	{ // 90度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot - (D3DX_PI * 0.5f)) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else if ((fRot >= D3DX_PI * -0.75f &&
+		fRot <= D3DX_PI * -0.25f))
+	{ // 270度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot + (D3DX_PI * 0.5f)) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else
+	{
+		if (fabsf(fRot - D3DX_PI) >= ROT_TOLERANCE &&
+			fabsf(fRot + D3DX_PI) >= ROT_TOLERANCE)
+		{  // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+
+	if (bOver)
+	{
+		// エラーメッセージボックス
+		MessageBox(nullptr, "キューブの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
+	}
+}
+
+#endif
