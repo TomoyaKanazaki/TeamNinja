@@ -15,7 +15,7 @@
 //===========================================
 namespace
 {
-
+	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
 }
 
 //=========================================
@@ -154,7 +154,7 @@ HRESULT CGimmickMalti::CreateButton(std::vector<SButton> vecButton)
 			rButton.pos,			// 生成位置
 			rButton.size,			// 生成大きさ
 			CGimmick::TYPE_POST,	// ギミックラベル (ボタン)
-			rButton.nNumClone		// ボタン押込に必要な人数
+			NUM_CLONE				// ボタン押込に必要な人数
 		);
 		if (pButton == nullptr)
 		{ // 生成に失敗した場合

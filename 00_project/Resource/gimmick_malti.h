@@ -17,16 +17,14 @@ public:
 	struct SButton
 	{
 		// コンストラクタ
-		SButton(D3DXVECTOR3 Pos, D3DXVECTOR3 Size, int Num) :
-			pos			(Pos),	// 位置
-			size		(Size),	// 大きさ
-			nNumClone	(Num)	// 必要クローン数
+		SButton(D3DXVECTOR3 Pos, D3DXVECTOR3 Size) :
+			pos		(Pos),	// 位置
+			size	(Size)	// 大きさ
 		{}
 
 		// メンバ変数
 		D3DXVECTOR3 pos;	// 位置
 		D3DXVECTOR3 size;	// 大きさ
-		int nNumClone;		// 必要クローン数
 	};
 
 	// メンバ関数
