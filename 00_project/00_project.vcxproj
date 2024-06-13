@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="enemy_belongings.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
@@ -316,6 +317,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="enemy_belongings.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
