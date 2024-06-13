@@ -79,14 +79,14 @@ bool CCollisionCube::Hit
 	D3DXVECTOR3 targetSizeDown = D3DXVECTOR3(m_fWidth, 0.0f, m_fDepth);
 	D3DXVECTOR3 posOld = rPosOld;
 	D3DXVECTOR3 move = rMove;
-	bool bJump = rJump;
+	bool bUp = false;
 
-	if (collision::ResponseBox3D(rPos, posOld, GetPos(), centerSizeUp, centerSizeDown, targetSizeUp, targetSizeDown, &move, &bJump))
+	if (collision::ResponseBox3D(rPos, posOld, GetPos(), centerSizeUp, centerSizeDown, targetSizeUp, targetSizeDown, &move, &bUp))
 	{ // “–‚½‚Á‚½ê‡
 
 		// ˆÚ“®—Ê‚ÆƒWƒƒƒ“ƒvó‹µ‚ğİ’è‚·‚é
 		rMove = move;
-		rJump = !bJump;
+		rJump = !bUp;
 
 		// true ‚ğ•Ô‚·
 		return true;
