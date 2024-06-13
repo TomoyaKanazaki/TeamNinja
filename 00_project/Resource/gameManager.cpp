@@ -42,6 +42,7 @@ namespace
 	const int CHANGE_UI_PRIORITY = 5;		// シネマスコープ終了時のUI優先順位
 	const float GAMEEND_WAITTIME = 2.0f;	// リザルト画面への遷移余韻フレーム
 
+	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
 }
 
@@ -101,8 +102,6 @@ HRESULT CGameManager::Init(void)
 
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
 
-	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR00);
-	//CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR01);
 #endif
 
 #if 0
