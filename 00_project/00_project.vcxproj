@@ -159,7 +159,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="enemy_belongings.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
@@ -204,6 +203,7 @@
     <ClInclude Include="Resource\enemyStateAttack.h" />
     <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
+    <ClInclude Include="Resource\enemy_belongings.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\fadeState.h" />
     <ClInclude Include="Resource\fadeStateIn.h" />
@@ -317,7 +317,6 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="enemy_belongings.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
@@ -362,6 +361,7 @@
     <ClCompile Include="Resource\enemyStateAttack.cpp" />
     <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
+    <ClCompile Include="Resource\enemy_belongings.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\fadeState.cpp" />
     <ClCompile Include="Resource\fadeStateIn.cpp" />
