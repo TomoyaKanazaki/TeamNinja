@@ -386,24 +386,6 @@ void CManager::Uninit(void)
 	SAFE_REF_RELEASE(m_pLoading);
 
 	//--------------------------------------------------------
-	//	情報の破棄
-	//--------------------------------------------------------
-	// テクスチャの破棄
-	SAFE_REF_RELEASE(m_pTexture);
-
-	// モデルの破棄
-	SAFE_REF_RELEASE(m_pModel);
-
-	// フォントの破棄
-	SAFE_REF_RELEASE(m_pFont);
-
-	// キャラクターの破棄
-	SAFE_REF_RELEASE(m_pCharacter);
-
-	// シェーダーの破棄
-	CShader::Release();
-
-	//--------------------------------------------------------
 	//	システムの破棄
 	//--------------------------------------------------------
 	// データ保存マネージャーの破棄
@@ -441,6 +423,24 @@ void CManager::Uninit(void)
 
 	// デルタタイムの破棄
 	SAFE_REF_RELEASE(m_pDeltaTime);
+
+	//--------------------------------------------------------
+	//	情報の破棄
+	//--------------------------------------------------------
+	// テクスチャの破棄
+	SAFE_REF_RELEASE(m_pTexture);
+
+	// モデルの破棄
+	SAFE_REF_RELEASE(m_pModel);
+
+	// フォントの破棄
+	SAFE_REF_RELEASE(m_pFont);
+
+	// キャラクターの破棄
+	SAFE_REF_RELEASE(m_pCharacter);
+
+	// シェーダーの破棄
+	CShader::Release();
 
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();

@@ -33,6 +33,10 @@
 #define NAME_UP_SIZE	("T")	// 拡大表示
 #define KEY_DOWN_SIZE	(DIK_G)	// 縮小キー
 #define NAME_DOWN_SIZE	("G")	// 縮小表示
+#define KEY_ROTA_RIGHT	(DIK_Z)	// 右回転キー
+#define NAME_ROTA_RIGHT	("Z")	// 右回転表示
+#define KEY_ROTA_LEFT	(DIK_C)	// 左回転キー
+#define NAME_ROTA_LEFT	("C")	// 左回転表示
 
 //************************************************************
 //	定数宣言
@@ -44,6 +48,8 @@ namespace
 	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.1f, 0.1f, 0.1f);		// 拡縮率
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
+
+	const float ROT_MOVE = 0.02f;	// 向きの移動量
 }
 
 //************************************************************
@@ -265,8 +271,44 @@ void CEditActor::UpdatePosition(void)
 //============================================================
 void CEditActor::UpdateRotation(void)
 {
-	// 向きの更新
-	CEditorObject::UpdateRotation();
+	if (m_pActor->GetCube().empty())
+	{ // 空白の場合
+
+		// 向きを変更
+		D3DXVECTOR3 rot = GetVec3Rotation();			// 向きを取得する
+		CInputKeyboard* m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
+		if (!m_pKeyboard->IsPress(KEY_TRIGGER))
+		{
+			if (m_pKeyboard->IsPress(KEY_ROTA_RIGHT))
+			{
+				rot.y += ROT_MOVE;
+			}
+			if (m_pKeyboard->IsPress(KEY_ROTA_LEFT))
+			{
+				rot.y -= ROT_MOVE;
+			}
+		}
+		else
+		{
+			if (m_pKeyboard->IsTrigger(KEY_ROTA_RIGHT))
+			{
+				rot.y += ROT_MOVE;
+			}
+			if (m_pKeyboard->IsTrigger(KEY_ROTA_LEFT))
+			{
+				rot.y -= ROT_MOVE;
+			}
+		}
+
+		// 向きを設定する
+		SetVec3Rotation(rot);
+	}
+	else
+	{ // 上記以外
+
+		// 向きの更新
+		CEditorObject::UpdateRotation();
+	}
 
 	for (auto& rCube : m_pActor->GetCube())
 	{ // コリジョンキューブ数分繰り返す
