@@ -58,6 +58,7 @@ namespace
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
 	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
+	const float FALL_RETURN_SPEED = 5.0f; // 落とし穴からもとに戻る移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
 	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
@@ -585,6 +586,9 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	// 受け取ったギミックを割り当てる
 	pPlayer->SetGimmick(gimmick);
 
+	// 反応する状態に設定する
+	pPlayer->m_eGimmick = GIMMICK_REACTION;
+
 	// 確保したアドレスを返す
 	return pPlayer;
 }
@@ -834,6 +838,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 //===========================================
 CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 {
+	// ギミックを持っていなかった場合関数を抜ける
+	if (m_pGimmick == nullptr)
+	{
+		m_move.x *= FALL_RETURN_SPEED;
+		m_move.z *= FALL_RETURN_SPEED;
+		m_Action = ACTION_MOVE;
+		return MOTION_DASH;
+	}
+
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1198,7 +1211,7 @@ void CPlayerClone::UpdateIgnore()
 		posGimmick = m_pGimmick->GetVec3Position();
 
 		// サイズを取得
-		sizeGimmick = m_pGimmick->GetVec3Sizing();
+		sizeGimmick = m_pGimmick->GetVec3Sizing() * 0.5f;
 
 		// 矩形の外の場合状態を切り替える
 		if (!collision::Box2D
@@ -1235,7 +1248,7 @@ void CPlayerClone::UpdateIgnore()
 		posGimmick = gimmick->GetVec3Position();
 
 		// サイズを取得
-		sizeGimmick = gimmick->GetVec3Sizing();
+		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
 
 		// 矩形の外の場合次に進む
 		if (!collision::Box2D
@@ -1287,7 +1300,7 @@ void CPlayerClone::UpdateReAction()
 		posGimmick = gimmick->GetVec3Position();
 
 		// サイズを取得
-		sizeGimmick = gimmick->GetVec3Sizing();
+		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
 
 		// 矩形の外の場合次に進む
 		if (!collision::Box2D
@@ -1334,7 +1347,7 @@ void CPlayerClone::UpdateAction()
 	posGimmick = m_pGimmick->GetVec3Position();
 
 	// サイズを取得
-	sizeGimmick = m_pGimmick->GetVec3Sizing();
+	sizeGimmick = m_pGimmick->GetVec3Sizing() * 0.5f;
 
 	// 矩形の外の場合状態を切り替える
 	if (!collision::Box2D
