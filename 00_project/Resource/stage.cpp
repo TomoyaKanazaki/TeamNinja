@@ -19,6 +19,7 @@
 #include "sky.h"
 #include "liquid.h"
 #include "actor.h"
+#include "checkpoint.h"
 
 //************************************************************
 //	定数宣言
@@ -37,7 +38,7 @@ namespace
 CStage::CStage()
 {
 	// メンバ変数をクリア
-	memset(&m_stageLimit,	0, sizeof(m_stageLimit));	// 範囲
+	memset(&m_stageLimit, 0, sizeof(m_stageLimit));	// 範囲
 }
 
 //============================================================
@@ -58,6 +59,15 @@ HRESULT CStage::Init(void)
 
 	// アクターのセットアップ
 	if (FAILED(CActor::LoadSetup()))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// チェックポイントのセットアップ
+	if (FAILED(CCheckPoint::LoadSetup()))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す

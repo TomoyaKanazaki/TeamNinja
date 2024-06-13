@@ -20,14 +20,18 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
-		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
-		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
-		"data\\TEXTURE\\field000.jpg",	// 草テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 砂利テクスチャ
+		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
+		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 砂利道テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 泥テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 掃除床テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 水テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
+		' ',	// 土フラグ
+		' ',	// 草土フラグ
 		' ',	// 草フラグ
 		'g',	// 砂利フラグ
 		'b',	// 泥
@@ -60,7 +64,7 @@ static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch"
 //============================================================
 CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::DIM_3D, PRIORITY),
 	m_terrain	(TERRAIN_120x120),	// 地形
-	m_type		(TYPE_NORMAL)		// 種類
+	m_type		(TYPE_SOIL)			// 種類
 {
 
 }
@@ -80,7 +84,7 @@ HRESULT CField::Init(void)
 {
 	// メンバ変数を初期化
 	m_terrain	= TERRAIN_120x120;	// 地形
-	m_type		= TYPE_NORMAL;		// 種類
+	m_type		= TYPE_SOIL;		// 種類
 
 	// オブジェクトメッシュフィールドの初期化
 	if (FAILED(CObjectMeshField::Init()))

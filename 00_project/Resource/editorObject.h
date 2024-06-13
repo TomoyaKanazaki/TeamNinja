@@ -49,12 +49,15 @@ public:
 	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
-	static CEditorObject* Create(CEditStage::EType type);		// 生成
-	static void Release(CEditorObject *&prEditorObject);		// 破棄
+	static CEditorObject* Create(CEditStage::EType type);			// 生成
+	static void Release(CEditorObject *&prEditorObject);			// 破棄
 
 	// メンバ関数
-	D3DXVECTOR3 GetVec3Position(void) const { return m_pos; }	// 位置取得
-	D3DXVECTOR3 GetVec3Rotation(void) const { return m_rot; }	// 向き取得
+	D3DXVECTOR3 GetVec3Position(void) const { return m_pos; }		// 位置取得
+	void SetVec3Rotation(const D3DXVECTOR3 rot) { m_rot = rot; }	// 向き設定
+	D3DXVECTOR3 GetVec3Rotation(void) const { return m_rot; }		// 向き取得
+	void GetAngle(const CEditor::EAngle angle) { m_angle = angle; }	// 角度設定
+	CEditor::EAngle GetAngle(void) const	{ return m_angle; }		// 角度取得
 
 protected:
 	// 仮想関数

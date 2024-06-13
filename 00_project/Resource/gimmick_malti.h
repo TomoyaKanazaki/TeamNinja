@@ -13,6 +13,19 @@
 class CGimmickMalti : public CGimmick
 {
 public:
+	// 生成ボタン構造体
+	struct SButton
+	{
+		// コンストラクタ
+		SButton(D3DXVECTOR3 Pos, D3DXVECTOR3 Size) :
+			pos		(Pos),	// 位置
+			size	(Size)	// 大きさ
+		{}
+
+		// メンバ変数
+		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 size;	// 大きさ
+	};
 
 	// メンバ関数
 	CGimmickMalti();
@@ -25,14 +38,14 @@ public:
 
 	bool IsActive() { return m_bActive; }
 
-private:
+	// 静的メンバ関数
+	static CGimmickMalti* Create(std::vector<SButton> vecButton); // 生成
 
+private:
 	// メンバ関数
-	HRESULT Create(); // 設置ギミックの生成
+	HRESULT CreateButton(std::vector<SButton> vecButton);	// ボタン情報生成
 
 	// メンバ変数
+	std::vector<CGimmick*> m_vecButton; // ボタン動的配列
 	bool m_bActive; // アクティブフラグ
-	CListManager<CGimmick>::AIterator m_iterator; // イテレーター
-	CListManager<CGimmick>* m_pGimmick; // オブジェクトリスト
-
 };

@@ -2,6 +2,7 @@
 //
 //  複数管理ギミック (gimmick_malti.cpp)
 //  Author : Tomoya kanazaki
+//  Adder  : Yuichi Fujita
 //
 //=========================================
 #include "gimmick_malti.h"
@@ -14,17 +15,17 @@
 //===========================================
 namespace
 {
-	const int NUM_GIMMICK = 3; // 管理するギミックの数
+	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
 }
 
 //=========================================
 //  コンストラクタ
 //=========================================
 CGimmickMalti::CGimmickMalti() : CGimmick(),
-m_pGimmick (nullptr), // 管理するギミック
 m_bActive (true) // アクティブフラグ
 {
-
+	// ボタン動的配列をクリア
+	m_vecButton.clear();
 }
 
 //=========================================
@@ -49,14 +50,6 @@ HRESULT CGimmickMalti::Init(void)
 		return E_FAIL;
 	}
 
-	// 設置ギミックを生成
-	if (FAILED(Create()))
-	{
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
 	// 成功を返す
 	return S_OK;
 }
@@ -66,8 +59,8 @@ HRESULT CGimmickMalti::Init(void)
 //=========================================
 void CGimmickMalti::Uninit(void)
 {
-	// リストマネージャーの破棄
-	m_pGimmick->Release(m_pGimmick);
+	// ボタン動的配列をクリア
+	m_vecButton.clear();
 
 	// 親クラスの終了
 	CGimmick::Uninit();
@@ -82,16 +75,15 @@ void CGimmickMalti::Update(const float fDeltaTime)
 	m_bActive = true;
 
 	// 管理しているギミックの設置フラグを取得
-	for (int i = 0; i < NUM_GIMMICK; ++i)
-	{
-		// ギミックを取得
-		CGimmick* pGimmick = *m_pGimmick->GetIndex(i);
+	for (const auto& rGimmick : m_vecButton)
+	{ // ボタン配列分繰り返す
 
 		// ギミックのフラグが立っていたら次に進む
-		if (pGimmick->IsSet()) { continue; }
+		if (rGimmick->IsSet()) { continue; }
 
 		// 1つでもフラグがoffならフラグをfalseにする
 		m_bActive = false;
+
 		break;
 	}
 
@@ -113,26 +105,66 @@ void CGimmickMalti::Draw(CShader* pShader)
 //===========================================
 //  設置ギミックの生成
 //===========================================
-HRESULT CGimmickMalti::Create()
+CGimmickMalti* CGimmickMalti::Create(std::vector<SButton> vecButton)
 {
-	if (m_pGimmick == nullptr)
-	{ // リストマネージャーが存在しない場合
+	// 複数管理ギミックの生成
+	CGimmickMalti *pGimmickMalti = new CGimmickMalti;
+	if (pGimmickMalti == nullptr)
+	{ // 生成に失敗した場合
 
-		// リストマネージャーの生成
-		m_pGimmick = CListManager<CGimmick>::Create();
-		if (m_pGimmick == nullptr)
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 複数管理ギミックの初期化
+		if (FAILED(pGimmickMalti->Init()))
+		{ // 初期化に失敗した場合
+
+			// 複数管理ギミックの破棄
+			SAFE_DELETE(pGimmickMalti);
+			return nullptr;
+		}
+
+		// ボタン情報の生成
+		if (FAILED(pGimmickMalti->CreateButton(vecButton)))
 		{ // 生成に失敗した場合
 
-			// 失敗を返す
+			// 複数管理ギミックの破棄
+			SAFE_DELETE(pGimmickMalti);
+			return nullptr;
+		}
+
+		// 確保したアドレスを返す
+		return pGimmickMalti;
+	}
+}
+
+//===========================================
+//  ボタン情報の生成
+//===========================================
+HRESULT CGimmickMalti::CreateButton(std::vector<SButton> vecButton)
+{
+	for (const auto& rButton : vecButton)
+	{ // ボタン配列分繰り返す
+
+		// ボタンの生成
+		CGimmick* pButton = CGimmick::Create
+		( // 引数
+			rButton.pos,			// 生成位置
+			rButton.size,			// 生成大きさ
+			CGimmick::TYPE_POST,	// ギミックラベル (ボタン)
+			NUM_CLONE				// ボタン押込に必要な人数
+		);
+		if (pButton == nullptr)
+		{ // 生成に失敗した場合
+
 			assert(false);
 			return E_FAIL;
 		}
-	}
 
-	// ギミック管理リストにオブジェクトを追加・イテレーターを取得
-	for (int i = 0; i < NUM_GIMMICK; ++i)
-	{
-		m_iterator = m_pGimmick->AddList(CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, -500 + -500.0f * i), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_POST, 1));
+		// 最後尾に生成したボタンを保存
+		m_vecButton.push_back(pButton);
 	}
 
 	return S_OK;
