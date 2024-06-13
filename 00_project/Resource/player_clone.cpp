@@ -58,6 +58,7 @@ namespace
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
 	const float FALL_SPEED = 0.2f; // 落とし穴待機時の移動速度倍率
+	const float FALL_RETURN_SPEED = 5.0f; // 落とし穴からもとに戻る移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
 	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
@@ -75,22 +76,24 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),		// 影の情報
-	m_pOrbit		(nullptr),		// 軌跡の情報
-	m_move			(VEC3_ZERO),	// 移動量
-	m_Action		(ACTION_CHASE),	// 行動
-	m_fDeleteTimer	(0.0f),			// 自動消滅タイマー
-	m_fGimmickTimer	(0.0f),			// ギミック受付時間タイマー
-	m_pGimmick		(nullptr),		// ギミックのポインタ
-	m_sFrags		({}),			// ギミックフラグの文字列
-	m_nIdxGimmick	(-1),			// ギミック内の管理番号
-	m_pCurField		(nullptr),		// 現在の地面
-	m_pOldField		(nullptr),		// 過去の地面
-	m_oldPos		(VEC3_ZERO),	// 過去位置
-	m_destRot		(VEC3_ZERO),	// 目標向き
-	m_bJump			(false),		// ジャンプ状況
-	m_fFallStart	(0.0f),			// 落とし穴の落ちる前の高さ
-	m_bGimmick		(true)			// ギミックフラグ
+	m_pShadow		(nullptr),			// 影の情報
+	m_pOrbit		(nullptr),			// 軌跡の情報
+	m_move			(VEC3_ZERO),		// 移動量
+	m_Action		(ACTION_CHASE),		// 行動
+	m_fDeleteTimer	(0.0f),				// 自動消滅タイマー
+	m_fGimmickTimer	(0.0f),				// ギミック受付時間タイマー
+	m_pGimmick		(nullptr),			// ギミックのポインタ
+	m_sFrags		({}),				// ギミックフラグの文字列
+	m_nIdxGimmick	(-1),				// ギミック内の管理番号
+	m_pCurField		(nullptr),			// 現在の地面
+	m_pOldField		(nullptr),			// 過去の地面
+	m_oldPos		(VEC3_ZERO),		// 過去位置
+	m_destRot		(VEC3_ZERO),		// 目標向き
+	m_bJump			(false),			// ジャンプ状況
+	m_fFallStart	(0.0f),				// 落とし穴の落ちる前の高さ
+	m_eGimmick		(GIMMICK_IGNORE),	// ギミックフラグ
+	m_bFind			(false),			// 発見フラグ
+	m_size			(VEC3_ZERO)			// サイズ
 {
 
 }
@@ -109,21 +112,23 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;		// 影の情報
-	m_pOrbit		= nullptr;		// 軌跡の情報
-	m_move			= VEC3_ZERO;	// 移動量
-	m_Action		= ACTION_CHASE;	// 行動
-	m_fDeleteTimer	= 0.0f;			// 自動消滅タイマー
-	m_fGimmickTimer = 0.0f;			// ギミック受付時間タイマー
-	m_pGimmick		= nullptr;		// ギミックのポインタ
-	m_sFrags		= {};			// ギミックフラグの文字列
-	m_nIdxGimmick	= -1;			// ギミック内の管理番号
-	m_pCurField		= nullptr;		// 現在の地面
-	m_pOldField		= nullptr;		// 過去の地面
-	m_oldPos		= VEC3_ZERO;	// 過去位置
-	m_destRot		= VEC3_ZERO;	// 目標向き
-	m_bJump			= true;			// ジャンプ状況
-	m_bGimmick		= true;			// ギミックフラグ
+	m_pShadow		= nullptr;			// 影の情報
+	m_pOrbit		= nullptr;			// 軌跡の情報
+	m_move			= VEC3_ZERO;		// 移動量
+	m_Action		= ACTION_CHASE;		// 行動
+	m_fDeleteTimer	= 0.0f;				// 自動消滅タイマー
+	m_fGimmickTimer = 0.0f;				// ギミック受付時間タイマー
+	m_pGimmick		= nullptr;			// ギミックのポインタ
+	m_sFrags		= {};				// ギミックフラグの文字列
+	m_nIdxGimmick	= -1;				// ギミック内の管理番号
+	m_pCurField		= nullptr;			// 現在の地面
+	m_pOldField		= nullptr;			// 過去の地面
+	m_oldPos		= VEC3_ZERO;		// 過去位置
+	m_destRot		= VEC3_ZERO;		// 目標向き
+	m_bJump			= true;				// ジャンプ状況
+	m_eGimmick		= GIMMICK_IGNORE;	// ギミックフラグ
+	m_bFind			= false;			// 発見フラグ
+	m_size			= D3DXVECTOR3(RADIUS, RADIUS, RADIUS);
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -227,6 +232,8 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	// 過去位置の更新
 	UpdateOldPosition();
+
+	CheckGimmick();
 
 	// 各種行動を起こす
 	switch (m_Action)
@@ -460,6 +467,9 @@ CPlayerClone* CPlayerClone::Create(void)
 			return nullptr;
 		}
 
+		// 発見フラグを立てる
+		pPlayer->m_bFind = true;
+
 		// ギミック受付時間を設定する
 		pPlayer->m_fGimmickTimer = GIMMICK_TIME;
 
@@ -576,6 +586,9 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	// 受け取ったギミックを割り当てる
 	pPlayer->SetGimmick(gimmick);
 
+	// 反応する状態に設定する
+	pPlayer->m_eGimmick = GIMMICK_REACTION;
+
 	// 確保したアドレスを返す
 	return pPlayer;
 }
@@ -675,7 +688,8 @@ void CPlayerClone::CallBack()
 
 		// ギミックフラグをリセット
 		pClone->m_fGimmickTimer = 0.0f;
-		pClone->m_bGimmick = false;
+		pClone->m_eGimmick = GIMMICK_IGNORE;
+		pClone->m_bFind = true;
 
 		// ギミックの保有分身数を減らす
 		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
@@ -741,20 +755,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	D3DXVECTOR3 posClone = GetVec3Position();	// クローン位置
 	D3DXVECTOR3 rotClone = GetVec3Rotation();	// クローン向き
 	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
-
-	// ギミック受付時間を更新
-	if (m_fGimmickTimer > 0.0f)
-	{
-		// 減算
-		m_fGimmickTimer -= fDeltaTime;
-
-		// 0未満になった場合フラグをoff
-		if (m_fGimmickTimer <= 0.0f)
-		{
-			m_bGimmick = false;
-			m_fGimmickTimer = 0.0f;
-		}
-	}
 
 	// 重力の更新
 	UpdateGravity();
@@ -838,6 +838,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 //===========================================
 CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 {
+	// ギミックを持っていなかった場合関数を抜ける
+	if (m_pGimmick == nullptr)
+	{
+		m_move.x *= FALL_RETURN_SPEED;
+		m_move.z *= FALL_RETURN_SPEED;
+		m_Action = ACTION_MOVE;
+		return MOTION_DASH;
+	}
+
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1182,6 +1191,183 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 	return bAlpha;
 }
 
+//===========================================
+//  無視する状態での更新
+//===========================================
+void CPlayerClone::UpdateIgnore()
+{
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
+	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
+
+	// 発見フラグがonの場合
+	if (m_bFind)
+	{
+		// ギミックがnullの場合関数を抜ける
+		if (m_pGimmick == nullptr) { return; }
+
+		// 位置を取得
+		posGimmick = m_pGimmick->GetVec3Position();
+
+		// サイズを取得
+		sizeGimmick = m_pGimmick->GetVec3Sizing() * 0.5f;
+
+		// 矩形の外の場合状態を切り替える
+		if (!collision::Box2D
+		(
+			pos,			// 判定位置
+			posGimmick,		// 判定目標位置
+			size,			// 判定サイズ(右・上・後)
+			size,			// 判定サイズ(左・下・前)
+			sizeGimmick,	// 判定目標サイズ(右・上・後)
+			sizeGimmick		// 判定目標サイズ(左・下・前)
+		))
+		{
+			// 反応する状態に変更
+			m_eGimmick = GIMMICK_REACTION;
+
+			// 現在持っているギミックを破棄
+			m_pGimmick = nullptr;
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// ギミックのリスト構造が無ければ抜ける
+	if (CGimmickAction::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
+
+	// 全てのギミックを確認する
+	for (CGimmickAction* gimmick : list)
+	{
+		// 位置を取得
+		posGimmick = gimmick->GetVec3Position();
+
+		// サイズを取得
+		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
+
+		// 矩形の外の場合次に進む
+		if (!collision::Box2D
+		(
+			pos,			// 判定位置
+			posGimmick,		// 判定目標位置
+			size,			// 判定サイズ(右・上・後)
+			size,			// 判定サイズ(左・下・前)
+			sizeGimmick,	// 判定目標サイズ(右・上・後)
+			sizeGimmick		// 判定目標サイズ(左・下・前)
+		))
+		{ continue; }
+
+		// 発見フラグをon
+		m_bFind = true;
+
+		// ギミックを設定
+		m_pGimmick = gimmick;
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 完全に見つからなかった場合反応する状態に変更する
+	m_eGimmick = GIMMICK_REACTION;
+}
+
+//===========================================
+//  反応する状態での更新
+//===========================================
+void CPlayerClone::UpdateReAction()
+{
+	// ギミックのリスト構造が無ければ抜ける
+	if (CGimmickAction::GetList() == nullptr) { return; }
+
+	std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();	// リストを取得
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
+	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
+
+	// 全てのギミックを確認する
+	for (CGimmickAction* gimmick : list)
+	{
+		// ギミックが使える状態なら次に進む
+		if (gimmick->IsActive()) { continue; }
+
+		// 位置を取得
+		posGimmick = gimmick->GetVec3Position();
+
+		// サイズを取得
+		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
+
+		// 矩形の外の場合次に進む
+		if (!collision::Box2D
+		(
+			pos,			// 判定位置
+			posGimmick,		// 判定目標位置
+			size,			// 判定サイズ(右・上・後)
+			size,			// 判定サイズ(左・下・前)
+			sizeGimmick,	// 判定目標サイズ(右・上・後)
+			sizeGimmick		// 判定目標サイズ(左・下・前)
+		))
+		{
+			continue;
+		}
+
+		// ギミックの人数を加算
+		gimmick->AddNumClone();
+
+		// ギミックを設定
+		SetGimmick(gimmick);
+
+		// 反応した状態に変更
+		m_eGimmick = GIMMICK_ACTION;
+
+		// ループを抜ける
+		break;
+	}
+}
+
+//===========================================
+//  反応した状態での更新
+//===========================================
+void CPlayerClone::UpdateAction()
+{
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
+	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
+
+	// ギミックがnullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
+
+	// 位置を取得
+	posGimmick = m_pGimmick->GetVec3Position();
+
+	// サイズを取得
+	sizeGimmick = m_pGimmick->GetVec3Sizing() * 0.5f;
+
+	// 矩形の外の場合状態を切り替える
+	if (!collision::Box2D
+	(
+		pos,			// 判定位置
+		posGimmick,		// 判定目標位置
+		size,			// 判定サイズ(右・上・後)
+		size,			// 判定サイズ(左・下・前)
+		sizeGimmick,	// 判定目標サイズ(右・上・後)
+		sizeGimmick		// 判定目標サイズ(左・下・前)
+	))
+	{
+		// 反応する状態に変更
+		m_eGimmick = GIMMICK_IGNORE;
+
+		// 現在持っているギミックを破棄
+		m_pGimmick = nullptr;
+	}
+}
+
 //==========================================
 //  前についていく処理
 //==========================================
@@ -1299,8 +1485,8 @@ CPlayerClone* CPlayerClone::Block()
 	// 自身の座標を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
-	// 前回座標を生成座標に設定する
-	m_oldPos = pos;
+	// 前回座標をプレイヤー座標に設定する
+	m_oldPos = GET_PLAYER->GetVec3Position();
 
 	// アクターに衝突した場合生成したものを削除する
 	if (CollisionActor())
@@ -1424,4 +1610,33 @@ bool CPlayerClone::CollisionActor()
 
 	// 衝突判定を返す
 	return bHit;
+}
+
+//===========================================
+//  ギミックとの当たり判定
+//===========================================
+void CPlayerClone::CheckGimmick()
+{
+	// 状態によって処理を分岐
+	switch (m_eGimmick)
+	{
+	case GIMMICK_IGNORE: // 無視する状態
+		DebugProc::Print(DebugProc::POINT_CENTER, "無視する状態");
+		UpdateIgnore();
+		break;
+
+	case GIMMICK_REACTION: // 反応する状態
+		DebugProc::Print(DebugProc::POINT_CENTER, "反応する状態");
+		UpdateReAction();
+		break;
+
+	case GIMMICK_ACTION: // 反応した状態
+		DebugProc::Print(DebugProc::POINT_CENTER, "反応した状態");
+		UpdateAction();
+		break;
+
+	default: // ここには来ない
+		assert(false);
+		break;
+	}
 }

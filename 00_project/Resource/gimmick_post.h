@@ -8,12 +8,16 @@
 #include "gimmick_action.h"
 
 //=========================================
+//  前方宣言
+//=========================================
+class CObjectMeshCube;
+
+//=========================================
 //  クラス定義
 //=========================================
 class CGimmickPost : public CGimmickAction
 {
 public:
-
 	// メンバ関数
 	CGimmickPost();
 	~CGimmickPost() override;
@@ -22,12 +26,14 @@ public:
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;
+	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;
 
 	bool IsSet() override { return m_bPost; } // 設置フラグの取得
 
 private:
-
 	// メンバ変数
+	CObjectMeshCube* m_pButton;	// ボタン
+	CObjectMeshCube* m_pEdge;	// 縁
 	bool m_bPost; // 設置フラグ
-
 };
