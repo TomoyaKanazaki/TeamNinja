@@ -146,7 +146,7 @@ private:
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 
 	// メンバ関数 (小原追加)
-	void CollisionActor();	// アクターの当たり判定
+	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
 
 #ifdef _DEBUG
 

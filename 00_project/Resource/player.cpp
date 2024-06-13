@@ -283,9 +283,6 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// アクターの当たり判定
-	CollisionActor();
-
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -670,6 +667,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 向き更新
 	UpdateRotation(rotPlayer);
+
+	// アクターの当たり判定
+	CollisionActor(posPlayer);
 
 	// 分身の処理
 	ControlClone(posPlayer, rotPlayer, fDeltaTime);
@@ -1319,13 +1319,12 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //==========================================
 // アクターの当たり判定
 //==========================================
-void CPlayer::CollisionActor()
+void CPlayer::CollisionActor(D3DXVECTOR3& pos)
 {
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return; }
 
 	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
 	for (auto actor : list)
 	{

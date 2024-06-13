@@ -229,49 +229,79 @@ void CActor::Collision
 	const float fRadius,			// 半径
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
-	bool& bJump,					// ジャンプ状況
-	bool* pHit						// 当たったかどうかの判定
+	bool& bJump						// ジャンプ状況
 )
 {
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	// 自身の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
 
+	// キューブ判定
 	for (auto cube : m_cube)
 	{
 		// ヒット処理
 		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
-
-		if (pHit != nullptr)
-		{ // ヒット状況が NULL じゃない場合
-
-			// ヒット状況を true にする
-			*pHit = true;
-		}
 	}
 
+	// シリンダー判定
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
-
-		if (pHit != nullptr)
-		{ // ヒット状況が NULL じゃない場合
-
-			// ヒット状況を true にする
-			*pHit = true;
-		}
 	}
 
+	// スフィア判定
 	for (auto sphere : m_sphere)
 	{
 		// ヒット処理
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
+}
 
-		if (pHit != nullptr)
-		{ // ヒット状況が NULL じゃない場合
+//==========================================
+//  判定を返すことのできる当たり判定
+//==========================================
+void CActor::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump,					// ジャンプ状況
+	bool& bHit						// 衝突判定
+)
+{
+	// 自身の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
 
-			// ヒット状況を true にする
-			*pHit = true;
-		}
+	// キューブ判定
+	for (auto cube : m_cube)
+	{
+		// ヒット処理
+		if (!cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 判定をtrueにする
+		bHit = true;
+	}
+
+	// シリンダー判定
+	for (auto cylinder : m_cylinder)
+	{
+		// ヒット処理
+		if (!cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 判定をtrueにする
+		bHit = true;
+	}
+
+	// スフィア判定
+	for (auto sphere : m_sphere)
+	{
+		// ヒット処理
+		if (!sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+	
+		// 判定をtrueにする
+		bHit = true;
 	}
 }
 
@@ -319,9 +349,9 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_cube[nCnt].offset,		// オフセット座標
-			coll.m_cube[nCnt].fWidth,		// 幅
-			coll.m_cube[nCnt].fHeight,		// 高さ
-			coll.m_cube[nCnt].fDepth,		// 奥行
+			coll.m_cube[nCnt].fWidth * GetVec3Scaling().x,		// 幅
+			coll.m_cube[nCnt].fHeight * GetVec3Scaling().y,		// 高さ
+			coll.m_cube[nCnt].fDepth * GetVec3Scaling().z,		// 奥行
 			GetVec3Rotation().y)			// 向き
 		);
 	}
@@ -333,8 +363,8 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_cylinder[nCnt].offset,	// オフセット座標
-			coll.m_cylinder[nCnt].fRadius,	// 半径
-			coll.m_cylinder[nCnt].fHeight	// 高さ
+			coll.m_cylinder[nCnt].fRadius * GetVec3Scaling().x,	// 半径
+			coll.m_cylinder[nCnt].fHeight * GetVec3Scaling().y	// 高さ
 		));
 	}
 
@@ -345,7 +375,7 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_sphere[nCnt].offset,		// オフセット座標
-			coll.m_sphere[nCnt].fRadius		// 半径
+			coll.m_sphere[nCnt].fRadius * GetVec3Scaling().x		// 半径
 		));
 	}
 }

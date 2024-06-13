@@ -58,8 +58,17 @@ public:
 		const float fRadius,			// 半径
 		const float fHeight,			// 高さ
 		D3DXVECTOR3& rMove,				// 移動量
+		bool& bJump						// ジャンプ状況
+	);
+	void Collision						// 当たり判定処理(判定を返すオーバーライド)
+	(
+		D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight,			// 高さ
+		D3DXVECTOR3& rMove,				// 移動量
 		bool& bJump,					// ジャンプ状況
-		bool* pHit = nullptr			// 当たったかどうかの判定
+		bool& bHit						// 衝突判定
 	);
 	void ClearCollision(void);			// 当たり判定の消去処理
 

@@ -15,6 +15,8 @@
 #include "MapModel.h"
 #include "stage.h"
 #include "scene.h"
+#include "debug.h"
+#include "debugproc.h"
 
 //************************************************************
 //	定数宣言
@@ -26,6 +28,7 @@ namespace
 	const float GRAVITY = 60.0f;		// 重力
 
 	const int OPEN_DOOR = 60 * 5;		// ドアが開くまでの時間
+	const int NUM_BOUND = 5;			// 扉が跳ねる回数
 }
 //============================================================
 //	コンストラクタ
@@ -33,8 +36,10 @@ namespace
 CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction(),
 m_pMapModel(nullptr),		// マップモデルの情報
 m_pStage(nullptr),			// ステージの情報
+m_posSave(VEC3_ZERO),		// 位置保存用
 m_move(VEC3_ZERO),			// 移動量
 m_nDoorCounter(0),			// 扉の開閉カウンター
+m_nNumBound(0),				// 扉が跳ねた回数
 m_state(STATE_NONE)			// 扉の状態
 {
 
@@ -56,8 +61,10 @@ HRESULT CGimmickHeavyDoor::Init(void)
 	// 変数初期化
 	m_pMapModel = nullptr;	// マップモデルの情報
 	m_pStage = CManager::GetInstance()->GetScene()->GetStage();		// ステージの情報
+	m_posSave = VEC3_ZERO;	// 位置保存用
 	m_move = VEC3_ZERO;		// 移動量
 	m_nDoorCounter = 0;		// 扉の開閉カウンター
+	m_nNumBound = 1;		// 扉が跳ねた回数
 	m_state = STATE_CLOSE;	// 扉の状態
 
 	// 扉の生成
@@ -165,8 +172,9 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 	// 位置取得
 	pos = m_pMapModel->GetVec3Position();
 
-	// 位置更新
+	// 移動量加算
 	pos += m_move;
+	m_posSave += m_move;	// 位置保存
 
 	// 位置設定
 	m_pMapModel->SetVec3Position(pos);
@@ -176,7 +184,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 
 		m_state = STATE_FULLY;		// 扉全開状態
 		m_nDoorCounter = 0;			// カウンター初期化
-		m_move = MOVEDOWN;			// 移動量
+		m_move = m_posSave;			// 移動量
 
 	}
 	else
@@ -196,22 +204,38 @@ void CGimmickHeavyDoor::CloseTheDoor(void)
 	// 位置取得
 	pos = m_pMapModel->GetVec3Position();
 
-	// 位置更新
+	// 重力
+	m_move.y -= GRAVITY;
+
+	// 移動量加算
 	pos += m_move;
 
 	// 範囲外の着地判定
 	if (m_pStage->LandLimitPosition(pos, m_move, 0.0f))
 	{
-		m_state = STATE_CLOSE;	// 扉閉じてる状態
-		m_nDoorCounter = 0;		// カウンター初期化
+		if (m_nNumBound <= NUM_BOUND)
+		{ // 跳ねた回数が目標の回数じゃない場合
 
-		// 扉開けてない
-		SetMoment(false);
+			m_nNumBound++;		// 跳ねた回数加算
+
+			// 跳ねる高さ設定
+			m_move.y = m_posSave.y / m_nNumBound;
+		}
+		else
+		{ // 跳ね切ってない場合
+
+			m_state = STATE_CLOSE;	// 扉閉じてる状態
+			m_posSave = VEC3_ZERO;	// 保存用の位置を初期化
+
+			m_nNumBound = 1;
+
+			// 扉開けてない
+			SetMoment(false);
+		}
 	}
+
+	DebugProc::Print(DebugProc::POINT_CENTER, "重扉の高さ %f", pos.y);
 
 	// 位置設定
 	m_pMapModel->SetVec3Position(pos);
-
-	// 重力
-	m_move.y -= GRAVITY;
 }
