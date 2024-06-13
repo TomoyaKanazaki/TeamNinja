@@ -35,7 +35,6 @@ public:
 		TYPE_JUMPTABLE = 0,		// ƒWƒƒƒ“ƒv‘ä
 		TYPE_STEP,				// “¥‚Ý‘ä
 		TYPE_FALL,				// —Ž‚Æ‚µŒŠ
-		TYPE_MALTI,				// •¡”ŠÇ—
 		TYPE_POST,				// Ý’u
 		TYPE_DECAED,			// ‹€‚¿‚½°
 		TYPE_JUMPOFF,			// ”ò‚Ñ~‚è
