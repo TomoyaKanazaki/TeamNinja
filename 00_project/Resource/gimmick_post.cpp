@@ -14,10 +14,23 @@
 //=========================================
 //  コンストラクタ
 //=========================================
+namespace
+{
+	const float BUTTON_OFF	= 15.0f;	// ボタンオフの時のオフセット
+	const float BUTTON_ON	= 6.0f;		// ボタンオンの時のオフセット
+	const float BUTTON_MOVE	= 60.0f;	// ボタン押込/戻し時の移動量
+
+	const D3DXVECTOR3 SCALE_BUTTON	= D3DXVECTOR3(-5.0f, 0.0f, -5.0f);				// ボタン大きさのオフセット
+	const D3DXVECTOR3 SCALE_EDGE	= D3DXVECTOR3(0.0f, BUTTON_ON - 1.0f, 0.0f);	// 縁取り大きさのオフセット
+}
+
+//=========================================
+//  コンストラクタ
+//=========================================
 CGimmickPost::CGimmickPost() : CGimmickAction(),
 m_pButton(nullptr), // ボタン
 m_pEdge(nullptr), // 縁
-m_bPost(false) // 設置フラグ
+m_fButtonHeight(BUTTON_OFF) // ボタン縦オフセット
 {
 
 }
@@ -100,8 +113,22 @@ void CGimmickPost::Uninit(void)
 //=========================================
 void CGimmickPost::Update(const float fDeltaTime)
 {
-	// アクティブ状態になっていたら設置フラグをon
-	m_bPost = IsActive();
+	// アクティブ状態ならボタンが押されてる
+	if (IsActive())
+	{ // ボタンが押されている場合
+
+		// ボタンを押しこむ
+		m_fButtonHeight -= BUTTON_MOVE * fDeltaTime;
+	}
+	else
+	{ // ボタンが押されていない場合
+
+		// ボタンを押し上げる
+		m_fButtonHeight += BUTTON_MOVE * fDeltaTime;
+	}
+
+	// ボタンの大きさ設定
+	SetButtonSizing();
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -140,8 +167,23 @@ void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	CGimmickAction::SetVec3Sizing(rSize);
 
 	// ボタンの大きさ設定
-	m_pButton->SetVec3Sizing(rSize * 0.5f + D3DXVECTOR3(-5.0f, 15.0f, -5.0f));
+	SetButtonSizing();
 
 	// 縁の大きさ設定
-	m_pEdge->SetVec3Sizing(rSize * 0.5f + D3DXVECTOR3(0.0f, 5.0f, 0.0f));
+	m_pEdge->SetVec3Sizing(rSize * 0.5f + SCALE_EDGE);
+}
+
+//============================================================
+//	ボタン大きさの設定処理
+//============================================================
+void CGimmickPost::SetButtonSizing(void)
+{
+	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f + SCALE_BUTTON;	// ボタンの大きさ
+
+	// ボタンの踏まれ具合を反映
+	useful::LimitNum(m_fButtonHeight, BUTTON_ON, BUTTON_OFF);	// 踏まれ具合を補正
+	size.y = m_fButtonHeight;
+
+	// ボタンの大きさ設定
+	m_pButton->SetVec3Sizing(size);
 }

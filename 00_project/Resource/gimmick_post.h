@@ -29,11 +29,14 @@ public:
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;
 
-	bool IsSet() override { return m_bPost; } // 設置フラグの取得
+	bool IsSet() override { return IsActive(); } // 設置フラグの取得
 
 private:
+	// メンバ関数
+	void SetButtonSizing(void);	// ボタン大きさ設定
+
 	// メンバ変数
 	CObjectMeshCube* m_pButton;	// ボタン
 	CObjectMeshCube* m_pEdge;	// 縁
-	bool m_bPost; // 設置フラグ
+	float m_fButtonHeight;		// ボタン縦オフセット
 };
