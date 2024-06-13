@@ -25,8 +25,10 @@ public:
 	// 種類列挙
 	enum EType
 	{
-		TYPE_NORMAL = 0,	// 通常テクスチャ
-		TYPE_MAX			// この列挙型の総数
+		TYPE_SOIL = 0,	// 土テクスチャ
+		TYPE_WEED_SOIL,	// 草土テクスチャ
+		TYPE_WEED,		// 草テクスチャ
+		TYPE_MAX		// この列挙型の総数
 	};
 
 	// コンストラクタ
