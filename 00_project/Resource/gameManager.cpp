@@ -111,9 +111,6 @@ HRESULT CGameManager::Init(void)
 	CDebugObject::Create();
 #endif
 
-	// マップを生成
-	if (FAILED(MapLoad())) { return E_FAIL; }
-
 	// TPSカメラの目標位置の設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
 	GET_MANAGER->GetCamera()->SetDestTps();
