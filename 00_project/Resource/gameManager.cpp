@@ -101,7 +101,9 @@ HRESULT CGameManager::Init(void)
 	CMapModel::Create(D3DXVECTOR3(100.0f, 0.0f, -100.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_LANTERN1);
 
 	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR00);
-	CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR01);
+	//CMapModel::Create(D3DXVECTOR3(-1400.0f, 0.0f, -200.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_DOOR01);
+
+
 
 	// TPSƒJƒƒ‰‚Ì–Ú•WˆÊ’u‚ÌÝ’è
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);

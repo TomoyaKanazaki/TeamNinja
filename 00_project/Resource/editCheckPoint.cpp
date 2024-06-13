@@ -409,7 +409,7 @@ HRESULT CEditCheckPoint::Save(void)
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-	file << "# この行から下をコピーし [map.txt] に張り付け\n" << std::endl;
+	file << "# この行から下をコピーし [checkpoint.txt] に張り付け\n" << std::endl;
 
 	// チェックポイントの色の全初期化
 	InitAllColorCheckPoint();
@@ -418,7 +418,7 @@ HRESULT CEditCheckPoint::Save(void)
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
 	// 読み込み開始文字列を書き出し
-	file << "STAGE_CHECKPOINTSET\n" << std::endl;
+	file << "STAGE_POINTSET\n" << std::endl;
 
 	for (const auto& rList : listCheckPoint)
 	{ // 地面の総数分繰り返す
@@ -430,13 +430,13 @@ HRESULT CEditCheckPoint::Save(void)
 		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
 
 		// 情報を書き出し
-		file << "	CHECKPOINTSET" << std::endl;
-		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "	END_CHECKPOINTSET\n" << std::endl;
+		file << "	POINTSET" << std::endl;
+		file << "		POS = " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+		file << "	END_POINTSET\n" << std::endl;
 	}
 
 	// 読み込み終了文字列を書き出し
-	file << "END_STAGE_CHECKPOINTSET" << std::endl;
+	file << "END_STAGE_POINTSET" << std::endl;
 
 	// チェックポイントの削除判定
 	DeleteCollisionCheckPoint(false);

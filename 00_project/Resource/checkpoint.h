@@ -24,24 +24,22 @@ public:
 	void Update(const float fDeltaTime) override; // 更新
 	void Draw(CShader* pShader = nullptr) override; // 描画
 
-	int GetSaveTension() const { return m_nSaveTension; } // セーブ時の士気力取得
+	int GetSaveTension() const { return m_nSaveTension; }	// セーブ時の士気力取得
 
 	// 静的メンバ関数
-	static CCheckPoint* Create(const D3DXVECTOR3& rPos); // 生成処理
-	static CListManager<CCheckPoint>* GetList(void);	 // リスト取得
+	static CCheckPoint* Create(const D3DXVECTOR3& rPos);	// 生成処理
+	static CListManager<CCheckPoint>* GetList(void);		// リスト取得
+	static HRESULT LoadSetup(void);	// セットアップ
 
 private:
 
 	// メンバ関数
 	void CollisionPlayer();	// プレイヤーとの当たり判定
-	void Load(); // 外部情報の読み込み
 
 	// メンバ変数
 	CListManager<CCheckPoint>::AIterator m_iterator;	// イテレーター
 	bool m_bSave; // セーブフラグ
-	float m_fRadius; // 当たり判定半径
 	int m_nSaveTension; // セーブ時の士気力
-	float m_fRotSpeed; // 回る速度
 
 	// 静的メンバ変数
 	static int m_nNumAll;
