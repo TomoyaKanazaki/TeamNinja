@@ -21,7 +21,7 @@ namespace
 	const int MAX_FLOATNUM = 4; // 小数点以下の表示桁数
 	const int MAX_DEBUGSTRING = 2048; // デバッグ表示の最大文字数
 	const char* FONT_PASS = "Terminal"; // 使用するフォント
-	const D3DXCOLOR FONT_COL = D3DCOLOR_RGBA(255, 255, 255, 255);	// フォント色
+	const D3DXCOLOR FONT_COL = D3DCOLOR_RGBA(250, 0, 180, 255);	// フォント色
 
 	// 静的変数
 	LPD3DXFONT m_pFont = nullptr; // デバッグフォントへのポインタ
