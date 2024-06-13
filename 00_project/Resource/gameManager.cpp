@@ -106,9 +106,9 @@ HRESULT CGameManager::Init(void)
 
 #if 0
 	std::vector<CGimmickMalti::SButton> vec;
-	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(-200.0f, 0.0f, 1500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f), 1));
-	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(   0.0f, 0.0f, 1500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f), 1));
-	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3( 200.0f, 0.0f, 1500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f), 1));
+	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(-200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(   0.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3( 200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	CGimmickMalti::Create(vec);
 #endif
 
