@@ -66,6 +66,12 @@ private:
 	// ƒƒ“ƒoŠÖ”
 	void Convert(const float fWidth, const float fDepth, const float fRot);		// Œü‚«‚É‚æ‚é•ÏŠ·ˆ—
 
+#ifdef _DEBUG
+
+	void RotWarning(const float fRot);		// Œü‚«‚ÌŒxˆ—
+
+#endif
+
 	// ƒƒ“ƒo•Ï”
 	float m_fWidth;		// •
 	float m_fHeight;	// ‚‚³

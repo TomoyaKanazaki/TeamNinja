@@ -1,48 +1,40 @@
 //============================================================
 //
-// 状態ギミックヘッダー [gimmick_state.h]
-// Author：小原立暉
+//	敵の持ち物ヘッダー [enemy_item.h]
+//	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _GIMMICK_STATE_H_
-#define _GIMMICK_STATE_H_
+#ifndef _ENEMY_ITEM_H_
+#define _ENEMY_ITEM_H_
 
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "gimmick.h"
-
-//===========================================
-//  前方宣言
-//===========================================
-class CPlayerClone;
+#include "objectModel.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// 状態ギミッククラス
-class CGimmickState : public CGimmick
+// 敵の持ち物クラス
+class CEnemyItem : public CObjectModel
 {
 public:
 
-	// 各ギミックのフラグ
-	enum EFrag
+	// 種類列挙
+	enum EType
 	{
-		GRAVEL = 'g', // 砂利道
-		BOOB = 'b', // 泥
-		WATER = 'w', // 水場
-		CLEEN = 'c', // 掃除したての床
-		MAX
+		TYPE_KATANA = 0,		// 刀
+		TYPE_MAX				// この列挙型の総数
 	};
 
 	// コンストラクタ
-	CGimmickState();
+	CEnemyItem();
 
 	// デストラクタ
-	virtual ~CGimmickState() override;
+	virtual ~CEnemyItem() override;
 
 	// オーバーライド関数
 	virtual HRESULT Init(void) override;	// 初期化
@@ -50,16 +42,26 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
-	void CollisionClone() override;			// クローンとの当たり判定
+	// セット・ゲット関数
+	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
+	EType GetType(void) const { return m_type; }			// 種類の取得処理
 
-protected:
-
-	// 純粋仮想関数
-	virtual void HitClone(CPlayerClone* pClone) = 0; // 分身に当たっていた時の処理
-	virtual void MissClone(CPlayerClone* pClone) = 0; // 分身に当たっていない場合の処理
+	// 静的メンバ関数
+	static CEnemyItem* Create			// 生成
+	( // 引数
+		const EType type,				// 種類
+		const D3DXVECTOR3& rOffset,		// オフセット
+		const D3DXMATRIX& rMtx			// マトリックス情報
+	);
 
 private:
 
+	// メンバ関数
+	void Offset(const D3DXMATRIX& rMtx);	// オフセット処理
+
+	// メンバ変数
+	D3DXVECTOR3 m_offset;	// オフセット
+	EType m_type;			// 種類
 };
 
-#endif	// _GIMMICK_ACTION_H_
+#endif	// _ACTOR_H_

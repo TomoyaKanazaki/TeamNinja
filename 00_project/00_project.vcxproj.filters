@@ -369,9 +369,6 @@
     <ClInclude Include="Resource\editorObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_state.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gimmick_action.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -483,7 +480,13 @@
     <ClInclude Include="Resource\editWall.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemy_belongings.h">
+    <ClInclude Include="Resource\enemy_item.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy_katana.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy_lantern.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -836,9 +839,6 @@
     <ClCompile Include="Resource\editorObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_state.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\gimmick_action.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -950,7 +950,13 @@
     <ClCompile Include="Resource\editWall.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\enemy_belongings.cpp">
+    <ClCompile Include="Resource\enemy_item.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy_katana.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy_lantern.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
