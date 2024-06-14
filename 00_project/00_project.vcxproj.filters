@@ -369,9 +369,6 @@
     <ClInclude Include="Resource\editorObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_state.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gimmick_action.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -840,9 +837,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorObject.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_state.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_action.cpp">

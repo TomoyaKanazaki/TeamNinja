@@ -97,42 +97,42 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 8					# 左前脚
 		PARENT = 1					# (親)体_前
-		POS = 9.0 -5.0 -17.4
+		POS = 9.0 -6.0 -16.4
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 
 	PARTSSET
 		INDEX = 9					# 左前足
 		PARENT = 8					# (親) 左前脚
-		POS = -1.5 -13.2 2.7
+		POS = -1.5 -12.7 2.7
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET
 		INDEX = 10					# 右腿
 		PARENT = 0					# (親)体
-		POS = -8.0 -4.0 0.0
+		POS = -7.7 -3.0 13.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET
 		INDEX = 11					# 左足
-		PARENT = 9					# (親)左腿
-		POS = 4.0 -20.0 0.0
+		PARENT = 10					# (親)左腿
+		POS = 1.0 -18.8 11.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET
 		INDEX = 12					# 右足
 		PARENT = 0					# (親)右腿
-		POS = -4.0 -20.0 0.0
+		POS = 6.7 -3.0 13.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET
 		INDEX = 13					# 刀
 		PARENT = 12					# 右手
-		POS = 0.0 0.0 0.0
+		POS = -0.5 -18.8 10.5
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
