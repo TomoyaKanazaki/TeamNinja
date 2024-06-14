@@ -312,7 +312,7 @@ HRESULT CCheckPoint::LoadSetup(void)
 			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
 
 			// チェックポイントの生成
-			if (CGoal::Create(pos, D3DXVECTOR3(0.0f, 0.01f, 0.0f)) == nullptr)
+			if (CGoal::Create(pos) == nullptr)
 			{ // 確保に失敗した場合
 
 				// 失敗を返す

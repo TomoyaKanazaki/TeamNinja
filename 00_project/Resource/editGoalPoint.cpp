@@ -249,11 +249,7 @@ void CEditGoalPoint::CreateCheckPoint(void)
 		//	ゴールポイントの生成
 		//----------------------------------------------------
 		// ゴールポイントの生成
-		CGoal::Create
-		( // 引数
-			GetVec3Position(),	// 位置
-			VEC3_ZERO			// 向き
-		);
+		CGoal::Create(GetVec3Position());
 		assert(m_pPoint != nullptr);
 
 		// 未保存を設定

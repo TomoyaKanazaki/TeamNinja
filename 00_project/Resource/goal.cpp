@@ -18,6 +18,9 @@ namespace
 {
 	const char* PARAM_FILE = "data\\TXT\\Goal.txt"; // パラメータが保存されたパス
 	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
+
+	const float ROT_SPEED = 0.01f;		// 向きの速度
+	const float RADIUS = 50.0f;			// 半径
 }
 
 //------------------------------------------
@@ -29,10 +32,9 @@ CListManager<CGoal>* CGoal::m_pList = nullptr;	// オブジェクトリスト
 //  コンストラクタ
 //==========================================
 CGoal::CGoal():
-	m_bClear(false),
-	m_fRadius(0.0f),
-	m_fRotSpeed(0.0f)
+	m_bClear(false)
 {
+
 }
 
 //==========================================
@@ -49,8 +51,6 @@ HRESULT CGoal::Init(void)
 {
 	// 値の初期化
 	m_bClear = false;
-	m_fRadius = 0.0f;
-	m_fRotSpeed = 0.0f;
 
 	// 親クラスの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -66,9 +66,6 @@ HRESULT CGoal::Init(void)
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_GOAL);
-
-	// 定数パラメータの読み込み
-	Load();
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -119,7 +116,7 @@ void CGoal::Update(const float fDeltaTime)
 
 	// くるくるしてみる
 	D3DXVECTOR3 rot = GetVec3Rotation();
-	rot.y += m_fRotSpeed;
+	rot.y += ROT_SPEED;
 	SetVec3Rotation(rot);
 
 	// 親クラスの更新
@@ -138,7 +135,7 @@ void CGoal::Draw(CShader* pShader)
 //==========================================
 //  生成処理
 //==========================================
-CGoal* CGoal::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
+CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 {
 	// ポインタを宣言
 	CGoal* pSavePoint = new CGoal;	// セーブポイント生成用
@@ -160,7 +157,7 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 	pSavePoint->SetVec3Position(rPos);
 
 	// 向きを設定
-	pSavePoint->SetVec3Rotation(rRot);
+	pSavePoint->SetVec3Rotation(VEC3_ZERO);
 
 	// 確保したアドレスを返す
 	return pSavePoint;
@@ -197,7 +194,7 @@ void CGoal::CollisionPlayer(void)
 	if (Player == nullptr) { return; }
 
 	// 当たっていない場合関数を抜ける
-	if (!collision::CirclePillar(pos, Player->GetVec3Position(), m_fRadius, Player->GetRadius()))
+	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
 	{ return; }
 
 	// ゴール時のUIを表示する
@@ -205,45 +202,4 @@ void CGoal::CollisionPlayer(void)
 
 	// クリアフラグをオンにする
 	m_bClear = true;
-}
-
-//==========================================
-//  外部情報の読み込み
-//==========================================
-void CGoal::Load()
-{
-	//ローカル変数宣言
-	FILE* pFile; // ファイルポインタ
-
-	//ファイルを読み取り専用で開く
-	pFile = fopen(PARAM_FILE, "r");
-
-	// ファイルが開けなかった場合
-	if (pFile == NULL) { assert(false); return; }
-
-	// 情報の読み込み
-	while (1)
-	{
-		// 文字列の記録用
-		char aStr[256];
-
-		// 文字列読み込み
-		fscanf(pFile, "%s", &aStr[0]);
-
-		// 条件分岐
-		if (strcmp(&aStr[0], "RADIUS") == 0) // 当たり判定の半径の設定
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fRadius);
-		}
-		if (strcmp(&aStr[0], "ROT_SPEED") == 0) // 回る速度
-		{
-			// データを格納
-			fscanf(pFile, "%f", &m_fRotSpeed);
-		}
-		if (strcmp(&aStr[0], "END_OF_FILE") == 0) // 読み込み終了
-		{
-			break;
-		}
-	}
 }
