@@ -261,7 +261,7 @@ CField *CField::Create
 		}
 
 		// テクスチャ分割数を設定
-		pField->SetTexPattern(rTexPart / 8 + POSGRID2(1, 1));	// TODO：木も返還なぽせ
+		pField->SetTexPattern(rTexPart);
 
 		// 確保したアドレスを返す
 		return pField;
