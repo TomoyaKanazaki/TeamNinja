@@ -71,3 +71,17 @@ void CGimmickDecaed::Draw(CShader* pShader)
 	// eƒNƒ‰ƒX‚Ì•`‰æ
 	CField::Draw(pShader);
 }
+
+//===========================================
+//  “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
+//===========================================
+void CGimmickDecaed::Hit(CPlayerClone* pClone)
+{
+}
+
+//==========================================
+//  “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
+//==========================================
+void CGimmickDecaed::Miss(CPlayerClone* pClone)
+{
+}
