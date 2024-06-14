@@ -15,7 +15,6 @@
 //	インクルードファイル
 //************************************************************
 #include "editorObject.h"
-#include "goal.h"
 
 //************************************************************
 //	クラス定義
@@ -43,16 +42,13 @@ public:
 
 private:
 
-	// オーバーライド関数
-	void UpdatePosition(void) override;		// 位置更新
-
 	// メンバ関数
 	void CreateCheckPoint(void);		// チェックポイント生成
 	void ReleaseCheckPoint(void);		// チェックポイント破棄
 	void DeleteCollisionCheckPoint(const bool bRelase);	// チェックポイントの削除判定
 
 	// メンバ変数
-	CGoal* m_pPoint;	// ポイント情報
+	CObjectModel* m_pPoint;		// ポイント情報(チェックポイントのリストに入らないように)
 	bool m_bSave;				// 保存状況
 };
 

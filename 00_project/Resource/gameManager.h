@@ -16,11 +16,6 @@
 #include "retentionManager.h"
 
 //************************************************************
-//  前方宣言
-//************************************************************
-class CGoal;
-
-//************************************************************
 //	クラス定義
 //************************************************************
 // ゲームマネージャークラス
@@ -47,8 +42,6 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 	void SetState(const EState state);		// 状態設定
 	EState GetState(void) const;			// 状態取得
-	void SetGoal(CGoal* pGoal);				// ゴール設定
-	CGoal* GetGoal(void) const;				// ゴール取得
 	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
 	// 静的メンバ関数
@@ -59,7 +52,6 @@ private:
 
 	// メンバ変数
 	EState m_state;	// 状態
-	CGoal* m_pGoal; // ゴールオブジェクトのポインタ
 };
 
 #endif	// _GAMEMANAGER_H_

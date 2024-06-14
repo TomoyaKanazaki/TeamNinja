@@ -53,8 +53,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CGameManager::CGameManager() :
-	m_state	(STATE_NONE),	// 状態
-	m_pGoal	(nullptr)		// ゴールのポインタ
+	m_state	(STATE_NONE)	// 状態
 {
 
 }
@@ -74,7 +73,6 @@ HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
-	m_pGoal = nullptr;		// ゴールのポインタ
 
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
@@ -125,7 +123,7 @@ HRESULT CGameManager::Init(void)
 //============================================================
 void CGameManager::Uninit(void)
 {
-	SAFE_UNINIT(m_pGoal);
+
 }
 
 //============================================================
@@ -145,9 +143,9 @@ void CGameManager::Update(const float fDeltaTime)
 		}
 
 		// ゴールしていた場合リザルト
-		if (m_pGoal != nullptr)
+		if (CGoal::GetGoal() != nullptr)
 		{
-			if (m_pGoal->GetClear())
+			if (CGoal::GetGoal()->GetClear())
 			{
 				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
 			}
@@ -177,24 +175,6 @@ CGameManager::EState CGameManager::GetState(void) const
 {
 	// 状態を返す
 	return m_state;
-}
-
-//============================================================
-// ゴール設定
-//============================================================
-void CGameManager::SetGoal(CGoal* pGoal)
-{
-	// ゴールを設定
-	m_pGoal = pGoal;
-}
-
-//============================================================
-// ゴール取得
-//============================================================
-CGoal* CGameManager::GetGoal(void) const
-{
-	// ゴールを返す
-	return m_pGoal;
 }
 
 //============================================================

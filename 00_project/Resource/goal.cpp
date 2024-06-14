@@ -20,6 +20,11 @@ namespace
 	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
 }
 
+//------------------------------------------
+// 静的メンバ変数宣言
+//------------------------------------------
+CListManager<CGoal>* CGoal::m_pList = nullptr;	// オブジェクトリスト
+
 //==========================================
 //  コンストラクタ
 //==========================================
@@ -65,6 +70,23 @@ HRESULT CGoal::Init(void)
 	// 定数パラメータの読み込み
 	Load();
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CGoal>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	return S_OK;
 }
 
@@ -73,6 +95,16 @@ HRESULT CGoal::Init(void)
 //==========================================
 void CGoal::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// 親クラスの終了
 	CObjectModel::Uninit();
 }
@@ -135,6 +167,19 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot)
 }
 
 //==========================================
+// リスト取得
+//==========================================
+CGoal* CGoal::GetGoal(void)
+{
+	if (m_pList == nullptr) { return nullptr; }		// リスト未使用の場合抜ける
+	if (m_pList->GetNumAll() != 1) { assert(false); return nullptr; }	// ゴールが1人ではない場合抜ける
+	CGoal* pGoal = m_pList->GetList().front();		// ゴールの情報
+
+	// ゴールのポインタを返す
+	return pGoal;
+}
+
+//==========================================
 //  プレイヤーとの当たり判定
 //==========================================
 void CGoal::CollisionPlayer(void)
@@ -147,6 +192,9 @@ void CGoal::CollisionPlayer(void)
 
 	// プレイヤーの情報を取得
 	CPlayer* Player = GET_PLAYER; // 座標
+
+	// プレイヤーがいない場合抜ける
+	if (Player == nullptr) { return; }
 
 	// 当たっていない場合関数を抜ける
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), m_fRadius, Player->GetRadius()))

@@ -27,6 +27,7 @@ public:
 
 	// 静的メンバ関数
 	static CGoal* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot); // 生成処理
+	static CGoal* GetGoal(void);	// リスト取得
 
 private:
 
@@ -35,8 +36,11 @@ private:
 	void Load(); // 外部情報の読み込み
 
 	// メンバ変数
+	CListManager<CGoal>::AIterator m_iterator;	// イテレーター
 	bool m_bClear; // クリアフラグ
 	float m_fRadius; // 当たり判定半径
 	float m_fRotSpeed; // 回転速度
 
+	// 静的メンバ変数
+	static CListManager<CGoal>* m_pList;	// オブジェクトリスト
 };
