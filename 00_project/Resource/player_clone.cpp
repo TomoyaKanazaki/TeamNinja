@@ -1621,17 +1621,14 @@ void CPlayerClone::CheckGimmick()
 	switch (m_eGimmick)
 	{
 	case GIMMICK_IGNORE: // –³‹‚·‚éó‘Ô
-		DebugProc::Print(DebugProc::POINT_CENTER, "–³‹‚·‚éó‘Ô");
 		UpdateIgnore();
 		break;
 
 	case GIMMICK_REACTION: // ”½‰‚·‚éó‘Ô
-		DebugProc::Print(DebugProc::POINT_CENTER, "”½‰‚·‚éó‘Ô");
 		UpdateReAction();
 		break;
 
 	case GIMMICK_ACTION: // ”½‰‚µ‚½ó‘Ô
-		DebugProc::Print(DebugProc::POINT_CENTER, "”½‰‚µ‚½ó‘Ô");
 		UpdateAction();
 		break;
 
