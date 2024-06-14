@@ -25,15 +25,15 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 泥テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 落とし穴テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 朽ちた床テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 水テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 土テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 草土テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 草テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 砂利道テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 泥テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 掃除床テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 朽ちた床テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 水テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
