@@ -11,7 +11,7 @@
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickDecaed::CGimmickDecaed() : CGimmickAction(),
+CGimmickDecaed::CGimmickDecaed() : CField(),
 m_bFall(false) // 落ちるフラグ
 {
 
@@ -31,7 +31,7 @@ CGimmickDecaed::~CGimmickDecaed()
 HRESULT CGimmickDecaed::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickAction::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -49,7 +49,7 @@ HRESULT CGimmickDecaed::Init(void)
 void CGimmickDecaed::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickAction::Uninit();
+	CField::Uninit();
 }
 
 //=========================================
@@ -57,16 +57,10 @@ void CGimmickDecaed::Uninit(void)
 //=========================================
 void CGimmickDecaed::Update(const float fDeltaTime)
 {
-	// 1度でもアクティブになったら常にアクティブ
-	if (!m_bFall && IsActive())
-	{
-		m_bFall = true;
-	}
-
 	if (m_bFall) { DebugProc::Print(DebugProc::POINT_CENTER, "落ちるon\n"); }
 
 	// 親クラスの更新
-	CGimmickAction::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //=========================================
@@ -75,5 +69,5 @@ void CGimmickDecaed::Update(const float fDeltaTime)
 void CGimmickDecaed::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickAction::Draw(pShader);
+	CField::Draw(pShader);
 }
