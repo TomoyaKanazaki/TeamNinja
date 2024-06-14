@@ -48,6 +48,21 @@ namespace
 		'w',	// 水
 	};
 
+#ifdef _DEBUG
+	const D3DXCOLOR COLOR[] =
+	{
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f)
+	};
+#endif
+
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
 
 	const int PRIORITY = 0;	// 地面の優先順位
@@ -64,6 +79,9 @@ CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#ifdef _DEBUG
+static_assert(NUM_ARRAY(COLOR) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#endif
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -259,6 +277,10 @@ CField *CField::Create
 			SAFE_DELETE(pField);
 			return nullptr;
 		}
+
+#ifdef _DEBUG
+		pField->SetColor(COLOR[type]);
+#endif
 
 		// テクスチャ分割数を設定
 		pField->SetTexPattern(rTexPart);
