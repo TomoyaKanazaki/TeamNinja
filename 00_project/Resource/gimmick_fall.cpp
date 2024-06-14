@@ -6,7 +6,7 @@
 //=========================================
 #include "gimmick_fall.h"
 #include "manager.h"
-#include "player.h"
+#include "player_clone.h"
 
 //=========================================
 //  コンストラクタ
@@ -75,6 +75,8 @@ void CGimmickFall::Draw(CShader* pShader)
 //===========================================
 void CGimmickFall::Hit(CPlayerClone* pClone)
 {
+	// 分身に文字列を渡す
+	pClone->AddFrags(GetFlag());
 }
 
 //==========================================
@@ -82,4 +84,6 @@ void CGimmickFall::Hit(CPlayerClone* pClone)
 //==========================================
 void CGimmickFall::Miss(CPlayerClone* pClone)
 {
+	// 分身からフラグを削除する
+	pClone->SabFrags(GetFlag());
 }

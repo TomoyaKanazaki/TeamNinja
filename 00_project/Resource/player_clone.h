@@ -23,6 +23,7 @@ class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
 class CField;	// 地面クラス
 class CGimmickAction;	// アクションギミッククラス
+class CField;	// フィールドクラス
 
 //************************************************************
 //	クラス定義
@@ -116,7 +117,7 @@ public:
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
 	EGimmick IsGimmickFrag() const { return m_eGimmick; }			// ギミックフラグの取得
-	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; } //ギミックフラグの設定
+	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; }	//ギミックフラグの設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
@@ -185,6 +186,7 @@ private:
 	EGimmick m_eGimmick;		// ギミックフラグ
 	bool m_bFind;				// 発見フラグ
 	D3DXVECTOR3 m_size;			// サイズ
+	CField* m_pField;			// フィールドフラグ
 
 	// メンバ変数 (藤田追加)
 	CField *m_pCurField;	// 現在の地面

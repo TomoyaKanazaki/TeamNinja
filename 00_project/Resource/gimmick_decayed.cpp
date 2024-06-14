@@ -6,7 +6,7 @@
 //=========================================
 #include "gimmick_decayed.h"
 #include "manager.h"
-#include "player.h"
+#include "player_clone.h"
 
 //=========================================
 //  コンストラクタ
@@ -77,6 +77,8 @@ void CGimmickDecaed::Draw(CShader* pShader)
 //===========================================
 void CGimmickDecaed::Hit(CPlayerClone* pClone)
 {
+	// 分身に文字列を渡す
+	pClone->AddFrags(GetFlag());
 }
 
 //==========================================
@@ -84,4 +86,6 @@ void CGimmickDecaed::Hit(CPlayerClone* pClone)
 //==========================================
 void CGimmickDecaed::Miss(CPlayerClone* pClone)
 {
+	// 分身からフラグを削除する
+	pClone->SabFrags(GetFlag());
 }

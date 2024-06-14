@@ -93,7 +93,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	m_fFallStart	(0.0f),				// 落とし穴の落ちる前の高さ
 	m_eGimmick		(GIMMICK_IGNORE),	// ギミックフラグ
 	m_bFind			(false),			// 発見フラグ
-	m_size			(VEC3_ZERO)			// サイズ
+	m_size			(VEC3_ZERO),		// サイズ
+	m_pField		(nullptr)			// フィールドギミック
 {
 
 }
@@ -129,6 +130,7 @@ HRESULT CPlayerClone::Init(void)
 	m_eGimmick		= GIMMICK_IGNORE;	// ギミックフラグ
 	m_bFind			= false;			// 発見フラグ
 	m_size			= D3DXVECTOR3(RADIUS, RADIUS, RADIUS);
+	m_pField		= nullptr;			// フィールドフラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
