@@ -21,15 +21,13 @@ namespace
 		D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),
 		D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f),
 		D3DXCOLOR(0.6f, 0.6f, 0.6f, 1.0f),
-		D3DXCOLOR(0.4f, 0.4f, 0.4f, 1.0f),
 	};
 
 	const D3DXVECTOR3 DIRECTION[] =	// 設定用方向ベクトル
 	{
-		D3DXVECTOR3( 0.22f, -0.97f,  0.54f),
-		D3DXVECTOR3(-0.38f,  0.78f, -0.54f),
-		D3DXVECTOR3( 0.89f, -0.21f,  0.44f),
-		D3DXVECTOR3(-0.96f,  0.15f, -0.44f),
+		D3DXVECTOR3(0.34f, -0.87f, 0.35f),
+		D3DXVECTOR3(-0.59f, -0.10f, -0.80f),
+		D3DXVECTOR3(-0.22f, -0.74f, 0.63f),
 	};
 }
 

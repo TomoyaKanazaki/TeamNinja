@@ -54,6 +54,8 @@ public:
 	void Update(const float fDeltaTime) override;	// XV
 	void Draw(CShader* pShader = nullptr) override;	// •`‰æ
 
+	void SetData(void) override;	// î•ñ‚Ìİ’èˆ—
+
 private:
 
 	// ƒƒ“ƒoŠÖ”

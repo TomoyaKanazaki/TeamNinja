@@ -17,6 +17,11 @@
 #include "motion.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CEnemyItem;			// 敵の持ち物
+
+//************************************************************
 // クラス定義
 //************************************************************
 // 敵クラス
@@ -44,6 +49,8 @@ public:
 	void Update(const float fDeltaTime) override;		// 更新
 	void Draw(CShader* pShader = nullptr) override;		// 描画
 
+	virtual void SetData(void) = 0;	// 情報の設定処理
+
 	// 静的メンバ関数
 	static CEnemy* Create	// 生成
 	( // 引数
@@ -60,6 +67,8 @@ public:
 	inline D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }				// 目的の向き取得
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
+	inline void SetItem(CEnemyItem* pItem)					{ m_pItem = pItem; }				// 敵の持ち物設定
+	inline CEnemyItem* GetItem(void) const					{ return m_pItem; }					// 敵の持ち物取得
 
 protected:
 
@@ -78,6 +87,7 @@ private:
 
 	// メンバ変数
 	CListManager<CEnemy>::AIterator m_iterator;	// イテレーター
+	CEnemyItem* m_pItem;			// 持ち物の情報
 	D3DXVECTOR3	m_oldPos;			// 過去位置
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量

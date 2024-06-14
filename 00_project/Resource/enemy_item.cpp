@@ -1,6 +1,6 @@
 //============================================================
 //
-//	敵の持ち物処理 [enemy_delongings.cpp]
+//	敵の持ち物処理 [enemy_item.cpp]
 //	Author：小原立暉
 //
 //============================================================
@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "model.h"
 
+#include "enemy_katana.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -19,7 +21,7 @@ namespace
 {
 	const char* MODEL[] =		// モデルのパス
 	{
-		"data\\MODEL\\Rock\\Moss-Rock000.x",		// 岩(小)
+		"data\\MODEL\\ENEMY\\SAMURAI\\13_katana.x",		// 刀
 	};
 
 	const int PRIORITY = 3;		// 優先度
@@ -36,7 +38,8 @@ static_assert(NUM_ARRAY(MODEL) == CEnemyItem::TYPE_MAX, "ERROR : Type Count Mism
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyItem::CEnemyItem() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY),
+CEnemyItem::CEnemyItem() : CObjectModel(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
+m_offset(VEC3_ZERO),	// オフセット座標
 m_type(TYPE_KATANA)		// 種類
 {
 
@@ -96,6 +99,33 @@ void CEnemyItem::Draw(CShader* pShader)
 }
 
 //============================================================
+// オフセット処理
+//============================================================
+void CEnemyItem::Offset(const D3DXMATRIX& rMtx)
+{
+	// 計算用マトリックス
+	D3DXMATRIX mtxTrans, mtxColl;
+
+	// マトリックスの初期化
+	D3DXMatrixIdentity(&mtxColl);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_offset.x, m_offset.y, m_offset.z);
+	D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
+
+	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+	D3DXMatrixMultiply
+	(
+		&mtxColl,
+		&mtxColl,
+		&rMtx
+	);
+
+	// 位置を設定する
+	SetVec3Position(D3DXVECTOR3(mtxColl._41, mtxColl._42, mtxColl._43));
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CEnemyItem* CEnemyItem::Create
@@ -106,7 +136,24 @@ CEnemyItem* CEnemyItem::Create
 )
 {
 	// モデルUIの生成
-	CEnemyItem* pItem = new CEnemyItem;
+	CEnemyItem* pItem = nullptr;
+
+	switch (type)
+	{
+	case CEnemyItem::TYPE_KATANA:
+
+		// 刀を生成
+		pItem = new CEnemyKatana;
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
 
 	if (pItem == nullptr)
 	{ // 生成に失敗した場合
@@ -140,31 +187,4 @@ CEnemyItem* CEnemyItem::Create
 		// 確保したアドレスを返す
 		return pItem;
 	}
-}
-
-//============================================================
-// オフセット処理
-//============================================================
-void CEnemyItem::Offset(const D3DXMATRIX& rMtx)
-{
-	// 計算用マトリックス
-	D3DXMATRIX mtxTrans, mtxColl;
-
-	// マトリックスの初期化
-	D3DXMatrixIdentity(&mtxColl);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_offset.x, m_offset.y, m_offset.z);
-	D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
-
-	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
-	D3DXMatrixMultiply
-	(
-		&mtxColl,
-		&mtxColl,
-		&rMtx
-	);
-
-	// 位置を設定する
-	SetVec3Position(D3DXVECTOR3(mtxColl._41, mtxColl._42, mtxColl._43));
 }

@@ -47,6 +47,8 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 	void SetState(const EState state);		// 状態設定
 	EState GetState(void) const;			// 状態取得
+	void SetGoal(CGoal* pGoal);				// ゴール設定
+	CGoal* GetGoal(void) const;				// ゴール取得
 	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
 	// 静的メンバ関数
