@@ -35,6 +35,28 @@ public:
 	enum EType
 	{
 		TYPE_ROCK_S = 0,		// Šâ(¬)
+		TYPE_ROCK_M,			// Šâ(’†)
+		TYPE_ROCK_B,			// Šâ(‘å)
+		TYPE_MOSS_ROCK_S,		// ‘ÛŠâ(¬)
+		TYPE_MOSS_ROCK_M,		// ‘ÛŠâ(’†)
+		TYPE_MOSS_ROCK_B,		// ‘ÛŠâ(‘å)
+		TYPE_BIRCHTREE_B,		// ”’Š’‚Ì–Ø(‘å)
+		TYPE_BIRCHTREE_M,		// ”’Š’‚Ì–Ø(’†)
+		TYPE_COM_TREE_B,		// •’Ê‚Ì–Ø(‘å)
+		TYPE_COM_TREE_M,		// •’Ê‚Ì–Ø(’†)
+		TYPE_WILLOW_B,			// –ö‚Ì–Ø(‘å)
+		TYPE_WILLOW_M,			// –ö‚Ì–Ø(’†)
+		TYPE_WOODLOG,			// Œ´–Ø
+		TYPE_TREESTOMP,			// –Ø‚ÌŠ²
+		TYPE_PLANT1,			// 4‚Â‚µ‚©‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‘
+		TYPE_PLANT2,			// ‘½‚­‚Â‚È‚ª‚Á‚Ä‚¢‚é‘
+		TYPE_BUSH,				// ‘‚Þ‚ç
+		TYPE_HOUSE1,			// ‰Æ1
+		TYPE_HOUSE2,			// ‰Æ2
+		TYPE_HOUSE3,			// ‰Æ3
+		TYPE_HOUSE4,			// ‰Æ4
+		TYPE_HOUSE5,			// ‰Æ5
+		TYPE_LANTERN,			// ƒ‰ƒ“ƒ^ƒ“
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
