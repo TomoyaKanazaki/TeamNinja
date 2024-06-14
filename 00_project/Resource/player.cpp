@@ -51,6 +51,7 @@ namespace
 	const float REBOUND		= 500.0f;		// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
+	const float HEIGHT		= 100.0f;		// 身長
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
@@ -76,7 +77,6 @@ namespace
 	const int MAX_CLONE = 10; // 分身の最大数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
-	const float HEIGHT = 100.0f; // 身長
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
 	const float GIMMICK_SET_DISTANCE = 10000.0f; // 直接ギミック分身の生成可能範囲
@@ -1334,7 +1334,7 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos)
 			pos,		// 位置
 			m_oldPos,	// 前回の位置
 			RADIUS,		// 半径
-			RADIUS,		// 高さ
+			HEIGHT,		// 高さ
 			m_move,		// 移動量
 			m_bJump		// ジャンプ状況
 		);
