@@ -69,7 +69,7 @@ void CGimmickCleen::Draw(CShader* pShader)
 }
 
 //===========================================
-//  
+//  “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
 //===========================================
 void CGimmickCleen::Hit(CPlayerClone* pClone)
 {
@@ -78,7 +78,7 @@ void CGimmickCleen::Hit(CPlayerClone* pClone)
 }
 
 //=========================================
-//  •¶š—ñ(ƒtƒ‰ƒO)‚Ìíœ
+//  “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
 //===========================================
 void CGimmickCleen::Miss(CPlayerClone* pClone)
 {

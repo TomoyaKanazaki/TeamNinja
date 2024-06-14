@@ -25,6 +25,10 @@ public:
 
 private:
 
+	// メンバ関数
+	void Hit(CPlayerClone* pClone) override; // 当たっていた場合の処理
+	void Miss(CPlayerClone* pClone) override; // 当たっていない場合の処理
+
 	// メンバ変数
 	bool m_bFall; // 落下フラグ
 
