@@ -25,7 +25,30 @@ namespace
 {
 	const char* MODEL[] =	// モデルのパス
 	{
-		"data\\MODEL\\Rock\\Moss-Rock000.x",		// 岩(小)
+		"data\\MODEL\\Rock\\Rock000.x",			// 岩(小)
+		"data\\MODEL\\Rock\\Rock001.x",			// 岩(中)
+		"data\\MODEL\\Rock\\Rock002.x",			// 岩(大)
+		"data\\MODEL\\Rock\\Moss-Rock000.x",	// 苔岩(小)
+		"data\\MODEL\\Rock\\Moss-Rock001.x",	// 苔岩(中)
+		"data\\MODEL\\Rock\\Moss-Rock002.x",	// 苔岩(大)
+		"data\\MODEL\\Tree\\BirchTree000.x",	// 白樺の木(大)
+		"data\\MODEL\\Tree\\BirchTree001.x",	// 白樺の木(中)
+		"data\\MODEL\\Tree\\CommonTree000.x",	// 普通の木(大)
+		"data\\MODEL\\Tree\\CommonTree001.x",	// 普通の木(中)
+		"data\\MODEL\\Tree\\Willow000.x",		// 柳の木(大)
+		"data\\MODEL\\Tree\\Willow001.x",		// 柳の木(中)
+		"data\\MODEL\\Tree\\WoodLog000.x",		// 原木
+		"data\\MODEL\\Tree\\TreeStump000.x",	// 木の幹
+		"data\\MODEL\\Plant\\Plant000.x",		// 4つしかつながっていない草
+		"data\\MODEL\\Plant\\Plant001.x",		// 多くつながっている草
+		"data\\MODEL\\Plant\\Bush000.x",		// 草むら
+		"data\\MODEL\\House\\House000.x",		// 家1
+		"data\\MODEL\\House\\House001.x",		// 家2
+		"data\\MODEL\\House\\House002.x",		// 家3
+		"data\\MODEL\\House\\House003.x",		// 家4
+		"data\\MODEL\\House\\House004.x",		// 家5
+		"data\\MODEL\\Lantern\\Lantern001.x",	// ランタン
+												
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス

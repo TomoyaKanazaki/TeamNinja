@@ -104,12 +104,18 @@ HRESULT CGameManager::Init(void)
 
 #endif
 
+	// 複数ボタン
 #if 0
 	std::vector<CGimmickMalti::SButton> vec;
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(-200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(   0.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3( 200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	CGimmickMalti::Create(vec);
+#endif
+
+	// 激重ドア
+#if 0
+	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 
 	// TPSカメラの目標位置の設定

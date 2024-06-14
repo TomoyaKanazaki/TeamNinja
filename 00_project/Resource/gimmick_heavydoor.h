@@ -18,8 +18,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObjectModel;		// オブジェクトモデルクラス
-class CStage;			// ステージクラス
+class CObjectModel;	// オブジェクトモデルクラス
 
 //************************************************************
 //	クラス定義
@@ -42,27 +41,22 @@ public:
 	~CGimmickHeavyDoor();
 
 	HRESULT Init(void);	// 初期化
-	void Uninit(void);		// 終了
+	void Uninit(void);	// 終了
 	void Update(const float fDeltaTime);	// 更新
 	void Draw(CShader* pShader = nullptr);	// 描画
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
+	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
 
 private:
 
-	void OpenTheDoor(void);	// 扉を上げる
+	void OpenTheDoor(void);		// 扉を上げる
 	void CloseTheDoor(void);	// 扉を下げる
 
 	// メンバ変数
-	CObjectModel* m_pRoofModel;		// オブジェクトモデル(屋根)の情報
-	CObjectModel* m_pDoorModel;		// オブジェクトモデル(扉)の情報
-	CStage* m_pStage;				// ステージの情報
-
-	D3DXVECTOR3 m_pos;		// 扉の位置
-	D3DXVECTOR3 m_posSave;	// 扉の位置保存用
-	D3DXVECTOR3 m_move;		// 移動量
-	int m_nDoorCounter;		// 扉の開閉カウンター
-	int m_nNumBound;		// 跳ねた回数
-
-	EState m_state;			// 扉の状態
+	CObjectModel* m_pRoofModel;	// オブジェクトモデル(屋根)の情報
+	CObjectModel* m_pDoorModel;	// オブジェクトモデル(扉)の情報
+	D3DXVECTOR3 m_move;	// 移動量
+	EState m_state;		// 扉の状態
 
 };
 
