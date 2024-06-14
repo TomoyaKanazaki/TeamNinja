@@ -143,9 +143,9 @@ void CGimmickPost::Draw(CShader* pShader)
 	CGimmickAction::Draw(pShader);
 }
 
-//============================================================
+//=========================================
 //	位置の設定処理
-//============================================================
+//=========================================
 void CGimmickPost::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 親クラスの位置設定
@@ -158,9 +158,9 @@ void CGimmickPost::SetVec3Position(const D3DXVECTOR3& rPos)
 	m_pEdge->SetVec3Position(rPos);
 }
 
-//============================================================
+//=========================================
 //	大きさの設定処理
-//============================================================
+//=========================================
 void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 {
 	// 親クラスの大きさ設定
@@ -173,9 +173,9 @@ void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	m_pEdge->SetVec3Sizing(rSize * 0.5f + SCALE_EDGE);
 }
 
-//============================================================
+//=========================================
 //	ボタン大きさの設定処理
-//============================================================
+//=========================================
 void CGimmickPost::SetButtonSizing(void)
 {
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f + SCALE_BUTTON;	// ボタンの大きさ

@@ -25,15 +25,15 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\testfield.png",	// 土テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 草土テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 草テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 泥テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 落とし穴テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 朽ちた床テクスチャ
-		"data\\TEXTURE\\testfield.png",	// 水テクスチャ
+		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
+		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 泥テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 朽ちた床テクスチャ
+		"data\\TEXTURE\\soil001.png",	// 水テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
@@ -47,6 +47,21 @@ namespace
 		'd',	// 朽ちた床
 		'w',	// 水
 	};
+
+#ifdef _DEBUG
+	const D3DXCOLOR COLOR[] =
+	{
+		D3DXCOLOR(0.70f, 0.37f, 0.00f, 1.0f),
+		D3DXCOLOR(0.11f, 0.02f, 0.00f, 1.0f),
+		D3DXCOLOR(0.02f, 0.96f, 0.27f, 1.0f),
+		D3DXCOLOR(0.38f, 0.38f, 0.38f, 1.0f),
+		D3DXCOLOR(0.18f, 0.10f, 0.00f, 1.0f),
+		D3DXCOLOR(0.90f, 0.90f, 1.00f, 1.0f),
+		D3DXCOLOR(0.81f, 0.90f, 0.85f, 1.0f),
+		D3DXCOLOR(0.28f, 0.00f, 0.18f, 1.0f),
+		D3DXCOLOR(0.28f, 0.87f, 0.95f, 1.0f)
+	};
+#endif
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
 
@@ -64,6 +79,9 @@ CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#ifdef _DEBUG
+static_assert(NUM_ARRAY(COLOR) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#endif
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -260,6 +278,10 @@ CField *CField::Create
 			return nullptr;
 		}
 
+#ifdef _DEBUG
+		pField->SetColor(COLOR[type]);
+#endif
+
 		// テクスチャ分割数を設定
 		pField->SetTexPattern(rTexPart);
 
@@ -307,6 +329,9 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+#ifdef _DEBUG
+		BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\testfield.png"));
+#endif
 	}
 	else { assert(false); }	// 範囲外
 }

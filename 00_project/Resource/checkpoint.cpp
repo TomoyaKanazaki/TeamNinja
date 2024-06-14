@@ -16,7 +16,7 @@
 //==========================================
 namespace
 {
-	const char *SETUP_TXT	= "data\\TXT\\checkpoint.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT	= "data\\TXT\\Point.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	const float ROT_SPEED	= 0.01f;	// 回る速度
 }
@@ -247,10 +247,10 @@ HRESULT CCheckPoint::LoadSetup(void)
 			// 一行全て読み込む
 			std::getline(file, str);
 		}
-		else if (str == "STAGE_POINTSET")
+		else if (str == "STAGE_CHECKSET")
 		{
 			do
-			{ // END_STAGE_POINTSETを読み込むまでループ
+			{ // END_STAGE_CHECKSETを読み込むまでループ
 
 				// 文字列を読み込む
 				file >> str;
@@ -261,10 +261,10 @@ HRESULT CCheckPoint::LoadSetup(void)
 					// 一行全て読み込む
 					std::getline(file, str);
 				}
-				else if (str == "POINTSET")
+				else if (str == "CHECKSET")
 				{
 					do
-					{ // END_POINTSETを読み込むまでループ
+					{ // END_CHECKSETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -278,7 +278,7 @@ HRESULT CCheckPoint::LoadSetup(void)
 							file >> pos.y;
 							file >> pos.z;
 						}
-					} while (str != "END_POINTSET");	// END_POINTSETを読み込むまでループ
+					} while (str != "END_CHECKSET");	// END_CHECKSETを読み込むまでループ
 
 					// チェックポイントの生成
 					if (CCheckPoint::Create(pos) == nullptr)
@@ -289,7 +289,7 @@ HRESULT CCheckPoint::LoadSetup(void)
 						return E_FAIL;
 					}
 				}
-			} while (str != "END_STAGE_POINTSET");	// END_STAGE_POINTSETを読み込むまでループ
+			} while (str != "END_STAGE_CHECKSET");	// END_STAGE_CHECKSETを読み込むまでループ
 		}
 	}
 

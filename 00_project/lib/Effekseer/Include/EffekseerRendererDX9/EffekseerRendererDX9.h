@@ -218,7 +218,7 @@ public:
 	/**
 		@brief	Specify the color of light
 	*/
-	virtual void SetLightColor(const ::Effekseer::Color& color);
+	virtual void SetLightColor(const ::Effekseer::Color& COLOR);
 
 	/**
 		@brief	Get the color of ambient
@@ -228,7 +228,7 @@ public:
 	/**
 		@brief	Specify the color of ambient
 	*/
-	virtual void SetLightAmbientColor(const ::Effekseer::Color& color);
+	virtual void SetLightAmbientColor(const ::Effekseer::Color& COLOR);
 
 	/**
 		@brief	最大描画スプライト数を取得する。
