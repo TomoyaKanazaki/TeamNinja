@@ -164,6 +164,36 @@ STAGE_WALLSET
 		TEXPART	= 32 6
 	END_WALLSET
 
+	WALLSET
+		TYPE	= 0
+		POS		= 4050.00 300.00 0.00
+		ROT		= 0.00 0.00 0.00
+		SIZE	= 500.00 250.00
+		COL		= 1.00 1.00 1.00 1.00
+		PART	= 1 1
+		TEXPART	= 10 5
+	END_WALLSET
+
+	WALLSET
+		TYPE	= 0
+		POS		= 4950.00 300.00 0.00
+		ROT		= 0.00 0.00 0.00
+		SIZE	= 500.00 250.00
+		COL		= 1.00 1.00 1.00 1.00
+		PART	= 1 1
+		TEXPART	= 10 5
+	END_WALLSET
+
+	WALLSET
+		TYPE	= 0
+		POS		= 5850.00 300.00 0.00
+		ROT		= 0.00 0.00 0.00
+		SIZE	= 500.00 500.00
+		COL		= 1.00 1.00 1.00 1.00
+		PART	= 1 1
+		TEXPART	= 10 10
+	END_WALLSET
+
 END_STAGE_WALLSET
 
 #------------------------------------------------------------------------------
