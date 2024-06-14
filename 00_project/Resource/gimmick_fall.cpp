@@ -69,3 +69,17 @@ void CGimmickFall::Draw(CShader* pShader)
 	// eƒNƒ‰ƒX‚Ì•`‰æ
 	CField::Draw(pShader);
 }
+
+//===========================================
+//  “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
+//===========================================
+void CGimmickFall::Hit(CPlayerClone* pClone)
+{
+}
+
+//==========================================
+//  “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
+//==========================================
+void CGimmickFall::Miss(CPlayerClone* pClone)
+{
+}
