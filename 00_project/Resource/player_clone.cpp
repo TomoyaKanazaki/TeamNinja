@@ -93,7 +93,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	m_fFallStart	(0.0f),				// 落とし穴の落ちる前の高さ
 	m_eGimmick		(GIMMICK_IGNORE),	// ギミックフラグ
 	m_bFind			(false),			// 発見フラグ
-	m_size			(VEC3_ZERO)			// サイズ
+	m_size			(VEC3_ZERO),		// サイズ
+	m_pField		(nullptr)			// フィールドギミック
 {
 
 }
@@ -129,6 +130,7 @@ HRESULT CPlayerClone::Init(void)
 	m_eGimmick		= GIMMICK_IGNORE;	// ギミックフラグ
 	m_bFind			= false;			// 発見フラグ
 	m_size			= D3DXVECTOR3(RADIUS, RADIUS, RADIUS);
+	m_pField		= nullptr;			// フィールドフラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -394,17 +396,6 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
-
-	// ギミックが落とし穴だった場合
-	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL || m_pGimmick->GetType() == CGimmick::TYPE_DECAED)
-	{
-		// 移動量を減少させる
-		m_move.x *= FALL_SPEED;
-		m_move.z *= FALL_SPEED;
-
-		// 落とし穴警戒状態にする
-		m_Action = ACTION_FALL_TO_WAIT;
-	}
 }
 
 //===========================================
@@ -1621,17 +1612,14 @@ void CPlayerClone::CheckGimmick()
 	switch (m_eGimmick)
 	{
 	case GIMMICK_IGNORE: // 無視する状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "無視する状態");
 		UpdateIgnore();
 		break;
 
 	case GIMMICK_REACTION: // 反応する状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "反応する状態");
 		UpdateReAction();
 		break;
 
 	case GIMMICK_ACTION: // 反応した状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "反応した状態");
 		UpdateAction();
 		break;
 

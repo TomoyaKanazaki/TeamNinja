@@ -99,6 +99,20 @@ bool CCollisionCylinder::Hit
 			// 真を返す
 			return true;
 		}
+		else if (rPosOld.y + fHeight <= posColl.y &&
+			rPos.y + fHeight > posColl.y)
+		{ // 上からの当たり判定
+
+			// 位置を補正する
+			rPos.y = posColl.y - fHeight;
+
+			// 移動量を0にする
+			rMove.y = 0.0f;
+
+			// 真を返す
+			return true;
+		}
+
 
 		// 変数を宣言
 		float fCenterRot = atan2f(rPos.x - posColl.x, rPos.z - posColl.z);	// 判定目標から見た判定向き

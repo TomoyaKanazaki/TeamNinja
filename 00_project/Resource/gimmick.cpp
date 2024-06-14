@@ -12,10 +12,8 @@
 
 #include "gimmick_jumptable.h"
 #include "gimmick_step.h"
-#include "gimmick_fall.h"
 #include "gimmick_post.h"
 #include "gimmick_malti.h"
-#include "gimmick_decayed.h"
 #include "gimmick_jumpoff.h"
 #include "gimmick_heavydoor.h"
 
@@ -154,21 +152,9 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_FALL:			// óéÇ∆Çµåä
-
-		pGimmick = new CGimmickFall;
-
-		break;
-
 	case CGimmick::TYPE_POST:			// ê›íu
 
 		pGimmick = new CGimmickPost;
-
-		break;
-
-	case CGimmick::TYPE_DECAED:			// ãÄÇøÇΩè∞
-
-		pGimmick = new CGimmickDecaed;
 
 		break;
 

@@ -5,12 +5,12 @@
 //  Author : Tomoya Kanzaki
 //
 //=========================================
-#include "gimmick_action.h"
+#include "field.h"
 
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickFall : public CGimmickAction
+class CGimmickFall : public CField
 {
 public:
 
@@ -23,9 +23,11 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
-	bool IsFall() override { return m_bFall; } // 落下フラグの取得
-
 private:
+
+	// メンバ関数
+	void Hit(CPlayerClone* pClone) override; // 当たっていた場合の処理
+	void Miss(CPlayerClone* pClone) override; // 当たっていない場合の処理
 
 	// メンバ変数
 	bool m_bFall; // 落下フラグ

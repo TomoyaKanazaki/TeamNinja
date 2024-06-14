@@ -1,23 +1,29 @@
 //============================================================
 //
-//	ジャンプ台処理 [gimmick_jumptable.cpp]
+//	敵の刀処理 [enemy_katana.cpp]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "manager.h"
-#include "gimmick_jumptable.h"
-#include "player.h"
+#include "enemy_katana.h"
 
 //************************************************************
-//	子クラス [CGimmickJumpTable] のメンバ関数
+//	定数宣言
+//************************************************************
+namespace
+{
+
+}
+
+//************************************************************
+//	子クラス [CEnemyKatana] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmickJumpTable::CGimmickJumpTable() : CGimmickAction()
+CEnemyKatana::CEnemyKatana() : CEnemyItem()
 {
 
 }
@@ -25,7 +31,7 @@ CGimmickJumpTable::CGimmickJumpTable() : CGimmickAction()
 //============================================================
 //	デストラクタ
 //============================================================
-CGimmickJumpTable::~CGimmickJumpTable()
+CEnemyKatana::~CEnemyKatana()
 {
 
 }
@@ -33,10 +39,10 @@ CGimmickJumpTable::~CGimmickJumpTable()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CGimmickJumpTable::Init(void)
+HRESULT CEnemyKatana::Init(void)
 {
-	// オブジェクト3Dの初期化
-	if (FAILED(CGimmickAction::Init()))
+	// オブジェクトモデルの初期化
+	if (FAILED(CEnemyItem::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -51,38 +57,26 @@ HRESULT CGimmickJumpTable::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CGimmickJumpTable::Uninit(void)
+void CEnemyKatana::Uninit(void)
 {
-	// オブジェクト3Dの終了
-	CGimmickAction::Uninit();
+	// オブジェクトモデルの終了
+	CEnemyItem::Uninit();
 }
 
 //============================================================
 //	更新処理
 //============================================================
-void CGimmickJumpTable::Update(const float fDeltaTime)
+void CEnemyKatana::Update(const float fDeltaTime)
 {
-	// プレイヤーとの当たり判定
-	if (CollisionPlayer())
-	{
-		// プレイヤーを大ジャンプ！
-		SetMoment(GET_PLAYER->GimmickHighJump());
-	}
-	else
-	{
-		// ジャンプしていない場合false
-		SetMoment(false);
-	}
-
-	// 親クラスの更新
-	CGimmickAction::Update(fDeltaTime);
+	// オブジェクトモデルの更新
+	CEnemyItem::Update(fDeltaTime);
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CGimmickJumpTable::Draw(CShader* pShader)
+void CEnemyKatana::Draw(CShader* pShader)
 {
-	// オブジェクト3Dの描画
-	CGimmickAction::Draw(pShader);
+	// オブジェクトモデルの描画
+	CEnemyItem::Draw(pShader);
 }

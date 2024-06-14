@@ -37,6 +37,8 @@ public:
 		TYPE_BOOB,		// “D
 		TYPE_CLEEN,		// ‘|œ°
 		TYPE_WATER,		// …
+		TYPE_FALL,		// —Ž‚Æ‚µŒŠ
+		TYPE_DECAYED,	// ‹€‚¿‚½°
 		TYPE_MAX		// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

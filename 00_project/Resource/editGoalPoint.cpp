@@ -1,7 +1,7 @@
 #if 1
 //============================================================
 //
-//	エディットチェックポイント処理 [editCheckPoint.cpp]
+//	エディットゴールポイント処理 [editGoalPoint.cpp]
 //	Author：小原立暉
 //
 //============================================================
@@ -9,11 +9,13 @@
 //	インクルードファイル
 //************************************************************
 #include "editManager.h"
-#include "editCheckPoint.h"
+#include "editGoalPoint.h"
 #include "manager.h"
 #include "collision.h"
 #include "useful.h"
 #include "stage.h"
+#include "gameManager.h"
+#include "sceneGame.h"
 
 //************************************************************
 //	マクロ定義
@@ -28,19 +30,19 @@
 //************************************************************
 namespace
 {
-	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_checkpoint.txt";	// セーブテキストパス
+	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_goalpoint.txt";	// セーブテキストパス
 
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
 }
 
 //************************************************************
-//	親クラス [CEditCheckPoint] のメンバ関数
+//	親クラス [CEditGoalPoint] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditCheckPoint::CEditCheckPoint()
+CEditGoalPoint::CEditGoalPoint()
 {
 #if _DEBUG
 
@@ -54,7 +56,7 @@ CEditCheckPoint::CEditCheckPoint()
 //============================================================
 //	デストラクタ
 //============================================================
-CEditCheckPoint::~CEditCheckPoint()
+CEditGoalPoint::~CEditGoalPoint()
 {
 #if _DEBUG
 #endif	// _DEBUG
@@ -63,7 +65,7 @@ CEditCheckPoint::~CEditCheckPoint()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CEditCheckPoint::Init(void)
+HRESULT CEditGoalPoint::Init(void)
 {
 #if _DEBUG
 
@@ -80,10 +82,11 @@ HRESULT CEditCheckPoint::Init(void)
 		return E_FAIL;
 	}
 
-	// チェックポイントの生成
-	m_pPoint = CCheckPoint::Create
+	// ゴールポイントの生成
+	m_pPoint = CGoal::Create
 	( // 引数
-		GetVec3Position()		// 位置
+		GetVec3Position(),				// 位置
+		D3DXVECTOR3(0.0f, 0.01f, 0.0f)	// 向き
 	);
 	if (m_pPoint == nullptr)
 	{ // 生成に失敗した場合
@@ -107,14 +110,14 @@ HRESULT CEditCheckPoint::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CEditCheckPoint::Uninit(void)
+void CEditGoalPoint::Uninit(void)
 {
 #if _DEBUG
 
 	// 親クラスの終了
 	CEditorObject::Uninit();
 
-	// チェックポイントの終了
+	// ゴールポイントの終了
 	SAFE_UNINIT(m_pPoint);
 
 #endif	// _DEBUG
@@ -123,17 +126,17 @@ void CEditCheckPoint::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEditCheckPoint::Update(void)
+void CEditGoalPoint::Update(void)
 {
 #if _DEBUG
 
 	// 親クラスの更新
 	CEditorObject::Update();
 
-	// チェックポイントの生成
+	// ゴールポイントの生成
 	CreateCheckPoint();
 
-	// チェックポイントの破棄
+	// ゴールポイントの破棄
 	ReleaseCheckPoint();
 
 	// 位置を反映
@@ -145,7 +148,7 @@ void CEditCheckPoint::Update(void)
 //============================================================
 //	保存状況取得処理
 //============================================================
-bool CEditCheckPoint::IsSave(void)
+bool CEditGoalPoint::IsSave(void)
 {
 #if _DEBUG
 
@@ -163,7 +166,7 @@ bool CEditCheckPoint::IsSave(void)
 //============================================================
 //	情報保存処理
 //============================================================
-void CEditCheckPoint::SaveInfo(void)
+void CEditGoalPoint::SaveInfo(void)
 {
 #if _DEBUG
 
@@ -176,7 +179,7 @@ void CEditCheckPoint::SaveInfo(void)
 //============================================================
 //	情報読込処理
 //============================================================
-void CEditCheckPoint::LoadInfo(void)
+void CEditGoalPoint::LoadInfo(void)
 {
 #if _DEBUG
 
@@ -189,7 +192,7 @@ void CEditCheckPoint::LoadInfo(void)
 //============================================================
 //	操作表示の描画処理
 //============================================================
-void CEditCheckPoint::DrawDebugControl(void)
+void CEditGoalPoint::DrawDebugControl(void)
 {
 #if _DEBUG
 
@@ -205,12 +208,23 @@ void CEditCheckPoint::DrawDebugControl(void)
 //============================================================
 //	情報表示の描画処理
 //============================================================
-void CEditCheckPoint::DrawDebugInfo(void)
+void CEditGoalPoint::DrawDebugInfo(void)
 {
 #if _DEBUG
 
 	// 情報表示の描画
 	CEditorObject::DrawDebugInfo();
+
+	if (CSceneGame::GetGameManager()->GetGoal() == nullptr)
+	{ // ゴールが NULL の場合
+
+		DebugProc::Print(DebugProc::POINT_RIGHT, "設置可能\n");
+	}
+	else
+	{ // 上記以外
+
+		DebugProc::Print(DebugProc::POINT_RIGHT, "設置不可能\n");
+	}
 
 #endif	// _DEBUG
 }
@@ -218,7 +232,7 @@ void CEditCheckPoint::DrawDebugInfo(void)
 //============================================================
 // 位置更新
 //============================================================
-void CEditCheckPoint::UpdatePosition(void)
+void CEditGoalPoint::UpdatePosition(void)
 {
 	// 位置の更新
 	CEditorObject::UpdatePosition();
@@ -228,167 +242,96 @@ void CEditCheckPoint::UpdatePosition(void)
 }
 
 //============================================================
-//	チェックポイントの生成処理
+//	ゴールポイントの生成処理
 //============================================================
-void CEditCheckPoint::CreateCheckPoint(void)
+void CEditGoalPoint::CreateCheckPoint(void)
 {
+	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();		// ゴール情報
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
-	// チェックポイントを配置
-	if (pKeyboard->IsTrigger(KEY_CREATE))
+	// ゴールポイントを配置
+	if (pKeyboard->IsTrigger(KEY_CREATE) &&
+		pGoal == nullptr)
 	{
 		//----------------------------------------------------
-		//	チェックポイントの情報を配置用に変更
+		//	ゴールポイントの情報を配置用に変更
 		//----------------------------------------------------
 		// 自動更新・自動描画をONにする
 		m_pPoint->SetEnableUpdate(true);
 		m_pPoint->SetEnableDraw(true);
 
+		// ゴールを設定する
+		CSceneGame::GetGameManager()->SetGoal(m_pPoint);
+
 		// 未保存を設定
 		m_bSave = false;
 
 		//----------------------------------------------------
-		//	新しいチェックポイントの生成
+		//	新しいゴールポイントの生成
 		//----------------------------------------------------
-		// チェックポイントの生成
-		m_pPoint = CCheckPoint::Create
+		// ゴールポイントの生成
+		m_pPoint = CGoal::Create
 		( // 引数
-			GetVec3Position()		// 位置
+			GetVec3Position(),				// 位置
+			D3DXVECTOR3(0.0f, 0.01f, 0.0f)	// 向き
 		);
 		assert(m_pPoint != nullptr);
 	}
 }
 
 //============================================================
-//	チェックポイントの破棄処理
+//	ゴールポイントの破棄処理
 //============================================================
-void CEditCheckPoint::ReleaseCheckPoint(void)
+void CEditGoalPoint::ReleaseCheckPoint(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 	bool bRelease = false;	// 破棄状況
 
-	// チェックポイントを削除
+	// ゴールポイントを削除
 	if (pKeyboard->IsTrigger(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
 		bRelease = true;
 	}
 
-	// チェックポイントの削除判定
+	// ゴールポイントの削除判定
 	DeleteCollisionCheckPoint(bRelease);
 }
 
 //============================================================
-//	チェックポイントの削除判定
+//	ゴールポイントの削除判定
 //============================================================
-void CEditCheckPoint::DeleteCollisionCheckPoint(const bool bRelase)
+void CEditGoalPoint::DeleteCollisionCheckPoint(const bool bRelase)
 {
-	CListManager<CCheckPoint>* pListManager = CCheckPoint::GetList();	// チェックポイントリストマネージャー
-	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CCheckPoint*> listCheckPoint = pListManager->GetList();	// チェックポイントリスト情報
+	// ゴールを取得
+	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();
 
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	for (auto& rList : listCheckPoint)
-	{ // チェックポイント数分繰り返す
+	if (pGoal != nullptr)
+	{ // ゴールが NULL じゃない場合
 
-		// 同じアドレスだった場合次へ
-		if (rList == m_pPoint) { continue; }
+		if (bRelase == true)
+		{ // 削除する場合
 
-		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
-		D3DXVECTOR3 scaleThis = VEC3_ZERO;	// 自身の大きさ
-		D3DXVECTOR3 scaleOther = VEC3_ZERO;	// 対象の大きさ
-
-		// 自身の大きさを設定
-		D3DXVECTOR3 scaleThisCheckPoint = m_pPoint->GetVec3Scaling();	// 自身の地面の大きさ
-		scaleThis.x = scaleThisCheckPoint.x;	// 判定サイズXを設定
-		scaleThis.y = scaleThisCheckPoint.y;	// 判定サイズYを設定
-		scaleThis.z = scaleThisCheckPoint.z;	// 判定サイズZを設定
-		scaleThis *= 0.5f;				// 判定サイズを半分に
-
-		// 対象の大きさを設定
-		D3DXVECTOR3 scaleOtherCheckPoint = rList->GetVec3Scaling();		// 対象の地面の大きさ
-		scaleOther.x = scaleOtherCheckPoint.x;	// 判定サイズXを設定
-		scaleOther.y = scaleOtherCheckPoint.y;	// 判定サイズYを設定
-		scaleOther.z = scaleOtherCheckPoint.z;	// 判定サイズZを設定
-		scaleOther *= 0.5f;				// 判定サイズを半分に
-
-		// 矩形の当たり判定
-		if (collision::Box3D
-		( // 引数
-			posEdit,	// 判定位置
-			posOther,	// 判定目標位置
-			scaleThis,	// 判定サイズ(右・上・後)
-			scaleThis,	// 判定サイズ(左・下・前)
-			scaleOther,	// 判定目標サイズ(右・上・後)
-			scaleOther	// 判定目標サイズ(左・下・前)
-		))
-		{ // 判定内だった場合
-
-			if (bRelase)
-			{ // 破棄する場合
-
-				// 終了処理
-				rList->Uninit();
-
-				// 未保存を設定
-				m_bSave = false;
-			}
-			else
-			{ // 破棄しない場合
-
-				// 赤を設定
-				rList->SetAllMaterial(material::Green());
-			}
+			// ゴールを終了する
+			pGoal->Uninit();
+			CSceneGame::GetGameManager()->SetGoal(nullptr);
 		}
-		else
-		{ // 判定外だった場合
-
-			// 通常色を設定
-			rList->ResetMaterial();
-		}
-	}
-}
-
-//============================================================
-//	チェックポイントの色の全初期化処理
-//============================================================
-void CEditCheckPoint::InitAllColorCheckPoint(void)
-{
-	CListManager<CCheckPoint>* pListManager = CCheckPoint::GetList();	// チェックポイントリストマネージャー
-	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CCheckPoint*> listCheckPoint = pListManager->GetList();	// チェックポイントリスト情報
-
-	int nCnt = 0;
-	for (auto& rList : listCheckPoint)
-	{ // チェックポイント数分繰り返す
-
-		// 同じアドレスだった場合次へ
-		if (rList == m_pPoint) { continue; }
-
-		// 通常色を設定
-		rList->ResetMaterial();
-
-		nCnt++;
 	}
 }
 
 //============================================================
 //	保存処理
 //============================================================
-HRESULT CEditCheckPoint::Save(void)
+HRESULT CEditGoalPoint::Save(void)
 {
 #if _DEBUG
 
-	// 地面のリストを取得
-	CListManager<CCheckPoint>* pListManager = CCheckPoint::GetList();	// リストマネージャー
-	std::list<CCheckPoint*> listCheckPoint;	// 地面リスト
-	if (pListManager != nullptr)
-	{ // リストマネージャーが生成されている場合
+	// ゴールの情報を取得
+	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();
 
-		// リストを取得
-		listCheckPoint = pListManager->GetList();
-	}
+	// ゴールが NULL の場合、抜ける
+	if (pGoal == nullptr) { return S_OK; }
 
 	// ファイルを開く
 	std::ofstream  file(SAVE_PASS);	// ファイルストリーム
@@ -396,7 +339,7 @@ HRESULT CEditCheckPoint::Save(void)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(nullptr, "チェックポイントの書き出しに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, "ゴールポイントの書き出しに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
@@ -405,41 +348,24 @@ HRESULT CEditCheckPoint::Save(void)
 	// 見出しを書き出し
 	file << "#==============================================================================" << std::endl;
 	file << "#" << std::endl;
-	file << "#	チェックポイントのセーブデータ [save_checkpoint.txt]" << std::endl;
+	file << "#	ゴールポイントのセーブデータ [save_goalpoint.txt]" << std::endl;
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
 	file << "# この行から下をコピーし [Point.txt] に張り付け\n" << std::endl;
 
-	// チェックポイントの色の全初期化
-	InitAllColorCheckPoint();
-
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
 	// 読み込み開始文字列を書き出し
-	file << "STAGE_CHECKSET\n" << std::endl;
+	file << "STAGE_GOALSET\n" << std::endl;
 
-	for (const auto& rList : listCheckPoint)
-	{ // 地面の総数分繰り返す
-
-		// 同じアドレスだった場合次へ
-		if (rList == m_pPoint) { continue; }
-
-		// 書き出す情報を取得
-		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
-
-		// 情報を書き出し
-		file << "	CHECKSET" << std::endl;
-		file << "		POS = " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "	END_CHECKSET\n" << std::endl;
-	}
+	// 位置を書き出し
+	D3DXVECTOR3 pos = pGoal->GetVec3Position();	// 位置
+	file << "		POS = " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 
 	// 読み込み終了文字列を書き出し
-	file << "END_STAGE_CHECKSET" << std::endl;
-
-	// チェックポイントの削除判定
-	DeleteCollisionCheckPoint(false);
+	file << "END_STAGE_GOALSET" << std::endl;
 
 	// 保存済みにする
 	m_bSave = true;

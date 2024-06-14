@@ -12,6 +12,11 @@
 #include "renderer.h"
 #include "texture.h"
 #include "gimmick_gravel.h"
+#include "gimmick_boob.h"
+#include "gimmick_cleen.h"
+#include "gimmick_fall.h"
+#include "gimmick_decayed.h"
+#include "gimmick_water.h"
 
 //************************************************************
 //	定数宣言
@@ -20,13 +25,15 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 泥テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\lava000.png",	// 水テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 土テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 草土テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 草テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 砂利道テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 泥テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 掃除床テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 朽ちた床テクスチャ
+		"data\\TEXTURE\\testfield.png",	// 水テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
@@ -36,8 +43,25 @@ namespace
 		'g',	// 砂利フラグ
 		'b',	// 泥
 		'c',	// 掃除床
-		'w'		// 水
+		'f',	// 落ちた床
+		'd',	// 朽ちた床
+		'w',	// 水
 	};
+
+#ifdef _DEBUG
+	const D3DXCOLOR COLOR[] =
+	{
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f),
+		D3DXCOLOR(0.3f, 0.25f, 0.1f, 1.0f)
+	};
+#endif
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
 
@@ -55,6 +79,9 @@ CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#ifdef _DEBUG
+static_assert(NUM_ARRAY(COLOR) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
+#endif
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -185,6 +212,26 @@ CField *CField::Create
 		pField = new CGimmickGravel;
 		break;
 
+	case TYPE_BOOB:
+		pField = new CGimmickBoob;
+		break;
+
+	case TYPE_CLEEN:
+		pField = new CGimmickCleen;
+		break;
+
+	case TYPE_FALL:
+		pField = new CGimmickFall;
+		break;
+
+	case TYPE_DECAYED:
+		pField = new CGimmickGravel;
+		break;
+
+	case TYPE_WATER:
+		pField = new CGimmickWater;
+		break;
+
 	default:
 		pField = new CField;
 		break;
@@ -230,6 +277,10 @@ CField *CField::Create
 			SAFE_DELETE(pField);
 			return nullptr;
 		}
+
+#ifdef _DEBUG
+		pField->SetColor(COLOR[type]);
+#endif
 
 		// テクスチャ分割数を設定
 		pField->SetTexPattern(rTexPart);

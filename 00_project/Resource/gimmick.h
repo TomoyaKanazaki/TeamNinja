@@ -34,9 +34,7 @@ public:
 	{
 		TYPE_JUMPTABLE = 0,		// ジャンプ台
 		TYPE_STEP,				// 踏み台
-		TYPE_FALL,				// 落とし穴
 		TYPE_POST,				// 設置
-		TYPE_DECAED,			// 朽ちた床
 		TYPE_JUMPOFF,			// 飛び降り
 		TYPE_HEAVYDOOR,			// 重い扉
 		TYPE_MAX				// この列挙型の総数
