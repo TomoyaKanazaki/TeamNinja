@@ -43,6 +43,7 @@ public:
 		TYPE_WALL,			// 壁
 		TYPE_ACTOR,			// アクター
 		TYPE_CHECKPOINT,	// チェックポイント
+		TYPE_GOALPOINT,		// ゴールポイント
 		TYPE_GIMMICK,		// ギミック
 		TYPE_MAX			// この列挙型の総数
 	};

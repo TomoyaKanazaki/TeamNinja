@@ -394,17 +394,6 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
-
-	// ギミックが落とし穴だった場合
-	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL || m_pGimmick->GetType() == CGimmick::TYPE_DECAED)
-	{
-		// 移動量を減少させる
-		m_move.x *= FALL_SPEED;
-		m_move.z *= FALL_SPEED;
-
-		// 落とし穴警戒状態にする
-		m_Action = ACTION_FALL_TO_WAIT;
-	}
 }
 
 //===========================================
@@ -1621,17 +1610,14 @@ void CPlayerClone::CheckGimmick()
 	switch (m_eGimmick)
 	{
 	case GIMMICK_IGNORE: // 無視する状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "無視する状態");
 		UpdateIgnore();
 		break;
 
 	case GIMMICK_REACTION: // 反応する状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "反応する状態");
 		UpdateReAction();
 		break;
 
 	case GIMMICK_ACTION: // 反応した状態
-		DebugProc::Print(DebugProc::POINT_CENTER, "反応した状態");
 		UpdateAction();
 		break;
 

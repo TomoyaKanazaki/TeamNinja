@@ -181,6 +181,7 @@
     <ClInclude Include="Resource\editCheckPoint.h" />
     <ClInclude Include="Resource\editEvent.h" />
     <ClInclude Include="Resource\editField.h" />
+    <ClInclude Include="Resource\editGoalPoint.h" />
     <ClInclude Include="Resource\editorGimmick.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
@@ -204,6 +205,8 @@
     <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyStateNone.h" />
     <ClInclude Include="Resource\enemy_item.h" />
+    <ClInclude Include="Resource\enemy_katana.h" />
+    <ClInclude Include="Resource\enemy_lantern.h" />
     <ClInclude Include="Resource\fade.h" />
     <ClInclude Include="Resource\fadeState.h" />
     <ClInclude Include="Resource\fadeStateIn.h" />
@@ -231,7 +234,6 @@
     <ClInclude Include="Resource\gimmick_jumpoff.h" />
     <ClInclude Include="Resource\gimmick_jumptable.h" />
     <ClInclude Include="Resource\gimmick_post.h" />
-    <ClInclude Include="Resource\gimmick_state.h" />
     <ClInclude Include="Resource\gimmick_step.h" />
     <ClInclude Include="Resource\gimmick_water.h" />
     <ClInclude Include="Resource\goal.h" />
@@ -339,6 +341,7 @@
     <ClCompile Include="Resource\editCheckPoint.cpp" />
     <ClCompile Include="Resource\editEvent.cpp" />
     <ClCompile Include="Resource\editField.cpp" />
+    <ClCompile Include="Resource\editGoalPoint.cpp" />
     <ClCompile Include="Resource\editorGimmick.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editor.cpp" />
@@ -362,6 +365,8 @@
     <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyStateNone.cpp" />
     <ClCompile Include="Resource\enemy_item.cpp" />
+    <ClCompile Include="Resource\enemy_katana.cpp" />
+    <ClCompile Include="Resource\enemy_lantern.cpp" />
     <ClCompile Include="Resource\fade.cpp" />
     <ClCompile Include="Resource\fadeState.cpp" />
     <ClCompile Include="Resource\fadeStateIn.cpp" />
@@ -389,7 +394,6 @@
     <ClCompile Include="Resource\gimmick_jumpoff.cpp" />
     <ClCompile Include="Resource\gimmick_jumptable.cpp" />
     <ClCompile Include="Resource\gimmick_post.cpp" />
-    <ClCompile Include="Resource\gimmick_state.cpp" />
     <ClCompile Include="Resource\gimmick_step.cpp" />
     <ClCompile Include="Resource\gimmick_water.cpp" />
     <ClCompile Include="Resource\goal.cpp" />

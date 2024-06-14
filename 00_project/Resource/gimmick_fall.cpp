@@ -11,7 +11,7 @@
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickFall::CGimmickFall() : CGimmickAction(),
+CGimmickFall::CGimmickFall() : CField(),
 m_bFall(false) // 落下フラグ
 {
 
@@ -31,7 +31,7 @@ CGimmickFall::~CGimmickFall()
 HRESULT CGimmickFall::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickAction::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -49,7 +49,7 @@ HRESULT CGimmickFall::Init(void)
 void CGimmickFall::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickAction::Uninit();
+	CField::Uninit();
 }
 
 //=========================================
@@ -57,11 +57,8 @@ void CGimmickFall::Uninit(void)
 //=========================================
 void CGimmickFall::Update(const float fDeltaTime)
 {
-	// アクティブフラグを落下フラグに代入
-	m_bFall = IsActive();
-
 	// 親クラスの更新
-	CGimmickAction::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //=========================================
@@ -70,5 +67,5 @@ void CGimmickFall::Update(const float fDeltaTime)
 void CGimmickFall::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickAction::Draw(pShader);
+	CField::Draw(pShader);
 }

@@ -18,6 +18,7 @@
 
 #include "enemyStalk.h"
 #include "enemyCaveat.h"
+#include "enemy_item.h"
 
 //************************************************************
 //	定数宣言
@@ -41,6 +42,7 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
+m_pItem(nullptr),			// 持ち物の情報
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
@@ -98,6 +100,14 @@ HRESULT CEnemy::Init(void)
 //============================================================
 void CEnemy::Uninit(void)
 {
+	if (m_pItem != nullptr)
+	{ // 持ち物が NULL じゃない場合
+
+		// 持ち物の終了処理
+		m_pItem->Uninit();
+		m_pItem = nullptr;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -181,6 +191,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 			SAFE_DELETE(pEnemy);
 			return nullptr;
 		}
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 位置を設定
 		pEnemy->SetVec3Position(rPos);

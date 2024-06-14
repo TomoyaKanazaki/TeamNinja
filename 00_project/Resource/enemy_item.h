@@ -42,6 +42,9 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
+	// メンバ関数
+	void Offset(const D3DXMATRIX& rMtx);	// オフセット処理
+
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
@@ -55,9 +58,6 @@ public:
 	);
 
 private:
-
-	// メンバ関数
-	void Offset(const D3DXMATRIX& rMtx);	// オフセット処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_offset;	// オフセット

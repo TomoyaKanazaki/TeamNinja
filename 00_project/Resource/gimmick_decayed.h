@@ -5,12 +5,12 @@
 //  Author : Tomoya Kanzaki
 //
 //=========================================
-#include "gimmick_action.h"
+#include "field.h"
 
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickDecaed : public CGimmickAction
+class CGimmickDecaed : public CField
 {
 public:
 
@@ -22,8 +22,6 @@ public:
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
-
-	bool IsFall() override { return m_bFall; } // 床抜けフラグの取得
 
 private:
 

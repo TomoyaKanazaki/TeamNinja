@@ -12,6 +12,11 @@
 #include "renderer.h"
 #include "texture.h"
 #include "gimmick_gravel.h"
+#include "gimmick_boob.h"
+#include "gimmick_cleen.h"
+#include "gimmick_fall.h"
+#include "gimmick_decayed.h"
+#include "gimmick_water.h"
 
 //************************************************************
 //	定数宣言
@@ -26,6 +31,8 @@ namespace
 		"data\\TEXTURE\\lava000.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\lava000.png",	// 泥テクスチャ
 		"data\\TEXTURE\\lava000.png",	// 掃除床テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\lava000.png",	// 朽ちた床テクスチャ
 		"data\\TEXTURE\\lava000.png",	// 水テクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
@@ -36,7 +43,9 @@ namespace
 		'g',	// 砂利フラグ
 		'b',	// 泥
 		'c',	// 掃除床
-		'w'		// 水
+		'f',	// 落ちた床
+		'd',	// 朽ちた床
+		'w',	// 水
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
@@ -183,6 +192,26 @@ CField *CField::Create
 	{ // 種類ごとの処理
 	case TYPE_GRAVEL:
 		pField = new CGimmickGravel;
+		break;
+
+	case TYPE_BOOB:
+		pField = new CGimmickBoob;
+		break;
+
+	case TYPE_CLEEN:
+		pField = new CGimmickCleen;
+		break;
+
+	case TYPE_FALL:
+		pField = new CGimmickFall;
+		break;
+
+	case TYPE_DECAYED:
+		pField = new CGimmickGravel;
+		break;
+
+	case TYPE_WATER:
+		pField = new CGimmickWater;
 		break;
 
 	default:

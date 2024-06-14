@@ -5,7 +5,6 @@
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_state.h"
 #include "field.h"
 
 //==========================================
