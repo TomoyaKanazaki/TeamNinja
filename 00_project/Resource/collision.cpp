@@ -524,6 +524,56 @@ bool collision::ResponseBox3D
 }
 
 //============================================================
+// 三軸の矩形の衝突判定(向きの列挙判定入り)
+//============================================================
+bool collision::ResponseBox3D
+( // 引数
+	D3DXVECTOR3& rCenterPos,	// 判定位置
+	D3DXVECTOR3& rCenterPosOld,	// 判定過去位置
+	D3DXVECTOR3 targetPos,		// 判定目標位置
+	D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+	D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+	D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+	D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+	const EAngle angle,			// 方向の列挙
+	D3DXVECTOR3* pMove,			// 移動量
+	bool* pUp,					// 上からの判定
+	bool* pSide,				// 横からの判定
+	bool* pDown					// 下からの判定
+)
+{
+	D3DXVECTOR3 tarSizeUp = VEC3_ZERO;
+	D3DXVECTOR3 tarSizeDown = VEC3_ZERO;
+
+	if (angle == EAngle::ANGLE_90 ||
+		angle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		tarSizeUp.x = targetSizeUp.z;
+		tarSizeUp.y = targetSizeUp.y;
+		tarSizeUp.z = targetSizeUp.x;
+		tarSizeDown.x = targetSizeDown.z;
+		tarSizeDown.y = targetSizeDown.y;
+		tarSizeDown.z = targetSizeDown.x;
+	}
+	else
+	{ // 上記以外
+
+		// サイズを設定
+		tarSizeUp = targetSizeUp;
+		tarSizeDown = targetSizeDown;
+	}
+
+	// 当たり判定処理
+	if (pMove == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown); }
+	if (pUp == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove); }
+	if (pSide == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp); }
+	if (pDown == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide); }
+	return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide, pDown);
+}
+
+//============================================================
 //	三軸の円の衝突判定
 //============================================================
 bool collision::ResponseCircle3D
