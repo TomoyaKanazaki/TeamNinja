@@ -49,7 +49,7 @@
 #define GET_RETENTION	(CManager::GetInstance()->GetRetention())	// データ保存情報取得
 #define GET_RENDERER	(CManager::GetInstance()->GetRenderer())	// レンダラー情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
-#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())	// プレイヤー取得
+#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生
@@ -147,6 +147,19 @@ struct POSGRID3
 };
 
 //************************************************************
+//	列挙型定義
+//************************************************************
+// 角度列挙
+enum EAngle
+{
+	ANGLE_0 = 0,	// 角度：0度
+	ANGLE_90,		// 角度：90度
+	ANGLE_180,		// 角度：180度
+	ANGLE_270,		// 角度：270度
+	ANGLE_MAX		// この列挙型の総数
+};
+
+//************************************************************
 //	名前空間宣言
 //************************************************************
 // 便利関数空間
@@ -195,8 +208,9 @@ namespace useful
 		float *pMaxPosY = nullptr	// 最大到達Y座標
 	);
 
-	float RandomRot(void);			// ランダム向き取得
-	void NormalizeRot(float& rRot);	// 向きの正規化
+	float RandomRot(void);				// ランダム向き取得
+	EAngle RotToFourDire(float fRot);	// 向きの四方向変換
+	void NormalizeRot(float& rRot);		// 向きの正規化
 	void NormalizeRot(D3DXVECTOR3& rRot);			// 三軸向きの正規化
 	void StandardizePathPart(std::string *pPath);	// パス区切りの標準化
 	void VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta);		// ベクトルの向き変換
