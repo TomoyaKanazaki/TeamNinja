@@ -256,6 +256,8 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(const float fDeltaTime)
 {
+	DebugProc::Print(DebugProc::POINT_CENTER, "pos : (%f, %f, %f)\n", m_posCenter.x, m_posCenter.y, m_posCenter.z);
+
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 過去位置の更新
