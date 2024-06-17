@@ -137,13 +137,22 @@ void CWall::Draw(CShader *pShader)
 //============================================================
 // 当たり判定処理
 //============================================================
-void CWall::Collision(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight)
+void CWall::Collision
+(
+	D3DXVECTOR3& rPos,		// 位置
+	D3DXVECTOR3& rPosOld,	// 前回の位置
+	const float fRadius,	// 半径
+	const float fHeight,	// 高さ
+	D3DXVECTOR3& rMove,		// 移動量
+	bool* pJump				// ジャンプ状況
+)
 {
 	EAngle angle = useful::RotToFourDire(GetVec3Rotation().y);		// 向き
 	D3DXVECTOR3 PlayerUp = D3DXVECTOR3(fRadius, fHeight, fRadius);	// プレイヤーのサイズ(上)
 	D3DXVECTOR3 PlayerDown = D3DXVECTOR3(fRadius, 0.0f, fRadius);	// プレイヤーのサイズ(下)
 	D3DXVECTOR3 sizeUp = VEC3_ZERO;			// プレイヤーのサイズ(上)
 	D3DXVECTOR3 sizeDown = VEC3_ZERO;		// プレイヤーのサイズ(下)
+	bool bUp = false;
 
 	// サイズを設定
 	sizeUp.x = GetVec2Sizing().x * 0.5f;
@@ -154,7 +163,7 @@ void CWall::Collision(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadi
 	sizeDown.z = 0.0f;
 
 	// 当たり判定処理(向きの列挙判定入り)
-	collision::ResponseBox3D
+	if (collision::ResponseBox3D
 	(
 		rPos,				// プレイヤーの位置
 		rPosOld,			// プレイヤーの前回の位置
@@ -163,8 +172,19 @@ void CWall::Collision(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadi
 		PlayerDown,			// プレイヤーのサイズ(下)
 		sizeUp,				// 壁のサイズ(上)
 		sizeDown,			// 壁のサイズ(下)
-		angle				// 方向
-	);
+		angle,				// 方向
+		&rMove,				// 移動量
+		&bUp				// 上状況
+	))
+	{ // 当たり判定に当たった場合
+
+		if (pJump != nullptr)
+		{ // ジャンプ状況が NULL じゃない場合
+
+			// ジャンプ状況を設定する
+			*pJump = !bUp;
+		}
+	}
 }
 
 //============================================================

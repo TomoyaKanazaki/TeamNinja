@@ -669,7 +669,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer);
 
 	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT);
+	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// アクターの当たり判定
 	CollisionActor(posPlayer);
