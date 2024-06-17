@@ -991,7 +991,7 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 	m_pOldField = m_pCurField;
 
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move, &m_pCurField)
+	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 

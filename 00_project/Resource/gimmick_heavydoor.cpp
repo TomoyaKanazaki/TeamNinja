@@ -36,10 +36,11 @@ namespace
 //	コンストラクタ
 //============================================================
 CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction(),
-m_pRoofModel(nullptr),	// オブジェクトモデル(屋根)の情報
-m_pDoorModel(nullptr),	// オブジェクトモデル(扉)の情報
-m_move(VEC3_ZERO),		// 移動量
-m_state(STATE_NONE)		// 扉の状態
+m_pRoofModel(nullptr),		// オブジェクトモデル(屋根)の情報
+m_pDoorModel(nullptr),		// オブジェクトモデル(扉)の情報
+m_oldPosDoor(VEC3_ZERO),	// 過去位置
+m_move(VEC3_ZERO),			// 移動量
+m_state(STATE_NONE)			// 扉の状態
 {
 
 }
@@ -58,10 +59,11 @@ CGimmickHeavyDoor::~CGimmickHeavyDoor()
 HRESULT CGimmickHeavyDoor::Init(void)
 {
 	// 変数初期化
-	m_pRoofModel = nullptr;	// 屋根モデルの情報
-	m_pDoorModel = nullptr;	// 扉モデルの情報
-	m_move = VEC3_ZERO;		// 移動量
-	m_state = STATE_CLOSE;	// 扉の状態
+	m_pRoofModel = nullptr;		// 屋根モデルの情報
+	m_pDoorModel = nullptr;		// 扉モデルの情報
+	m_oldPosDoor = VEC3_ZERO;	// 過去位置
+	m_move = VEC3_ZERO;			// 移動量
+	m_state = STATE_CLOSE;		// 扉の状態
 
 	// ギミックアクションの初期化
 	if (FAILED(CGimmickAction::Init()))
@@ -131,6 +133,9 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
+	// 過去位置を更新
+	m_oldPosDoor = m_pDoorModel->GetVec3Position();
+
 	switch (m_state)
 	{
 	case CGimmickHeavyDoor::STATE_NONE:		// 何もしてない
@@ -220,7 +225,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 	// 位置設定
 	m_pDoorModel->SetVec3Position(posDoor);
 
-	if (posDoor.y >= GetVec3Position().y + 100.0f || IsActive() == false)
+	if (posDoor.y >= GetVec3Position().y + 100.0f || IsActive() == false)	// TODO：上げる量は定数に
 	{ // 一定時間経ったら
 
 		m_state = STATE_FULLY;	// 扉全開状態
@@ -242,7 +247,7 @@ void CGimmickHeavyDoor::CloseTheDoor(void)
 	posDoor += m_move;
 
 	// 範囲外の着地判定
-	if (pStage->LandFieldPosition(posDoor, m_move))
+	if (pStage->LandFieldPosition(posDoor, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
 	{
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
 	}
