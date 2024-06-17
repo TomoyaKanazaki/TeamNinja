@@ -77,7 +77,7 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
 
@@ -112,7 +112,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// 激重ドア
-#if 0
+#if 1
 	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 

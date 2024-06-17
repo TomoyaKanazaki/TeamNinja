@@ -55,6 +55,7 @@ private:
 	// メンバ変数
 	CObjectModel* m_pRoofModel;	// オブジェクトモデル(屋根)の情報
 	CObjectModel* m_pDoorModel;	// オブジェクトモデル(扉)の情報
+	D3DXVECTOR3	m_oldPosDoor;	// 過去位置
 	D3DXVECTOR3 m_move;	// 移動量
 	EState m_state;		// 扉の状態
 

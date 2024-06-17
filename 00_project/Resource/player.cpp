@@ -101,21 +101,21 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
-	m_pShadow			(nullptr),		// 影の情報
-	m_pOrbit			(nullptr),		// 軌跡の情報
-	m_oldPos			(VEC3_ZERO),	// 過去位置
-	m_move				(VEC3_ZERO),	// 移動量
-	m_destRot			(VEC3_ZERO),	// 目標向き
-	m_state				(STATE_NONE),	// 状態
-	m_bJump				(false),		// ジャンプ状況
-	m_nCounterState		(0),			// 状態管理カウンター
-	m_pTensionGauge		(nullptr),		// 士気力ゲージのポインタ
-	m_pCheckPoint		(nullptr),		// セーブしたチェックポイント
-	m_fScalar			(0.0f),			// 移動量
-	m_bClone			(true),			// 分身操作可能フラグ
-	m_bGimmickClone		(false),		// ギミッククローンの生成フラグ
-	m_fGimmickTimer		(0.0f),			// ギミッククローンの生成タイマー
-	m_fTempStick		(0.0f)			// スティックの入力角を保存する変数
+	m_pShadow		(nullptr),		// 影の情報
+	m_pOrbit		(nullptr),		// 軌跡の情報
+	m_oldPos		(VEC3_ZERO),	// 過去位置
+	m_move			(VEC3_ZERO),	// 移動量
+	m_destRot		(VEC3_ZERO),	// 目標向き
+	m_state			(STATE_NONE),	// 状態
+	m_bJump			(false),		// ジャンプ状況
+	m_nCounterState	(0),			// 状態管理カウンター
+	m_pTensionGauge	(nullptr),		// 士気力ゲージのポインタ
+	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
+	m_fScalar		(0.0f),			// 移動量
+	m_bClone		(true),			// 分身操作可能フラグ
+	m_bGimmickClone	(false),		// ギミッククローンの生成フラグ
+	m_fGimmickTimer	(0.0f),			// ギミッククローンの生成タイマー
+	m_fTempStick	(0.0f)			// スティックの入力角を保存する変数
 {
 
 }
@@ -134,21 +134,21 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow			= nullptr;		// 影の情報
-	m_pOrbit			= nullptr;		// 軌跡の情報
-	m_oldPos			= VEC3_ZERO;	// 過去位置
-	m_move				= VEC3_ZERO;	// 移動量
-	m_destRot			= VEC3_ZERO;	// 目標向き
-	m_state				= STATE_NONE;	// 状態
-	m_bJump				= true;			// ジャンプ状況
-	m_nCounterState		= 0;			// 状態管理カウンター
-	m_pTensionGauge		= nullptr;		// 士気力ゲージのポインタ
-	m_pCheckPoint		= nullptr;		// セーブしたチェックポイント
-	m_fScalar			= 0.0f;			// 移動量
-	m_bClone			= true;			// 分身操作可能フラグ
-	m_bGimmickClone		= false;		// ギミッククローンの生成フラグ
-	m_fGimmickTimer		= 0.0f;			// ギミッククローンの生成タイマー
-	m_fTempStick		= 0.0f;			// スティックの入力角を保存する変数
+	m_pShadow		= nullptr;		// 影の情報
+	m_pOrbit		= nullptr;		// 軌跡の情報
+	m_oldPos		= VEC3_ZERO;	// 過去位置
+	m_move			= VEC3_ZERO;	// 移動量
+	m_destRot		= VEC3_ZERO;	// 目標向き
+	m_state			= STATE_NONE;	// 状態
+	m_bJump			= true;			// ジャンプ状況
+	m_nCounterState	= 0;			// 状態管理カウンター
+	m_pTensionGauge	= nullptr;		// 士気力ゲージのポインタ
+	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
+	m_fScalar		= 0.0f;			// 移動量
+	m_bClone		= true;			// 分身操作可能フラグ
+	m_bGimmickClone	= false;		// ギミッククローンの生成フラグ
+	m_fGimmickTimer	= 0.0f;			// ギミッククローンの生成タイマー
+	m_fTempStick	= 0.0f;			// スティックの入力角を保存する変数
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -544,7 +544,7 @@ bool CPlayer::GimmickHighJump(void)
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
 	// ジャンプエフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	//GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 追従している分身を消す
 	CPlayerClone::Delete();
@@ -788,7 +788,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
