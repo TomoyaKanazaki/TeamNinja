@@ -36,9 +36,9 @@ public:
 		TYPE_GRAVEL,	// 砂利道
 		TYPE_BOOB,		// 泥
 		TYPE_CLEEN,		// 掃除床
-		TYPE_WATER,		// 水
 		TYPE_FALL,		// 落とし穴
 		TYPE_DECAYED,	// 朽ちた床
+		TYPE_WATER,		// 水
 		TYPE_MAX,		// この列挙型の総数
 		TYPE_NONE		// 存在しない種類
 	};
@@ -96,7 +96,7 @@ public:
 	const char GetFlag() const;								// フラグ取得
 
 	// 静的メンバ関数
-	const char GetFlag(EType type) const;		// フラグ取得
+	static const char GetFlag(EType type);		// フラグ取得
 
 private:
 
