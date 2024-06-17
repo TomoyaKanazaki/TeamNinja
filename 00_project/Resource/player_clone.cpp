@@ -399,6 +399,14 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 }
 
 //===========================================
+//  フィールドのポインタを取得する
+//===========================================
+void CPlayerClone::SetField(CField* field)
+{
+
+}
+
+//===========================================
 //  文字列(フラグ)の追加
 //===========================================
 void CPlayerClone::AddFrags(const char cFrag)
