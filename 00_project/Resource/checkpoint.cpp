@@ -10,6 +10,7 @@
 #include "player.h"
 #include "collision.h"
 #include "popupUI.h"
+#include "goal.h"
 
 //==========================================
 //  定数定義
@@ -290,6 +291,34 @@ HRESULT CCheckPoint::LoadSetup(void)
 					}
 				}
 			} while (str != "END_STAGE_CHECKSET");	// END_STAGE_CHECKSETを読み込むまでループ
+		}
+		else if (str == "STAGE_GOALSET")
+		{
+			do
+			{ // END_STAGE_GOALSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str == "POS")
+				{
+					file >> str;	// ＝を読込
+
+					// 位置を読込
+					file >> pos.x;
+					file >> pos.y;
+					file >> pos.z;
+				}
+			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
+
+			// チェックポイントの生成
+			if (CGoal::Create(pos) == nullptr)
+			{ // 確保に失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
 		}
 	}
 

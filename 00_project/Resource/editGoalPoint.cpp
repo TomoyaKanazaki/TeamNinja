@@ -14,8 +14,8 @@
 #include "collision.h"
 #include "useful.h"
 #include "stage.h"
-#include "gameManager.h"
-#include "sceneGame.h"
+
+#include "goal.h"
 
 //************************************************************
 //	マクロ定義
@@ -83,10 +83,10 @@ HRESULT CEditGoalPoint::Init(void)
 	}
 
 	// ゴールポイントの生成
-	m_pPoint = CGoal::Create
+	m_pPoint = CObjectModel::Create
 	( // 引数
-		GetVec3Position(),				// 位置
-		D3DXVECTOR3(0.0f, 0.01f, 0.0f)	// 向き
+		GetVec3Position(),		// 位置
+		VEC3_ZERO				// 向き
 	);
 	if (m_pPoint == nullptr)
 	{ // 生成に失敗した場合
@@ -95,6 +95,9 @@ HRESULT CEditGoalPoint::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// モデルを割り当てる
+	m_pPoint->BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
 
 	// 成功を返す
 	return S_OK;
@@ -215,7 +218,7 @@ void CEditGoalPoint::DrawDebugInfo(void)
 	// 情報表示の描画
 	CEditorObject::DrawDebugInfo();
 
-	if (CSceneGame::GetGameManager()->GetGoal() == nullptr)
+	if (CGoal::GetGoal() == nullptr)
 	{ // ゴールが NULL の場合
 
 		DebugProc::Print(DebugProc::POINT_RIGHT, "設置可能\n");
@@ -230,23 +233,11 @@ void CEditGoalPoint::DrawDebugInfo(void)
 }
 
 //============================================================
-// 位置更新
-//============================================================
-void CEditGoalPoint::UpdatePosition(void)
-{
-	// 位置の更新
-	CEditorObject::UpdatePosition();
-
-	// 位置を反映
-	m_pPoint->SetVec3Position(GetVec3Position());
-}
-
-//============================================================
 //	ゴールポイントの生成処理
 //============================================================
 void CEditGoalPoint::CreateCheckPoint(void)
 {
-	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();		// ゴール情報
+	CGoal* pGoal = CGoal::GetGoal();			// ゴールの情報を取得
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 
@@ -255,28 +246,14 @@ void CEditGoalPoint::CreateCheckPoint(void)
 		pGoal == nullptr)
 	{
 		//----------------------------------------------------
-		//	ゴールポイントの情報を配置用に変更
+		//	ゴールポイントの生成
 		//----------------------------------------------------
-		// 自動更新・自動描画をONにする
-		m_pPoint->SetEnableUpdate(true);
-		m_pPoint->SetEnableDraw(true);
-
-		// ゴールを設定する
-		CSceneGame::GetGameManager()->SetGoal(m_pPoint);
+		// ゴールポイントの生成
+		CGoal::Create(GetVec3Position());
+		assert(m_pPoint != nullptr);
 
 		// 未保存を設定
 		m_bSave = false;
-
-		//----------------------------------------------------
-		//	新しいゴールポイントの生成
-		//----------------------------------------------------
-		// ゴールポイントの生成
-		m_pPoint = CGoal::Create
-		( // 引数
-			GetVec3Position(),				// 位置
-			D3DXVECTOR3(0.0f, 0.01f, 0.0f)	// 向き
-		);
-		assert(m_pPoint != nullptr);
 	}
 }
 
@@ -305,7 +282,7 @@ void CEditGoalPoint::ReleaseCheckPoint(void)
 void CEditGoalPoint::DeleteCollisionCheckPoint(const bool bRelase)
 {
 	// ゴールを取得
-	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();
+	CGoal* pGoal = CGoal::GetGoal();
 
 	if (pGoal != nullptr)
 	{ // ゴールが NULL じゃない場合
@@ -315,7 +292,6 @@ void CEditGoalPoint::DeleteCollisionCheckPoint(const bool bRelase)
 
 			// ゴールを終了する
 			pGoal->Uninit();
-			CSceneGame::GetGameManager()->SetGoal(nullptr);
 		}
 	}
 }
@@ -328,7 +304,7 @@ HRESULT CEditGoalPoint::Save(void)
 #if _DEBUG
 
 	// ゴールの情報を取得
-	CGoal* pGoal = CSceneGame::GetGameManager()->GetGoal();
+	CGoal* pGoal = CGoal::GetGoal();
 
 	// ゴールが NULL の場合、抜ける
 	if (pGoal == nullptr) { return S_OK; }
@@ -362,7 +338,7 @@ HRESULT CEditGoalPoint::Save(void)
 
 	// 位置を書き出し
 	D3DXVECTOR3 pos = pGoal->GetVec3Position();	// 位置
-	file << "		POS = " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+	file << "	POS = " << pos.x << " " << pos.y << " " << pos.z << "\n" << std::endl;
 
 	// 読み込み終了文字列を書き出し
 	file << "END_STAGE_GOALSET" << std::endl;

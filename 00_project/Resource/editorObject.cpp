@@ -15,6 +15,7 @@
 #include "editWall.h"
 #include "editActor.h"
 #include "editCheckPoint.h"
+#include "editGoalPoint.h"
 
 //************************************************************
 //	マクロ定義
@@ -173,6 +174,10 @@ CEditorObject *CEditorObject::Create(CEditStage::EType type)
 
 	case CEditStage::TYPE_CHECKPOINT:
 		pEditorObject = new CEditCheckPoint;	// エディットチェックポイント
+		break;
+
+	case CEditStage::TYPE_GOALPOINT:
+		pEditorObject = new CEditGoalPoint;		// エディットゴールポイント
 		break;
 
 	case CEditStage::TYPE_GIMMICK:
