@@ -1,7 +1,7 @@
 #pragma once
 //=========================================
 //
-//  朽ちた床ヘッダー (gimmick_decaed.h)
+//  朽ちた床ヘッダー (gimmick_decayed.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
@@ -10,13 +10,13 @@
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickDecaed : public CField
+class CGimmickDecayed : public CField
 {
 public:
 
 	// メンバ関数
-	CGimmickDecaed();
-	~CGimmickDecaed() override;
+	CGimmickDecayed();
+	~CGimmickDecayed() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;

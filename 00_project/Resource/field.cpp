@@ -225,7 +225,7 @@ CField *CField::Create
 		break;
 
 	case TYPE_DECAYED:
-		pField = new CGimmickGravel;
+		pField = new CGimmickDecayed;
 		break;
 
 	case TYPE_WATER:
@@ -363,7 +363,7 @@ const char CField::GetFlag() const
 //===========================================
 //  指定のフラグ取得
 //===========================================
-const char CField::GetFlag(EType type) const
+const char CField::GetFlag(EType type)
 {
 	// 指定されたフラグを返す
 	return FLAG[type];

@@ -403,16 +403,25 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 void CPlayerClone::SetField(CField* field)
 {
+	// 既に同じポインタを所持している場合関数を抜ける
+	if (m_pField == field) { return; }
+
 	// 引数をポインタに設定する
 	m_pField = field;
 
-	// 落下系のフラグでない場合関数を抜ける
-	const char flag = m_pField->GetFlag();
-	if (flag != m_pField->GetFlag(CField::TYPE_FALL)) { return; }
-	if (flag != m_pField->GetFlag(CField::TYPE_DECAYED)) { return; }
+	// 追従分身なら関数を抜ける
+	if (m_Action == ACTION_CHASE) { return; }
 
-	// 警戒状態に変更
-	m_Action = ACTION_FALL_TO_WAIT;
+	// 落下系フラグの場合警戒状態に変更
+	const char flag = m_pField->GetFlag();
+	if (
+		flag == CField::GetFlag(CField::TYPE_FALL) ||
+		flag == CField::GetFlag(CField::TYPE_DECAYED)
+		)
+	{
+		m_move *= FALL_SPEED;
+		m_Action = ACTION_FALL_TO_WAIT;
+	}
 }
 
 //===========================================
