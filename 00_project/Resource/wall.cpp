@@ -9,6 +9,7 @@
 //************************************************************
 #include "wall.h"
 #include "manager.h"
+#include "collision.h"
 #include "renderer.h"
 #include "texture.h"
 
@@ -130,6 +131,28 @@ void CWall::Draw(CShader *pShader)
 {
 	// オブジェクトメッシュウォールの描画
 	CObjectMeshWall::Draw(pShader);
+}
+
+//============================================================
+// 当たり判定処理
+//============================================================
+void CWall::Collision(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight)
+{
+	D3DXVECTOR3 PlayerUp = D3DXVECTOR3(fRadius, fHeight, fRadius);	// プレイヤーのサイズ(上)
+	D3DXVECTOR3 PlayerDown = D3DXVECTOR3(fRadius, 0.0f, fRadius);	// プレイヤーのサイズ(下)
+	D3DXVECTOR3 sizeUp = D3DXVECTOR3(fRadius, fHeight, fRadius);	// プレイヤーのサイズ(上)
+	D3DXVECTOR3 sizeDown = D3DXVECTOR3(fRadius, 0.0f, fRadius);		// プレイヤーのサイズ(下)
+
+	// サイズを設定
+	sizeUp.x = GetVec2Sizing().x * 0.5f;
+	sizeUp.y = GetVec2Sizing().y;
+	sizeUp.z = 0.0f;
+	sizeDown.x = GetVec2Sizing().x * 0.5f;
+	sizeDown.y = 0.0f;
+	sizeDown.z = 0.0f;
+
+	// 当たり判定処理
+	collision::ResponseBox3D(rPos, rPosOld, GetVec3Position(), PlayerUp, PlayerDown, sizeUp, sizeDown);
 }
 
 //============================================================
