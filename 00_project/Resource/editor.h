@@ -23,16 +23,6 @@ class CEditor
 {
 public:
 
-	// 角度列挙
-	enum EAngle
-	{
-		ANGLE_0 = 0,	// 角度：0度
-		ANGLE_90,		// 角度：90度
-		ANGLE_180,		// 角度：180度
-		ANGLE_270,		// 角度：270度
-		ANGLE_MAX		// この列挙型の総数
-	};
-
 	// 種類列挙
 	enum EType
 	{
