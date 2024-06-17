@@ -34,6 +34,17 @@ namespace collision
 		D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
 		D3DXVECTOR3 targetSizeDown	// 判定目標サイズ(左・下・前)
 	);
+	bool Box3D	// 3軸の矩形の当たり判定(向きの列挙判定入り)
+	( // 引数
+		D3DXVECTOR3 centerPos,		// 判定位置
+		D3DXVECTOR3 targetPos,		// 判定目標位置
+		D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+		D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+		D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+		D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+		const EAngle centerAngle,	// 判定方向列挙
+		const EAngle targetAngle	// 判定目標方向列挙
+	);
 	bool Circle2D	// XZ平面の円の当たり判定
 	( // 引数
 		D3DXVECTOR3 centerPos,	// 判定位置
@@ -51,11 +62,11 @@ namespace collision
 	);
 	bool Sector	// XZ平面の扇形の当たり判定
 	( // 引数
-		D3DXVECTOR3 centerPos,	// 判定位置
-		D3DXVECTOR3 targetPos,	// 判定目標位置
-		float fCenterRot,		// 判定向き
-		float fRadius,			// 視界範囲
-		float fAngle,			// 視野角
+		D3DXVECTOR3 centerPos,		// 判定位置
+		D3DXVECTOR3 targetPos,		// 判定目標位置
+		float fCenterRot,			// 判定向き
+		float fRadius,				// 視界範囲
+		float fAngle,				// 視野角
 		float *pLength = nullptr	// 判定目標との距離
 	);
 

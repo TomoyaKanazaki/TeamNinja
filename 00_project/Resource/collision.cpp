@@ -67,6 +67,55 @@ bool collision::Box3D
 }
 
 //============================================================
+//	3軸の矩形の当たり判定(向きの列挙判定入り)
+//============================================================
+bool collision::Box3D
+(
+	D3DXVECTOR3 centerPos,		// 判定位置
+	D3DXVECTOR3 targetPos,		// 判定目標位置
+	D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+	D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+	D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+	D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+	const EAngle centerAngle,	// 判定方向列挙
+	const EAngle targetAngle	// 判定目標方向列挙
+)
+{
+	D3DXVECTOR3 cenSizeUp	= centerSizeUp;
+	D3DXVECTOR3 cenSizeDown	= centerSizeDown;
+	D3DXVECTOR3 tarSizeUp	= targetSizeUp;
+	D3DXVECTOR3 tarSizeDown	= targetSizeDown;
+
+	if (centerAngle == EAngle::ANGLE_90 ||
+		centerAngle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		cenSizeUp.x = centerSizeUp.z;
+		cenSizeUp.y = centerSizeUp.y;
+		cenSizeUp.z = centerSizeUp.x;
+		cenSizeDown.x = centerSizeDown.z;
+		cenSizeDown.y = centerSizeDown.y;
+		cenSizeDown.z = centerSizeDown.x;
+	}
+
+	if (targetAngle == EAngle::ANGLE_90 ||
+		targetAngle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		tarSizeUp.x = targetSizeUp.z;
+		tarSizeUp.y = targetSizeUp.y;
+		tarSizeUp.z = targetSizeUp.x;
+		tarSizeDown.x = targetSizeDown.z;
+		tarSizeDown.y = targetSizeDown.y;
+		tarSizeDown.z = targetSizeDown.x;
+	}
+
+	return Box3D(centerPos, targetPos, cenSizeUp, cenSizeDown, tarSizeUp, tarSizeDown);
+}
+
+//============================================================
 //	XZ平面の円の当たり判定
 //============================================================
 bool collision::Circle2D
@@ -566,10 +615,6 @@ bool collision::ResponseBox3D
 	}
 
 	// 当たり判定処理
-	if (pMove == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown); }
-	if (pUp == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove); }
-	if (pSide == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp); }
-	if (pDown == nullptr) { return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide); }
 	return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide, pDown);
 }
 
