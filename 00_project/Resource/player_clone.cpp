@@ -625,7 +625,7 @@ void CPlayerClone::Delete(const int nNum)
 	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
 
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	//GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	pAvatar->Uninit();
@@ -756,7 +756,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	if (m_fDeleteTimer <= 0.0f)
 	{
 		// 消去のエフェクトを生成する
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+		//GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return MOTION_IDOL;
 	}
@@ -1521,13 +1521,13 @@ CPlayerClone* CPlayerClone::Block()
 	// アクターに衝突した場合生成したものを削除する
 	if (CollisionActor())
 	{
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+		//GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
 		return nullptr;
 	}
 
 	// エフェクトを生成
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
+	//GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
 
 	// ヒットしていなければ生成できる
 	return this;
