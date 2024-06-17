@@ -20,6 +20,7 @@
 #include "stage.h"
 #include "field.h"
 #include "actor.h"
+#include "wall.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -1630,6 +1631,40 @@ bool CPlayerClone::CollisionActor()
 
 		// 一時保存フラグがfalseまたは衝突フラグがtrueの場合次に進む
 		if (!bTemp || bHit) { continue; }
+
+		// 衝突判定をtrueにする
+		bHit = true;
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
+
+	// 衝突判定を返す
+	return bHit;
+}
+
+//===========================================
+//  壁との当たり判定
+//===========================================
+bool CPlayerClone::CollisionWall()
+{
+	// 壁のリスト構造が無ければ抜ける
+	if (CWall::GetList() == nullptr) { return false; }
+
+	std::list<CWall*> list = CWall::GetList()->GetList(); // リストを取得
+	D3DXVECTOR3 pos = GetVec3Position(); // 位置
+	bool bHit = false; // 衝突判定
+
+	// 全ての壁と判定を取る
+	for (auto wall : list)
+	{
+		// 当たり判定処理
+		wall->Collision
+		(
+			pos, m_oldPos,		// 座標
+			RADIUS, RADIUS,		// 判定範囲
+			m_move	// 移動情報
+		);
 
 		// 衝突判定をtrueにする
 		bHit = true;

@@ -62,6 +62,8 @@ protected:
 	D3DXVECTOR3 GetVec3Position(void) const		{ return m_pEditor->GetVec3Position(); }	// ˆÊ’uæ“¾
 	void SetVec3Rotation(const D3DXVECTOR3 rot)	{ m_pEditor->SetVec3Rotation(rot); }		// Œü‚«İ’è
 	D3DXVECTOR3 GetVec3Rotation(void) const		{ return m_pEditor->GetVec3Rotation(); }	// Œü‚«æ“¾
+	void SetAngle(const EAngle angle)			{ m_pEditor->SetAngle(angle); }				// •ûŒüİ’è
+	EAngle GetAngle(void) const					{ return m_pEditor->GetAngle(); }			// •ûŒüæ“¾
 
 private:
 	// ƒƒ“ƒo•Ï”

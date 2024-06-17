@@ -44,7 +44,7 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// メンバ関数(小原追加)
-	void Collision				// 当たり判定処理
+	bool Collision				// 当たり判定処理
 	(
 		D3DXVECTOR3& rPos,			// 位置
 		D3DXVECTOR3& rPosOld,		// 前回の位置

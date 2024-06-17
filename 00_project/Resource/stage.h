@@ -63,14 +63,13 @@ public:
 	void SetStageLimit(const SStageLimit& rLimit);	// ステージ範囲設定
 	SStageLimit GetStageLimit(void) const;			// ステージ範囲取得
 
-	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);	// 範囲外の着地判定
-	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地
-	bool LandFieldPositionTop(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);						// 一番上の地面着地
-	void CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump = nullptr);	// 壁との当たり判定
-	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);	// 位置補正
-	bool CollisionKillY(const D3DXVECTOR3& rPos);				// キルY座標との当たり判定
-	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);			// メッシュの範囲内取得
-	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得
+	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);				// 範囲外の着地判定
+	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地 (回転考慮)
+	bool CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump = nullptr);		// 壁との当たり判定
+	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);		// 位置補正
+	bool CollisionKillY(const D3DXVECTOR3& rPos);					// キルY座標との当たり判定
+	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);				// メッシュの範囲内取得 (回転考慮)
+	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);			// メッシュの着地位置取得 (回転考慮)
 
 	// 静的メンバ関数
 	static CStage *Create(const CScene::EMode mode);	// 生成
