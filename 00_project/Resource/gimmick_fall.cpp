@@ -8,18 +8,26 @@
 #include "manager.h"
 #include "player_clone.h"
 
-//=========================================
+//==========================================
+//  定数定義
+//==========================================
+namespace
+{
+	const int FALL_NUM = 3; // 上に乗ることのできる分身の数
+}
+
+//==========================================
 //  コンストラクタ
-//=========================================
+//==========================================
 CGimmickFall::CGimmickFall() : CField(),
 m_bFall(false) // 落下フラグ
 {
 
 }
 
-//=========================================
+//==========================================
 //  デストラクタ
-//=========================================
+//==========================================
 CGimmickFall::~CGimmickFall()
 {
 
@@ -77,6 +85,12 @@ void CGimmickFall::Hit(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
 	pClone->AddFrags(GetFlag());
+
+	// 分身に自身の情報を渡す
+	pClone->SetField(this);
+
+	// 分身数をカウント
+	Count();
 }
 
 //==========================================
@@ -86,4 +100,36 @@ void CGimmickFall::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
+
+	// 分身からフィールドを削除する
+	pClone->DeleteField();
+}
+
+//===========================================
+//  乗っているキャラクター総数の計算処理
+//===========================================
+void CGimmickFall::Count()
+{
+	// 分身のリスト構造が無ければ抜ける
+	if (CPlayerClone::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();
+
+	// 自身の上にいる分身の数をカウント
+	int nNum = 0; // 乗っている分身数
+	for (CPlayerClone* clone : list)
+	{
+		// 分身が所持しているフィールドが自身でない場合次に進む
+		if (clone->GetField() != this) { continue; }
+
+		// 自身の上の分身数を加算
+		++nNum;
+	}
+
+	// 分身の数が最大数未満の場合関数を抜ける
+	if (nNum < FALL_NUM) { m_bFall = false; return; }
+
+	// 落下フラグを立てる
+	m_bFall = true;
 }

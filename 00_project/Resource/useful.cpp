@@ -219,32 +219,25 @@ EAngle useful::RotToFourDire(float fRot)
 {
 	// 向きを0～2πにする
 	fRot += D3DX_PI;
+
 	if (fRot >= QRTR_PI && fRot <= D3DX_PI - QRTR_PI)
 	{
-		// 右のアクションモーションを設定
-		//currentMotion = MOTION_ACTION_RIGHT;
-
+		// 右を返す
 		return ANGLE_90;
 	}
 	else if (fRot >= D3DX_PI - QRTR_PI && fRot <= D3DX_PI + QRTR_PI)
 	{
-		// 手前のアクションモーションを設定
-		//currentMotion = MOTION_ACTION_NEAR;
-
+		// 手前を返す
 		return ANGLE_0;
 	}
 	else if (fRot >= D3DX_PI + QRTR_PI && fRot <= (D3DX_PI * 2) - QRTR_PI)
 	{
-		// 左のアクションモーションを設定
-		//currentMotion = MOTION_ACTION_LEFT;
-
+		// 左を返す
 		return ANGLE_270;
 	}
 	else if (fRot >= (D3DX_PI * 2) - QRTR_PI && fRot <= (D3DX_PI * 2) || fRot >= 0.0f && fRot <= QRTR_PI)
 	{
-		// 奥のアクションモーションを設定
-		//currentMotion = MOTION_ACTION_FAR;
-
+		// 奥を返す
 		return ANGLE_180;
 	}
 
