@@ -206,10 +206,10 @@ CStage *CScene::GetStage(void)
 //============================================================
 CPlayer *CScene::GetPlayer(void)
 {
-	CListManager<CPlayer> *pListManager = CPlayer::GetList();	// プレイヤーリストマネージャー
-	if (pListManager == nullptr)		 { return nullptr; }	// リスト未使用の場合抜ける
-	if (pListManager->GetNumAll() != 1)	 { return nullptr; }	// プレイヤーが1人ではない場合抜ける
-	CPlayer *pPlayer = pListManager->GetList().front();			// プレイヤーの情報
+	CListManager<CPlayer> *pListManager = CPlayer::GetList();				// プレイヤーリストマネージャー
+	if (pListManager == nullptr)		 { return nullptr; }				// リスト未使用の場合抜ける
+	if (pListManager->GetNumAll() != 1)  { assert(false); return nullptr; }	// プレイヤーが1人ではない場合抜ける
+	CPlayer *pPlayer = pListManager->GetList().front();						// プレイヤーの情報
 
 	// プレイヤーのポインタを返す
 	return pPlayer;

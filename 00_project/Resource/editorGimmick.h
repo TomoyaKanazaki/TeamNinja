@@ -62,7 +62,7 @@ private:
 	// メンバ変数
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
-	CEditor::EAngle m_angle;		// 角度
+	EAngle m_angle;		// 角度
 };
 
 #endif	// _EDITOR_OBJECT_H_

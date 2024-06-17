@@ -181,6 +181,7 @@
     <ClInclude Include="Resource\editCheckPoint.h" />
     <ClInclude Include="Resource\editEvent.h" />
     <ClInclude Include="Resource\editField.h" />
+    <ClInclude Include="Resource\editGoalPoint.h" />
     <ClInclude Include="Resource\editorGimmick.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="Resource\editCheckPoint.cpp" />
     <ClCompile Include="Resource\editEvent.cpp" />
     <ClCompile Include="Resource\editField.cpp" />
+    <ClCompile Include="Resource\editGoalPoint.cpp" />
     <ClCompile Include="Resource\editorGimmick.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editor.cpp" />

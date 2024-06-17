@@ -36,8 +36,11 @@ public:
 		TYPE_GRAVEL,	// 砂利道
 		TYPE_BOOB,		// 泥
 		TYPE_CLEEN,		// 掃除床
+		TYPE_FALL,		// 落とし穴
+		TYPE_DECAYED,	// 朽ちた床
 		TYPE_WATER,		// 水
-		TYPE_MAX		// この列挙型の総数
+		TYPE_MAX,		// この列挙型の総数
+		TYPE_NONE		// 存在しない種類
 	};
 
 	// 地形列挙
@@ -89,13 +92,14 @@ public:
 	void SetType(const EType type);				// 種類設定
 	ETerrain GetTerrain(void) const	{ return m_terrain; }	// 地形取得
 	EType GetType(void) const		{ return m_type; }		// 種類取得
+	virtual bool IsFall() const { return bool(); }			// 落下判定の取得
+	const char GetFlag() const;								// フラグ取得
 
-protected:
-	// メンバ関数
-	const char GetFlag(void) const;	// 自身のフラグ取得
-	const char GetFlag(EType type) const;	// 指定のフラグ取得
+	// 静的メンバ関数
+	static const char GetFlag(EType type);		// フラグ取得
 
 private:
+
 	// 静的メンバ変数
 	static CListManager<CField> *m_pList;	// オブジェクトリスト
 	static STerrainInfo m_aTerrainInfo[TERRAIN_MAX];	// 地形情報

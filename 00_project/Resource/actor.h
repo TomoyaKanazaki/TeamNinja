@@ -35,6 +35,28 @@ public:
 	enum EType
 	{
 		TYPE_ROCK_S = 0,		// 岩(小)
+		TYPE_ROCK_M,			// 岩(中)
+		TYPE_ROCK_B,			// 岩(大)
+		TYPE_MOSS_ROCK_S,		// 苔岩(小)
+		TYPE_MOSS_ROCK_M,		// 苔岩(中)
+		TYPE_MOSS_ROCK_B,		// 苔岩(大)
+		TYPE_BIRCHTREE_B,		// 白樺の木(大)
+		TYPE_BIRCHTREE_M,		// 白樺の木(中)
+		TYPE_COM_TREE_B,		// 普通の木(大)
+		TYPE_COM_TREE_M,		// 普通の木(中)
+		TYPE_WILLOW_B,			// 柳の木(大)
+		TYPE_WILLOW_M,			// 柳の木(中)
+		TYPE_WOODLOG,			// 原木
+		TYPE_TREESTOMP,			// 木の幹
+		TYPE_PLANT1,			// 4つしかつながっていない草
+		TYPE_PLANT2,			// 多くつながっている草
+		TYPE_BUSH,				// 草むら
+		TYPE_HOUSE1,			// 家1
+		TYPE_HOUSE2,			// 家2
+		TYPE_HOUSE3,			// 家3
+		TYPE_HOUSE4,			// 家4
+		TYPE_HOUSE5,			// 家5
+		TYPE_LANTERN,			// ランタン
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -71,6 +93,7 @@ public:
 		bool& bHit						// 衝突判定
 	);
 	void ClearCollision(void);			// 当たり判定の消去処理
+	void SetModel(const EType type);	// モデルの割り当て処理
 
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理

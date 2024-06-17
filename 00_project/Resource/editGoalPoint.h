@@ -1,34 +1,33 @@
 #if 1
 //============================================================
 //
-//	エディットチェックポイントヘッダー [editCheckPoint.h]
+//	エディットゴールポイントヘッダー [editGoalPoint.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _EDIT_CHECKPOINT_H_
-#define _EDIT_CHECKPOINT_H_
+#ifndef _EDIT_GOALPOINT_H_
+#define _EDIT_GOALPOINT_H_
 
 //************************************************************
 //	インクルードファイル
 //************************************************************
 #include "editorObject.h"
-#include "checkpoint.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// エディットチェックポイントクラス
-class CEditCheckPoint : public CEditorObject
+// エディットゴールポイントクラス
+class CEditGoalPoint : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditCheckPoint(CEditStage* pEditor);
+	CEditGoalPoint(CEditStage* pEditor);
 
 	// デストラクタ
-	~CEditCheckPoint() override;
+	~CEditGoalPoint() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -42,18 +41,15 @@ public:
 	void DrawDebugInfo(void) override;		// 情報表示描画
 
 private:
-	// オーバーライド関数
-	void UpdatePosition(void) override;		// 位置更新
 
 	// メンバ関数
 	void CreateCheckPoint(void);		// チェックポイント生成
 	void ReleaseCheckPoint(void);		// チェックポイント破棄
 	void DeleteCollisionCheckPoint(const bool bRelase);	// チェックポイントの削除判定
-	void InitAllColorCheckPoint(void);	// チェックポイントの色全初期化
 
 	// メンバ変数
-	CCheckPoint* m_pPoint;	// ポイント情報
-	bool m_bSave;			// 保存状況
+	CObjectModel* m_pPoint;		// ポイント情報(チェックポイントのリストに入らないように)
+	bool m_bSave;				// 保存状況
 };
 
 #endif	// _EDIT_ACTOR_H_

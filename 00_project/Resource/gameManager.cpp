@@ -53,8 +53,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CGameManager::CGameManager() :
-	m_state	(STATE_NONE),	// 状態
-	m_pGoal	(nullptr)		// ゴールのポインタ
+	m_state	(STATE_NONE)	// 状態
 {
 
 }
@@ -74,7 +73,6 @@ HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
-	m_pGoal = nullptr;		// ゴールのポインタ
 
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
@@ -85,7 +83,6 @@ HRESULT CGameManager::Init(void)
 
 	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -1000.0f), D3DXVECTOR3(300.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 2);
 	CGimmick::Create(D3DXVECTOR3(800.0f, 0.0f, -1300.0f), D3DXVECTOR3(100.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 2);
-	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_FALL, 2);
 	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
 
 	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
@@ -105,12 +102,18 @@ HRESULT CGameManager::Init(void)
 
 #endif
 
+	// 複数ボタン
 #if 0
 	std::vector<CGimmickMalti::SButton> vec;
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(-200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(   0.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3( 200.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	CGimmickMalti::Create(vec);
+#endif
+
+	// 激重ドア
+#if 0
+	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 
 	// TPSカメラの目標位置の設定
@@ -126,7 +129,7 @@ HRESULT CGameManager::Init(void)
 //============================================================
 void CGameManager::Uninit(void)
 {
-	SAFE_UNINIT(m_pGoal);
+
 }
 
 //============================================================
@@ -146,9 +149,9 @@ void CGameManager::Update(const float fDeltaTime)
 		}
 
 		// ゴールしていた場合リザルト
-		if (m_pGoal != nullptr)
+		if (CGoal::GetGoal() != nullptr)
 		{
-			if (m_pGoal->GetClear())
+			if (CGoal::GetGoal()->GetClear())
 			{
 				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
 			}

@@ -6,12 +6,20 @@
 //=========================================
 #include "gimmick_decayed.h"
 #include "manager.h"
-#include "player.h"
+#include "player_clone.h"
+
+//==========================================
+//  定数定義
+//==========================================
+namespace
+{
+	const int FALL_NUM = 3; // 上に乗ることのできる分身の数
+}
 
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickDecaed::CGimmickDecaed() : CGimmickAction(),
+CGimmickDecayed::CGimmickDecayed() : CField(),
 m_bFall(false) // 落ちるフラグ
 {
 
@@ -20,7 +28,7 @@ m_bFall(false) // 落ちるフラグ
 //=========================================
 //  デストラクタ
 //=========================================
-CGimmickDecaed::~CGimmickDecaed()
+CGimmickDecayed::~CGimmickDecayed()
 {
 
 }
@@ -28,10 +36,10 @@ CGimmickDecaed::~CGimmickDecaed()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickDecaed::Init(void)
+HRESULT CGimmickDecayed::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CGimmickAction::Init()))
+	if (FAILED(CField::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -46,34 +54,84 @@ HRESULT CGimmickDecaed::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickDecaed::Uninit(void)
+void CGimmickDecayed::Uninit(void)
 {
 	// 親クラスの終了
-	CGimmickAction::Uninit();
+	CField::Uninit();
 }
 
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickDecaed::Update(const float fDeltaTime)
+void CGimmickDecayed::Update(const float fDeltaTime)
 {
-	// 1度でもアクティブになったら常にアクティブ
-	if (!m_bFall && IsActive())
-	{
-		m_bFall = true;
-	}
-
 	if (m_bFall) { DebugProc::Print(DebugProc::POINT_CENTER, "落ちるon\n"); }
 
 	// 親クラスの更新
-	CGimmickAction::Update(fDeltaTime);
+	CField::Update(fDeltaTime);
 }
 
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickDecaed::Draw(CShader* pShader)
+void CGimmickDecayed::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CGimmickAction::Draw(pShader);
+	CField::Draw(pShader);
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickDecayed::Hit(CPlayerClone* pClone)
+{
+	// 分身に文字列を渡す
+	pClone->AddFrags(GetFlag());
+
+	// 分身に自身の情報を渡す
+	pClone->SetField(this);
+
+	// 落下フラグがoffの場合分身の数を計算
+	if (!m_bFall) { Count(); }
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickDecayed::Miss(CPlayerClone* pClone)
+{
+	// 分身からフラグを削除する
+	pClone->SabFrags(GetFlag());
+
+	// 分身からフィールドを削除する
+	pClone->DeleteField();
+}
+
+//===========================================
+//  乗っているキャラクター総数の計算処理
+//===========================================
+void CGimmickDecayed::Count()
+{
+	// 分身のリスト構造が無ければ抜ける
+	if (CPlayerClone::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CPlayerClone*> list = CPlayerClone::GetList()->GetList();
+
+	// 自身の上にいる分身の数をカウント
+	int nNum = 0; // 乗っている分身数
+	for (CPlayerClone* clone : list)
+	{
+		// 分身が所持しているフィールドが自身でない場合次に進む
+		if (clone->GetField() != this) { continue; }
+
+		// 自身の上の分身数を加算
+		++nNum;
+	}
+
+	// 分身の数が最大数未満の場合関数を抜ける
+	if (nNum < FALL_NUM) { return; }
+
+	// 落下フラグを立てる
+	m_bFall = true;
 }

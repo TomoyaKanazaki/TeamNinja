@@ -204,6 +204,49 @@ D3DXVECTOR2 useful::CalcMoveParabola
 }
 
 //============================================================
+//	ランダム向き取得
+//============================================================
+float useful::RandomRot(void)
+{
+	// ランダム向きを返す
+	return (float)(rand() % 629 - 314) * 0.01f;
+}
+
+//============================================================
+//	向きの四方向変換
+//============================================================
+EAngle useful::RotToFourDire(float fRot)
+{
+	// 向きを0～2πにする
+	fRot += D3DX_PI;
+
+	if (fRot >= QRTR_PI && fRot <= D3DX_PI - QRTR_PI)
+	{
+		// 右を返す
+		return ANGLE_90;
+	}
+	else if (fRot >= D3DX_PI - QRTR_PI && fRot <= D3DX_PI + QRTR_PI)
+	{
+		// 手前を返す
+		return ANGLE_0;
+	}
+	else if (fRot >= D3DX_PI + QRTR_PI && fRot <= (D3DX_PI * 2) - QRTR_PI)
+	{
+		// 左を返す
+		return ANGLE_270;
+	}
+	else if (fRot >= (D3DX_PI * 2) - QRTR_PI && fRot <= (D3DX_PI * 2) || fRot >= 0.0f && fRot <= QRTR_PI)
+	{
+		// 奥を返す
+		return ANGLE_180;
+	}
+
+	// 初期値を返す
+	assert(false);	// 向きの正規化ミス
+	return (EAngle)0;
+}
+
+//============================================================
 //	向きの正規化
 //============================================================
 void useful::NormalizeRot(float& rRot)
@@ -302,15 +345,6 @@ float useful::GetTexHeightFromAspect(const float fWidth, const int nTexID)
 
 	// アスペクト比から計算した縦幅を返す
 	return fWidth * aspect.y;
-}
-
-//============================================================
-//	ランダム向き取得
-//============================================================
-float useful::RandomRot(void)
-{
-	// ランダム向きを返す
-	return (float)(rand() % 629 - 314) * 0.01f;
 }
 
 //============================================================

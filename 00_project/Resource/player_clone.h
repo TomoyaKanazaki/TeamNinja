@@ -23,6 +23,7 @@ class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
 class CField;	// 地面クラス
 class CGimmickAction;	// アクションギミッククラス
+class CField;	// フィールドクラス
 
 //************************************************************
 //	クラス定義
@@ -108,15 +109,18 @@ public:
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
 	void DeleteGimmick() { m_pGimmick = nullptr; } // 所持しているギミックを削除
+	void SetField(CField* field);	// フィールドのポインタを受け取る
+	void DeleteField() { m_pField = nullptr; } // 所持しているフィールドを削除
 
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
-	CGimmickAction* GetGimmick() const	{ return m_pGimmick; }	// 所持ギミックを取得
+	CGimmickAction* GetGimmick() const { return m_pGimmick; }	// 所持ギミックを取得
+	CField* GetField() const { return m_pField; }				// 所持フィールドを取得
 	void SetAction(EAction action)		{ m_Action = action; }	// 行動を設定
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
 	EGimmick IsGimmickFrag() const { return m_eGimmick; }			// ギミックフラグの取得
-	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; } //ギミックフラグの設定
+	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; }	//ギミックフラグの設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
@@ -165,7 +169,7 @@ private:
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 	bool CollisionActor();				// アクターとの当たり判定
-	void CheckGimmick();			// ギミックとの当たり判定
+	void CheckGimmick();				// ギミックとの当たり判定
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -185,6 +189,7 @@ private:
 	EGimmick m_eGimmick;		// ギミックフラグ
 	bool m_bFind;				// 発見フラグ
 	D3DXVECTOR3 m_size;			// サイズ
+	CField* m_pField;			// フィールドフラグ
 
 	// メンバ変数 (藤田追加)
 	CField *m_pCurField;	// 現在の地面

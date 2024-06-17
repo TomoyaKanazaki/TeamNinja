@@ -93,7 +93,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	m_fFallStart	(0.0f),				// 落とし穴の落ちる前の高さ
 	m_eGimmick		(GIMMICK_IGNORE),	// ギミックフラグ
 	m_bFind			(false),			// 発見フラグ
-	m_size			(VEC3_ZERO)			// サイズ
+	m_size			(VEC3_ZERO),		// サイズ
+	m_pField		(nullptr)			// フィールドギミック
 {
 
 }
@@ -129,6 +130,7 @@ HRESULT CPlayerClone::Init(void)
 	m_eGimmick		= GIMMICK_IGNORE;	// ギミックフラグ
 	m_bFind			= false;			// 発見フラグ
 	m_size			= D3DXVECTOR3(RADIUS, RADIUS, RADIUS);
+	m_pField		= nullptr;			// フィールドフラグ
 
 	// オブジェクトキャラクターの初期化
 	if (FAILED(CObjectChara::Init()))
@@ -394,15 +396,30 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 
 	// ギミック待機状態になる
 	m_Action = ACTION_MOVE_TO_WAIT;
+}
 
-	// ギミックが落とし穴だった場合
-	if (m_pGimmick->GetType() == CGimmick::TYPE_FALL || m_pGimmick->GetType() == CGimmick::TYPE_DECAED)
+//===========================================
+//  フィールドのポインタを取得する
+//===========================================
+void CPlayerClone::SetField(CField* field)
+{
+	// 既に同じポインタを所持している場合関数を抜ける
+	if (m_pField == field) { return; }
+
+	// 引数をポインタに設定する
+	m_pField = field;
+
+	// 追従分身なら関数を抜ける
+	if (m_Action == ACTION_CHASE) { return; }
+
+	// 落下系フラグの場合警戒状態に変更
+	const char flag = m_pField->GetFlag();
+	if (
+		flag == CField::GetFlag(CField::TYPE_FALL) ||
+		flag == CField::GetFlag(CField::TYPE_DECAYED)
+		)
 	{
-		// 移動量を減少させる
-		m_move.x *= FALL_SPEED;
-		m_move.z *= FALL_SPEED;
-
-		// 落とし穴警戒状態にする
+		m_move *= FALL_SPEED;
 		m_Action = ACTION_FALL_TO_WAIT;
 	}
 }
@@ -692,10 +709,14 @@ void CPlayerClone::CallBack()
 		pClone->m_bFind = true;
 
 		// ギミックの保有分身数を減らす
-		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		if (pClone->m_pGimmick != nullptr)
+		{
+			pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		}
 
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
+		pClone->m_pField = nullptr;
 
 		// ギミック内管理番号をリセットする
 		pClone->m_nIdxGimmick = -1;
@@ -777,6 +798,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	// 向きを反映
 	SetVec3Rotation(rotClone);
 
+	// 落下するならしろ
+	if (m_pField != nullptr)
+	{
+		if (m_pField->IsFall())
+		{
+			m_Action = ACTION_FALL;
+		}
+	}
+
 	// 現在のモーションを返す
 	return currentMotion;
 }
@@ -839,7 +869,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 {
 	// ギミックを持っていなかった場合関数を抜ける
-	if (m_pGimmick == nullptr)
+	if (m_pField == nullptr)
 	{
 		m_move.x *= FALL_RETURN_SPEED;
 		m_move.z *= FALL_RETURN_SPEED;
@@ -857,7 +887,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 	SetVec3Position(pos);
 
 	// アクティブ状態になったら落下して関数を抜ける
-	if (m_pGimmick->IsFall())
+	if (m_pField->IsFall())
 	{
 		// 落とし穴落下に変更
 		m_Action = ACTION_FALL;

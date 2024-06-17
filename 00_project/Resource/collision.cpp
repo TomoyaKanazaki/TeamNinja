@@ -67,6 +67,55 @@ bool collision::Box3D
 }
 
 //============================================================
+//	3軸の矩形の当たり判定(向きの列挙判定入り)
+//============================================================
+bool collision::Box3D
+(
+	D3DXVECTOR3 centerPos,		// 判定位置
+	D3DXVECTOR3 targetPos,		// 判定目標位置
+	D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+	D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+	D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+	D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+	const EAngle centerAngle,	// 判定方向列挙
+	const EAngle targetAngle	// 判定目標方向列挙
+)
+{
+	D3DXVECTOR3 cenSizeUp	= centerSizeUp;
+	D3DXVECTOR3 cenSizeDown	= centerSizeDown;
+	D3DXVECTOR3 tarSizeUp	= targetSizeUp;
+	D3DXVECTOR3 tarSizeDown	= targetSizeDown;
+
+	if (centerAngle == EAngle::ANGLE_90 ||
+		centerAngle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		cenSizeUp.x = centerSizeUp.z;
+		cenSizeUp.y = centerSizeUp.y;
+		cenSizeUp.z = centerSizeUp.x;
+		cenSizeDown.x = centerSizeDown.z;
+		cenSizeDown.y = centerSizeDown.y;
+		cenSizeDown.z = centerSizeDown.x;
+	}
+
+	if (targetAngle == EAngle::ANGLE_90 ||
+		targetAngle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		tarSizeUp.x = targetSizeUp.z;
+		tarSizeUp.y = targetSizeUp.y;
+		tarSizeUp.z = targetSizeUp.x;
+		tarSizeDown.x = targetSizeDown.z;
+		tarSizeDown.y = targetSizeDown.y;
+		tarSizeDown.z = targetSizeDown.x;
+	}
+
+	return Box3D(centerPos, targetPos, cenSizeUp, cenSizeDown, tarSizeUp, tarSizeDown);
+}
+
+//============================================================
 //	XZ平面の円の当たり判定
 //============================================================
 bool collision::Circle2D
@@ -521,6 +570,52 @@ bool collision::ResponseBox3D
 
 	// 衝突判定を返す
 	return bHit;
+}
+
+//============================================================
+// 三軸の矩形の衝突判定(向きの列挙判定入り)
+//============================================================
+bool collision::ResponseBox3D
+( // 引数
+	D3DXVECTOR3& rCenterPos,	// 判定位置
+	D3DXVECTOR3& rCenterPosOld,	// 判定過去位置
+	D3DXVECTOR3 targetPos,		// 判定目標位置
+	D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+	D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+	D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+	D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+	const EAngle angle,			// 方向の列挙
+	D3DXVECTOR3* pMove,			// 移動量
+	bool* pUp,					// 上からの判定
+	bool* pSide,				// 横からの判定
+	bool* pDown					// 下からの判定
+)
+{
+	D3DXVECTOR3 tarSizeUp = VEC3_ZERO;
+	D3DXVECTOR3 tarSizeDown = VEC3_ZERO;
+
+	if (angle == EAngle::ANGLE_90 ||
+		angle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		tarSizeUp.x = targetSizeUp.z;
+		tarSizeUp.y = targetSizeUp.y;
+		tarSizeUp.z = targetSizeUp.x;
+		tarSizeDown.x = targetSizeDown.z;
+		tarSizeDown.y = targetSizeDown.y;
+		tarSizeDown.z = targetSizeDown.x;
+	}
+	else
+	{ // 上記以外
+
+		// サイズを設定
+		tarSizeUp = targetSizeUp;
+		tarSizeDown = targetSizeDown;
+	}
+
+	// 当たり判定処理
+	return ResponseBox3D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide, pDown);
 }
 
 //============================================================

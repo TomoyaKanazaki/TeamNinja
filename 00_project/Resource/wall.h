@@ -43,6 +43,17 @@ public:
 	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
+	// メンバ関数(小原追加)
+	void Collision				// 当たり判定処理
+	(
+		D3DXVECTOR3& rPos,			// 位置
+		D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,		// 半径
+		const float fHeight,		// 高さ
+		D3DXVECTOR3& rMove,			// 移動量
+		bool* pJump = nullptr		// ジャンプ状況
+	);
+
 	// 静的メンバ関数
 	static CWall *Create	// 生成
 	( // 引数

@@ -14,6 +14,8 @@
 
 #include "player.h"
 #include "player_clone.h"
+#include "multiModel.h"
+#include "enemy_item.h"
 
 //************************************************************
 //	定数宣言
@@ -23,6 +25,8 @@ namespace
 	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
 	const float MOVE = -300.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
+
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-3.0f, -15.0f, 0.0f);	// オフセット座標
 }
 
 //************************************************************
@@ -88,6 +92,13 @@ void CEnemyCaveat::Update(const float fDeltaTime)
 
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
+
+	if (GetItem() != nullptr)
+	{ // アイテムを持っている場合
+
+		// アイテムのオフセット処理
+		GetItem()->Offset(GetParts(8)->GetMtxWorld());
+	}
 }
 
 //============================================================
@@ -97,6 +108,20 @@ void CEnemyCaveat::Draw(CShader* pShader)
 {
 	// 敵の描画
 	CEnemy::Draw(pShader);
+}
+
+//============================================================
+// 情報の設定処理
+//============================================================
+void CEnemyCaveat::SetData(void)
+{
+	// アイテムを設定する
+	SetItem(CEnemyItem::Create
+	(
+		CEnemyItem::TYPE_KATANA,
+		OFFSET,
+		GetParts(8)->GetMtxWorld()
+	));
 }
 
 //============================================================

@@ -199,6 +199,25 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** p
 }
 
 //============================================================
+// 壁との当たり判定
+//============================================================
+void CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump)
+{
+	CListManager<CWall>* pListManager = CWall::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
+	std::list<CWall*> listWall = pListManager->GetList();	// フィールドリスト情報
+
+	for (auto& rList : listWall)
+	{ // 地面の総数分繰り返す
+
+		assert(rList != nullptr);
+
+		// 当たり判定処理
+		rList->Collision(rPos, rPosOld, fRadius, fHeight, rMove, pJump);
+	}
+}
+
+//============================================================
 //	位置の補正処理
 //============================================================
 void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
