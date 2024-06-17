@@ -65,7 +65,7 @@ public:
 
 	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);				// 範囲外の着地判定
 	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地 (回転考慮)
-	void CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump = nullptr);		// 壁との当たり判定
+	bool CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump = nullptr);		// 壁との当たり判定
 	void LimitPosition(D3DXVECTOR3& rPos, const float fRadius);		// 位置補正
 	bool CollisionKillY(const D3DXVECTOR3& rPos);					// キルY座標との当たり判定
 	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);				// メッシュの範囲内取得 (回転考慮)

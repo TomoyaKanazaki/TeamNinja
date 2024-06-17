@@ -137,7 +137,7 @@ void CWall::Draw(CShader *pShader)
 //============================================================
 // 当たり判定処理
 //============================================================
-void CWall::Collision
+bool CWall::Collision
 (
 	D3DXVECTOR3& rPos,		// 位置
 	D3DXVECTOR3& rPosOld,	// 前回の位置
@@ -152,7 +152,8 @@ void CWall::Collision
 	D3DXVECTOR3 PlayerDown = D3DXVECTOR3(fRadius, 0.0f, fRadius);	// プレイヤーのサイズ(下)
 	D3DXVECTOR3 sizeUp = VEC3_ZERO;			// プレイヤーのサイズ(上)
 	D3DXVECTOR3 sizeDown = VEC3_ZERO;		// プレイヤーのサイズ(下)
-	bool bUp = false;
+	bool bUp = false;		// 上状況
+	bool bHit = false;		// ヒット状況
 
 	// サイズを設定
 	sizeUp.x = GetVec2Sizing().x * 0.5f;
@@ -163,7 +164,7 @@ void CWall::Collision
 	sizeDown.z = 0.0f;
 
 	// 当たり判定処理(向きの列挙判定入り)
-	if (collision::ResponseBox3D
+	bHit = collision::ResponseBox3D
 	(
 		rPos,				// プレイヤーの位置
 		rPosOld,			// プレイヤーの前回の位置
@@ -175,7 +176,9 @@ void CWall::Collision
 		angle,				// 方向
 		&rMove,				// 移動量
 		&bUp				// 上状況
-	))
+	);
+
+	if(bHit)
 	{ // 当たり判定に当たった場合
 
 		if (pJump != nullptr)
@@ -185,6 +188,9 @@ void CWall::Collision
 			*pJump = !bUp;
 		}
 	}
+
+	// ヒット状況を返す
+	return bHit;
 }
 
 //============================================================

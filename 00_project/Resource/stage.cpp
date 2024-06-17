@@ -201,11 +201,12 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** p
 //============================================================
 // 壁との当たり判定
 //============================================================
-void CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump)
+bool CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float fRadius, const float fHeight, D3DXVECTOR3& rMove, bool* pJump)
 {
 	CListManager<CWall>* pListManager = CWall::GetList();	// フィールドリストマネージャー
-	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CWall*> listWall = pListManager->GetList();	// フィールドリスト情報
+	bool bHit = false;			// ヒット状況
 
 	for (auto& rList : listWall)
 	{ // 地面の総数分繰り返す
@@ -213,8 +214,14 @@ void CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float 
 		assert(rList != nullptr);
 
 		// 当たり判定処理
-		rList->Collision(rPos, rPosOld, fRadius, fHeight, rMove, pJump);
+		if (!rList->Collision(rPos, rPosOld, fRadius, fHeight, rMove, pJump)) { continue; }
+
+		// ヒット状況を true にする
+		bHit = true;
 	}
+
+	// ヒット状況を返す
+	return bHit;
 }
 
 //============================================================
