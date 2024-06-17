@@ -352,14 +352,19 @@ void CField::Miss(CPlayerClone* pClone)
 
 }
 
-//=========================================
+//===========================================
+//  自身のフラグを返す
+//===========================================
+const char CField::GetFlag() const
+{
+	return FLAG[m_type];
+}
+
+//===========================================
 //  指定のフラグ取得
 //===========================================
 const char CField::GetFlag(EType type) const
 {
-	// デフォルトの引数を受け取った場合自身のフラグえお返す
-	if (type == TYPE_NONE) { return (const char)m_type; }
-
 	// 指定されたフラグを返す
 	return FLAG[type];
 }
