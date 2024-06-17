@@ -40,7 +40,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditCheckPoint::CEditCheckPoint()
+CEditCheckPoint::CEditCheckPoint(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 

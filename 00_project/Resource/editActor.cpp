@@ -58,7 +58,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditActor::CEditActor()
+CEditActor::CEditActor(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 

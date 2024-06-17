@@ -709,10 +709,14 @@ void CPlayerClone::CallBack()
 		pClone->m_bFind = true;
 
 		// ギミックの保有分身数を減らす
-		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		if (pClone->m_pGimmick != nullptr)
+		{
+			pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		}
 
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
+		pClone->m_pField = nullptr;
 
 		// ギミック内管理番号をリセットする
 		pClone->m_nIdxGimmick = -1;
@@ -793,6 +797,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 
 	// 向きを反映
 	SetVec3Rotation(rotClone);
+
+	// 落下するならしろ
+	if (m_pField != nullptr)
+	{
+		if (m_pField->IsFall())
+		{
+			m_Action = ACTION_FALL;
+		}
+	}
 
 	// 現在のモーションを返す
 	return currentMotion;

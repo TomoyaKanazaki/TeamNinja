@@ -25,7 +25,7 @@ class CEditField : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditField();
+	CEditField(CEditStage* pEditor);
 
 	// デストラクタ
 	~CEditField() override;

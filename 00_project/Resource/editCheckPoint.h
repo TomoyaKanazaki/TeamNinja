@@ -25,7 +25,7 @@ class CEditCheckPoint : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditCheckPoint();
+	CEditCheckPoint(CEditStage* pEditor);
 
 	// デストラクタ
 	~CEditCheckPoint() override;
