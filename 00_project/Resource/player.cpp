@@ -256,6 +256,8 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(const float fDeltaTime)
 {
+	DebugProc::Print(DebugProc::POINT_CENTER, "pos : (%f, %f, %f)\n", m_posCenter.x, m_posCenter.y, m_posCenter.z);
+
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 過去位置の更新
@@ -669,7 +671,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer);
 
 	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT);
+	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// アクターの当たり判定
 	CollisionActor(posPlayer);
@@ -1140,15 +1142,14 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return; }
 
+	// 士気力が0なら関数を抜ける
+	if (m_pTensionGauge->GetNum() <= 0) { return; }
+
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
 
-#ifndef _DEBUG
-
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
-
-#endif
 
 	// プレイヤーの方向を取得
 	float fRotPlayer = GetVec3Rotation().y;

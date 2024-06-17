@@ -51,7 +51,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditWall::CEditWall()
+CEditWall::CEditWall(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 
@@ -466,7 +466,9 @@ void CEditWall::DeleteCollisionWall(const bool bRelase)
 			sizeThis,	// 判定サイズ(右・上・後)
 			sizeThis,	// 判定サイズ(左・下・前)
 			sizeOther,	// 判定目標サイズ(右・上・後)
-			sizeOther	// 判定目標サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(左・下・前)
+			useful::RotToFourDire(GetVec3Rotation().y),			// 判定方向列挙
+			useful::RotToFourDire(rList->GetVec3Rotation().y)	// 判定目標方向列挙
 		))
 		{ // 判定内だった場合
 

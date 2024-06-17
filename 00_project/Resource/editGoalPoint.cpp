@@ -42,7 +42,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditGoalPoint::CEditGoalPoint()
+CEditGoalPoint::CEditGoalPoint(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 

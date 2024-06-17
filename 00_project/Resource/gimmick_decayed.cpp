@@ -19,7 +19,7 @@ namespace
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickDecaed::CGimmickDecaed() : CField(),
+CGimmickDecayed::CGimmickDecayed() : CField(),
 m_bFall(false) // 落ちるフラグ
 {
 
@@ -28,7 +28,7 @@ m_bFall(false) // 落ちるフラグ
 //=========================================
 //  デストラクタ
 //=========================================
-CGimmickDecaed::~CGimmickDecaed()
+CGimmickDecayed::~CGimmickDecayed()
 {
 
 }
@@ -36,7 +36,7 @@ CGimmickDecaed::~CGimmickDecaed()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickDecaed::Init(void)
+HRESULT CGimmickDecayed::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CField::Init()))
@@ -54,7 +54,7 @@ HRESULT CGimmickDecaed::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickDecaed::Uninit(void)
+void CGimmickDecayed::Uninit(void)
 {
 	// 親クラスの終了
 	CField::Uninit();
@@ -63,7 +63,7 @@ void CGimmickDecaed::Uninit(void)
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickDecaed::Update(const float fDeltaTime)
+void CGimmickDecayed::Update(const float fDeltaTime)
 {
 	if (m_bFall) { DebugProc::Print(DebugProc::POINT_CENTER, "落ちるon\n"); }
 
@@ -74,7 +74,7 @@ void CGimmickDecaed::Update(const float fDeltaTime)
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickDecaed::Draw(CShader* pShader)
+void CGimmickDecayed::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CField::Draw(pShader);
@@ -83,7 +83,7 @@ void CGimmickDecaed::Draw(CShader* pShader)
 //===========================================
 //  当たっていた場合の処理
 //===========================================
-void CGimmickDecaed::Hit(CPlayerClone* pClone)
+void CGimmickDecayed::Hit(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
 	pClone->AddFrags(GetFlag());
@@ -98,7 +98,7 @@ void CGimmickDecaed::Hit(CPlayerClone* pClone)
 //==========================================
 //  当たっていない場合の処理
 //==========================================
-void CGimmickDecaed::Miss(CPlayerClone* pClone)
+void CGimmickDecayed::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
@@ -110,7 +110,7 @@ void CGimmickDecaed::Miss(CPlayerClone* pClone)
 //===========================================
 //  乗っているキャラクター総数の計算処理
 //===========================================
-void CGimmickDecaed::Count()
+void CGimmickDecayed::Count()
 {
 	// 分身のリスト構造が無ければ抜ける
 	if (CPlayerClone::GetList() == nullptr) { return; }
