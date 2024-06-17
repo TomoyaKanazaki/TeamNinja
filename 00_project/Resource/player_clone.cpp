@@ -403,16 +403,25 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 void CPlayerClone::SetField(CField* field)
 {
+	// 既に同じポインタを所持している場合関数を抜ける
+	if (m_pField == field) { return; }
+
 	// 引数をポインタに設定する
 	m_pField = field;
 
-	// 落下系のフラグでない場合関数を抜ける
-	const char flag = m_pField->GetFlag();
-	if (flag != m_pField->GetFlag(CField::TYPE_FALL)) { return; }
-	if (flag != m_pField->GetFlag(CField::TYPE_DECAYED)) { return; }
+	// 追従分身なら関数を抜ける
+	if (m_Action == ACTION_CHASE) { return; }
 
-	// 警戒状態に変更
-	m_Action = ACTION_FALL_TO_WAIT;
+	// 落下系フラグの場合警戒状態に変更
+	const char flag = m_pField->GetFlag();
+	if (
+		flag == CField::GetFlag(CField::TYPE_FALL) ||
+		flag == CField::GetFlag(CField::TYPE_DECAYED)
+		)
+	{
+		m_move *= FALL_SPEED;
+		m_Action = ACTION_FALL_TO_WAIT;
+	}
 }
 
 //===========================================
@@ -700,10 +709,14 @@ void CPlayerClone::CallBack()
 		pClone->m_bFind = true;
 
 		// ギミックの保有分身数を減らす
-		pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		if (pClone->m_pGimmick != nullptr)
+		{
+			pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
+		}
 
 		// 保存しているギミックを初期化する
 		pClone->m_pGimmick = nullptr;
+		pClone->m_pField = nullptr;
 
 		// ギミック内管理番号をリセットする
 		pClone->m_nIdxGimmick = -1;
@@ -784,6 +797,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 
 	// 向きを反映
 	SetVec3Rotation(rotClone);
+
+	// 落下するならしろ
+	if (m_pField != nullptr)
+	{
+		if (m_pField->IsFall())
+		{
+			m_Action = ACTION_FALL;
+		}
+	}
 
 	// 現在のモーションを返す
 	return currentMotion;
