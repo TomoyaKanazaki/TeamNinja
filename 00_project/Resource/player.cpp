@@ -544,7 +544,7 @@ bool CPlayer::GimmickHighJump(void)
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
 	// ジャンプエフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	//GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 追従している分身を消す
 	CPlayerClone::Delete();
