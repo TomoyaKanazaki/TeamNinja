@@ -403,7 +403,16 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 void CPlayerClone::SetField(CField* field)
 {
+	// 引数をポインタに設定する
+	m_pField = field;
 
+	// 落下系のフラグでない場合関数を抜ける
+	const char flag = m_pField->GetFlag();
+	if (flag != m_pField->GetFlag(CField::TYPE_FALL)) { return; }
+	if (flag != m_pField->GetFlag(CField::TYPE_DECAYED)) { return; }
+
+	// 警戒状態に変更
+	m_Action = ACTION_FALL_TO_WAIT;
 }
 
 //===========================================
@@ -838,7 +847,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 {
 	// ギミックを持っていなかった場合関数を抜ける
-	if (m_pGimmick == nullptr)
+	if (m_pField == nullptr)
 	{
 		m_move.x *= FALL_RETURN_SPEED;
 		m_move.z *= FALL_RETURN_SPEED;
@@ -856,7 +865,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 	SetVec3Position(pos);
 
 	// アクティブ状態になったら落下して関数を抜ける
-	if (m_pGimmick->IsFall())
+	if (m_pField->IsFall())
 	{
 		// 落とし穴落下に変更
 		m_Action = ACTION_FALL;

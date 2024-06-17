@@ -23,11 +23,14 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	bool IsFall() const override { return m_bFall; } // 落下判定
+
 private:
 
 	// メンバ関数
 	void Hit(CPlayerClone* pClone) override; // 当たっていた場合の処理
 	void Miss(CPlayerClone* pClone) override; // 当たっていない場合の処理
+	void Count(); // 乗っているキャラクター総数の計算処理
 
 	// メンバ変数
 	bool m_bFall; // 床抜けフラグ
