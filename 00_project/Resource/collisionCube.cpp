@@ -152,6 +152,7 @@ CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR
 		CObjectMeshCube::ORIGIN_DOWN
 	);
 	pColl->m_pCube->SetPriority(CUBE_PRIORITY);
+	pColl->m_pCube->SetLabel(CObject::LABEL_COLLISION);
 
 #endif // _DEBUG
 

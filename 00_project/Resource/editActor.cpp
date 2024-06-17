@@ -18,6 +18,7 @@
 #include "collisionCube.h"
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
+#include "collManager.h"
 
 //************************************************************
 //	マクロ定義
@@ -281,22 +282,22 @@ void CEditActor::UpdateRotation(void)
 		{
 			if (m_pKeyboard->IsPress(KEY_ROTA_RIGHT))
 			{
-				rot.y += ROT_MOVE;
+				rot.y -= ROT_MOVE;
 			}
 			if (m_pKeyboard->IsPress(KEY_ROTA_LEFT))
 			{
-				rot.y -= ROT_MOVE;
+				rot.y += ROT_MOVE;
 			}
 		}
 		else
 		{
 			if (m_pKeyboard->IsTrigger(KEY_ROTA_RIGHT))
 			{
-				rot.y += ROT_MOVE;
+				rot.y -= ROT_MOVE;
 			}
 			if (m_pKeyboard->IsTrigger(KEY_ROTA_LEFT))
 			{
-				rot.y -= ROT_MOVE;
+				rot.y += ROT_MOVE;
 			}
 		}
 
@@ -422,6 +423,13 @@ void CEditActor::ChangeType(void)
 	{
 		m_infoCreate.type = (CActor::EType)((m_infoCreate.type + 1) % CActor::TYPE_MAX);
 
+		if (!CScene::GetCollManager()->GetCollInfo(m_infoCreate.type).m_cube.empty())
+		{ // キューブの情報が入っている場合
+
+			// 向きの補正処理
+			RotCorrect();
+		}
+
 		// モデルを生成し直す
 		m_pActor->Uninit();
 		m_pActor = CActor::Create(m_infoCreate.type, GetVec3Position(), GetVec3Rotation(), m_infoCreate.scale);
@@ -436,6 +444,46 @@ void CEditActor::ChangeType(void)
 
 	// 種類を反映
 	m_pActor->SetType(m_infoCreate.type);
+}
+
+//============================================================
+// 向きの補正処理
+//============================================================
+void CEditActor::RotCorrect(void)
+{
+	// 向きを取得
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	if (rot.y >= -D3DX_PI * 0.25f &&
+		rot.y <= D3DX_PI * 0.25f)
+	{ // 0度補正前提で誤差が大きすぎる場合
+
+		// 向きを設定する
+		rot.y = 0.0f;
+	}
+	else if (rot.y >= D3DX_PI * 0.25f &&
+		rot.y <= D3DX_PI * 0.75f)
+	{ // 90度補正前提で誤差が大きすぎる場合
+
+		// 向きを設定する
+		rot.y = D3DX_PI * 0.5f;
+	}
+	else if ((rot.y >= D3DX_PI * -0.75f &&
+		rot.y <= D3DX_PI * -0.25f))
+	{ // 270度補正前提で誤差が大きすぎる場合
+
+		// 向きを設定する
+		rot.y = D3DX_PI * -0.5f;
+	}
+	else
+	{ // 上記以外
+
+		// 向きを設定する
+		rot.y = -D3DX_PI;
+	}
+
+	// 向きを適用する
+	SetVec3Rotation(rot);
 }
 
 //============================================================

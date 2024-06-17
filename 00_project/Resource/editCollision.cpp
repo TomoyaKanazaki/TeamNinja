@@ -27,6 +27,8 @@
 #define NAME_RELEASE		("9")	// 破棄表示
 #define KEY_CHANGE_OBJECT	(DIK_2)	// オブジェクトタイプ変更キー
 #define NAME_CHANGE_OBJECT	("2")	// オブジェクトタイプ変更表示
+#define KEY_CHANGE_ACTOR	(DIK_3)	// アクターの種類変更キー
+#define NAME_CHANGE_ACTOR	("3")	// アクターの種類変更表示
 
 //************************************************************
 //	定数宣言
@@ -181,6 +183,9 @@ void CEditCollision::Update(void)
 
 	// オブジェクトタイプの変更
 	ChangeObjectType();
+
+	// アクターの種類変更
+	ChangeActorType();
 
 	// エディター情報の更新
 	assert(m_pEditor != nullptr);
@@ -498,6 +503,47 @@ void CEditCollision::ChangeObjectType(void)
 			m_pEditor = CEditorCollShape::Create(m_type, nIdx);
 			assert(m_pEditor != nullptr);	// 生成失敗
 		}
+	}
+}
+
+//============================================================
+//	アクター変更処理
+//============================================================
+void CEditCollision::ChangeActorType(void)
+{
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
+
+	// 種類を変更
+	if (pKeyboard->IsTrigger(KEY_CHANGE_ACTOR))
+	{
+		m_actorType = (CActor::EType)((m_actorType + 1) % CActor::TYPE_MAX);
+
+		// モデルを生成し直す
+		m_pActor->Uninit();
+		m_pActor = CActor::Create(m_actorType, VEC3_ZERO);
+		m_pActor->ClearCollision();
+		for (auto& rCube : m_cube)
+		{ // コリジョンキューブ数分繰り返す
+
+			// 終了処理
+			rCube.Uninit();
+		}
+		for (auto& rCylinder : m_cylinder)
+		{ // コリジョンシリンダー数分繰り返す
+
+			// 終了処理
+			rCylinder.Uninit();
+		}
+		for (auto& rSphere : m_sphere)
+		{ // コリジョンスフィア数分繰り返す
+
+			// 終了処理
+			rSphere.Uninit();
+		}
+		// 配列を全消去する
+		m_cube.clear();
+		m_cylinder.clear();
+		m_sphere.clear();
 	}
 }
 

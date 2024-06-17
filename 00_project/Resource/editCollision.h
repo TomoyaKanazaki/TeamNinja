@@ -63,6 +63,7 @@ private:
 	// メンバ関数
 	void DispObject(const bool bDisp);		// オブジェクトの描画関係処理
 	void ChangeObjectType(void);			// オブジェクトタイプ変更
+	void ChangeActorType(void);				// アクタータイプ変更
 	void Create(void);						// 生成処理
 	void Delete(void);						// 消去処理
 
