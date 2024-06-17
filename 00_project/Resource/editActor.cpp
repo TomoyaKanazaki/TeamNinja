@@ -421,6 +421,17 @@ void CEditActor::ChangeType(void)
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
 		m_infoCreate.type = (CActor::EType)((m_infoCreate.type + 1) % CActor::TYPE_MAX);
+
+		// モデルを生成し直す
+		m_pActor->Uninit();
+		m_pActor = CActor::Create(m_infoCreate.type, GetVec3Position(), GetVec3Rotation(), m_infoCreate.scale);
+
+		if (!m_pActor->GetCube().empty())
+		{ // キューブの当たり判定が存在していた場合
+			
+			// 方向の設定処理
+			SetAngle(useful::RotToFourDire(GetVec3Rotation().y));
+		}
 	}
 
 	// 種類を反映
