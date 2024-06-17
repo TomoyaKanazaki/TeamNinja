@@ -317,8 +317,8 @@ void CEnemy::Landing(void)
 	m_bJump = true;
 
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(pos, m_move)
-		|| pStage->LandLimitPosition(pos, m_move, 0.0f))
+	if (pStage->LandFieldPosition(pos, m_oldPos, m_move)
+	||  pStage->LandLimitPosition(pos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// ジャンプしていない状態にする
