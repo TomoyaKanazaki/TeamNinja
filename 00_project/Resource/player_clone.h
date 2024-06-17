@@ -169,6 +169,7 @@ private:
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 	bool CollisionActor();				// アクターとの当たり判定
+	bool CollisionWall();				// 壁との当たり判定
 	void CheckGimmick();				// ギミックとの当たり判定
 
 	// 静的メンバ変数
