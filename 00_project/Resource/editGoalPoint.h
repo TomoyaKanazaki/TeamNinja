@@ -24,7 +24,7 @@ class CEditGoalPoint : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditGoalPoint();
+	CEditGoalPoint(CEditStage* pEditor);
 
 	// デストラクタ
 	~CEditGoalPoint() override;

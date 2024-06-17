@@ -30,7 +30,7 @@ class CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditorObject();
+	CEditorObject(CEditStage* pEditor);
 
 	// デストラクタ
 	virtual ~CEditorObject();
@@ -49,25 +49,23 @@ public:
 	virtual void DrawDebugInfo(void);		// 情報表示描画
 
 	// 静的メンバ関数
-	static CEditorObject* Create(CEditStage::EType type);	// 生成
+	static CEditorObject* Create(CEditStage* pEditor, CEditStage::EType type);	// 生成
 	static void Release(CEditorObject *&prEditorObject);	// 破棄
-
-	// メンバ関数
-	void SetVec3Position(const D3DXVECTOR3 pos)	{ m_pos = pos; }	// 位置設定
-	D3DXVECTOR3 GetVec3Position(void) const		{ return m_pos; }	// 位置取得
-	void SetVec3Rotation(const D3DXVECTOR3 rot)	{ m_rot = rot; }	// 向き設定
-	D3DXVECTOR3 GetVec3Rotation(void) const		{ return m_rot; }	// 向き取得
 
 protected:
 	// 仮想関数
 	virtual void UpdatePosition(void);	// 位置更新
 	virtual void UpdateRotation(void);	// 向き更新
 
+	// メンバ関数
+	void SetVec3Position(const D3DXVECTOR3 pos)	{ m_pEditor->SetVec3Position(pos); }		// 位置設定
+	D3DXVECTOR3 GetVec3Position(void) const		{ return m_pEditor->GetVec3Position(); }	// 位置取得
+	void SetVec3Rotation(const D3DXVECTOR3 rot)	{ m_pEditor->SetVec3Rotation(rot); }		// 向き設定
+	D3DXVECTOR3 GetVec3Rotation(void) const		{ return m_pEditor->GetVec3Rotation(); }	// 向き取得
+
 private:
 	// メンバ変数
-	D3DXVECTOR3 m_pos;	// 位置
-	D3DXVECTOR3 m_rot;	// 向き
-	EAngle m_angle;		// 角度
+	CEditStage* m_pEditor;	// エディター情報
 };
 
 #endif	// _EDITOR_OBJECT_H_
