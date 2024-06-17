@@ -25,7 +25,7 @@ class CEditActor : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditActor();
+	CEditActor(CEditStage* pEditor);
 
 	// デストラクタ
 	~CEditActor() override;

@@ -51,7 +51,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditWall::CEditWall()
+CEditWall::CEditWall(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 

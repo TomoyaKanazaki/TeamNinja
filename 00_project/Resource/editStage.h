@@ -65,6 +65,13 @@ public:
 	void DrawDebugControl(void) override;	// 操作表示描画
 	void DrawDebugInfo(void) override;		// 情報表示描画
 
+	void UpdatePosition(void);	// 位置更新
+	void UpdateRotation(void);	// 向き更新
+	void SetVec3Position(const D3DXVECTOR3 pos)	{ m_pos = pos; }	// 位置設定
+	D3DXVECTOR3 GetVec3Position(void) const		{ return m_pos; }	// 位置取得
+	void SetVec3Rotation(const D3DXVECTOR3 rot)	{ m_rot = rot; }	// 向き設定
+	D3DXVECTOR3 GetVec3Rotation(void) const		{ return m_rot; }	// 向き取得
+
 private:
 	// メンバ関数
 	void ChangeObjectType(void);	// オブジェクトタイプ変更
@@ -72,6 +79,9 @@ private:
 	// メンバ変数
 	CEditorObject *m_pEditor;	// エディター情報
 	CEditStage::EType m_type;	// オブジェクトタイプ
+	D3DXVECTOR3 m_pos;	// 位置
+	D3DXVECTOR3 m_rot;	// 向き
+	EAngle m_angle;		// 角度
 };
 
 #endif	// _EDIT_STAGE_H_

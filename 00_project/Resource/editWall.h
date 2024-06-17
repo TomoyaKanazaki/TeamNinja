@@ -25,7 +25,7 @@ class CEditWall : public CEditorObject
 {
 public:
 	// コンストラクタ
-	CEditWall();
+	CEditWall(CEditStage* pEditor);
 
 	// デストラクタ
 	~CEditWall() override;

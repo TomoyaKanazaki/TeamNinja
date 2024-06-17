@@ -51,7 +51,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEditField::CEditField()
+CEditField::CEditField(CEditStage* pEditor) : CEditorObject(pEditor)
 {
 #if _DEBUG
 
