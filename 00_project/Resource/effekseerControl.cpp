@@ -160,6 +160,7 @@ void CEffekseer::Update()
 //======================================================
 void CEffekseer::Draw()
 {
+	return;
 	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 
 	m_efkRenderer->SetTime(time / 60.0f);
