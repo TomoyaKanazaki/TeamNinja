@@ -127,7 +127,7 @@ void CEnemyCaveat::SetData(void)
 //============================================================
 // モーションの更新処理
 //============================================================
-void CEnemyCaveat::UpdateMotion(const float fDeltaTime)
+void CEnemyCaveat::UpdateMotion(int nMotion, const float fDeltaTime)
 {
 
 }

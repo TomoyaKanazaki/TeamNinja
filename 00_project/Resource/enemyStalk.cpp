@@ -131,7 +131,7 @@ void CEnemyStalk::SetData(void)
 //============================================================
 // モーションの更新処理
 //============================================================
-void CEnemyStalk::UpdateMotion(const float fDeltaTime)
+void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 {
 
 }
