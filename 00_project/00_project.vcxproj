@@ -204,7 +204,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyCaveat.h" />
     <ClInclude Include="Resource\enemyStalk.h" />
-    <ClInclude Include="Resource\enemy_dog.h" />
+    <ClInclude Include="Resource\enemyWolf.h" />
     <ClInclude Include="Resource\enemy_item.h" />
     <ClInclude Include="Resource\enemy_katana.h" />
     <ClInclude Include="Resource\enemy_lantern.h" />
@@ -365,7 +365,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyCaveat.cpp" />
     <ClCompile Include="Resource\enemyStalk.cpp" />
-    <ClCompile Include="Resource\enemy_dog.cpp" />
+    <ClCompile Include="Resource\enemyWolf.cpp" />
     <ClCompile Include="Resource\enemy_item.cpp" />
     <ClCompile Include="Resource\enemy_katana.cpp" />
     <ClCompile Include="Resource\enemy_lantern.cpp" />
