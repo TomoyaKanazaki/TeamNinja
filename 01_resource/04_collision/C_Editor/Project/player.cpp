@@ -286,45 +286,6 @@ void CPlayer::UpdateMotion(const int nMotion)
 			SetMotion(nMotion);
 		}
 	}
-	else
-	{ // ループしないモーションの場合
-
-		switch (GetMotionType())
-		{ // モーションごとの処理
-		case MOTION_JUMP:	// ジャンプモーション：ループOFF
-			break;
-
-		case MOTION_LAND:	// 着地モーション：ループOFF
-
-			if (nMotion != MOTION_IDOL)
-			{ // 待機モーション以外の場合
-
-				// 現在のモーションの設定
-				SetMotion(nMotion);
-			}
-
-			break;
-		}
-	}
-
-	switch (GetMotionType())
-	{ // モーションごとの処理
-	case MOTION_IDOL:	// 待機モーション：ループON
-	case MOTION_MOVE:	// 移動モーション：ループON
-	case MOTION_JUMP:	// ジャンプモーション：ループOFF
-		break;
-
-	case MOTION_LAND:	// 着地モーション：ループOFF
-
-		if (IsMotionFinish())
-		{ // モーションが終了していた場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion);
-		}
-
-		break;
-	}
 }
 
 //============================================================
@@ -341,10 +302,10 @@ void CPlayer::UpdateNormal(int *pMotion)
 	if (pStage == nullptr) { assert(false); return; }	// ステージ非使用中
 
 	// 移動操作・目標向き設定
-	UpdateMove(pMotion);
+	UpdateMove();
 
 	// ジャンプ操作
-	UpdateJump(pMotion);
+	UpdateJump();
 
 	// 位置更新
 	UpdatePosition(&posPlayer);
@@ -368,7 +329,7 @@ void CPlayer::UpdateNormal(int *pMotion)
 //============================================================
 //	移動操作・目標向きの更新処理
 //============================================================
-void CPlayer::UpdateMove(int *pMotion)
+void CPlayer::UpdateMove(void)
 {
 	CInputPad *pPad  = GET_INPUTPAD;				// パッド
 	CCamera *pCamera = GET_MANAGER->GetCamera();	// カメラ
@@ -386,16 +347,13 @@ void CPlayer::UpdateMove(int *pMotion)
 
 		// 目標向きを設定
 		m_destRot.y = atan2f(-m_move.x, -m_move.z);
-
-		// 移動モーションを設定
-		*pMotion = MOTION_MOVE;
 	}
 }
 
 //============================================================
 //	ジャンプ操作の更新処理
 //============================================================
-void CPlayer::UpdateJump(int *pMotion)
+void CPlayer::UpdateJump(void)
 {
 	if (m_bJump) { return; }	// ジャンプ中の場合抜ける
 
@@ -406,9 +364,6 @@ void CPlayer::UpdateJump(int *pMotion)
 
 		// ジャンプ中にする
 		m_bJump = true;
-
-		// ジャンプモーションを設定
-		*pMotion = MOTION_JUMP;
 	}
 }
 
@@ -445,17 +400,6 @@ void CPlayer::UpdateLanding(D3DXVECTOR3 *pPos)
 
 		// ジャンプフラグをOFFにする
 		m_bJump = false;
-	}
-
-	if (!m_bJump)
-	{ // 空中にいない場合
-
-		if (GetMotionType() == MOTION_JUMP)
-		{ // モーションがジャンプ中の場合
-
-			// 着地モーションを指定
-			SetMotion(MOTION_LAND);
-		}
 	}
 }
 

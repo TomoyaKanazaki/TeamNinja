@@ -43,9 +43,6 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション：ループON
-		MOTION_MOVE,		// 移動モーション：ループON
-		MOTION_JUMP,		// ジャンプモーション：ループOFF
-		MOTION_LAND,		// 着地モーション：ループOFF
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -74,8 +71,8 @@ private:
 	// メンバ関数
 	void LoadSetup(void);				// セットアップ
 	void UpdateNormal(int *pMotion);	// 通常状態時の更新
-	void UpdateMove(int *pMotion);		// 移動操作・目標向きの更新
-	void UpdateJump(int *pMotion);		// ジャンプ操作の更新
+	void UpdateMove(void);				// 移動操作・目標向きの更新
+	void UpdateJump(void);				// ジャンプ操作の更新
 
 	void UpdateMotion(int nMotion);			// モーションの更新
 	void UpdateOldPosition(void);			// 過去位置の更新
