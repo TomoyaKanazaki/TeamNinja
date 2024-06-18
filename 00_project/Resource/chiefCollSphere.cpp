@@ -1,4 +1,3 @@
-#if 1
 //============================================================
 //
 //	円判定統括処理 [chiefCollSphere.cpp]
@@ -48,6 +47,13 @@ HRESULT CChiefCollSphere::Init(void)
 //============================================================
 void CChiefCollSphere::Uninit(void)
 {
+	for (auto& rVec : m_vecColl)
+	{ // 判定の所持数分繰り返す
+
+		// 判定の終了
+		SAFE_UNINIT(rVec);
+	}
+
 	// 判定情報配列をクリア
 	m_vecColl.clear();
 }
@@ -83,10 +89,12 @@ D3DXVECTOR3 CChiefCollSphere::GetWorldPosition(const int nCollID) const
 //============================================================
 //	判定情報の設定処理
 //============================================================
-void CChiefCollSphere::SetInfo(const SInfo& rInfo, const int nID)
+void CChiefCollSphere::SetInfo(const SInfo& rInfo, const int nCollID)
 {
 	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
 	// イテレーターの中身を設定
 	*info = rInfo;
@@ -95,10 +103,12 @@ void CChiefCollSphere::SetInfo(const SInfo& rInfo, const int nID)
 //============================================================
 //	判定情報の取得処理
 //============================================================
-CChiefCollSphere::SInfo CChiefCollSphere::GetInfo(const int nID) const
+CChiefCollSphere::SInfo CChiefCollSphere::GetInfo(const int nCollID) const
 {
 	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
 	// イテレーターの中身を返す
 	return *info;
@@ -110,7 +120,7 @@ CChiefCollSphere::SInfo CChiefCollSphere::GetInfo(const int nID) const
 void CChiefCollSphere::SetVector(const std::vector<SInfo>& rVector)
 {
 	// 配列を設定
-	m_coll = rVector;
+	m_vecColl = rVector;
 }
 
 //============================================================
@@ -119,7 +129,7 @@ void CChiefCollSphere::SetVector(const std::vector<SInfo>& rVector)
 std::vector<CChiefCollSphere::SInfo> CChiefCollSphere::GetVector(void) const
 {
 	// 配列を返す
-	return m_coll;
+	return m_vecColl;
 }
 #endif
 
@@ -212,4 +222,3 @@ void CChiefCollSphere::Release(CChiefCollSphere *&prChiefCollSphere)
 	// メモリ開放
 	SAFE_DELETE(prChiefCollSphere);
 }
-#endif

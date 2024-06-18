@@ -66,11 +66,17 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const char *pFileName		// ファイル名
 	);
+	void SetCollInfo	// 当たり判定情報設定
+	( // 引数
+		const int nID,	// パーツインデックス
+		std::vector<CCharacter::SColl> vecColl	// 当たり判定情報
+	);
 
 	void BindCharaData(const char *pCharaPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetNumParts(const int nNumParts);			// パーツ数設定
-	void SetPartsInfo(CCharacter::SPartsInfo& rInfo);					// パーツ情報設定
+	void SetPartsInfoAll(CCharacter::SPartsInfo& rInfo);				// パーツ情報設定
+	void SetCollInfoAll(CCharacter::SPartsInfo& rInfo);					// 当たり判定情報設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得

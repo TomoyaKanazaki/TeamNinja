@@ -265,8 +265,7 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 		}
 		else if (str == "CHARACTERSET")
 		{
-			do
-			{ // END_CHARACTERSETを読み込むまでループ
+			do { // END_CHARACTERSETを読み込むまでループ
 
 				// 文字列を読み込む
 				file >> str;
@@ -279,8 +278,7 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 				}
 				else if (str == "PARTSSET")
 				{
-					do
-					{ // END_PARTSSETを読み込むまでループ
+					do { // END_PARTSSETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -330,6 +328,14 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 				}
 			} while (str != "END_CHARACTERSET");	// END_CHARACTERSETを読み込むまでループ
 		}
+		else if (str == "COLLPASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// モーションパスを読込
+
+			// 当たり判定パスを読み込む
+			LoadCollSetup(pInfoParts, str.c_str());
+		}
 		else if (str == "MOTIONPASS")
 		{
 			file >> str;	// ＝を読込
@@ -337,6 +343,111 @@ HRESULT CCharacter::LoadSetup(SCharaData *pInfoChara, const char *pCharaPass)
 
 			// モーションパスを読み込む
 			LoadMotionSetup(&pInfoChara->infoMotion, pInfoParts, str.c_str());
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	当たり判定情報セットアップ処理
+//============================================================
+HRESULT CCharacter::LoadCollSetup(SPartsInfo *pInfoParts, const char *pCollPass)
+{
+	SColl infoColl;		// 読込判定情報
+	int nPartsID = 0;	// 読込パーツインデックス
+
+	// ファイルを開く
+	std::ifstream file(pCollPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "当たり判定セットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "COLLISIONSET")
+		{
+			do { // END_COLLISIONSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "COLLSET")
+				{
+					do { // END_COLLSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str.front() == '#')
+						{ // コメントアウトされている場合
+
+							// 一行全て読み込む
+							std::getline(file, str);
+						}
+						else if (str == "PARTS")
+						{
+							file >> str;		// ＝を読込
+							file >> nPartsID;	// パーツインデックスを読込
+						}
+						else if (str == "COLL")
+						{
+							do { // END_COLLを読み込むまでループ
+
+								// 文字列を読み込む
+								file >> str;
+
+								if (str.front() == '#')
+								{ // コメントアウトされている場合
+
+									// 一行全て読み込む
+									std::getline(file, str);
+								}
+								else if (str == "OFFSET")
+								{
+									file >> str;				// ＝を読込
+									file >> infoColl.offset.x;	// Xオフセットを読込
+									file >> infoColl.offset.y;	// Yオフセットを読込
+									file >> infoColl.offset.z;	// Zオフセットを読込
+								}
+								else if (str == "RADIUS")
+								{
+									file >> str;				// ＝を読込
+									file >> infoColl.fRadius;	// 半径を読込
+								}
+							} while (str != "END_COLL");	// END_COLLを読み込むまでループ
+
+							// 最後尾に判定情報を追加
+							pInfoParts->vecParts[nPartsID].vecColl.push_back(infoColl);
+						}
+					} while (str != "END_COLLSET");	// END_COLLSETを読み込むまでループ
+				}
+			} while (str != "END_COLLISIONSET");	// END_COLLISIONSETを読み込むまでループ
 		}
 	}
 
@@ -390,8 +501,7 @@ HRESULT CCharacter::LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInf
 			// 現在のキー番号を初期化
 			nCurKey = 0;
 
-			do
-			{ // END_MOTIONSETを読み込むまでループ
+			do { // END_MOTIONSETを読み込むまでループ
 
 				// 文字列を読み込む
 				file >> str;
@@ -448,8 +558,7 @@ HRESULT CCharacter::LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInf
 					// 現在のパーツ番号を初期化
 					nCurParts = 0;
 
-					do
-					{ // END_KEYSETを読み込むまでループ
+					do { // END_KEYSETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -477,8 +586,7 @@ HRESULT CCharacter::LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInf
 							pKey->vecParts.emplace_back();	// 空の要素を最後尾に追加
 							CMotion::SParts *pParts = &pKey->vecParts[nCurParts];	// 現在のパーツ情報
 
-							do
-							{ // END_KEYを読み込むまでループ
+							do { // END_KEYを読み込むまでループ
 
 								// 文字列を読み込む
 								file >> str;
