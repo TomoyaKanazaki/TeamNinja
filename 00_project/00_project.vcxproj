@@ -166,6 +166,7 @@
     <ClInclude Include="Resource\char2D.h" />
     <ClInclude Include="Resource\character.h" />
     <ClInclude Include="Resource\checkpoint.h" />
+    <ClInclude Include="Resource\chiefCollSphere.h" />
     <ClInclude Include="Resource\cinemaScope.h" />
     <ClInclude Include="Resource\cloneAngleUI.h" />
     <ClInclude Include="Resource\collision.h" />
@@ -326,6 +327,7 @@
     <ClCompile Include="Resource\char2D.cpp" />
     <ClCompile Include="Resource\character.cpp" />
     <ClCompile Include="Resource\checkpoint.cpp" />
+    <ClCompile Include="Resource\chiefCollSphere.cpp" />
     <ClCompile Include="Resource\cinemaScope.cpp" />
     <ClCompile Include="Resource\cloneAngleUI.cpp" />
     <ClCompile Include="Resource\collision.cpp" />

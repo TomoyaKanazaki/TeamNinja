@@ -1441,7 +1441,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Lantern_Diffuse.png";
+    "data\\TEXTURE\\MODEL\\LANTERN\\Lantern001.png";
    }
   }
  }
