@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
-#include "collisionSphere.h"
+#include "chiefCollSphere.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -468,7 +468,7 @@ CMultiModel *CObjectChara::GetParts(const int nPartsID) const
 //============================================================
 //	当たり判定取得処理
 //============================================================
-CCollisionSphere *CObjectChara::GetCollision(const int nPartsID) const
+CChiefCollSphere *CObjectChara::GetCollision(const int nPartsID) const
 {
 	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
