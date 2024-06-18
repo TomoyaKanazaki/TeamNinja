@@ -146,7 +146,7 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECT
 
 	CField *pCurField = nullptr;			// 着地予定の地面
 	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
-	bool bLand = false;	// 地面の着地判定
+	bool bLand = false;						// 地面の着地判定
 
 	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す
@@ -203,7 +203,7 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECT
 }
 
 //============================================================
-//	一番上の地面着地
+//	一番上の地面着地処理
 //============================================================
 bool CStage::LandFieldPositionTop(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField** ppCollField)
 {
@@ -213,7 +213,7 @@ bool CStage::LandFieldPositionTop(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField*
 
 	CField *pCurField = nullptr;			// 着地予定の地面
 	float fCurPos = m_stageLimit.fField;	// 着地予定のY座標
-	bool bLand = false;	// 地面の着地判定
+	bool bLand = false;						// 地面の着地判定
 
 	for (auto& rList : listField)
 	{ // 地面の総数分繰り返す

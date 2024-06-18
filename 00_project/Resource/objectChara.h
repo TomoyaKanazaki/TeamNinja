@@ -20,7 +20,8 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CMultiModel;	// マルチモデルクラス
+class CMultiModel;		// マルチモデルクラス
+class CCollisionSphere;	// スフィアの当たり判定クラス
 
 //************************************************************
 //	クラス定義
@@ -75,6 +76,7 @@ public:
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
 	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
 	CMultiModel *GetParts(const int nPartsID) const;					// パーツ取得
+	CCollisionSphere *GetCollision(const int nPartsID) const;			// 当たり判定取得
 	CMotion *GetMotion(void) const	{ return m_pMotion; }				// モーション取得
 	int GetNumParts(void) const		{ return (int)m_vecParts.size(); }	// パーツ数取得
 
@@ -110,7 +112,8 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	std::vector<CMultiModel*> m_vecParts;	// パーツ情報
+	std::vector<CMultiModel*> m_vecParts;		// パーツ情報
+	std::vector<CCollisionSphere*> m_vecColl;	// 判定情報
 	CMotion		*m_pMotion;	// モーションの情報
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
 	D3DXVECTOR3	m_pos;		// 位置

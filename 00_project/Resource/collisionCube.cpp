@@ -115,7 +115,15 @@ void CCollisionCube::OffSet(const D3DXMATRIX& mtx)
 //============================================================
 // 生成処理
 //============================================================
-CCollisionCube* CCollisionCube::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth, const float fRot)
+CCollisionCube* CCollisionCube::Create
+(
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rOffset,		// オフセット
+	const float fWidth,				// 幅
+	const float fHeight,			// 高さ
+	const float fDepth,				// 奥行
+	const float fRot				// 向き
+)
 {
 	// 当たり判定の生成
 	CCollisionCube* pColl = new CCollisionCube();

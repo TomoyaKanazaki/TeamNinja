@@ -11510,7 +11510,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_MainHouse_Decals_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_1.png";
    }
   }
   Material {
@@ -11519,7 +11519,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_MainHouse_RidgesWoodPipe_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_2.png";
    }
   }
   Material {
@@ -11528,7 +11528,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_MainHouse_Rooftop_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_3.png";
    }
   }
   Material {
@@ -11537,7 +11537,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_MainHouse_BrickWall_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_4.png";
    }
   }
   Material {
@@ -11546,7 +11546,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_DoorsRidgeendsWindows_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_5.png";
    }
   }
   Material {
@@ -11555,7 +11555,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_MainHouse_Wooden_01_BC.png";
+    "data\\TEXTURE\\MODEL\\House006_6.png";
    }
   }
  }
