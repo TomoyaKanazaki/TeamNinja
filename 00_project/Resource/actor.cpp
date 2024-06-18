@@ -156,13 +156,13 @@ void CActor::Update(const float fDeltaTime)
 
 	for (auto cylinder : m_cylinder)
 	{
-		// 終了処理
+		// オフセット処理
 		cylinder->OffSet(GetMtxWorld());
 	}
 
 	for (auto sphere : m_sphere)
 	{
-		// 終了処理
+		// オフセット処理
 		sphere->OffSet(GetMtxWorld());
 	}
 
