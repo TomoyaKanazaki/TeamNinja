@@ -67,6 +67,9 @@ public:
 
 private:
 
+	// オーバーライド関数
+	void UpdateMotion(const float fDeltaTime) override;		// モーションの更新処理
+
 	// メンバ関数
 	void State(void);		// 状態処理
 	void Crawl(void);		// 巡回処理

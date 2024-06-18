@@ -170,12 +170,6 @@ HRESULT CPlayerClone::Init(void)
 		return E_FAIL;
 	}
 
-	// マテリアルを変更
-	SetAllMaterial(material::Green());
-
-	// サイズを調整
-	SetVec3Scaling(D3DXVECTOR3(0.8f, 0.8f, 0.8f));
-
 	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
 
@@ -392,6 +386,12 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
+	// ギミックの待機位置を設定する
+	m_pGimmick->SetActionPoint(GetVec3Position());
+
+	// ギミックの人数を加算
+	m_pGimmick->AddNumClone();
+
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
 
@@ -453,7 +453,7 @@ void CPlayerClone::SabFrags(const char cFrag)
 }
 
 //===========================================
-//  文字列(フラグ)の追加
+//  文字列(フラグ)の取得
 //===========================================
 bool CPlayerClone::GetFrags(const char cFrag)
 {
@@ -727,7 +727,7 @@ void CPlayerClone::CallBack()
 
 #ifdef _DEBUG
 		// マテリアルを変更
-		pClone->SetAllMaterial(material::Green());
+		pClone->ResetMaterial();
 #endif
 
 		// 追従状態にする
@@ -820,15 +820,14 @@ CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
 
-	// TODO：Gimmick移動どうしよかね
-	// ギミックの位置に移動する
-	SetVec3Position(m_pGimmick->GetVec3Position());
+	// 待機位置が遠かった場合移動モーションを返す
+	if (!Approach(m_pGimmick->GetActionPoint())) { return MOTION_DASH; }
 
-	// ギミック待機状態にする
-	m_Action = ACTION_WAIT;
+	// 発動可能の場合ギミック待機状態に変更
+	if(m_pGimmick->IsActive()) { m_Action = ACTION_WAIT; }
 
-	// 移動モーションを返す
-	return MOTION_DASH;
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //==========================================
@@ -1347,9 +1346,6 @@ void CPlayerClone::UpdateReAction()
 			continue;
 		}
 
-		// ギミックの人数を加算
-		gimmick->AddNumClone();
-
 		// ギミックを設定
 		SetGimmick(gimmick);
 
@@ -1373,6 +1369,9 @@ void CPlayerClone::UpdateAction()
 
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { return; }
+
+	// 待機位置に向かう
+	Approach(m_pGimmick->GetActionPoint());
 
 	// 位置を取得
 	posGimmick = m_pGimmick->GetVec3Position();
@@ -1460,12 +1459,12 @@ CPlayerClone::EMotion CPlayerClone::Chase
 (
 	D3DXVECTOR3* pPosThis,			// 自身の位置
 	D3DXVECTOR3* pRotThis,			// 自身の向き
-	const D3DXVECTOR3& rPosPrev,	// ついていくやつの位置
+	const D3DXVECTOR3& rPosTarget,	// ついていくやつの位置
 	const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
 )
 {
 	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 posTarget = CalcPrevBack(rPosPrev, rRotPrev);
+	D3DXVECTOR3 posTarget = CalcPrevBack(rPosTarget, rRotPrev);
 
 	// 目標地点へのベクトルを求める
 	D3DXVECTOR3 vecTarget = posTarget - *pPosThis;
@@ -1475,9 +1474,9 @@ CPlayerClone::EMotion CPlayerClone::Chase
 	*pPosThis += vecTarget * 0.1f;
 
 	// 目標の方向を向く処理
-	ViewTarget(*pPosThis, rPosPrev);
+	ViewTarget(*pPosThis, rPosTarget);
 
-	// 移動量のスカラー値を産出
+	// 移動量のスカラー値を算出
 	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z);
 	if (fScalar > DASH_SPEED)
 	{
@@ -1496,16 +1495,53 @@ CPlayerClone::EMotion CPlayerClone::Chase
 //==========================================
 //  目標の方向を向く処理
 //==========================================
-void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosPrev)
+void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget)
 {
 	// 目標方向との差分を求める
-	D3DXVECTOR3 vecTarget = rPosPrev - rPosThis;
+	D3DXVECTOR3 vecTarget = rPosTarget - rPosThis;
 
 	// 差分ベクトルの向きを求める
 	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
 
 	// 目標向きを設定
 	m_destRot.y = fRot;
+}
+
+//===========================================
+//  目標位置に向かう処理
+//===========================================
+bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
+{
+	// 自身の位置を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = posTarget - pos;
+
+	// 目標へのベクトルに倍率をかけ現在地に加算する
+	vecTarget.y = 0.0f;
+	pos += vecTarget * 0.1f;
+
+	// 位置を適用する
+	SetVec3Position(pos);
+
+	// 移動量のスカラー値を算出
+	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
+
+	// 移動量が極端に小さい場合trueを返す
+	if (fScalar < DASH_SPEED * DASH_SPEED)
+	{
+		return true;
+	}
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
+
+	// 向きを更新
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
+
+	return false;
 }
 
 //===========================================

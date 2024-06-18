@@ -1909,7 +1909,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Kunai_AlbedoTransparency.png";
+    "data\\TEXTURE\\MODEL\\KUNAI\\Kunai000.png";
    }
   }
  }

@@ -47,7 +47,9 @@ public:
 	void SetMoment(bool moment) { m_bMoment = moment; }			// 発動中フラグの設定
 	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
 	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
- 
+	void SetActionPoint(const D3DXVECTOR3& pos);				// 待機位置の設定
+	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 待機位置の設定
+
 private:
 
 	// 静的メンバ変数
@@ -55,9 +57,10 @@ private:
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
-	int m_nNumClone;	// 範囲に入っている分身の数
-	bool m_bActive;		// 発動状況
-	bool m_bMoment;		// 発動中フラグ
+	int m_nNumClone;			// 範囲に入っている分身の数
+	bool m_bActive;				// 発動状況
+	bool m_bMoment;				// 発動中フラグ
+	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
 
 };
 

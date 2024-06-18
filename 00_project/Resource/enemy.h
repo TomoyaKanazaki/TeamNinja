@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_STALK = 0,		// しつこい敵
 		TYPE_CAVEAT,		// 警告敵
+		TYPE_WOLF,			// 狼敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -79,6 +80,7 @@ protected:
 private:
 
 	// メンバ関数
+	virtual void UpdateMotion(const float fDeltaTime) = 0;		// モーションの更新処理
 	void Gravity(void);		// 重力処理
 	void Landing(void);		// 着地処理
 
