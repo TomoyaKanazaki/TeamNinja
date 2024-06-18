@@ -194,6 +194,9 @@ void CCheckPoint::CollisionPlayer(void)
 	// プレイヤーの情報を取得
 	CPlayer* Player = GET_PLAYER; // 座標
 
+	// プレイヤーが NULL の場合
+	if (Player == nullptr) { return; }
+
 	// 当たっていない場合関数を抜ける
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
 	{ return; }
