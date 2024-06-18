@@ -202,10 +202,8 @@
     <ClInclude Include="Resource\effekseerManager.h" />
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyCaveat.h" />
-    <ClInclude Include="Resource\enemyState.h" />
-    <ClInclude Include="Resource\enemyStateAttack.h" />
     <ClInclude Include="Resource\enemyStalk.h" />
-    <ClInclude Include="Resource\enemyStateNone.h" />
+    <ClInclude Include="Resource\enemy_dog.h" />
     <ClInclude Include="Resource\enemy_item.h" />
     <ClInclude Include="Resource\enemy_katana.h" />
     <ClInclude Include="Resource\enemy_lantern.h" />
@@ -364,10 +362,8 @@
     <ClCompile Include="Resource\effekseerManager.cpp" />
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyCaveat.cpp" />
-    <ClCompile Include="Resource\enemyState.cpp" />
-    <ClCompile Include="Resource\enemyStateAttack.cpp" />
     <ClCompile Include="Resource\enemyStalk.cpp" />
-    <ClCompile Include="Resource\enemyStateNone.cpp" />
+    <ClCompile Include="Resource\enemy_dog.cpp" />
     <ClCompile Include="Resource\enemy_item.cpp" />
     <ClCompile Include="Resource\enemy_katana.cpp" />
     <ClCompile Include="Resource\enemy_lantern.cpp" />
