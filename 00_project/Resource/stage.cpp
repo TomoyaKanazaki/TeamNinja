@@ -274,7 +274,6 @@ bool CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float 
 	CListManager<CWall>* pListManager = CWall::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CWall*> listWall = pListManager->GetList();	// フィールドリスト情報
-	D3DXVECTOR3 pos = rPos;
 	bool bHit = false;			// ヒット状況
 
 	for (auto& rList : listWall)
@@ -283,9 +282,7 @@ bool CStage::CollisionWall(D3DXVECTOR3& rPos, D3DXVECTOR3& rPosOld, const float 
 		assert(rList != nullptr);
 
 		// 当たり判定処理
-		if (!rList->Collision(pos, rPosOld, fRadius, fHeight, rMove, pJump)) { continue; }
-
-		rPos = pos;
+		if (!rList->Collision(rPos, rPosOld, fRadius, fHeight, rMove, pJump)) { continue; }
 
 		// ヒット状況を true にする
 		bHit = true;
