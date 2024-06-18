@@ -29,7 +29,7 @@ public:
 	CCollisionCube();			// コンストラクタ
 	~CCollisionCube();			// デストラクタ
 
-	void Uninit(void);			// 終了処理
+	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
 	(
@@ -59,7 +59,15 @@ public:
 #endif // _DEBUG
 
 	// 静的メンバ関数
-	static CCollisionCube* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fWidth, const float fHeight, const float fDepth, const float fRot);		// 生成処理
+	static CCollisionCube* Create			// 生成処理
+	(
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rOffset,		// オフセット
+		const float fWidth,				// 幅
+		const float fHeight,			// 高さ
+		const float fDepth,				// 奥行
+		const float fRot				// 向き
+	);
 
 private:
 
