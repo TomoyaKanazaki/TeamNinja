@@ -201,8 +201,8 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 //===========================================
 void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
 {
-	// 設定可能フラグがoffの場合関数を抜ける
-	if (!ACTION_SET_FRAG[GetType()]) { return; }
+	// 設定可能フラグがoffの場合中心座標を設定し関数を抜ける
+	if (!ACTION_SET_FRAG[GetType()]) { m_posAction = GetVec3Position(); return; }
 
 	// 待機位置に引数を設定する
 	m_posAction = pos;
