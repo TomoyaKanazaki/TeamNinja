@@ -421,7 +421,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Kakejiku000.png";
+    "data\\TEXTURE\\MODEL\\KAKEJIKU\\Kakejiku000.png";
    }
   }
   Material {
@@ -430,7 +430,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Wood09_col.jpg";
+    "data\\TEXTURE\\MODEL\\KAKEJIKU\\Wood09_col.jpg";
    }
   }
   Material {
@@ -439,7 +439,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Wood09_nrm.jpg";
+    "data\\TEXTURE\\MODEL\\KAKEJIKU\\Wood09_nrm.jpg";
    }
   }
  }
