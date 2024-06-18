@@ -1,14 +1,14 @@
 //============================================================
 //
-//	警告敵ヘッダー [enemyCaveat.h]
+//	狼敵ヘッダー [enemyWolf.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _ENEMY_CAVEAT_H_
-#define _ENEMY_CAVEAT_H_
+#ifndef _ENEMY_WOLF_H_
+#define _ENEMY_WOLF_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,35 +18,27 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// 警告敵クラス
-class CEnemyCaveat : public CEnemy
+// 狼敵クラス
+class CEnemyWolf : public CEnemy
 {
 public:
-
-	// 状態
-	enum EState
-	{
-		STATE_CRAWL = 0,	// 巡回状態
-		STATE_CAVEAT,		// 警告状態
-		STATE_MAX			// この列挙型の総数
-	};
 
 	// モーション列挙
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
-		MOTION_WALK,		// 歩行モーション
+		MOTION_RUN,			// 走行モーション
 		MOTION_FOUND,		// 発見モーション
-		MOTION_ATTACK,		// 攻撃モーション
-		MOTION_UPSET,		// 動揺モーション
+		MOTION_BITE,		// 噛みつきモーション
+		MOTION_TURN,		// 振り向きモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
-	CEnemyCaveat();
+	CEnemyWolf();
 
 	// デストラクタ
-	~CEnemyCaveat() override;
+	~CEnemyWolf() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -60,13 +52,6 @@ private:
 
 	// オーバーライド関数
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;		// モーションの更新処理
-
-	// メンバ関数
-	void State(void);		// 状態処理
-	void Caveat(void);		// 警告処理
-
-	// メンバ変数
-	EState m_state;			// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

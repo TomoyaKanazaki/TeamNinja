@@ -16,9 +16,10 @@
 #include "player_clone.h"
 #include "stage.h"
 
+#include "enemy_item.h"
 #include "enemyStalk.h"
 #include "enemyCaveat.h"
-#include "enemy_item.h"
+#include "enemyWolf.h"
 
 //************************************************************
 //	定数宣言
@@ -127,9 +128,6 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	// オブジェクトキャラクターの更新
-	//CObjectChara::Update(fDeltaTime);
-
 	// 重力処理
 	Gravity();
 
@@ -167,6 +165,13 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		// 警告敵を生成
 		pEnemy = new CEnemyCaveat;
+
+		break;
+
+	case TYPE_WOLF:
+
+		// 犬敵を生成
+		pEnemy = new CEnemyWolf;
 
 		break;
 

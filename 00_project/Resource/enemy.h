@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_STALK = 0,		// しつこい敵
 		TYPE_CAVEAT,		// 警告敵
+		TYPE_WOLF,			// 狼敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -71,6 +72,9 @@ public:
 	inline CEnemyItem* GetItem(void) const					{ return m_pItem; }					// 敵の持ち物取得
 
 protected:
+
+	// オーバライド関数
+	virtual void UpdateMotion(int nMotion, const float fDeltaTime) = 0;		// モーションの更新処理
 
 	// メンバ関数
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);		// プレイヤーの探索処理

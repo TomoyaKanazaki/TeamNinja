@@ -1,0 +1,133 @@
+#==============================================================================
+#
+#	犬のセットアップ [dog.txt]
+#	Author : you
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+#	キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+
+	PARTSSET
+		INDEX = 0
+		PARENT = -1
+		POS = 0.0 37.0 0.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\00_body_back.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 1
+		PARENT = 0
+		POS = 0.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\01_body_front.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 2
+		PARENT = 1
+		POS = 0.0 1.5 -24.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\02_head.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 3
+		PARENT = 2
+		POS = -0.5 1.4 -11.9
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\03_mouth.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 4
+		PARENT = 0
+		POS = 0.0 -1.0 24.9
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\04_tail_root.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 5
+		PARENT = 4
+		POS = 0.0 -11.6 12.6
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\05_tail_tip.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 6
+		PARENT = 1
+		POS = -9.0 -5.0 -17.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\06A_front_right.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 7
+		PARENT = 6
+		POS = 1.5 -13.2 2.7
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\06B_front_right.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 8
+		PARENT = 1
+		POS = 9.0 -6.0 -16.4
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\07A_front_left.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 9
+		PARENT = 8
+		POS = -1.5 -12.7 2.7
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\07B_front_left.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 10
+		PARENT = 0
+		POS = -7.7 -3.0 13.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\08A_back_right.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 11
+		PARENT = 10
+		POS = 1.0 -18.8 11.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\08B_back_right.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 12
+		PARENT = 0
+		POS = 6.7 -3.0 13.0
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\09A_back_left.x
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 13
+		PARENT = 12
+		POS = -0.5 -18.8 10.5
+		ROT = 0.0 0.0 0.0
+		FILEPASS = data\MODEL\ENEMY\WOLF\09B_back_left.x
+	END_PARTSSET
+	
+END_CHARACTERSET
+
+#------------------------------------------------------------------------------
+#	モーション情報
+#------------------------------------------------------------------------------
+MOTIONPASS = data\MOTION\ENEMY\WOLF\idol.txt	# 待機モーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\run.txt		# 走行モーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\found.txt	# 発見モーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\bite.txt	# 噛みつきモーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\turn.txt	# 振り向きモーション
