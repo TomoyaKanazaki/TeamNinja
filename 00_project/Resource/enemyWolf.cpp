@@ -8,7 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "manager.h"
-#include "enemy_dog.h"
+#include "enemyWolf.h"
 #include "renderer.h"
 #include "deltaTime.h"
 
@@ -21,12 +21,12 @@ namespace
 }
 
 //************************************************************
-//	子クラス [CEnemyDog] のメンバ関数
+//	子クラス [CEnemyWolf] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyDog::CEnemyDog() : CEnemy()
+CEnemyWolf::CEnemyWolf() : CEnemy()
 {
 
 }
@@ -34,7 +34,7 @@ CEnemyDog::CEnemyDog() : CEnemy()
 //============================================================
 //	デストラクタ
 //============================================================
-CEnemyDog::~CEnemyDog()
+CEnemyWolf::~CEnemyWolf()
 {
 
 }
@@ -42,7 +42,7 @@ CEnemyDog::~CEnemyDog()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CEnemyDog::Init(void)
+HRESULT CEnemyWolf::Init(void)
 {
 	// 敵の初期化
 	if (FAILED(CEnemy::Init()))
@@ -63,7 +63,7 @@ HRESULT CEnemyDog::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CEnemyDog::Uninit(void)
+void CEnemyWolf::Uninit(void)
 {
 	// 敵の終了
 	CEnemy::Uninit();
@@ -72,7 +72,7 @@ void CEnemyDog::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEnemyDog::Update(const float fDeltaTime)
+void CEnemyWolf::Update(const float fDeltaTime)
 {
 	// 過去位置更新
 	UpdateOldPosition();
@@ -84,7 +84,7 @@ void CEnemyDog::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CEnemyDog::Draw(CShader* pShader)
+void CEnemyWolf::Draw(CShader* pShader)
 {
 	// 敵の描画
 	CEnemy::Draw(pShader);
@@ -93,7 +93,7 @@ void CEnemyDog::Draw(CShader* pShader)
 //============================================================
 // 情報の設定処理
 //============================================================
-void CEnemyDog::SetData(void)
+void CEnemyWolf::SetData(void)
 {
 
 }

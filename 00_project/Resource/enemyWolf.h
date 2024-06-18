@@ -1,14 +1,14 @@
 //============================================================
 //
-//	犬敵ヘッダー [enemyDog.h]
+//	狼敵ヘッダー [enemyWolf.h]
 //	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _ENEMY_DOG_H_
-#define _ENEMY_DOG_H_
+#ifndef _ENEMY_WOLF_H_
+#define _ENEMY_WOLF_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,8 +18,8 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// 犬敵クラス
-class CEnemyDog : public CEnemy
+// 狼敵クラス
+class CEnemyWolf : public CEnemy
 {
 public:
 
@@ -27,18 +27,18 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
-		MOTION_WALK,		// 歩行モーション
+		MOTION_RUN,			// 走行モーション
 		MOTION_FOUND,		// 発見モーション
-		MOTION_ATTACK,		// 攻撃モーション
-		MOTION_UPSET,		// 動揺モーション
+		MOTION_BITE,		// 噛みつきモーション
+		MOTION_TURN,		// 振り向きモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
-	CEnemyDog();
+	CEnemyWolf();
 
 	// デストラクタ
-	~CEnemyDog() override;
+	~CEnemyWolf() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
