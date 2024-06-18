@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_STALK = 0,		// ‚µ‚Â‚±‚¢“G
 		TYPE_CAVEAT,		// Œx“G
+		TYPE_WOLF,			// ˜T“G
 		TYPE_MAX			// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
