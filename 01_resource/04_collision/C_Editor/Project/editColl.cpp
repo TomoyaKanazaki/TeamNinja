@@ -540,18 +540,18 @@ void CEditColl::SaveColl(void)
 			std::vector<CCollSphere::SInfo> vector = pColl->GetVector();	// ‰~”»’è”z—ñ
 			if (vector.size() <= 0) { continue; }	// ”»’è‚ªˆê‚Â‚à‚È‚¢ê‡ŽŸ‚Ìƒ‹[ƒv‚Ö
 
-			fprintf(pFile, "	COLLSET\n\n");
+			fprintf(pFile, "	COLLSET\n");
 
 			fprintf(pFile, "		PARTS = %d\n", nCntParts);
-			fprintf(pFile, "		NUMCOLL = %d\n\n", (int)vector.size());
 
 			for (auto info : vector)
 			{ // ”»’è”•ªŒJ‚è•Ô‚·
 
+				fprintf(pFile, "		\n");
 				fprintf(pFile, "		COLL\n");
 				fprintf(pFile, "			OFFSET = %.2f %.2f %.2f\n", info.offset.x, info.offset.y, info.offset.z);
 				fprintf(pFile, "			RADIUS = %.2f\n", info.fRadius);
-				fprintf(pFile, "		END_COLL\n\n");
+				fprintf(pFile, "		END_COLL\n");
 			}
 
 			fprintf(pFile, "	END_COLLSET\n\n");

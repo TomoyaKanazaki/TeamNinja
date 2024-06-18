@@ -60,9 +60,8 @@ public:
 
 private:
 	// メンバ関数
-	HRESULT Load(void);		// モデル生成
-	void Unload(void);		// モデル破棄
-	void LoadSetup(void);	// セットアップ
+	HRESULT Load(void);	// モデル生成
+	void Unload(void);	// モデル破棄
 	HRESULT LoadXFileModel(const int nID, const char *pFileName);	// xファイルの読み込み
 	HRESULT LoadTextureModel(const int nID);	// テクスチャの読み込み
 	void SetCollisionModel(const int nID);		// 当たり判定の作成

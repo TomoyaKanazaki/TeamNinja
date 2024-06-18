@@ -12,14 +12,6 @@
 #include "renderer.h"
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const char *SETUP_TXT = "data\\TXT\\texture.txt";	// セットアップテキスト相対パス
-}
-
-//************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 int CTexture::m_nNumAll = 0;	// テクスチャの総数
@@ -62,9 +54,6 @@ HRESULT CTexture::Load(void)
 
 	// 全ファイル名を削除
 	m_sFileName.clear();
-
-	// セットアップの読込
-	LoadSetup();
 
 	// 成功を返す
 	return S_OK;
@@ -266,55 +255,4 @@ void CTexture::Release(CTexture *&prTexture)
 
 	// メモリ開放
 	SAFE_DELETE(prTexture);
-}
-
-//============================================================
-//	セットアップ処理
-//============================================================
-void CTexture::LoadSetup(void)
-{
-	// 変数を宣言
-	int nEnd = 0;	// テキスト読み込み終了の確認用
-
-	// 変数配列を宣言
-	char aString[MAX_STRING];	// テキストの文字列の代入用
-
-	// ポインタを宣言
-	FILE *pFile;	// ファイルポインタ
-
-	// ファイルを読み込み形式で開く
-	pFile = fopen(SETUP_TXT, "r");
-
-	if (pFile != nullptr)
-	{ // ファイルが開けた場合
-
-		do
-		{ // 読み込んだ文字列が EOF ではない場合ループ
-
-			// ファイルから文字列を読み込む
-			nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
-
-			if (strcmp(&aString[0], "FILENAME") == 0)
-			{ // 読み込んだ文字列が FILENAME の場合
-
-				// = を読み込む (不要)
-				fscanf(pFile, "%s", &aString[0]);
-
-				// ファイルパスを読み込む
-				fscanf(pFile, "%s", &aString[0]);
-
-				// テクスチャを登録
-				Regist(&aString[0]);
-			}
-		} while (nEnd != EOF);	// 読み込んだ文字列が EOF ではない場合ループ
-		
-		// ファイルを閉じる
-		fclose(pFile);
-	}
-	else
-	{ // ファイルが開けなかった場合
-
-		// エラーメッセージボックス
-		MessageBox(nullptr, "テクスチャセットアップファイルの読み込みに失敗！", "警告！", MB_ICONWARNING);
-	}
 }

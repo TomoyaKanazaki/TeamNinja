@@ -29,25 +29,11 @@ public:
 		TEXTURE_MAX			// この列挙型の総数
 	};
 
-	// 地形列挙
-	enum ETerrain
-	{
-		TERRAIN_120x120 = 0,	// 120x120分割数の地形
-		TERRAIN_MAX				// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CField();
 
 	// デストラクタ
 	~CField() override;
-
-	// 地形情報構造体
-	struct STerrainInfo
-	{
-		D3DXVECTOR3 *pPosGap;	// 頂点座標のずれ量
-		POSGRID2 part;			// 分割数
-	};
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -56,7 +42,6 @@ public:
 	void Draw(void) override;		// 描画
 
 	// 静的メンバ関数
-	static void LoadSetup(void);	// セットアップ
 	static CField *Create	// 生成
 	( // 引数
 		const ETexture texture,		// 種類
@@ -66,13 +51,6 @@ public:
 		const D3DXCOLOR& rCol,		// 色
 		const POSGRID2& rPart		// 分割数
 	);
-
-	// メンバ関数
-	void SetTerrain(const ETerrain terrain);	// 地形設定
-
-private:
-	// 静的メンバ変数
-	static STerrainInfo m_aTerrainInfo[TERRAIN_MAX];	// 地形情報
 };
 
 #endif	// _FIELD_H_

@@ -69,9 +69,8 @@ public:
 
 private:
 	// メンバ関数
-	HRESULT Load(void);		// テクスチャ生成
-	void Unload(void);		// テクスチャ破棄
-	void LoadSetup(void);	// セットアップ
+	HRESULT Load(void);	// テクスチャ生成
+	void Unload(void);	// テクスチャ破棄
 
 	// メンバ変数
 	LPDIRECT3DTEXTURE9 m_apTexture[texture::MAX_NUM];	// テクスチャへのポインタ
