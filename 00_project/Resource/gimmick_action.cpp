@@ -18,12 +18,25 @@
 namespace
 {
 	const D3DXVECTOR3 CLONE_RADIUS = D3DXVECTOR3(20.0f, 0.0f, 20.0f);	// 半径
+	const bool ACTION_SET_FRAG[] = // アクションポイントの設定可能フラグ
+	{
+		true, // ジャンプ台
+		true, // 踏み台
+		false, // 設置
+		true, // 飛び降り
+		false // 重い扉
+	};
 }
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CGimmickAction>* CGimmickAction::m_pList = nullptr;	// オブジェクトリスト
+
+//===========================================
+//  静的警告処理
+//===========================================
+static_assert(NUM_ARRAY(ACTION_SET_FRAG) == CGimmick::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CGimmickAction] のメンバ関数
@@ -34,7 +47,8 @@ CListManager<CGimmickAction>* CGimmickAction::m_pList = nullptr;	// オブジェクト
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// 範囲に入っている分身の数
 m_bActive(false),				// 発動状況
-m_bMoment(false)				// 発動中
+m_bMoment(false),				// 発動中
+m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
 {
 
 }
@@ -52,6 +66,9 @@ CGimmickAction::~CGimmickAction()
 //============================================================
 HRESULT CGimmickAction::Init(void)
 {
+	// メンバ変数の初期化
+	m_posAction = GetVec3Position();
+
 	// オブジェクト3Dの初期化
 	if (FAILED(CGimmick::Init()))
 	{ // 初期化に失敗した場合
@@ -177,4 +194,16 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//===========================================
+//  待機位置の設定
+//===========================================
+void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
+{
+	// 設定可能フラグがoffの場合関数を抜ける
+	if (!ACTION_SET_FRAG[GetType()]) { return; }
+
+	// 待機位置に引数を設定する
+	m_posAction = pos;
 }
