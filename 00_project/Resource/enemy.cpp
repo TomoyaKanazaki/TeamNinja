@@ -16,9 +16,10 @@
 #include "player_clone.h"
 #include "stage.h"
 
+#include "enemy_item.h"
 #include "enemyStalk.h"
 #include "enemyCaveat.h"
-#include "enemy_item.h"
+#include "enemyWolf.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -167,6 +168,13 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		// Œx“G‚ğ¶¬
 		pEnemy = new CEnemyCaveat;
+
+		break;
+
+	case TYPE_WOLF:
+
+		// Œ¢“G‚ğ¶¬
+		pEnemy = new CEnemyWolf;
 
 		break;
 
