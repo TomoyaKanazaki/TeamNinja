@@ -185,14 +185,17 @@ CListManager<CCheckPoint>* CCheckPoint::GetList(void)
 //==========================================
 void CCheckPoint::CollisionPlayer(void)
 {
+	// プレイヤーの情報を取得
+	CPlayer* Player = GET_PLAYER;
+
+	// プレイヤーが未生成なら関数を抜ける
+	if (Player == nullptr) { return; }
+
 	// セーブフラグがオンなら関数を抜ける
 	if (m_bSave) { return; }
 
 	//　自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
-
-	// プレイヤーの情報を取得
-	CPlayer* Player = GET_PLAYER; // 座標
 
 	// 当たっていない場合関数を抜ける
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
