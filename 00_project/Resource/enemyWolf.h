@@ -50,6 +50,8 @@ public:
 
 private:
 
+	// オーバーライド関数
+	void UpdateMotion(int nMotion, const float fDeltaTime) override;		// モーションの更新処理
 };
 
 #endif	// _ENEMY_CHASE_H_

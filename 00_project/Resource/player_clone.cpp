@@ -383,6 +383,12 @@ bool CPlayerClone::Hit(const int nDamage)
 //==========================================
 void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 {
+	// 受け取ったギミックがnullの場合関数を抜ける
+	if (gimmick == nullptr) { return; }
+
+	// ギミックで所持する最大数を超えていた場合関数を抜ける
+	if (gimmick->GetNumActive() <= gimmick->GetNumClone()) { return; }
+
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
@@ -821,7 +827,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
 
 	// 待機位置が遠かった場合移動モーションを返す
-	if (!Approach(m_pGimmick->GetActionPoint())) { return MOTION_DASH; }
+	if (!Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick))) { return MOTION_DASH; }
 
 	// 発動可能の場合ギミック待機状態に変更
 	if(m_pGimmick->IsActive()) { m_Action = ACTION_WAIT; }
@@ -1371,31 +1377,10 @@ void CPlayerClone::UpdateAction()
 	if (m_pGimmick == nullptr) { return; }
 
 	// 待機位置に向かう
-	Approach(m_pGimmick->GetActionPoint());
+	Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
 
-	// 位置を取得
-	posGimmick = m_pGimmick->GetVec3Position();
-
-	// サイズを取得
-	sizeGimmick = m_pGimmick->GetVec3Sizing() * 0.5f;
-
-	// 矩形の外の場合状態を切り替える
-	if (!collision::Box2D
-	(
-		pos,			// 判定位置
-		posGimmick,		// 判定目標位置
-		size,			// 判定サイズ(右・上・後)
-		size,			// 判定サイズ(左・下・前)
-		sizeGimmick,	// 判定目標サイズ(右・上・後)
-		sizeGimmick		// 判定目標サイズ(左・下・前)
-	))
-	{
-		// 反応する状態に変更
-		m_eGimmick = GIMMICK_IGNORE;
-
-		// 現在持っているギミックを破棄
-		m_pGimmick = nullptr;
-	}
+	// 待機中心の方向を向く
+	//ViewTarget(m_pGimmick->CalcWaitPoint(m_nIdxGimmick), m_pGimmick->GetActionPoint());
 }
 
 //==========================================
@@ -1525,6 +1510,16 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	// 位置を適用する
 	SetVec3Position(pos);
 
+	// 待機中心との差分を求める
+	D3DXVECTOR3 vecCenter = m_pGimmick->GetActionPoint() - pos;
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+
+	// 向きを更新
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
+
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
 
@@ -1533,13 +1528,6 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	{
 		return true;
 	}
-
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
-
-	// 向きを更新
-	D3DXVECTOR3 rot = GetVec3Rotation();
-	SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
 
 	return false;
 }

@@ -57,10 +57,40 @@ public:
 		}
 
 		// メンバ関数
-		int GetNumParts(void) { return vecParts.size(); }	// パーツ情報の総数取得
+		int GetNumParts(void) { return (int)vecParts.size(); }	// パーツ情報の総数取得
 
 		// メンバ変数
 		std::vector<SParts> vecParts;	// パーツ情報
+	};
+
+	// 当たり判定構造体
+	struct SColl
+	{
+		// コンストラクタ
+		SColl() :
+			offset	(VEC3_ZERO),	// オフセット
+			fRadius	(0.0f)			// 半径
+		{}
+
+		// メンバ変数
+		D3DXVECTOR3 offset;	// オフセット
+		float fRadius;		// 半径
+	};
+
+	// 当たり判定情報構造体
+	struct SCollInfo
+	{
+		// コンストラクタ
+		SCollInfo()
+		{
+			vecColl.clear();	// 当たり判定情報をクリア
+		}
+
+		// メンバ関数
+		int GetNumParts(void) { return (int)vecColl.size(); }	// パーツ情報の総数取得
+
+		// メンバ変数
+		std::vector<SColl> vecColl;	// 当たり判定情報
 	};
 
 	// キャラクター情報構造体
@@ -72,6 +102,7 @@ public:
 		// メンバ変数
 		CMotion::SInfo infoMotion;	// モーション情報
 		SPartsInfo infoParts;		// パーツ情報
+		SCollInfo infoColl;			// 当たり判定情報
 	};
 
 	// メンバ関数

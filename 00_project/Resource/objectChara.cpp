@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
-#include "collisionSphere.h"
+#include "chiefCollSphere.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -30,6 +30,9 @@ CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dime
 
 	// パーツ情報配列をクリア
 	m_vecParts.clear();
+
+	// 判定情報をクリア
+	m_vecColl.clear();
 }
 
 //============================================================
@@ -53,6 +56,9 @@ HRESULT CObjectChara::Init(void)
 
 	// パーツ情報配列を初期化
 	m_vecParts.clear();
+
+	// 判定情報を初期化
+	m_vecColl.clear();
 
 	// モーションの生成
 	m_pMotion = CMotion::Create(this);
@@ -85,6 +91,16 @@ void CObjectChara::Uninit(void)
 
 	// パーツ情報配列をクリア
 	m_vecParts.clear();
+
+	for (auto& rVec : m_vecColl)
+	{ // パーツ数分繰り返す
+
+		// 当たり判定の破棄
+		SAFE_REF_RELEASE(rVec);
+	}
+
+	// 判定情報をクリア
+	m_vecColl.clear();
 
 	// オブジェクトキャラクターを破棄
 	Release();
@@ -468,7 +484,7 @@ CMultiModel *CObjectChara::GetParts(const int nPartsID) const
 //============================================================
 //	当たり判定取得処理
 //============================================================
-CCollisionSphere *CObjectChara::GetCollision(const int nPartsID) const
+CChiefCollSphere *CObjectChara::GetCollision(const int nPartsID) const
 {
 	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合
