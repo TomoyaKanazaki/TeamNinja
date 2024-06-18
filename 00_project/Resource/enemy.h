@@ -80,6 +80,7 @@ protected:
 private:
 
 	// メンバ関数
+	virtual void UpdateMotion(const float fDeltaTime) = 0;		// モーションの更新処理
 	void Gravity(void);		// 重力処理
 	void Landing(void);		// 着地処理
 

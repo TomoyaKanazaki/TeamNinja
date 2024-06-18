@@ -136,6 +136,9 @@ void CEnemy::Update(const float fDeltaTime)
 
 	// 着地処理
 	Landing();
+
+	// モーションの更新処理
+	UpdateMotion(fDeltaTime);
 }
 
 //============================================================
