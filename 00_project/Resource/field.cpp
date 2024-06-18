@@ -27,7 +27,7 @@ namespace
 	{
 		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
+		"data\\TEXTURE\\soil004.png",	// 草テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 泥テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
