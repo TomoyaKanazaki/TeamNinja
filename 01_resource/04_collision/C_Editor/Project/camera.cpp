@@ -23,8 +23,11 @@ namespace
 	// カメラ基本情報
 	namespace basic
 	{
-		const D3DXVECTOR3 INIT_VECU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトルの初期値
-		const D3DXVECTOR3 INIT_POSV = D3DXVECTOR3(0.0f, 0.0f, -600.0f);	// 視点の初期値
+		const D3DXVECTOR3 INIT_VECU	= D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトルの初期値
+		const D3DXVECTOR3 INIT_POSV	= D3DXVECTOR3(0.0f, 0.0f, -600.0f);	// 視点の初期値
+		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 200.0f, 0.0f);	// 注視点の初期値
+		const D3DXVECTOR3 INIT_ROT	= D3DXVECTOR3(HALF_PI, 0.0f, 0.0f);	// 向きの初期値
+		const float INIT_DIS	= 500.0f;	// 距離の初期値
 		const float VIEW_NEAR	= 10.0f;	// モデルが見えるZ軸の最小値
 		const float VIEW_FAR	= 50000.0f;	// モデルが見えるZ軸の最大値
 		const float MIN_DIS		= 1.0f;		// カメラの視点から注視点への距離の最小
@@ -107,14 +110,14 @@ HRESULT CCamera::Init(void)
 	//--------------------------------------------------------
 	// カメラ情報を初期化
 	m_aCamera[TYPE_MAIN].posV		= VEC3_ZERO;		// 現在の視点
-	m_aCamera[TYPE_MAIN].posR		= VEC3_ZERO;		// 現在の注視点
+	m_aCamera[TYPE_MAIN].posR		= basic::INIT_POSR;	// 現在の注視点
 	m_aCamera[TYPE_MAIN].destPosV	= VEC3_ZERO;		// 目標の視点
-	m_aCamera[TYPE_MAIN].destPosR	= VEC3_ZERO;		// 目標の注視点
+	m_aCamera[TYPE_MAIN].destPosR	= basic::INIT_POSR;	// 目標の注視点
 	m_aCamera[TYPE_MAIN].vecU		= basic::INIT_VECU;	// 上方向ベクトル
-	m_aCamera[TYPE_MAIN].rot		= VEC3_ZERO;		// 現在の向き
+	m_aCamera[TYPE_MAIN].rot		= basic::INIT_ROT;	// 現在の向き
 	m_aCamera[TYPE_MAIN].destRot	= VEC3_ZERO;		// 目標の向き
-	m_aCamera[TYPE_MAIN].fDis		= 0.0f;				// 現在の視点と注視点の距離
-	m_aCamera[TYPE_MAIN].fDestDis	= 0.0f;				// 目標の視点と注視点の距離
+	m_aCamera[TYPE_MAIN].fDis		= basic::INIT_DIS;	// 現在の視点と注視点の距離
+	m_aCamera[TYPE_MAIN].fDestDis	= basic::INIT_DIS;	// 目標の視点と注視点の距離
 
 	// カメラ揺れ情報を初期化
 	m_aCamera[TYPE_MAIN].swingInfo.shiftPos		= VEC3_ZERO;	// 位置ずれ量
