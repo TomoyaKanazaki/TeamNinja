@@ -27,6 +27,8 @@
 #define NAME_RELEASE		("9")	// 破棄表示
 #define KEY_CHANGE_OBJECT	(DIK_2)	// オブジェクトタイプ変更キー
 #define NAME_CHANGE_OBJECT	("2")	// オブジェクトタイプ変更表示
+#define KEY_CHANGE_ACTOR	(DIK_3)	// アクターの種類変更キー
+#define NAME_CHANGE_ACTOR	("3")	// アクターの種類変更表示
 
 //************************************************************
 //	定数宣言
@@ -182,6 +184,9 @@ void CEditCollision::Update(void)
 	// オブジェクトタイプの変更
 	ChangeObjectType();
 
+	// アクターの種類変更
+	ChangeActorType();
+
 	// エディター情報の更新
 	assert(m_pEditor != nullptr);
 	m_pEditor->Update();
@@ -234,72 +239,72 @@ HRESULT CEditCollision::Save(void)
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "CUBE_COLLISIONSET" << std::endl;
+	file << "	CUBE_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nCUBE_NUM	= " << m_cube.size() << "\n" << std::endl;
+	file << "\n	CUBE_NUM	= " << m_cube.size() << "\n" << std::endl;
 
 	for (const auto& rCube : m_cube)
 	{ // キューブの総数分繰り返す
 
 		// 情報を書き出し
-		file << "	COLLISIONSET" << std::endl;
-		file << "		OFFSET	= " << rCube.GetVec3OffSet().x << " " << rCube.GetVec3OffSet().y << " " << rCube.GetVec3OffSet().z << std::endl;
-		file << "		WIDTH	= " << rCube.GetInfo().fWidth << std::endl;
-		file << "		HEIGHT	= " << rCube.GetInfo().fHeight << std::endl;
-		file << "		DEPTH	= " << rCube.GetInfo().fDepth << std::endl;
-		file << "	END_COLLISIONSET\n" << std::endl;
+		file << "		COLLISIONSET" << std::endl;
+		file << "			OFFSET	= " << rCube.GetVec3OffSet().x << " " << rCube.GetVec3OffSet().y << " " << rCube.GetVec3OffSet().z << std::endl;
+		file << "			WIDTH	= " << rCube.GetInfo().fWidth << std::endl;
+		file << "			HEIGHT	= " << rCube.GetInfo().fHeight << std::endl;
+		file << "			DEPTH	= " << rCube.GetInfo().fDepth << std::endl;
+		file << "		END_COLLISIONSET\n" << std::endl;
 	}
 
 	// 読み込み終了文字列を書き出し
-	file << "END_CUBE_COLLISIONSET\n" << std::endl;
+	file << "	END_CUBE_COLLISIONSET\n" << std::endl;
 
 //============================================================
 //	シリンダーの当たり判定
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "CYLINDER_COLLISIONSET" << std::endl;
+	file << "	CYLINDER_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nCYLINDER_NUM	= " << m_cylinder.size() << "\n" << std::endl;
+	file << "\n	CYLINDER_NUM	= " << m_cylinder.size() << "\n" << std::endl;
 
 	for (const auto& rCylinder : m_cylinder)
 	{ // シリンダーの総数分繰り返す
 
 		// 情報を書き出し
-		file << "	COLLISIONSET" << std::endl;
-		file << "		OFFSET	= " << rCylinder.GetVec3OffSet().x << " " << rCylinder.GetVec3OffSet().y << " " << rCylinder.GetVec3OffSet().z << std::endl;
-		file << "		RADIUS	= " << rCylinder.GetInfo().fRadius << std::endl;
-		file << "		HEIGHT	= " << rCylinder.GetInfo().fHeight << std::endl;
-		file << "	END_COLLISIONSET\n" << std::endl;
+		file << "		COLLISIONSET" << std::endl;
+		file << "			OFFSET	= " << rCylinder.GetVec3OffSet().x << " " << rCylinder.GetVec3OffSet().y << " " << rCylinder.GetVec3OffSet().z << std::endl;
+		file << "			RADIUS	= " << rCylinder.GetInfo().fRadius << std::endl;
+		file << "			HEIGHT	= " << rCylinder.GetInfo().fHeight << std::endl;
+		file << "		END_COLLISIONSET\n" << std::endl;
 	}
 
 	// 読み込み終了文字列を書き出し
-	file << "END_CYLINDER_COLLISIONSET\n" << std::endl;
+	file << "	END_CYLINDER_COLLISIONSET\n" << std::endl;
 
 //============================================================
 //	スフィアの当たり判定
 //============================================================
 
 	// 読み込み開始文字列を書き出し
-	file << "SPHERE_COLLISIONSET" << std::endl;
+	file << "	SPHERE_COLLISIONSET" << std::endl;
 
 	// 当たり判定の数を書き出す
-	file << "\nSPHERE_NUM	= " << m_sphere.size() << "\n" << std::endl;
+	file << "\n	SPHERE_NUM	= " << m_sphere.size() << "\n" << std::endl;
 
 	for (const auto& rSphere : m_sphere)
 	{ // スフィアの総数分繰り返す
 
 		// 情報を書き出し
-		file << "	COLLISIONSET" << std::endl;
-		file << "		OFFSET	= " << rSphere.GetVec3OffSet().x << " " << rSphere.GetVec3OffSet().y << " " << rSphere.GetVec3OffSet().z << std::endl;
-		file << "		RADIUS	= " << rSphere.GetInfo().fRadius << std::endl;
-		file << "	END_COLLISIONSET\n" << std::endl;
+		file << "		COLLISIONSET" << std::endl;
+		file << "			OFFSET	= " << rSphere.GetVec3OffSet().x << " " << rSphere.GetVec3OffSet().y << " " << rSphere.GetVec3OffSet().z << std::endl;
+		file << "			RADIUS	= " << rSphere.GetInfo().fRadius << std::endl;
+		file << "		END_COLLISIONSET\n" << std::endl;
 	}
 
 	// 読み込み終了文字列を書き出し
-	file << "END_SPHERE_COLLISIONSET\n" << std::endl;
+	file << "	END_SPHERE_COLLISIONSET\n" << std::endl;
 
 	// 読み込み終了文字列を書き出し
 	file << "END_STAGE_COLLISIONSET" << std::endl;
@@ -498,6 +503,47 @@ void CEditCollision::ChangeObjectType(void)
 			m_pEditor = CEditorCollShape::Create(m_type, nIdx);
 			assert(m_pEditor != nullptr);	// 生成失敗
 		}
+	}
+}
+
+//============================================================
+//	アクター変更処理
+//============================================================
+void CEditCollision::ChangeActorType(void)
+{
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
+
+	// 種類を変更
+	if (pKeyboard->IsTrigger(KEY_CHANGE_ACTOR))
+	{
+		m_actorType = (CActor::EType)((m_actorType + 1) % CActor::TYPE_MAX);
+
+		// モデルを生成し直す
+		m_pActor->Uninit();
+		m_pActor = CActor::Create(m_actorType, VEC3_ZERO);
+		m_pActor->ClearCollision();
+		for (auto& rCube : m_cube)
+		{ // コリジョンキューブ数分繰り返す
+
+			// 終了処理
+			rCube.Uninit();
+		}
+		for (auto& rCylinder : m_cylinder)
+		{ // コリジョンシリンダー数分繰り返す
+
+			// 終了処理
+			rCylinder.Uninit();
+		}
+		for (auto& rSphere : m_sphere)
+		{ // コリジョンスフィア数分繰り返す
+
+			// 終了処理
+			rSphere.Uninit();
+		}
+		// 配列を全消去する
+		m_cube.clear();
+		m_cylinder.clear();
+		m_sphere.clear();
 	}
 }
 

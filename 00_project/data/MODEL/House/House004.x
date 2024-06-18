@@ -6575,7 +6575,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Texture_4_Diffuse.jpg";
+    "data\\TEXTURE\\MODEL\\HOUSE\\House003.jpg";
    }
   }
  }

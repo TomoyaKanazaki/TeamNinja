@@ -69,7 +69,7 @@ public:
 	void UpdateRotation(void);	// 向き更新
 	void SetVec3Position(const D3DXVECTOR3 pos)	{ m_pos = pos; }		// 位置設定
 	D3DXVECTOR3 GetVec3Position(void) const		{ return m_pos; }		// 位置取得
-	void SetVec3Rotation(const D3DXVECTOR3 rot)	{ m_rot = rot; }		// 向き設定
+	void SetVec3Rotation(const D3DXVECTOR3 rot) { m_rot = rot; useful::NormalizeRot(m_rot); }		// 向き設定
 	D3DXVECTOR3 GetVec3Rotation(void) const		{ return m_rot; }		// 向き取得
 	void SetAngle(const EAngle angle)			{ m_angle = angle; }	// 方向設定
 	EAngle GetAngle(void) const					{ return m_angle; }		// 方向取得

@@ -173,6 +173,7 @@ CCollisionCylinder* CCollisionCylinder::Create(const D3DXVECTOR3& rPos, const D3
 	// ƒ`ƒ…[ƒu‚ð¶¬
 	pColl->m_pTube = CObjectMeshTube::Create(rPos, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius, fHeight);
 	pColl->m_pTube->SetPriority(TUBE_PRIORITY);
+	pColl->m_pTube->SetLabel(CObject::LABEL_COLLISION);
 
 #endif // _DEBUG
 
