@@ -50,6 +50,24 @@ public:
 	// 当たり判定関係の構造体
 	struct SCollision
 	{
+		SCollision()			// コンストラクタ
+		{
+			m_cube = {};			// キューブの情報配列
+			m_cylinder = {};		// シリンダーの情報配列
+			m_sphere = {};			// スフィアの情報配列
+		}
+		SCollision				// コンストラクタ(オーバーロード)
+		(
+			std::vector<SCollCube> cube,
+			std::vector<SCollCylinder> cylinder,
+			std::vector<SCollSphere> sphere
+		)
+		{
+			m_cube = cube;			// キューブの情報配列
+			m_cylinder = cylinder;	// シリンダーの情報配列
+			m_sphere = sphere;		// スフィアの情報配列
+		}
+
 		std::vector<SCollCube> m_cube;			// キューブの情報配列
 		std::vector<SCollCylinder> m_cylinder;	// シリンダーの情報配列
 		std::vector<SCollSphere> m_sphere;		// スフィアの情報配列
@@ -66,6 +84,7 @@ public:
 
 	HRESULT Load(void);	// ロード処理
 
+	void SetCollInfo(const CActor::EType type, const SCollision coll);	// 情報の取得処理
 	SCollision GetCollInfo(const CActor::EType type);	// 情報の取得処理
 
 	// 静的メンバ関数

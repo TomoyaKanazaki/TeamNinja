@@ -18,6 +18,10 @@
 #include "editCollCylinder.h"
 #include "editCollSphere.h"
 
+#include "gameManager.h"
+#include "sceneGame.h"
+#include "collManager.h"
+
 //************************************************************
 //	マクロ定義
 //************************************************************
@@ -207,6 +211,9 @@ HRESULT CEditCollision::Save(void)
 {
 #if _DEBUG
 
+	// マネージャーのセーブ処理
+	ManagerSave();
+
 	// ファイルを開く
 	std::ofstream  file(SAVE_PASS);	// ファイルストリーム
 	if (file.fail())
@@ -231,83 +238,97 @@ HRESULT CEditCollision::Save(void)
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
 
-	// 読み込み開始文字列を書き出し
-	file << "STAGE_COLLISIONSET\n" << std::endl;
+	// 当たり判定の情報
+	CCollManager::SCollision coll = {};
+
+	for (int nCntSave = 0; nCntSave < CActor::TYPE_MAX; nCntSave++)
+	{
+		// 当たり判定の情報を取得する
+		coll = CSceneGame::GetCollManager()->GetCollInfo((CActor::EType)nCntSave);
+
+		// 読み込み開始文字列を書き出し
+		file << "#=================================================================================" << std::endl;
+		file << "ACTOR_TYPE = " << nCntSave << std::endl;
+
+		// 読み込み開始文字列を書き出し
+		file << "STAGE_COLLSET\n" << std::endl;
 
 //============================================================
 //	キューブの当たり判定
 //============================================================
 
-	// 読み込み開始文字列を書き出し
-	file << "	CUBE_COLLISIONSET" << std::endl;
+		// 読み込み開始文字列を書き出し
+		file << "CUBESET" << std::endl;
 
-	// 当たり判定の数を書き出す
-	file << "\n	CUBE_NUM	= " << m_cube.size() << "\n" << std::endl;
+		// 当たり判定の数を書き出す
+		file << "	NUM	= " << coll.m_cube.size() << "\n" << std::endl;
 
-	for (const auto& rCube : m_cube)
-	{ // キューブの総数分繰り返す
+		for (const auto& rCube : coll.m_cube)
+		{ // キューブの総数分繰り返す
 
-		// 情報を書き出し
-		file << "		COLLISIONSET" << std::endl;
-		file << "			OFFSET	= " << rCube.GetVec3OffSet().x << " " << rCube.GetVec3OffSet().y << " " << rCube.GetVec3OffSet().z << std::endl;
-		file << "			WIDTH	= " << rCube.GetInfo().fWidth << std::endl;
-		file << "			HEIGHT	= " << rCube.GetInfo().fHeight << std::endl;
-		file << "			DEPTH	= " << rCube.GetInfo().fDepth << std::endl;
-		file << "		END_COLLISIONSET\n" << std::endl;
-	}
+			// 情報を書き出し
+			file << "	COLLSET" << std::endl;
+			file << "		OFFSET	= " << rCube.offset.x << " " << rCube.offset.y << " " << rCube.offset.z << std::endl;
+			file << "		WIDTH	= " << rCube.fWidth << std::endl;
+			file << "		HEIGHT	= " << rCube.fHeight << std::endl;
+			file << "		DEPTH	= " << rCube.fDepth << std::endl;
+			file << "	END_COLLSET" << std::endl;
+		}
 
-	// 読み込み終了文字列を書き出し
-	file << "	END_CUBE_COLLISIONSET\n" << std::endl;
+		// 読み込み終了文字列を書き出し
+		file << "END_CUBESET\n" << std::endl;
 
 //============================================================
 //	シリンダーの当たり判定
 //============================================================
 
-	// 読み込み開始文字列を書き出し
-	file << "	CYLINDER_COLLISIONSET" << std::endl;
+		// 読み込み開始文字列を書き出し
+		file << "CYLINDERSET" << std::endl;
 
-	// 当たり判定の数を書き出す
-	file << "\n	CYLINDER_NUM	= " << m_cylinder.size() << "\n" << std::endl;
+		// 当たり判定の数を書き出す
+		file << "	NUM	= " << coll.m_cylinder.size() << std::endl;
 
-	for (const auto& rCylinder : m_cylinder)
-	{ // シリンダーの総数分繰り返す
+		for (const auto& rCylinder : coll.m_cylinder)
+		{ // シリンダーの総数分繰り返す
 
-		// 情報を書き出し
-		file << "		COLLISIONSET" << std::endl;
-		file << "			OFFSET	= " << rCylinder.GetVec3OffSet().x << " " << rCylinder.GetVec3OffSet().y << " " << rCylinder.GetVec3OffSet().z << std::endl;
-		file << "			RADIUS	= " << rCylinder.GetInfo().fRadius << std::endl;
-		file << "			HEIGHT	= " << rCylinder.GetInfo().fHeight << std::endl;
-		file << "		END_COLLISIONSET\n" << std::endl;
-	}
+			// 情報を書き出し
+			file << "	COLLSET" << std::endl;
+			file << "		OFFSET	= " << rCylinder.offset.x << " " << rCylinder.offset.y << " " << rCylinder.offset.z << std::endl;
+			file << "		RADIUS	= " << rCylinder.fRadius << std::endl;
+			file << "		HEIGHT	= " << rCylinder.fHeight << std::endl;
+			file << "	END_COLLSET" << std::endl;
+		}
 
-	// 読み込み終了文字列を書き出し
-	file << "	END_CYLINDER_COLLISIONSET\n" << std::endl;
+		// 読み込み終了文字列を書き出し
+		file << "END_CYLINDERSET\n" << std::endl;
 
 //============================================================
 //	スフィアの当たり判定
 //============================================================
 
-	// 読み込み開始文字列を書き出し
-	file << "	SPHERE_COLLISIONSET" << std::endl;
+		// 読み込み開始文字列を書き出し
+		file << "SPHERESET" << std::endl;
 
-	// 当たり判定の数を書き出す
-	file << "\n	SPHERE_NUM	= " << m_sphere.size() << "\n" << std::endl;
+		// 当たり判定の数を書き出す
+		file << "	NUM	= " << coll.m_sphere.size() << std::endl;
 
-	for (const auto& rSphere : m_sphere)
-	{ // スフィアの総数分繰り返す
+		for (const auto& rSphere : coll.m_sphere)
+		{ // スフィアの総数分繰り返す
 
-		// 情報を書き出し
-		file << "		COLLISIONSET" << std::endl;
-		file << "			OFFSET	= " << rSphere.GetVec3OffSet().x << " " << rSphere.GetVec3OffSet().y << " " << rSphere.GetVec3OffSet().z << std::endl;
-		file << "			RADIUS	= " << rSphere.GetInfo().fRadius << std::endl;
-		file << "		END_COLLISIONSET\n" << std::endl;
+			// 情報を書き出し
+			file << "	COLLSET" << std::endl;
+			file << "		OFFSET	= " << rSphere.offset.x << " " << rSphere.offset.y << " " << rSphere.offset.z << std::endl;
+			file << "		RADIUS	= " << rSphere.fRadius << std::endl;
+			file << "	END_COLLSET" << std::endl;
+		}
+
+		// 読み込み終了文字列を書き出し
+		file << "END_SPHERESET\n" << std::endl;
+
+		// 読み込み終了文字列を書き出し
+		file << "END_STAGE_COLLSET" << std::endl;
+		file << "#=================================================================================\n\n" << std::endl;
 	}
-
-	// 読み込み終了文字列を書き出し
-	file << "	END_SPHERE_COLLISIONSET\n" << std::endl;
-
-	// 読み込み終了文字列を書き出し
-	file << "END_STAGE_COLLISIONSET" << std::endl;
 
 	// 成功を返す
 	return S_OK;
@@ -648,6 +669,56 @@ void CEditCollision::Delete(void)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+// マネージャーのセーブ処理
+//============================================================
+void CEditCollision::ManagerSave(void)
+{
+	// ローカル変数宣言
+	std::vector<CCollManager::SCollCube> saveCube;			// キューブの情報配列
+	std::vector<CCollManager::SCollCylinder> saveCylinder;	// シリンダーの情報配列
+	std::vector<CCollManager::SCollSphere> saveSphere;		// スフィアの情報配列
+	CCollManager::SCollCube cube;				// キューブ
+	CCollManager::SCollCylinder cylinder;		// シリンダー
+	CCollManager::SCollSphere sphere;			// スフィア
+
+	for (const auto& rCube : m_cube)
+	{
+		// 情報を取得
+		cube.offset = rCube.GetVec3OffSet();		// オフセット座標
+		cube.fWidth = rCube.GetInfo().fWidth;		// 幅
+		cube.fHeight = rCube.GetInfo().fHeight;		// 高さ
+		cube.fDepth = rCube.GetInfo().fDepth;		// 奥行
+
+		// 情報を設定
+		saveCube.push_back(cube);
+	}
+
+	for (const auto& rCylinder : m_cylinder)
+	{
+		// 情報を取得
+		cylinder.offset = rCylinder.GetVec3OffSet();		// オフセット座標
+		cylinder.fRadius = rCylinder.GetInfo().fRadius;		// 半径
+		cylinder.fHeight = rCylinder.GetInfo().fHeight;		// 高さ
+
+		// 情報を設定
+		saveCylinder.push_back(cylinder);
+	}
+
+	for (const auto& rSphere : m_sphere)
+	{
+		// 情報を取得
+		sphere.offset = rSphere.GetVec3OffSet();		// オフセット座標
+		sphere.fRadius = rSphere.GetInfo().fRadius;		// 半径
+
+		// 情報を設定
+		saveSphere.push_back(sphere);
+	}
+
+	// 当たり判定マネージャーに設定
+	CSceneGame::GetCollManager()->SetCollInfo(m_actorType, CCollManager::SCollision(saveCube, saveCylinder, saveSphere));
 }
 
 //============================================================
