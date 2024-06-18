@@ -5710,7 +5710,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Texture_3.jpg";
+    "data\\TEXTURE\\MODEL\\HOUSE\\House002.jpg";
    }
   }
   Material {

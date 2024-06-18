@@ -114,6 +114,7 @@ CCollisionSphere* CCollisionSphere::Create(const D3DXVECTOR3& rPos, const D3DXVE
 	// スフィアを生成
 	pColl->m_pSphere = CObjectMeshSphere::Create(rPos, VEC3_ZERO, COL, POSGRID2(8, 2), POSGRID2(8, 2), fRadius);
 	pColl->m_pSphere->SetPriority(SPHERE_PRIORITY);
+	pColl->m_pSphere->SetLabel(CObject::LABEL_COLLISION);
 
 #endif // _DEBUG
 

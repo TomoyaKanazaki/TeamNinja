@@ -105,6 +105,7 @@ public:
 		LABEL_GIMMICK,		// ギミック
 		LABEL_MAPMODEL,		// マップモデル
 		LABEL_ACTOR,		// アクター
+		LABEL_COLLISION,	// コリジョン
 		LABEL_MAX			// この列挙型の総数
 	};
 

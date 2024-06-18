@@ -102,7 +102,8 @@ CTitleManager::CTitleManager() :
 	m_fScale		(0.0f),			// タイトル拡大率
 	m_nSelect		(0),			// 現在の選択
 	m_nOldSelect	(0),			// 前回の選択
-	m_nWaitCounter	(0)				// タイトル移動までの待機時間
+	m_nWaitCounter	(0),			// タイトル移動までの待機時間
+	m_fMove			(0.0f)			// 
 {
 	// メンバ変数をクリア
 	//memset(&m_apLogo[0],	0, sizeof(m_apLogo));	// タイトル表示の情報
