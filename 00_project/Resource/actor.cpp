@@ -39,6 +39,7 @@ namespace
 		"data\\MODEL\\Tree\\Willow001.x",		// –ö‚Ì–Ø(’†)
 		"data\\MODEL\\Tree\\WoodLog000.x",		// Œ´–Ø
 		"data\\MODEL\\Tree\\TreeStump000.x",	// –Ø‚ÌŠ²
+		"data\\MODEL\\LilyPad\\LilyPad000.x",	// ˜@‚Ì—t
 		"data\\MODEL\\Plant\\Plant000.x",		// 4‚Â‚µ‚©‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‘
 		"data\\MODEL\\Plant\\Plant001.x",		// ‘½‚­‚Â‚È‚ª‚Á‚Ä‚¢‚é‘
 		"data\\MODEL\\Plant\\Bush000.x",		// ‘‚Ş‚ç

@@ -27,13 +27,14 @@ namespace
 	{
 		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
+		"data\\TEXTURE\\soil004.png",	// 草テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 泥テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 落とし穴テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 朽ちた床テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 水テクスチャ
+		"data\\TEXTURE\\soil001.png",	// ドブテクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
@@ -46,6 +47,7 @@ namespace
 		'f',	// 落ちた床
 		'd',	// 朽ちた床
 		'w',	// 水
+		'u',	// ドブ
 	};
 
 #ifdef _DEBUG
@@ -59,7 +61,8 @@ namespace
 		D3DXCOLOR(0.90f, 0.90f, 1.00f, 1.0f),
 		D3DXCOLOR(0.81f, 0.90f, 0.85f, 1.0f),
 		D3DXCOLOR(0.28f, 0.00f, 0.18f, 1.0f),
-		D3DXCOLOR(0.28f, 0.87f, 0.95f, 1.0f)
+		D3DXCOLOR(0.28f, 0.87f, 0.95f, 1.0f),
+		D3DXCOLOR(0.33f, 0.40f, 0.26f, 1.0f)
 	};
 #endif
 

@@ -1,81 +1,62 @@
-#if 0
+#if 1
 //============================================================
 //
-//	円判定ヘッダー [collSphere.h]
+//	円判定統括ヘッダー [chiefCollSphere.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _COLL_SPHERE_H_
-#define _COLL_SPHERE_H_
+#ifndef _CHIEF_COLL_SPHERE_H_
+#define _CHIEF_COLL_SPHERE_H_
 
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObject;	// オブジェクトクラス
-
-#if _DEBUG
-class CDebugCollSphere;	// 球体判定デバッグ表示クラス
-#endif	// _DEBUG
+class CCollisionSphere;	// スフィアの当たり判定クラス
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// 円判定クラス
-class CCollSphere
+// 円判定統括クラス
+class CChiefCollSphere
 {
 public:
 	// コンストラクタ
-	CCollSphere();
+	CChiefCollSphere();
 
 	// デストラクタ
-	~CCollSphere();
-
-	// 判定情報構造体
-	struct SInfo
-	{
-		D3DXVECTOR3 offset;	// 判定位置オフセット
-		float fRadius;		// 判定半径
-
-#if _DEBUG
-		CDebugCollSphere *pVisual;	// 判定表示
-#endif	// _DEBUG
-	};
+	~CChiefCollSphere();
 
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(void);	// 更新
-	D3DXVECTOR3 CalcWorldPosition(const int nID) const;	// 判定位置計算
+	void OffSet(const D3DXMATRIX& rMtx);	// オフセット更新
+	D3DXVECTOR3 GetWorldPosition(const int nCollID) const;	// 判定位置取得
+
+#if 0
 	void SetInfo(const SInfo& rInfo, const int nID);	// 判定情報設定
 	SInfo GetInfo(const int nID) const;					// 判定情報取得
 	void SetVector(const std::vector<SInfo>& rVector);	// 配列設定
 	std::vector<SInfo> GetVector(void) const;			// 配列取得
+#endif
 
-	void AddColl	// 判定追加
+	HRESULT AddColl	// 判定追加
 	( // 引数
 		const D3DXVECTOR3& rOffset,	// 判定位置オフセット
 		const float fRadius			// 判定半径
 	);
-	void SubColl(const int nID);	// 判定削除
+	void SubColl(const int nCollID);	// 判定削除
 
 	// 静的メンバ関数
-	static CCollSphere *Create(CObject *pParent);		// 生成
-	static void Release(CCollSphere *&prCollSphere);	// 破棄
-
-	static void SetVisual(const bool bVisual)	{ m_bVisualColl = bVisual; }	// 見た目表示設定
-	static bool IsVisual(void)					{ return m_bVisualColl; }		// 見た目表示取得
+	static CChiefCollSphere *Create(void);	// 生成
+	static void Release(CChiefCollSphere *&prChiefCollSphere);	// 破棄
 
 private:
-	// 静的メンバ変数
-	static bool m_bVisualColl;	// 判定見た目表示フラグ
-
 	// メンバ変数
-	CObject *m_pParent;	// 親オブジェクト
-	std::vector<SInfo> m_coll;	// 判定情報
+	std::vector<CCollisionSphere*> m_vecColl;	// 判定情報配列
 };
 
-#endif	// _COLL_SPHERE_H_
+#endif	// _CHIEF_COLL_SPHERE_H_
 #endif
