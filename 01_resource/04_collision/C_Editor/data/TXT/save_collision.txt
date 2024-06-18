@@ -1,0 +1,168 @@
+#==============================================================================
+#
+#	判定セーブテキスト [save_collison.txt]
+#	Author : you
+#
+#==============================================================================
+---------->--<---------- ここから下を コピーし貼り付け ---------->--<----------
+
+COLLISIONSET
+
+	COLLSET
+		PARTS = 0
+		
+		COLL
+			OFFSET = 0.00 -20.00 0.00
+			RADIUS = 56.00
+		END_COLL
+		
+		COLL
+			OFFSET = -92.50 -12.50 0.00
+			RADIUS = 20.00
+		END_COLL
+		
+		COLL
+			OFFSET = 92.50 -10.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 1
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 2
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 3
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 4
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 5
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 6
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 7
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 8
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 9
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 11
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 12
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 13
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+	COLLSET
+		PARTS = 14
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+		
+		COLL
+			OFFSET = 0.00 0.00 0.00
+			RADIUS = 20.00
+		END_COLL
+	END_COLLSET
+
+END_COLLISIONSET
+
