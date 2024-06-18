@@ -3831,7 +3831,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Bake casa media.png";
+    "data\\TEXTURE\\MODEL\\House005.png";
    }
   }
  }

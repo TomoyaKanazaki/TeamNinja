@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
+#include "collisionSphere.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -99,6 +100,17 @@ void CObjectChara::Update(const float fDeltaTime)
 
 		// モーションの更新
 		m_pMotion->Update(fDeltaTime);
+	}
+
+	int nCntParts = 0;	// パーツインデックス
+	for (auto& rSphere : m_vecColl)
+	{ // パーツの最大数分繰り返す
+
+		// オフセットの更新
+		rSphere->OffSet(m_vecParts[nCntParts]->GetMtxWorld());
+
+		// パーツインデックス加算
+		nCntParts++;
 	}
 }
 
@@ -448,6 +460,23 @@ CMultiModel *CObjectChara::GetParts(const int nPartsID) const
 		return m_vecParts[nPartsID];
 	}
 	
+	// インデックスエラー
+	assert(false);
+	return nullptr;
+}
+
+//============================================================
+//	当たり判定取得処理
+//============================================================
+CCollisionSphere *CObjectChara::GetCollision(const int nPartsID) const
+{
+	if (nPartsID < GetNumParts())
+	{ // 使用可能なインデックスの場合
+
+		// 当たり判定の情報を返す
+		return m_vecColl[nPartsID];
+	}
+
 	// インデックスエラー
 	assert(false);
 	return nullptr;

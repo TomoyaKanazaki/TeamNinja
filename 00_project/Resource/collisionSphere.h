@@ -29,7 +29,7 @@ public:
 	CCollisionSphere();			// コンストラクタ
 	~CCollisionSphere();		// デストラクタ
 
-	void Uninit(void);			// 終了処理
+	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
 	(
