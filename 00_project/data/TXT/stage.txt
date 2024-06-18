@@ -426,7 +426,7 @@ STAGE_FIELDSET
 		PART	= 1 1
 		TEXPART	= 2 32
 	END_FIELDSET
-
+	
 END_STAGE_FIELDSET
 
 #------------------------------------------------------------------------------
