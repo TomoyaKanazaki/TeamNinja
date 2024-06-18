@@ -48,7 +48,11 @@ public:
 		MODEL_TYPE_HOUSE3,				//設置用
 		MODEL_TYPE_HOUSE4,				//設置用
 		MODEL_TYPE_HOUSE5,				//設置用
-		MODEL_TYPE_LANTERN1,
+		MODEL_TYPE_HOUSE6,				//設置用
+		MODEL_TYPE_HOUSE7,				//設置用
+		MODEL_TYPE_HOUSE8,				//設置用
+		MODEL_TYPE_HOUSE9,				//設置用
+		MODEL_TYPE_HOUSE10,				//設置用
 		MODEL_TYPE_MAX
 	};
 

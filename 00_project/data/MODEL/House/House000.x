@@ -7862,7 +7862,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\T_Japanese_country_house_1_Diffuse.png";
+    "data\\TEXTURE\\MODEL\\HOUSE\\House000.png";
    }
   }
  }
