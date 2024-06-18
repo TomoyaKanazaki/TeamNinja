@@ -1515,10 +1515,7 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
-	// 目標方向を向く
-	ViewTarget(pos, posTarget);
-
-	// 目標地点へのベクトルを求める
+	// 目標方向との差分を求める
 	D3DXVECTOR3 vecTarget = posTarget - pos;
 
 	// 目標へのベクトルに倍率をかけ現在地に加算する
@@ -1536,6 +1533,13 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	{
 		return true;
 	}
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecTarget.x, -vecTarget.z);
+
+	// 向きを更新
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
 
 	return false;
 }
