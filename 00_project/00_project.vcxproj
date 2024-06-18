@@ -172,6 +172,7 @@
     <ClInclude Include="Resource\collisionCube.h" />
     <ClInclude Include="Resource\collisionCylinder.h" />
     <ClInclude Include="Resource\collisionModel.h" />
+    <ClInclude Include="Resource\collisionPolygon.h" />
     <ClInclude Include="Resource\collisionSphere.h" />
     <ClInclude Include="Resource\collManager.h" />
     <ClInclude Include="Resource\debug.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
     <ClInclude Include="Resource\editCheckPoint.h" />
+    <ClInclude Include="Resource\editCollPolygon.h" />
     <ClInclude Include="Resource\editEvent.h" />
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editGoalPoint.h" />
@@ -332,6 +334,7 @@
     <ClCompile Include="Resource\collisionCube.cpp" />
     <ClCompile Include="Resource\collisionCylinder.cpp" />
     <ClCompile Include="Resource\collisionModel.cpp" />
+    <ClCompile Include="Resource\collisionPolygon.cpp" />
     <ClCompile Include="Resource\collisionSphere.cpp" />
     <ClCompile Include="Resource\collManager.cpp" />
     <ClCompile Include="Resource\debug.cpp" />
@@ -339,6 +342,7 @@
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
     <ClCompile Include="Resource\editCheckPoint.cpp" />
+    <ClCompile Include="Resource\editCollPolygon.cpp" />
     <ClCompile Include="Resource\editEvent.cpp" />
     <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editGoalPoint.cpp" />
