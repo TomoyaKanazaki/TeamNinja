@@ -1344,7 +1344,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\House_lambert1_BaseColor.png";
+    "data\\TEXTURE\\MODEL\\House007.png";
    }
   }
  }
