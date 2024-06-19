@@ -105,3 +105,12 @@ void CGimmickJumpOff::Draw(CShader* pShader)
 	// ギミックアクションの描画
 	CGimmickAction::Draw(pShader);
 }
+
+//===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickJumpOff::CalcWaitPoint(const int Idx) const
+{
+	// TODO : 飛び降りの待機位置
+	return GetVec3Position();
+}

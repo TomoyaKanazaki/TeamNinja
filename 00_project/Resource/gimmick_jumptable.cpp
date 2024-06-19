@@ -103,8 +103,6 @@ D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx) const
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// TODO : 向きどうしようか
-
 	// プレイヤーの位置を取得
 	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
 

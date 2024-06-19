@@ -100,6 +100,15 @@ void CGimmickStep::Draw(CShader* pShader)
 }
 
 //===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx) const
+{
+	// TODO : 踏み台の待機位置
+	return GetVec3Position();
+}
+
+//===========================================
 //  登る
 //===========================================
 void CGimmickStep::Climb(CPlayer* player, const float fDeltaTime)

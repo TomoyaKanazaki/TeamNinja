@@ -27,6 +27,7 @@ public:
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
+	D3DXVECTOR3 CalcWaitPoint(const int Idx) const override; // 各分身毎の待機位置を算出
 
 private:
 

@@ -50,7 +50,7 @@ public:
 	void SetActionPoint(const D3DXVECTOR3& pos);				// 待機位置の設定
 	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 待機位置の設定
 	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx) const		// 各分身毎の待機位置を算出
-	{ assert(false); return D3DXVECTOR3(); }
+	{ assert(false); return GetVec3Position(); }
 
 private:
 
