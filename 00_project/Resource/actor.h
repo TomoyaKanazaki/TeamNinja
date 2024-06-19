@@ -48,6 +48,7 @@ public:
 		TYPE_WILLOW_M,			// –ö‚Ì–Ø(’†)
 		TYPE_WOODLOG,			// Œ´–Ø
 		TYPE_TREESTOMP,			// –Ø‚ÌŠ²
+		TYPE_LILYPAD,			// ˜@‚Ì—t
 		TYPE_PLANT1,			// 4‚Â‚µ‚©‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‘
 		TYPE_PLANT2,			// ‘½‚­‚Â‚È‚ª‚Á‚Ä‚¢‚é‘
 		TYPE_BUSH,				// ‘‚Þ‚ç

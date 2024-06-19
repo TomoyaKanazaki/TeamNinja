@@ -132,13 +132,18 @@ CHARACTERSET
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
+#	当たり判定情報
+#------------------------------------------------------------------------------
+COLLPASS = data\COLLISION\player.txt	# 当たり判定
+
+#------------------------------------------------------------------------------
 #	モーション情報
 #------------------------------------------------------------------------------
-MOTIONPASS = data\MOTION\PLAYER\idol.txt			# 待機モーション
-MOTIONPASS = data\MOTION\PLAYER\cautious.txt		# 警戒モーション
-MOTIONPASS = data\MOTION\PLAYER\dash.txt			# 歩行モーション
-MOTIONPASS = data\MOTION\PLAYER\stealthwalk.txt		# 忍び足モーション
-MOTIONPASS = data\MOTION\PLAYER\minijump.txt		# 小ジャンプモーション
-MOTIONPASS = data\MOTION\PLAYER\highjump.txt		# 大ジャンプモーション
-MOTIONPASS = data\MOTION\PLAYER\fall.txt			# 落下モーション
-MOTIONPASS = data\MOTION\PLAYER\landing.txt			# 着地モーション
+MOTIONPASS = data\MOTION\PLAYER\idol.txt		# 待機モーション
+MOTIONPASS = data\MOTION\PLAYER\cautious.txt	# 警戒モーション
+MOTIONPASS = data\MOTION\PLAYER\dash.txt		# 歩行モーション
+MOTIONPASS = data\MOTION\PLAYER\stealthwalk.txt	# 忍び足モーション
+MOTIONPASS = data\MOTION\PLAYER\minijump.txt	# 小ジャンプモーション
+MOTIONPASS = data\MOTION\PLAYER\highjump.txt	# 大ジャンプモーション
+MOTIONPASS = data\MOTION\PLAYER\fall.txt		# 落下モーション
+MOTIONPASS = data\MOTION\PLAYER\landing.txt		# 着地モーション

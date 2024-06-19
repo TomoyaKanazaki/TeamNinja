@@ -1,4 +1,3 @@
-#if 1
 //============================================================
 //
 //	円判定統括ヘッダー [chiefCollSphere.h]
@@ -36,10 +35,10 @@ public:
 	D3DXVECTOR3 GetWorldPosition(const int nCollID) const;	// 判定位置取得
 
 #if 0
-	void SetInfo(const SInfo& rInfo, const int nID);	// 判定情報設定
-	SInfo GetInfo(const int nID) const;					// 判定情報取得
-	void SetVector(const std::vector<SInfo>& rVector);	// 配列設定
-	std::vector<SInfo> GetVector(void) const;			// 配列取得
+	void SetInfo(const SInfo& rInfo, const int nCollID);	// 判定情報設定
+	SInfo GetInfo(const int nCollID) const;					// 判定情報取得
+	void SetVector(const std::vector<SInfo>& rVector);		// 配列設定
+	std::vector<SInfo> GetVector(void) const;				// 配列取得
 #endif
 
 	HRESULT AddColl	// 判定追加
@@ -59,4 +58,3 @@ private:
 };
 
 #endif	// _CHIEF_COLL_SPHERE_H_
-#endif
