@@ -128,11 +128,20 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	// 重力処理
-	Gravity();
+	D3DXVECTOR3 posEnemy = GetVec3Position();	// 敵位置
+	D3DXVECTOR3 rotEnemy = GetVec3Rotation();	// 敵向き
 
-	// 着地処理
-	Landing();
+	// 過去位置更新
+	UpdateOldPosition();
+
+	// 状態更新
+	int nCurMotion = UpdateState(&posEnemy, &rotEnemy);	// 現在のモーションを取得
+
+	SetVec3Position(posEnemy);	// 位置を反映
+	SetVec3Rotation(rotEnemy);	// 向きを反映
+
+	// モーション・オブジェクトキャラクター更新
+	UpdateMotion(nCurMotion, fDeltaTime);
 }
 
 //============================================================
@@ -140,8 +149,22 @@ void CEnemy::Update(const float fDeltaTime)
 //============================================================
 void CEnemy::Draw(CShader* pShader)
 {
-	// オブジェクトキャラクターの描画
-	CObjectChara::Draw(pShader);
+	CToonShader	*pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
+	if (pToonShader->IsEffectOK())
+	{ // エフェクトが使用可能な場合
+
+		// オブジェクトキャラクターの描画
+		CObjectChara::Draw(pToonShader);
+	}
+	else
+	{ // エフェクトが使用不可能な場合
+
+		// エフェクトエラー
+		assert(false);
+
+		// オブジェクトキャラクターの描画
+		CObjectChara::Draw(pShader);
+	}
 }
 
 //============================================================
@@ -304,7 +327,7 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
 //============================================================
 // 重力処理
 //============================================================
-void CEnemy::Gravity(void)
+void CEnemy::UpdateGravity(void)
 {
 	// 重力を加算する
 	m_move.y -= GRAVITY;
@@ -313,23 +336,16 @@ void CEnemy::Gravity(void)
 //============================================================
 // 着地処理
 //============================================================
-void CEnemy::Landing(void)
+void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 {
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
-	CStage* pStage = CScene::GetStage();	// ステージ情報
-
-	// ジャンプしている状態にする
-	m_bJump = true;
+	CStage *pStage = CScene::GetStage();	// ステージ情報
 
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(pos, m_oldPos, m_move)
-	||  pStage->LandLimitPosition(pos, m_move, 0.0f))
-	{ // プレイヤーが着地していた場合
+	if (pStage->LandFieldPosition(*pPos, m_oldPos, m_move)
+	||  pStage->LandLimitPosition(*pPos, m_move, 0.0f))
+	{ // 着地していた場合
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
 	}
-
-	// 位置を適用
-	SetVec3Position(pos);
 }

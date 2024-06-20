@@ -217,6 +217,9 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx) const
 {
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -252,7 +255,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 	// 位置設定
 	m_pDoorModel->SetVec3Position(posDoor);
 
-	if (posDoor.y >= GetVec3Position().y + 100.0f || IsActive() == false)	// TODO：上げる量は定数に
+	if (posDoor.y >= GetVec3Position().y + CPlayerClone::GetHeight() || IsActive() == false)	// TODO：上げる量は定数に
 	{ // 一定時間経ったら
 
 		m_state = STATE_FULLY;	// 扉全開状態

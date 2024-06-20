@@ -2,6 +2,7 @@
 //
 //	敵ヘッダー [enemy.h]
 //	Author：小原立暉
+//	Adder ：藤田勇一
 //
 //============================================================
 //************************************************************
@@ -62,7 +63,6 @@ public:
 	static CListManager<CEnemy>* GetList(void);			// リスト取得
 
 	// メンバ関数
-	inline void UpdateOldPosition(void)						{ m_oldPos = GetVec3Position(); }	// 過去位置更新
 	inline D3DXVECTOR3 GetOldPosition(void) const			{ return m_oldPos; }				// 過去位置取得
 	inline void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }				// 目的の向き設定
 	inline D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }				// 目的の向き取得
@@ -73,18 +73,21 @@ public:
 
 protected:
 
-	// オーバライド関数
-	virtual void UpdateMotion(int nMotion, const float fDeltaTime) = 0;		// モーションの更新処理
+	// 純粋仮想関数
+	virtual void UpdateMotion(int nMotion, const float fDeltaTime) = 0;	// モーションの更新処理
+	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot) = 0;	// 状態の更新処理
+	virtual void UpdateLanding(D3DXVECTOR3* pPos) = 0;	// 着地更新
 
 	// メンバ関数
-	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);		// プレイヤーの探索処理
-	bool SearchClone(D3DXVECTOR3* pPos = nullptr);		// 分身の探索処理
+	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);	// プレイヤーの探索処理
+	bool SearchClone(D3DXVECTOR3* pPos = nullptr);	// 分身の探索処理
+
+	void UpdateOldPosition(void) { m_oldPos = GetVec3Position(); }	// 過去位置更新
+	void UpdateGravity(void);	// 重力更新
+
+	bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
 
 private:
-
-	// メンバ関数
-	void Gravity(void);		// 重力処理
-	void Landing(void);		// 着地処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト
@@ -96,7 +99,7 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	EType m_type;					// 種類
-	bool m_bJump;					// 着地状況
+	bool m_bJump;					// ジャンプ状況
 };
 
 #endif	// _ENEMY_H_

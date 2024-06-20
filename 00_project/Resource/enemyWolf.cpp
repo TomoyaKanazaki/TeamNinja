@@ -29,7 +29,8 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyWolf::CEnemyWolf() : CEnemy()
+CEnemyWolf::CEnemyWolf() : CEnemy(),
+m_state(STATE_CRAWL)	// 状態
 {
 
 }
@@ -77,14 +78,8 @@ void CEnemyWolf::Uninit(void)
 //============================================================
 void CEnemyWolf::Update(const float fDeltaTime)
 {
-	// 過去位置更新
-	UpdateOldPosition();
-
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
-
-	// モーションの更新処理
-	UpdateMotion(MOTION_IDOL, fDeltaTime);
 }
 
 //============================================================
@@ -97,7 +92,7 @@ void CEnemyWolf::Draw(CShader* pShader)
 }
 
 //============================================================
-// 情報の設定処理
+//	情報の設定処理
 //============================================================
 void CEnemyWolf::SetData(void)
 {
@@ -105,159 +100,198 @@ void CEnemyWolf::SetData(void)
 }
 
 //============================================================
+//	状態の更新処理
+//============================================================
+int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+	switch (m_state)
+	{ // 状態ごとの処理
+	case STATE_CRAWL:	// 巡回状態
+
+		// TODO：ごめんいったん放置
+
+		// 移動操作
+		//nCurMotion = UpdateMove();
+
+		// 重力の更新
+		UpdateGravity();
+
+		// 位置更新
+		//UpdatePosition(pPos, fDeltaTime);
+
+		// 着地判定
+		UpdateLanding(pPos);
+
+		// 向き更新
+		//UpdateRotation(pRot);
+
+		break;
+
+	case STATE_CAVEAT:	// 警告状態
+		break;
+
+	case STATE_FOUND:	// 追跡状態
+		break;
+
+	case STATE_ATTACK:	// 攻撃状態
+		break;
+
+	case STATE_UPSET:	// 動揺状態
+		break;
+
+	default:	// 例外処理
+		assert(false);
+		break;
+	}
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
 //	モーション・キャラクターの更新処理
 //============================================================
 void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 {
-//	// 死んでたら抜ける
-//	if (IsDeath()) { return; }
-//
-//	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
-//
-//	if (nMotion != NONE_IDX)
-//	{ // モーションが設定されている場合
-//
-//		if (IsMotionLoop())
-//		{ // ループするモーション中の場合
-//
-//			if (nAnimMotion != nMotion)
-//			{ // 現在のモーションが再生中のモーションと一致しない場合
-//
-//				// 現在のモーションの設定
-//				SetMotion(nMotion, BLEND_FRAME_OTHER);
-//			}
-//		}
-//		else
-//		{ // ループしないモーション中の場合
-//
-//			switch (GetMotionType())
-//			{
-//			case CEnemyWolf::MOTION_FOUND:		// 発見モーション
-//			case CEnemyWolf::MOTION_TURN:		// 振り向きモーション
-//			case CEnemyWolf::MOTION_BITE:
-//
-//
-//
-//				break;
-//			}
-//
-//			//switch (GetMotionType())
-//			//{ // モーションごとの処理
-//			//case MOTION_CAUTIOUS:	// 警戒モーション
-//			//case MOTION_LANDING:	// 着地モーション
-//
-//			//	if (nMotion != MOTION_IDOL)
-//			//	{ // 待機モーション以外の場合
-//
-//			//		// 現在のモーションの設定
-//			//		SetMotion(nMotion, BLEND_FRAME_OTHER);
-//			//	}
-//
-//			//	break;
-//			//}
-//		}
-//	}
-//
-//	// オブジェクトキャラクターの更新
-//	CObjectChara::Update(fDeltaTime);
-//
-//	switch (GetMotionType())
-//	{ // モーションの種類ごとの処理
-//	case MOTION_IDOL:	// 待機モーション
-//
-//		if (GetMotionNumLoop() >= CAUTIOUS_TRANS_LOOP)
-//		{ // 待機モーションでしばらくいた場合
-//
-//			// 警戒モーションの設定
-//			SetMotion(MOTION_CAUTIOUS, BLEND_FRAME_OTHER);
-//		}
-//
-//		break;
-//
-//	case MOTION_CAUTIOUS:	// 警戒モーション
-//
-//		if (IsMotionFinish())
-//		{ // モーションが再生終了した場合
-//
-//			// 現在のモーションの設定
-//			SetMotion(nMotion, BLEND_FRAME_LAND);
-//		}
-//
-//		break;
-//
-//#if 0
-//	case MOTION_DASH:	// 歩行モーション
-//
-//		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
-//		{ // 足がついたタイミングの場合
-//
-//			switch (m_land)
-//			{ // 着地物ごとの処理
-//			case LAND_OBSTACLE:
-//
-//				// サウンドの再生
-//				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
-//
-//				break;
-//
-//			default:
-//
-//				// サウンドの再生
-//				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
-//
-//				break;
-//			}
-//		}
-//
-//		break;
-//
-//	case MOTION_STEALTHWALK:	// 忍び足モーション
-//
-//		break;
-//#endif
-//
-//	case MOTION_JUMP_MINI:	// 小ジャンプモーション
-//
-//		if (!m_bJump)
-//		{ // ジャンプ中ではない場合
-//
-//			// 現在のモーションの設定
-//			SetMotion(nMotion, BLEND_FRAME_OTHER);
-//		}
-//
-//		break;
-//
-//	case MOTION_JUMP_HIGH:	// 大ジャンプモーション
-//
-//		if (!m_bJump)
-//		{ // ジャンプ中ではない場合
-//
-//			// 現在のモーションの設定
-//			SetMotion(nMotion, BLEND_FRAME_OTHER);
-//		}
-//
-//		break;
-//
-//	case MOTION_FALL:	// 落下モーション
-//
-//		if (!m_bJump)
-//		{ // ジャンプ中ではない場合
-//
-//			// 現在のモーションの設定
-//			SetMotion(nMotion, BLEND_FRAME_OTHER);
-//		}
-//
-//		break;
-//
-//	case MOTION_LANDING:	// 着地モーション
-//
-//		if (IsMotionFinish())
-//		{ // モーションが再生終了した場合
-//
-//			// 現在のモーションの設定
-//			SetMotion(nMotion, BLEND_FRAME_LAND);
-//		}
-//
-//		break;
-//	}
+	// 死んでたら抜ける
+	if (IsDeath()) { return; }
+
+	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
+	if (nMotion != NONE_IDX)
+	{ // モーションが設定されている場合
+
+		if (IsMotionLoop())
+		{ // ループするモーション中の場合
+
+			if (nAnimMotion != nMotion)
+			{ // 現在のモーションが再生中のモーションと一致しない場合
+
+				// 現在のモーションの設定
+				SetMotion(nMotion, BLEND_FRAME_OTHER);
+			}
+		}
+	}
+
+	// オブジェクトキャラクターの更新
+	CObjectChara::Update(fDeltaTime);
+
+	switch (GetMotionType())
+	{ // モーションの種類ごとの処理
+	case MOTION_IDOL:	// 待機モーション
+		break;
+
+	case MOTION_RUN:	// 警戒モーション
+
+#if 0
+		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			switch (m_land)
+			{ // 着地物ごとの処理
+			case LAND_OBSTACLE:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
+
+				break;
+
+			default:
+
+				// サウンドの再生
+				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
+
+				break;
+			}
+		}
+#endif
+		break;
+
+	case MOTION_FOUND:	// 発見モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_BITE:	// 噛みつきモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_TURN:	// 振り向きモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_FALL:	// 落下モーション
+
+		if (!IsJump())
+		{ // ジャンプ中ではない場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case MOTION_LANDING:	// 着地モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+	}
+}
+
+//============================================================
+//	着地の更新処理
+//============================================================
+void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
+{
+	// 親クラスの着地更新
+	CEnemy::UpdateLanding(pPos);
+
+	// 現在のモーション種類を取得
+	int nCurMotion = GetMotionType();
+
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
+
+	if (!IsJump())
+	{ // 空中にいない場合
+
+		if (bTypeFall)
+		{ // モーションが落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+		}
+	}
+	else
+	{ // 空中にいる場合
+
+		// 落下モーションを指定
+		SetMotion(MOTION_FALL);
+	}
 }
