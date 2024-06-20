@@ -110,7 +110,7 @@ public:
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
 	void DeleteGimmick() { m_pGimmick = nullptr; } // 所持しているギミックを削除
 	void SetField(CField* field);	// フィールドのポインタを受け取る
-	void DeleteField() { m_pField = nullptr; } // 所持しているフィールドを削除
+	void DeleteField(CField* field);				// 所持しているフィールドを削除
 
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const { return m_pGimmick; }	// 所持ギミックを取得
