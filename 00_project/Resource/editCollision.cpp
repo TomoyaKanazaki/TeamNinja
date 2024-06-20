@@ -17,6 +17,7 @@
 #include "editCollCube.h"
 #include "editCollCylinder.h"
 #include "editCollSphere.h"
+#include "editCollPolygon.h"
 
 #include "gameManager.h"
 #include "sceneGame.h"
@@ -46,6 +47,7 @@ namespace
 		"キューブ",			// キューブ
 		"シリンダー",		// シリンダー
 		"スフィア",			// スフィア
+		"ポリゴン",			// ポリゴン
 	};
 	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
 	const float DELETE_RANGE = 30.0f;	// 消去する範囲
@@ -75,6 +77,7 @@ CEditCollision::CEditCollision(CEditManager* pEditManager) : CEditor(pEditManage
 	m_cube = {};						// キューブの可変長配列
 	m_cylinder = {};					// シリンダーの可変長配列
 	m_sphere = {};						// スフィアの可変長配列
+	m_polygon = {};						// ポリゴンの可変長配列
 
 	// オブジェクトの描画関係処理
 	DispObject(false);
@@ -110,6 +113,7 @@ HRESULT CEditCollision::Init(void)
 	m_cube = {};						// キューブの可変長配列
 	m_cylinder = {};					// シリンダーの可変長配列
 	m_sphere = {};						// スフィアの可変長配列
+	m_polygon = {};						// ポリゴンの可変長配列
 
 	// エディター情報の生成
 	m_pEditor = CEditorCollShape::Create(m_type, 0);
@@ -164,10 +168,18 @@ void CEditCollision::Uninit(void)
 		rSphere.Uninit();
 	}
 
+	for (auto& rPolygon : m_polygon)
+	{ // コリジョンポリゴン数分繰り返す
+
+		// 終了処理
+		rPolygon.Uninit();
+	}
+
 	// 配列を全消去する
 	m_cube.clear();
 	m_cylinder.clear();
 	m_sphere.clear();
+	m_polygon.clear();
 
 	// エディター情報の破棄
 	SAFE_REF_RELEASE(m_pEditor);
@@ -324,6 +336,31 @@ HRESULT CEditCollision::Save(void)
 
 		// 読み込み終了文字列を書き出し
 		file << "END_SPHERESET\n" << std::endl;
+
+//============================================================
+//	ポリゴンの当たり判定
+//============================================================
+
+		// 読み込み開始文字列を書き出し
+		file << "POLYGONSET" << std::endl;
+
+		// 当たり判定の数を書き出す
+		file << "	NUM	= " << coll.m_polygon.size() << std::endl;
+
+		for (const auto& rPolygon : coll.m_polygon)
+		{ // ポリゴンの総数分繰り返す
+
+			// 情報を書き出し
+			file << "	COLLSET" << std::endl;
+			file << "		OFFSET	= " << rPolygon.offset.x << " " << rPolygon.offset.y << " " << rPolygon.offset.z << std::endl;
+			file << "		ROT	= "		<< rPolygon.rot.x << " " << rPolygon.rot.y << " " << rPolygon.rot.z << std::endl;
+			file << "		WIDTH	= " << rPolygon.size.x << std::endl;
+			file << "		DEPTH	= " << rPolygon.size.z << std::endl;
+			file << "	END_COLLSET" << std::endl;
+		}
+
+		// 読み込み終了文字列を書き出し
+		file << "END_POLYGONSET\n" << std::endl;
 
 		// 読み込み終了文字列を書き出し
 		file << "END_STAGE_COLLSET" << std::endl;
@@ -515,6 +552,9 @@ void CEditCollision::ChangeObjectType(void)
 			case CEditCollision::TYPE_SPHERE:
 				nIdx = m_sphere.size();
 				break;
+			case CEditCollision::TYPE_POLYGON:
+				nIdx = m_polygon.size();
+				break;
 			default:		// 例外処理
 				assert(false);
 				break;
@@ -561,10 +601,17 @@ void CEditCollision::ChangeActorType(void)
 			// 終了処理
 			rSphere.Uninit();
 		}
+		for (auto& rPolygon : m_polygon)
+		{ // コリジョンポリゴン数分繰り返す
+
+			// 終了処理
+			rPolygon.Uninit();
+		}
 		// 配列を全消去する
 		m_cube.clear();
 		m_cylinder.clear();
 		m_sphere.clear();
+		m_polygon.clear();
 	}
 }
 
@@ -579,6 +626,7 @@ void CEditCollision::Create(void)
 		CEditCollCube* pCube = nullptr;
 		CEditCollCylinder* pCylinder = nullptr;
 		CEditCollSphere* pSphere = nullptr;
+		CEditCollPolygon* pPolygon = nullptr;
 
 		switch (m_type)
 		{
@@ -599,7 +647,7 @@ void CEditCollision::Create(void)
 			pCylinder = dynamic_cast<CEditCollCylinder*>(m_pEditor);
 
 			if (pCylinder != nullptr)
-			{ // キューブが NULL じゃない場合
+			{ // シリンダーが NULL じゃない場合
 
 				// 追加処理
 				m_cylinder.push_back(*pCylinder);
@@ -611,10 +659,22 @@ void CEditCollision::Create(void)
 			pSphere = dynamic_cast<CEditCollSphere*>(m_pEditor);
 
 			if (pSphere != nullptr)
-			{ // キューブが NULL じゃない場合
+			{ // スフィアが NULL じゃない場合
 
 				// 追加処理
 				m_sphere.push_back(*pSphere);
+			}
+
+			break;
+		case CEditCollision::TYPE_POLYGON:
+
+			pPolygon = dynamic_cast<CEditCollPolygon*>(m_pEditor);
+
+			if (pPolygon != nullptr)
+			{ // ポリゴンが NULL じゃない場合
+
+				// 追加処理
+				m_polygon.push_back(*pPolygon);
 			}
 
 			break;
@@ -665,6 +725,13 @@ void CEditCollision::Delete(void)
 
 		break;
 
+	case CEditCollision::TYPE_POLYGON:
+
+		// ポリゴンの消去処理
+		DeleteCollPolygon(bRelease);
+
+		break;
+
 	default:		// 例外処理
 		assert(false);
 		break;
@@ -680,9 +747,11 @@ void CEditCollision::ManagerSave(void)
 	std::vector<CCollManager::SCollCube> saveCube;			// キューブの情報配列
 	std::vector<CCollManager::SCollCylinder> saveCylinder;	// シリンダーの情報配列
 	std::vector<CCollManager::SCollSphere> saveSphere;		// スフィアの情報配列
+	std::vector<CCollManager::SCollPolygon> savePolygon;	// ポリゴンの情報配列
 	CCollManager::SCollCube cube;				// キューブ
 	CCollManager::SCollCylinder cylinder;		// シリンダー
 	CCollManager::SCollSphere sphere;			// スフィア
+	CCollManager::SCollPolygon polygon;			// ポリゴン
 
 	for (const auto& rCube : m_cube)
 	{
@@ -717,8 +786,19 @@ void CEditCollision::ManagerSave(void)
 		saveSphere.push_back(sphere);
 	}
 
+	for (const auto& rPolygon : m_polygon)
+	{
+		// 情報を取得
+		polygon.offset = rPolygon.GetVec3OffSet();		// オフセット座標
+		polygon.rot = rPolygon.GetInfo().rot;			// 向き
+		polygon.size = rPolygon.GetInfo().size;			// サイズ
+
+		// 情報を設定
+		savePolygon.push_back(polygon);
+	}
+
 	// 当たり判定マネージャーに設定
-	CSceneGame::GetCollManager()->SetCollInfo(m_actorType, CCollManager::SCollision(saveCube, saveCylinder, saveSphere));
+	CSceneGame::GetCollManager()->SetCollInfo(m_actorType, CCollManager::SCollision(saveCube, saveCylinder, saveSphere, savePolygon));
 }
 
 //============================================================
@@ -767,6 +847,23 @@ void CEditCollision::InitAllColorCollSphere(void)
 
 		// 通常色を設定
 		rSphere.GetSphere()->GetSphere()->SetColor(COL);
+
+#endif // _DEBUG
+	}
+}
+
+//============================================================
+// ポリゴンの色全初期化
+//============================================================
+void CEditCollision::InitAllColorCollPolygon(void)
+{
+	for (auto& rPolygon : m_polygon)
+	{ // コリジョンスフィア数分繰り返す
+
+#ifdef _DEBUG
+
+		// 通常色を設定
+		rPolygon.GetPolygon()->GetPolygon()->SetColor(COL);
 
 #endif // _DEBUG
 	}
@@ -1000,6 +1097,81 @@ void CEditCollision::DeleteCollSphere(const bool bRelease)
 
 			// 通常色を設定
 			sphere->GetSphere()->GetSphere()->SetColor(COL);
+
+#endif // _DEBUG
+		}
+	}
+}
+
+//============================================================
+// ポリゴンの消去処理
+//============================================================
+void CEditCollision::DeleteCollPolygon(const bool bRelease)
+{
+	D3DXVECTOR3 posEdit = m_pEditor->GetVec3OffSet();	// エディットの位置
+	CEffect3D::Create(posEdit, DELETE_RANGE);			// エフェクトを生成
+
+	for (auto polygon = m_polygon.begin(); polygon != m_polygon.end(); polygon++)
+	{ // フィールド数分繰り返す
+
+		D3DXVECTOR3 posOther = polygon->GetVec3OffSet();	// 対象の地面位置
+		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
+
+		// 自身の大きさを設定
+		sizeThis.x = DELETE_RANGE;		// 判定サイズXを設定
+		sizeThis.y = DELETE_RANGE;		// 判定サイズYを設定
+		sizeThis.z = DELETE_RANGE;		// 判定サイズZを設定
+		sizeThis *= 0.5f;				// 判定サイズを半分に
+
+		// 対象の大きさを設定
+		sizeOther = polygon->GetInfo().size * 0.5f;	// 判定サイズを設定
+
+		// 矩形の当たり判定
+		if (collision::Box3D
+		( // 引数
+			posEdit,	// 判定位置
+			posOther,	// 判定目標位置
+			sizeThis,	// 判定サイズ(右・上・後)
+			sizeThis,	// 判定サイズ(左・下・前)
+			sizeOther,	// 判定目標サイズ(右・上・後)
+			sizeOther	// 判定目標サイズ(左・下・前)
+		))
+		{ // 判定内だった場合
+
+			if (bRelease)
+			{ // 破棄する場合
+
+				// 終了処理
+				polygon->Uninit();
+
+				// 消去処理
+				m_polygon.erase(polygon);
+
+				// 抜け出す
+				break;
+			}
+			else
+			{ // 破棄しない場合
+
+#ifdef _DEBUG
+
+				// 青を設定
+				polygon->GetPolygon()->GetPolygon()->SetColor(XCOL_BLUE);
+
+#endif // _DEBUG
+
+				// 抜け出す
+				break;
+			}
+		}
+		else
+		{ // 判定外だった場合
+
+#ifdef _DEBUG
+
+			// 通常色を設定
+			polygon->GetPolygon()->GetPolygon()->SetColor(COL);
 
 #endif // _DEBUG
 		}
