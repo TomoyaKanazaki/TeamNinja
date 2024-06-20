@@ -55,11 +55,13 @@ private:
 	void ChangeEditMode(void);		// エディターモード変更
 	void ChangeDispPause(void);		// ポーズ表示変更
 	void ResultTrans(void);			// リザルト遷移
+	void ChangeActorDisp(void);		// アクター当たり判定表示変更
 
 	// メンバ変数
 	int  m_nFps;	// FPSカウンタ
 	bool m_bDisp2D;	// 2D表示状況
 	bool m_bDisp3D;	// 3D表示状況
+	bool m_bDispActor;		// アクターの当たり判定の表示状況
 	DWORD m_dwFrameCount;	// フレームカウント
 	DWORD m_dwFPSLastTime;	// 最後にFPSを計測した時刻
 	D3DFILLMODE m_fillMode;	// 塗りつぶしモード

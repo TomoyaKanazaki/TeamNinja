@@ -50,9 +50,6 @@ HRESULT CGimmickStep::Init(void)
 		return E_FAIL;
 	}
 
-	//登頂判定位置を設定
-	m_fSummit = GetVec3Position().y + CLIMB_MAX;
-
 	// 成功を返す
 	return S_OK;
 }
@@ -75,7 +72,7 @@ void CGimmickStep::Update(const float fDeltaTime)
 	CPlayer* player = GET_PLAYER;
 
 	// プレイヤーとの当たり判定
-	if (CollisionPlayer())
+	if (DistancePlayer())
 	{
 		// 登る
 		Climb(player, fDeltaTime);
@@ -100,13 +97,33 @@ void CGimmickStep::Draw(CShader* pShader)
 }
 
 //===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx) const
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// 待機位置を取得
+	D3DXVECTOR3 pos = GetActionPoint();
+
+	// 自分の番号に合わせて高さを加算する
+	pos.y += Idx * CPlayerClone::GetHeight();
+
+	return pos;
+}
+
+//===========================================
 //  登る
 //===========================================
 void CGimmickStep::Climb(CPlayer* player, const float fDeltaTime)
 {
+	// 登頂判定の高さを算出
+	float fSummit = GetVec3Position().y + (CPlayerClone::GetHeight() * GetNumActive());
+
 	// 登頂している高さなら関数を抜ける
 	float fHeight = player->GetVec3Position().y;
-	if (fHeight > m_fSummit) { return; }
+	if (fHeight > fSummit) { return; }
 
 	// プレイヤーの移動量を取得
 	D3DXVECTOR3 movePlasyer = player->GetMove();
@@ -118,7 +135,7 @@ void CGimmickStep::Climb(CPlayer* player, const float fDeltaTime)
 	player->SetMove(movePlasyer);
 
 	// 登頂できる移動量ならジャンプして関数を抜ける
-	if (fHeight + (movePlasyer.y * fDeltaTime) > m_fSummit)
+	if (fHeight + (movePlasyer.y * fDeltaTime) > fSummit)
 	{
 		// 分身の操作を可能にする
 		player->SetClone(true);
