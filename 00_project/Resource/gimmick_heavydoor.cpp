@@ -212,6 +212,17 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	CGimmickAction::SetVec3Sizing(rSize);
 }
 
+//===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx) const
+{// TODO : 想い扉の待機位置
+	// 自身の位置を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	return GetVec3Position();
+}
+
 //============================================================
 // 扉を上げる
 //============================================================

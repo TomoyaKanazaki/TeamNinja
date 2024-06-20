@@ -66,6 +66,7 @@ private:
 	void ChangeActorType(void);				// アクタータイプ変更
 	void Create(void);						// 生成処理
 	void Delete(void);						// 消去処理
+	void ManagerSave(void);					// マネージャーのセーブ処理
 
 	void InitAllColorCollCube(void);				// キューブの色全初期化
 	void InitAllColorCollCylinder(void);			// シリンダーの色全初期化

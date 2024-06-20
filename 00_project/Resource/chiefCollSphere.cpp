@@ -1,38 +1,31 @@
-#if 0
 //============================================================
 //
-//	円判定処理 [collSphere.cpp]
+//	円判定統括処理 [chiefCollSphere.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "collSphere.h"
-#include "debugCollSphere.h"
-#include "object.h"
+#include "chiefCollSphere.h"
+#include "collisionSphere.h"
 
 //************************************************************
-//	静的メンバ変数宣言
-//************************************************************
-bool CCollSphere::m_bVisualColl = false;	// 判定見た目表示フラグ
-
-//************************************************************
-//	親クラス [CCollSphere] のメンバ関数
+//	親クラス [CChiefCollSphere] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CCollSphere::CCollSphere()
+CChiefCollSphere::CChiefCollSphere()
 {
-	// メンバ変数をクリア
-	m_coll.clear();	// 要素をクリア
+	// 判定情報配列をクリア
+	m_vecColl.clear();
 }
 
 //============================================================
 //	デストラクタ
 //============================================================
-CCollSphere::~CCollSphere()
+CChiefCollSphere::~CChiefCollSphere()
 {
 
 }
@@ -40,10 +33,10 @@ CCollSphere::~CCollSphere()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CCollSphere::Init(void)
+HRESULT CChiefCollSphere::Init(void)
 {
-	// メンバ変数を初期化
-	m_coll.clear();	// 要素をクリア
+	// 判定情報配列を初期化
+	m_vecColl.clear();
 
 	// 成功を返す
 	return S_OK;
@@ -52,65 +45,56 @@ HRESULT CCollSphere::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CCollSphere::Uninit(void)
+void CChiefCollSphere::Uninit(void)
 {
-	// 要素をクリア
-	m_coll.clear();
-}
+	for (auto& rVec : m_vecColl)
+	{ // 判定の所持数分繰り返す
 
-//============================================================
-//	更新処理
-//============================================================
-void CCollSphere::Update(void)
-{
-#if _DEBUG
-
-	for (auto info : m_coll)
-	{ // 全要素分繰り返す
-
-		// オフセットマトリックスを求める
-		D3DXMATRIX mtxParent = m_pParent->GetMtxWorld();	// 親マトリックス
-		D3DXMATRIX mtxOffset;	// オフセット計算マトリックス
-		D3DXMatrixTranslation(&mtxOffset, info.offset.x, info.offset.y, info.offset.z);
-		D3DXMatrixMultiply(&mtxOffset, &mtxOffset, &mtxParent);
-
-		// 情報を見た目に反映
-		D3DXVECTOR3 posColl = useful::GetMatrixPosition(mtxOffset);
-		info.pVisual->SetVec3Position(posColl);	// 位置
-		info.pVisual->SetRadius(info.fRadius);	// 半径
-
-		// 見た目の表示状況を設定
-		info.pVisual->SetEnableDraw(m_bVisualColl);
+		// 判定の終了
+		SAFE_UNINIT(rVec);
 	}
 
-#endif	// _DEBUG
+	// 判定情報配列をクリア
+	m_vecColl.clear();
 }
 
 //============================================================
-//	判定位置の計算処理
+//	オフセット更新処理
 //============================================================
-D3DXVECTOR3 CCollSphere::CalcWorldPosition(const int nID) const
+void CChiefCollSphere::OffSet(const D3DXMATRIX& rMtx)
 {
-	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+	for (auto& rSphere : m_vecColl)
+	{ // パーツの最大数分繰り返す
 
-	// オフセットマトリックスを求める
-	D3DXMATRIX mtxParent = m_pParent->GetMtxWorld();	// 親マトリックス
-	D3DXMATRIX mtxOffset;	// オフセット計算マトリックス
-	D3DXMatrixTranslation(&mtxOffset, info->offset.x, info->offset.y, info->offset.z);
-	D3DXMatrixMultiply(&mtxOffset, &mtxOffset, &mtxParent);
+		// オフセットの更新
+		rSphere->OffSet(rMtx);
+	}
+}
+
+//============================================================
+//	判定位置の取得処理
+//============================================================
+D3DXVECTOR3 CChiefCollSphere::GetWorldPosition(const int nCollID) const
+{
+	auto info = m_vecColl.begin();	// 配列の先頭イテレーター
+
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
 	// 判定位置を返す
-	return useful::GetMatrixPosition(mtxOffset);
+	return (*info)->GetPos();
 }
 
+#if 0
 //============================================================
 //	判定情報の設定処理
 //============================================================
-void CCollSphere::SetInfo(const SInfo& rInfo, const int nID)
+void CChiefCollSphere::SetInfo(const SInfo& rInfo, const int nCollID)
 {
 	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
 	// イテレーターの中身を設定
 	*info = rInfo;
@@ -119,10 +103,12 @@ void CCollSphere::SetInfo(const SInfo& rInfo, const int nID)
 //============================================================
 //	判定情報の取得処理
 //============================================================
-CCollSphere::SInfo CCollSphere::GetInfo(const int nID) const
+CChiefCollSphere::SInfo CChiefCollSphere::GetInfo(const int nCollID) const
 {
 	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
 	// イテレーターの中身を返す
 	return *info;
@@ -131,80 +117,78 @@ CCollSphere::SInfo CCollSphere::GetInfo(const int nID) const
 //============================================================
 //	配列の設定処理
 //============================================================
-void CCollSphere::SetVector(const std::vector<SInfo>& rVector)
+void CChiefCollSphere::SetVector(const std::vector<SInfo>& rVector)
 {
 	// 配列を設定
-	m_coll = rVector;
+	m_vecColl = rVector;
 }
 
 //============================================================
 //	配列の取得処理
 //============================================================
-std::vector<CCollSphere::SInfo> CCollSphere::GetVector(void) const
+std::vector<CChiefCollSphere::SInfo> CChiefCollSphere::GetVector(void) const
 {
 	// 配列を返す
-	return m_coll;
+	return m_vecColl;
 }
+#endif
 
 //============================================================
 //	判定の追加処理
 //============================================================
-void CCollSphere::AddColl
+HRESULT CChiefCollSphere::AddColl
 (
 	const D3DXVECTOR3& rOffset,	// 判定位置オフセット
 	const float fRadius			// 判定半径
 )
 {
 	// 情報を設定
-	SInfo tempInfo;	// 設定用情報
-	tempInfo.offset  = rOffset;	// オフセット
-	tempInfo.fRadius = fRadius;	// 半径
+	CCollisionSphere *pColl = CCollisionSphere::Create
+	( // 引数
+		VEC3_ZERO,	// 位置
+		rOffset,	// オフセット
+		fRadius		// 半径
+	);
+	if (pColl == nullptr)
+	{ // 生成に失敗した場合
 
-#if _DEBUG
-
-	// オフセットマトリックスを求める
-	D3DXMATRIX mtxParent = m_pParent->GetMtxWorld();	// 親マトリックス
-	D3DXMATRIX mtxOffset;	// オフセット計算マトリックス
-	D3DXMatrixTranslation(&mtxOffset, rOffset.x, rOffset.y, rOffset.z);
-	D3DXMatrixMultiply(&mtxOffset, &mtxOffset, &mtxParent);
-
-	// オフセットワールド座標を見た目に設定
-	D3DXVECTOR3 posColl = useful::GetMatrixPosition(mtxOffset);
-	tempInfo.pVisual = CDebugCollSphere::Create(posColl, fRadius);
-
-#endif	// _DEBUG
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// 配列最後尾に追加情報を設定
-	m_coll.push_back(tempInfo);
+	m_vecColl.push_back(pColl);
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================
 //	判定の削除処理
 //============================================================
-void CCollSphere::SubColl(const int nID)
+void CChiefCollSphere::SubColl(const int nCollID)
 {
-	auto info = m_coll.begin();	// 配列の先頭イテレーター
-	info += nID;	// イテレーターをインデックス分動かす
+	auto info = m_vecColl.begin();	// 配列の先頭イテレーター
 
-#if _DEBUG
+	// イテレーターをインデックス分動かす
+	info += nCollID;
 
-	// デバッグ用の見た目を終了
-	SAFE_UNINIT(info->pVisual);
-
-#endif	// _DEBUG
+	// 判定の終了
+	SAFE_UNINIT(*info);
 
 	// 配列の要素から削除
-	m_coll.erase(info);
+	m_vecColl.erase(info);
 }
 
 //============================================================
 //	生成処理
 //============================================================
-CCollSphere *CCollSphere::Create(CObject *pParent)
+CChiefCollSphere *CChiefCollSphere::Create(void)
 {
-	// 円判定の生成
-	CCollSphere *pCollSphere = new CCollSphere;
-	if (pCollSphere == nullptr)
+	// 円判定統括の生成
+	CChiefCollSphere *pChiefCollSphere = new CChiefCollSphere;
+	if (pChiefCollSphere == nullptr)
 	{ // 生成に失敗した場合
 
 		return nullptr;
@@ -212,33 +196,29 @@ CCollSphere *CCollSphere::Create(CObject *pParent)
 	else
 	{ // 生成に成功した場合
 
-		// 円判定の初期化
-		if (FAILED(pCollSphere->Init()))
+		// 円判定統括の初期化
+		if (FAILED(pChiefCollSphere->Init()))
 		{ // 初期化に失敗した場合
 
-			// 円判定の破棄
-			SAFE_DELETE(pCollSphere);
+			// 円判定統括の破棄
+			SAFE_DELETE(pChiefCollSphere);
 			return nullptr;
 		}
 
-		// 親オブジェクトを設定
-		pCollSphere->m_pParent = pParent;
-
 		// 確保したアドレスを返す
-		return pCollSphere;
+		return pChiefCollSphere;
 	}
 }
 
 //============================================================
 //	破棄処理
 //============================================================
-void CCollSphere::Release(CCollSphere *&prCollSphere)
+void CChiefCollSphere::Release(CChiefCollSphere *&prChiefCollSphere)
 {
-	// 円判定の終了
-	assert(prCollSphere != nullptr);
-	prCollSphere->Uninit();
+	// 円判定統括の終了
+	assert(prChiefCollSphere != nullptr);
+	prChiefCollSphere->Uninit();
 
 	// メモリ開放
-	SAFE_DELETE(prCollSphere);
+	SAFE_DELETE(prChiefCollSphere);
 }
-#endif

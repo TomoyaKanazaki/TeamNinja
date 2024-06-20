@@ -73,6 +73,9 @@ public:
 
 protected:
 
+	// オーバライド関数
+	virtual void UpdateMotion(int nMotion, const float fDeltaTime) = 0;		// モーションの更新処理
+
 	// メンバ関数
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);		// プレイヤーの探索処理
 	bool SearchClone(D3DXVECTOR3* pPos = nullptr);		// 分身の探索処理
@@ -80,7 +83,6 @@ protected:
 private:
 
 	// メンバ関数
-	virtual void UpdateMotion(const float fDeltaTime) = 0;		// モーションの更新処理
 	void Gravity(void);		// 重力処理
 	void Landing(void);		// 着地処理
 

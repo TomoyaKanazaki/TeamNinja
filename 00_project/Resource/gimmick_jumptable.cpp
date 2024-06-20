@@ -11,6 +11,14 @@
 #include "gimmick_jumptable.h"
 #include "player.h"
 
+//===========================================
+//  定数定義
+//===========================================
+namespace
+{
+	const float DISTANCE_CENTER = 50.0f; // 待機中心との距離
+}
+
 //************************************************************
 //	子クラス [CGimmickJumpTable] のメンバ関数
 //************************************************************
@@ -85,4 +93,40 @@ void CGimmickJumpTable::Draw(CShader* pShader)
 {
 	// オブジェクト3Dの描画
 	CGimmickAction::Draw(pShader);
+}
+
+//===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx) const
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// プレイヤーの位置を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// 自身の位置を取得
+	D3DXVECTOR3 posThis = GetActionPoint();
+
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = posPlayer - posThis;
+
+	// 差分ベクトルの向きを求める
+	float fRot = atan2f(vecTarget.x, -vecTarget.z) + (D3DX_PI * Idx);
+	useful::NormalizeRot(fRot);
+
+	// 待機中心を取得
+	D3DXVECTOR3 posCenter = GetActionPoint();
+
+	// 差分ベクトル方向に傾けて座標を設定
+	D3DXVECTOR3 posWait = D3DXVECTOR3
+		(
+			posCenter.x + cosf(fRot) * DISTANCE_CENTER,
+			posCenter.y,
+			posCenter.z + sinf(fRot) * DISTANCE_CENTER
+		);
+
+	// 算出した座標を返す
+	return posWait;
 }

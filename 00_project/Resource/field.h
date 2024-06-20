@@ -39,6 +39,7 @@ public:
 		TYPE_FALL,		// —Ž‚Æ‚µŒŠ
 		TYPE_DECAYED,	// ‹€‚¿‚½°
 		TYPE_WATER,		// …
+		TYPE_GUTTER,	// ƒhƒu
 		TYPE_MAX,		// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 		TYPE_NONE		// ‘¶Ý‚µ‚È‚¢Ží—Þ
 	};

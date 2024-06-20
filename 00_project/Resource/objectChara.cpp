@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "multiModel.h"
 #include "motion.h"
-#include "collisionSphere.h"
+#include "chiefCollSphere.h"
 
 //************************************************************
 //	子クラス [CObjectChara] のメンバ関数
@@ -30,6 +30,9 @@ CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dime
 
 	// パーツ情報配列をクリア
 	m_vecParts.clear();
+
+	// 判定情報配列をクリア
+	m_vecColl.clear();
 }
 
 //============================================================
@@ -53,6 +56,9 @@ HRESULT CObjectChara::Init(void)
 
 	// パーツ情報配列を初期化
 	m_vecParts.clear();
+
+	// 判定情報配列を初期化
+	m_vecColl.clear();
 
 	// モーションの生成
 	m_pMotion = CMotion::Create(this);
@@ -86,6 +92,16 @@ void CObjectChara::Uninit(void)
 	// パーツ情報配列をクリア
 	m_vecParts.clear();
 
+	for (auto& rVec : m_vecColl)
+	{ // パーツ数分繰り返す
+
+		// 当たり判定の破棄
+		SAFE_REF_RELEASE(rVec);
+	}
+
+	// 判定情報配列をクリア
+	m_vecColl.clear();
+
 	// オブジェクトキャラクターを破棄
 	Release();
 }
@@ -103,11 +119,11 @@ void CObjectChara::Update(const float fDeltaTime)
 	}
 
 	int nCntParts = 0;	// パーツインデックス
-	for (auto& rSphere : m_vecColl)
+	for (auto& rVec : m_vecColl)
 	{ // パーツの最大数分繰り返す
 
 		// オフセットの更新
-		rSphere->OffSet(m_vecParts[nCntParts]->GetMtxWorld());
+		rVec->OffSet(m_vecParts[nCntParts]->GetMtxWorld());
 
 		// パーツインデックス加算
 		nCntParts++;
@@ -269,9 +285,10 @@ void CObjectChara::SetPartsInfo
 	const char *pFileName		// ファイル名
 )
 {
-	// インデックスが非正規の場合抜ける
 	int nNumParts = GetNumParts();	// パーツの総数
-	if (nID <= NONE_IDX || nID >= nNumParts) { assert(false); return; }
+
+	// インデックスが非正規の場合抜ける
+	if (nID <= NONE_IDX || nID >= nNumParts)				 { assert(false); return; }
 	if (nParentID <= NONE_IDX - 1 || nParentID >= nNumParts) { assert(false); return; }
 
 	// ファイル指定がない場合抜ける
@@ -303,6 +320,30 @@ void CObjectChara::SetPartsInfo
 }
 
 //============================================================
+//	当たり判定情報の設定処理
+//============================================================
+void CObjectChara::SetCollInfo
+(
+	const int nID,	// パーツインデックス
+	std::vector<CCharacter::SColl> vecColl	// 当たり判定情報
+)
+{
+	// インデックスが非正規の場合抜ける
+	int nNumParts = GetNumParts();	// パーツの総数
+	if (nID <= NONE_IDX || nID >= nNumParts) { assert(false); return; }
+
+	// 当たり判定の生成
+	m_vecColl[nID] = CChiefCollSphere::Create();
+
+	for (const auto& rVec : vecColl)
+	{ // 判定数分繰り返す
+
+		// 判定情報を追加
+		m_vecColl[nID]->AddColl(rVec.offset, rVec.fRadius);
+	}
+}
+
+//============================================================
 //	キャラクター情報割当
 //============================================================
 void CObjectChara::BindCharaData(const char *pCharaPass)
@@ -319,7 +360,10 @@ void CObjectChara::BindCharaData(const char *pCharaPass)
 	SetNumParts(data.infoParts.GetNumParts());
 
 	// 自身のパーツ情報を設定
-	SetPartsInfo(data.infoParts);
+	SetPartsInfoAll(data.infoParts);
+
+	// 自身の当たり判定情報を設定
+	SetCollInfoAll(data.infoParts);
 
 	// モーションにパーツ情報を割当
 	m_pMotion->BindPartsData(&m_vecParts[0]);
@@ -355,6 +399,9 @@ void CObjectChara::SetNumParts(const int nNumParts)
 	// パーツ情報配列をクリア
 	m_vecParts.clear();
 
+	// 判定情報配列をクリア
+	m_vecColl.clear();
+
 	//--------------------------------------------------------
 	//	パーツ数を設定
 	//--------------------------------------------------------
@@ -362,20 +409,21 @@ void CObjectChara::SetNumParts(const int nNumParts)
 	m_pMotion->SetNumParts(nNumParts);
 
 	// 自身のパーツ数の設定
-	m_vecParts.resize(nNumParts);
+	m_vecParts.resize(nNumParts);	// パーツ情報
+	m_vecColl.resize(nNumParts);	// 判定情報
 }
 
 //============================================================
 //	パーツ情報の設定処理
 //============================================================
-void CObjectChara::SetPartsInfo(CCharacter::SPartsInfo& rInfo)
+void CObjectChara::SetPartsInfoAll(CCharacter::SPartsInfo& rInfo)
 {
 	for (int nCntParts = 0; nCntParts < rInfo.GetNumParts(); nCntParts++)
 	{ // パーツ数分繰り返す
 
 		// パーツ情報の設定
 		CCharacter::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
-		CObjectChara::SetPartsInfo
+		SetPartsInfo
 		( // 引数
 			nCntParts,				// パーツインデックス
 			pParts->nParentID,		// 親インデックス
@@ -383,6 +431,20 @@ void CObjectChara::SetPartsInfo(CCharacter::SPartsInfo& rInfo)
 			pParts->rot,			// 向き
 			pParts->strPass.c_str()	// ファイル名
 		);
+	}
+}
+
+//============================================================
+//	当たり判定情報の設定処理
+//============================================================
+void CObjectChara::SetCollInfoAll(CCharacter::SPartsInfo& rInfo)
+{
+	for (int nCntParts = 0; nCntParts < rInfo.GetNumParts(); nCntParts++)
+	{ // パーツ数分繰り返す
+
+		// 当たり判定情報の設定
+		CCharacter::SParts *pParts = &rInfo.vecParts[nCntParts];	// パーツ情報
+		SetCollInfo(nCntParts, pParts->vecColl);
 	}
 }
 
@@ -468,7 +530,7 @@ CMultiModel *CObjectChara::GetParts(const int nPartsID) const
 //============================================================
 //	当たり判定取得処理
 //============================================================
-CCollisionSphere *CObjectChara::GetCollision(const int nPartsID) const
+CChiefCollSphere *CObjectChara::GetCollision(const int nPartsID) const
 {
 	if (nPartsID < GetNumParts())
 	{ // 使用可能なインデックスの場合

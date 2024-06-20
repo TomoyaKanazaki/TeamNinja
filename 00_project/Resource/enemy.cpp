@@ -128,17 +128,11 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	// オブジェクトキャラクターの更新
-	//CObjectChara::Update(fDeltaTime);
-
 	// 重力処理
 	Gravity();
 
 	// 着地処理
 	Landing();
-
-	// モーションの更新処理
-	UpdateMotion(fDeltaTime);
 }
 
 //============================================================

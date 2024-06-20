@@ -173,6 +173,14 @@ void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	m_pEdge->SetVec3Sizing(rSize * 0.5f + SCALE_EDGE);
 }
 
+//===========================================
+//  各分身毎の待機位置を算出
+//===========================================
+D3DXVECTOR3 CGimmickPost::CalcWaitPoint(const int Idx) const
+{
+	return GetVec3Position();
+}
+
 //=========================================
 //	ボタン大きさの設定処理
 //=========================================

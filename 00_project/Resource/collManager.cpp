@@ -90,11 +90,11 @@ HRESULT CCollManager::Load(void)
 			// 一行全て読み込む
 			std::getline(file, str);
 		}
-		else if (str == "STAGE_COLLISIONSET")
+		else if (str == "STAGE_COLLSET")
 		{ // ステージの当たり判定の設定を読み込んだ場合
 
 			do
-			{ // END_STAGE_COLLISIONSETを読み込むまでループ
+			{ // END_STAGE_COLLSETを読み込むまでループ
 
 				// 文字列を読み込む
 				file >> str;
@@ -105,11 +105,11 @@ HRESULT CCollManager::Load(void)
 					// 一行全て読み込む
 					std::getline(file, str);
 				}
-				else if (str == "CUBE_COLLISIONSET")
+				else if (str == "CUBESET")
 				{ // キューブの当たり判定を読み込んだ場合
 
 					do
-					{ // END_CUBE_COLLISIONSETを読み込むまでループ
+					{ // END_CUBESETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -120,7 +120,7 @@ HRESULT CCollManager::Load(void)
 							// 一行全て読み込む
 							std::getline(file, str);
 						}
-						else if (str == "CUBE_NUM")
+						else if (str == "NUM")
 						{ // キューブの数を読み込んだ場合
 
 							file >> str;	// ＝を読込
@@ -130,7 +130,7 @@ HRESULT CCollManager::Load(void)
 							{
 								while (file >> str)
 								{
-									if (str == "COLLISIONSET")
+									if (str == "COLLSET")
 									{ // コリジョン設定を読み込んだ場合
 
 										// OFFSETを読込
@@ -155,7 +155,7 @@ HRESULT CCollManager::Load(void)
 										file >> str;	// ＝を読込
 										file >> cubeInfo.fDepth;	// 奥行を読込
 
-										// END_COLLISIONSETを読込
+										// END_COLLSETを読込
 										file >> str;
 
 										// while文を抜け出す
@@ -173,13 +173,13 @@ HRESULT CCollManager::Load(void)
 								cubeInfo.fDepth = 0.0f;			// 奥行
 							}
 						}
-					} while (str != "END_CUBE_COLLISIONSET");	// END_CUBE_COLLISIONSETを読み込むまでループ
+					} while (str != "END_CUBESET");	// END_CUBESETを読み込むまでループ
 				}
-				else if (str == "CYLINDER_COLLISIONSET")
+				else if (str == "CYLINDERSET")
 				{ // シリンダーの当たり判定を読み込んだ場合
 
 					do
-					{ // END_CYLINDER_COLLISIONSETを読み込むまでループ
+					{ // END_CYLINDERSETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -190,7 +190,7 @@ HRESULT CCollManager::Load(void)
 							// 一行全て読み込む
 							std::getline(file, str);
 						}
-						else if (str == "CYLINDER_NUM")
+						else if (str == "NUM")
 						{ // シリンダーの数を読み込んだ場合
 
 							file >> str;	// ＝を読込
@@ -200,7 +200,7 @@ HRESULT CCollManager::Load(void)
 							{
 								while (file >> str)
 								{
-									if (str == "COLLISIONSET")
+									if (str == "COLLSET")
 									{ // コリジョン設定を読み込んだ場合
 
 										// OFFSETを読込
@@ -220,7 +220,7 @@ HRESULT CCollManager::Load(void)
 										file >> str;	// ＝を読込
 										file >> cylinderInfo.fHeight;	// 高さを読込
 
-										// END_COLLISIONSETを読込
+										// END_COLLSETを読込
 										file >> str;
 
 										// while文を抜け出す
@@ -237,13 +237,13 @@ HRESULT CCollManager::Load(void)
 								cylinderInfo.fHeight = 0.0f;		// 高さ
 							}
 						}
-					} while (str != "END_CYLINDER_COLLISIONSET");	// END_CYLINDER_COLLISIONSETを読み込むまでループ
+					} while (str != "END_CYLINDERSET");	// END_CYLINDERSETを読み込むまでループ
 				}
-				else if (str == "SPHERE_COLLISIONSET")
+				else if (str == "SPHERESET")
 				{ // スフィアの当たり判定を読み込んだ場合
 
 					do
-					{ // END_SPHERE_COLLISIONSETを読み込むまでループ
+					{ // END_SPHERESETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -254,7 +254,7 @@ HRESULT CCollManager::Load(void)
 							// 一行全て読み込む
 							std::getline(file, str);
 						}
-						else if (str == "SPHERE_NUM")
+						else if (str == "NUM")
 						{ // スフィアの数を読み込んだ場合
 
 							file >> str;	// ＝を読込
@@ -264,7 +264,7 @@ HRESULT CCollManager::Load(void)
 							{
 								while (file >> str)
 								{
-									if (str == "COLLISIONSET")
+									if (str == "COLLSET")
 									{ // コリジョン設定を読み込んだ場合
 
 										// OFFSETを読込
@@ -279,7 +279,7 @@ HRESULT CCollManager::Load(void)
 										file >> str;	// ＝を読込
 										file >> sphereInfo.fRadius;	// 半径を読込
 
-										// END_COLLISIONSETを読込
+										// END_COLLSETを読込
 										file >> str;
 
 										// while文を抜け出す
@@ -295,9 +295,9 @@ HRESULT CCollManager::Load(void)
 								sphereInfo.fRadius = 0.0f;		// 半径
 							}
 						}
-					} while (str != "END_SPHERE_COLLISIONSET");	// END_SPHERE_COLLISIONSETを読み込むまでループ
+					} while (str != "END_SPHERESET");	// END_SPHERESETを読み込むまでループ
 				}
-			} while (str != "END_STAGE_COLLISIONSET");	// END_STAGE_COLLISIONSETを読み込むまでループ
+			} while (str != "END_STAGE_COLLSET");	// END_STAGE_COLLSETを読み込むまでループ
 
 			// 種類を加算する
 			nType++;
@@ -309,6 +309,15 @@ HRESULT CCollManager::Load(void)
 
 	// 成功を返す
 	return S_OK;
+}
+
+//============================================================
+// 情報の取得処理
+//============================================================
+void CCollManager::SetCollInfo(const CActor::EType type, const SCollision coll)
+{
+	// 当たり判定の情報を設定する
+	m_aCollInfo[type] = coll;
 }
 
 //============================================================

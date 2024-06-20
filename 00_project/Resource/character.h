@@ -28,6 +28,20 @@ public:
 	// デストラクタ
 	~CCharacter();
 
+	// 当たり判定構造体
+	struct SColl
+	{
+		// コンストラクタ
+		SColl() :
+			offset	(VEC3_ZERO),	// オフセット
+			fRadius	(0.0f)			// 半径
+		{}
+
+		// メンバ変数
+		D3DXVECTOR3 offset;	// オフセット
+		float fRadius;		// 半径
+	};
+
 	// パーツ構造体
 	struct SParts
 	{
@@ -37,14 +51,16 @@ public:
 			rot			(VEC3_ZERO),	// 向き
 			nParentID	(NONE_IDX)		// 親インデックス
 		{
+			vecColl.clear();	// 当たり判定情報をクリア
 			strPass.clear();	// モデルパスをクリア
 		}
 
 		// メンバ変数
-		std::string strPass;	// モデルパス
-		D3DXVECTOR3 pos;		// 位置
-		D3DXVECTOR3 rot;		// 向き
-		int nParentID;			// 親インデックス
+		std::vector<SColl> vecColl;	// 当たり判定情報
+		std::string strPass;		// モデルパス
+		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 rot;	// 向き
+		int nParentID;		// 親インデックス
 	};
 
 	// パーツ情報構造体
@@ -57,7 +73,7 @@ public:
 		}
 
 		// メンバ関数
-		int GetNumParts(void) { return vecParts.size(); }	// パーツ情報の総数取得
+		int GetNumParts(void) { return (int)vecParts.size(); }	// パーツ情報の総数取得
 
 		// メンバ変数
 		std::vector<SParts> vecParts;	// パーツ情報
@@ -89,7 +105,8 @@ private:
 	HRESULT SearchFolderAll(std::string sFolderPath);	// フォルダ全検索
 
 	// メンバ関数
-	HRESULT LoadSetup(SCharaData *pInfoChara, const char *pCharaPass);	// キャラクター情報セットアップ
+	HRESULT LoadSetup(SCharaData *pInfoChara, const char *pCharaPass);		// キャラクター情報セットアップ
+	HRESULT LoadCollSetup(SPartsInfo *pInfoParts, const char *pCollPass);	// 当たり判定情報セットアップ
 	HRESULT LoadMotionSetup(CMotion::SInfo *pInfoMotion, const SPartsInfo *pInfoParts, const char *pMotionPass);	// モーション情報セットアップ
 
 	// メンバ変数

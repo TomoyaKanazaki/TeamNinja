@@ -21,7 +21,7 @@
 //	前方宣言
 //************************************************************
 class CMultiModel;		// マルチモデルクラス
-class CCollisionSphere;	// スフィアの当たり判定クラス
+class CChiefCollSphere;	// 円判定統括クラス
 
 //************************************************************
 //	クラス定義
@@ -66,17 +66,23 @@ public:
 		const D3DXVECTOR3& rRot,	// 向き
 		const char *pFileName		// ファイル名
 	);
+	void SetCollInfo	// 当たり判定情報設定
+	( // 引数
+		const int nID,	// パーツインデックス
+		std::vector<CCharacter::SColl> vecColl	// 当たり判定情報
+	);
 
 	void BindCharaData(const char *pCharaPass);		// キャラクター情報割当
 	void SetMtxWorld(const D3DXMATRIX &rMtxWorld);	// マトリックス設定
 	void SetNumParts(const int nNumParts);			// パーツ数設定
-	void SetPartsInfo(CCharacter::SPartsInfo& rInfo);					// パーツ情報設定
+	void SetPartsInfoAll(CCharacter::SPartsInfo& rInfo);				// パーツ情報設定
+	void SetCollInfoAll(CCharacter::SPartsInfo& rInfo);					// 当たり判定情報設定
 	void SetPartsPosition(const int nPartsID, const D3DXVECTOR3& rPos);	// パーツ位置設定
 	void SetPartsRotation(const int nPartsID, const D3DXVECTOR3& rRot);	// パーツ向き設定
 	D3DXVECTOR3 GetPartsPosition(const int nPartsID) const;				// パーツ位置取得
 	D3DXVECTOR3 GetPartsRotation(const int nPartsID) const;				// パーツ向き取得
 	CMultiModel *GetParts(const int nPartsID) const;					// パーツ取得
-	CCollisionSphere *GetCollision(const int nPartsID) const;			// 当たり判定取得
+	CChiefCollSphere *GetCollision(const int nPartsID) const;			// 当たり判定取得
 	CMotion *GetMotion(void) const	{ return m_pMotion; }				// モーション取得
 	int GetNumParts(void) const		{ return (int)m_vecParts.size(); }	// パーツ数取得
 
@@ -113,7 +119,7 @@ private:
 
 	// メンバ変数
 	std::vector<CMultiModel*> m_vecParts;		// パーツ情報
-	std::vector<CCollisionSphere*> m_vecColl;	// 判定情報
+	std::vector<CChiefCollSphere*> m_vecColl;	// 判定情報
 	CMotion		*m_pMotion;	// モーションの情報
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
 	D3DXVECTOR3	m_pos;		// 位置
