@@ -84,12 +84,6 @@ void CEnemyCaveat::Uninit(void)
 //============================================================
 void CEnemyCaveat::Update(const float fDeltaTime)
 {
-	// 過去位置更新
-	UpdateOldPosition();
-
-	// 状態処理
-	State();
-
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
 
@@ -125,18 +119,11 @@ void CEnemyCaveat::SetData(void)
 }
 
 //============================================================
-// モーションの更新処理
+// 状態の更新処理
 //============================================================
-void CEnemyCaveat::UpdateMotion(int nMotion, const float fDeltaTime)
+int CEnemyCaveat::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 {
-
-}
-
-//============================================================
-// 状態処理
-//============================================================
-void CEnemyCaveat::State(void)
-{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
 	{
 	case CEnemyCaveat::STATE_CRAWL:
@@ -161,6 +148,49 @@ void CEnemyCaveat::State(void)
 	default:		// 例外処理
 		assert(false);
 		break;
+	}
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+// モーションの更新処理
+//============================================================
+void CEnemyCaveat::UpdateMotion(int nMotion, const float fDeltaTime)
+{
+
+}
+
+//============================================================
+// 着地の更新処理
+//============================================================
+void CEnemyCaveat::UpdateLanding(D3DXVECTOR3* pPos)
+{
+	// 親クラスの着地更新
+	CEnemy::UpdateLanding(pPos);
+
+	// 現在のモーション種類を取得
+	int nCurMotion = GetMotionType();
+
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
+
+	if (!IsJump())
+	{ // 空中にいない場合
+
+		if (bTypeFall)
+		{ // モーションが落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+		}
+	}
+	else
+	{ // 空中にいる場合
+
+		// 落下モーションを指定
+		SetMotion(MOTION_FALL);
 	}
 }
 

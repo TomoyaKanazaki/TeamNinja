@@ -39,6 +39,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_ATTACK,		// 攻撃モーション
 		MOTION_UPSET,		// 動揺モーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -68,10 +70,11 @@ public:
 private:
 
 	// オーバーライド関数
-	void UpdateMotion(int nMotion, const float fDeltaTime) override;		// モーションの更新処理
+	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot) override;	// 状態の更新処理
+	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
+	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
 
 	// メンバ関数
-	void State(void);		// 状態処理
 	void Crawl(void);		// 巡回処理
 	void Stalk(void);		// 追跡処理
 	void Move(void);		// 移動処理
