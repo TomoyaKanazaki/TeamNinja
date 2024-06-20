@@ -43,6 +43,8 @@ namespace
 #define NAME_PAUSE_DISP		("F6")		// ポーズ表示ON/OFF表示
 #define KEY_RESULT_TRANS	(DIK_F7)	// リザルト遷移キー
 #define NAME_RESULT_TRANS	("F7")		// リザルト遷移表示
+#define KEY_ACTOR_DISP		(DIK_F8)	// アクターの当たり判定表示ON/OFFキー
+#define NAME_ACTOR_TRANS	("F8")		// アクターの当たり判定表示ON/OFF表示
 
 //************************************************************
 //	親クラス [CDebug] のメンバ関数
@@ -56,6 +58,7 @@ CDebug::CDebug() :
 	m_nFps				(0),					// FPSカウンタ
 	m_bDisp2D			(false),				// 2D表示状況
 	m_bDisp3D			(false),				// 3D表示状況
+	m_bDispActor		(false),				// アクターの当たり判定の表示状況
 	m_dwFrameCount		(0),					// フレームカウント
 	m_dwFPSLastTime		(0),					// 最後にFPSを計測した時刻
 	m_fillMode			(D3DFILL_SOLID),		// 塗りつぶしモード
@@ -97,6 +100,7 @@ HRESULT CDebug::Init(void)
 	m_nFps				= 0;					// FPSカウンタ
 	m_bDisp2D			= true;					// 2D表示状況
 	m_bDisp3D			= true;					// 3D表示状況
+	m_bDispActor		= false;				// アクターの当たり判定の表示状況
 	m_dwFrameCount		= 0;					// フレームカウント
 	m_dwFPSLastTime		= timeGetTime();		// 現在時刻を取得
 	m_fillMode			= D3DFILL_SOLID;		// 塗りつぶしモード
@@ -228,6 +232,9 @@ void CDebug::UpdateDebugControl(void)
 	// 2Dオブジェクト表示変更
 	ChangeDisp2D();
 
+	// アクター当たり判定表示変更
+	ChangeActorDisp();
+
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
@@ -295,6 +302,7 @@ void CDebug::DrawDebugControl(void)
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：リザルト遷移\n", NAME_RESULT_TRANS);
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
 
 		break;
 
@@ -479,6 +487,54 @@ void CDebug::ResultTrans(void)
 	{
 		// リザルト画面に遷移
 		GET_MANAGER->SetLoadScene(CScene::MODE_RESULT);
+	}
+}
+
+//============================================================
+// アクター当たり判定表示変更
+//============================================================
+void CDebug::ChangeActorDisp(void)
+{
+	if (GET_INPUTKEY->IsTrigger(KEY_ACTOR_DISP))
+	{
+		// アクターの当たり判定の表示状況を切り替える
+		m_bDispActor = !m_bDispActor;
+
+		for (int nCntDim = 0; nCntDim < CObject::DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
+
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
+
+				// オブジェクトの先頭を代入
+				CObject* pObject = CObject::GetTop(static_cast<CObject::EDim>(nCntDim), nCntPri);
+
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
+
+					// 次のオブジェクトを代入
+					CObject* pObjectNext = pObject->GetNext();
+
+					if (pObject->IsDeath())
+					{ // 死亡している場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					if (pObject->GetLabel() == CObject::LABEL_COLLISION)
+					{ // 当たり判定ラベル
+
+						// オブジェクトを見えなくする
+						pObject->SetEnableDebugDisp(!m_bDispActor);
+					}
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+				}
+			}
+		}
 	}
 }
 
