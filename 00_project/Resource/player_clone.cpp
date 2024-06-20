@@ -903,9 +903,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
+	
+	// 重力
+	UpdateGravity();
 
 	// 移動
 	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
 
 	// 位置の適用
 	SetVec3Position(pos);
@@ -919,9 +925,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 		// 落下
 		return MOTION_FALL;
 	}
-
-	// 着地判定
-	UpdateLanding(pos);
 
 	// 落ちる前の高さを保存
 	m_fFallStart = pos.y;
