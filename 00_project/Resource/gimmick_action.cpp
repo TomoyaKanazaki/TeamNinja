@@ -17,7 +17,7 @@
 // 定数定義
 namespace
 {
-	const D3DXVECTOR3 CLONE_RADIUS = D3DXVECTOR3(20.0f, 0.0f, 20.0f);	// 半径
+	const float RADIUS = 20.0f;	// 半径
 	const bool ACTION_SET_FRAG[] = // アクションポイントの設定可能フラグ
 	{
 		true, // ジャンプ台
@@ -146,7 +146,7 @@ void CGimmickAction::Draw(CShader* pShader)
 }
 
 //============================================================
-// プレイヤーとの当たり判定
+// プレイヤーとの当たり判定(矩形)
 //============================================================
 bool CGimmickAction::CollisionPlayer(void)
 {
@@ -163,7 +163,7 @@ bool CGimmickAction::CollisionPlayer(void)
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
 	D3DXVECTOR3 posPlayer = VEC3_ZERO;			// プレイヤーの位置
-	D3DXVECTOR3 sizePlayer = CLONE_RADIUS;		// プレイヤーのサイズ
+	D3DXVECTOR3 sizePlayer = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);		// プレイヤーのサイズ
 
 	for (auto player : list)
 	{
@@ -182,6 +182,36 @@ bool CGimmickAction::CollisionPlayer(void)
 		{ // 四角の中に入った場合
 			bHit = true;
 		}
+	}
+
+	return bHit;
+}
+
+//===========================================
+//  プレイヤーとの当たり判定(円形)
+//===========================================
+bool CGimmickAction::DistancePlayer()
+{
+	// 判定フラグ
+	bool bHit = false;
+
+	// 発動可能フラグがoffなら関数を抜ける
+	if (!m_bActive) { return bHit; }
+
+	// プレイヤー情報の取得
+	CPlayer* player = GET_PLAYER;
+
+	// ギミックの中心座標を取得
+	D3DXVECTOR3 posActive = GetActionPoint();
+
+	// 中心座標とプレイヤーの距離の2乗を算出
+	D3DXVECTOR3 vecToPlayer = player->GetVec3Position() - posActive;
+	float fDistance = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
+
+	// 距離の2乗がプレイヤーの半径2乗未満の場合フラグを立てる
+	if (RADIUS * RADIUS > fDistance)
+	{
+		bHit = true;
 	}
 
 	return bHit;

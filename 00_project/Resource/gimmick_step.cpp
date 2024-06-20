@@ -72,7 +72,7 @@ void CGimmickStep::Update(const float fDeltaTime)
 	CPlayer* player = GET_PLAYER;
 
 	// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è
-	if (CollisionPlayer())
+	if (DistancePlayer())
 	{
 		// “o‚é
 		Climb(player, fDeltaTime);

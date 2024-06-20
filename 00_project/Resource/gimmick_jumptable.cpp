@@ -71,7 +71,7 @@ void CGimmickJumpTable::Uninit(void)
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
-	if (CollisionPlayer())
+	if (DistancePlayer())
 	{
 		// プレイヤーを大ジャンプ！
 		SetMoment(GET_PLAYER->GimmickHighJump());
