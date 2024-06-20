@@ -38,6 +38,7 @@ namespace
 	const int	BLEND_FRAME	= 5;		// モーションのブレンドフレーム
 	const float	GRAVITY		= 60.0f;	// 重力
 	const float	RADIUS		= 20.0f;	// 半径
+	const float HEIGHT		= 80.0f;	// 身長
 	const float	REV_ROTA	= 0.15f;	// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;	// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;	// 通常状態時の空中の移動量の減衰係数
@@ -739,6 +740,14 @@ void CPlayerClone::CallBack()
 		// 追従状態にする
 		pClone->SetAction(ACTION_CHASE);
 	}
+}
+
+//===========================================
+//  身長の取得
+//===========================================
+float CPlayerClone::GetHeight()
+{
+	return HEIGHT;
 }
 
 //============================================================
@@ -1504,7 +1513,6 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	D3DXVECTOR3 vecTarget = posTarget - pos;
 
 	// 目標へのベクトルに倍率をかけ現在地に加算する
-	vecTarget.y = 0.0f;
 	pos += vecTarget * 0.1f;
 
 	// 位置を適用する
