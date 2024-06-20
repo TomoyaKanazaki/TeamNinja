@@ -23,6 +23,17 @@ class CEnemyWolf : public CEnemy
 {
 public:
 
+	// 状態列挙
+	enum EState
+	{
+		STATE_CRAWL = 0,	// 巡回状態
+		STATE_CAVEAT,		// 警告状態
+		STATE_FOUND,		// 追跡状態
+		STATE_ATTACK,		// 攻撃状態
+		STATE_UPSET,		// 動揺状態
+		STATE_MAX			// この列挙型の総数
+	};
+
 	// モーション列挙
 	enum EMotion
 	{
@@ -31,6 +42,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_BITE,		// 噛みつきモーション
 		MOTION_TURN,		// 振り向きモーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -51,7 +64,13 @@ public:
 private:
 
 	// オーバーライド関数
-	void UpdateMotion(int nMotion, const float fDeltaTime) override;		// モーションの更新処理
+	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot) override;	// 状態の更新処理
+	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
+	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
+
+	// メンバ変数
+	EState m_state;	// 状態
+
 };
 
 #endif	// _ENEMY_CHASE_H_

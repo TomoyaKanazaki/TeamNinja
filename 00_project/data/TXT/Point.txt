@@ -36,6 +36,10 @@ STAGE_CHECKSET
 	CHECKSET
 		POS = 20750.00 50.00 0.00
 	END_CHECKSET
+	
+	CHECKSET
+		POS = 28950.00 0.00 -2600.00
+	END_CHECKSET
 
 END_STAGE_CHECKSET
 
@@ -44,6 +48,6 @@ END_STAGE_CHECKSET
 #------------------------------------------------------------------------------
 STAGE_GOALSET
 
-	POS = 0.00 0.00 650.00
+	POS = 32000.00 0.00 -2600.00
 
 END_STAGE_GOALSET

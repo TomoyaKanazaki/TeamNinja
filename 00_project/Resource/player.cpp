@@ -869,6 +869,8 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 //============================================================
 void CPlayer::UpdateRotation(D3DXVECTOR3& rRot)
 {
+	// TODO：デルタタイム加味して
+
 	// 変数を宣言
 	float fDiffRot = 0.0f;	// 差分向き
 

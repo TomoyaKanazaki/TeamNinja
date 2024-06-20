@@ -10,14 +10,8 @@
 #include "gimmick_jumpoff.h"
 #include "manager.h"
 #include "player.h"
+#include "player_clone.h"
 
-//************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const float CLONE_HEIGHT = 80.0f;		// クローンの高さ
-}
 //============================================================
 //	コンストラクタ
 //============================================================
@@ -77,7 +71,7 @@ void CGimmickJumpOff::Update(const float fDeltaTime)
 
 				D3DXVECTOR3 pos = GetVec3Position();		// 発動位置
 
-				if ((GET_PLAYER->GetVec3Position().y - (pos.y + CLONE_HEIGHT)) <= 10.0f)
+				if ((GET_PLAYER->GetVec3Position().y - (pos.y + CPlayerClone::GetHeight())) <= 10.0f)
 				{ // 特定の高さまで下がった場合
 
 					// 発動中
@@ -111,6 +105,9 @@ void CGimmickJumpOff::Draw(CShader* pShader)
 //===========================================
 D3DXVECTOR3 CGimmickJumpOff::CalcWaitPoint(const int Idx) const
 {
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
 	// TODO : 飛び降りの待機位置
 	return GetVec3Position();
 }
