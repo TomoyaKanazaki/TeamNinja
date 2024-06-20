@@ -77,7 +77,7 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
 	CEnemy::Create(D3DXVECTOR3(600.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
@@ -126,7 +126,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// わんわんおー
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 #endif
 
