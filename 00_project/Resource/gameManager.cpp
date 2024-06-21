@@ -114,10 +114,13 @@ HRESULT CGameManager::Init(void)
 // 小原用ギミック置き場
 #if 1
 	// 踏み台
-	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 3);
+	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
 
-	// 重い扉(TODO：後で調整)
+	// 重い扉
 	CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+
+	// ジャンプ台
+	CGimmick::Create(D3DXVECTOR3(7150.0f, 301.0f, -300.0f), D3DXVECTOR3(100.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
 	{ // 複数ボタン
 		std::vector<CGimmickMalti::SButton> vec;
