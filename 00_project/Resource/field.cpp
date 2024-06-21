@@ -28,13 +28,13 @@ namespace
 		"data\\TEXTURE\\soil003.png",	// 土テクスチャ
 		"data\\TEXTURE\\soil004.png",	// 草土テクスチャ
 		"data\\TEXTURE\\soil005.png",	// 草テクスチャ
-		"data\\TEXTURE\\FIELD2\\OldWood002.jpg",	// 床テクスチャ
+		"data\\TEXTURE\\FIELD\\OldWood002.jpg",	// 床テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\FIELD2\\Mud000.jpg",	// 泥テクスチャ
+		"data\\TEXTURE\\FIELD\\Mud000.jpg",	// 泥テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\FIELD2\\pitfall.jpg",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\FIELD\\pitfall.jpg",	// 落とし穴テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 朽ちた床テクスチャ
-		"data\TEXTURE\FIELD2\Water.png",	// 水テクスチャ
+		"data\\TEXTURE\\FIELD\\Water.png",	// 水テクスチャ
 		"data\\TEXTURE\\soil001.png",	// ドブテクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
@@ -336,7 +336,7 @@ void CField::SetType(const EType type)
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 #ifdef _DEBUG
-		BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\testfield.png"));
+		//BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\testfield.png"));
 #endif
 	}
 	else { assert(false); }	// 範囲外
