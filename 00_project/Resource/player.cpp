@@ -1270,7 +1270,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		}
 
 		// 分身のリスト構造が無ければ抜ける
-		if (CGimmickAction::GetList() == nullptr) { assert(false); return false; }
+		if (CGimmickAction::GetList() == nullptr) { return false; }
 
 		// ギミックのリストを取得
 		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
