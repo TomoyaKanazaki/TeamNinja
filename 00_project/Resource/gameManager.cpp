@@ -118,7 +118,8 @@ HRESULT CGameManager::Init(void)
 
 // 藤田用ギミック置き場
 #if 1
-	CGimmick::Create(D3DXVECTOR3(800.0f, 0.0f, -1300.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	// ジャンプ台：最奥
+	CGimmick::Create(D3DXVECTOR3(1600.0f, 1.0f, 0.0f), D3DXVECTOR3(300.0f, 0.0f, 1600.0f), CGimmick::TYPE_JUMPTABLE, 2);
 #endif
 
 	// 複数ボタン
