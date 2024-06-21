@@ -771,8 +771,8 @@ void CPlayer::UpdateGravity(void)
 //============================================================
 void CPlayer::UpdateSaveTeleport(void)
 {
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	if (pKey->IsTrigger(DIK_Q))
+	CInputPad* pPad = GET_INPUTPAD;
+	if (pPad->IsTrigger(CInputPad::KEY_BACK))
 	{
 		// チェックポイントに帰る
 		SaveReset();
@@ -1269,9 +1269,6 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			return false;
 		}
 
-		// 分身のリスト構造が無ければ抜ける
-		if (CGimmickAction::GetList() == nullptr) { return false; }
-
 		// ギミックのリストを取得
 		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
 
@@ -1305,7 +1302,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		}
 
 		// 距離が近い場合
-		if (fTempDistance < GIMMICK_SET_DISTANCE)
+		if (pGimmick->CollisionPlayer())
 		{
 			// 直接ギミックになる分身を必要分生成
 			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
