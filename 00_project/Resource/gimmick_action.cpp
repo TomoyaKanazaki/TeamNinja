@@ -154,7 +154,7 @@ bool CGimmickAction::CollisionPlayer(void)
 	bool bHit = false;
 
 	// 発動可能フラグがoffなら関数を抜ける
-	if (!m_bActive) { return bHit; }
+	//if (!m_bActive) { return bHit; }
 
 	// プレイヤーのリスト構造が無ければ抜ける
 	if (CPlayer::GetList() == nullptr) { return bHit; }
