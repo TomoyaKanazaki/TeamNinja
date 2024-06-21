@@ -38,6 +38,9 @@ public:
 
 	bool IsActive() { return m_bActive; }
 
+	// TODO : α提出用クリアフラグ。消せ。
+	static bool IsClear() { return m_bClear; }
+
 	// 静的メンバ関数
 	static CGimmickMalti* Create(std::vector<SButton> vecButton); // 生成
 
@@ -48,4 +51,7 @@ private:
 	// メンバ変数
 	std::vector<CGimmick*> m_vecButton; // ボタン動的配列
 	bool m_bActive; // アクティブフラグ
+
+	// TODO : α提出用クリアフラグ。消せ。
+	static bool m_bClear;
 };

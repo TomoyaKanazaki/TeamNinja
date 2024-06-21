@@ -11,6 +11,9 @@
 #include "collision.h"
 #include "popupUI.h"
 
+// TODO : α提出用クリアフラグ。消せ。
+#include "gimmick_malti.h"
+
 //==========================================
 //  定数定義
 //==========================================
@@ -182,6 +185,9 @@ void CGoal::CollisionPlayer(void)
 {
 	// クリアフラグがオンなら関数を抜ける
 	if (m_bClear) { return; }
+
+	// TODO : α提出用クリアフラグ。消せ。
+	if (!CGimmickMalti::IsClear()) { return; }
 
 	//　自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
