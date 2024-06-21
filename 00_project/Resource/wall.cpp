@@ -21,8 +21,8 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
+		"data\\TEXTURE\\soil005.png",	// 土テクスチャ
+		"data\\TEXTURE\\soil005.png",	// 草土テクスチャ
 		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
 	};
 
