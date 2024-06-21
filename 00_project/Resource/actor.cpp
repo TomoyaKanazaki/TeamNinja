@@ -50,7 +50,8 @@ namespace
 		"data\\MODEL\\House\\House003.x",		// 家4
 		"data\\MODEL\\House\\House004.x",		// 家5
 		"data\\MODEL\\Lantern\\Lantern001.x",	// ランタン
-												
+		"data\\MODEL\\GATE\\gate000.x",			// 門(枠)
+		"data\\MODEL\\GATE\\gate001.x",			// 門(扉)
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス

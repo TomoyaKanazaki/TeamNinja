@@ -1,6 +1,6 @@
 //==========================================
 //
-//  チェックポイント(checkpoint.cpp)
+//  ゴール(goal.cpp)
 //  Author : Tomoya Kanazaki
 //
 //==========================================
@@ -145,7 +145,7 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 	// メモリの確保に失敗していた場合nullを返す
 	if (pSavePoint == nullptr) { assert(false); return nullptr; }
 
-	// セーブポイントの初期化
+	// ゴールの初期化
 	if (FAILED(pSavePoint->Init()))
 	{
 		// メモリ開放
@@ -171,7 +171,7 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 CGoal* CGoal::GetGoal(void)
 {
 	if (m_pList == nullptr) { return nullptr; }		// リスト未使用の場合抜ける
-	if (m_pList->GetNumAll() != 1) { assert(false); return nullptr; }	// ゴールが1人ではない場合抜ける
+	if (m_pList->GetNumAll() != 1) { assert(false); return nullptr; }	// ゴールが存在した場合関数を抜ける
 	CGoal* pGoal = m_pList->GetList().front();		// ゴールの情報
 
 	// ゴールのポインタを返す

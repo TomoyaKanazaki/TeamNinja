@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "gimmick_jumptable.h"
 #include "player.h"
+#include "player_clone.h"
 
 //===========================================
 //  定数定義
@@ -71,10 +72,10 @@ void CGimmickJumpTable::Uninit(void)
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
-	if (DistancePlayer())
+	if (HitPlayer())
 	{
 		// プレイヤーを大ジャンプ！
-		SetMoment(GET_PLAYER->GimmickHighJump());
+		SetMoment(GET_PLAYER->GimmickHighJump(GetNumActive()));
 	}
 	else
 	{
@@ -126,4 +127,24 @@ D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx) const
 
 	// 算出した座標を返す
 	return posWait;
+}
+
+//===========================================
+//  プレイヤーとの判定
+//===========================================
+bool CGimmickJumpTable::HitPlayer()
+{
+	// プレイヤーのy座標を取得
+	float fPosYPlayer = GET_PLAYER->GetVec3Position().y;
+
+	// 分身の身長を取得
+	float fHeightClone = CPlayerClone::GetHeight();
+
+	// 自身のy座標を取得
+	float fPosYThis = GetVec3Position().y;
+
+	// 自身の高さ + 分身の身長 がプレイヤーより低い位置の場合falseを返す
+	if (fPosYThis + fHeightClone < fPosYPlayer) { return false; }
+	
+	return DistancePlayer();
 }
