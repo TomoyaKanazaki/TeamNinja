@@ -309,6 +309,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// アクターの当たり判定
 	(void)CollisionActor();
 
+	// 壁の当たり判定
+	(void)CollisionWall();
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -1257,7 +1260,7 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 void CPlayerClone::UpdateIgnore()
 {
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
-	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 size = m_size * 0.5f;			// サイズ
 	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
 	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
 
