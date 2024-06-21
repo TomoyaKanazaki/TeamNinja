@@ -154,7 +154,7 @@ bool CGimmickAction::CollisionPlayer(void)
 	bool bHit = false;
 
 	// 発動可能フラグがoffなら関数を抜ける
-	if (!m_bActive) { return bHit; }
+	//if (!m_bActive) { return bHit; }
 
 	// プレイヤーのリスト構造が無ければ抜ける
 	if (CPlayer::GetList() == nullptr) { return bHit; }
@@ -201,11 +201,14 @@ bool CGimmickAction::DistancePlayer()
 	// プレイヤー情報の取得
 	CPlayer* player = GET_PLAYER;
 
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayer = player->GetVec3Position();
+
 	// ギミックの中心座標を取得
 	D3DXVECTOR3 posActive = GetActionPoint();
 
 	// 中心座標とプレイヤーの距離の2乗を算出
-	D3DXVECTOR3 vecToPlayer = player->GetVec3Position() - posActive;
+	D3DXVECTOR3 vecToPlayer = posPlayer - posActive;
 	float fDistance = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
 
 	// 距離の2乗がプレイヤーの半径2乗未満の場合フラグを立てる

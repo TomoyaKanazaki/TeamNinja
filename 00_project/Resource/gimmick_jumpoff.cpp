@@ -63,27 +63,30 @@ void CGimmickJumpOff::Update(const float fDeltaTime)
 	if (GET_PLAYER->IsJump())
 	{ // プレイヤーがジャンプしている場合
 
-		// プレイヤーとの当たり判定
-		if (CollisionPlayer())
+		if (IsActive())
 		{
-			if (GetMoment() == false)
-			{ // ギミック発動してない場合
+			// プレイヤーとの当たり判定
+			if (CollisionPlayer())
+			{
+				if (GetMoment() == false)
+				{ // ギミック発動してない場合
 
-				D3DXVECTOR3 pos = GetVec3Position();		// 発動位置
+					D3DXVECTOR3 pos = GetVec3Position();		// 発動位置
 
-				if ((GET_PLAYER->GetVec3Position().y - (pos.y + CPlayerClone::GetHeight())) <= 10.0f)
-				{ // 特定の高さまで下がった場合
+					if ((GET_PLAYER->GetVec3Position().y - (pos.y + CPlayerClone::GetHeight())) <= 10.0f)
+					{ // 特定の高さまで下がった場合
 
-					// 発動中
-					SetMoment(GET_PLAYER->GimmickLand());
+						// 発動中
+						SetMoment(GET_PLAYER->GimmickLand());
+					}
 				}
 			}
-		}
-		else
-		{ // 範囲内じゃない場合
+			else
+			{ // 範囲内じゃない場合
 
-			// 発動しない
-			SetMoment(false);
+				// 発動しない
+				SetMoment(false);
+			}
 		}
 	}
 	

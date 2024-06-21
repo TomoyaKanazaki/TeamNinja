@@ -113,13 +113,33 @@ HRESULT CGameManager::Init(void)
 
 // 小原用ギミック置き場
 #if 1
-	CGimmick::Create(D3DXVECTOR3(2950.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 3);
+	// 踏み台
+	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 3);
+
+	// 重い扉(TODO：後で調整)
+	CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+
+	{ // 複数ボタン
+		std::vector<CGimmickMalti::SButton> vec;
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+		CGimmickMalti::Create(vec);
+	}
+
 #endif
 
 // 藤田用ギミック置き場
 #if 1
-	// ジャンプ台：最奥
-	CGimmick::Create(D3DXVECTOR3(1600.0f, 1.0f, 0.0f), D3DXVECTOR3(300.0f, 0.0f, 1600.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	// 梯子：手前
+	CGimmick::Create(D3DXVECTOR3(-1450.0f, 1.0f, 450.0f), D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 2);
+	CGimmick::Create(D3DXVECTOR3(-950.0f, 151.0f, 450.0f), D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 3);
+
+	// ジャンプ台：手前
+	CGimmick::Create(D3DXVECTOR3(-100.0f, 1.0f, -50.0f), D3DXVECTOR3(300.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 4);
+
+	// ジャンプ台：奥
+	CGimmick::Create(D3DXVECTOR3(1600.0f, 1.0f, 0.0f), D3DXVECTOR3(300.0f, 0.0f, 1600.0f), CGimmick::TYPE_JUMPTABLE, 6);
 #endif
 
 	// 複数ボタン

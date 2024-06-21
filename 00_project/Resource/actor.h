@@ -59,6 +59,8 @@ public:
 		TYPE_HOUSE4,			// ‰Æ4
 		TYPE_HOUSE5,			// ‰Æ5
 		TYPE_LANTERN,			// ƒ‰ƒ“ƒ^ƒ“
+		TYPE_GATE,				// –å(˜g•”•ª)
+		TYPE_DOOR,				// –å(”à•”•ª)
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
