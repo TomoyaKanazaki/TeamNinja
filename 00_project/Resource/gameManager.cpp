@@ -112,10 +112,8 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 小原用ギミック置き場
-#if 0
-	
-
-
+#if 1
+	CGimmick::Create(D3DXVECTOR3(2950.0f, 0.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 3);
 #endif
 
 // 藤田用ギミック置き場
