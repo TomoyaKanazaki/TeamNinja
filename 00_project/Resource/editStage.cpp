@@ -50,6 +50,8 @@ namespace
 		"ゴールポイント",
 		"ギミック",
 	};
+
+	const float MOVE = editstage::SIZE * 0.5f;	// 移動量
 }
 
 //************************************************************
@@ -273,54 +275,54 @@ void CEditStage::UpdatePosition(void)
 	{
 		if (m_pKeyboard->IsPress(KEY_FAR))
 		{
-			m_pos.z += editstage::SIZE;
+			m_pos.z += MOVE;
 		}
 		if (m_pKeyboard->IsPress(KEY_NEAR))
 		{
-			m_pos.z -= editstage::SIZE;
+			m_pos.z -= MOVE;
 		}
 		if (m_pKeyboard->IsPress(KEY_RIGHT))
 		{
-			m_pos.x += editstage::SIZE;
+			m_pos.x += MOVE;
 		}
 		if (m_pKeyboard->IsPress(KEY_LEFT))
 		{
-			m_pos.x -= editstage::SIZE;
+			m_pos.x -= MOVE;
 		}
 		if (m_pKeyboard->IsPress(KEY_UP))
 		{
-			m_pos.y += editstage::SIZE;
+			m_pos.y += MOVE;
 		}
 		if (m_pKeyboard->IsPress(KEY_DOWN))
 		{
-			m_pos.y -= editstage::SIZE;
+			m_pos.y -= MOVE;
 		}
 	}
 	else
 	{
 		if (m_pKeyboard->IsTrigger(KEY_FAR))
 		{
-			m_pos.z += editstage::SIZE;
+			m_pos.z += MOVE;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_NEAR))
 		{
-			m_pos.z -= editstage::SIZE;
+			m_pos.z -= MOVE;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_RIGHT))
 		{
-			m_pos.x += editstage::SIZE;
+			m_pos.x += MOVE;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_LEFT))
 		{
-			m_pos.x -= editstage::SIZE;
+			m_pos.x -= MOVE;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_UP))
 		{
-			m_pos.y += editstage::SIZE;
+			m_pos.y += MOVE;
 		}
 		if (m_pKeyboard->IsTrigger(KEY_DOWN))
 		{
-			m_pos.y -= editstage::SIZE;
+			m_pos.y -= MOVE;
 		}
 	}
 }
