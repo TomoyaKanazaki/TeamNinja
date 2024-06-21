@@ -332,7 +332,7 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
-#if 0
+#if 0 // TODO デバッグ中は１の方が見やすいよ
 		BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\testfield.png"));
 #endif
 	}
