@@ -114,6 +114,8 @@ HRESULT CGameManager::Init(void)
 // 小原用ギミック置き場
 #if 0
 	
+
+
 #endif
 
 // 藤田用ギミック置き場
