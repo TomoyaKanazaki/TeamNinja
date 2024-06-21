@@ -25,16 +25,16 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil004.png",	// 草テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 泥テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 落とし穴テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 朽ちた床テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 水テクスチャ
-		"data\\TEXTURE\\soil001.png",	// ドブテクスチャ
+		"data\\TEXTURE\\soil005.png",			// 土テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 草土テクスチャ
+		"data\\TEXTURE\\soil004.png",			// 草テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 砂利道テクスチャ
+		"data\\TEXTURE\\FIELD2\\Mud000.jpg",	// 泥テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 掃除床テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 落とし穴テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 朽ちた床テクスチャ
+		"data\\TEXTURE\\soil001.png",			// 水テクスチャ
+		"data\\TEXTURE\\soil001.png",			// ドブテクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
 	{
@@ -332,7 +332,7 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
-#ifdef _DEBUG
+#if 0 // TODO デバッグ中は１の方が見やすいよ
 		BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\testfield.png"));
 #endif
 	}
