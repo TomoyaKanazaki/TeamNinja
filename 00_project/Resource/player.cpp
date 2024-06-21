@@ -50,7 +50,7 @@ namespace
 	const float REBOUND		= 500.0f;		// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;		// 重力
 	const float	RADIUS		= 20.0f;		// 半径
-	const float HEIGHT		= 100.0f;		// 身長
+	const float HEIGHT		= 80.0f;		// 身長
 	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数

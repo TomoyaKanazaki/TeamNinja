@@ -28,7 +28,7 @@ namespace
 	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 扉が上がる移動量
 	const D3DXVECTOR3 MOVEDOWN	= D3DXVECTOR3(0.0f, 12.0f, 0.0f);	// 扉が下がる移動量
 	const float GRAVITY	= 60.0f;	// 重力
-	const float CLONE_UP = 15.0f;	// 分身の身長に加算する値
+	const float CLONE_UP = 10.0f;	// 分身の身長に加算する値
 }
 
 //============================================================
