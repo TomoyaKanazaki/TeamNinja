@@ -16,7 +16,6 @@
 //==========================================
 namespace
 {
-	const char* PARAM_FILE = "data\\TXT\\Goal.txt"; // パラメータが保存されたパス
 	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
 
 	const float ROT_SPEED = 0.01f;		// 向きの速度

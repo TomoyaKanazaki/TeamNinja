@@ -303,9 +303,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
-	DebugProc::Print(DebugProc::POINT_CENTER, "モーション : %d\n", currentMotion);
-	DebugProc::Print(DebugProc::POINT_CENTER, "アクション : %d", m_Action);
-
 	// アクターの当たり判定
 	(void)CollisionActor();
 
@@ -1561,8 +1558,8 @@ CPlayerClone* CPlayerClone::Block()
 	// 前回座標をプレイヤー座標に設定する
 	m_oldPos = GET_PLAYER->GetVec3Position();
 
-	// アクターに衝突した場合生成したものを削除する
-	if (CollisionActor())
+	// 何かに衝突した場合生成したものを削除する
+	if (CollisionActor() || CollisionWall())
 	{
 		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
@@ -1701,14 +1698,17 @@ bool CPlayerClone::CollisionWall()
 	for (auto wall : list)
 	{
 		// 当たり判定処理
-		wall->Collision
+		bool bTemp = wall->Collision
 		(
 			pos, m_oldPos,		// 座標
 			RADIUS, RADIUS,		// 判定範囲
-			m_move	// 移動情報
+			m_move				// 移動情報
 		);
 
-		// 衝突判定をtrueにする
+		// 一時保存フラグがfalseなら次に進む
+		if (!bTemp || bHit) { continue; }
+
+		// 衝突フラグを立てる
 		bHit = true;
 	}
 
