@@ -25,15 +25,16 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil000.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil004.png",	// 草テクスチャ
+		"data\\TEXTURE\\soil003.png",	// 土テクスチャ
+		"data\\TEXTURE\\soil004.png",	// 草土テクスチャ
+		"data\\TEXTURE\\soil005.png",	// 草テクスチャ
+		"data\\TEXTURE\\FIELD2\\OldWood002.jpg",	// 床テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 砂利道テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 泥テクスチャ
+		"data\\TEXTURE\\FIELD2\\Mud000.jpg",	// 泥テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 掃除床テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 落とし穴テクスチャ
+		"data\\TEXTURE\\FIELD2\\pitfall.jpg",	// 落とし穴テクスチャ
 		"data\\TEXTURE\\soil001.png",	// 朽ちた床テクスチャ
-		"data\\TEXTURE\\soil001.png",	// 水テクスチャ
+		"data\TEXTURE\FIELD2\Water.png",	// 水テクスチャ
 		"data\\TEXTURE\\soil001.png",	// ドブテクスチャ
 	};
 	const char FLAG[] =	// フラグ配列
@@ -41,6 +42,7 @@ namespace
 		' ',	// 土フラグ
 		' ',	// 草土フラグ
 		' ',	// 草フラグ
+		' ',	// 床フラグ
 		'g',	// 砂利フラグ
 		'b',	// 泥
 		'c',	// 掃除床
@@ -56,6 +58,7 @@ namespace
 		D3DXCOLOR(0.70f, 0.37f, 0.00f, 1.0f),
 		D3DXCOLOR(0.11f, 0.02f, 0.00f, 1.0f),
 		D3DXCOLOR(0.02f, 0.96f, 0.27f, 1.0f),
+		D3DXCOLOR(0.52f, 0.46f, 0.27f, 1.0f),
 		D3DXCOLOR(0.38f, 0.38f, 0.38f, 1.0f),
 		D3DXCOLOR(0.18f, 0.10f, 0.00f, 1.0f),
 		D3DXCOLOR(0.90f, 0.90f, 1.00f, 1.0f),
