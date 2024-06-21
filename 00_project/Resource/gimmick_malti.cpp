@@ -91,7 +91,7 @@ void CGimmickMalti::Update(const float fDeltaTime)
 	}
 
 	// TODO : α提出用クリアフラグ。消せ。
-	if (!m_bActive) { m_bClear = true; }
+	if (m_bActive) { m_bClear = true; }
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
