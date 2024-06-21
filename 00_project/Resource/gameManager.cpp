@@ -111,6 +111,16 @@ HRESULT CGameManager::Init(void)
 
 #endif
 
+// 小原用ギミック置き場
+#if 0
+	
+#endif
+
+// 藤田用ギミック置き場
+#if 0
+
+#endif
+
 	// 複数ボタン
 #if 0
 	std::vector<CGimmickMalti::SButton> vec;
