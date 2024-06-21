@@ -75,7 +75,7 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 	if (HitPlayer())
 	{
 		// プレイヤーを大ジャンプ！
-		SetMoment(GET_PLAYER->GimmickHighJump());
+		SetMoment(GET_PLAYER->GimmickHighJump(GetNumActive()));
 	}
 	else
 	{
