@@ -105,15 +105,15 @@ public:
 	void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }	// ジャンプ状況設定
 	bool IsJump(void) const							{ return m_bJump; }		// ジャンプ状況設定
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
-	bool Hit(const int nDamage);		// ヒット
-	void SetSpawn(void);				// 出現設定
-	void SetState(const EState state);	// 状態設定
-	EState GetState(void) const;		// 状態取得
-	float GetRadius(void) const;		// 半径取得
-	float GetHeight(void) const;		// 縦幅取得
-	bool GimmickHighJump(void);			// ギミックのハイジャンプ
-	void GimmickLowJump(void);			// ギミックの小ジャンプ
-	bool GimmickLand(void);				// ギミックの飛び降り着地
+	bool Hit(const int nDamage);				// ヒット
+	void SetSpawn(void);						// 出現設定
+	void SetState(const EState state);			// 状態設定
+	EState GetState(void) const;				// 状態取得
+	float GetRadius(void) const;				// 半径取得
+	float GetHeight(void) const;				// 縦幅取得
+	bool GimmickHighJump(const int nNumClone);	// ギミックのハイジャンプ
+	void GimmickLowJump(void);					// ギミックの小ジャンプ
+	bool GimmickLand(void);						// ギミックの飛び降り着地
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
