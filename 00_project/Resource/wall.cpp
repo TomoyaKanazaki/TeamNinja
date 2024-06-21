@@ -21,9 +21,9 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\soil005.png",	// 土テクスチャ
-		"data\\TEXTURE\\soil005.png",	// 草土テクスチャ
-		"data\\TEXTURE\\soil002.png",	// 草テクスチャ
+		"data\\TEXTURE\\FIELD\\soil005.png",	// 土テクスチャ
+		"data\\TEXTURE\\FIELD\\soil005.png",	// 草土テクスチャ
+		"data\\TEXTURE\\FIELD\\soil002.png",	// 草テクスチャ
 	};
 
 	const int PRIORITY = 0;	// 壁の優先順位

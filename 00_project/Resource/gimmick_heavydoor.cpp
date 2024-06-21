@@ -18,15 +18,13 @@
 #include "scene.h"
 #include "debug.h"
 #include "debugproc.h"
+#include "actor.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char* MODEL_ROOF_PASS	= "data\\MODEL\\DOOR\\gate000.x";	// 重い扉(屋根)
-	const char* MODEL_DOOR_PASS	= "data\\MODEL\\DOOR\\gate001.x";	// 重い扉(扉)
-
 	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 扉が上がる移動量
 	const D3DXVECTOR3 MOVEDOWN	= D3DXVECTOR3(0.0f, 12.0f, 0.0f);	// 扉が下がる移動量
 	const float GRAVITY	= 60.0f;	// 重力
@@ -36,7 +34,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CGimmickHeavyDoor::CGimmickHeavyDoor() : CGimmickAction(),
-m_pRoofModel(nullptr),		// オブジェクトモデル(屋根)の情報
+m_pGateModel(nullptr),		// オブジェクトモデル(枠)の情報
 m_pDoorModel(nullptr),		// オブジェクトモデル(扉)の情報
 m_oldPosDoor(VEC3_ZERO),	// 過去位置
 m_move(VEC3_ZERO),			// 移動量
@@ -59,7 +57,7 @@ CGimmickHeavyDoor::~CGimmickHeavyDoor()
 HRESULT CGimmickHeavyDoor::Init(void)
 {
 	// 変数初期化
-	m_pRoofModel = nullptr;		// 屋根モデルの情報
+	m_pGateModel = nullptr;		// 枠モデルの情報
 	m_pDoorModel = nullptr;		// 扉モデルの情報
 	m_oldPosDoor = VEC3_ZERO;	// 過去位置
 	m_move = VEC3_ZERO;			// 移動量
@@ -77,9 +75,9 @@ HRESULT CGimmickHeavyDoor::Init(void)
 	//-----------------------------------------------------------
 	//	モデルの生成
 	//-----------------------------------------------------------
-	// 屋根の生成
-	m_pRoofModel = CObjectModel::Create(VEC3_ZERO, VEC3_ZERO);
-	if (m_pRoofModel == nullptr)
+	// 枠の生成
+	m_pGateModel = CActor::Create(CActor::TYPE_GATE, GetVec3Position(), VEC3_ZERO);
+	if (m_pGateModel == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
@@ -87,14 +85,11 @@ HRESULT CGimmickHeavyDoor::Init(void)
 		return E_FAIL;
 	}
 
-	// 屋根モデルを割当
-	m_pRoofModel->BindModel(MODEL_ROOF_PASS);
-
 	// 自動更新・破棄されるラベルを適応
-	m_pRoofModel->SetLabel(CObject::LABEL_GIMMICK);
+	m_pGateModel->SetLabel(CObject::LABEL_GIMMICK);
 
 	// 扉の生成
-	m_pDoorModel = CObjectModel::Create(VEC3_ZERO, VEC3_ZERO);
+	m_pDoorModel = CActor::Create(CActor::TYPE_DOOR, GetVec3Position(), VEC3_ZERO);
 	if (m_pDoorModel == nullptr)
 	{ // 生成に失敗した場合
 
@@ -102,9 +97,6 @@ HRESULT CGimmickHeavyDoor::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 扉モデルを割当
-	m_pDoorModel->BindModel(MODEL_DOOR_PASS);
 
 	// 自動更新・破棄されるラベルを適応
 	m_pDoorModel->SetLabel(CObject::LABEL_GIMMICK);
@@ -118,8 +110,8 @@ HRESULT CGimmickHeavyDoor::Init(void)
 //============================================================
 void CGimmickHeavyDoor::Uninit(void)
 {
-	// 屋根モデルの終了
-	SAFE_UNINIT(m_pRoofModel);
+	// 枠モデルの終了
+	SAFE_UNINIT(m_pGateModel);
 
 	// 扉モデルの終了
 	SAFE_UNINIT(m_pDoorModel);
@@ -196,8 +188,8 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 親クラスの位置設定
 	CGimmickAction::SetVec3Position(rPos);
 
-	// 屋根の位置設定
-	m_pRoofModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 100.0f));
+	// 枠の位置設定
+	m_pGateModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 100.0f));
 
 	// 扉の位置設定
 	m_pDoorModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 100.0f));
@@ -255,7 +247,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 	// 位置設定
 	m_pDoorModel->SetVec3Position(posDoor);
 
-	if (posDoor.y >= GetVec3Position().y + CPlayerClone::GetHeight() || IsActive() == false)	// TODO：上げる量は定数に
+	if (posDoor.y >= GetVec3Position().y + CPlayerClone::GetHeight() || IsActive() == false)
 	{ // 一定時間経ったら
 
 		m_state = STATE_FULLY;	// 扉全開状態

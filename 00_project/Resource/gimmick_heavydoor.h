@@ -18,7 +18,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObjectModel;	// オブジェクトモデルクラス
+class CActor;	// アクタークラス
 
 //************************************************************
 //	クラス定義
@@ -54,8 +54,8 @@ private:
 	void CloseTheDoor(void);	// 扉を下げる
 
 	// メンバ変数
-	CObjectModel* m_pRoofModel;	// オブジェクトモデル(屋根)の情報
-	CObjectModel* m_pDoorModel;	// オブジェクトモデル(扉)の情報
+	CActor* m_pGateModel;	// アクター(枠)の情報
+	CActor* m_pDoorModel;	// アクター(扉)の情報
 	D3DXVECTOR3	m_oldPosDoor;	// 過去位置
 	D3DXVECTOR3 m_move;	// 移動量
 	EState m_state;		// 扉の状態
