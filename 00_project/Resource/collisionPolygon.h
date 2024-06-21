@@ -17,7 +17,7 @@
 
 #ifdef _DEBUG
 
-#include "object2D.h"
+#include "object3D.h"
 
 #endif // _DEBUG
 
@@ -51,7 +51,7 @@ public:
 
 #ifdef _DEBUG
 
-	CObject2D* GetSphere(void) const { return m_pPolygon; }	// メッシュスフィアの取得処理
+	CObject3D* GetPolygon(void) const { return m_pPolygon; }	// メッシュポリゴンの取得処理
 
 #endif // _DEBUG
 
@@ -72,7 +72,7 @@ private:
 
 #ifdef _DEBUG
 
-	CObject2D* m_pPolygon;	// ポリゴン
+	CObject3D* m_pPolygon;	// ポリゴン
 
 #endif // _DEBUG
 };

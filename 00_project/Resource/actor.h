@@ -22,6 +22,7 @@
 class CCollisionCube;		// キューブの当たり判定
 class CCollisionCylinder;	// シリンダーの当たり判定
 class CCollisionSphere;		// スフィアの当たり判定
+class CCollisionPolygon;	// ポリゴンの当たり判定
 
 //************************************************************
 //	クラス定義
@@ -102,6 +103,7 @@ public:
 	std::vector<CCollisionCube*> GetCube(void) const { return m_cube; }					// キューブの情報の取得処理
 	std::vector<CCollisionCylinder*> GetCylinder (void) const { return m_cylinder; }	// シリンダーの情報の取得処理
 	std::vector<CCollisionSphere*> GetSphere(void) const { return m_sphere; }			// スフィアの情報の取得処理
+	std::vector<CCollisionPolygon*> GetPolygon(void) const { return m_polygon; }		// ポリゴンの情報の取得処理
 
 	// 静的メンバ関数
 	static CActor* Create	// 生成
@@ -128,6 +130,7 @@ private:
 	std::vector<CCollisionCube*> m_cube;			// キューブの可変長配列
 	std::vector<CCollisionCylinder*> m_cylinder;	// シリンダーの可変長配列
 	std::vector<CCollisionSphere*> m_sphere;		// スフィアの可変長配列
+	std::vector<CCollisionPolygon*> m_polygon;		// ポリゴンの可変長配列
 };
 
 #endif	// _ACTOR_H_

@@ -18,6 +18,7 @@
 #include "collisionCube.h"
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
+#include "collisionPolygon.h"
 #include "collManager.h"
 
 //************************************************************
@@ -316,22 +317,34 @@ void CEditActor::UpdateRotation(void)
 	for (auto& rCube : m_pActor->GetCube())
 	{ // コリジョンキューブ数分繰り返す
 
-		// 終了処理
+		// 向きを適用する
 		rCube->GetCube()->SetVec3Rotation(GetVec3Rotation());
 	}
 
 	for (auto& rCylinder : m_pActor->GetCylinder())
 	{ // コリジョンシリンダー数分繰り返す
 
-		// 終了処理
+		// 向きを適用する
 		rCylinder->GetTube()->SetVec3Rotation(GetVec3Rotation());
 	}
 
 	for (auto& rSphere : m_pActor->GetSphere())
 	{ // コリジョンスフィア数分繰り返す
 
-		// 終了処理
+		// 向きを適用する
 		rSphere->GetSphere()->SetVec3Rotation(GetVec3Rotation());
+	}
+
+	for (auto& rPolygon : m_pActor->GetPolygon())
+	{ // コリジョンポリゴン数分繰り返す
+
+		// 向きを適用する
+		rPolygon->GetPolygon()->SetVec3Rotation(D3DXVECTOR3
+		(
+			rPolygon->GetRot().x,
+			rPolygon->GetRot().y + GetVec3Rotation().y,
+			rPolygon->GetRot().z
+		));
 	}
 
 #endif // _DEBUG
@@ -403,6 +416,18 @@ void CEditActor::UpdateScaling(void)
 
 		// 拡大率を適用する
 		rSphere->GetSphere()->SetRadius(rSphere->GetRadius() * m_infoCreate.scale.x);
+	}
+
+	for (auto& rPolygon : m_pActor->GetPolygon())
+	{ // コリジョンポリゴン数分繰り返す
+
+		// 拡大率を適用する
+		rPolygon->GetPolygon()->SetVec3Sizing(D3DXVECTOR3
+		(
+			rPolygon->GetSize().x * m_infoCreate.scale.x,
+			rPolygon->GetSize().y * m_infoCreate.scale.y,
+			rPolygon->GetSize().z * m_infoCreate.scale.z
+		));
 	}
 
 #endif // _DEBUG
@@ -544,6 +569,18 @@ void CEditActor::CreateActor(void)
 
 			// 大きさを設定する
 			rSphere->SetRadius(rSphere->GetRadius() / m_infoCreate.scale.x);
+		}
+
+		for (auto& rPolygon : m_pActor->GetPolygon())
+		{ // コリジョンポリゴン数分繰り返す
+
+			// 大きさを設定する
+			rPolygon->SetSize(D3DXVECTOR3
+			(
+				rPolygon->GetSize().x / m_infoCreate.scale.x,
+				rPolygon->GetSize().y / m_infoCreate.scale.y,
+				rPolygon->GetSize().z / m_infoCreate.scale.z
+			));
 		}
 	}
 }

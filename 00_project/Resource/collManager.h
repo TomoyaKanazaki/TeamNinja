@@ -47,6 +47,14 @@ public:
 		float fRadius;		// 半径
 	};
 
+	// ポリゴンの当たり判定の情報構造体
+	struct SCollPolygon
+	{
+		D3DXVECTOR3 offset;	// オフセット座標
+		D3DXVECTOR3 rot;	// 向き
+		D3DXVECTOR3 size;	// サイズ
+	};
+
 	// 当たり判定関係の構造体
 	struct SCollision
 	{
@@ -55,22 +63,26 @@ public:
 			m_cube = {};			// キューブの情報配列
 			m_cylinder = {};		// シリンダーの情報配列
 			m_sphere = {};			// スフィアの情報配列
+			m_polygon = {};			// ポリゴンの情報配列
 		}
 		SCollision				// コンストラクタ(オーバーロード)
 		(
 			std::vector<SCollCube> cube,
 			std::vector<SCollCylinder> cylinder,
-			std::vector<SCollSphere> sphere
+			std::vector<SCollSphere> sphere,
+			std::vector<SCollPolygon> polygon
 		)
 		{
 			m_cube = cube;			// キューブの情報配列
 			m_cylinder = cylinder;	// シリンダーの情報配列
 			m_sphere = sphere;		// スフィアの情報配列
+			m_polygon = polygon;	// ポリゴンの情報配列
 		}
 
 		std::vector<SCollCube> m_cube;			// キューブの情報配列
 		std::vector<SCollCylinder> m_cylinder;	// シリンダーの情報配列
 		std::vector<SCollSphere> m_sphere;		// スフィアの情報配列
+		std::vector<SCollPolygon> m_polygon;	// ポリゴンの情報配列
 	};
 
 	// コンストラクタ

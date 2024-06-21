@@ -62,6 +62,7 @@ HRESULT CCollManager::Load(void)
 	SCollCube cubeInfo;				// キューブの情報
 	SCollCylinder cylinderInfo;		// シリンダーの情報
 	SCollSphere sphereInfo;			// スフィアの情報
+	SCollPolygon polygonInfo;		// ポリゴンの情報
 	int nNum = 0;					// 総数
 	int nType = 0;					// 種類
 
@@ -296,6 +297,80 @@ HRESULT CCollManager::Load(void)
 							}
 						}
 					} while (str != "END_SPHERESET");	// END_SPHERESETを読み込むまでループ
+				}
+				else if (str == "POLYGONSET")
+				{ // ポリゴンの当たり判定を読み込んだ場合
+
+					do
+					{ // END_POLYGONSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str.front() == '#')
+						{ // コメントアウトされている場合
+
+							// 一行全て読み込む
+							std::getline(file, str);
+						}
+						else if (str == "NUM")
+						{ // ポリゴンの数を読み込んだ場合
+
+							file >> str;	// ＝を読込
+							file >> nNum;	// 総数を読込
+
+							for (int nCnt = 0; nCnt < nNum; nCnt++)
+							{
+								while (file >> str)
+								{
+									if (str == "COLLSET")
+									{ // コリジョン設定を読み込んだ場合
+
+										// OFFSETを読込
+										file >> str;
+										file >> str;
+										file >> polygonInfo.offset.x;
+										file >> polygonInfo.offset.y;
+										file >> polygonInfo.offset.z;
+
+										// ROTを読込
+										file >> str;
+										file >> str;
+										file >> polygonInfo.rot.x;
+										file >> polygonInfo.rot.y;
+										file >> polygonInfo.rot.z;
+
+										// WIDTHを読み込み
+										file >> str;	// WIDTHを読込
+										file >> str;	// ＝を読込
+										file >> polygonInfo.size.x;	// 幅を読込
+
+										// 高さを設定
+										polygonInfo.size.y = 0.0f;
+
+										// DEPTHを読み込み
+										file >> str;	// DEPTHを読込
+										file >> str;	// ＝を読込
+										file >> polygonInfo.size.z;	// 奥行を読込
+
+										// END_COLLSETを読込
+										file >> str;
+
+										// while文を抜け出す
+										break;
+									}
+								}
+
+								// ポリゴンの情報を設定する
+								m_aCollInfo[nType].m_polygon.push_back(polygonInfo);
+
+								// ポリゴンの当たり判定を初期化
+								polygonInfo.offset = VEC3_ZERO;	// オフセット座標
+								polygonInfo.rot = VEC3_ZERO;	// 向き
+								polygonInfo.size = VEC3_ZERO;	// サイズ
+							}
+						}
+					} while (str != "END_POLYGONSET");	// END_POLYGONSETを読み込むまでループ
 				}
 			} while (str != "END_STAGE_COLLSET");	// END_STAGE_COLLSETを読み込むまでループ
 
