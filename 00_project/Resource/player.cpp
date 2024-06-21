@@ -771,8 +771,8 @@ void CPlayer::UpdateGravity(void)
 //============================================================
 void CPlayer::UpdateSaveTeleport(void)
 {
-	CInputKeyboard* pKey = GET_INPUTKEY;
-	if (pKey->IsTrigger(DIK_Q))
+	CInputPad* pPad = GET_INPUTPAD;
+	if (pPad->IsTrigger(CInputPad::KEY_BACK))
 	{
 		// チェックポイントに帰る
 		SaveReset();
