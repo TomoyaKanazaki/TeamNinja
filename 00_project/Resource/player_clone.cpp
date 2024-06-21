@@ -306,6 +306,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// アクターの当たり判定
 	(void)CollisionActor();
 
+	// 壁の当たり判定
+	(void)CollisionWall();
+
 	// 影の更新
 	m_pShadow->Update(fDeltaTime);
 
@@ -411,8 +414,8 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 //===========================================
 void CPlayerClone::SetField(CField* field)
 {
-	// 既に同じポインタを所持している場合関数を抜ける
-	if (m_pField == field) { return; }
+	// 既に別のフィールドを所持している場合関数を抜ける
+	if (m_pField != nullptr) { return; }
 
 	// 引数をポインタに設定する
 	m_pField = field;
@@ -430,6 +433,15 @@ void CPlayerClone::SetField(CField* field)
 		m_move *= FALL_SPEED;
 		m_Action = ACTION_FALL_TO_WAIT;
 	}
+}
+
+//===========================================
+//  フィールドの削除
+//===========================================
+void CPlayerClone::DeleteField(CField* field)
+{
+	// 引数と現在所持しているフィールドが一致した場合のみ削除する
+	if (m_pField == field) { m_pField = nullptr; }
 }
 
 //===========================================
@@ -494,9 +506,6 @@ CPlayerClone* CPlayerClone::Create(void)
 
 		// 発見フラグを立てる
 		pPlayer->m_bFind = true;
-
-		// ギミック受付時間を設定する
-		pPlayer->m_fGimmickTimer = GIMMICK_TIME;
 
 		// 位置を設定する
 		pPlayer->SetVec3Position(pPlayer->CalcStartPos());
@@ -894,9 +903,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
+	
+	// 重力
+	UpdateGravity();
 
 	// 移動
 	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
 
 	// 位置の適用
 	SetVec3Position(pos);
@@ -910,9 +925,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 		// 落下
 		return MOTION_FALL;
 	}
-
-	// 着地判定
-	UpdateLanding(pos);
 
 	// 落ちる前の高さを保存
 	m_fFallStart = pos.y;
@@ -1000,6 +1012,9 @@ void CPlayerClone::UpdateRotation(D3DXVECTOR3& rRot)
 void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
+
+	// TODO
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d\n", m_pOldField == m_pCurField);
 
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
@@ -1242,7 +1257,7 @@ bool CPlayerClone::UpdateFadeIn(const float fSub)
 void CPlayerClone::UpdateIgnore()
 {
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
-	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 size = m_size * 0.5f;			// サイズ
 	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
 	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
 
@@ -1377,19 +1392,11 @@ void CPlayerClone::UpdateReAction()
 //===========================================
 void CPlayerClone::UpdateAction()
 {
-	D3DXVECTOR3 pos = GetVec3Position();		// 位置
-	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
-	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
-	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
-
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { return; }
 
 	// 待機位置に向かう
 	Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
-
-	// 待機中心の方向を向く
-	//ViewTarget(m_pGimmick->CalcWaitPoint(m_nIdxGimmick), m_pGimmick->GetActionPoint());
 }
 
 //==========================================
@@ -1551,8 +1558,8 @@ CPlayerClone* CPlayerClone::Block()
 	// 前回座標をプレイヤー座標に設定する
 	m_oldPos = GET_PLAYER->GetVec3Position();
 
-	// アクターに衝突した場合生成したものを削除する
-	if (CollisionActor())
+	// 何かに衝突した場合生成したものを削除する
+	if (CollisionActor() || CollisionWall())
 	{
 		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
@@ -1691,14 +1698,17 @@ bool CPlayerClone::CollisionWall()
 	for (auto wall : list)
 	{
 		// 当たり判定処理
-		wall->Collision
+		bool bTemp = wall->Collision
 		(
 			pos, m_oldPos,		// 座標
 			RADIUS, RADIUS,		// 判定範囲
-			m_move	// 移動情報
+			m_move				// 移動情報
 		);
 
-		// 衝突判定をtrueにする
+		// 一時保存フラグがfalseなら次に進む
+		if (!bTemp || bHit) { continue; }
+
+		// 衝突フラグを立てる
 		bHit = true;
 	}
 

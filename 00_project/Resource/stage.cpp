@@ -26,7 +26,8 @@
 //************************************************************
 namespace
 {
-	const char *SETUP_TXT = "data\\TXT\\stage.txt";	// セットアップテキスト相対パス
+	// TODO：仮で別ファイルから読込
+	const char *SETUP_TXT = "data\\TXT\\stage_alpha.txt";	// セットアップテキスト相対パス
 }
 
 //************************************************************
@@ -172,17 +173,17 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECT
 	}
 
 	if (pCurField == nullptr)
-	{ // 着地予定の地面が存在しない場合抜ける
+	{ // 着地予定の地面が存在しない場合
 
 		if (ppCollField != nullptr)
 		{ // 地面の保存アドレスがある場合
 
 			// 地面無しを保存
-			*ppCollField = pCurField;
+			*ppCollField = nullptr;
 		}
 	}
 	else
-	{ // 着地予定の地面が存在しない場合抜ける
+	{ // 着地予定の地面が存在する場合
 
 		// メッシュの着地状況を保存
 		bLand = pCurField->LandPosition(rPos, rMove);

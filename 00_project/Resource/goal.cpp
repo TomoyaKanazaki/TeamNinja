@@ -11,12 +11,14 @@
 #include "collision.h"
 #include "popupUI.h"
 
+// TODO : α提出用クリアフラグ。消せ。
+#include "gimmick_malti.h"
+
 //==========================================
 //  定数定義
 //==========================================
 namespace
 {
-	const char* PARAM_FILE = "data\\TXT\\Goal.txt"; // パラメータが保存されたパス
 	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
 
 	const float ROT_SPEED = 0.01f;		// 向きの速度
@@ -183,6 +185,9 @@ void CGoal::CollisionPlayer(void)
 {
 	// クリアフラグがオンなら関数を抜ける
 	if (m_bClear) { return; }
+
+	// TODO : α提出用クリアフラグ。消せ。
+	if (!CGimmickMalti::IsClear()) { return; }
 
 	//　自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();

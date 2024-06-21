@@ -17,6 +17,7 @@
 #include "collisionCube.h"
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
+#include "collisionPolygon.h"
 
 //************************************************************
 //	定数宣言
@@ -167,6 +168,12 @@ void CActor::Update(const float fDeltaTime)
 		sphere->OffSet(GetMtxWorld());
 	}
 
+	for (auto polygon : m_polygon)
+	{
+		// オフセット処理
+		polygon->OffSet(GetMtxWorld());
+	}
+
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -279,6 +286,13 @@ void CActor::Collision
 		// ヒット処理
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
+
+	// ポリゴン判定
+	for (auto polygon : m_polygon)
+	{
+		// ヒット処理
+		polygon->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
 }
 
 //==========================================
@@ -327,6 +341,16 @@ void CActor::Collision
 		// 判定をtrueにする
 		bHit = true;
 	}
+
+	// ポリゴン判定
+	for (auto polygon : m_polygon)
+	{
+		// ヒット処理
+		if (!polygon->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 判定をtrueにする
+		bHit = true;
+	}
 }
 
 //============================================================
@@ -352,10 +376,17 @@ void CActor::ClearCollision(void)
 		sphere->Uninit();
 	}
 
+	for (auto polygon : m_polygon)
+	{
+		// 終了処理
+		polygon->Uninit();
+	}
+
 	// クリア処理
 	m_cube.clear();
 	m_cylinder.clear();
 	m_sphere.clear();
+	m_polygon.clear();
 }
 
 //============================================================
@@ -409,6 +440,18 @@ void CActor::BindCollision(void)
 			GetVec3Position(),				// 位置
 			coll.m_sphere[nCnt].offset,		// オフセット座標
 			coll.m_sphere[nCnt].fRadius * GetVec3Scaling().x		// 半径
+		));
+	}
+
+	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_polygon.size()); nCnt++)
+	{
+		// スフィアの情報を追加する
+		m_polygon.push_back(CCollisionPolygon::Create
+		(
+			GetVec3Position(),				// 位置
+			coll.m_polygon[nCnt].offset,	// オフセット座標
+			coll.m_polygon[nCnt].rot,		// 向き
+			D3DXVECTOR3(coll.m_polygon[nCnt].size.x * GetVec3Scaling().x, 0.0f, coll.m_polygon[nCnt].size.z * GetVec3Scaling().z)		// サイズ
 		));
 	}
 }

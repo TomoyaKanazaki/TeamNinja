@@ -4,33 +4,607 @@
 #	Author : 小原 立暉
 #
 #==============================================================================
+#=================================================================================
+ACTOR_TYPE = 0
 STAGE_COLLSET
 
 CUBESET
-	NUM	= 1
-	COLLSET
-		OFFSET	= -41.00 0.00 -117.00
-		WIDTH	= 104.00
-		HEIGHT	= 172.00
-		DEPTH	= 54.00
-	END_COLLSET
+	NUM	= 0
+
 END_CUBESET
 
 CYLINDERSET
-	NUM	= 1
-	COLLSET
-		OFFSET	= -101.00 0.00 142.00
-		RADIUS	= 44.00
-		HEIGHT	= 68.00
-	END_COLLSET
+	NUM	= 0
 END_CYLINDERSET
 
 SPHERESET
-	NUM	= 1
-	COLLSET
-		OFFSET	= 103.00 0.00 44.00
-		RADIUS	= 41.00
-	END_COLLSET
+	NUM	= 0
 END_SPHERESET
 
+POLYGONSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 72.00 30.00 6.00
+		ROT	= 0.30 -0.71 1.26
+		WIDTH	= 94.00
+		DEPTH	= 88.00
+	END_COLLSET
+END_POLYGONSET
+
 END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 1
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 2
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 3
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 4
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 5
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 6
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 7
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 8
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 9
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 10
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 11
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 12
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 13
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 14
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 15
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 16
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 17
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 18
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 19
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 20
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 21
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 22
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 23
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================

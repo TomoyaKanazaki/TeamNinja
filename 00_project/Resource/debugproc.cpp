@@ -103,7 +103,6 @@ void DebugProc::Draw(void)
 //==========================================================
 void DebugProc::Print(const EPoint point, const char *fmt, ...)
 {
-#ifdef _DEBUG
 	va_list args;
 	char aString[MAX_DEBUGSTRING] = {};		// 指定文字格納用
 	char aSaveString[MAX_DEBUGSTRING] = {};	// 可変引数中身格納用
@@ -192,5 +191,4 @@ void DebugProc::Print(const EPoint point, const char *fmt, ...)
 
 	//文字列を連結する
 	strcat(&m_aStr[point][0], &aString[0]);
-#endif
 }

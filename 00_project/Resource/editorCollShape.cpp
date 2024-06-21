@@ -14,6 +14,7 @@
 #include "editCollCube.h"
 #include "editCollCylinder.h"
 #include "editCollSphere.h"
+#include "editCollPolygon.h"
 #include "actor.h"
 
 //************************************************************
@@ -160,6 +161,9 @@ CEditorCollShape* CEditorCollShape::Create(CEditCollision::EType type, const int
 		break;
 	case CEditCollision::TYPE_SPHERE:
 		pEditorObject = new CEditCollSphere(nIdx);		// エディットコリジョンスフィア
+		break;
+	case CEditCollision::TYPE_POLYGON:
+		pEditorObject = new CEditCollPolygon(nIdx);		// エディットコリジョンポリゴン
 		break;
 	default:		// 例外処理
 		assert(false);

@@ -17,7 +17,7 @@
 // 定数定義
 namespace
 {
-	const float RADIUS = 20.0f;	// 半径
+	const float RADIUS = 40.0f;	// 半径
 	const bool ACTION_SET_FRAG[] = // アクションポイントの設定可能フラグ
 	{
 		true, // ジャンプ台

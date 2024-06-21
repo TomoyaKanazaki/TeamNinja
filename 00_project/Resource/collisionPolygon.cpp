@@ -122,7 +122,7 @@ CCollisionPolygon* CCollisionPolygon::Create
 #ifdef _DEBUG
 
 	// ƒ|ƒŠƒSƒ“‚ð¶¬
-	pColl->m_pPolygon = CObject2D::Create
+	pColl->m_pPolygon = CObject3D::Create
 	(
 		rPos,
 		pColl->m_size,

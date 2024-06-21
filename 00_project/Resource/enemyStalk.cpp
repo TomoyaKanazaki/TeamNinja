@@ -88,12 +88,6 @@ void CEnemyStalk::Uninit(void)
 //============================================================
 void CEnemyStalk::Update(const float fDeltaTime)
 {
-	// 過去位置更新
-	UpdateOldPosition();
-
-	// 状態処理
-	State();
-
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
 
@@ -129,18 +123,11 @@ void CEnemyStalk::SetData(void)
 }
 
 //============================================================
-// モーションの更新処理
+// 状態の更新処理
 //============================================================
-void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
+int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 {
-
-}
-
-//============================================================
-// 状態処理
-//============================================================
-void CEnemyStalk::State(void)
-{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
 	{
 	case CEnemyStalk::STATE_CRAWL:
@@ -164,6 +151,49 @@ void CEnemyStalk::State(void)
 	default:		// 例外処理
 		assert(false);
 		break;
+	}
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+// モーションの更新処理
+//============================================================
+void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
+{
+
+}
+
+//============================================================
+// 着地の更新処理
+//============================================================
+void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
+{
+	// 親クラスの着地更新
+	CEnemy::UpdateLanding(pPos);
+
+	// 現在のモーション種類を取得
+	int nCurMotion = GetMotionType();
+
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
+
+	if (!IsJump())
+	{ // 空中にいない場合
+
+		if (bTypeFall)
+		{ // モーションが落下中の場合
+
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+		}
+	}
+	else
+	{ // 空中にいる場合
+
+		// 落下モーションを指定
+		SetMotion(MOTION_FALL);
 	}
 }
 

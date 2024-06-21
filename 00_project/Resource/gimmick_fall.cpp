@@ -102,7 +102,7 @@ void CGimmickFall::Miss(CPlayerClone* pClone)
 	pClone->SabFrags(GetFlag());
 
 	// 分身からフィールドを削除する
-	pClone->DeleteField();
+	pClone->DeleteField(this);
 }
 
 //===========================================

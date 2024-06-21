@@ -24,6 +24,7 @@ class CEditorCollShape;		// エディターコリジョンシェイプクラス
 class CEditCollCube;		// キューブ当たり判定
 class CEditCollCylinder;	// シリンダー当たり判定
 class CEditCollSphere;		// スフィア当たり判定
+class CEditCollPolygon;		// ポリゴン当たり判定
 
 //************************************************************
 //	クラス定義
@@ -38,6 +39,7 @@ public:
 		TYPE_CUBE = 0,		// キューブ
 		TYPE_CYLINDER,		// シリンダー
 		TYPE_SPHERE,		// スフィア
+		TYPE_POLYGON,		// ポリゴン
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -71,9 +73,11 @@ private:
 	void InitAllColorCollCube(void);				// キューブの色全初期化
 	void InitAllColorCollCylinder(void);			// シリンダーの色全初期化
 	void InitAllColorCollSphere(void);				// スフィアの色全初期化
+	void InitAllColorCollPolygon(void);				// ポリゴンの色全初期化
 	void DeleteCollCube(const bool bRelease);		// キューブの消去処理
 	void DeleteCollCylinder(const bool bRelease);	// シリンダーの消去処理
 	void DeleteCollSphere(const bool bRelease);		// スフィアの消去処理
+	void DeleteCollPolygon(const bool bRelease);	// ポリゴンの消去処理
 
 	// メンバ変数
 	CEditorCollShape* m_pEditor;	// エディター情報
@@ -83,6 +87,7 @@ private:
 	std::vector<CEditCollCube> m_cube;			// キューブの可変長配列
 	std::vector<CEditCollCylinder> m_cylinder;	// シリンダーの可変長配列
 	std::vector<CEditCollSphere> m_sphere;		// スフィアの可変長配列
+	std::vector<CEditCollPolygon> m_polygon;	// ポリゴンの可変長配列
 
 };
 
