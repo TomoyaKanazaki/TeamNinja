@@ -21,7 +21,6 @@ namespace
 //  コンストラクタ
 //=========================================
 CGimmickStep::CGimmickStep() : CGimmickAction(),
-m_fSummit(0.0f), //登頂位置
 m_bClimb(false) // 登っているフラグ
 {
 
