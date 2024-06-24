@@ -103,9 +103,11 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
-
+	//エフェクトの配列を取得
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
 	//現在のエフェクトを削除
-	if (m_pEffectdata != NULL)
+	
+	if (!vEffect.empty())
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;
@@ -217,7 +219,8 @@ void CCheckPoint::CollisionPlayer(void)
 	m_nSaveTension = Player->GetTension();
 
 	//現在のエフェクトを削除
-	if (m_pEffectdata != NULL)
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	if (!vEffect.empty())
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;
