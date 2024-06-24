@@ -23,7 +23,6 @@
 //************************************************************
 class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
-class CCloneAngleUI;	// 分身出す方向UI
 class CGauge2D;			// ゲージクラス
 class CCheckPoint;		// チェックポイントクラス
 

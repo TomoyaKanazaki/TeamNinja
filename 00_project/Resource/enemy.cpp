@@ -135,7 +135,7 @@ void CEnemy::Update(const float fDeltaTime)
 	UpdateOldPosition();
 
 	// 状態更新
-	int nCurMotion = UpdateState(&posEnemy, &rotEnemy);	// 現在のモーションを取得
+	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
 
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映

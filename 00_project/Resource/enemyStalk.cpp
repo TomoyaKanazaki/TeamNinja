@@ -128,7 +128,7 @@ void CEnemyStalk::SetData(void)
 //============================================================
 // 状態の更新処理
 //============================================================
-int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
