@@ -18,7 +18,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込→一旦元に戻した
-	const char *SETUP_TXT	= "data\\TXT\\point_correction.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT	= "data\\TXT\\point_alpha.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
@@ -69,9 +69,6 @@ HRESULT CCheckPoint::Init(void)
 		return E_FAIL;
 	}
 
-	// チェックポイントエフェクトを出す
-	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", GetVec3Position() + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f,true);
-
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
 
@@ -106,6 +103,16 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
+	//エフェクトの配列を取得
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	//現在のエフェクトを削除
+	
+	if (!vEffect.empty())
+	{
+		delete m_pEffectdata;
+		m_pEffectdata = NULL;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -127,7 +134,6 @@ void CCheckPoint::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
 	CollisionPlayer();
-
 	
 	// 親クラスの更新
 	CObjectModel::Update(fDeltaTime);
@@ -165,6 +171,9 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 
 	// 位置を設定
 	pSavePoint->SetVec3Position(rPos);
+
+	// チェックポイントエフェクトを出す
+	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, pSavePoint->GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
 
 	// 確保したアドレスを返す
 	return pSavePoint;
@@ -209,17 +218,20 @@ void CCheckPoint::CollisionPlayer(void)
 	// 士気力を保存する
 	m_nSaveTension = Player->GetTension();
 
-	delete m_pEffectdata;
-	m_pEffectdata = NULL;
+	//現在のエフェクトを削除
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	if (!vEffect.empty())
+	{
+		delete m_pEffectdata;
+		m_pEffectdata = NULL;
+	}
+	
 	// チェックポイントエフェクトを出す
-	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", GetVec3Position() + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
+	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", pos + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
+	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", pos + OFFSET_CHECKEFFECT, GetVec3Rotation(), VEC3_ZERO, 30.0f);
 
-	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", GetVec3Position() + OFFSET_CHECKEFFECT, GetVec3Rotation(), VEC3_ZERO, 30.0f);
 	// セーブフラグをオンにする
 	m_bSave = true;
-	
-	// UIを表示
-	//CPopUpUI::Create();
 }
 
 //============================================================

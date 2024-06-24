@@ -101,7 +101,7 @@ void CEnemyItem::Draw(CShader* pShader)
 //============================================================
 // オフセット処理
 //============================================================
-void CEnemyItem::Offset(const D3DXMATRIX& rMtx)
+void CEnemyItem::Offset(const D3DXMATRIX& rMtx, const D3DXVECTOR3& rRot)
 {
 	// 計算用マトリックス
 	D3DXMATRIX mtxTrans, mtxColl;
@@ -121,8 +121,9 @@ void CEnemyItem::Offset(const D3DXMATRIX& rMtx)
 		&rMtx
 	);
 
-	// 位置を設定する
+	// 位置と向きを設定する
 	SetVec3Position(D3DXVECTOR3(mtxColl._41, mtxColl._42, mtxColl._43));
+	SetVec3Rotation(rRot);
 }
 
 //============================================================
@@ -132,7 +133,8 @@ CEnemyItem* CEnemyItem::Create
 ( // 引数
 	const EType type,				// 種類
 	const D3DXVECTOR3& rOffset,		// オフセット
-	const D3DXMATRIX& rMtx			// マトリックス情報
+	const D3DXMATRIX& rMtx,			// マトリックス情報
+	const D3DXVECTOR3& rRot			// 向き
 )
 {
 	// モデルUIの生成
@@ -182,7 +184,7 @@ CEnemyItem* CEnemyItem::Create
 		pItem->m_type = type;
 
 		// オフセット処理
-		pItem->Offset(rMtx);
+		pItem->Offset(rMtx, rRot);
 
 		// 確保したアドレスを返す
 		return pItem;

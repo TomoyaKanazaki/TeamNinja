@@ -24,7 +24,8 @@ namespace
 		true, // “¥‚İ‘ä
 		false, // İ’u
 		true, // ”ò‚Ñ~‚è
-		false // d‚¢”à
+		false, // d‚¢”à
+		false // ‹´
 	};
 }
 

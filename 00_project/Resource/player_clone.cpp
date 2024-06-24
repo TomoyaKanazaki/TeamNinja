@@ -892,15 +892,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 //===========================================
 CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 {
-	// ギミックを持っていなかった場合関数を抜ける
-	if (m_pField == nullptr)
-	{
-		m_move.x *= FALL_RETURN_SPEED;
-		m_move.z *= FALL_RETURN_SPEED;
-		m_Action = ACTION_MOVE;
-		return MOTION_DASH;
-	}
-
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 	
@@ -915,6 +906,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateFallToWait(const float fDeltaTime)
 
 	// 位置の適用
 	SetVec3Position(pos);
+
+	// ギミックを持っていなかった場合関数を抜ける
+	if (m_pField == nullptr)
+	{
+		m_move.x *= FALL_RETURN_SPEED;
+		m_move.z *= FALL_RETURN_SPEED;
+		m_Action = ACTION_MOVE;
+		return MOTION_DASH;
+	}
 
 	// アクティブ状態になったら落下して関数を抜ける
 	if (m_pField->IsFall())

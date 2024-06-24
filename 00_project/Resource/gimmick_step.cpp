@@ -107,7 +107,7 @@ void CGimmickStep::Draw(CShader* pShader)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx) const
+D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }

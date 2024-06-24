@@ -16,6 +16,7 @@
 #include "gimmick_malti.h"
 #include "gimmick_jumpoff.h"
 #include "gimmick_heavydoor.h"
+#include "gimmick_bridge.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -167,6 +168,12 @@ CGimmick* CGimmick::Create
 	case CGimmick::TYPE_HEAVYDOOR:		// d‚¢”à
 
 		pGimmick = new CGimmickHeavyDoor;
+
+		break;
+
+	case CGimmick::TYPE_BRIDGE:		// d‚¢”à
+
+		pGimmick = new CGimmickBridge;
 
 		break;
 
