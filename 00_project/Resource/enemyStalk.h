@@ -48,6 +48,7 @@ public:
 	enum EState
 	{
 		STATE_CRAWL = 0,	// 巡回状態
+		STATE_WARNING,		// 警告状態
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
@@ -76,17 +77,21 @@ private:
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
 
 	// メンバ関数
-	EMotion Crawl(void);	// 巡回処理
-	EMotion Stalk(void);	// 追跡処理
-	void Move(void);		// 移動処理
-	bool Approach(void);	// 接近処理
-	EMotion Attack(void);	// 攻撃処理
+	EMotion Crawl(void);				// 巡回処理
+	EMotion Warning(void);				// 警告処理
+	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);	// 追跡処理
+	EMotion Attack(void);				// 攻撃処理
+	EMotion Upset(void);				// 動揺処理
+
+	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
+	bool Approach(D3DXVECTOR3* pPos);	// 接近処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
 	ETarget m_target;			// 標的
 	EState m_state;				// 状態
 	float m_fSpeed;				// 速度
+	int m_nStateCount;			// 状態カウント
 };
 
 #endif	// _ENEMY_CHASE_H_
