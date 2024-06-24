@@ -758,7 +758,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugMoveControl();
 
 	// ƒWƒƒƒ“ƒv‘€ì
-	//DebugJumpControl();
+	DebugJumpControl();
 
 #endif
 

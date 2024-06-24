@@ -27,7 +27,7 @@
 namespace
 {
 	const int	PRIORITY = 3;			// 敵の優先順位
-	const float	GRAVITY = 1.0f;			// 重力
+	const float	GRAVITY = 60.0f;		// 重力
 	const float VIEW_RANGE = 400.0f;	// 視界の範囲
 }
 
@@ -339,6 +339,9 @@ void CEnemy::UpdateGravity(void)
 void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 {
 	CStage *pStage = CScene::GetStage();	// ステージ情報
+
+	// ジャンプしている状態にする
+	m_bJump = true;
 
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(*pPos, m_oldPos, m_move)

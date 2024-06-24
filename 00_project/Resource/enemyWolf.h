@@ -75,6 +75,10 @@ private:
 	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 攻撃状態時の更新
 	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 動揺状態時の更新
 
+	int UpdateMove(void);	// 移動量・目標向きの更新
+	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
+	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
+
 	// メンバ変数
 	EState m_state;	// 状態
 
