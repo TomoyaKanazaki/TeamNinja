@@ -377,8 +377,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 		// 標的を分身にする
 		m_target = TARGET_CLONE;
 	}
-
-	if (SearchPlayer(&m_posTarget))
+	else if (SearchPlayer(&m_posTarget))
 	{ // 分身が目に入った場合
 
 		// 標的をプレイヤーにする
@@ -415,7 +414,7 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(void)
 	case CEnemyStalk::TARGET_PLAYER:
 
 		// ヒット処理
-		CScene::GetPlayer()->Hit(1);
+		CScene::GetPlayer()->Hit(20);
 
 		if (GetMotionType() != MOTION_ATTACK)
 		{ // 攻撃モーションじゃない場合
