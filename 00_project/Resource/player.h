@@ -132,7 +132,7 @@ private:
 	void UpdateGravity(void);		// 重力の更新
 	void UpdateSaveTeleport(void);	// 保存位置の更新
 
-	bool UpdateLanding(D3DXVECTOR3& rPos);							// 着地状況の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);							// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot);							// 向きの更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新

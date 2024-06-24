@@ -52,6 +52,8 @@ namespace
 	const float	GRAVITY		= 60.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
 	const float HEIGHT		= 80.0f;			// 身長
+	const float LANDING_SPEED_M = -20.0f;		// 着地エフェクトMの切り替えライン
+	const float LANDING_SPEED_L = -35.0f;		// 着地エフェクトLの切り替えライン
 	const float	REV_ROTA	= 0.15f;			// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;			// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;			// 通常状態時の空中の移動量の減衰係数
@@ -260,6 +262,7 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(const float fDeltaTime)
 {
 	DebugProc::Print(DebugProc::POINT_CENTER, "pos : (%f, %f, %f)\n", m_posCenter.x, m_posCenter.y, m_posCenter.z);
+	DebugProc::Print(DebugProc::POINT_CENTER, "move : (%f, %f, %f)\n", m_move.x * fDeltaTime, m_move.y * fDeltaTime, m_move.z * fDeltaTime);
 
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
@@ -627,6 +630,9 @@ void CPlayer::RecoverJust()
 
 	// 固定値で士気力を回復する
 	m_pTensionGauge->AddNum(JUST_RECOVER);
+
+	// 回復エフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
 }
 
 //============================================================
@@ -668,7 +674,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdatePosition(posPlayer, fDeltaTime);
 
 	// 着地判定
-	UpdateLanding(posPlayer);
+	UpdateLanding(posPlayer, fDeltaTime);
 
 	// 向き更新
 	UpdateRotation(rotPlayer);
@@ -785,11 +791,11 @@ void CPlayer::UpdateSaveTeleport(void)
 //============================================================
 //	着地状況の更新処理
 //============================================================
-bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
+bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 {
 	bool bLand = false;	// 着地フラグ
 	CStage *pStage = CScene::GetStage();	// ステージ情報
-
+	D3DXVECTOR3 move = m_move * fDeltaTime; //現在の移動速度を一時保存
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
@@ -821,8 +827,29 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos)
 			// 着地モーションを指定
 			SetMotion(MOTION_LANDING);
 
-			// 着地音の再生
-			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+			if (move.y < LANDING_SPEED_L)
+			{
+				// 着地(大)エフェクトを出す
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_big.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 90.0f);
+				// 着地音(大)の再生
+				PLAY_SOUND(CSound::LABEL_SE_LAND_B);
+			}
+			else if (move.y < LANDING_SPEED_M)
+			{
+				// 着地(中)エフェクトを出す
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_mid.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 60.0f);
+				// 着地音(大)の再生
+				PLAY_SOUND(CSound::LABEL_SE_LAND_B);
+			}
+			else
+			{
+				// 着地(小)エフェクトを出す
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_small.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 90.0f);
+				// 着地音(小)の再生
+				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+			}
+
+			
 		}
 	}
 	else
