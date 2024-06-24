@@ -64,7 +64,7 @@ HRESULT CGoal::Init(void)
 	}
 
 	// ƒ‚ƒfƒ‹‚ğŠ„‚è“–‚Ä
-	BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
+	BindModel("data\\MODEL\\Kunai\\Kunai000.x");
 
 	// ©g‚Ìƒ‰ƒxƒ‹‚ğİ’è
 	SetLabel(LABEL_GOAL);
