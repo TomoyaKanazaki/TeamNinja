@@ -258,14 +258,10 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 		// ランキングに設定
 		CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());
-
-		// UIを表示
-		CPopUpUI::Create();
 	}
 	else
 	{
-		// UIを表示
-		CPopUpUI::Create();
+
 	}
 }
 

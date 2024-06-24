@@ -218,7 +218,7 @@ void CCheckPoint::CollisionPlayer(void)
 	m_bSave = true;
 	
 	// UI‚ð•\Ž¦
-	CPopUpUI::Create();
+	//CPopUpUI::Create();
 }
 
 //============================================================
