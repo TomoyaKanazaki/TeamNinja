@@ -430,8 +430,13 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(void)
 
 	case CEnemyStalk::TARGET_CLONE:
 
-		// ヒット処理
-		(*CPlayerClone::GetList()->GetBegin())->Hit(1);
+		if (CPlayerClone::GetList() != nullptr &&
+			*CPlayerClone::GetList()->GetBegin() != nullptr)
+		{ // プレイヤーの分身が存在している場合
+
+			// ヒット処理
+			(*CPlayerClone::GetList()->GetBegin())->Hit(1);
+		}
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
