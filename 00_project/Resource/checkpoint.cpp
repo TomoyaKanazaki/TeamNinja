@@ -18,7 +18,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込→一旦元に戻した
-	const char *SETUP_TXT	= "data\\TXT\\point_correction.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT	= "data\\TXT\\point_alpha.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
@@ -103,9 +103,11 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
-
+	//エフェクトの配列を取得
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
 	//現在のエフェクトを削除
-	if (m_pEffectdata != NULL)
+	
+	if (!vEffect.empty())
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;
@@ -217,7 +219,8 @@ void CCheckPoint::CollisionPlayer(void)
 	m_nSaveTension = Player->GetTension();
 
 	//現在のエフェクトを削除
-	if (m_pEffectdata != NULL)
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	if (!vEffect.empty())
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;

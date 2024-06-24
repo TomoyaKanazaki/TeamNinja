@@ -37,6 +37,7 @@ public:
 		TYPE_POST,				// Ý’u
 		TYPE_JUMPOFF,			// ”ò‚Ñ~‚è
 		TYPE_HEAVYDOOR,			// d‚¢”à
+		TYPE_BRIDGE,			// ‹´
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
