@@ -7,6 +7,8 @@
 //==========================================
 #pragma once
 #include "objectModel.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //==========================================
 //  クラス定義
@@ -40,6 +42,7 @@ private:
 	CListManager<CCheckPoint>::AIterator m_iterator;	// イテレーター
 	bool m_bSave; // セーブフラグ
 	int m_nSaveTension; // セーブ時の士気力
+	CEffekseer::CEffectData* m_pEffectdata; //保持するエフェクト情報
 
 	// 静的メンバ変数
 	static int m_nNumAll;

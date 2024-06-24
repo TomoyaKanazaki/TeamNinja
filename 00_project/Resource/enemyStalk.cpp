@@ -23,11 +23,14 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
-	const float MOVE = -300.0f;								// 移動量
-	const float ROT_REV = 0.5f;								// 向きの補正係数
-	const float ATTACK_DISTANCE = 50.0f;					// 攻撃判定に入る距離
+	const float MOVE = -300.0f;				// 移動量
+	const float ROT_REV = 0.5f;				// 向きの補正係数
+	const float ATTACK_DISTANCE = 50.0f;	// 攻撃判定に入る距離
+	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
+	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-3.0f, -15.0f, 0.0f);	// オフセット座標
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-12.0f, -9.5f, 0.0f);	// オフセット座標
 }
 
 //************************************************************
@@ -125,7 +128,7 @@ void CEnemyStalk::SetData(void)
 //============================================================
 // 状態の更新処理
 //============================================================
-int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
@@ -133,23 +136,43 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	case CEnemyStalk::STATE_CRAWL:
 
 		// 巡回処理
-		Crawl();
+		nCurMotion = Crawl();
+
+		break;
+
+	case CEnemyStalk::STATE_WARNING:
+
+		// 警告処理
+		nCurMotion = Warning();
 
 		break;
 
 	case CEnemyStalk::STATE_STALK:
 
 		// 追跡処理
-		Stalk();
+		nCurMotion = Stalk(pPos, pRot);
 
 		break;
 
 	case CEnemyStalk::STATE_ATTACK:
 
+		// 攻撃処理
+		nCurMotion = Attack();
+
 		break;
 
-	default:		// 例外処理
+	case CEnemyStalk::STATE_UPSET:
+
+		// 動揺処理
+		nCurMotion = Upset();
+
+		break;
+
+	default:
+
+		// 停止
 		assert(false);
+
 		break;
 	}
 
@@ -162,7 +185,99 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 //============================================================
 void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 {
+	// 死んでたら抜ける
+	if (IsDeath()) { return; }
 
+	int nAnimMotion = GetMotionType();	// 現在再生中のモーション
+	if (nMotion != NONE_IDX)
+	{ // モーションが設定されている場合
+
+		if (IsMotionLoop())
+		{ // ループするモーション中の場合
+
+			if (nAnimMotion != nMotion)
+			{ // 現在のモーションが再生中のモーションと一致しない場合
+
+				// 現在のモーションの設定
+				SetMotion(nMotion, BLEND_FRAME_OTHER);
+			}
+		}
+	}
+
+	// オブジェクトキャラクターの更新
+	CObjectChara::Update(fDeltaTime);
+
+	// 現在のモーションの更新
+	switch (GetMotionType())
+	{
+	case CEnemyStalk::MOTION_IDOL:		// 待機
+		break;
+
+	case CEnemyStalk::MOTION_WALK:		// 歩行
+		break;
+
+	case CEnemyStalk::MOTION_FOUND:		// 発見
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case CEnemyStalk::MOTION_ATTACK:	// 攻撃
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case CEnemyStalk::MOTION_UPSET:		// 動揺
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case CEnemyStalk::MOTION_FALL:		// 落下
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case CEnemyStalk::MOTION_LANDING:	// 着地
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
 }
 
 //============================================================
@@ -200,129 +315,207 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 // 巡回処理
 //============================================================
-void CEnemyStalk::Crawl(void)
+CEnemyStalk::EMotion CEnemyStalk::Crawl(void)
 {
 	if (SearchClone(&m_posTarget))
 	{ // 分身が目に入った場合
 
-		// 追跡状態にする
-		m_state = STATE_STALK;
+		// 警告状態にする
+		m_state = STATE_WARNING;
 
 		// 標的を分身にする
 		m_target = TARGET_CLONE;
 
-		return;
+		// 発見モーションを返す
+		return MOTION_FOUND;
 	}
 
 	if (SearchPlayer(&m_posTarget))
 	{ // 分身が目に入った場合
 
-		// 追跡状態にする
-		m_state = STATE_STALK;
+		// 警告状態にする
+		m_state = STATE_WARNING;
 
 		// 標的をプレイヤーにする
 		m_target = TARGET_PLAYER;
 
-		return;
+		// 発見モーションを返す
+		return MOTION_FOUND;
 	}
 
 	// 巡回状態にする
 	m_state = STATE_CRAWL;
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
+// 警告処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Warning(void)
+{
+	if (GetMotionType() != MOTION_FOUND)
+	{ // 発見モーションじゃなかった場合
+
+		// 追跡状態にする
+		m_state = STATE_STALK;
+	}
+
+	// 歩行状態を返す
+	return MOTION_WALK;
 }
 
 //============================================================
 // 追跡処理
 //============================================================
-void CEnemyStalk::Stalk(void)
+CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 {
-	// 巡回処理
-	Crawl();
+	if (SearchClone(&m_posTarget))
+	{ // 分身が目に入った場合
+
+		// 標的を分身にする
+		m_target = TARGET_CLONE;
+	}
+	else if (SearchPlayer(&m_posTarget))
+	{ // 分身が目に入った場合
+
+		// 標的をプレイヤーにする
+		m_target = TARGET_PLAYER;
+	}
 
 	// 移動処理
-	Move();
+	Move(pPos, pRot);
 
-	if (Approach())
+	if (Approach(pPos))
 	{ // 接近した場合
 
 		// 攻撃状態にする
 		m_state = STATE_ATTACK;
 
-		switch (m_target)
-		{
-		case CEnemyStalk::TARGET_PLAYER:
-
-			// ヒット処理
-			CScene::GetPlayer()->Hit(1);
-
-			break;
-
-		case CEnemyStalk::TARGET_CLONE:
-
-			// ヒット処理
-			(*CPlayerClone::GetList()->GetBegin())->Hit(1);
-
-			break;
-
-		default:		// 例外処理
-			assert(false);
-			break;
-		}
+		// 攻撃モーションを返す
+		return MOTION_ATTACK;
 	}
 
 	// デバッグ
 	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", m_posTarget.x, m_posTarget.y, m_posTarget.z);
+
+	// 歩行モーションを返す
+	return MOTION_WALK;
+}
+
+//============================================================
+// 攻撃処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Attack(void)
+{
+	switch (m_target)
+	{
+	case CEnemyStalk::TARGET_PLAYER:
+
+		// ヒット処理
+		CScene::GetPlayer()->Hit(20);
+
+		if (GetMotionType() != MOTION_ATTACK)
+		{ // 攻撃モーションじゃない場合
+
+			// 巡回状態にする
+			m_state = STATE_CRAWL;
+		}
+
+		// 待機モーションにする
+		return MOTION_IDOL;
+
+		break;
+
+	case CEnemyStalk::TARGET_CLONE:
+
+		if (CPlayerClone::GetList() != nullptr &&
+			*CPlayerClone::GetList()->GetBegin() != nullptr)
+		{ // プレイヤーの分身が存在している場合
+
+			// ヒット処理
+			(*CPlayerClone::GetList()->GetBegin())->Hit(1);
+		}
+
+		// 動揺状態にする
+		m_state = STATE_UPSET;
+
+		// 動揺モーションにする
+		return MOTION_UPSET;
+
+		break;
+
+	default:		// 例外処理
+		assert(false);
+		break;
+	}
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
+// 動揺処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Upset(void)
+{
+	if (GetMotionType() != MOTION_UPSET)
+	{ // 動揺モーションじゃなかった場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+	}
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================
 // 移動処理
 //============================================================
-void CEnemyStalk::Move(void)
+void CEnemyStalk::Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 {
-	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
-	D3DXVECTOR3 rot = GetVec3Rotation();		// 向き
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
 	float fDiff;
 
 	// 目的の向きを取得
-	destRot.y = atan2f(pos.x - m_posTarget.x, pos.z - m_posTarget.z);
+	destRot.y = atan2f(pPos->x - m_posTarget.x, pPos->z - m_posTarget.z);
 
 	// 向きの差分
-	fDiff = destRot.y - rot.y;
+	fDiff = destRot.y - pRot->y;
 
 	// 向きの正規化
 	useful::NormalizeRot(fDiff);
 
 	// 向きを補正
-	rot.y += fDiff * ROT_REV;
+	pRot->y += fDiff * ROT_REV;
 
 	// 向きの正規化
-	useful::NormalizeRot(rot.y);
+	useful::NormalizeRot(pRot->y);
 
 	// 移動量を設定する
-	move.x = sinf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	move.z = cosf(rot.y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.x = sinf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.z = cosf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
 
 	// 位置を移動する
-	pos += move;
+	*pPos += move;
 
 	// 情報を適用
-	SetVec3Position(pos);
 	SetDestRotation(destRot);
-	SetVec3Rotation(rot);
 	SetMovePosition(move);
 }
 
 //============================================================
 // 接近処理
 //============================================================
-bool CEnemyStalk::Approach(void)
+bool CEnemyStalk::Approach(D3DXVECTOR3* pPos)
 {
 	float fDistance = 0.0f;					// 距離
-	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 
 	// 距離を測る
-	fDistance = sqrtf((pos.x - m_posTarget.x) * (pos.x - m_posTarget.x) + (pos.z - m_posTarget.z) * (pos.z - m_posTarget.z));
+	fDistance = sqrtf((pPos->x - m_posTarget.x) * (pPos->x - m_posTarget.x) + (pPos->z - m_posTarget.z) * (pPos->z - m_posTarget.z));
 
 	if (fDistance <= ATTACK_DISTANCE)
 	{ // 一定の距離に入った場合
@@ -333,4 +526,24 @@ bool CEnemyStalk::Approach(void)
 
 	// 接近してない
 	return false;
+}
+
+//====================================================================================================================================================================================
+// TODO：ここから下はう〇ちカス判定だから後で修正
+//====================================================================================================================================================================================
+
+//============================================================
+// プレイヤーのヒット処理
+//============================================================
+void CEnemyStalk::HitPlayer(D3DXVECTOR3* pPos)
+{
+
+}
+
+//============================================================
+// 分身のヒット処理
+//============================================================
+void CEnemyStalk::HitClone(D3DXVECTOR3* pPos)
+{
+
 }

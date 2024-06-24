@@ -27,7 +27,7 @@ namespace
 {
 	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 扉が上がる移動量
 	const D3DXVECTOR3 MOVEDOWN	= D3DXVECTOR3(0.0f, 12.0f, 0.0f);	// 扉が下がる移動量
-	const float GRAVITY	= 60.0f;	// 重力
+	const float GRAVITY	= 360.0f;	// 重力
 	const float CLONE_UP = 10.0f;	// 分身の身長に加算する値
 }
 
@@ -168,6 +168,13 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 		break;
 	}
 
+	// 移動量加算
+	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();
+	posDoor += m_move * fDeltaTime;
+
+	// 位置設定
+	m_pDoorModel->SetVec3Position(posDoor);
+
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -260,21 +267,16 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 //============================================================
 void CGimmickHeavyDoor::CloseTheDoor(void)
 {
+	// 変数宣言
 	CStage *pStage = GET_MANAGER->GetScene()->GetStage();	// ステージ情報
 	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();	// 位置
 
 	// 重力
 	m_move.y -= GRAVITY;
 
-	// 移動量加算
-	posDoor += m_move;
-
 	// 範囲外の着地判定
 	if (pStage->LandFieldPosition(posDoor, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
 	{
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
 	}
-
-	// 位置設定
-	m_pDoorModel->SetVec3Position(posDoor);
 }

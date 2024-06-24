@@ -20,7 +20,8 @@ namespace
 	// TODO：仮で別ファイルから読込→一旦元に戻した
 	const char *SETUP_TXT	= "data\\TXT\\point_correction.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
-	const float ROT_SPEED	= 0.01f;	// 回る速度
+	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
+	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
 }
 
 //==========================================
@@ -36,6 +37,7 @@ CCheckPoint::CCheckPoint():
 	m_bSave(false),
 	m_nSaveTension(0)
 {
+	m_pEffectdata = NULL;
 	// 総数を加算
 	++m_nNumAll;
 }
@@ -67,8 +69,8 @@ HRESULT CCheckPoint::Init(void)
 		return E_FAIL;
 	}
 
-	// モデルを割り当て
-	BindModel("data\\MODEL\\FONT\\name_boss000.x");
+	// チェックポイントエフェクトを出す
+	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", GetVec3Position() + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f,true);
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
@@ -126,11 +128,7 @@ void CCheckPoint::Update(const float fDeltaTime)
 	// プレイヤーとの当たり判定
 	CollisionPlayer();
 
-	// くるくるしてみる
-	D3DXVECTOR3 rot = GetVec3Rotation();
-	rot.y += ROT_SPEED;
-	SetVec3Rotation(rot);
-
+	
 	// 親クラスの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -211,14 +209,17 @@ void CCheckPoint::CollisionPlayer(void)
 	// 士気力を保存する
 	m_nSaveTension = Player->GetTension();
 
-	// マテリアルを変更
-	SetAllMaterial(material::Red());
+	delete m_pEffectdata;
+	m_pEffectdata = NULL;
+	// チェックポイントエフェクトを出す
+	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", GetVec3Position() + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
 
+	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", GetVec3Position() + OFFSET_CHECKEFFECT, GetVec3Rotation(), VEC3_ZERO, 30.0f);
 	// セーブフラグをオンにする
 	m_bSave = true;
 	
 	// UIを表示
-	CPopUpUI::Create();
+	//CPopUpUI::Create();
 }
 
 //============================================================

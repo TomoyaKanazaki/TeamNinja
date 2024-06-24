@@ -18,9 +18,12 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\wolf.txt";	// セットアップテキスト相対パス
-	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
-	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
-	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
+	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
+
+	const float	REV_ROTA = 9.0f;	// 向き変更の補正係数
+	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
+	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
 }
 
 //************************************************************
@@ -102,42 +105,39 @@ void CEnemyWolf::SetData(void)
 //============================================================
 //	状態の更新処理
 //============================================================
-int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_CRAWL:	// 巡回状態
 
-		// TODO：ごめんいったん放置
-
-		// 移動操作
-		//nCurMotion = UpdateMove();
-
-		// 重力の更新
-		UpdateGravity();
-
-		// 位置更新
-		//UpdatePosition(pPos, fDeltaTime);
-
-		// 着地判定
-		UpdateLanding(pPos);
-
-		// 向き更新
-		//UpdateRotation(pRot);
-
+		// 巡回状態時の更新
+		nCurMotion = UpdateCrawl(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_CAVEAT:	// 警告状態
+
+		// 警告状態時の更新
+		nCurMotion = UpdateCaveat(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_FOUND:	// 追跡状態
+
+		// 追跡状態時の更新
+		nCurMotion = UpdateFound(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_ATTACK:	// 攻撃状態
+
+		// 攻撃状態時の更新
+		nCurMotion = UpdateAttack(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_UPSET:	// 動揺状態
+
+		// 動揺状態時の更新
+		nCurMotion = UpdateUpset(pPos, pRot, fDeltaTime);
 		break;
 
 	default:	// 例外処理
@@ -272,16 +272,11 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 	// 親クラスの着地更新
 	CEnemy::UpdateLanding(pPos);
 
-	// 現在のモーション種類を取得
-	int nCurMotion = GetMotionType();
-
-	// 落下モーションのフラグを設定
-	bool bTypeFall = nCurMotion == MOTION_FALL;
-
 	if (!IsJump())
 	{ // 空中にいない場合
 
-		if (bTypeFall)
+		//  TODO：なぜかここで待機モーションになってる→ループモーションだからだ
+		if (GetMotionType() == MOTION_FALL)
 		{ // モーションが落下中の場合
 
 			// 着地モーションを指定
@@ -294,4 +289,165 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 		// 落下モーションを指定
 		SetMotion(MOTION_FALL);
 	}
+}
+
+//============================================================
+//	巡回状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 移動操作
+	nCurMotion = UpdateMove();
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(*pPos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pPos);
+
+	// 向き更新
+	UpdateRotation(*pRot, fDeltaTime);
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	警告状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	追跡状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	攻撃状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	動揺状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	移動量・目標向きの更新処理
+//============================================================
+int CEnemyWolf::UpdateMove(void)
+{
+	D3DXVECTOR3 move = GetMovePosition();		// 移動量
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// スティックの傾きから移動量を設定
+	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
+	if (pad::DEAD_ZONE < fSpeed)
+	{ // デッドゾーン以上の場合
+
+		// スティック向きを取得
+		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
+
+		// 目標向きを設定
+		destRot.y = fStickRot;
+		useful::NormalizeRot(destRot.y);	// 向きの正規化
+
+		// 移動量を設定する
+		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
+		move.x = sinf(fStickRot + D3DX_PI) * (600.0f * fabsf(fRate.x));
+		move.z = cosf(fStickRot + D3DX_PI) * (600.0f * fabsf(fRate.z));
+
+		// 走行モーションにする
+		nCurMotion = MOTION_RUN;
+	}
+
+	SetMovePosition(move);		// 移動量を反映
+	SetDestRotation(destRot);	// 目標向きを反映
+
+	// 現在のモーションを返す
+	return nCurMotion;
+}
+
+//============================================================
+//	位置の更新処理
+//============================================================
+void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
+{
+	D3DXVECTOR3 move = GetMovePosition();	// 移動量
+
+	// 移動量を加算
+	rPos += move * fDeltaTime;
+
+	// 移動量を減衰
+	if (IsJump())
+	{ // 空中の場合
+
+		move.x += (0.0f - move.x) * JUMP_REV;
+		move.z += (0.0f - move.z) * JUMP_REV;
+	}
+	else
+	{ // 地上の場合
+
+		move.x += (0.0f - move.x) * LAND_REV;
+		move.z += (0.0f - move.z) * LAND_REV;
+	}
+
+	SetMovePosition(move);	// 移動量を反映
+}
+
+//============================================================
+//	向きの更新処理
+//============================================================
+void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+	float fDiffRot = 0.0f;	// 差分向き
+
+	// 目標向きの正規化
+	useful::NormalizeRot(destRot.y);
+
+	// 目標向きまでの差分を計算
+	fDiffRot = destRot.y - rRot.y;
+
+	// 差分向きの正規化
+	useful::NormalizeRot(fDiffRot);
+
+	// 向きの更新
+	rRot.y += fDiffRot * fDeltaTime * REV_ROTA;
+
+	// 向きの正規化
+	useful::NormalizeRot(rRot.y);
+
+	SetDestRotation(destRot);	// 目標向きを反映
 }
