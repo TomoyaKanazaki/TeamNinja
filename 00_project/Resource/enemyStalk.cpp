@@ -32,7 +32,7 @@ namespace
 	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-12.0f, -9.5f, 0.0f);	// オフセット座標
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-12.0f, -9.5f, 0.0f);		// オフセット座標
 }
 
 //************************************************************
