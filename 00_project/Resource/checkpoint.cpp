@@ -103,6 +103,14 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
+
+	//現在のエフェクトを削除
+	if (m_pEffectdata != NULL)
+	{
+		delete m_pEffectdata;
+		m_pEffectdata = NULL;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -208,9 +216,13 @@ void CCheckPoint::CollisionPlayer(void)
 	// 士気力を保存する
 	m_nSaveTension = Player->GetTension();
 
-	delete m_pEffectdata;
-	m_pEffectdata = NULL;
-
+	//現在のエフェクトを削除
+	if (m_pEffectdata != NULL)
+	{
+		delete m_pEffectdata;
+		m_pEffectdata = NULL;
+	}
+	
 	// チェックポイントエフェクトを出す
 	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", pos + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
 	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", pos + OFFSET_CHECKEFFECT, GetVec3Rotation(), VEC3_ZERO, 30.0f);
