@@ -27,7 +27,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込
-	const char *SETUP_TXT = "data\\TXT\\stage_alpha.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\TXT\\stage_correction.txt";	// セットアップテキスト相対パス
 }
 
 //************************************************************
