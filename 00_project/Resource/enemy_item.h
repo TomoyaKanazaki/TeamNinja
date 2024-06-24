@@ -43,7 +43,7 @@ public:
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// メンバ関数
-	void Offset(const D3DXMATRIX& rMtx);	// オフセット処理
+	void Offset(const D3DXMATRIX& rMtx, const D3DXVECTOR3& rRot);	// オフセット処理
 
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
@@ -54,7 +54,8 @@ public:
 	( // 引数
 		const EType type,				// 種類
 		const D3DXVECTOR3& rOffset,		// オフセット
-		const D3DXMATRIX& rMtx			// マトリックス情報
+		const D3DXMATRIX& rMtx,			// マトリックス情報
+		const D3DXVECTOR3& rRot			// 向き
 	);
 
 private:

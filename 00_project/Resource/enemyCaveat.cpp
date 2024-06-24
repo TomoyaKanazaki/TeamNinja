@@ -91,7 +91,11 @@ void CEnemyCaveat::Update(const float fDeltaTime)
 	{ // アイテムを持っている場合
 
 		// アイテムのオフセット処理
-		GetItem()->Offset(GetParts(8)->GetMtxWorld());
+		GetItem()->Offset
+		(
+			GetParts(8)->GetMtxWorld(),
+			GetParts(8)->GetVec3Rotation()
+		);
 	}
 }
 
@@ -114,7 +118,8 @@ void CEnemyCaveat::SetData(void)
 	(
 		CEnemyItem::TYPE_KATANA,
 		OFFSET,
-		GetParts(8)->GetMtxWorld()
+		GetParts(8)->GetMtxWorld(),
+		GetParts(8)->GetVec3Rotation()
 	));
 }
 
