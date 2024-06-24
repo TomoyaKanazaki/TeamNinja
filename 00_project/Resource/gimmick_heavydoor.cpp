@@ -260,6 +260,7 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 //============================================================
 void CGimmickHeavyDoor::CloseTheDoor(void)
 {
+	// 変数宣言
 	CStage *pStage = GET_MANAGER->GetScene()->GetStage();	// ステージ情報
 	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();	// 位置
 

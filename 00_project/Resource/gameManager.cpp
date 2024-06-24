@@ -77,6 +77,8 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
+	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
+
 #if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
@@ -258,14 +260,10 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 		// ランキングに設定
 		CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());
-
-		// UIを表示
-		CPopUpUI::Create();
 	}
 	else
 	{
-		// UIを表示
-		CPopUpUI::Create();
+
 	}
 }
 
