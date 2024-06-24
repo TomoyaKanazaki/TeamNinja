@@ -52,6 +52,7 @@ namespace
 	const float	GRAVITY		= 60.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
 	const float HEIGHT		= 80.0f;			// 身長
+	const float	REV_ROTA	= 9.0f;				// 向き変更の補正係数
 	const float LANDING_SPEED_M = -20.0f;		// 着地エフェクトMの切り替えライン
 	const float LANDING_SPEED_L = -35.0f;		// 着地エフェクトLの切り替えライン
 	const float	REV_ROTA	= 0.15f;			// 向き変更の補正係数
@@ -677,7 +678,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateLanding(posPlayer, fDeltaTime);
 
 	// 向き更新
-	UpdateRotation(rotPlayer);
+	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
 	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
@@ -897,10 +898,8 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 //============================================================
 //	向きの更新処理
 //============================================================
-void CPlayer::UpdateRotation(D3DXVECTOR3& rRot)
+void CPlayer::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
 {
-	// TODO：デルタタイム加味して
-
 	// 変数を宣言
 	float fDiffRot = 0.0f;	// 差分向き
 
@@ -914,7 +913,7 @@ void CPlayer::UpdateRotation(D3DXVECTOR3& rRot)
 	useful::NormalizeRot(fDiffRot);
 
 	// 向きの更新
-	rRot.y += fDiffRot * REV_ROTA;
+	rRot.y += fDiffRot * fDeltaTime * REV_ROTA;
 
 	// 向きの正規化
 	useful::NormalizeRot(rRot.y);

@@ -121,7 +121,7 @@ void CEnemyCaveat::SetData(void)
 //============================================================
 // 状態の更新処理
 //============================================================
-int CEnemyCaveat::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+int CEnemyCaveat::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
