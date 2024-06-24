@@ -55,7 +55,6 @@ namespace
 	const float	REV_ROTA	= 9.0f;				// 向き変更の補正係数
 	const float LANDING_SPEED_M = -20.0f;		// 着地エフェクトMの切り替えライン
 	const float LANDING_SPEED_L = -35.0f;		// 着地エフェクトLの切り替えライン
-	const float	REV_ROTA	= 0.15f;			// 向き変更の補正係数
 	const float	ADD_MOVE	= 0.08f;			// 非アクション時の速度加算量
 	const float	JUMP_REV	= 0.16f;			// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV	= 0.16f;			// 通常状態時の地上の移動量の減衰係数
