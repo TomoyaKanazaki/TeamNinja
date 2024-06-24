@@ -17,8 +17,8 @@
 //==========================================
 namespace
 {
-	// TODO：仮で別ファイルから読込
-	const char *SETUP_TXT	= "data\\TXT\\point_alpha.txt";	// セットアップテキスト相対パス
+	// TODO：仮で別ファイルから読込→一旦元に戻した
+	const char *SETUP_TXT	= "data\\TXT\\point_correction.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	const float ROT_SPEED	= 0.01f;	// 回る速度
 }
