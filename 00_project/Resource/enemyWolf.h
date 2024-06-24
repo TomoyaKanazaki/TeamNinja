@@ -68,6 +68,13 @@ private:
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
 
+	// メンバ関数
+	void UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 巡回状態時の更新
+	void UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 警告状態時の更新
+	void UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 追跡状態時の更新
+	void UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 攻撃状態時の更新
+	void UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 動揺状態時の更新
+
 	// メンバ変数
 	EState m_state;	// 状態
 
