@@ -74,8 +74,8 @@ public:
 protected:
 
 	// 純粋仮想関数
+	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) = 0;	// 状態の更新処理
 	virtual void UpdateMotion(int nMotion, const float fDeltaTime) = 0;	// モーションの更新処理
-	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot) = 0;	// 状態の更新処理
 	virtual void UpdateLanding(D3DXVECTOR3* pPos) = 0;	// 着地更新
 
 	// メンバ関数

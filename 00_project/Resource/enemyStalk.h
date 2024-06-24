@@ -50,6 +50,7 @@ public:
 		STATE_CRAWL = 0,	// 巡回状態
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
+		STATE_UPSET,		// 動揺状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -70,15 +71,16 @@ public:
 private:
 
 	// オーバーライド関数
-	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot) override;	// 状態の更新処理
+	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override;	// 状態の更新処理
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
 
 	// メンバ関数
-	void Crawl(void);		// 巡回処理
-	void Stalk(void);		// 追跡処理
+	EMotion Crawl(void);	// 巡回処理
+	EMotion Stalk(void);	// 追跡処理
 	void Move(void);		// 移動処理
 	bool Approach(void);	// 接近処理
+	EMotion Attack(void);	// 攻撃処理
 
 	// メンバ変数
 	D3DXVECTOR3 m_posTarget;	// 目標の位置

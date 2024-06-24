@@ -218,6 +218,9 @@ HRESULT CPlayer::Init(void)
 	// プレイヤーを出現させる
 	SetSpawn();
 
+	// 開始エフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
+
 	// 成功を返す
 	return S_OK;
 }
