@@ -5,13 +5,25 @@
 //
 //===========================================
 #include "gimmick_bridge.h"
+#include "manager.h"
+#include "player.h"
+
+//===========================================
+//  定数定義
+//===========================================
+namespace
+{
+	const float DISTANCE = 30.0f; // 待機位置との距離
+}
 
 //===========================================
 //  コンストラクタ
 //===========================================
 CGimmickBridge::CGimmickBridge() : CGimmickAction(),
 m_bSet(false),
-m_ConectPoint()
+m_ConectPoint(),
+m_vecToWait(VEC3_ZERO),
+m_nIdxWait(0)
 {
 }
 
@@ -73,9 +85,35 @@ void CGimmickBridge::Draw(CShader* pShader)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx) const
+D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
 {
-	return D3DXVECTOR3();
+	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
+	if (Idx == 0)
+	{
+		// プレイヤー座標を取得
+		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+		// プレイヤーと2点を結ぶベクトルを算出
+		D3DXVECTOR3 vecToPlayer[2] = { posPlayer - m_ConectPoint[0], posPlayer - m_ConectPoint[1] };
+
+		// 距離の2乗が小さい方の配列番号を保存
+		if (vecToPlayer[0].x * vecToPlayer[0].x + vecToPlayer[0].z * vecToPlayer[0].z <=
+			vecToPlayer[1].x * vecToPlayer[1].x + vecToPlayer[1].z * vecToPlayer[1].z)
+		{
+			m_nIdxWait = 0;
+		}
+		else
+		{
+			m_nIdxWait = 1;
+		}
+
+		// 中心から待機中心へのベクトルを算出し正規化する
+		D3DXVECTOR3 vecToWait = m_ConectPoint[m_nIdxWait] - GetVec3Position();
+		D3DXVec3Normalize(&m_vecToWait, &vecToWait);
+	}
+
+	// 待機位置を返す
+	return m_ConectPoint[m_nIdxWait] + (m_vecToWait * DISTANCE * (float)Idx);
 }
 
 //===========================================

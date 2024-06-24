@@ -22,15 +22,17 @@ public:
 	void Uninit(void) override; // 終了処理
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
-	D3DXVECTOR3 CalcWaitPoint(const int Idx) const override; // 各分身毎の待機位置を算出
+	D3DXVECTOR3 CalcWaitPoint(const int Idx) override; // 各分身毎の待機位置を算出
 
 private:
 
 	// メンバ関数
 	void CalcConectPoint(); // 橋の端の計算処理
+	void SetWait(int nIdx) { m_nIdxWait = nIdx; } // 待機中心のインデックス設定
 
 	// メンバ変数
 	bool m_bSet; // 設定済みフラグ
 	D3DXVECTOR3 m_ConectPoint[2]; // 橋の端
-
+	D3DXVECTOR3 m_vecToWait; // 中心座標から待機中心へのベクトル(単位ベクトル)
+	int m_nIdxWait; // 待機中心のインデックス
 };
