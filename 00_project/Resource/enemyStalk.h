@@ -86,12 +86,15 @@ private:
 	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
 	bool Approach(D3DXVECTOR3* pPos);	// 接近処理
 
+	// TODO：う〇ちカス判定だから後で修正
+	void HitPlayer(D3DXVECTOR3* pPos);		// プレイヤーのヒット処理
+	void HitClone(D3DXVECTOR3* pPos);		// 分身のヒット処理
+
 	// メンバ変数
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
 	ETarget m_target;			// 標的
 	EState m_state;				// 状態
 	float m_fSpeed;				// 速度
-	int m_nStateCount;			// 状態カウント
 };
 
 #endif	// _ENEMY_CHASE_H_
