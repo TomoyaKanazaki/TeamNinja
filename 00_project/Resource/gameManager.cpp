@@ -162,7 +162,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// ÇÌÇÒÇÌÇÒÇ®Å[
-#if 0
+#if 1
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 #endif
 
