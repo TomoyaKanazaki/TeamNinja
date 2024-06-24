@@ -18,9 +18,8 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\wolf.txt";	// セットアップテキスト相対パス
-	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
-	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
-	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
+	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 }
 
 //************************************************************
@@ -110,31 +109,31 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	case STATE_CRAWL:	// 巡回状態
 
 		// 巡回状態時の更新
-		UpdateCrawl(pPos, pRot, fDeltaTime);
+		nCurMotion = UpdateCrawl(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_CAVEAT:	// 警告状態
 
 		// 警告状態時の更新
-		UpdateCaveat(pPos, pRot, fDeltaTime);
+		nCurMotion = UpdateCaveat(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_FOUND:	// 追跡状態
 
 		// 追跡状態時の更新
-		UpdateFound(pPos, pRot, fDeltaTime);
+		nCurMotion = UpdateFound(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_ATTACK:	// 攻撃状態
 
 		// 攻撃状態時の更新
-		UpdateAttack(pPos, pRot, fDeltaTime);
+		nCurMotion = UpdateAttack(pPos, pRot, fDeltaTime);
 		break;
 
 	case STATE_UPSET:	// 動揺状態
 
 		// 動揺状態時の更新
-		UpdateUpset(pPos, pRot, fDeltaTime);
+		nCurMotion = UpdateUpset(pPos, pRot, fDeltaTime);
 		break;
 
 	default:	// 例外処理
@@ -296,8 +295,10 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 //	巡回状態時の更新処理
 //============================================================
-void CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
 	// 移動操作
 	//nCurMotion = UpdateMove();
 
@@ -312,32 +313,51 @@ void CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 	// 向き更新
 	//UpdateRotation(pRot);
+
+	// 現在のモーションを返す
+	return nCurMotion;
 }
 
 //============================================================
 //	警告状態時の更新処理
 //============================================================
-void CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
 }
 
 //============================================================
 //	追跡状態時の更新処理
 //============================================================
-void CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
 }
 
 //============================================================
 //	攻撃状態時の更新処理
 //============================================================
-void CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
 }
 
 //============================================================
 //	動揺状態時の更新処理
 //============================================================
-void CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+
+	// 現在のモーションを返す
+	return nCurMotion;
 }
