@@ -45,20 +45,21 @@ namespace
 {
 	const char *SETUP_TXT = "data\\CHARACTER\\player.txt";	// セットアップテキスト相対パス
 
-	const int	PRIORITY	= 3;			// プレイヤーの優先順位
-	const float	JUMP_MOVE	= 615.0f;		// 大ジャンプ上昇量
-	const float REBOUND		= 500.0f;		// ジャンプの跳ね返り
-	const float	GRAVITY		= 60.0f;		// 重力
-	const float	RADIUS		= 20.0f;		// 半径
-	const float HEIGHT		= 80.0f;		// 身長
-	const float	REV_ROTA	= 0.15f;		// 向き変更の補正係数
-	const float	ADD_MOVE	= 0.08f;		// 非アクション時の速度加算量
-	const float	JUMP_REV	= 0.16f;		// 通常状態時の空中の移動量の減衰係数
-	const float	LAND_REV	= 0.16f;		// 通常状態時の地上の移動量の減衰係数
-	const float	SPAWN_ADD_ALPHA	= 0.03f;	// スポーン状態時の透明度の加算量
-	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
-	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
-	const int	CAUTIOUS_TRANS_LOOP	= 7;	// 警戒モーションに遷移する待機ループ数
+	const int	PRIORITY	= 3;				// プレイヤーの優先順位
+	const float	JUMP_MOVE	= 615.0f;			// 大ジャンプ上昇量
+	const float	STEP_MOVE	= JUMP_MOVE * 2.0f;	// 大ジャンプ上昇量
+	const float REBOUND		= 500.0f;			// ジャンプの跳ね返り
+	const float	GRAVITY		= 60.0f;			// 重力
+	const float	RADIUS		= 20.0f;			// 半径
+	const float HEIGHT		= 80.0f;			// 身長
+	const float	REV_ROTA	= 0.15f;			// 向き変更の補正係数
+	const float	ADD_MOVE	= 0.08f;			// 非アクション時の速度加算量
+	const float	JUMP_REV	= 0.16f;			// 通常状態時の空中の移動量の減衰係数
+	const float	LAND_REV	= 0.16f;			// 通常状態時の地上の移動量の減衰係数
+	const float	SPAWN_ADD_ALPHA	= 0.03f;		// スポーン状態時の透明度の加算量
+	const int	BLEND_FRAME_OTHER	= 5;		// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_LAND	= 15;		// モーション着地のブレンドフレーム
+	const int	CAUTIOUS_TRANS_LOOP	= 7;		// 警戒モーションに遷移する待機ループ数
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
@@ -557,7 +558,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 void CPlayer::GimmickLowJump(void)
 {
 	// 上移動量を与える
-	m_move.y = JUMP_MOVE;
+	m_move.y = STEP_MOVE;
 
 	// ジャンプ中にする
 	m_bJump = true;

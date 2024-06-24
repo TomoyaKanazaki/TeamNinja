@@ -14,8 +14,7 @@
 //===========================================
 namespace
 {
-	const float CLIMB_MAX = 300.0f; // 登れる限界の高さ
-	const float CLIMB_SPEED = 200.0f; // 1秒間に登る速度
+	const float CLIMB_SPEED = 600.0f; // 1秒間に登る速度
 }
 
 //=========================================
@@ -23,7 +22,7 @@ namespace
 //=========================================
 CGimmickStep::CGimmickStep() : CGimmickAction(),
 m_fSummit(0.0f), //登頂位置
-m_bSummit(false) // 登頂フラグ
+m_bClimb(false) // 登っているフラグ
 {
 
 }
@@ -68,19 +67,29 @@ void CGimmickStep::Uninit(void)
 //=========================================
 void CGimmickStep::Update(const float fDeltaTime)
 {
-	// プレイヤーの座標を取得
-	CPlayer* player = GET_PLAYER;
+	// 登る
+	if (IsActive())
+	{
+		// プレイヤー情報を取得
+		CPlayer* player = GET_PLAYER;
 
-	// プレイヤーとの当たり判定
-	if (DistancePlayer())
-	{
-		// 登る
-		Climb(player, fDeltaTime);
-	}
-	else
-	{
-		// 分身の操作を可能にする
-		player->SetClone(true);
+		// フラグを一時保存
+		bool bTemp = m_bClimb;
+
+		// 上昇判定
+		if (!Climb(player) && bTemp)
+		{
+			// プレイヤー移動量を設定
+			D3DXVECTOR3 move = player->GetMove();
+			move.y = 0.0f;
+			player->SetMove(move);
+
+			// ジャンプ
+			player->GimmickLowJump();
+
+			// フラグを更新
+			m_bClimb = false;
+		}
 	}
 
 	// 親クラスの更新
@@ -116,38 +125,26 @@ D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx) const
 //===========================================
 //  登る
 //===========================================
-void CGimmickStep::Climb(CPlayer* player, const float fDeltaTime)
+bool CGimmickStep::Climb(CPlayer* player)
 {
-	// 登頂判定の高さを算出
-	float fSummit = GetVec3Position().y + (CPlayerClone::GetHeight() * GetNumActive());
+	// xz平面で接触していない場合関数を抜ける
+	if (!DistancePlayer()) { return false; }
 
-	// 登頂している高さなら関数を抜ける
-	float fHeight = player->GetVec3Position().y;
-	if (fHeight > fSummit) { return; }
+	// プレイヤーのy座標を取得
+	float fPlayer = player->GetVec3Position().y;
 
-	// プレイヤーの移動量を取得
-	D3DXVECTOR3 movePlasyer = player->GetMove();
+	// 頂上の座標を算出
+	float fHeight = GetVec3Position().y + (CPlayerClone::GetHeight() * GetNumActive());
 
-	// yの移動量を加算
-	movePlasyer.y = CLIMB_SPEED;
+	// プレイヤーが頂上より上にいる場合関数を抜ける
+	if (fPlayer > fHeight) { return false; }
 
-	// 移動量を適用する
-	player->SetMove(movePlasyer);
+	// プレイヤーの移動量を加算する
+	D3DXVECTOR3 move = player->GetMove();
+	move.y = CLIMB_SPEED;
+	player->SetMove(move);
 
-	// 登頂できる移動量ならジャンプして関数を抜ける
-	if (fHeight + (movePlasyer.y * fDeltaTime) > fSummit)
-	{
-		// 分身の操作を可能にする
-		player->SetClone(true);
-
-		// ジャンプ
-		player->GimmickLowJump();
-		return;
-	}
-
-	// 分身の操作を不可能にする
-	player->SetClone(false);
-
-	// 分身を削除する
-	CPlayerClone::Delete();
+	// フラグを立てる
+	m_bClimb = true;
+	return m_bClimb;
 }

@@ -32,10 +32,11 @@ public:
 private:
 
 	// メンバ関数
-	void Climb(CPlayer* player, const float fDeltaTime); // 登る
+	bool Climb(CPlayer* player); // 登る
 
 	// メンバ変数
 	float m_fSummit; // 登頂位置
 	bool m_bSummit; // 登頂フラグ
+	bool m_bClimb; // 登ってる中フラグ
 
 };
