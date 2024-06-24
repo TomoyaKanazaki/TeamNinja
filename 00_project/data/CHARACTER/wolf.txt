@@ -131,3 +131,5 @@ MOTIONPASS = data\MOTION\ENEMY\WOLF\run.txt		# 走行モーション
 MOTIONPASS = data\MOTION\ENEMY\WOLF\found.txt	# 発見モーション
 MOTIONPASS = data\MOTION\ENEMY\WOLF\bite.txt	# 噛みつきモーション
 MOTIONPASS = data\MOTION\ENEMY\WOLF\turn.txt	# 振り向きモーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\fall.txt	# 落下モーション
+MOTIONPASS = data\MOTION\ENEMY\WOLF\landing.txt	# 着地モーション
