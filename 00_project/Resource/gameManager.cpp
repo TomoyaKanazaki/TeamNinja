@@ -174,8 +174,8 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// TPSƒJƒƒ‰‚Ì–Ú•WˆÊ’u‚Ìİ’è
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-	GET_MANAGER->GetCamera()->SetDestTps();
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+	GET_MANAGER->GetCamera()->SetDestAround();
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
