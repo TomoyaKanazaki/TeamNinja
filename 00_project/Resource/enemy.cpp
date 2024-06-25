@@ -273,7 +273,7 @@ bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
 //============================================================
 // ï™êgÇÃíTçıèàóù
 //============================================================
-bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
+bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 {
 	D3DXVECTOR3 pos = VEC3_ZERO;					// à íu
 	D3DXVECTOR3 posEnemy = GetVec3Position();		// ìGÇÃà íu
