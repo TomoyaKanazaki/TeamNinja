@@ -1176,12 +1176,13 @@ void CCamera::Swing(void)
 //===========================================
 void CCamera::Around(void)
 {
-	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
-	if (pList == nullptr) { return; }	// リスト未使用
-	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
-	if (m_state != STATE_AROUND) { return; }		// カメラ追従状態以外
+	// 回り込み状態じゃない場合関数を抜ける
+	if (m_state != STATE_AROUND) { return; }
 
-	auto player = pList->GetList().front();	// プレイヤー情報
+	// プレイヤー情報の取得
+	CPlayer* player = GET_PLAYER;
+
+	// 変数宣言
 	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
 	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
 	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
