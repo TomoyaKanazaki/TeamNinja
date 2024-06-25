@@ -320,6 +320,9 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 	// プレイヤーの位置を取得する
 	if (pPos != nullptr) { *pPos = pos; }
 
+	// 分身の情報を取得する
+	if (pClone != nullptr) { *pClone = *CPlayerClone::GetList()->GetIndex(nIdx); }
+
 	// true を返す
 	return true;
 }
