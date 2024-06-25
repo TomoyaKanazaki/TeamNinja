@@ -42,6 +42,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemy(),
+m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_PLAYER),	// 標的
 m_state(STATE_CRAWL),		// 状態
