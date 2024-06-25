@@ -119,18 +119,18 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
 
 	// 重い扉
-	CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+	//CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
 	// ジャンプ台
 	CGimmick::Create(D3DXVECTOR3(7150.0f, 301.0f, -300.0f), D3DXVECTOR3(100.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
-	{ // 複数ボタン
-		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		CGimmickMalti::Create(vec);
-	}
+	//{ // 複数ボタン
+	//	std::vector<CGimmickMalti::SButton> vec;
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	CGimmickMalti::Create(vec);
+	//}
 
 #endif
 
