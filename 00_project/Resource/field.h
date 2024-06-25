@@ -41,6 +41,7 @@ public:
 		TYPE_DECAYED,	// ‹€‚¿‚½°
 		TYPE_WATER,		// …
 		TYPE_GUTTER,	// ƒhƒu
+		TYPE_BRIDGE,	// ‹´
 		TYPE_MAX,		// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 		TYPE_NONE		// ‘¶Ý‚µ‚È‚¢Ží—Þ
 	};
