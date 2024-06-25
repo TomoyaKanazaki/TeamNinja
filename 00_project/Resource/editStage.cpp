@@ -15,8 +15,10 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_CHANGE_OBJECT	(DIK_2)	// オブジェクトタイプ変更キー
-#define NAME_CHANGE_OBJECT	("2")	// オブジェクトタイプ変更表示
+#define KEY_CHANGE_OBJECT_FRONT		(DIK_3)	// オブジェクトタイプ前進変更キー
+#define NAME_CHANGE_OBJECT_FRONT	("3")	// オブジェクトタイプ前進変更表示
+#define KEY_CHANGE_OBJECT_BACK		(DIK_2)	// オブジェクトタイプ後進変更キー
+#define NAME_CHANGE_OBJECT_BACK		("2")	// オブジェクトタイプ後進変更表示
 
 #define KEY_FAR		(DIK_W)	// 奥移動キー
 #define NAME_FAR	("W")	// 奥移動表示
@@ -235,7 +237,7 @@ void CEditStage::DrawDebugControl(void)
 {
 #if _DEBUG
 
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ変更：[%s]\n", NAME_CHANGE_OBJECT);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ前進変更：[%s]\nエディットステージタイプ後進変更：[%s]\n", NAME_CHANGE_OBJECT_FRONT, NAME_CHANGE_OBJECT_BACK);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "移動：[%s/%s/%s/%s/%s/%s+%s]\n", NAME_FAR, NAME_LEFT, NAME_NEAR, NAME_RIGHT, NAME_UP, NAME_DOWN, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "回転：[%s/%s]\n", NAME_ROTA_RIGHT, NAME_ROTA_LEFT);
 
@@ -364,13 +366,29 @@ void CEditStage::ChangeObjectType(void)
 {
 	// オブジェクトタイプの変更
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT))
+	if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT_FRONT))
 	{
 		// エディター情報の破棄
 		SAFE_REF_RELEASE(m_pEditor);
 
 		// オブジェクトタイプの変更
 		m_type = (CEditStage::EType)((m_type + 1) % CEditStage::TYPE_MAX);
+
+		if (m_pEditor == nullptr)
+		{
+			// エディター情報の生成
+			m_pEditor = CEditorObject::Create(this, m_type);
+			assert(m_pEditor != nullptr);	// 生成失敗
+		}
+	}
+
+	if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT_BACK))
+	{
+		// エディター情報の破棄
+		SAFE_REF_RELEASE(m_pEditor);
+
+		// オブジェクトタイプの変更
+		m_type = (CEditStage::EType)((m_type + (CEditStage::TYPE_MAX - 1)) % CEditStage::TYPE_MAX);
 
 		if (m_pEditor == nullptr)
 		{
