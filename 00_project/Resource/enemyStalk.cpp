@@ -328,7 +328,7 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Crawl(void)
 {
-	if (SearchClone(&m_posTarget))
+	if (SearchClone(&m_posTarget, &m_pClone))
 	{ // 分身が目に入った場合
 
 		// 警告状態にする
@@ -382,7 +382,7 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(void)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 {
-	if (SearchClone(&m_posTarget))
+	if (SearchClone(&m_posTarget,&m_pClone))
 	{ // 分身が目に入った場合
 
 		// 標的を分身にする
@@ -441,13 +441,8 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 
 	case CEnemyStalk::TARGET_CLONE:
 
-		if (CPlayerClone::GetList() != nullptr &&
-			*CPlayerClone::GetList()->GetBegin() != nullptr)
-		{ // プレイヤーの分身が存在している場合
-
-			// ヒット処理
-			(*CPlayerClone::GetList()->GetBegin())->Hit(1);
-		}
+		// 分身の当たり判定処理
+		HitClone(rPos);
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
@@ -578,5 +573,60 @@ void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 //============================================================
 void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 {
+	// 分身の情報が存在しない場合抜ける
+	if (CPlayerClone::GetList() == nullptr ||
+		*CPlayerClone::GetList()->GetBegin() == nullptr ||
+		m_pClone == nullptr)
+	{
+		return;
+	}
 
+	CPlayerClone* pClone = nullptr;	// 分身の情報
+
+	for (auto& rClone : CPlayerClone::GetList()->GetList())
+	{
+		if (m_pClone == rClone)
+		{ // 分身が存在した場合
+
+			// 分身の情報を設定
+			pClone = rClone;
+
+			// for文を抜ける
+			break;
+		}
+	}
+
+	// 分身が NULL の場合抜ける
+	if (pClone == nullptr) { return; }
+
+	// ヒット処理
+	D3DXVECTOR3 posPlayer = pClone->GetVec3Position();
+	D3DXVECTOR3 sizeUpPlayer =
+	{
+		pClone->GetRadius(),
+		pClone->GetHeight(),
+		pClone->GetRadius()
+	};
+	D3DXVECTOR3 sizeDownPlayer =
+	{
+		pClone->GetRadius(),
+		0.0f,
+		pClone->GetRadius()
+	};
+
+	// ボックスの当たり判定
+	if (collision::Box3D
+	(
+		rPos,			// 判定位置
+		posPlayer,		// 判定目標位置
+		D3DXVECTOR3(30.0f, 100.0f, 30.0f),	// 判定サイズ(右・上・後)
+		D3DXVECTOR3(30.0f, 0.0f, 30.0f),	// 判定サイズ(左・下・前)
+		sizeUpPlayer,	// 判定目標サイズ(右・上・後)
+		sizeDownPlayer	// 判定目標サイズ(左・下・前)
+	))
+	{ // 判定内に入った場合
+
+		// ヒット処理
+		pClone->Hit(20);
+	}
 }
