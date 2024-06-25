@@ -15,6 +15,8 @@
 #include "useful.h"
 #include "stage.h"
 
+#include "effect3D.h"
+
 //************************************************************
 //	マクロ定義
 //************************************************************
@@ -32,6 +34,12 @@ namespace
 
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
+
+	const D3DXVECTOR3 DELETE_EFFECT_MOVE = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	// 消去エフェクトの移動量
+	const D3DXCOLOR DELETE_EFFECT_COL = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);	// 消去エフェクトの色
+	const float DELETE_EFFECT_RADIUS = 100.0f;		// 消去エフェクトの半径
+	const float DELETE_EFFECT_SUB_RADIUS = 7.0f;	// 消去エフェクトの減算する半径
+	const int DELETE_EFFECT_LIFE = 10;				// 消去エフェクトの寿命
 }
 
 //************************************************************
@@ -300,18 +308,20 @@ void CEditCheckPoint::DeleteCollisionCheckPoint(const bool bRelase)
 		D3DXVECTOR3 scaleOther = VEC3_ZERO;	// 対象の大きさ
 
 		// 自身の大きさを設定
-		D3DXVECTOR3 scaleThisCheckPoint = m_pPoint->GetVec3Scaling();	// 自身の地面の大きさ
-		scaleThis.x = scaleThisCheckPoint.x;	// 判定サイズXを設定
-		scaleThis.y = scaleThisCheckPoint.y;	// 判定サイズYを設定
-		scaleThis.z = scaleThisCheckPoint.z;	// 判定サイズZを設定
-		scaleThis *= 0.5f;				// 判定サイズを半分に
+		scaleThis = D3DXVECTOR3
+		(
+			m_pPoint->GetRadius(),
+			m_pPoint->GetRadius(),
+			m_pPoint->GetRadius()
+		);
 
 		// 対象の大きさを設定
-		D3DXVECTOR3 scaleOtherCheckPoint = rList->GetVec3Scaling();		// 対象の地面の大きさ
-		scaleOther.x = scaleOtherCheckPoint.x;	// 判定サイズXを設定
-		scaleOther.y = scaleOtherCheckPoint.y;	// 判定サイズYを設定
-		scaleOther.z = scaleOtherCheckPoint.z;	// 判定サイズZを設定
-		scaleOther *= 0.5f;				// 判定サイズを半分に
+		scaleOther = D3DXVECTOR3
+		(
+			rList->GetRadius(),
+			rList->GetRadius(),
+			rList->GetRadius()
+		);
 
 		// 矩形の当たり判定
 		if (collision::Box3D
@@ -337,39 +347,20 @@ void CEditCheckPoint::DeleteCollisionCheckPoint(const bool bRelase)
 			else
 			{ // 破棄しない場合
 
-				// 赤を設定
-				rList->SetAllMaterial(material::Green());
+				// エフェクトを生成
+				CEffect3D::Create
+				(
+					rList->GetVec3Position(),
+					DELETE_EFFECT_RADIUS,
+					CEffect3D::TYPE_NORMAL,
+					DELETE_EFFECT_LIFE,
+					DELETE_EFFECT_MOVE,
+					VEC3_ZERO,
+					DELETE_EFFECT_COL,
+					DELETE_EFFECT_SUB_RADIUS
+				);
 			}
 		}
-		else
-		{ // 判定外だった場合
-
-			// 通常色を設定
-			rList->ResetMaterial();
-		}
-	}
-}
-
-//============================================================
-//	チェックポイントの色の全初期化処理
-//============================================================
-void CEditCheckPoint::InitAllColorCheckPoint(void)
-{
-	CListManager<CCheckPoint>* pListManager = CCheckPoint::GetList();	// チェックポイントリストマネージャー
-	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CCheckPoint*> listCheckPoint = pListManager->GetList();	// チェックポイントリスト情報
-
-	int nCnt = 0;
-	for (auto& rList : listCheckPoint)
-	{ // チェックポイント数分繰り返す
-
-		// 同じアドレスだった場合次へ
-		if (rList == m_pPoint) { continue; }
-
-		// 通常色を設定
-		rList->ResetMaterial();
-
-		nCnt++;
 	}
 }
 
@@ -410,9 +401,6 @@ HRESULT CEditCheckPoint::Save(void)
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
 	file << "# この行から下をコピーし [Point.txt] に張り付け\n" << std::endl;
-
-	// チェックポイントの色の全初期化
-	InitAllColorCheckPoint();
 
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
