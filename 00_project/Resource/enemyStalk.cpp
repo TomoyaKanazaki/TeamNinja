@@ -600,14 +600,13 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 	if (pClone == nullptr) { return; }
 
 	// ヒット処理
-	D3DXVECTOR3 posPlayer = pClone->GetVec3Position();
-	D3DXVECTOR3 sizeUpPlayer =
+	D3DXVECTOR3 sizeUpClone =
 	{
 		pClone->GetRadius(),
 		pClone->GetHeight(),
 		pClone->GetRadius()
 	};
-	D3DXVECTOR3 sizeDownPlayer =
+	D3DXVECTOR3 sizeDownClone =
 	{
 		pClone->GetRadius(),
 		0.0f,
@@ -618,11 +617,11 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 	if (collision::Box3D
 	(
 		rPos,			// 判定位置
-		posPlayer,		// 判定目標位置
+		pClone->GetVec3Position(),			// 判定目標位置
 		D3DXVECTOR3(30.0f, 100.0f, 30.0f),	// 判定サイズ(右・上・後)
 		D3DXVECTOR3(30.0f, 0.0f, 30.0f),	// 判定サイズ(左・下・前)
-		sizeUpPlayer,	// 判定目標サイズ(右・上・後)
-		sizeDownPlayer	// 判定目標サイズ(左・下・前)
+		sizeUpClone,	// 判定目標サイズ(右・上・後)
+		sizeDownClone	// 判定目標サイズ(左・下・前)
 	))
 	{ // 判定内に入った場合
 
