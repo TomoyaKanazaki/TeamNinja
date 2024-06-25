@@ -30,10 +30,10 @@
 #define NAME_CREATE					("0")	// 生成表示
 #define KEY_RELEASE					(DIK_9)	// 破棄キー
 #define NAME_RELEASE				("9")	// 破棄表示
-#define KEY_CHANGE_OBJECT_FRONT		(DIK_3)	// オブジェクトタイプ前進変更キー
-#define NAME_CHANGE_OBJECT_FRONT	("3")	// オブジェクトタイプ前進変更表示
-#define KEY_CHANGE_OBJECT_BACK		(DIK_2)	// オブジェクトタイプ後進変更キー
-#define NAME_CHANGE_OBJECT_BACK		("2")	// オブジェクトタイプ後進変更表示
+#define KEY_CHANGE_OBJECT_FRONT		(DIK_2)	// オブジェクトタイプ前進変更キー
+#define NAME_CHANGE_OBJECT_FRONT	("2")	// オブジェクトタイプ前進変更表示
+#define KEY_CHANGE_OBJECT_BACK		(DIK_3)	// オブジェクトタイプ後進変更キー
+#define NAME_CHANGE_OBJECT_BACK		("3")	// オブジェクトタイプ後進変更表示
 #define KEY_CHANGE_ACTOR			(DIK_4)	// アクターの種類変更キー
 #define NAME_CHANGE_ACTOR			("4")	// アクターの種類変更表示
 

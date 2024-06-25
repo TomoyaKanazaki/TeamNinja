@@ -49,7 +49,6 @@ private:
 	void CreateCheckPoint(void);		// チェックポイント生成
 	void ReleaseCheckPoint(void);		// チェックポイント破棄
 	void DeleteCollisionCheckPoint(const bool bRelase);	// チェックポイントの削除判定
-	void InitAllColorCheckPoint(void);	// チェックポイントの色全初期化
 
 	// メンバ変数
 	CCheckPoint* m_pPoint;	// ポイント情報
