@@ -64,6 +64,8 @@ public:
 		TYPE_HOUSE9,			// 家9
 		TYPE_HOUSE10,			// 家10
 		TYPE_LANTERN,			// ランタン
+		TYPE_GATE,				// 門(枠部分)
+		TYPE_DOOR,				// 門(扉部分)
 		TYPE_KAKEJIKU,			// 掛け軸
 		TYPE_PIER,				// 橋
 		TYPE_PILLER1,			// 城に配置する形の柱
@@ -72,8 +74,6 @@ public:
 		TYPE_B_LATTICE,			// 竹の格子
 		TYPE_ROOFFLOOR1,		// 骨組みみたいな屋根裏の木
 		TYPE_ROOFFLOOR2,		// レンガ柄風の屋根裏の木
-		TYPE_GATE,				// 門(枠部分)
-		TYPE_DOOR,				// 門(扉部分)
 		TYPE_MAX				// この列挙型の総数
 	};
 
