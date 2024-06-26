@@ -22,6 +22,13 @@
 class CEnemyWolf : public CEnemy
 {
 public:
+	// ターゲット
+	enum ETarget
+	{
+		TARGET_PLAYER = 0,	// プレイヤー
+		TARGET_CLONE,		// 分身
+		TARGET_MAX			// この列挙型の総数
+	};
 
 	// 状態列挙
 	enum EState
@@ -75,13 +82,15 @@ private:
 	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 攻撃状態時の更新
 	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 動揺状態時の更新
 
-	int UpdateMove(void);	// 移動量・目標向きの更新
+	void UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 移動量・目標向きの更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
+	bool Approach(const D3DXVECTOR3& rPos);	// 接近の判定
 
 	// メンバ変数
-	EState m_state;	// 状態
-
+	D3DXVECTOR3 m_posTarget;	// 目標位置
+	ETarget m_target;			// 標的
+	EState m_state;				// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

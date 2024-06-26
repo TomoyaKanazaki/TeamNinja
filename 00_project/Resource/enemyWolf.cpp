@@ -19,11 +19,15 @@ namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\wolf.txt";	// セットアップテキスト相対パス
 	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_TURN	= 20;	// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 
-	const float	REV_ROTA = 9.0f;	// 向き変更の補正係数
+	const float MOVE = 500.0f;		// 移動量
+	const float	REV_ROTA = 4.5f;	// 向き変更の補正係数
 	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
+
+	const float ATTACK_DISTANCE = 50.0f;	// 攻撃判定に入る距離
 }
 
 //************************************************************
@@ -33,7 +37,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemy(),
-m_state(STATE_CRAWL)	// 状態
+m_posTarget(VEC3_ZERO),		// 目標の位置
+m_target(TARGET_PLAYER),	// 標的
+m_state(STATE_CRAWL)		// 状態
 {
 
 }
@@ -235,7 +241,10 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 		{ // モーションが再生終了した場合
 
 			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_OTHER);
+			SetMotion(MOTION_IDOL, BLEND_FRAME_TURN);
+
+			// 巡回状態にする
+			m_state = STATE_CRAWL;
 		}
 
 		break;
@@ -296,10 +305,113 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+	// 重力の更新
+	UpdateGravity();
 
-	// 移動操作
-	nCurMotion = UpdateMove();
+	// 位置更新
+	UpdatePosition(*pPos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pPos);
+
+	// 向き更新
+	UpdateRotation(*pRot, fDeltaTime);
+
+	if (SearchClone(&m_posTarget, nullptr))
+	{ // 分身が目に入った場合
+
+		// 警告状態にする
+		m_state = STATE_CAVEAT;
+
+		// 標的を分身にする
+		m_target = TARGET_CLONE;
+
+		// 発見モーションを返す
+		return MOTION_FOUND;
+	}
+
+	if (SearchPlayer(&m_posTarget))
+	{ // プレイヤーが目に入った場合
+
+		// 警告状態にする
+		m_state = STATE_CAVEAT;
+
+		// 標的をプレイヤーにする
+		m_target = TARGET_PLAYER;
+
+		// 発見モーションを返す
+		return MOTION_FOUND;
+	}
+
+	// 巡回状態にする
+	m_state = STATE_CRAWL;
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
+//	警告状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(*pPos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pPos);
+
+	// 向き更新
+	UpdateRotation(*pRot, fDeltaTime);
+
+	if (GetMotionType() != MOTION_FOUND)
+	{ // 発見モーションじゃなかった場合
+
+		// 追跡状態にする
+		m_state = STATE_FOUND;
+	}
+
+	// 走行状態を返す
+	return MOTION_RUN;
+}
+
+//============================================================
+//	追跡状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	if (SearchClone(&m_posTarget, nullptr))
+	{ // 分身が目に入った場合
+
+		// 標的を分身にする
+		m_target = TARGET_CLONE;
+	}
+	else if (SearchPlayer(&m_posTarget))
+	{ // プレイヤーが目に入った場合
+
+		// 標的をプレイヤーにする
+		m_target = TARGET_PLAYER;
+	}
+	// TODO:ここに見失い
+
+	// デバッグ
+	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", m_posTarget.x, m_posTarget.y, m_posTarget.z);
+
+	// 移動処理
+	UpdateMove(*pPos, *pRot, fDeltaTime);
+
+	if (Approach(*pPos))
+	{ // 接近した場合
+
+		// 攻撃状態にする
+		m_state = STATE_ATTACK;
+
+		// 噛みつきモーションを返す
+		return MOTION_BITE;
+	}
 
 	// 重力の更新
 	UpdateGravity();
@@ -313,30 +425,8 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
-	// 現在のモーションを返す
-	return nCurMotion;
-}
-
-//============================================================
-//	警告状態時の更新処理
-//============================================================
-int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
-{
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
-
-	// 現在のモーションを返す
-	return nCurMotion;
-}
-
-//============================================================
-//	追跡状態時の更新処理
-//============================================================
-int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
-{
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
-
-	// 現在のモーションを返す
-	return nCurMotion;
+	// 走行モーションを返す
+	return MOTION_RUN;
 }
 
 //============================================================
@@ -344,10 +434,53 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 //============================================================
 int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+	// 重力の更新
+	UpdateGravity();
 
-	// 現在のモーションを返す
-	return nCurMotion;
+	// 位置更新
+	UpdatePosition(*pPos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pPos);
+
+	// 向き更新
+	UpdateRotation(*pRot, fDeltaTime);
+
+	switch (m_target)
+	{ // ターゲットごとの処理
+	case CEnemyWolf::TARGET_PLAYER:
+
+		// プレイヤーの当たり判定処理
+		//HitPlayer(*pPos);
+
+		if (GetMotionType() != MOTION_BITE)
+		{ // 攻撃モーションじゃない場合
+
+			// 巡回状態にする
+			m_state = STATE_CRAWL;
+		}
+
+		// 待機モーションにする
+		return MOTION_IDOL;
+
+	case CEnemyWolf::TARGET_CLONE:
+
+		// 分身の当たり判定処理
+		//HitClone(*pPos);
+
+		// 動揺状態にする
+		m_state = STATE_UPSET;
+
+		// 動揺モーションにする
+		return MOTION_TURN;
+
+	default:	// 例外処理
+		assert(false);
+		break;
+	}
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================
@@ -355,48 +488,42 @@ int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 //============================================================
 int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
+	// 重力の更新
+	UpdateGravity();
 
-	// 現在のモーションを返す
-	return nCurMotion;
+	// 位置更新
+	UpdatePosition(*pPos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pPos);
+
+	// 向き更新
+	UpdateRotation(*pRot, fDeltaTime);
+
+	// 動揺モーションにする
+	return MOTION_TURN;
 }
 
 //============================================================
 //	移動量・目標向きの更新処理
 //============================================================
-int CEnemyWolf::UpdateMove(void)
+void CEnemyWolf::UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
-	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 
-	// スティックの傾きから移動量を設定
-	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
-	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
-	if (pad::DEAD_ZONE < fSpeed)
-	{ // デッドゾーン以上の場合
+	// 目標向きを求める
+	destRot.y = atan2f(rPos.x - m_posTarget.x, rPos.z - m_posTarget.z);
 
-		// スティック向きを取得
-		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
+	// 移動量を設定する
+	move.x = sinf(rRot.y - D3DX_PI) * MOVE * fDeltaTime;
+	move.z = cosf(rRot.y - D3DX_PI) * MOVE * fDeltaTime;
 
-		// 目標向きを設定
-		destRot.y = fStickRot;
-		useful::NormalizeRot(destRot.y);	// 向きの正規化
-
-		// 移動量を設定する
-		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
-		move.x = sinf(fStickRot + D3DX_PI) * (600.0f * fabsf(fRate.x));
-		move.z = cosf(fStickRot + D3DX_PI) * (600.0f * fabsf(fRate.z));
-
-		// 走行モーションにする
-		nCurMotion = MOTION_RUN;
-	}
+	// 位置を移動する
+	rPos += move;
 
 	SetMovePosition(move);		// 移動量を反映
 	SetDestRotation(destRot);	// 目標向きを反映
-
-	// 現在のモーションを返す
-	return nCurMotion;
 }
 
 //============================================================
@@ -439,15 +566,29 @@ void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
 
 	// 目標向きまでの差分を計算
 	fDiffRot = destRot.y - rRot.y;
-
-	// 差分向きの正規化
-	useful::NormalizeRot(fDiffRot);
+	useful::NormalizeRot(fDiffRot);	// 差分向きの正規化
 
 	// 向きの更新
 	rRot.y += fDiffRot * fDeltaTime * REV_ROTA;
-
-	// 向きの正規化
-	useful::NormalizeRot(rRot.y);
+	useful::NormalizeRot(rRot.y);	// 向きの正規化
 
 	SetDestRotation(destRot);	// 目標向きを反映
+}
+
+//============================================================
+//	接近の判定処理
+//============================================================
+bool CEnemyWolf::Approach(const D3DXVECTOR3& rPos)
+{
+	// 目標位置と自身位置の距離を求める
+	float fDis = sqrtf((rPos.x - m_posTarget.x) * (rPos.x - m_posTarget.x) + (rPos.z - m_posTarget.z) * (rPos.z - m_posTarget.z));
+	if (fDis <= ATTACK_DISTANCE)
+	{ // 一定距離の場合
+
+		// 接近を返す
+		return true;
+	}
+
+	// 非接近を返す
+	return false;
 }

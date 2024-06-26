@@ -184,8 +184,22 @@ void CActor::Update(const float fDeltaTime)
 //============================================================
 void CActor::Draw(CShader* pShader)
 {
-	// オブジェクトモデルの描画
-	CObjectModel::Draw(pShader);
+	CToonShader	*pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
+	if (pToonShader->IsEffectOK())
+	{ // エフェクトが使用可能な場合
+
+		// オブジェクトモデルの描画
+		CObjectModel::Draw(pToonShader);
+	}
+	else
+	{ // エフェクトが使用不可能な場合
+
+		// エフェクトエラー
+		assert(false);
+
+		// オブジェクトモデルの描画
+		CObjectModel::Draw(pShader);
+	}
 }
 
 //============================================================
