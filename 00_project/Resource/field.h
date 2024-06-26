@@ -53,6 +53,15 @@ public:
 		TERRAIN_MAX				// この列挙型の総数
 	};
 
+	// フィールド基準
+	enum EZ
+	{
+		Z_MIDDLE = 0, // 中心
+		Z_FRONT, // 手前
+		Z_BACK, // 奥
+		Z_MAX
+	};
+
 	// コンストラクタ
 	CField();
 
@@ -99,6 +108,9 @@ public:
 	const char GetFlag() const;								// フラグ取得
 
 	// 静的メンバ関数
+	static EZ CalcNearLine(); // プレイヤーに最も近い基準線の算出
+
+	// 静的メンバ関数
 	static const char GetFlag(EType type);		// フラグ取得
 
 private:
@@ -106,6 +118,7 @@ private:
 	// 静的メンバ変数
 	static CListManager<CField> *m_pList;	// オブジェクトリスト
 	static STerrainInfo m_aTerrainInfo[TERRAIN_MAX];	// 地形情報
+	static EZ m_eNear; // 最も近い基準線
 
 	// メンバ変数
 	CListManager<CField>::AIterator m_iterator;	// イテレーター

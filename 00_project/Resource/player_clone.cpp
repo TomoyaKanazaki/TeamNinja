@@ -657,7 +657,7 @@ void CPlayerClone::Delete(const int nNum)
 void CPlayerClone::Delete(const EAction act)
 {
 	// ƒŠƒXƒgî•ñ‚ª‚È‚¢ê‡’âŽ~‚·‚é
-	if (m_pList == nullptr) { assert(false); return; }
+	if (m_pList == nullptr) { return; }
 
 	// ‘”‚ðŽæ“¾
 	int nNum = m_pList->GetNumAll();
