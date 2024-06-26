@@ -129,7 +129,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(8825.0f, 25.0f, -300.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
 	CGimmick::Create(D3DXVECTOR3(8875.0f, 100.0f, -50.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
 	CGimmick::Create(D3DXVECTOR3(9875.0f, 100.0f, -425.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(10150.0f, 125.0f, -659.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(10150.0f, 50.0f, -659.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 	// “¥‚Ý‘ä
 	CGimmick::Create(D3DXVECTOR3(4150.0f, 550.0f, 0.0f), D3DXVECTOR3(50.0f, 0.0f, 200.0f), CGimmick::TYPE_STEP, 4);
@@ -139,7 +139,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(10750.0f, 0.0f, 1300.0f), D3DXVECTOR3(700.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 6);
 	CGimmick::Create(D3DXVECTOR3(7275.0f, 0.0f, -525.0f), D3DXVECTOR3(200.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 2);
 	CGimmick::Create(D3DXVECTOR3(7675.0f, 25.0f, -525.0f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(8125.0f, 75.0f, -200.0f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
+	CGimmick::Create(D3DXVECTOR3(8125.0f, 75.0f, -200.0f), D3DXVECTOR3(500.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
 	CGimmick::Create(D3DXVECTOR3(8550.0f, 25.0f, -200.0f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
 	CGimmick::Create(D3DXVECTOR3(8625.0f, 50.0f, -500.0f), D3DXVECTOR3(350.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
 	CGimmick::Create(D3DXVECTOR3(9100.0f, 25.0f, -400.0f), D3DXVECTOR3(450.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
