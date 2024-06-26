@@ -144,7 +144,8 @@ private:
 	void Swing(void);		// カメラ揺れの更新
 
 	// 金崎追加
-	void Around(void);		// 回り込み
+	void Around();										// 回り込み
+	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
