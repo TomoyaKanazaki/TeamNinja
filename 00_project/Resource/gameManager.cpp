@@ -44,6 +44,10 @@ namespace
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
+
+#ifdef _DEBUG
+	bool bCamera = false;
+#endif
 }
 
 //************************************************************
@@ -174,8 +178,8 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// TPSカメラの目標位置の設定
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
-	GET_MANAGER->GetCamera()->SetDestAround();
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+	GET_MANAGER->GetCamera()->SetDestTps();
 
 	// 成功を返す
 	return S_OK;
@@ -194,6 +198,26 @@ void CGameManager::Uninit(void)
 //============================================================
 void CGameManager::Update(const float fDeltaTime)
 {
+#ifdef _DEBUG // カメラ切り替え
+	DebugProc::Print(DebugProc::POINT_CENTER, "キーボードの C を押すと何かが起こる!？\n");
+	if (GET_INPUTKEY->IsTrigger(DIK_C))
+	{
+		// 状態を切り替え
+		bCamera = !bCamera;
+
+		if (bCamera)
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+			GET_MANAGER->GetCamera()->SetDestTps();
+		}
+		else
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+			GET_MANAGER->GetCamera()->SetDestAround();
+		}
+	}
+
+#endif
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
