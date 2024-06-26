@@ -127,6 +127,7 @@ public:
 	D3DXVECTOR3 CalcWorldToScreen(const D3DXVECTOR3& pos); // ワールド座標をスクリーン座標に変換する
 	bool OnScreen(const D3DXVECTOR3& pos); // スクリーン内判定
 	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos); // スクリーン座標を返すスクリーン内判定
+	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成

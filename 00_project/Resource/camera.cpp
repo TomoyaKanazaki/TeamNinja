@@ -795,6 +795,24 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 	return true;
 }
 
+//===========================================
+//  プレイヤーよりも手前にいる
+//===========================================
+bool CCamera::IsOverPlayer(const D3DXVECTOR3& pos)
+{
+	// プレイヤーのスクリーン座標を取得
+	D3DXVECTOR3 posPlayer = CalcPlayerPos();
+
+	// 自身のスクリーン座標を取得
+	D3DXVECTOR3 posThis = VEC3_ZERO;
+	OnScreen(pos, posThis);
+
+	// z値がプレイヤーより大きい場合trueを返す
+	if (posPlayer.z > posThis.z) { return true; }
+
+	return false;
+}
+
 //============================================================
 //	生成処理
 //============================================================

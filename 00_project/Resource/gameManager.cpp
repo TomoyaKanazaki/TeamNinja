@@ -199,6 +199,7 @@ void CGameManager::Uninit(void)
 void CGameManager::Update(const float fDeltaTime)
 {
 #ifdef _DEBUG // カメラ切り替え
+	DebugProc::Print(DebugProc::POINT_CENTER, "キーボードの C を押すと何かが起こる!？\n");
 	if (GET_INPUTKEY->IsTrigger(DIK_C))
 	{
 		// 状態を切り替え
