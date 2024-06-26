@@ -35,7 +35,8 @@ namespace
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
 	const int DODGE_COUNT = 17;				// 回避カウント数
 
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 0.0f, 10.0f);		// オフセット座標
+	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
+	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
 }
 
 //************************************************************
@@ -100,17 +101,6 @@ void CEnemyStalk::Update(const float fDeltaTime)
 {
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
-
-	if (GetItem() != nullptr)
-	{ // アイテムを持っている場合
-
-		// アイテムのオフセット処理
-		GetItem()->Offset
-		(
-			GetParts(8)->GetMtxWorld(),
-			GetParts(8)->GetVec3Rotation()
-		);
-	}
 }
 
 //============================================================
@@ -131,10 +121,12 @@ void CEnemyStalk::SetData(void)
 	SetItem(CEnemyItem::Create
 	(
 		CEnemyItem::TYPE_KATANA,
-		OFFSET,
-		GetParts(8)->GetMtxWorld(),
-		GetParts(8)->GetVec3Rotation()
+		ITEM_OFFSET,
+		ITEM_ROT
 	));
+
+	// 親オブジェクト (持ち手) の設定
+	GetItem()->SetParentObject(GetParts(8));
 }
 
 //============================================================

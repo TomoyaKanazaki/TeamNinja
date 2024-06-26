@@ -13,13 +13,13 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "objectModel.h"
+#include "multiModel.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // 敵の持ち物クラス
-class CEnemyItem : public CObjectModel
+class CEnemyItem : public CMultiModel
 {
 public:
 
@@ -42,9 +42,6 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
-	// メンバ関数
-	void Offset(const D3DXMATRIX& rMtx, const D3DXVECTOR3& rRot);	// オフセット処理
-
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
@@ -54,14 +51,12 @@ public:
 	( // 引数
 		const EType type,				// 種類
 		const D3DXVECTOR3& rOffset,		// オフセット
-		const D3DXMATRIX& rMtx,			// マトリックス情報
 		const D3DXVECTOR3& rRot			// 向き
 	);
 
 private:
 
 	// メンバ変数
-	D3DXVECTOR3 m_offset;	// オフセット
 	EType m_type;			// 種類
 };
 
