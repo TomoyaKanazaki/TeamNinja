@@ -38,8 +38,7 @@ static_assert(NUM_ARRAY(MODEL) == CEnemyItem::TYPE_MAX, "ERROR : Type Count Mism
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyItem::CEnemyItem() : CObjectModel(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
-m_offset(VEC3_ZERO),	// オフセット座標
+CEnemyItem::CEnemyItem() : CMultiModel(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
 m_type(TYPE_KATANA)		// 種類
 {
 
@@ -59,7 +58,7 @@ CEnemyItem::~CEnemyItem()
 HRESULT CEnemyItem::Init(void)
 {
 	// オブジェクトモデルの初期化
-	if (FAILED(CObjectModel::Init()))
+	if (FAILED(CMultiModel::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -77,7 +76,7 @@ HRESULT CEnemyItem::Init(void)
 void CEnemyItem::Uninit(void)
 {
 	// オブジェクトモデルの終了
-	CObjectModel::Uninit();
+	CMultiModel::Uninit();
 }
 
 //============================================================
@@ -86,7 +85,7 @@ void CEnemyItem::Uninit(void)
 void CEnemyItem::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
-	CObjectModel::Update(fDeltaTime);
+	CMultiModel::Update(fDeltaTime);
 }
 
 //============================================================
@@ -95,35 +94,7 @@ void CEnemyItem::Update(const float fDeltaTime)
 void CEnemyItem::Draw(CShader* pShader)
 {
 	// オブジェクトモデルの描画
-	CObjectModel::Draw(pShader);
-}
-
-//============================================================
-// オフセット処理
-//============================================================
-void CEnemyItem::Offset(const D3DXMATRIX& rMtx, const D3DXVECTOR3& rRot)
-{
-	// 計算用マトリックス
-	D3DXMATRIX mtxTrans, mtxColl;
-
-	// マトリックスの初期化
-	D3DXMatrixIdentity(&mtxColl);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_offset.x, m_offset.y, m_offset.z);
-	D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
-
-	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
-	D3DXMatrixMultiply
-	(
-		&mtxColl,
-		&mtxColl,
-		&rMtx
-	);
-
-	// 位置と向きを設定する
-	SetVec3Position(D3DXVECTOR3(mtxColl._41, mtxColl._42, mtxColl._43));
-	SetVec3Rotation(rRot);
+	CMultiModel::Draw(pShader);
 }
 
 //============================================================
@@ -133,7 +104,6 @@ CEnemyItem* CEnemyItem::Create
 ( // 引数
 	const EType type,				// 種類
 	const D3DXVECTOR3& rOffset,		// オフセット
-	const D3DXMATRIX& rMtx,			// マトリックス情報
 	const D3DXVECTOR3& rRot			// 向き
 )
 {
@@ -178,13 +148,13 @@ CEnemyItem* CEnemyItem::Create
 		pItem->BindModel(MODEL[type]);
 
 		// オフセット座標を設定
-		pItem->m_offset = rOffset;
+		pItem->SetVec3Position(rOffset);
+
+		// 向きを設定
+		pItem->SetVec3Rotation(rRot);
 
 		// 種類を設定
 		pItem->m_type = type;
-
-		// オフセット処理
-		pItem->Offset(rMtx, rRot);
 
 		// 確保したアドレスを返す
 		return pItem;

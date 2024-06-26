@@ -142,6 +142,13 @@ void CEnemy::Update(const float fDeltaTime)
 
 	// モーション・オブジェクトキャラクター更新
 	UpdateMotion(nCurMotion, fDeltaTime);
+
+	if (m_pItem != nullptr)
+	{ // アイテムを持っている場合
+
+		// アイテムのオフセット処理
+		m_pItem->Update(fDeltaTime);
+	}
 }
 
 //============================================================
@@ -164,6 +171,13 @@ void CEnemy::Draw(CShader* pShader)
 
 		// オブジェクトキャラクターの描画
 		CObjectChara::Draw(pShader);
+	}
+
+	if (m_pItem != nullptr)
+	{ // アイテムを持っている場合
+
+		// アイテムのオフセット処理
+		m_pItem->Draw(pShader);
 	}
 }
 
