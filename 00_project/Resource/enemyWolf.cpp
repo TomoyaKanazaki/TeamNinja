@@ -22,12 +22,14 @@ namespace
 	const int	BLEND_FRAME_TURN	= 20;	// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 
-	const float MOVE = 500.0f;		// 移動量
-	const float	REV_ROTA = 4.5f;	// 向き変更の補正係数
+	const float MOVE = 500.0f;	// 移動量
+	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
+	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
+	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
+
 	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
 
-	const float ATTACK_DISTANCE = 50.0f;	// 攻撃判定に入る距離
 }
 
 //************************************************************
@@ -37,9 +39,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemy(),
-m_posTarget(VEC3_ZERO),		// 目標の位置
-m_target(TARGET_PLAYER),	// 標的
-m_state(STATE_CRAWL)		// 状態
+m_posTarget(VEC3_ZERO),	// 目標の位置
+m_target(TARGET_NONE),	// 標的
+m_state(STATE_CRAWL)	// 状態
 {
 
 }
@@ -346,6 +348,9 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 巡回状態にする
 	m_state = STATE_CRAWL;
 
+	// 標的を未設定にする
+	m_target = TARGET_NONE;
+
 	// 待機モーションを返す
 	return MOTION_IDOL;
 }
@@ -364,8 +369,27 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	// 着地判定
 	UpdateLanding(pPos);
 
+	// 目標位置の更新
+	if		(SearchClone(&m_posTarget, nullptr)) {}	// 分身を見つける
+	else if	(SearchPlayer(&m_posTarget)) {}			// プレイヤーを見つける
+	else
+	{ // 誰も見つけていない場合
+
+		// 動揺状態にする
+		m_state = STATE_UPSET;
+
+		// 標的を未設定にする
+		m_target = TARGET_NONE;
+
+		// 動揺モーションにする
+		return MOTION_TURN;
+	}
+
+	// 目標位置の視認
+	LookTarget(*pPos);
+
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	UpdateRotation(*pRot, REV_ROTA_LOOK, fDeltaTime);
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
@@ -395,7 +419,18 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		// 標的をプレイヤーにする
 		m_target = TARGET_PLAYER;
 	}
-	// TODO:ここに見失い
+	else
+	{ // 誰も見つけていない場合
+
+		// 動揺状態にする
+		m_state = STATE_UPSET;
+
+		// 標的を未設定にする
+		m_target = TARGET_NONE;
+
+		// 動揺モーションにする
+		return MOTION_TURN;
+	}
 
 	// デバッグ
 	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", m_posTarget.x, m_posTarget.y, m_posTarget.z);
@@ -510,10 +545,9 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 void CEnemyWolf::UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
-	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
 
-	// 目標向きを求める
-	destRot.y = atan2f(rPos.x - m_posTarget.x, rPos.z - m_posTarget.z);
+	// 目標向きを目標位置方向にする
+	LookTarget(rPos);
 
 	// 移動量を設定する
 	move.x = sinf(rRot.y - D3DX_PI) * MOVE * fDeltaTime;
@@ -523,7 +557,6 @@ void CEnemyWolf::UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fD
 	rPos += move;
 
 	SetMovePosition(move);		// 移動量を反映
-	SetDestRotation(destRot);	// 目標向きを反映
 }
 
 //============================================================
@@ -558,6 +591,15 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 //============================================================
 void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
 {
+	// 向きの更新
+	UpdateRotation(rRot, REV_ROTA, fDeltaTime);
+}
+
+//============================================================
+//	向きの更新処理 (補正量設定)
+//============================================================
+void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime)
+{
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
 	float fDiffRot = 0.0f;	// 差分向き
 
@@ -569,7 +611,7 @@ void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
 	useful::NormalizeRot(fDiffRot);	// 差分向きの正規化
 
 	// 向きの更新
-	rRot.y += fDiffRot * fDeltaTime * REV_ROTA;
+	rRot.y += fDiffRot * fDeltaTime * fRevRota;
 	useful::NormalizeRot(rRot.y);	// 向きの正規化
 
 	SetDestRotation(destRot);	// 目標向きを反映
@@ -591,4 +633,17 @@ bool CEnemyWolf::Approach(const D3DXVECTOR3& rPos)
 
 	// 非接近を返す
 	return false;
+}
+
+//============================================================
+//	目標位置の視認処理
+//============================================================
+void CEnemyWolf::LookTarget(const D3DXVECTOR3& rPos)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+
+	// 目標向きを求める
+	destRot.y = atan2f(rPos.x - m_posTarget.x, rPos.z - m_posTarget.z);
+
+	SetDestRotation(destRot);	// 目標向きを反映
 }

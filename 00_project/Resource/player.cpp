@@ -676,6 +676,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// アクターの当たり判定
+	CollisionActor(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -684,9 +687,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 壁の当たり判定
 	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
-
-	// アクターの当たり判定
-	CollisionActor(posPlayer);
 
 	// 分身の処理
 	ControlClone(posPlayer, rotPlayer, fDeltaTime);

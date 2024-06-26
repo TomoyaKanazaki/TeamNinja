@@ -55,6 +55,8 @@ namespace
 		"data\\MODEL\\House\\House008.x",				// 家9
 		"data\\MODEL\\House\\House009.x",				// 家10
 		"data\\MODEL\\Lantern\\Lantern001.x",			// ランタン
+		"data\\MODEL\\GATE\\gate000.x",					// 門(枠)
+		"data\\MODEL\\GATE\\gate001.x",					// 門(扉)
 		"data\\MODEL\\Kakejiku\\Kakejiku000.x",			// 掛け軸
 		"data\\MODEL\\Pier\\Pier000.x",					// 橋
 		"data\\MODEL\\Pillar\\WoodPillar000.x",			// 城に配置する形の柱
@@ -63,8 +65,6 @@ namespace
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
 		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
-		"data\\MODEL\\GATE\\gate000.x",					// 門(枠)
-		"data\\MODEL\\GATE\\gate001.x",					// 門(扉)
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス

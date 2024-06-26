@@ -25,7 +25,8 @@ public:
 	// ターゲット
 	enum ETarget
 	{
-		TARGET_PLAYER = 0,	// プレイヤー
+		TARGET_NONE = 0,	// ターゲット無し
+		TARGET_PLAYER,		// プレイヤー
 		TARGET_CLONE,		// 分身
 		TARGET_MAX			// この列挙型の総数
 	};
@@ -81,11 +82,12 @@ private:
 	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡状態時の更新
 	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 攻撃状態時の更新
 	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 動揺状態時の更新
-
 	void UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 移動量・目標向きの更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
-	bool Approach(const D3DXVECTOR3& rPos);	// 接近の判定
+	void UpdateRotation(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime);	// 向きの更新 (補正量設定)
+	bool Approach(const D3DXVECTOR3& rPos);		// 接近の判定
+	void LookTarget(const D3DXVECTOR3& rPos);	// 目標位置の視認
 
 	// メンバ変数
 	D3DXVECTOR3 m_posTarget;	// 目標位置
