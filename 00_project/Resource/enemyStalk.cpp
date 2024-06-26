@@ -46,7 +46,8 @@ m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_PLAYER),	// 標的
 m_state(STATE_CRAWL),		// 状態
-m_fSpeed(0.0f)				// 速度
+m_fSpeed(0.0f),				// 速度
+m_bAttack(false)			// 攻撃状況
 {
 
 }
@@ -387,12 +388,18 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 
 		// 標的を分身にする
 		m_target = TARGET_CLONE;
+
+		// 攻撃判定を false にする
+		m_bAttack = false;
 	}
 	else if (SearchPlayer(&m_posTarget))
 	{ // 分身が目に入った場合
 
 		// 標的をプレイヤーにする
 		m_target = TARGET_PLAYER;
+
+		// 攻撃判定を false にする
+		m_bAttack = false;
 	}
 
 	// 移動処理
@@ -536,6 +543,9 @@ bool CEnemyStalk::Approach(const D3DXVECTOR3& rPos)
 //============================================================
 void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 {
+	// 攻撃判定が true の場合抜ける
+	if (m_bAttack == true) { return; }
+
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
 	D3DXVECTOR3 sizeUpPlayer =
@@ -565,6 +575,9 @@ void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 
 		// ヒット処理
 		CScene::GetPlayer()->Hit(20);
+
+		// 攻撃状況を true にする
+		m_bAttack = true;
 	}
 }
 
@@ -576,7 +589,8 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 	// 分身の情報が存在しない場合抜ける
 	if (CPlayerClone::GetList() == nullptr ||
 		*CPlayerClone::GetList()->GetBegin() == nullptr ||
-		m_pClone == nullptr)
+		m_pClone == nullptr ||
+		m_bAttack == true)
 	{
 		return;
 	}
@@ -627,5 +641,8 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 
 		// ヒット処理
 		pClone->Hit(20);
+
+		// 攻撃状況を true にする
+		m_bAttack = true;
 	}
 }

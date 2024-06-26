@@ -101,6 +101,7 @@ private:
 	ETarget m_target;			// 標的
 	EState m_state;				// 状態
 	float m_fSpeed;				// 速度
+	bool m_bAttack;				// 攻撃状況TODO：後で変更
 };
 
 #endif	// _ENEMY_CHASE_H_
