@@ -277,6 +277,7 @@ void CGimmickHeavyDoor::CloseTheDoor(void)
 	// 範囲外の着地判定
 	if (pStage->LandFieldPosition(posDoor, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
 	{
+		m_pDoorModel->SetVec3Position(posDoor);	// 位置
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
 	}
 }
