@@ -128,6 +128,13 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
 	// 過去位置を更新
 	m_oldPosDoor = m_pDoorModel->GetVec3Position();
+	
+	// 移動量加算
+	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();
+	posDoor += m_move * fDeltaTime;
+
+	// 位置設定
+	m_pDoorModel->SetVec3Position(posDoor);
 
 	switch (m_state)
 	{
@@ -167,13 +174,6 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// 移動量加算
-	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();
-	posDoor += m_move * fDeltaTime;
-
-	// 位置設定
-	m_pDoorModel->SetVec3Position(posDoor);
 
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);

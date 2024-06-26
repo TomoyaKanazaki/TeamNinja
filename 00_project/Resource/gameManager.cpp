@@ -163,7 +163,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// åÉèdÉhÉA
-#if 0
+#if 1
 	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 
