@@ -379,6 +379,9 @@ bool CPlayerClone::Hit(const int nDamage)
 {
 	if (IsDeath()) { return false; }	// €–SÏ‚İ
 
+	// I—¹ˆ—
+	Uninit();
+
 	return true;
 }
 
