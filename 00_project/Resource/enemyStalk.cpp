@@ -31,8 +31,11 @@ namespace
 	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
+	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
+	const int DODGE_COUNT = 17;				// 回避カウント数
 
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-12.0f, -9.5f, 0.0f);		// オフセット座標
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 0.0f, 10.0f);		// オフセット座標
 }
 
 //************************************************************
@@ -47,7 +50,7 @@ m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_PLAYER),	// 標的
 m_state(STATE_CRAWL),		// 状態
 m_fSpeed(0.0f),				// 速度
-m_bAttack(false)			// 攻撃状況
+m_attack()					// 攻撃判定
 {
 
 }
@@ -105,7 +108,7 @@ void CEnemyStalk::Update(const float fDeltaTime)
 		GetItem()->Offset
 		(
 			GetParts(8)->GetMtxWorld(),
-			GetParts(8)->GetVec3Rotation()
+			GetParts(8)->GetVec3Rotation() + D3DXVECTOR3(-D3DX_PI * 0.5f,0.0f,0.0f)
 		);
 	}
 }
@@ -130,7 +133,7 @@ void CEnemyStalk::SetData(void)
 		CEnemyItem::TYPE_KATANA,
 		OFFSET,
 		GetParts(8)->GetMtxWorld(),
-		GetParts(8)->GetVec3Rotation()
+		GetParts(8)->GetVec3Rotation() + D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f)
 	));
 }
 
@@ -390,7 +393,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 		m_target = TARGET_CLONE;
 
 		// 攻撃判定を false にする
-		m_bAttack = false;
+		m_attack.bAttack = false;
 	}
 	else if (SearchPlayer(&m_posTarget))
 	{ // 分身が目に入った場合
@@ -399,7 +402,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 		m_target = TARGET_PLAYER;
 
 		// 攻撃判定を false にする
-		m_bAttack = false;
+		m_attack.bAttack = false;
 	}
 
 	// 移動処理
@@ -544,17 +547,17 @@ bool CEnemyStalk::Approach(const D3DXVECTOR3& rPos)
 void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 {
 	// 攻撃判定が true の場合抜ける
-	if (m_bAttack == true) { return; }
+	if (m_attack.bAttack == true) { return; }
 
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
-	D3DXVECTOR3 sizeUpPlayer =
+	D3DXVECTOR3 sizeUpPlayer =				// プレイヤーの判定(右・上・後)
 	{
 		CScene::GetPlayer()->GetRadius(),
 		CScene::GetPlayer()->GetHeight(),
 		CScene::GetPlayer()->GetRadius()
 	};
-	D3DXVECTOR3 sizeDownPlayer =
+	D3DXVECTOR3 sizeDownPlayer =			// プレイヤーの判定(左・下・前)
 	{
 		CScene::GetPlayer()->GetRadius(),
 		0.0f,
@@ -562,22 +565,43 @@ void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 	};
 
 	// ボックスの当たり判定
-	if (collision::Box3D
+	if (!collision::Box3D
 	(
-		rPos,			// 判定位置
-		posPlayer,		// 判定目標位置
-		D3DXVECTOR3(30.0f,100.0f,30.0f),	// 判定サイズ(右・上・後)
-		D3DXVECTOR3(30.0f, 0.0f, 30.0f),	// 判定サイズ(左・下・前)
-		sizeUpPlayer,	// 判定目標サイズ(右・上・後)
-		sizeDownPlayer	// 判定目標サイズ(左・下・前)
+		rPos,				// 判定位置
+		posPlayer,			// 判定目標位置
+		ATTACK_COLLUP,		// 判定サイズ(右・上・後)
+		ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
+		sizeUpPlayer,		// 判定目標サイズ(右・上・後)
+		sizeDownPlayer		// 判定目標サイズ(左・下・前)
 	))
-	{ // 判定内に入った場合
+	{ // 当たってなかった場合
+
+		return;
+	}
+
+	if (m_attack.nCount <= DODGE_COUNT)
+	{ // 回避カウント中
+
+		// 青色に変えておく
+		SetAllMaterial(material::Blue());
+
+		// 回避カウントを加算する
+		m_attack.nCount++;
+	}
+	else
+	{ // 上記以外
+
+		// 回避カウントを初期化する
+		m_attack.nCount = 0;
+
+		// マテリアルをリセット
+		ResetMaterial();
 
 		// ヒット処理
 		CScene::GetPlayer()->Hit(20);
 
 		// 攻撃状況を true にする
-		m_bAttack = true;
+		m_attack.bAttack = true;
 	}
 }
 
@@ -590,7 +614,7 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 	if (CPlayerClone::GetList() == nullptr ||
 		*CPlayerClone::GetList()->GetBegin() == nullptr ||
 		m_pClone == nullptr ||
-		m_bAttack == true)
+		m_attack.bAttack == true)
 	{
 		return;
 	}
@@ -599,15 +623,14 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 
 	for (auto& rClone : CPlayerClone::GetList()->GetList())
 	{
-		if (m_pClone == rClone)
-		{ // 分身が存在した場合
+		// 分身の情報じゃ無かった場合次へ
+		if (m_pClone != rClone) { continue; }
 
-			// 分身の情報を設定
-			pClone = rClone;
+		// 分身の情報を設定
+		pClone = rClone;
 
-			// for文を抜ける
-			break;
-		}
+		// for文を抜ける
+		break;
 	}
 
 	// 分身が NULL の場合抜ける
@@ -628,21 +651,23 @@ void CEnemyStalk::HitClone(const D3DXVECTOR3& rPos)
 	};
 
 	// ボックスの当たり判定
-	if (collision::Box3D
+	if (!collision::Box3D
 	(
-		rPos,			// 判定位置
-		pClone->GetVec3Position(),			// 判定目標位置
-		D3DXVECTOR3(30.0f, 100.0f, 30.0f),	// 判定サイズ(右・上・後)
-		D3DXVECTOR3(30.0f, 0.0f, 30.0f),	// 判定サイズ(左・下・前)
-		sizeUpClone,	// 判定目標サイズ(右・上・後)
-		sizeDownClone	// 判定目標サイズ(左・下・前)
+		rPos,						// 判定位置
+		pClone->GetVec3Position(),	// 判定目標位置
+		ATTACK_COLLUP,				// 判定サイズ(右・上・後)
+		ATTACK_COLLDOWN,			// 判定サイズ(左・下・前)
+		sizeUpClone,				// 判定目標サイズ(右・上・後)
+		sizeDownClone				// 判定目標サイズ(左・下・前)
 	))
-	{ // 判定内に入った場合
+	{ // 当たってなかったら抜ける
 
-		// ヒット処理
-		pClone->Hit(20);
-
-		// 攻撃状況を true にする
-		m_bAttack = true;
+		return;
 	}
+
+	// ヒット処理
+	pClone->Hit(20);
+
+	// 攻撃状況を true にする
+	m_attack.bAttack = true;
 }
