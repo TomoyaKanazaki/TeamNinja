@@ -108,7 +108,7 @@ void CEnemyStalk::Update(const float fDeltaTime)
 		GetItem()->Offset
 		(
 			GetParts(8)->GetMtxWorld(),
-			GetParts(8)->GetVec3Rotation() + D3DXVECTOR3(-D3DX_PI * 0.5f,0.0f,0.0f)
+			GetParts(8)->GetVec3Rotation()
 		);
 	}
 }
@@ -133,7 +133,7 @@ void CEnemyStalk::SetData(void)
 		CEnemyItem::TYPE_KATANA,
 		OFFSET,
 		GetParts(8)->GetMtxWorld(),
-		GetParts(8)->GetVec3Rotation() + D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f)
+		GetParts(8)->GetVec3Rotation()
 	));
 }
 
@@ -598,7 +598,7 @@ void CEnemyStalk::HitPlayer(const D3DXVECTOR3& rPos)
 		ResetMaterial();
 
 		// ƒqƒbƒgˆ—
-		CScene::GetPlayer()->Hit(20);
+		CScene::GetPlayer()->Hit(500);
 
 		// UŒ‚ó‹µ‚ğ true ‚É‚·‚é
 		m_attack.bAttack = true;
