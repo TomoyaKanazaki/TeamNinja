@@ -1437,7 +1437,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Pier000.png";
+    "data\\TEXTURE\\MODEL\\PIER\\Pier000.png";
    }
   }
  }
