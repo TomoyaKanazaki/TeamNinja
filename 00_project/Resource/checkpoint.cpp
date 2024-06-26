@@ -18,7 +18,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込→一旦元に戻した
-	const char *SETUP_TXT	= "data\\TXT\\point_alpha.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT	= "data\\TXT\\point.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
