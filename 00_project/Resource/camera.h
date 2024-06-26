@@ -39,6 +39,7 @@ public:
 		STATE_ROTATE,	// 回転状態
 		STATE_FOLLOW,	// 追従状態
 		STATE_TPS,		// 三人称状態
+		STATE_AROUND,	// 回り込み
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -107,6 +108,7 @@ public:
 	void SetDestRotate(void);	// カメラ目標位置設定 (回転)
 	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
 	void SetDestTps(void);		// カメラ目標位置設定 (三人称)
+	void SetDestAround(void);	// カメラ目標位置設定 (回り込み)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -140,6 +142,9 @@ private:
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)
 	void Swing(void);		// カメラ揺れの更新
+
+	// 金崎追加
+	void Around(void);		// 回り込み
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
