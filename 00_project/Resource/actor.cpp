@@ -26,32 +26,45 @@ namespace
 {
 	const char* MODEL[] =	// モデルのパス
 	{
-		"data\\MODEL\\Rock\\Rock000.x",			// 岩(小)
-		"data\\MODEL\\Rock\\Rock001.x",			// 岩(中)
-		"data\\MODEL\\Rock\\Rock002.x",			// 岩(大)
-		"data\\MODEL\\Rock\\Moss-Rock000.x",	// 苔岩(小)
-		"data\\MODEL\\Rock\\Moss-Rock001.x",	// 苔岩(中)
-		"data\\MODEL\\Rock\\Moss-Rock002.x",	// 苔岩(大)
-		"data\\MODEL\\Tree\\BirchTree000.x",	// 白樺の木(大)
-		"data\\MODEL\\Tree\\BirchTree001.x",	// 白樺の木(中)
-		"data\\MODEL\\Tree\\CommonTree000.x",	// 普通の木(大)
-		"data\\MODEL\\Tree\\CommonTree001.x",	// 普通の木(中)
-		"data\\MODEL\\Tree\\Willow000.x",		// 柳の木(大)
-		"data\\MODEL\\Tree\\Willow001.x",		// 柳の木(中)
-		"data\\MODEL\\Tree\\WoodLog000.x",		// 原木
-		"data\\MODEL\\Tree\\TreeStump000.x",	// 木の幹
-		"data\\MODEL\\LilyPad\\LilyPad000.x",	// 蓮の葉
-		"data\\MODEL\\Plant\\Plant000.x",		// 4つしかつながっていない草
-		"data\\MODEL\\Plant\\Plant001.x",		// 多くつながっている草
-		"data\\MODEL\\Plant\\Bush000.x",		// 草むら
-		"data\\MODEL\\House\\House000.x",		// 家1
-		"data\\MODEL\\House\\House001.x",		// 家2
-		"data\\MODEL\\House\\House002.x",		// 家3
-		"data\\MODEL\\House\\House003.x",		// 家4
-		"data\\MODEL\\House\\House004.x",		// 家5
-		"data\\MODEL\\Lantern\\Lantern001.x",	// ランタン
-		"data\\MODEL\\GATE\\gate000.x",			// 門(枠)
-		"data\\MODEL\\GATE\\gate001.x",			// 門(扉)
+		"data\\MODEL\\Rock\\Rock000.x",					// 岩(小)
+		"data\\MODEL\\Rock\\Rock001.x",					// 岩(中)
+		"data\\MODEL\\Rock\\Rock002.x",					// 岩(大)
+		"data\\MODEL\\Rock\\Moss-Rock000.x",			// 苔岩(小)
+		"data\\MODEL\\Rock\\Moss-Rock001.x",			// 苔岩(中)
+		"data\\MODEL\\Rock\\Moss-Rock002.x",			// 苔岩(大)
+		"data\\MODEL\\Tree\\BirchTree000.x",			// 白樺の木(大)
+		"data\\MODEL\\Tree\\BirchTree001.x",			// 白樺の木(中)
+		"data\\MODEL\\Tree\\CommonTree000.x",			// 普通の木(大)
+		"data\\MODEL\\Tree\\CommonTree001.x",			// 普通の木(中)
+		"data\\MODEL\\Tree\\Willow000.x",				// 柳の木(大)
+		"data\\MODEL\\Tree\\Willow001.x",				// 柳の木(中)
+		"data\\MODEL\\Tree\\WoodLog000.x",				// 原木
+		"data\\MODEL\\Tree\\TreeStump000.x",			// 木の幹
+		"data\\MODEL\\LilyPad\\LilyPad000.x",			// 蓮の葉
+		"data\\MODEL\\Plant\\Plant000.x",				// 4つしかつながっていない草
+		"data\\MODEL\\Plant\\Plant001.x",				// 多くつながっている草
+		"data\\MODEL\\Plant\\Bush000.x",				// 草むら
+		"data\\MODEL\\House\\House000.x",				// 家1
+		"data\\MODEL\\House\\House001.x",				// 家2
+		"data\\MODEL\\House\\House002.x",				// 家3
+		"data\\MODEL\\House\\House003.x",				// 家4
+		"data\\MODEL\\House\\House004.x",				// 家5
+		"data\\MODEL\\House\\House005.x",				// 家6
+		"data\\MODEL\\House\\House006.x",				// 家7
+		"data\\MODEL\\House\\House007.x",				// 家8
+		"data\\MODEL\\House\\House008.x",				// 家9
+		"data\\MODEL\\House\\House009.x",				// 家10
+		"data\\MODEL\\Lantern\\Lantern001.x",			// ランタン
+		"data\\MODEL\\Kakejiku\\Kakejiku000.x",			// 掛け軸
+		"data\\MODEL\\Pier\\Pier000.x",					// 橋
+		"data\\MODEL\\Pillar\\WoodPillar000.x",			// 城に配置する形の柱
+		"data\\MODEL\\Pillar\\WoodPillar001.x",			// ただ四角いだけの柱
+		"data\\MODEL\\Stairs\\WoodStairs001.x",			// 階段
+		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
+		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
+		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
+		"data\\MODEL\\GATE\\gate000.x",					// 門(枠)
+		"data\\MODEL\\GATE\\gate001.x",					// 門(扉)
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
