@@ -379,6 +379,9 @@ bool CPlayerClone::Hit(const int nDamage)
 {
 	if (IsDeath()) { return false; }	// Ž€–SÏ‚Ý
 
+	// I—¹ˆ—
+	Uninit();
+
 	return true;
 }
 
@@ -749,6 +752,14 @@ void CPlayerClone::CallBack()
 		// ’Ç]ó‘Ô‚É‚·‚é
 		pClone->SetAction(ACTION_CHASE);
 	}
+}
+
+//===========================================
+// ”¼Œa‚ÌŽæ“¾
+//===========================================
+float CPlayerClone::GetRadius()
+{
+	return RADIUS;
 }
 
 //===========================================

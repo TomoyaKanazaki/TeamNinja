@@ -26,14 +26,16 @@
 //************************************************************
 //	マクロ定義
 //************************************************************
-#define KEY_CREATE			(DIK_0)	// 生成キー
-#define NAME_CREATE			("0")	// 生成表示
-#define KEY_RELEASE			(DIK_9)	// 破棄キー
-#define NAME_RELEASE		("9")	// 破棄表示
-#define KEY_CHANGE_OBJECT	(DIK_2)	// オブジェクトタイプ変更キー
-#define NAME_CHANGE_OBJECT	("2")	// オブジェクトタイプ変更表示
-#define KEY_CHANGE_ACTOR	(DIK_3)	// アクターの種類変更キー
-#define NAME_CHANGE_ACTOR	("3")	// アクターの種類変更表示
+#define KEY_CREATE					(DIK_0)	// 生成キー
+#define NAME_CREATE					("0")	// 生成表示
+#define KEY_RELEASE					(DIK_9)	// 破棄キー
+#define NAME_RELEASE				("9")	// 破棄表示
+#define KEY_CHANGE_OBJECT_FRONT		(DIK_2)	// オブジェクトタイプ前進変更キー
+#define NAME_CHANGE_OBJECT_FRONT	("2")	// オブジェクトタイプ前進変更表示
+#define KEY_CHANGE_OBJECT_BACK		(DIK_3)	// オブジェクトタイプ後進変更キー
+#define NAME_CHANGE_OBJECT_BACK		("3")	// オブジェクトタイプ後進変更表示
+#define KEY_CHANGE_ACTOR			(DIK_4)	// アクターの種類変更キー
+#define NAME_CHANGE_ACTOR			("4")	// アクターの種類変更表示
 
 //************************************************************
 //	定数宣言
@@ -432,7 +434,7 @@ void CEditCollision::DrawDebugControl(void)
 {
 #if _DEBUG
 
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ変更：[%s]\n", NAME_CHANGE_OBJECT);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ前進変更：[%s]\nエディットステージタイプ後進変更：[%s]\n", NAME_CHANGE_OBJECT_FRONT, NAME_CHANGE_OBJECT_BACK);
 
 	// エディター情報の操作表示
 	assert(m_pEditor != nullptr);
@@ -526,13 +528,52 @@ void CEditCollision::ChangeObjectType(void)
 {
 	// オブジェクトタイプの変更
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
-	if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT))
+	if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT_FRONT))
 	{
 		// エディター情報の破棄
 		SAFE_REF_RELEASE(m_pEditor);
 
 		// オブジェクトタイプの変更
 		m_type = (CEditCollision::EType)((m_type + 1) % CEditCollision::TYPE_MAX);
+
+		if (m_pEditor == nullptr)
+		{ // エディターが NULL の場合
+
+			// インデックス
+			int nIdx = NONE_IDX;
+
+			// インデックスを代入
+			switch (m_type)
+			{
+			case CEditCollision::TYPE_CUBE:
+				nIdx = m_cube.size();
+				break;
+			case CEditCollision::TYPE_CYLINDER:
+				nIdx = m_cylinder.size();
+				break;
+			case CEditCollision::TYPE_SPHERE:
+				nIdx = m_sphere.size();
+				break;
+			case CEditCollision::TYPE_POLYGON:
+				nIdx = m_polygon.size();
+				break;
+			default:		// 例外処理
+				assert(false);
+				break;
+			}
+
+			// エディター情報の生成
+			m_pEditor = CEditorCollShape::Create(m_type, nIdx);
+			assert(m_pEditor != nullptr);	// 生成失敗
+		}
+	}
+	else if (pKeyboard->IsTrigger(KEY_CHANGE_OBJECT_BACK))
+	{
+		// エディター情報の破棄
+		SAFE_REF_RELEASE(m_pEditor);
+
+		// オブジェクトタイプの変更
+		m_type = (CEditCollision::EType)((m_type + (CEditCollision::TYPE_MAX - 1)) % CEditCollision::TYPE_MAX);
 
 		if (m_pEditor == nullptr)
 		{ // エディターが NULL の場合

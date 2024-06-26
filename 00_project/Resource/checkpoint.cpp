@@ -18,7 +18,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込→一旦元に戻した
-	const char *SETUP_TXT	= "data\\TXT\\point_alpha.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT	= "data\\TXT\\point.txt";	// セットアップテキスト相対パス
 	const float RADIUS		= 50.0f;	// 半径
 	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
@@ -34,6 +34,7 @@ CListManager<CCheckPoint>* CCheckPoint::m_pList = nullptr;	// オブジェクトリスト
 //  コンストラクタ
 //==========================================
 CCheckPoint::CCheckPoint():
+	m_pos(VEC3_ZERO),
 	m_bSave(false),
 	m_nSaveTension(0)
 {
@@ -57,26 +58,12 @@ CCheckPoint::~CCheckPoint()
 HRESULT CCheckPoint::Init(void)
 {
 	// 値の初期化
+	m_pos = VEC3_ZERO;
 	m_bSave = false;
 	m_nSaveTension = 0;
 
-	// 親クラスの初期化
-	if (FAILED(CObjectModel::Init()))
-	{ // 初期化に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
 	// 自身のラベルを設定
 	SetLabel(LABEL_CHECKPOINT);
-
-	// サイズを調整
-	SetVec3Scaling(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
-
-	// マテリアルを変更
-	SetAllMaterial(material::GlowCyan());
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -123,8 +110,8 @@ void CCheckPoint::Uninit(void)
 		m_pList->Release(m_pList);
 	}
 
-	// 親クラスの終了
-	CObjectModel::Uninit();
+	// オブジェクトを破棄
+	Release();
 }
 
 //==========================================
@@ -132,11 +119,15 @@ void CCheckPoint::Uninit(void)
 //==========================================
 void CCheckPoint::Update(const float fDeltaTime)
 {
+#ifdef _DEBUG
+
+	// エフェクトの位置を設定する
+	m_pEffectdata->m_pos = m_pos;
+
+#endif // _DEBUG
+
 	// プレイヤーとの当たり判定
 	CollisionPlayer();
-	
-	// 親クラスの更新
-	CObjectModel::Update(fDeltaTime);
 }
 
 //==========================================
@@ -144,8 +135,16 @@ void CCheckPoint::Update(const float fDeltaTime)
 //==========================================
 void CCheckPoint::Draw(CShader* pShader)
 {
-	// 親クラスの描画
-	CObjectModel::Draw(pShader);
+
+}
+
+//==========================================
+// 半径取得処理
+//==========================================
+float CCheckPoint::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
 }
 
 //==========================================
@@ -170,10 +169,10 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 	}
 
 	// 位置を設定
-	pSavePoint->SetVec3Position(rPos);
+	pSavePoint->m_pos = rPos;
 
 	// チェックポイントエフェクトを出す
-	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, pSavePoint->GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
+	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
 
 	// 確保したアドレスを返す
 	return pSavePoint;
@@ -202,11 +201,8 @@ void CCheckPoint::CollisionPlayer(void)
 	// セーブフラグがオンなら関数を抜ける
 	if (m_bSave) { return; }
 
-	//　自身の位置を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
 	// 当たっていない場合関数を抜ける
-	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
+	if (!collision::CirclePillar(m_pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
 	{ return; }
 
 	// プレイヤーを回復する
@@ -227,8 +223,8 @@ void CCheckPoint::CollisionPlayer(void)
 	}
 	
 	// チェックポイントエフェクトを出す
-	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", pos + OFFSET, GetVec3Rotation(), VEC3_ZERO, 50.0f, true);
-	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", pos + OFFSET_CHECKEFFECT, GetVec3Rotation(), VEC3_ZERO, 30.0f);
+	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", m_pos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", m_pos + OFFSET_CHECKEFFECT, VEC3_ZERO, VEC3_ZERO, 30.0f);
 
 	// セーブフラグをオンにする
 	m_bSave = true;

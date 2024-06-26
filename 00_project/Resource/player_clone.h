@@ -131,6 +131,7 @@ public:
 	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static void CallBack();															// 分身を呼び戻す
+	static float GetRadius();														// 半径の取得
 	static float GetHeight();														// 身長の取得
 
 private:

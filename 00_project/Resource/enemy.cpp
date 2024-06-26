@@ -273,7 +273,7 @@ bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
 //============================================================
 // 分身の探索処理
 //============================================================
-bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
+bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 {
 	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
 	D3DXVECTOR3 posEnemy = GetVec3Position();		// 敵の位置
@@ -319,6 +319,9 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos)
 
 	// プレイヤーの位置を取得する
 	if (pPos != nullptr) { *pPos = pos; }
+
+	// 分身の情報を取得する
+	if (pClone != nullptr) { *pClone = *CPlayerClone::GetList()->GetIndex(nIdx); }
 
 	// true を返す
 	return true;

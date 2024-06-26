@@ -21,6 +21,7 @@
 // 前方宣言
 //************************************************************
 class CEnemyItem;			// 敵の持ち物
+class CPlayerClone;			// プレイヤーの分身
 
 //************************************************************
 // クラス定義
@@ -80,7 +81,7 @@ protected:
 
 	// メンバ関数
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);	// プレイヤーの探索処理
-	bool SearchClone(D3DXVECTOR3* pPos = nullptr);	// 分身の探索処理
+	bool SearchClone(D3DXVECTOR3* pPos = nullptr, CPlayerClone** pClone = nullptr);	// 分身の探索処理
 
 	void UpdateOldPosition(void) { m_oldPos = GetVec3Position(); }	// 過去位置更新
 	void UpdateGravity(void);	// 重力更新

@@ -7,6 +7,7 @@
 #include "gimmick_bridge.h"
 #include "manager.h"
 #include "player.h"
+#include "field.h"
 
 //===========================================
 //  定数定義
@@ -23,7 +24,8 @@ CGimmickBridge::CGimmickBridge() : CGimmickAction(),
 m_bSet(false),
 m_ConectPoint(),
 m_vecToWait(VEC3_ZERO),
-m_nIdxWait(0)
+m_nIdxWait(0),
+m_pField(nullptr)
 {
 }
 
@@ -68,6 +70,10 @@ void CGimmickBridge::Update(const float fDeltaTime)
 {
 	// 橋の端の設定
 	if (!m_bSet) { CalcConectPoint(); }
+
+	// 橋を架ける
+	if (IsActive()) { Active(); }
+	else { SAFE_UNINIT(m_pField); }
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -145,11 +151,27 @@ void CGimmickBridge::CalcConectPoint()
 	}
 	else // xzのサイズが一致している場合
 	{
-		// 本当はやめてほしい。
+		// 本当は一致させないでほしい。
 		assert(false);
 		
 		// 中心座標にサイズ * 0.5を加算する
 		m_ConectPoint[0] = pos + D3DXVECTOR3(size.x * 0.5f, 0.0f, size.z * 0.5f);
 		m_ConectPoint[1] = pos - D3DXVECTOR3(size.x * 0.5f, 0.0f, size.z * 0.5f);
 	}
+}
+
+//===========================================
+//  アクティブ状態の処理
+//===========================================
+void CGimmickBridge::Active()
+{
+	// 足場を生成する
+	if (m_pField == nullptr)
+	{
+		// sizeを2次元に変換
+		D3DXVECTOR2 size = D3DXVECTOR2(GetVec3Sizing().x, GetVec3Sizing().z);
+		m_pField = CField::Create(CField::TYPE_BRIDGE, GetVec3Position(), GetVec3Rotation(), size, D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), POSGRID2(10, 10), POSGRID2(10, 10));
+	}
+
+	// TODO : 分身の配置を変更？
 }

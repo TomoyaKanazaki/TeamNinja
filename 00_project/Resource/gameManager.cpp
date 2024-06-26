@@ -44,6 +44,10 @@ namespace
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
+
+#ifdef _DEBUG
+	bool bCamera = false;
+#endif
 }
 
 //************************************************************
@@ -78,6 +82,8 @@ HRESULT CGameManager::Init(void)
 	CPopUpUI::Create(START_TEXTURE);
 
 	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
+
+	CGimmick::Create(D3DXVECTOR3(2800.0f, 300.0f, 0.0f), D3DXVECTOR3(600.0f, 0.0f, 100.0f), CGimmick::TYPE_BRIDGE, 4);
 
 #if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
@@ -119,18 +125,18 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
 
 	// 重い扉
-	CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+	//CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
 	// ジャンプ台
 	CGimmick::Create(D3DXVECTOR3(7150.0f, 301.0f, -300.0f), D3DXVECTOR3(100.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
-	{ // 複数ボタン
-		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-		CGimmickMalti::Create(vec);
-	}
+	//{ // 複数ボタン
+	//	std::vector<CGimmickMalti::SButton> vec;
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
+	//	CGimmickMalti::Create(vec);
+	//}
 
 #endif
 
@@ -192,6 +198,26 @@ void CGameManager::Uninit(void)
 //============================================================
 void CGameManager::Update(const float fDeltaTime)
 {
+#ifdef _DEBUG // カメラ切り替え
+	DebugProc::Print(DebugProc::POINT_CENTER, "キーボードの C を押すと何かが起こる!？\n");
+	if (GET_INPUTKEY->IsTrigger(DIK_C))
+	{
+		// 状態を切り替え
+		bCamera = !bCamera;
+
+		if (bCamera)
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+			GET_MANAGER->GetCamera()->SetDestTps();
+		}
+		else
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+			GET_MANAGER->GetCamera()->SetDestAround();
+		}
+	}
+
+#endif
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:

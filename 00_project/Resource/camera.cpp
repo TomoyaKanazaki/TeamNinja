@@ -15,6 +15,7 @@
 #include "stage.h"
 #include "player.h"
 #include "multiModel.h"
+#include "field.h"
 
 //************************************************************
 //	定数宣言
@@ -93,6 +94,26 @@ namespace
 		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
 		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
 		const float	INIT_ROTX = 1.5f;		// 追従カメラの向きX初期値
+
+		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
+		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
+		const float	LIMIT_ROT_LOW = 1.1f;				// X下回転の制限値
+		const float	MAX_SUB_DIS = 1500.0f;				// 下方向カメラの距離減算量
+	}
+
+	// 回り込みカメラ情報
+	namespace around
+	{
+		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);	// カメラ視点の補正係数
+		const D3DXVECTOR3 REV_POSR = D3DXVECTOR3(1.0f, 0.35f, 1.0f);	// カメラ注視点の補正係数
+
+		const float	STICK_REV = 0.00000225f;	// カメラ操作スティックの傾き量の補正係数
+
+		const float	ROTX_REV = 0.5f;		// カメラピッチ回転の補正係数
+		const float	REV_ROT = 1.0f;			// カメラ向きの補正係数
+		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
+		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
+		const float	INIT_ROTX = 1.3f;		// 追従カメラの向きX初期値
 
 		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
@@ -253,6 +274,13 @@ void CCamera::Update(const float fDeltaTime)
 
 		// 三人称の更新
 		Tps();
+
+		break;
+
+	case STATE_AROUND:	// 回り込み
+
+		//回り込みの更新
+		Around();
 
 		break;
 
@@ -447,6 +475,53 @@ void CCamera::SetDestTps(void)
 
 		// 地面を貫通しないよう補正
 		m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis -= (tps::MAX_SUB_DIS / HALF_PI) * (HALF_PI - m_aCamera[TYPE_MAIN].rot.x);
+	}
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = player->GetVec3Position() + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+}
+
+//===========================================
+//  カメラ目標位置設定(回り込み)
+//===========================================
+void CCamera::SetDestAround(void)
+{
+	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
+	if (pList == nullptr) { return; }	// リスト未使用
+	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
+	if (m_state != STATE_AROUND) { return; }	// 回り込み状態以外
+
+	auto player = pList->GetList().front();	// プレイヤー情報
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 向きを設定
+	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
+	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y = player->GetVec3Rotation().y;
+
+	// 向きを正規化
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+	if (m_aCamera[TYPE_MAIN].rot.x < HALF_PI)
+	{ // 下から向き始めた場合
+
+		// 地面を貫通しないよう補正
+		m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis -= (around::MAX_SUB_DIS / HALF_PI) * (HALF_PI - m_aCamera[TYPE_MAIN].rot.x);
 	}
 
 	//----------------------------------------------------
@@ -720,6 +795,24 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 	return true;
 }
 
+//===========================================
+//  プレイヤーよりも手前にいる
+//===========================================
+bool CCamera::IsOverPlayer(const D3DXVECTOR3& pos)
+{
+	// プレイヤーのスクリーン座標を取得
+	D3DXVECTOR3 posPlayer = CalcPlayerPos();
+
+	// 自身のスクリーン座標を取得
+	D3DXVECTOR3 posThis = VEC3_ZERO;
+	OnScreen(pos, posThis);
+
+	// z値がプレイヤーより大きい場合trueを返す
+	if (posPlayer.z > posThis.z) { return true; }
+
+	return false;
+}
+
 //============================================================
 //	生成処理
 //============================================================
@@ -767,7 +860,7 @@ void CCamera::Release(CCamera *&prCamera)
 //============================================================
 void CCamera::Tps(void)
 {
-	//CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
 	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
 	if (pList == nullptr) { return; }	// リスト未使用
 	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
@@ -781,27 +874,27 @@ void CCamera::Tps(void)
 	//----------------------------------------------------
 	//	向きの更新
 	//----------------------------------------------------
-	//float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
-	//if (pad::DEAD_ZONE < fRTilt)
-	//{ // デッドゾーン以上の場合
+	float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
+	if (pad::DEAD_ZONE < fRTilt)
+	{ // デッドゾーン以上の場合
 
-	//	// 目標向きを設定
-	//	float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
-	//	m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
-	//	m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
+		// 目標向きを設定
+		float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
+		m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
+		m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
 
-	//	// 目標向きを正規化
-	//	useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
-	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
+		// 目標向きを正規化
+		useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
+		useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
 
-	//	// 差分向きを計算
-	//	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
-	//	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+		// 差分向きを計算
+		diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+		useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
-	//	// 現在向きの更新
-	//	m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
-	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
-	//}
+		// 現在向きの更新
+		m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
+		useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+	}
 
 	//----------------------------------------------------
 	//	距離の更新
@@ -1114,5 +1207,115 @@ void CCamera::Swing(void)
 			// 距離を補正
 			useful::LimitMinNum(pSwing->fShiftLength, 0.0f);
 		}
+	}
+}
+
+//===========================================
+//  回り込み
+//===========================================
+void CCamera::Around(void)
+{
+	// 回り込み状態じゃない場合関数を抜ける
+	if (m_state != STATE_AROUND) { return; }
+
+	// プレイヤー情報の取得
+	CPlayer* player = GET_PLAYER;
+
+	// 変数宣言
+	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
+	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
+	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
+
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayer = player->GetVec3Position();
+
+	// 目標の角度を算出
+	CalcAround(posPlayer);
+
+#ifdef _DEBUG
+
+	// キーボード情報の入力
+	CInputKeyboard* pKey = GET_INPUTKEY;
+
+	if (pKey->IsPress(DIK_NUMPAD1))
+	{
+		m_aCamera[TYPE_MAIN].rot.y += 0.01f;
+	}
+	if (pKey->IsPress(DIK_NUMPAD3))
+	{
+		m_aCamera[TYPE_MAIN].rot.y -= 0.01f;
+	}
+
+#endif
+
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 注視点の差分位置を計算
+	diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 視点の差分位置を計算
+	diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 注視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * around::REV_POSR.x;
+	m_aCamera[TYPE_MAIN].posR.y += diffPosR.y * around::REV_POSR.y;
+	m_aCamera[TYPE_MAIN].posR.z += diffPosR.z * around::REV_POSR.z;
+
+	// 視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * around::REV_POSV.x;
+	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * around::REV_POSV.y;
+	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * around::REV_POSV.z;
+}
+
+//===========================================
+//  回り込みの計算
+//===========================================
+void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
+{
+	// フィールドのリストを取得
+	CListManager<CField>* pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+
+	// z座標を取得する関数
+	float fMax = 0.0f, fMin = 0.0f;
+
+	// 各フィールドのz座標を比較する
+	for (auto& rList : listField)
+	{
+		// z座標を取得
+		float fTemp = rList->GetVec3Position().z;
+
+		// z座標が保存された座標より大きい場合上書き
+		if (fMax < fTemp) { fMax = fTemp; }
+
+		// z座標が保存された座標より小さい場合上書き
+		if (fMin > fTemp) { fMin = fTemp; }
+	}
+
+	// プレイヤーのz座標をフィールドの割合に変換する
+	float fScale = (posPlayer.z - fMin) / (fMax - fMin);
+
+	// 割合からカメラの角度を設定する
+	if (fScale >= 1.0f) // 1以上の場合
+	{
+		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI;
+	}
+	else if (fScale <= 0.0f) // 0以下の場合
+	{
+		m_aCamera[TYPE_MAIN].rot.y = 0.0f;
+	}
+	else // 1 ~ 0の範囲内だった場合
+	{
+		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * fScale;
 	}
 }

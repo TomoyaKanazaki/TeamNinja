@@ -39,6 +39,7 @@ public:
 		STATE_ROTATE,	// 回転状態
 		STATE_FOLLOW,	// 追従状態
 		STATE_TPS,		// 三人称状態
+		STATE_AROUND,	// 回り込み
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -107,6 +108,7 @@ public:
 	void SetDestRotate(void);	// カメラ目標位置設定 (回転)
 	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
 	void SetDestTps(void);		// カメラ目標位置設定 (三人称)
+	void SetDestAround(void);	// カメラ目標位置設定 (回り込み)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -125,6 +127,7 @@ public:
 	D3DXVECTOR3 CalcWorldToScreen(const D3DXVECTOR3& pos); // ワールド座標をスクリーン座標に変換する
 	bool OnScreen(const D3DXVECTOR3& pos); // スクリーン内判定
 	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos); // スクリーン座標を返すスクリーン内判定
+	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成
@@ -140,6 +143,10 @@ private:
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)
 	void Swing(void);		// カメラ揺れの更新
+
+	// 金崎追加
+	void Around();										// 回り込み
+	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報

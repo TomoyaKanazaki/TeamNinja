@@ -451,6 +451,9 @@ bool CPlayer::Hit(const int nDamage)
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
 
+	// ジャンプエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
 	// 士気力を減少
 	m_pTensionGauge->AddNum(-nDamage);
 
@@ -729,14 +732,19 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		// スティック向きを取得
 		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
 
+		// カメラの向きを取得
+		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+
+		// 移動の向きを算出
+		float fMoveRot = fStickRot + fCameraRot;
+
 		// 目標向きを設定
-		m_destRot.y = fStickRot;
-		useful::NormalizeRot(m_destRot.y);	// 向きの正規化
+		m_destRot.y = fMoveRot;
 
 		// 移動量を設定する
 		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
-		m_move.x = sinf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.x));
-		m_move.z = cosf(fStickRot + D3DX_PI) * (NORMAL_MOVE * fabsf(fRate.z));
+		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
+		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
 
 		// 歩行モーションにする
 		currentMotion = MOTION_DASH;
@@ -1188,20 +1196,23 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// スティック入力の方向を取得する
 	float fRotStick = pPad->GetPressRStickRot();
 
+	// カメラの向きを取得
+	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+
 	// スティック方向を3D空間に対応する
-	float fTemp = fRotStick - (D3DX_PI * 0.5f);
+	float fTemp = fRotStick + fCameraRot;
 	useful::NormalizeRot(fTemp);
 
 	// プレイヤー方向からスティックの方向を減算
-	float fRot = fRotPlayer - fTemp;
+	float fRot = fRotPlayer - (fTemp - D3DX_PI * 0.5f);
 	useful::NormalizeRot(fRot);
 
 	// 分身の位置を算出
 	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
 	(
-		DISTANCE_CLONE * cosf(-fRotStick),
+		DISTANCE_CLONE * cosf(-fTemp),
 		0.0f,
-		DISTANCE_CLONE * sinf(-fRotStick)
+		DISTANCE_CLONE * sinf(-fTemp)
 	);
 
 	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
@@ -1212,7 +1223,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		{
 			m_bGimmickClone = true;
 			m_fGimmickTimer = 0.0f;
-			m_fTempStick = fRotStick;
+			m_fTempStick = fTemp;
 		}
 		return;
 	}
@@ -1220,9 +1231,9 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		CLONE_MOVE * cosf(-fRotStick),
+		CLONE_MOVE * cosf(-fTemp),
 		0.0f,
-		CLONE_MOVE * sinf(-fRotStick)
+		CLONE_MOVE * sinf(-fTemp)
 	);
 
 	// 歩く分身を出す
@@ -1230,7 +1241,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	{
 		m_bGimmickClone = true;
 		m_fGimmickTimer = 0.0f;
-		m_fTempStick = fRotStick;
+		m_fTempStick = fTemp;
 	}
 }
 

@@ -16,6 +16,11 @@
 #include "enemy.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CPlayerClone;		// 分身の情報
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // しつこい敵クラス
@@ -55,6 +60,25 @@ public:
 		STATE_MAX			// この列挙型の総数
 	};
 
+	// 攻撃判定の情報構造体
+	struct SAttack
+	{
+		SAttack()
+		{
+			nCount = 0;
+			bAttack = false;
+		}
+
+		SAttack(const int Cnt, const bool bIs)
+		{
+			nCount = Cnt;
+			bAttack = bIs;
+		}
+
+		int nCount;			// 攻撃カウント
+		bool bAttack;		// 攻撃状況TODO：後で変更
+	};
+
 	// コンストラクタ
 	CEnemyStalk();
 
@@ -91,9 +115,11 @@ private:
 	void HitClone(const D3DXVECTOR3& rPos);		// 分身のヒット処理
 
 	// メンバ変数
+	CPlayerClone* m_pClone;		// 分身の情報
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
 	ETarget m_target;			// 標的
 	EState m_state;				// 状態
+	SAttack m_attack;			// 攻撃情報
 	float m_fSpeed;				// 速度
 };
 

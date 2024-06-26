@@ -21,8 +21,8 @@
 #define NAME_CREATE		("0")	// 生成表示
 #define KEY_RELEASE		(DIK_9)	// 破棄キー
 #define NAME_RELEASE	("9")	// 破棄表示
-#define KEY_TYPE		(DIK_3)	// 種類変更キー
-#define NAME_TYPE		("3")	// 種類変更表示
+#define KEY_TYPE		(DIK_4)	// 種類変更キー
+#define NAME_TYPE		("4")	// 種類変更表示
 
 #define KEY_UP_SIZE_X		(DIK_T)	// X軸拡大キー
 #define NAME_UP_SIZE_X		("T")	// X軸拡大表示

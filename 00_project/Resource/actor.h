@@ -58,7 +58,20 @@ public:
 		TYPE_HOUSE3,			// 家3
 		TYPE_HOUSE4,			// 家4
 		TYPE_HOUSE5,			// 家5
+		TYPE_HOUSE6,			// 家6
+		TYPE_HOUSE7,			// 家7
+		TYPE_HOUSE8,			// 家8
+		TYPE_HOUSE9,			// 家9
+		TYPE_HOUSE10,			// 家10
 		TYPE_LANTERN,			// ランタン
+		TYPE_KAKEJIKU,			// 掛け軸
+		TYPE_PIER,				// 橋
+		TYPE_PILLER1,			// 城に配置する形の柱
+		TYPE_PILLER2,			// ただ四角いだけの柱
+		TYPE_STAIRS,			// 階段
+		TYPE_B_LATTICE,			// 竹の格子
+		TYPE_ROOFFLOOR1,		// 骨組みみたいな屋根裏の木
+		TYPE_ROOFFLOOR2,		// レンガ柄風の屋根裏の木
 		TYPE_GATE,				// 門(枠部分)
 		TYPE_DOOR,				// 門(扉部分)
 		TYPE_MAX				// この列挙型の総数
