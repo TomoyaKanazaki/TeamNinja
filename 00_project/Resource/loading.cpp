@@ -31,7 +31,7 @@ namespace
 
 #else	// NDEBUG
 
-	const int MIN_LOAD = 2;	// 最低ロード繰り返し数
+	const int MIN_LOAD = 1;	// 最低ロード繰り返し数
 
 #endif	// _DEBUG
 }

@@ -1186,6 +1186,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
 
+
 	// プレイヤーの方向を取得
 	float fRotPlayer = GetVec3Rotation().y;
 
