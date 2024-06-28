@@ -231,7 +231,11 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 過去位置の更新
 	UpdateOldPosition();
 
+	// ギミックとの当たり判定
 	CheckGimmick();
+
+	// アクターの当たり判定
+	(void)CollisionActor();
 
 	// 各種行動を起こす
 	switch (m_Action)
@@ -302,9 +306,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// アクターの当たり判定
-	(void)CollisionActor();
 
 	// 壁の当たり判定
 	(void)CollisionWall();

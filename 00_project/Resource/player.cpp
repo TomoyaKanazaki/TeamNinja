@@ -688,11 +688,11 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// •Ç‚Ì“–‚½‚è”»’è
 	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
-	// •ªg‚Ìˆ—
-	ControlClone(posPlayer, rotPlayer, fDeltaTime);
-
 	// ˆÊ’u‚ğ”½‰f
 	SetVec3Position(posPlayer);
+
+	// •ªg‚Ìˆ—
+	ControlClone(posPlayer, rotPlayer, fDeltaTime);
 
 	// Œü‚«‚ğ”½‰f
 	SetVec3Rotation(rotPlayer);
