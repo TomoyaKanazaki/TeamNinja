@@ -1190,6 +1190,7 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
 #endif
+
 	// プレイヤーの方向を取得
 	float fRotPlayer = GetVec3Rotation().y;
 

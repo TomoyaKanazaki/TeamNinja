@@ -57,31 +57,12 @@ namespace
 
 	const float ZLINE[] = // フィールドの基準線
 	{
-		0.0f, // 中心
+		0.0f,	// 中心
 		2600.0f, // 手前
 		-2600.0f // 奥
 	};
 
-#ifdef _DEBUG
-	const D3DXCOLOR COLOR[] =
-	{
-		D3DXCOLOR(0.70f, 0.37f, 0.00f, 1.0f),
-		D3DXCOLOR(0.11f, 0.02f, 0.00f, 1.0f),
-		D3DXCOLOR(0.02f, 0.96f, 0.27f, 1.0f),
-		D3DXCOLOR(0.52f, 0.46f, 0.27f, 1.0f),
-		D3DXCOLOR(0.38f, 0.38f, 0.38f, 1.0f),
-		D3DXCOLOR(0.18f, 0.10f, 0.00f, 1.0f),
-		D3DXCOLOR(0.90f, 0.90f, 1.00f, 1.0f),
-		D3DXCOLOR(0.81f, 0.90f, 0.85f, 1.0f),
-		D3DXCOLOR(0.28f, 0.00f, 0.18f, 1.0f),
-		D3DXCOLOR(0.28f, 0.87f, 0.95f, 1.0f),
-		D3DXCOLOR(0.33f, 0.40f, 0.26f, 1.0f),
-		D3DXCOLOR(1.00f, 1.00f, 1.00f, 1.0f)
-	};
-#endif
-
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
-
 	const int PRIORITY = 0;	// 地面の優先順位
 }
 
@@ -98,9 +79,6 @@ CField::EZ CField::m_eNear = CField::Z_MIDDLE;	// 最も近い基準線
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(ZLINE) == CField::Z_MAX, "ERROR : Type Count Mismatch");
-#ifdef _DEBUG
-static_assert(NUM_ARRAY(COLOR) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
-#endif
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -297,10 +275,6 @@ CField *CField::Create
 			return nullptr;
 		}
 
-#ifdef _DEBUG
-		pField->SetColor(COLOR[type]);
-#endif
-
 		// テクスチャ分割数を設定
 		pField->SetTexPattern(rTexPart);
 
@@ -348,9 +322,6 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
-#ifdef _DEBUG
-		//BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\test.png"));
-#endif
 	}
 	else { assert(false); }	// 範囲外
 }
