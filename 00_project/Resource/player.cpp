@@ -691,11 +691,11 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(posPlayer);
 
-	// 分身の処理
-	ControlClone(posPlayer, rotPlayer, fDeltaTime);
-
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
+
+	// 分身の処理
+	ControlClone(posPlayer, rotPlayer, fDeltaTime);
 
 	// 保存位置の更新
 	UpdateSaveTeleport();
