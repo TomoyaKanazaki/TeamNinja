@@ -121,6 +121,7 @@ public:
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
+	CGauge2D* GetTensionGauge() const { return m_pTensionGauge; } // 士気力ゲージの取得
 
 private:
 	// メンバ関数
