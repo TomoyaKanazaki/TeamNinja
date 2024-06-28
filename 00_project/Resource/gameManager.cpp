@@ -182,7 +182,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), D3DXVECTOR3(1000.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 6);
 
 	// 重ドア：中央
-	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
 	{ // 複数ボタン：最奥
 		std::vector<CGimmickMalti::SButton> vec;

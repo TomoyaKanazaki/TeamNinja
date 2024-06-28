@@ -1186,9 +1186,14 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
 
+	// TODO：士気力の減る量考えて！
+#if 0
 #ifndef _DEBUG
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
+#endif
+#else
+
 #endif
 
 	// プレイヤーの方向を取得
