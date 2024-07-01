@@ -28,7 +28,7 @@ namespace
 {
 	const int	PRIORITY = 3;			// “G‚Ì—Dæ‡ˆÊ
 	const float	GRAVITY = 60.0f;		// d—Í
-	const float VIEW_RANGE = 400.0f;	// ‹ŠE‚Ì”ÍˆÍ
+	const float VIEW_RANGE = 1000.0f;	// ‹ŠE‚Ì”ÍˆÍ
 }
 
 //************************************************************

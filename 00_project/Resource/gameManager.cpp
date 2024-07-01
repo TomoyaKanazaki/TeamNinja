@@ -29,6 +29,7 @@
 #include "gimmick_malti.h"
 #include "actor.h"
 #include "MapModel.h"
+#include "camera_change.h"
 
 
 //************************************************************
@@ -147,6 +148,9 @@ HRESULT CGameManager::Init(void)
 #if 1
 	// 橋
 	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
+
+	// カメラチェンジャー
+	CCameraChanger::Create(D3DXVECTOR3(-1500.0f, 0.0f, 500.0f), D3DXVECTOR3(100.0f, 100.0f, 100.0f));
 #endif
 
 // 小原用ギミック置き場

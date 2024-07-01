@@ -113,6 +113,8 @@ public:
 	bool GimmickHighJump(const int nNumClone);	// ギミックのハイジャンプ
 	void GimmickLowJump(void);					// ギミックの小ジャンプ
 	bool GimmickLand(void);						// ギミックの飛び降り着地
+	D3DXVECTOR3 GetVec3Sizing() const override
+	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
