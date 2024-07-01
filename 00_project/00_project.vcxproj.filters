@@ -87,9 +87,6 @@
     <ClInclude Include="Resource\liquid.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\impact.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
     <ClInclude Include="Resource\flash.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\field.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\cinemaScope.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -120,22 +114,10 @@
     <ClInclude Include="Resource\anim2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\wall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\wave.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\value.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\valueUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\stage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sky.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\shaderMono.h">
@@ -192,22 +174,10 @@
     <ClInclude Include="Resource\character.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\checkpoint.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\goal.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\popupUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\cloneAngleUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\MapModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\actor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\chiefCollSphere.h">
@@ -549,24 +519,42 @@
     <ClInclude Include="Resource\listManager.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\actor.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\checkpoint.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goal.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\light.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\MapModel.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\wall.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\wave.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\stage.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sky.h">
+      <Filter>Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Resource\wall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\wave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\value.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\valueUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sky.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\shadow.cpp">
@@ -620,9 +608,6 @@
     <ClCompile Include="Resource\loading.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\liquid.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -639,9 +624,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\flash.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\field.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\cinemaScope.cpp">
@@ -680,22 +662,10 @@
     <ClCompile Include="Resource\character.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\checkpoint.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\goal.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\popupUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\cloneAngleUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\MapModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\actor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\chiefCollSphere.cpp">
@@ -1036,6 +1006,36 @@
     </ClCompile>
     <ClCompile Include="Resource\random.cpp">
       <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\checkpoint.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\actor.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\goal.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\light.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\MapModel.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sky.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\stage.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\wall.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\wave.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
