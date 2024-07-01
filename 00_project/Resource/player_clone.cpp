@@ -629,8 +629,13 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	// 反応する状態に設定する
 	pPlayer->m_eGimmick = GIMMICK_REACTION;
 
+	// TODO：士気力の減る量考えて！
+#if 0
+#ifndef _DEBUG
 	// 士気力を減少
 	GET_PLAYER->GetTensionGauge()->AddNum(-500);
+#endif
+#endif
 
 	// 確保したアドレスを返す
 	return pPlayer;
@@ -1589,8 +1594,13 @@ CPlayerClone* CPlayerClone::Block()
 	// エフェクトを生成
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
 
+	// TODO：士気力の減る量考えて！
+#if 0
+#ifndef _DEBUG
 	// 士気力を減少
 	GET_PLAYER->GetTensionGauge()->AddNum(-500);
+#endif
+#endif
 
 	// ヒットしていなければ生成できる
 	return this;
