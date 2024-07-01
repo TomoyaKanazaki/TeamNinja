@@ -61,9 +61,11 @@ public:
 		MOTION_STEALTHWALK,	// 忍び足モーション
 		MOTION_FALL,		// 落下モーション
 		MOTION_LANDING,		// 着地モーション
-		MOTION_JUMP_IDOL,	// ジャンプ台モーション
-		MOTION_CATAPULT,	// 打ち上げモーション
+		MOTION_JUMP_IDOL,	// ジャンプ台待機モーション
+		MOTION_JUMP_WALK,	// ジャンプ台移動モーション
+		MOTION_CATAPULT,	// ジャンプ台打ち上げモーション
 		MOTION_LADDER,		// 梯子/橋モーション
+		MOTION_OPEN,		// 扉上げモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 

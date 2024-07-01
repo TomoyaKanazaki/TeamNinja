@@ -50,8 +50,8 @@ public:
 
 private:
 
-	void OpenTheDoor(void);		// 扉を上げる
-	void CloseTheDoor(void);	// 扉を下げる
+	void OpenTheDoor(D3DXVECTOR3& rPos);	// 扉を上げる
+	void CloseTheDoor(D3DXVECTOR3& rPos);	// 扉を下げる
 
 	// メンバ変数
 	CActor* m_pGateModel;	// アクター(枠)の情報
