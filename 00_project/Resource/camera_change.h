@@ -52,6 +52,7 @@ public:
 		const EDirection Dir = DIRECTION_FRONT, // カメラ方向
 		const ERotation Rot = ROTATION_DEFAULT // カメラ角度
 	);
+	static CListManager<CCameraChanger>* GetList(void);	// リスト取得
 
 private:
 
@@ -59,5 +60,8 @@ private:
 	bool m_bChange; // カメラ方向変更フラグ
 	EDirection m_eDir; // カメラ方向
 	ERotation m_eRot; // カメラ角度
+	CListManager<CCameraChanger>::AIterator m_iterator; // イテレーター
 
+	// 静的メンバ変数
+	static CListManager<CCameraChanger>* m_pList; // オブジェクトリスト
 };

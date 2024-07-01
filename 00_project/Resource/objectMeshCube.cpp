@@ -129,6 +129,14 @@ HRESULT CObjectMeshCube::Init(void)
 	m_meshCube.aTexPart[CUBEPART_Y] = VEC2_ONE;	// 分割数Y
 	m_meshCube.aTexPart[CUBEPART_Z] = VEC2_ONE;	// 分割数Z
 
+	// 縁取りの状態を設定
+	if (FAILED(SetBorderState(m_meshCube.bordState)))
+	{ // 分割数の設定に失敗した場合
+
+		// オブジェクトメッシュキューブの破棄
+		return E_FAIL;
+	}
+
 	// レンダーステートの生成
 	m_pRenderState = CRenderState::Create();
 	if (m_pRenderState == nullptr)
