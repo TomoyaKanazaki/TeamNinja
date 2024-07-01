@@ -57,13 +57,13 @@ public:
 	enum EMotion
 	{
 		MOTION_IDOL = 0,	// 待機モーション
-		MOTION_CAUTIOUS,	// 警戒モーション
 		MOTION_DASH,		// 歩行モーション
 		MOTION_STEALTHWALK,	// 忍び足モーション
 		MOTION_FALL,		// 落下モーション
 		MOTION_LANDING,		// 着地モーション
 		MOTION_JUMP_IDOL,	// ジャンプ台モーション
 		MOTION_CATAPULT,	// 打ち上げモーション
+		MOTION_LADDER,		// 梯子/橋モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -77,8 +77,9 @@ public:
 		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
 		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
-		ACTION_JUMPOFF,			// 飛び降り
 		ACTION_HEAVYDOOR,		// 重い扉
+		ACTION_STEP,			// 梯子
+		ACTION_BRIDGE,			// 橋
 		ACTION_MAX
 	};
 
@@ -143,6 +144,9 @@ private:
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
+	EMotion UpdateHeavyDoor(const float fDeltaTime);	// 重い扉行動時の更新
+	EMotion UpdateStep(const float fDeltaTime);			// 梯子行動時の更新
+	EMotion UpdateBridge(const float fDeltaTime);		// 橋行動時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
 	void UpdateGravity(void);				// 重力の更新

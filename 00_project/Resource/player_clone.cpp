@@ -1,8 +1,9 @@
 //============================================================
 //
 //	プレイヤーの分身処理 [player_clone.cpp]
-//	Author：藤田勇一
-//	adder : 金崎朋弥
+//	Author：小原立暉
+//	Adder : 藤田勇一
+//	Adder : 金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -46,7 +47,6 @@ namespace
 	const float	LAND_REV	= 0.16f;	// 通常状態時の地上の移動量の減衰係数
 	const int	BLEND_FRAME_OTHER	= 5;		// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;		// モーション着地のブレンドフレーム
-	const int	CAUTIOUS_TRANS_LOOP	= 7;		// 警戒モーションに遷移する待機ループ数
 	const float	SPAWN_ADD_ALPHA		= 0.03f;	// スポーン状態時の透明度の加算量
 
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
@@ -301,6 +301,27 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		// ギミック台状態の更新
 		currentMotion = UpdateJumpTable(fDeltaTime);
+
+		break;
+
+	case ACTION_HEAVYDOOR: // 重い扉
+
+		// 重い扉状態の更新
+		currentMotion = UpdateHeavyDoor(fDeltaTime);
+
+		break;
+
+	case ACTION_STEP: // 梯子
+
+		// 梯子状態の更新
+		currentMotion = UpdateStep(fDeltaTime);
+
+		break;
+
+	case ACTION_BRIDGE: // 橋
+
+		// 橋状態の更新
+		currentMotion = UpdateBridge(fDeltaTime);
 
 		break;
 
@@ -899,7 +920,24 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 
 		// ジャンプ台状態に変更
 		m_Action = ACTION_JUMPTABLE;
+		break;
 
+	case CGimmick::TYPE_HEAVYDOOR:	// 重い扉
+
+		// 重い扉状態に変更
+		m_Action = ACTION_HEAVYDOOR;
+		break;
+
+	case CGimmick::TYPE_STEP:		// 踏み台
+
+		// 梯子状態に変更
+		m_Action = ACTION_STEP;
+		break;
+
+	case CGimmick::TYPE_BRIDGE:		// 橋
+
+		// 橋状態に変更
+		m_Action = ACTION_BRIDGE;
 		break;
 
 	default: // その他
@@ -984,6 +1022,36 @@ CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 	if (m_pGimmick->GetMoment()) { return MOTION_CATAPULT; }
 
 	return MOTION_JUMP_IDOL;
+}
+
+//============================================================
+//	重い扉行動時の更新処理
+//============================================================
+CPlayerClone::EMotion CPlayerClone::UpdateHeavyDoor(const float fDeltaTime)
+{
+	// TODO：ジャンプ台と同じような感じになるかな
+
+	//if (m_pGimmick->IsActive()) { return /*ここに重い扉上げモーション*/; }
+
+	return MOTION_JUMP_IDOL;
+}
+
+//============================================================
+//	梯子行動時の更新処理
+//============================================================
+CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
+{
+	return MOTION_LADDER;
+}
+
+//============================================================
+//	橋行動時の更新処理
+//============================================================
+CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
+{
+	if (m_pGimmick->IsActive()) { return MOTION_LADDER; }
+
+	return MOTION_IDOL;
 }
 
 //============================================================
@@ -1119,25 +1187,6 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 	switch (GetMotionType())
 	{ // モーションの種類ごとの処理
 	case MOTION_IDOL:	// 待機モーション
-
-		if (GetMotionNumLoop() >= CAUTIOUS_TRANS_LOOP)
-		{ // 待機モーションでしばらくいた場合
-
-			// 警戒モーションの設定
-			SetMotion(MOTION_CAUTIOUS, BLEND_FRAME_OTHER);
-		}
-
-		break;
-
-	case MOTION_CAUTIOUS:	// 警戒モーション
-
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_LAND);
-		}
-
 		break;
 
 #if 0
@@ -1179,7 +1228,6 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			// 現在のモーションの設定
 			SetMotion(nMotion, BLEND_FRAME_OTHER);
 		}
-
 		break;
 
 	case MOTION_LANDING:	// 着地モーション
@@ -1190,7 +1238,6 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			// 現在のモーションの設定
 			SetMotion(nMotion, BLEND_FRAME_LAND);
 		}
-
 		break;
 
 	case MOTION_JUMP_IDOL:	// ジャンプ台モーション
@@ -1204,7 +1251,9 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			// ジャンプ台モーションに遷移
 			SetMotion(MOTION_JUMP_IDOL, BLEND_FRAME_OTHER);
 		}
+		break;
 
+	case MOTION_LADDER:	// 梯子/橋モーション
 		break;
 	}
 }
