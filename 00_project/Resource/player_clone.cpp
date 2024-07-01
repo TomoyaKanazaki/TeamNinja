@@ -65,6 +65,7 @@ namespace
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
 	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
+	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
 }
 
 //************************************************************
@@ -1362,7 +1363,7 @@ void CPlayerClone::UpdateReAction()
 
 	std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
-	D3DXVECTOR3 size = m_size * 0.5f;	// サイズ
+	D3DXVECTOR3 size = m_size * 0.5f;			// サイズ
 	D3DXVECTOR3 posGimmick = VEC3_ZERO;			// ギミックの位置
 	D3DXVECTOR3 sizeGimmick = VEC3_ZERO;		// ギミックのサイズ
 
@@ -1374,6 +1375,9 @@ void CPlayerClone::UpdateReAction()
 
 		// 位置を取得
 		posGimmick = gimmick->GetVec3Position();
+
+		// y軸の距離が離れていた場合次に進む
+		if (fabsf(posGimmick.y - pos.y) >= GIMMICK_HEIGHT) { continue; }
 
 		// サイズを取得
 		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
