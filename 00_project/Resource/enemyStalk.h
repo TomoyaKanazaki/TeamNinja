@@ -13,28 +13,15 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "enemy.h"
-
-//************************************************************
-// 前方宣言
-//************************************************************
-class CPlayerClone;		// 分身の情報
+#include "enemyAttack.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // しつこい敵クラス
-class CEnemyStalk : public CEnemy
+class CEnemyStalk : public CEnemyAttack
 {
 public:
-
-	// ターゲット
-	enum ETarget
-	{
-		TARGET_PLAYER = 0,	// プレイヤー
-		TARGET_CLONE,		// 分身
-		TARGET_MAX			// この列挙型の総数
-	};
 
 	// モーション列挙
 	enum EMotion
@@ -58,25 +45,6 @@ public:
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
 		STATE_MAX			// この列挙型の総数
-	};
-
-	// 攻撃判定の情報構造体
-	struct SAttack
-	{
-		SAttack()
-		{
-			nCount = 0;
-			bAttack = false;
-		}
-
-		SAttack(const int Cnt, const bool bIs)
-		{
-			nCount = Cnt;
-			bAttack = bIs;
-		}
-
-		int nCount;			// 攻撃カウント
-		bool bAttack;		// 攻撃状況TODO：後で変更
 	};
 
 	// コンストラクタ
@@ -107,20 +75,8 @@ private:
 	EMotion Attack(const D3DXVECTOR3& rPos);				// 攻撃処理
 	EMotion Upset(void);				// 動揺処理
 
-	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
-	bool Approach(const D3DXVECTOR3& rPos);	// 接近処理
-
-	// TODO：う〇ちカス判定だから後で修正
-	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
-	void HitClone(const D3DXVECTOR3& rPos);		// 分身のヒット処理
-
 	// メンバ変数
-	CPlayerClone* m_pClone;		// 分身の情報
-	D3DXVECTOR3 m_posTarget;	// 目標の位置
-	ETarget m_target;			// 標的
 	EState m_state;				// 状態
-	SAttack m_attack;			// 攻撃情報
-	float m_fSpeed;				// 速度
 };
 
 #endif	// _ENEMY_CHASE_H_

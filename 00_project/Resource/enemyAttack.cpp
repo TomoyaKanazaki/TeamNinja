@@ -23,13 +23,8 @@
 //************************************************************
 namespace
 {
-	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
 	const float MOVE = -250.0f;				// 移動量
 	const float ROT_REV = 0.5f;				// 向きの補正係数
-	const float ATTACK_DISTANCE = 50.0f;	// 攻撃判定に入る距離
-	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
-	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
-	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
 	const int DODGE_COUNT = 17;				// 回避カウント数
@@ -72,9 +67,6 @@ HRESULT CEnemyAttack::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// キャラクター情報の割当
-	BindCharaData(SETUP_TXT);
 
 	// 成功を返す
 	return S_OK;
@@ -154,14 +146,14 @@ void CEnemyAttack::Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 //============================================================
 // 接近処理
 //============================================================
-bool CEnemyAttack::Approach(const D3DXVECTOR3& rPos)
+bool CEnemyAttack::Approach(const D3DXVECTOR3& rPos, const float fDis)
 {
 	float fDistance = 0.0f;					// 距離
 
 	// 距離を測る
 	fDistance = sqrtf((rPos.x - m_posTarget.x) * (rPos.x - m_posTarget.x) + (rPos.z - m_posTarget.z) * (rPos.z - m_posTarget.z));
 
-	if (fDistance <= ATTACK_DISTANCE)
+	if (fDistance <= fDis)
 	{ // 一定の距離に入った場合
 
 		// 接近した
@@ -170,6 +162,36 @@ bool CEnemyAttack::Approach(const D3DXVECTOR3& rPos)
 
 	// 接近してない
 	return false;
+}
+
+//============================================================
+// プレイヤーの探索処理
+//============================================================
+bool CEnemyAttack::JudgePlayer(void)
+{
+	// プレイヤーが見つからなかった場合 false を返す
+	if (!SearchPlayer(&m_posTarget)) { return false; }
+
+	// 標的をプレイヤーにする
+	m_target = TARGET_PLAYER;
+
+	// true を返す
+	return true;
+}
+
+//============================================================
+// 分身の探索処理
+//============================================================
+bool CEnemyAttack::JudgeClone(void)
+{
+	// 分身が見つからなかった場合 false を返す
+	if (!SearchClone(&m_posTarget, &m_pClone)) { return false; }
+
+	// 標的を分身にする
+	m_target = TARGET_CLONE;
+
+	// true を返す
+	return true;
 }
 
 //====================================================================================================================================================================================
