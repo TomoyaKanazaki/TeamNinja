@@ -16,6 +16,7 @@
 #include "player.h"
 #include "multiModel.h"
 #include "field.h"
+#include "camera_change.h"
 
 //************************************************************
 //	定数宣言
@@ -110,7 +111,7 @@ namespace
 		const float	STICK_REV = 0.00000225f;	// カメラ操作スティックの傾き量の補正係数
 
 		const float	ROTX_REV = 0.5f;		// カメラピッチ回転の補正係数
-		const float	REV_ROT = 1.0f;			// カメラ向きの補正係数
+		const float	REV_ROT = 0.1f;			// カメラ向きの補正係数
 		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
 		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
 		const float	INIT_ROTX = 1.3f;		// 追従カメラの向きX初期値
@@ -1232,6 +1233,14 @@ void CCamera::Around(void)
 
 	// 目標の角度を算出
 	CalcAround(posPlayer);
+	 
+	// 差分向きを計算
+	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot += diffRot * around::REV_ROT;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
 
 	// 目標距離を設定
 	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
@@ -1266,32 +1275,47 @@ void CCamera::Around(void)
 //===========================================
 void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 {
-	// プレイヤーに最も近い基準線を取得する
-	CField::EZ eLine = CField::CalcNearLine();
+	// カメラ方向変更判定リストの取得
+	if (CCameraChanger::GetList() == nullptr) { return; }
+	std::list<CCameraChanger*> list = CCameraChanger::GetList()->GetList();	// リストを取得
 
-	// TODO switchで上から左右からを変更する
-	// カメラの角度を設定
-	m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * 0.5f;
-	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+	// リストの中身を確認する
+	for (CCameraChanger* changer : list)
+	{
+		// プレイヤーが内部にいない場合次に進む
+		if (!changer->GetChange()) { continue; }
+
+		// 情報を変更
+		m_aCamera[TYPE_MAIN].destRot.y = changer->GetDirection();
+		m_aCamera[TYPE_MAIN].destRot.x = changer->GetRotation();
+		return;
+	}
+
+	// 情報を変更
+	m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
+	m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
 
 	return;
+
+	// プレイヤーに最も近い基準線を取得する
+	CField::EZ eLine = CField::CalcNearLine();
 
 	// 基準線に合わせてカメラの角度を変更する
 	switch (eLine)
 	{
 	case CField::Z_MIDDLE: // 中心
-		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * 0.5f; 
-		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
+		m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
 		break;
 
 	case CField::Z_FRONT: // 手前
-		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI;
-		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
+		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI;
+		m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
 		break;
 
 	case CField::Z_BACK: // 奥
-		m_aCamera[TYPE_MAIN].rot.y = 0.0f;
-		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
+		m_aCamera[TYPE_MAIN].destRot.y = 0.0f;
+		m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
 		break;
 
 	default:
@@ -1299,7 +1323,7 @@ void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 		break;
 	}
 
-	//return;
+	return;
 
 	// フィールドのリストを取得
 	CListManager<CField>* pListManager = CField::GetList();	// フィールドリストマネージャー

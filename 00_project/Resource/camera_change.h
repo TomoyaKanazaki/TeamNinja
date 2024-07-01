@@ -43,6 +43,8 @@ public:
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
 	bool GetChange() const { return m_bChange; } // フラグの取得
+	float GetDirection() const; // 方向の取得
+	float GetRotation() const; // 角度の取得
 
 	// 静的メンバ関数
 	static CCameraChanger* Create // 生成処理

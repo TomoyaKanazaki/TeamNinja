@@ -21,6 +21,8 @@ namespace
 	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_TURN	= 20;	// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
+	const float	RADIUS = 70.0f;				// 半径
+	const float HEIGHT = 20.0f;				// 身長
 
 	const float MOVE = 500.0f;	// 移動量
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
@@ -105,6 +107,24 @@ void CEnemyWolf::Draw(CShader* pShader)
 void CEnemyWolf::SetData(void)
 {
 
+}
+
+//============================================================
+// 半径の取得処理
+//============================================================
+float CEnemyWolf::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
+}
+
+//============================================================
+// 高さの取得処理
+//============================================================
+float CEnemyWolf::GetHeight(void) const
+{
+	// 身長を返す
+	return HEIGHT;
 }
 
 //============================================================
