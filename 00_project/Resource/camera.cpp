@@ -1269,6 +1269,13 @@ void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 	// プレイヤーに最も近い基準線を取得する
 	CField::EZ eLine = CField::CalcNearLine();
 
+	// TODO switchで上から左右からを変更する
+	// カメラの角度を設定
+	m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * 0.5f;
+	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+
+	return;
+
 	// 基準線に合わせてカメラの角度を変更する
 	switch (eLine)
 	{
