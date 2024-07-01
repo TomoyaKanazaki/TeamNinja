@@ -26,7 +26,8 @@ namespace
 	const float MOVE = -300.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
 
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(-3.0f, -15.0f, 0.0f);	// オフセット座標
+	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -15.0f, 0.0f);		// アイテムのオフセット座標
+	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
 }
 
 //************************************************************
@@ -86,17 +87,6 @@ void CEnemyCaveat::Update(const float fDeltaTime)
 {
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
-
-	if (GetItem() != nullptr)
-	{ // アイテムを持っている場合
-
-		// アイテムのオフセット処理
-		GetItem()->Offset
-		(
-			GetParts(8)->GetMtxWorld(),
-			GetParts(8)->GetVec3Rotation()
-		);
-	}
 }
 
 //============================================================
@@ -117,10 +107,12 @@ void CEnemyCaveat::SetData(void)
 	SetItem(CEnemyItem::Create
 	(
 		CEnemyItem::TYPE_KATANA,
-		OFFSET,
-		GetParts(8)->GetMtxWorld(),
-		GetParts(8)->GetVec3Rotation()
+		ITEM_OFFSET,
+		ITEM_ROT
 	));
+
+	// 親オブジェクト (持ち手) の設定
+	GetItem()->SetParentObject(GetParts(8));
 }
 
 //============================================================

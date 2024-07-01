@@ -21,6 +21,7 @@
 #include "field.h"
 #include "actor.h"
 #include "wall.h"
+#include "gauge2D.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -231,7 +232,11 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 過去位置の更新
 	UpdateOldPosition();
 
+	// ギミックとの当たり判定
 	CheckGimmick();
+
+	// アクターの当たり判定
+	(void)CollisionActor();
 
 	// 各種行動を起こす
 	switch (m_Action)
@@ -302,9 +307,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// アクターの当たり判定
-	(void)CollisionActor();
 
 	// 壁の当たり判定
 	(void)CollisionWall();
@@ -626,6 +628,9 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	// 反応する状態に設定する
 	pPlayer->m_eGimmick = GIMMICK_REACTION;
 
+	// 士気力を減少
+	GET_PLAYER->GetTensionGauge()->AddNum(-500);
+
 	// 確保したアドレスを返す
 	return pPlayer;
 }
@@ -657,7 +662,7 @@ void CPlayerClone::Delete(const int nNum)
 void CPlayerClone::Delete(const EAction act)
 {
 	// リスト情報がない場合停止する
-	if (m_pList == nullptr) { assert(false); return; }
+	if (m_pList == nullptr) { return; }
 
 	// 総数を取得
 	int nNum = m_pList->GetNumAll();
@@ -1579,6 +1584,9 @@ CPlayerClone* CPlayerClone::Block()
 
 	// エフェクトを生成
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
+
+	// 士気力を減少
+	GET_PLAYER->GetTensionGauge()->AddNum(-500);
 
 	// ヒットしていなければ生成できる
 	return this;

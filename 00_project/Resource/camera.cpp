@@ -114,6 +114,7 @@ namespace
 		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
 		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
 		const float	INIT_ROTX = 1.3f;		// 追従カメラの向きX初期値
+		const float CENTER_ROTX = 1.1f;		// 中心線の時のx
 
 		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
@@ -860,7 +861,7 @@ void CCamera::Release(CCamera *&prCamera)
 //============================================================
 void CCamera::Tps(void)
 {
-	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	//CInputPad* pPad = GET_INPUTPAD;	// パッド情報
 	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
 	if (pList == nullptr) { return; }	// リスト未使用
 	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
@@ -874,27 +875,27 @@ void CCamera::Tps(void)
 	//----------------------------------------------------
 	//	向きの更新
 	//----------------------------------------------------
-	float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
-	if (pad::DEAD_ZONE < fRTilt)
-	{ // デッドゾーン以上の場合
+	//float fRTilt = pPad->GetPressRStickTilt();	// スティックの傾き量
+	//if (pad::DEAD_ZONE < fRTilt)
+	//{ // デッドゾーン以上の場合
 
-		// 目標向きを設定
-		float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
-		m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
-		m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
+	//	// 目標向きを設定
+	//	float fMove = fRTilt * tps::STICK_REV;	// カメラ回転量
+	//	m_aCamera[TYPE_MAIN].destRot.x += sinf(pPad->GetPressRStickRot()) * fMove * tps::ROTX_REV;
+	//	m_aCamera[TYPE_MAIN].destRot.y += cosf(pPad->GetPressRStickRot()) * fMove;
 
-		// 目標向きを正規化
-		useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
-		useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
+	//	// 目標向きを正規化
+	//	useful::LimitNum(m_aCamera[TYPE_MAIN].destRot.x, tps::LIMIT_ROT_LOW, tps::LIMIT_ROT_HIGH);
+	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot.y);
 
-		// 差分向きを計算
-		diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
-		useful::NormalizeRot(diffRot);	// 差分向きを正規化
+	//	// 差分向きを計算
+	//	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	//	useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
-		// 現在向きの更新
-		m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
-		useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
-	}
+	//	// 現在向きの更新
+	//	m_aCamera[TYPE_MAIN].rot += diffRot * tps::REV_ROT;
+	//	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+	//}
 
 	//----------------------------------------------------
 	//	距離の更新
@@ -1232,22 +1233,6 @@ void CCamera::Around(void)
 	// 目標の角度を算出
 	CalcAround(posPlayer);
 
-#ifdef _DEBUG
-
-	// キーボード情報の入力
-	CInputKeyboard* pKey = GET_INPUTKEY;
-
-	if (pKey->IsPress(DIK_NUMPAD1))
-	{
-		m_aCamera[TYPE_MAIN].rot.y += 0.01f;
-	}
-	if (pKey->IsPress(DIK_NUMPAD3))
-	{
-		m_aCamera[TYPE_MAIN].rot.y -= 0.01f;
-	}
-
-#endif
-
 	// 目標距離を設定
 	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
 
@@ -1281,6 +1266,34 @@ void CCamera::Around(void)
 //===========================================
 void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 {
+	// プレイヤーに最も近い基準線を取得する
+	CField::EZ eLine = CField::CalcNearLine();
+
+	// 基準線に合わせてカメラの角度を変更する
+	switch (eLine)
+	{
+	case CField::Z_MIDDLE: // 中心
+		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * 0.5f; 
+		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+		break;
+
+	case CField::Z_FRONT: // 手前
+		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI;
+		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
+		break;
+
+	case CField::Z_BACK: // 奥
+		m_aCamera[TYPE_MAIN].rot.y = 0.0f;
+		m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	//return;
+
 	// フィールドのリストを取得
 	CListManager<CField>* pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける

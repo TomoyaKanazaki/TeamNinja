@@ -17,6 +17,7 @@
 #include "gimmick_fall.h"
 #include "gimmick_decayed.h"
 #include "gimmick_water.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -54,26 +55,14 @@ namespace
 		' ',	// 橋
 	};
 
-#ifdef _DEBUG
-	const D3DXCOLOR COLOR[] =
+	const float ZLINE[] = // フィールドの基準線
 	{
-		D3DXCOLOR(0.70f, 0.37f, 0.00f, 1.0f),
-		D3DXCOLOR(0.11f, 0.02f, 0.00f, 1.0f),
-		D3DXCOLOR(0.02f, 0.96f, 0.27f, 1.0f),
-		D3DXCOLOR(0.52f, 0.46f, 0.27f, 1.0f),
-		D3DXCOLOR(0.38f, 0.38f, 0.38f, 1.0f),
-		D3DXCOLOR(0.18f, 0.10f, 0.00f, 1.0f),
-		D3DXCOLOR(0.90f, 0.90f, 1.00f, 1.0f),
-		D3DXCOLOR(0.81f, 0.90f, 0.85f, 1.0f),
-		D3DXCOLOR(0.28f, 0.00f, 0.18f, 1.0f),
-		D3DXCOLOR(0.28f, 0.87f, 0.95f, 1.0f),
-		D3DXCOLOR(0.33f, 0.40f, 0.26f, 1.0f),
-		D3DXCOLOR(1.00f, 1.00f, 1.00f, 1.0f)
+		0.0f,	// 中心
+		2600.0f, // 手前
+		-2600.0f // 奥
 	};
-#endif
 
 	const char *SETUP_TXT = "data\\TXT\\field.txt";	// セットアップテキスト相対パス
-
 	const int PRIORITY = 0;	// 地面の優先順位
 }
 
@@ -82,15 +71,14 @@ namespace
 //************************************************************
 CListManager<CField> *CField::m_pList = nullptr;	// オブジェクトリスト
 CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
+CField::EZ CField::m_eNear = CField::Z_MIDDLE;	// 最も近い基準線
 
 //************************************************************
 //	スタティックアサート
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
-#ifdef _DEBUG
-static_assert(NUM_ARRAY(COLOR) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
-#endif
+static_assert(NUM_ARRAY(ZLINE) == CField::Z_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -287,10 +275,6 @@ CField *CField::Create
 			return nullptr;
 		}
 
-#ifdef _DEBUG
-		pField->SetColor(COLOR[type]);
-#endif
-
 		// テクスチャ分割数を設定
 		pField->SetTexPattern(rTexPart);
 
@@ -338,9 +322,6 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
-#ifdef _DEBUG
-		//BindTexture(GET_MANAGER->GetTexture()->Regist("data\\TEXTURE\\test.png"));
-#endif
 	}
 	else { assert(false); }	// 範囲外
 }
@@ -367,6 +348,29 @@ void CField::Miss(CPlayerClone* pClone)
 const char CField::GetFlag() const
 {
 	return FLAG[m_type];
+}
+
+//=========================================
+//  プレイヤーに最も近い基準線を算出
+//===========================================
+CField::EZ CField::CalcNearLine()
+{
+	// プレイヤーのz座標を取得
+	float fPlayerZ = GET_PLAYER->GetVec3Position().z;
+
+	// 中心との距離を比較
+	float fDistance = fPlayerZ - ZLINE[Z_MIDDLE];
+
+	// 返り値を保存する変数
+	EZ eTemp = Z_MIDDLE;
+
+	// 中心との距離が手前に近い場合変数を書き換え
+	if (fDistance > ZLINE[Z_FRONT] * 0.5f) { eTemp = Z_FRONT; }
+
+	// 中心との距離が奥に近い場合変数を書き換え
+	if (fDistance < ZLINE[Z_BACK] * 0.5f) { eTemp = Z_BACK; }
+
+	return eTemp;
 }
 
 //===========================================

@@ -214,18 +214,19 @@ CGimmick* CGimmick::Create
 		// 発動可能な分身の数を設定
 		pGimmick->m_nNumActive = nNumActive;
 
+		// TODO：Releaseでギミックどう見せるか
+#if 0
 #ifdef _DEBUG
-
 		// 色の設定
 		pGimmick->SetColor(XCOL_YELLOW);
-
 #else
-
 		// 色の設定
 		pGimmick->SetColor(XCOL_AWHITE);
-
 #endif // _DEBUG
-
+#else
+		// 色の設定
+		pGimmick->SetColor(XCOL_YELLOW);
+#endif
 
 		// 確保したアドレスを返す
 		return pGimmick;

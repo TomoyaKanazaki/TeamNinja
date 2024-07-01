@@ -676,6 +676,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// アクターの当たり判定
+	CollisionActor(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -685,17 +688,14 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 壁の当たり判定
 	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
-	// アクターの当たり判定
-	CollisionActor(posPlayer);
-
-	// 分身の処理
-	ControlClone(posPlayer, rotPlayer, fDeltaTime);
-
 	// 位置を反映
 	SetVec3Position(posPlayer);
 
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
+
+	// 分身の処理
+	ControlClone(posPlayer, rotPlayer, fDeltaTime);
 
 	// 保存位置の更新
 	UpdateSaveTeleport();
@@ -1186,10 +1186,16 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return; }
 
+	// TODO：士気力の減る量考えて！
+#if 0
 #ifndef _DEBUG
 	// 士気力が減少する
 	m_pTensionGauge->AddNum(-500);
 #endif
+#else
+
+#endif
+
 	// プレイヤーの方向を取得
 	float fRotPlayer = GetVec3Rotation().y;
 
