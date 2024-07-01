@@ -58,22 +58,24 @@ public:
 	void SetTarget(const ETarget target) { m_target = target; }			// 標的設定
 	ETarget GetTarget(void) const { return m_target; }					// 標的取得
 	int GetAttackCount(void) const { return m_nAttackCount; }			// 攻撃カウント取得
+	void SetEnableAttack(const bool bAttack) { m_bAttack = bAttack; }	// 攻撃状況設定
 	bool IsAttack(void) const { return m_bAttack; }						// 攻撃状況取得
+
+	// メンバ関数
+	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
+	bool Approach(const D3DXVECTOR3& rPos, const float fDis = 50.0f);				// 接近処理
+	bool JudgePlayer(void);		// プレイヤーの探索処理
+	bool JudgeClone(void);		// 分身の探索処理
+
+	// TODO：う〇ちカス判定だから後で修正
+	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
+	void HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 private:
 
 	// オーバーライド関数
 	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override = 0;	// 状態の更新処理
 	virtual void UpdateMotion(int nMotion, const float fDeltaTime) override = 0;	// モーションの更新処理
-	virtual void UpdateLanding(D3DXVECTOR3* pPos) override = 0;	// 着地更新
-
-	// メンバ関数
-	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
-	bool Approach(const D3DXVECTOR3& rPos);					// 接近処理
-
-	// TODO：う〇ちカス判定だから後で修正
-	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
-	void HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// メンバ変数
 	CPlayerClone* m_pClone;		// 分身の情報
