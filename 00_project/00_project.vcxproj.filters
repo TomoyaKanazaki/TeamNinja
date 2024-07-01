@@ -40,6 +40,18 @@
     <Filter Include="Debug">
       <UniqueIdentifier>{e01dc73c-8d19-440b-bade-e8ac7f7f42e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{e83765ca-9fd0-4380-a708-d71cfef1a975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{ce37c63b-6fb2-4c73-9bdf-1de638f43c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{657ac58a-fb2c-4acc-a669-538b9d44f1ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Fade">
+      <UniqueIdentifier>{4d8e18a9-35e6-48c1-9ff9-9c71114d1915}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
@@ -54,16 +66,7 @@
     <ClInclude Include="Resource\player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\particle3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\pause.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\particle2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\orbit.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\multiModel.h">
@@ -111,9 +114,6 @@
     <ClInclude Include="Resource\hitStop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gameManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gauge2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -121,18 +121,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\field.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\deltaTime.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\cinemaScope.h">
@@ -159,16 +147,7 @@
     <ClInclude Include="Resource\valueUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\tutorialManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\useful.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\titleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timerUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\texture.h">
@@ -204,30 +183,6 @@
     <ClInclude Include="Resource\scroll2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\scenery.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTitle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneRanking.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneResult.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneGame.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resultManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\retentionManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -235,9 +190,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\resource.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\rankingManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\shadow.h">
@@ -258,12 +210,6 @@
     <ClInclude Include="Resource\text2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\effekseerControl.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effekseerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\ZTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -282,12 +228,6 @@
     <ClInclude Include="Resource\goal.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\timer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timeUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\popupUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -298,27 +238,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\actor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeState.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateNone.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIn.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateOut.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateWait.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIrisIn.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIrisOut.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\chiefCollSphere.h">
@@ -531,6 +450,99 @@
     <ClInclude Include="Resource\debug.h">
       <Filter>Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneGame.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneRanking.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneResult.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneTitle.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneTutorial.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\scenery.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timeUI.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timerUI.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effekseerManager.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effekseerControl.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effect3D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effect2D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\deltaTime.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fade.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeState.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIn.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIrisIn.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIrisOut.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateNone.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateOut.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateWait.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\particle2D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\particle3D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\orbit.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\tutorialManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\titleManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\resultManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\rankingManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gameManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\wall.cpp">
@@ -545,16 +557,7 @@
     <ClCompile Include="Resource\valueUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\tutorialManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\useful.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\titleManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timerUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\texture.cpp">
@@ -590,40 +593,13 @@
     <ClCompile Include="Resource\scroll2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\scenery.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\screen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTitle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneRanking.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneResult.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneGame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\resultManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\retentionManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\rankingManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\renderState.cpp">
@@ -639,15 +615,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\pause.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\particle2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\particle3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\orbit.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\multiValue.cpp">
@@ -698,25 +665,10 @@
     <ClCompile Include="Resource\gauge2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gameManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\flash.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\field.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\deltaTime.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\cinemaScope.cpp">
@@ -746,12 +698,6 @@
     <ClCompile Include="Resource\text2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\effekseerControl.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effekseerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\ZTexture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -770,12 +716,6 @@
     <ClCompile Include="Resource\goal.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\timer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timeUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\popupUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -786,27 +726,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\actor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateNone.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIn.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateOut.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateWait.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIrisIn.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIrisOut.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\chiefCollSphere.cpp">
@@ -1018,6 +937,99 @@
     </ClCompile>
     <ClCompile Include="Resource\debug.cpp">
       <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneGame.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneRanking.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneResult.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneTitle.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneTutorial.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\scenery.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timeUI.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timerUI.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effect2D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effect3D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effekseerControl.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effekseerManager.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\deltaTime.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fade.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeState.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIn.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIrisIn.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIrisOut.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateNone.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateOut.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateWait.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\particle3D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\particle2D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\orbit.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\tutorialManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\titleManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\resultManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\rankingManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gameManager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
