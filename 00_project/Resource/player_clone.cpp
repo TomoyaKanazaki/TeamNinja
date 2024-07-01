@@ -1617,7 +1617,6 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	D3DXVECTOR3 vecCenter = m_pGimmick->GetActionPoint() - pos;
 
 
-	// TODOFŒü‚«Žw’è‚ª‚¤‚ñ‚±
 	switch (GetGimmick()->GetType())
 	{
 	case CGimmick::TYPE_HEAVYDOOR:
