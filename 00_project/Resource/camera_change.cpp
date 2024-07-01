@@ -7,6 +7,33 @@
 #include "camera_change.h"
 
 //===========================================
+//  定数定義
+//===========================================
+namespace
+{
+	const float CAMERA_DIRECTION[] = // カメラの方向
+	{
+		D3DX_PI * 0.5f, // 正面
+		D3DX_PI * -0.5f, // 後方
+		D3DX_PI * 1.0f, // 左
+		D3DX_PI * 0.0f, // 右
+	};
+
+	const float CAMERA_ROTATION[] = // カメラの角度
+	{
+		1.3f, // デフォルト
+		1.05f, // 上
+		1.5f // 下
+	};
+}
+
+//===========================================
+//  静的警告処理
+//===========================================
+static_assert(NUM_ARRAY(CAMERA_DIRECTION) == CCameraChanger::DIRECTION_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(CAMERA_ROTATION) == CCameraChanger::ROTATION_MAX, "ERROR : Type Count Mismatch");
+
+//===========================================
 //  静的メンバ変数宣言
 //===========================================
 CListManager<CCameraChanger>* CCameraChanger::m_pList = nullptr; // オブジェクトリスト
