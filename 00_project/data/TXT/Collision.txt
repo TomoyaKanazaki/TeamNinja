@@ -762,6 +762,131 @@ ACTOR_TYPE = 24
 STAGE_COLLSET
 
 CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 25
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 26
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 27
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 28
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 29
+STAGE_COLLSET
+
+CUBESET
 	NUM	= 2
 
 	COLLSET
@@ -795,7 +920,7 @@ END_STAGE_COLLSET
 
 
 #=================================================================================
-ACTOR_TYPE = 25
+ACTOR_TYPE = 30
 STAGE_COLLSET
 
 CUBESET
