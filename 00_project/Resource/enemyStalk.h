@@ -61,6 +61,9 @@ public:
 
 	void SetData(void) override;	// 情報の設定処理
 
+	float GetRadius(void) const override;			// 半径の取得処理
+	float GetHeight(void) const override;			// 高さの取得処理
+
 private:
 
 	// オーバーライド関数

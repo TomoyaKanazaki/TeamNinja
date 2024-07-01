@@ -15,6 +15,7 @@
 #include "player.h"
 #include "player_clone.h"
 #include "stage.h"
+#include "actor.h"
 
 #include "enemy_item.h"
 #include "enemyStalk.h"
@@ -136,6 +137,12 @@ void CEnemy::Update(const float fDeltaTime)
 
 	// 状態更新
 	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
+
+	// アクターの当たり判定処理
+	CollisionActor(posEnemy);
+
+	// 壁の当たり判定
+	CScene::GetStage()->CollisionWall(posEnemy, m_oldPos, GetRadius(), GetHeight(), m_move);
 
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
@@ -367,5 +374,31 @@ void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+}
+
+//============================================================
+// アクターの当たり判定処理
+//============================================================
+void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CActor*> list = CActor::GetList()->GetList();
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,			// 位置
+			m_oldPos,		// 前回の位置
+			GetRadius(),	// 半径
+			GetHeight(),	// 高さ
+			m_move,			// 移動量
+			m_bJump			// ジャンプ状況
+		);
 	}
 }

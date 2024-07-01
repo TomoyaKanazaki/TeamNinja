@@ -71,6 +71,8 @@ public:
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
 	inline void SetItem(CEnemyItem* pItem)					{ m_pItem = pItem; }				// 敵の持ち物設定
 	inline CEnemyItem* GetItem(void) const					{ return m_pItem; }					// 敵の持ち物取得
+	virtual float GetRadius(void) const = 0;			// 半径の取得処理
+	virtual float GetHeight(void) const = 0;			// 高さの取得処理
 
 protected:
 
@@ -89,6 +91,9 @@ protected:
 	bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
 
 private:
+
+	// メンバ関数
+	void CollisionActor(D3DXVECTOR3& rPos);		// アクターの当たり判定処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト
