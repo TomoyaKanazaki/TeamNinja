@@ -25,7 +25,7 @@ namespace
 	const float CAMERA_ROTATION[] = // カメラの角度
 	{
 		1.3f, // デフォルト
-		1.05f, // 上
+		0.5f, // 上
 		1.5f // 下
 	};
 }
@@ -85,6 +85,9 @@ HRESULT CCameraChanger::Init()
 	col.a = 0.5f;
 	SetCubeColor(col);
 
+	// 原点を設定
+	SetOrigin(ORIGIN_DOWN);
+
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
@@ -142,6 +145,22 @@ void CCameraChanger::Draw(CShader* pShader)
 
 	//親クラスの描画処理
 	CObjectMeshCube::Draw(pShader);
+}
+
+//===========================================
+//  方向の取得
+//===========================================
+float CCameraChanger::GetDirection() const
+{
+	return CAMERA_DIRECTION[m_eDir];
+}
+
+//===========================================
+//  角度の取得
+//===========================================
+float CCameraChanger::GetRotation() const
+{
+	return CAMERA_ROTATION[m_eRot];
 }
 
 //===========================================
