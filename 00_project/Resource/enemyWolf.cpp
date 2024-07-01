@@ -1,6 +1,6 @@
 //============================================================
 //
-//	犬敵処理 [enemyDog.cpp]
+//	狼敵処理 [enemyWolf.cpp]
 //	Author：小原立暉
 //
 //============================================================
@@ -29,7 +29,6 @@ namespace
 
 	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
-
 }
 
 //************************************************************
@@ -38,9 +37,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyWolf::CEnemyWolf() : CEnemy(),
-m_posTarget(VEC3_ZERO),	// 目標の位置
-m_target(TARGET_NONE),	// 標的
+CEnemyWolf::CEnemyWolf() : CEnemyAttack(),
 m_state(STATE_CRAWL)	// 状態
 {
 
@@ -60,7 +57,7 @@ CEnemyWolf::~CEnemyWolf()
 HRESULT CEnemyWolf::Init(void)
 {
 	// 敵の初期化
-	if (FAILED(CEnemy::Init()))
+	if (FAILED(CEnemyAttack::Init()))
 	{ // 初期化に失敗した場合
 
 		// 失敗を返す
@@ -81,7 +78,7 @@ HRESULT CEnemyWolf::Init(void)
 void CEnemyWolf::Uninit(void)
 {
 	// 敵の終了
-	CEnemy::Uninit();
+	CEnemyAttack::Uninit();
 }
 
 //============================================================
@@ -90,7 +87,7 @@ void CEnemyWolf::Uninit(void)
 void CEnemyWolf::Update(const float fDeltaTime)
 {
 	// 敵の更新
-	CEnemy::Update(fDeltaTime);
+	CEnemyAttack::Update(fDeltaTime);
 }
 
 //============================================================
@@ -99,7 +96,7 @@ void CEnemyWolf::Update(const float fDeltaTime)
 void CEnemyWolf::Draw(CShader* pShader)
 {
 	// 敵の描画
-	CEnemy::Draw(pShader);
+	CEnemyAttack::Draw(pShader);
 }
 
 //============================================================
@@ -281,7 +278,7 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 {
 	// 親クラスの着地更新
-	CEnemy::UpdateLanding(pPos);
+	CEnemyAttack::UpdateLanding(pPos);
 
 	if (!IsJump())
 	{ // 空中にいない場合
@@ -319,27 +316,12 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
-	if (SearchClone(&m_posTarget, nullptr))
-	{ // 分身が目に入った場合
+	if (JudgeClone() || 
+		JudgePlayer())
+	{ // 分身かプレイヤーが目に入った場合
 
 		// 警告状態にする
 		m_state = STATE_CAVEAT;
-
-		// 標的を分身にする
-		m_target = TARGET_CLONE;
-
-		// 発見モーションを返す
-		return MOTION_FOUND;
-	}
-
-	if (SearchPlayer(&m_posTarget))
-	{ // プレイヤーが目に入った場合
-
-		// 警告状態にする
-		m_state = STATE_CAVEAT;
-
-		// 標的をプレイヤーにする
-		m_target = TARGET_PLAYER;
 
 		// 発見モーションを返す
 		return MOTION_FOUND;
@@ -349,7 +331,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	m_state = STATE_CRAWL;
 
 	// 標的を未設定にする
-	m_target = TARGET_NONE;
+	SetTarget(TARGET_NONE);
 
 	// 待機モーションを返す
 	return MOTION_IDOL;
@@ -370,16 +352,15 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	UpdateLanding(pPos);
 
 	// 目標位置の更新
-	if		(SearchClone(&m_posTarget, nullptr)) {}	// 分身を見つける
-	else if	(SearchPlayer(&m_posTarget)) {}			// プレイヤーを見つける
-	else
-	{ // 誰も見つけていない場合
+	if (!JudgeClone() &&
+		!JudgePlayer()) 
+	{ // 分身もプレイヤーも見つけられなかった場合
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
 
 		// 標的を未設定にする
-		m_target = TARGET_NONE;
+		SetTarget(TARGET_NONE);
 
 		// 動揺モーションにする
 		return MOTION_TURN;
@@ -407,33 +388,22 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 //============================================================
 int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	if (SearchClone(&m_posTarget, nullptr))
+	if (!JudgeClone() &&
+		!JudgePlayer())
 	{ // 分身が目に入った場合
-
-		// 標的を分身にする
-		m_target = TARGET_CLONE;
-	}
-	else if (SearchPlayer(&m_posTarget))
-	{ // プレイヤーが目に入った場合
-
-		// 標的をプレイヤーにする
-		m_target = TARGET_PLAYER;
-	}
-	else
-	{ // 誰も見つけていない場合
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
 
 		// 標的を未設定にする
-		m_target = TARGET_NONE;
+		SetTarget(TARGET_NONE);
 
 		// 動揺モーションにする
 		return MOTION_TURN;
 	}
 
 	// デバッグ
-	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", m_posTarget.x, m_posTarget.y, m_posTarget.z);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", GetTargetPos().x, GetTargetPos().y, GetTargetPos().z);
 
 	// 移動処理
 	UpdateMove(*pPos, *pRot, fDeltaTime);
@@ -481,12 +451,12 @@ int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
-	switch (m_target)
+	switch (GetTarget())
 	{ // ターゲットごとの処理
-	case CEnemyWolf::TARGET_PLAYER:
+	case CEnemyAttack::TARGET_PLAYER:
 
 		// プレイヤーの当たり判定処理
-		//HitPlayer(*pPos);
+		HitPlayer(*pPos);
 
 		if (GetMotionType() != MOTION_BITE)
 		{ // 攻撃モーションじゃない場合
@@ -501,7 +471,7 @@ int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	case CEnemyWolf::TARGET_CLONE:
 
 		// 分身の当たり判定処理
-		//HitClone(*pPos);
+		HitClone(*pPos);
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
@@ -618,24 +588,6 @@ void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fRevRota, const f
 }
 
 //============================================================
-//	接近の判定処理
-//============================================================
-bool CEnemyWolf::Approach(const D3DXVECTOR3& rPos)
-{
-	// 目標位置と自身位置の距離を求める
-	float fDis = sqrtf((rPos.x - m_posTarget.x) * (rPos.x - m_posTarget.x) + (rPos.z - m_posTarget.z) * (rPos.z - m_posTarget.z));
-	if (fDis <= ATTACK_DISTANCE)
-	{ // 一定距離の場合
-
-		// 接近を返す
-		return true;
-	}
-
-	// 非接近を返す
-	return false;
-}
-
-//============================================================
 //	目標位置の視認処理
 //============================================================
 void CEnemyWolf::LookTarget(const D3DXVECTOR3& rPos)
@@ -643,7 +595,7 @@ void CEnemyWolf::LookTarget(const D3DXVECTOR3& rPos)
 	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
 
 	// 目標向きを求める
-	destRot.y = atan2f(rPos.x - m_posTarget.x, rPos.z - m_posTarget.z);
+	destRot.y = atan2f(rPos.x - GetTargetPos().x, rPos.z - GetTargetPos().z);
 
 	SetDestRotation(destRot);	// 目標向きを反映
 }

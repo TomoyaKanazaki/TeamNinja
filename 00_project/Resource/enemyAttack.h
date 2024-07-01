@@ -31,7 +31,8 @@ public:
 	// ターゲット
 	enum ETarget
 	{
-		TARGET_PLAYER = 0,	// プレイヤー
+		TARGET_NONE = 0,	// 無対象
+		TARGET_PLAYER,		// プレイヤー
 		TARGET_CLONE,		// 分身
 		TARGET_MAX			// この列挙型の総数
 	};
