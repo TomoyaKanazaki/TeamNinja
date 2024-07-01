@@ -93,6 +93,20 @@ void CGimmickBridge::Draw(CShader* pShader)
 //===========================================
 D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
 {
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	/* TODO 関数の追加
+	* 関数の仕様
+	*  IsActive()がtrueの時に呼び出す
+	*  関数内で各分身の位置を計算して返り値に設定
+	* 
+	* if(IsActive())
+	* {
+	*	return function();
+	* }
+	*/
+
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
 	if (Idx == 0)
 	{

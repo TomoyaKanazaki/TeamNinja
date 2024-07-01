@@ -163,6 +163,7 @@
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
     <ClInclude Include="Resource\camera.h" />
+    <ClInclude Include="Resource\camera_change.h" />
     <ClInclude Include="Resource\char2D.h" />
     <ClInclude Include="Resource\character.h" />
     <ClInclude Include="Resource\checkpoint.h" />
@@ -327,6 +328,7 @@
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
     <ClCompile Include="Resource\camera.cpp" />
+    <ClCompile Include="Resource\camera_change.cpp" />
     <ClCompile Include="Resource\char2D.cpp" />
     <ClCompile Include="Resource\character.cpp" />
     <ClCompile Include="Resource\checkpoint.cpp" />
