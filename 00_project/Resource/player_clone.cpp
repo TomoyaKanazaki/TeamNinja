@@ -1029,9 +1029,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateHeavyDoor(const float fDeltaTime)
 {
-	// TODO：ジャンプ台と同じような感じになるかな
-
-	//if (m_pGimmick->IsActive()) { return /*ここに重い扉上げモーション*/; }
+	if (m_pGimmick->IsActive()) { return MOTION_OPEN; }
 
 	return MOTION_JUMP_IDOL;
 }
@@ -1240,10 +1238,13 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 		break;
 
-	case MOTION_JUMP_IDOL:	// ジャンプ台モーション
+	case MOTION_JUMP_IDOL:	// ジャンプ台待機モーション
 		break;
 
-	case MOTION_CATAPULT:	// 打ち上げモーション
+	case MOTION_JUMP_WALK:	// ジャンプ台移動モーション
+		break;
+
+	case MOTION_CATAPULT:	// ジャンプ台打ち上げモーション
 
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
@@ -1254,6 +1255,19 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_LADDER:	// 梯子/橋モーション
+		break;
+
+	case MOTION_OPEN:	// 扉上げモーション
+
+		// TODO：扉上げやめたとき降ろすよ
+#if 0
+		if (IsMotionFinish() && )
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+#endif
 		break;
 	}
 }
@@ -1602,12 +1616,29 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	// 待機中心との差分を求める
 	D3DXVECTOR3 vecCenter = m_pGimmick->GetActionPoint() - pos;
 
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
 
-	// 向きを更新
-	D3DXVECTOR3 rot = GetVec3Rotation();
-	SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
+	// TODO：向き指定がうんこ
+	switch (GetGimmick()->GetType())
+	{
+	case CGimmick::TYPE_HEAVYDOOR:
+	{
+		// 向きを更新
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		SetVec3Rotation(D3DXVECTOR3(rot.x, D3DX_PI, rot.z));
+		break;
+	}
+	default:
+	{
+		// 差分ベクトルの向きを求める
+		float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+
+		// 向きを更新
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
+		break;
+	}
+	}
+
 
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;

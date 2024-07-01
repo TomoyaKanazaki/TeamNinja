@@ -24,6 +24,8 @@ namespace
 	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
+	const float	RADIUS = 20.0f;				// 半径
+	const float HEIGHT = 80.0f;				// 身長
 	
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
@@ -113,6 +115,24 @@ void CEnemyStalk::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+}
+
+//============================================================
+// 半径の取得処理
+//============================================================
+float CEnemyStalk::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
+}
+
+//============================================================
+// 高さの取得処理
+//============================================================
+float CEnemyStalk::GetHeight(void) const
+{
+	// 身長を返す
+	return HEIGHT;
 }
 
 //============================================================

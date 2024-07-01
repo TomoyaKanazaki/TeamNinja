@@ -25,6 +25,8 @@ namespace
 	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
 	const float MOVE = -300.0f;								// 移動量
 	const float ROT_REV = 0.5f;								// 向きの補正係数
+	const float	RADIUS = 20.0f;								// 半径
+	const float HEIGHT = 80.0f;								// 身長
 
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -15.0f, 0.0f);		// アイテムのオフセット座標
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
@@ -113,6 +115,24 @@ void CEnemyCaveat::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(8));
+}
+
+//============================================================
+// 半径の取得処理
+//============================================================
+float CEnemyCaveat::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
+}
+
+//============================================================
+// 高さの取得処理
+//============================================================
+float CEnemyCaveat::GetHeight(void) const
+{
+	// 身長を返す
+	return HEIGHT;
 }
 
 //============================================================
