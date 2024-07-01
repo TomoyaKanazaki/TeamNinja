@@ -21,6 +21,7 @@
 #include "field.h"
 #include "actor.h"
 #include "wall.h"
+#include "gauge2D.h"
 
 #include "collision.h"
 #include "gimmick_action.h"
@@ -626,6 +627,9 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 
 	// 反応する状態に設定する
 	pPlayer->m_eGimmick = GIMMICK_REACTION;
+
+	// 士気力を減少
+	GET_PLAYER->GetTensionGauge()->AddNum(-500);
 
 	// 確保したアドレスを返す
 	return pPlayer;
@@ -1580,6 +1584,9 @@ CPlayerClone* CPlayerClone::Block()
 
 	// エフェクトを生成
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 15.0f);
+
+	// 士気力を減少
+	GET_PLAYER->GetTensionGauge()->AddNum(-500);
 
 	// ヒットしていなければ生成できる
 	return this;

@@ -121,6 +121,8 @@ void CCheckPoint::Update(const float fDeltaTime)
 {
 #ifdef _DEBUG
 
+	// ※エディターの時に動かすのでデバッグのみ
+
 	// エフェクトの位置を設定する
 	m_pEffectdata->m_pos = m_pos;
 

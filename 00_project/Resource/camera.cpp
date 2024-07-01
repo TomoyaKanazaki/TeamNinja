@@ -1292,7 +1292,7 @@ void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 		break;
 	}
 
-	return;
+	//return;
 
 	// フィールドのリストを取得
 	CListManager<CField>* pListManager = CField::GetList();	// フィールドリストマネージャー
