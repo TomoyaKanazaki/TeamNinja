@@ -19,9 +19,6 @@
     <Filter Include="InGame">
       <UniqueIdentifier>{cf00ed9e-30f4-4ad9-ac90-1340306e3b0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Editter">
-      <UniqueIdentifier>{d740e1b0-3167-4387-a6b9-cc668a6b81e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collide">
       <UniqueIdentifier>{652abf25-dfd8-4dda-bf80-42e81299f1c3}</UniqueIdentifier>
     </Filter>
@@ -52,18 +49,18 @@
     <Filter Include="Scene\Fade">
       <UniqueIdentifier>{4d8e18a9-35e6-48c1-9ff9-9c71114d1915}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InGame\Player">
+      <UniqueIdentifier>{d8fc3506-8f3e-419a-9f71-7ce43ead2db5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{1e8656d2-81c7-4ff6-a99e-071212f5eea2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Editter">
+      <UniqueIdentifier>{d740e1b0-3167-4387-a6b9-cc668a6b81e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\precompile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\random.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\pause.h">
@@ -84,22 +81,10 @@
     <ClInclude Include="Resource\model.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\manager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\loading.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\liquid.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\listManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\light.h">
@@ -147,19 +132,10 @@
     <ClInclude Include="Resource\valueUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\useful.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\texture.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\stage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\sky.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sound.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\shaderMono.h">
@@ -184,9 +160,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\retentionManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\renderer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\resource.h">
@@ -214,9 +187,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\DepthShadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\player_clone.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\character.h">
@@ -268,55 +238,55 @@
       <Filter>Collide</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editActor.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCheckPoint.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCollCube.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCollCylinder.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCollision.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCollPolygon.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editCollSphere.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editEvent.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editField.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editGoalPoint.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editManager.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editor.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorCollShape.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorGimmick.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorObject.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editStage.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editWall.h">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick.h">
       <Filter>InGame\Gimmick</Filter>
@@ -543,6 +513,42 @@
     <ClInclude Include="Resource\gameManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\player.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\player_clone.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\useful.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\texture.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sound.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\renderer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\precompile.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\main.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\manager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\input.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\random.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\listManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\wall.cpp">
@@ -557,19 +563,10 @@
     <ClCompile Include="Resource\valueUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\useful.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\stage.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\sky.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\shadow.cpp">
@@ -599,19 +596,7 @@
     <ClCompile Include="Resource\retentionManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\renderState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\precompile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\random.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\pause.cpp">
@@ -632,15 +617,6 @@
     <ClCompile Include="Resource\model.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\listManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\loading.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -651,9 +627,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\impact.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gauge3D.cpp">
@@ -702,9 +675,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\DepthShadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\player_clone.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\character.cpp">
@@ -756,55 +726,55 @@
       <Filter>Collide</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editActor.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCheckPoint.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCollCube.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCollCylinder.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCollision.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCollPolygon.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editCollSphere.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editEvent.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editField.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editGoalPoint.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editManager.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editor.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorCollShape.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorGimmick.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorObject.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editStage.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editWall.cpp">
-      <Filter>Editter</Filter>
+      <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick.cpp">
       <Filter>InGame\Gimmick</Filter>
@@ -1030,6 +1000,42 @@
     </ClCompile>
     <ClCompile Include="Resource\gameManager.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\player.cpp">
+      <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\player_clone.cpp">
+      <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\useful.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\texture.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sound.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\renderer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\precompile.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\main.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\manager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\input.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\listManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\random.cpp">
+      <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
