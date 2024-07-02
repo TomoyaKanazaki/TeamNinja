@@ -153,27 +153,7 @@ HRESULT CGameManager::Init(void)
 	CCameraChanger::Create(D3DXVECTOR3(700.0f, 0.0f, -500.0f), D3DXVECTOR3(1000.0f, 100.0f, 300.0f), CCameraChanger::DIRECTION_RIGHT, CCameraChanger::ROTATION_DOWN);
 #endif
 
-// 小原用ギミック置き場
-#if 1
-	// 踏み台
-	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
-
-	//// 重い扉
-	//CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
-
-	//// ジャンプ台
-	//CGimmick::Create(D3DXVECTOR3(7150.0f, 301.0f, -300.0f), D3DXVECTOR3(100.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 3);
-
-	//{ // 複数ボタン
-	//	std::vector<CGimmickMalti::SButton> vec;
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	CGimmickMalti::Create(vec);
-	//}
-#endif
-
-// 藤田用ギミック置き場
+// ギミック置き場
 #if 1
 	// 梯子：手前
 	CGimmick::Create(D3DXVECTOR3(-1450.0f, 1.0f, 450.0f), D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 2);
@@ -188,6 +168,9 @@ HRESULT CGameManager::Init(void)
 	// 重ドア：中央
 	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
+	// 踏み台：最奥
+	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
+
 	{ // 複数ボタン：最奥
 		std::vector<CGimmickMalti::SButton> vec;
 		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(9900.0f, 0.0f, -2250.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
@@ -195,11 +178,6 @@ HRESULT CGameManager::Init(void)
 		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(10750.0f, 0.0f, -2350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 		CGimmickMalti::Create(vec);
 	}
-#endif
-
-	// 激重ドア
-#if 0
-	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 
 	// わんわんおー
