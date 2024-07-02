@@ -292,27 +292,27 @@ void CEditChanger::UpdateSize(void)
 	{
 		if (pKeyboard->IsTrigger(KEY_UP_SIZE_X))
 		{
-			m_infoCreate.size.x += INIT_SIZE.x;
+			m_infoCreate.size.x += INIT_SIZE.x * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_X))
 		{
-			m_infoCreate.size.x -= INIT_SIZE.x;
+			m_infoCreate.size.x -= INIT_SIZE.x * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Y))
 		{
-			m_infoCreate.size.y += INIT_SIZE.y;
+			m_infoCreate.size.y += INIT_SIZE.y * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Y))
 		{
-			m_infoCreate.size.y -= INIT_SIZE.y;
+			m_infoCreate.size.y -= INIT_SIZE.y * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Z))
 		{
-			m_infoCreate.size.z += INIT_SIZE.z;
+			m_infoCreate.size.z += INIT_SIZE.z * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Z))
 		{
-			m_infoCreate.size.z -= INIT_SIZE.z;
+			m_infoCreate.size.z -= INIT_SIZE.z * 0.5f;
 		}
 	}
 
