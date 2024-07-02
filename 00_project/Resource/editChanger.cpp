@@ -292,27 +292,27 @@ void CEditChanger::UpdateSize(void)
 	{
 		if (pKeyboard->IsTrigger(KEY_UP_SIZE_X))
 		{
-			m_infoCreate.size.x += INIT_SIZE.x;
+			m_infoCreate.size.x += INIT_SIZE.x * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_X))
 		{
-			m_infoCreate.size.x -= INIT_SIZE.x;
+			m_infoCreate.size.x -= INIT_SIZE.x * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Y))
 		{
-			m_infoCreate.size.y += INIT_SIZE.y;
+			m_infoCreate.size.y += INIT_SIZE.y * 0.5f;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Y))
 		{
-			m_infoCreate.size.y -= INIT_SIZE.y;
+			m_infoCreate.size.y -= INIT_SIZE.y * 0.5f;
 		}
-		if (pKeyboard->IsPress(KEY_UP_SIZE_Z))
+		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Z))
 		{
-			m_infoCreate.size.z += INIT_SIZE.z;
+			m_infoCreate.size.z += INIT_SIZE.z * 0.5f;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Z))
+		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Z))
 		{
-			m_infoCreate.size.z -= INIT_SIZE.z;
+			m_infoCreate.size.z -= INIT_SIZE.z * 0.5f;
 		}
 	}
 
@@ -508,7 +508,7 @@ HRESULT CEditChanger::Save(void)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, "カメラ変更地点配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
@@ -539,14 +539,14 @@ HRESULT CEditChanger::Save(void)
 		CCameraChanger::EDirection dir = rList->GetDir(); // 方向
 		CCameraChanger::ERotation rot = rList->GetRot(); // 角度
 		D3DXVECTOR3 pos = rList->GetVec3Position(); // 位置
-		D3DXVECTOR2 size = rList->GetVec2Sizing(); // 大きさ
+		D3DXVECTOR3 size = rList->GetVec3Sizing(); // 大きさ
 
 		// 情報を書き出し
 		file << "	CHANGERSET" << std::endl;
 		file << "		DIR		= " << dir << std::endl;
 		file << "		ROT		= " << rot << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
 		file << "	END_CHANGERSET\n" << std::endl;
 	}
 
