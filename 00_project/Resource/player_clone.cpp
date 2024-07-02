@@ -262,20 +262,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 		break;
 
-	case ACTION_MOVE_TO_WAIT: // 待機位置への移動
-
-		// 待機位置への移動状態の更新
-		currentMotion = UpdateMoveToWait(fDeltaTime);
-
-		break;
-
-	case ACTION_WAIT: // ギミック待機
-
-		// ギミック待機状態の更新
-		currentMotion = UpdateWait(fDeltaTime);
-
-		break;
-
 	case ACTION_FALL_TO_WAIT: // 落とし穴警戒
 
 		// ギミック待機状態の更新
@@ -432,8 +418,41 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
 
-	// ギミック待機状態になる
-	m_Action = ACTION_MOVE_TO_WAIT;
+#ifdef _DEBUG
+	// マテリアルカラーを変えてわかりやすくする
+	SetAllMaterial(material::Yellow());
+#endif
+
+	// ギミックに対応したステータスを適用する
+	switch (m_pGimmick->GetType())
+	{
+	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
+
+		// ジャンプ台状態に変更
+		m_Action = ACTION_JUMPTABLE;
+		break;
+
+	case CGimmick::TYPE_HEAVYDOOR:	// 重い扉
+
+		// 重い扉状態に変更
+		m_Action = ACTION_HEAVYDOOR;
+		break;
+
+	case CGimmick::TYPE_STEP:		// 踏み台
+
+		// 梯子状態に変更
+		m_Action = ACTION_STEP;
+		break;
+
+	case CGimmick::TYPE_BRIDGE:		// 橋
+
+		// 橋状態に変更
+		m_Action = ACTION_BRIDGE;
+		break;
+
+	default: // その他
+		break;
+	}
 }
 
 //===========================================
@@ -879,6 +898,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	return currentMotion;
 }
 
+#if 0
 //============================================================
 //	待機位置への移動時の更新処理
 //============================================================
@@ -943,39 +963,11 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 	// ギミックがアクティブ状態なら
 	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
 
-	// ギミックに対応したステータスを適用する
-	switch (m_pGimmick->GetType())
-	{
-	case CGimmick::TYPE_JUMPTABLE: // ジャンプ台
 
-		// ジャンプ台状態に変更
-		m_Action = ACTION_JUMPTABLE;
-		break;
-
-	case CGimmick::TYPE_HEAVYDOOR:	// 重い扉
-
-		// 重い扉状態に変更
-		m_Action = ACTION_HEAVYDOOR;
-		break;
-
-	case CGimmick::TYPE_STEP:		// 踏み台
-
-		// 梯子状態に変更
-		m_Action = ACTION_STEP;
-		break;
-
-	case CGimmick::TYPE_BRIDGE:		// 橋
-
-		// 橋状態に変更
-		m_Action = ACTION_BRIDGE;
-		break;
-
-	default: // その他
-		break;
-	}
 
 	return MOTION_IDOL;
 }
+#endif
 
 //===========================================
 //  落とし穴警戒状態の更新処理

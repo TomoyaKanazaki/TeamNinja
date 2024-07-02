@@ -508,7 +508,7 @@ HRESULT CEditChanger::Save(void)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, "カメラ変更地点配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
@@ -539,14 +539,14 @@ HRESULT CEditChanger::Save(void)
 		CCameraChanger::EDirection dir = rList->GetDir(); // 方向
 		CCameraChanger::ERotation rot = rList->GetRot(); // 角度
 		D3DXVECTOR3 pos = rList->GetVec3Position(); // 位置
-		D3DXVECTOR2 size = rList->GetVec2Sizing(); // 大きさ
+		D3DXVECTOR3 size = rList->GetVec3Sizing(); // 大きさ
 
 		// 情報を書き出し
 		file << "	CHANGERSET" << std::endl;
 		file << "		DIR		= " << dir << std::endl;
 		file << "		ROT		= " << rot << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "		SIZE	= " << size.x << " " << size.y << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
 		file << "	END_CHANGERSET\n" << std::endl;
 	}
 
