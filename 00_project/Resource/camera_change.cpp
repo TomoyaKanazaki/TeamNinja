@@ -5,6 +5,36 @@
 //
 //===========================================
 #include "camera_change.h"
+#include "manager.h"
+#include "player.h"
+#include "collision.h"
+
+//===========================================
+//  定数定義
+//===========================================
+namespace
+{
+	const float CAMERA_DIRECTION[] = // カメラの方向
+	{
+		D3DX_PI * 0.5f, // 正面
+		D3DX_PI * -0.5f, // 後方
+		D3DX_PI * 1.0f, // 左
+		D3DX_PI * 0.0f, // 右
+	};
+
+	const float CAMERA_ROTATION[] = // カメラの角度
+	{
+		1.3f, // デフォルト
+		0.5f, // 上
+		1.5f // 下
+	};
+}
+
+//===========================================
+//  静的警告処理
+//===========================================
+static_assert(NUM_ARRAY(CAMERA_DIRECTION) == CCameraChanger::DIRECTION_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(CAMERA_ROTATION) == CCameraChanger::ROTATION_MAX, "ERROR : Type Count Mismatch");
 
 //===========================================
 //  静的メンバ変数宣言
@@ -55,6 +85,9 @@ HRESULT CCameraChanger::Init()
 	col.a = 0.5f;
 	SetCubeColor(col);
 
+	// 原点を設定
+	SetOrigin(ORIGIN_DOWN);
+
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
@@ -86,6 +119,16 @@ void CCameraChanger::Uninit()
 //===========================================
 void CCameraChanger::Update(const float fDeltaTime)
 {
+	// 各種判定用情報の取得
+	CPlayer* player = GET_PLAYER; // プレイヤーポインタ
+	D3DXVECTOR3 posPlayer = player->GetVec3Position(); // プレイヤー座標
+	D3DXVECTOR3 sizePlayer = player->GetVec3Sizing(); // プレイヤーサイズ
+	D3DXVECTOR3 posThis = GetVec3Position(); // 自身の座標
+	D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
+
+	// フラグの更新
+	m_bChange = collision::Box3D(posThis, posPlayer, sizeThis, sizeThis, sizePlayer, sizePlayer);
+
 	// 親クラスの更新処理
 	CObjectMeshCube::Update(fDeltaTime);
 }
@@ -102,6 +145,22 @@ void CCameraChanger::Draw(CShader* pShader)
 
 	//親クラスの描画処理
 	CObjectMeshCube::Draw(pShader);
+}
+
+//===========================================
+//  方向の取得
+//===========================================
+float CCameraChanger::GetDirection() const
+{
+	return CAMERA_DIRECTION[m_eDir];
+}
+
+//===========================================
+//  角度の取得
+//===========================================
+float CCameraChanger::GetRotation() const
+{
+	return CAMERA_ROTATION[m_eRot];
 }
 
 //===========================================

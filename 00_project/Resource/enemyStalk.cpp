@@ -13,6 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
+#include "enemyNavigation.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -21,16 +22,13 @@
 namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
-	const float MOVE = -250.0f;				// 移動量
-	const float ROT_REV = 0.5f;				// 向きの補正係数
-	const float ATTACK_DISTANCE = 50.0f;	// 攻撃判定に入る距離
 	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
-	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 17;				// 回避カウント数
-
+	const float	RADIUS = 20.0f;				// 半径
+	const float HEIGHT = 80.0f;				// 身長
+	
+	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
 }
@@ -42,6 +40,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
+m_pNav(nullptr),
 m_state(STATE_CRAWL)
 {
 
@@ -81,6 +80,14 @@ HRESULT CEnemyStalk::Init(void)
 //============================================================
 void CEnemyStalk::Uninit(void)
 {
+	if (m_pNav != nullptr)
+	{ // ナビが NULL じゃない場合
+
+		// ナビの終了処理
+		m_pNav->Uninit();
+		m_pNav = nullptr;
+	}
+
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -117,7 +124,28 @@ void CEnemyStalk::SetData(void)
 	));
 
 	// 親オブジェクト (持ち手) の設定
-	GetItem()->SetParentObject(GetParts(8));
+	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+
+	// ナビゲーションを生成
+	m_pNav = CEnemyNav::Create(GetVec3Position());
+}
+
+//============================================================
+// 半径の取得処理
+//============================================================
+float CEnemyStalk::GetRadius(void) const
+{
+	// 半径を返す
+	return RADIUS;
+}
+
+//============================================================
+// 高さの取得処理
+//============================================================
+float CEnemyStalk::GetHeight(void) const
+{
+	// 身長を返す
+	return HEIGHT;
 }
 
 //============================================================
@@ -130,8 +158,41 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	{
 	case CEnemyStalk::STATE_CRAWL:
 
-		// 巡回処理
-		nCurMotion = Crawl();
+		//// 巡回処理
+		//nCurMotion = Crawl();
+
+		if (m_pNav != nullptr)
+		{ // ナビゲーションが NULL じゃない場合
+
+			D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
+			D3DXVECTOR3 Move = GetMovePosition();
+			float fDiff;
+
+			// 向きの差分
+			fDiff = rotDest.y - pRot->y;
+
+			// 向きの正規化
+			useful::NormalizeRot(fDiff);
+
+			// 向きを補正
+			pRot->y += fDiff * 0.5f;
+
+			// 向きの正規化
+			useful::NormalizeRot(pRot->y);
+
+			// ナビの更新処理
+			m_pNav->Update
+			(
+				pPos,				// 位置
+				GetOldPosition(),	// 前回の位置
+				pRot,				// 向き
+				&rotDest,			// 目的の向き
+				&Move				// 移動量
+			);
+
+			SetDestRotation(rotDest);
+			SetMovePosition(Move);
+		}
 
 		break;
 
@@ -325,9 +386,12 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(void)
 		// 発見モーションを返す
 		return MOTION_FOUND;
 	}
+	else
+	{ // 上記以外
 
-	// 巡回状態にする
-	m_state = STATE_CRAWL;
+		// 無対象にする
+		SetTarget(TARGET_NONE);
+	}
 
 	// 待機モーションを返す
 	return MOTION_IDOL;
@@ -361,6 +425,15 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 		// 攻撃判定を false にする
 		SetEnableAttack(false);
 	}
+	else
+	{ // 上記以外
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
 
 	// 移動処理
 	Move(pPos, pRot);
@@ -389,7 +462,7 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 {
 	switch (GetTarget())
 	{
-	case CEnemyStalk::TARGET_PLAYER:
+	case CEnemyAttack::TARGET_PLAYER:
 
 		// プレイヤーの当たり判定処理
 		HitPlayer(rPos);
@@ -406,7 +479,7 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 
 		break;
 
-	case CEnemyStalk::TARGET_CLONE:
+	case CEnemyAttack::TARGET_CLONE:
 
 		// 分身の当たり判定処理
 		HitClone(rPos);

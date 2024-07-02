@@ -16,81 +16,54 @@
     <Filter Include="シェーダー ファイル">
       <UniqueIdentifier>{00dd5524-55df-4b40-8691-a6e2a68c944e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InGame">
+      <UniqueIdentifier>{cf00ed9e-30f4-4ad9-ac90-1340306e3b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collide">
+      <UniqueIdentifier>{652abf25-dfd8-4dda-bf80-42e81299f1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{a048bfbf-84c2-4762-bc2b-c68d6c310883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InGame\Gimmick">
+      <UniqueIdentifier>{ec928504-b2f3-4bf2-b6f8-eac1040d4b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InGame\Enemy">
+      <UniqueIdentifier>{dad3a6a0-74a4-4f61-87fd-c63233275ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Object">
+      <UniqueIdentifier>{5741cd5b-4937-46f4-a3e8-87ea88933855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{e01dc73c-8d19-440b-bade-e8ac7f7f42e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{e83765ca-9fd0-4380-a708-d71cfef1a975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{ce37c63b-6fb2-4c73-9bdf-1de638f43c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{657ac58a-fb2c-4acc-a669-538b9d44f1ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Fade">
+      <UniqueIdentifier>{4d8e18a9-35e6-48c1-9ff9-9c71114d1915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InGame\Player">
+      <UniqueIdentifier>{d8fc3506-8f3e-419a-9f71-7ce43ead2db5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{1e8656d2-81c7-4ff6-a99e-071212f5eea2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Editter">
+      <UniqueIdentifier>{d740e1b0-3167-4387-a6b9-cc668a6b81e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\precompile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\random.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\particle3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\pause.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\particle2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectTornado.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\orbit.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshTube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshWall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshRing.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshSphere.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshDome.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshField.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCylinder.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCircle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectMeshCube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectDivChara.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectChara.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectBillboard.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\object2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\multiModel.h">
@@ -108,25 +81,10 @@
     <ClInclude Include="Resource\model.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\manager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\loading.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\liquid.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\listManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\light.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\impact.h">
@@ -138,37 +96,10 @@
     <ClInclude Include="Resource\hitStop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gameManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gauge2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\flash.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\field.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effect3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\debugproc.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\deltaTime.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\debug.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collision.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\cinemaScope.h">
@@ -183,40 +114,10 @@
     <ClInclude Include="Resource\anim2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\wall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\wave.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\value.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\valueUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\tutorialManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\useful.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\titleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timerUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\texture.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\stage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sky.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sound.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\shaderMono.h">
@@ -240,40 +141,10 @@
     <ClInclude Include="Resource\scroll2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\scenery.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTitle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneRanking.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneResult.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneGame.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resultManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\retentionManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\renderer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\resource.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\rankingManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\shadow.h">
@@ -294,252 +165,402 @@
     <ClInclude Include="Resource\text2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\effekseerControl.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\effekseerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\ZTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\DepthShadow.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\player_clone.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\character.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\checkpoint.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyStalk.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\goal.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\timeUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\popupUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editStage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editField.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\cloneAngleUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\MapModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_jumptable.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editorObject.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_action.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\actor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collisionModel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collisionCylinder.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collisionSphere.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collisionCube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCollision.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCollCube.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCollCylinder.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCollSphere.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editorCollShape.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editActor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editorGimmick.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_gravel.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_step.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editEvent.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCheckPoint.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_boob.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_water.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_cleen.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_fall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_jumpoff.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyCaveat.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_post.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_malti.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\objectCircle2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_decayed.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_heavydoor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeState.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateNone.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIn.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateOut.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateWait.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIrisIn.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\fadeStateIrisOut.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editWall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy_item.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy_katana.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemy_lantern.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editGoalPoint.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\collisionPolygon.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editCollPolygon.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyWolf.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\chiefCollSphere.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\collManager.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collision.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collisionCube.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collisionCylinder.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collisionModel.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collisionPolygon.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\collisionSphere.h">
+      <Filter>Collide</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editActor.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCheckPoint.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCollCube.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCollCylinder.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCollision.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCollPolygon.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editCollSphere.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editEvent.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editField.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editGoalPoint.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editManager.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editor.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editorCollShape.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editorGimmick.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editorObject.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editStage.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editWall.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_action.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_boob.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
     <ClInclude Include="Resource\gimmick_bridge.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_cleen.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_decayed.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_fall.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_gravel.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_heavydoor.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_jumpoff.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_jumptable.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_malti.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_post.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_step.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_water.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy_item.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy_katana.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemy_lantern.h">
+      <Filter>InGame\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemyAttack.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyCaveat.h">
+      <Filter>InGame\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemyOther.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyStalk.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyWolf.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\object.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\object2D.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\object3D.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectBillboard.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectChara.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectCircle2D.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectDivChara.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshCircle.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshCube.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshCylinder.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshDome.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshField.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshRing.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshSphere.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshTube.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectMeshWall.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectModel.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\objectTornado.h">
+      <Filter>System\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\debugproc.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\debug.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneGame.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneRanking.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneResult.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneTitle.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneTutorial.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\scenery.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timeUI.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timerUI.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\timer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effekseerManager.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effekseerControl.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effect3D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\effect2D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\deltaTime.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fade.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeState.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIn.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIrisIn.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateIrisOut.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateNone.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateOut.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\fadeStateWait.h">
+      <Filter>Scene\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\particle2D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\particle3D.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\orbit.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\tutorialManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\titleManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\resultManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\rankingManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gameManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\player.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\player_clone.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\useful.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\texture.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sound.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\renderer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\precompile.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\main.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\manager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\input.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\random.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\listManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\actor.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\checkpoint.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goal.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\light.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\MapModel.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\wall.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\wave.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\stage.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sky.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editChanger.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\camera_change.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyNavigation.h">
+      <Filter>InGame\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Resource\wall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\wave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\value.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\valueUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\tutorialManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\useful.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\titleManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timerUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sky.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\shadow.cpp">
@@ -563,118 +584,19 @@
     <ClCompile Include="Resource\scroll2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\scenery.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\screen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTitle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneRanking.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneResult.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\scene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneGame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\resultManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\retentionManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\rankingManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\renderState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\precompile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\random.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\pause.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\particle2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\particle3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectTornado.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\orbit.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshTube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshWall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshSphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshField.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshRing.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshDome.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCylinder.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectMeshCircle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectDivChara.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectBillboard.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectChara.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\multiValue.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\object.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\motion.cpp">
@@ -689,28 +611,13 @@
     <ClCompile Include="Resource\model.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\listManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\loading.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\light.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\liquid.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\impact.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gauge3D.cpp">
@@ -722,34 +629,7 @@
     <ClCompile Include="Resource\gauge2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gameManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\flash.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\field.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effect3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\deltaTime.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\debugproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\debug.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\cinemaScope.cpp">
@@ -779,215 +659,395 @@
     <ClCompile Include="Resource\text2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\effekseerControl.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\effekseerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\ZTexture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\DepthShadow.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\player_clone.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\character.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\checkpoint.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyStalk.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\goal.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\timeUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\popupUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editStage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editField.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\cloneAngleUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\MapModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_jumptable.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editorObject.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_action.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\actor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collisionModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collisionCylinder.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collisionSphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collisionCube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCollision.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCollCube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCollCylinder.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCollSphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editorCollShape.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editActor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editorGimmick.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_gravel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_step.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editEvent.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCheckPoint.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_boob.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_water.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_cleen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_fall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_jumpoff.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyCaveat.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_post.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_malti.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\objectCircle2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_decayed.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_heavydoor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateNone.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIn.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateOut.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateWait.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIrisIn.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\fadeStateIrisOut.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editWall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy_item.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy_katana.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemy_lantern.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editGoalPoint.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\collisionPolygon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editCollPolygon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyWolf.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\chiefCollSphere.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\collision.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionCube.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionCylinder.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionModel.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionPolygon.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collisionSphere.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\collManager.cpp">
+      <Filter>Collide</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editActor.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCheckPoint.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCollCube.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCollCylinder.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCollision.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCollPolygon.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCollSphere.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editEvent.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editField.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editGoalPoint.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editManager.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editor.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editorCollShape.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editorGimmick.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editorObject.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editStage.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editWall.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_action.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_boob.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
     <ClCompile Include="Resource\gimmick_bridge.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_cleen.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_decayed.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_fall.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_gravel.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_heavydoor.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_jumpoff.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_jumptable.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_malti.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_post.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_step.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_water.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy_item.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy_katana.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemy_lantern.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemyAttack.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyCaveat.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemyOther.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyStalk.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyWolf.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\object.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\object2D.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\object3D.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectBillboard.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectChara.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectCircle2D.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectDivChara.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshCircle.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshCube.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshCylinder.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshDome.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshField.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshRing.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshSphere.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshTube.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectMeshWall.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectModel.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\objectTornado.cpp">
+      <Filter>System\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\debugproc.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\debug.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneGame.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneRanking.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneResult.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneTitle.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneTutorial.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\scenery.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timeUI.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timerUI.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\timer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effect2D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effect3D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effekseerControl.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effekseerManager.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\deltaTime.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fade.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeState.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIn.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIrisIn.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateIrisOut.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateNone.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateOut.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fadeStateWait.cpp">
+      <Filter>Scene\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\particle3D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\particle2D.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\orbit.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\tutorialManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\titleManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\resultManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\rankingManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gameManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\player.cpp">
+      <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\player_clone.cpp">
+      <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\useful.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\texture.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sound.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\renderer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\precompile.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\main.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\manager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\input.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\listManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\random.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\checkpoint.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\actor.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\goal.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\light.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\MapModel.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sky.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\stage.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\wall.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\wave.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editChanger.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\camera_change.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyNavigation.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

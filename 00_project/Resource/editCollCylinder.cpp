@@ -139,7 +139,7 @@ void CEditCollCylinder::Update(void)
 	CEditorCollShape::Update();
 
 	// 大きさの更新
-	UpdateSizing();
+	UpdateSize();
 
 	// 位置を反映
 	m_pCylinder->SetOffset(m_pCylinder->GetPos());
@@ -242,7 +242,7 @@ void CEditCollCylinder::UpdateOffset(void)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditCollCylinder::UpdateSizing(void)
+void CEditCollCylinder::UpdateSize(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 

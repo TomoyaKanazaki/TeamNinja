@@ -15,6 +15,7 @@
 #include "player.h"
 #include "player_clone.h"
 #include "stage.h"
+#include "actor.h"
 
 #include "enemy_item.h"
 #include "enemyStalk.h"
@@ -28,7 +29,7 @@ namespace
 {
 	const int	PRIORITY = 3;			// 敵の優先順位
 	const float	GRAVITY = 60.0f;		// 重力
-	const float VIEW_RANGE = 400.0f;	// 視界の範囲
+	const float VIEW_RANGE = 1000.0f;	// 視界の範囲
 }
 
 //************************************************************
@@ -137,6 +138,12 @@ void CEnemy::Update(const float fDeltaTime)
 	// 状態更新
 	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
 
+	// アクターの当たり判定処理
+	CollisionActor(posEnemy);
+
+	// 壁の当たり判定
+	CScene::GetStage()->CollisionWall(posEnemy, m_oldPos, GetRadius(), GetHeight(), m_move);
+
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
 
@@ -234,9 +241,6 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 			return nullptr;
 		}
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// 位置を設定
 		pEnemy->SetVec3Position(rPos);
 
@@ -245,6 +249,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		// 種類を設定
 		pEnemy->m_type = type;
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
@@ -367,5 +374,31 @@ void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+}
+
+//============================================================
+// アクターの当たり判定処理
+//============================================================
+void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CActor*> list = CActor::GetList()->GetList();
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,			// 位置
+			m_oldPos,		// 前回の位置
+			GetRadius(),	// 半径
+			GetHeight(),	// 高さ
+			m_move,			// 移動量
+			m_bJump			// ジャンプ状況
+		);
 	}
 }

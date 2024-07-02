@@ -20,6 +20,7 @@
 #include "liquid.h"
 #include "actor.h"
 #include "checkpoint.h"
+#include "camera_change.h"
 
 //************************************************************
 //	定数宣言
@@ -557,6 +558,15 @@ HRESULT CStage::LoadSetup(const CScene::EMode /*mode*/, CStage *pStage)
 
 			// 液体の読込
 			else if (FAILED(LoadLiquid(&aString[0], pFile, pStage)))
+			{ // 読み込みに失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+			
+			// カメラ変更地点の読込
+			else if (FAILED(LoadChanger(&aString[0], pFile, pStage)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -1302,6 +1312,79 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 				}
 			}
 		} while (strcmp(&aString[0], "END_STAGE_LIQUIDSET") != 0);	// 読み込んだ文字列が END_STAGE_LIQUIDSET ではない場合ループ
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//===========================================
+//  カメラ変更地点情報の読込
+//===========================================
+HRESULT CStage::LoadChanger(const char* pString, FILE* pFile, CStage* pStage)
+{
+	// 読込に失敗した場合関数を抜ける
+	if (pString == nullptr || pFile == nullptr || pStage == nullptr) { assert(false); return E_FAIL; }
+
+	// オブジェクトの設定
+	if (strcmp(pString, "STAGE_CHANGERSET") == 0) // 読込開始フラグ
+	{
+		// 一時格納用変数
+		char aTemp[MAX_STRING];
+
+		do // 読込が完了するまでループする
+		{
+			// 文字列の読み込み
+			fscanf(pFile, "%s", &aTemp[0]);
+
+			// オブジェクトの配置
+			if (strcmp(&aTemp[0], "CHANGERSET") == 0)
+			{
+				// 変数を宣言
+				int nDir = 0; // 方向の格納用
+				int nRot = 0; // 角度の格納用
+				D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の格納用
+				D3DXVECTOR3 size = VEC3_ZERO;	// 大きさの格納用
+
+				do // 読込が完了するまでループする
+				{
+					// ファイルから文字列を読み込む
+					fscanf(pFile, "%s", &aTemp[0]);
+
+					if (strcmp(&aTemp[0], "TYPE") == 0)
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%d", &nDir); // 方向の読込
+					}
+					if (strcmp(&aTemp[0], "TYPE") == 0)
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%d", &nRot); // 角度の読み込み
+					}
+					if (strcmp(&aTemp[0], "POS") == 0) // 位置の読み込み 
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%f", &pos.x); // X
+						fscanf(pFile, "%f", &pos.y); // Y
+						fscanf(pFile, "%f", &pos.z); // Z
+					}
+					if (strcmp(&aTemp[0], "SIZE") == 0) // 大きさの読み込み
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%f", &size.x); // X
+						fscanf(pFile, "%f", &size.y); // Y
+						fscanf(pFile, "%f", &size.z); // Z
+					}
+
+				} while (strcmp(&aTemp[0], "END_CHANGERSET") != 0);
+
+				// オブジェクトの生成
+				if (CCameraChanger::Create(pos, size, (CCameraChanger::EDirection)nDir, (CCameraChanger::ERotation)nRot) == nullptr)
+				{
+					assert(false); return E_FAIL;
+				}
+			}
+		} while (strcmp(&aTemp[0], "END_STAGE_CHANGERSET") != 0);
 	}
 
 	// 成功を返す

@@ -23,7 +23,7 @@
 //************************************************************
 namespace
 {
-	const float MOVE = -250.0f;				// 移動量
+	const float MOVE = -290.0f;				// 移動量
 	const float ROT_REV = 0.5f;				// 向きの補正係数
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
@@ -39,7 +39,7 @@ namespace
 CEnemyAttack::CEnemyAttack() : CEnemy(),
 m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
-m_target(TARGET_PLAYER),	// 標的
+m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
 m_bAttack(false)			// 攻撃状況
 {

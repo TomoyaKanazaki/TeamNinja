@@ -25,10 +25,9 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 扉が上がる移動量
-	const D3DXVECTOR3 MOVEDOWN	= D3DXVECTOR3(0.0f, 12.0f, 0.0f);	// 扉が下がる移動量
+	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 60.0f, 0.0f);	// 扉が上がる移動量
 	const float GRAVITY	= 360.0f;	// 重力
-	const float CLONE_UP = 10.0f;	// 分身の身長に加算する値
+	const float CLONE_UP = 2.0f;	// 分身の身長に加算する値
 }
 
 //============================================================
@@ -133,9 +132,6 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();
 	posDoor += m_move * fDeltaTime;
 
-	// 位置設定
-	m_pDoorModel->SetVec3Position(posDoor);
-
 	switch (m_state)
 	{
 	case CGimmickHeavyDoor::STATE_NONE:		// 何もしてない
@@ -146,8 +142,8 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 		if (IsActive())
 		{ // 必要な人数が揃ってる場合
 
-			m_state = STATE_OPEN;	// 扉上げる
 			m_move = MOVEUP;		// 移動量
+			m_state = STATE_OPEN;	// 扉上げる
 		}
 
 		break;
@@ -155,7 +151,7 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 	case CGimmickHeavyDoor::STATE_OPEN:		// 扉上げてる
 
 		// 扉開く
-		OpenTheDoor();
+		OpenTheDoor(posDoor);
 
 		break;
 
@@ -165,7 +161,7 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 		{ // 必要な人数が揃ってない場合
 
 			// 扉閉める
-			CloseTheDoor();
+			CloseTheDoor(posDoor);
 		}
 
 		break;
@@ -174,6 +170,9 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+
+	// 位置設定
+	m_pDoorModel->SetVec3Position(posDoor);
 
 	// ギミックアクションの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -197,10 +196,10 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	CGimmickAction::SetVec3Position(rPos);
 
 	// 枠の位置設定
-	m_pGateModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 100.0f));
+	m_pGateModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 65.0f));
 
 	// 扉の位置設定
-	m_pDoorModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 100.0f));
+	m_pDoorModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 65.0f));
 }
 
 //============================================================
@@ -242,22 +241,31 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx)
 	return posWait;
 }
 
+//===========================================
+//  各分身毎の待機向きを算出
+//===========================================
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// 向きを更新
+	D3DXVECTOR3 rotWait = GetVec3Rotation();
+	rotWait.y += D3DX_PI;			// 待機向きをギミック向きの反対にする (向かい合う形にする)
+	useful::NormalizeRot(rotWait);	// 向きを正規化
+
+	return rotWait;
+}
+
 //============================================================
 // 扉を上げる
 //============================================================
-void CGimmickHeavyDoor::OpenTheDoor(void)
+void CGimmickHeavyDoor::OpenTheDoor(D3DXVECTOR3& rPos)
 {
-	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();	// 位置
-
-	// 移動量加算
-	posDoor += m_move;
-
-	// 位置設定
-	m_pDoorModel->SetVec3Position(posDoor);
-
-	if (posDoor.y >= GetVec3Position().y + CPlayerClone::GetHeight() + CLONE_UP || IsActive() == false)
+	if (rPos.y >= GetVec3Position().y + CPlayerClone::GetHeight() + CLONE_UP || IsActive() == false)
 	{ // 一定時間経ったら
 
+		m_move = VEC3_ZERO;		// 移動量
 		m_state = STATE_FULLY;	// 扉全開状態
 	}
 }
@@ -265,19 +273,18 @@ void CGimmickHeavyDoor::OpenTheDoor(void)
 //============================================================
 // 扉を下げる
 //============================================================
-void CGimmickHeavyDoor::CloseTheDoor(void)
+void CGimmickHeavyDoor::CloseTheDoor(D3DXVECTOR3& rPos)
 {
 	// 変数宣言
 	CStage *pStage = GET_MANAGER->GetScene()->GetStage();	// ステージ情報
-	D3DXVECTOR3 posDoor = m_pDoorModel->GetVec3Position();	// 位置
 
 	// 重力
 	m_move.y -= GRAVITY;
 
 	// 範囲外の着地判定
-	if (pStage->LandFieldPosition(posDoor, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
+	if (pStage->LandFieldPosition(rPos, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
 	{
-		m_pDoorModel->SetVec3Position(posDoor);	// 位置
+		m_move = VEC3_ZERO;		// 移動量
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
 	}
 }

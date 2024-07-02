@@ -32,9 +32,10 @@ public:
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
-	void Update(const float fDeltaTime) override;	// 更新
-	void Draw(CShader* pShader = nullptr) override;	// 描画
-	D3DXVECTOR3 CalcWaitPoint(const int Idx) override; // 各分身毎の待機位置を算出
+	void Update(const float fDeltaTime) override;		// 更新
+	void Draw(CShader* pShader = nullptr) override;		// 描画
+	D3DXVECTOR3 CalcWaitPoint(const int Idx) override;	// 各分身毎の待機位置を算出
+	D3DXVECTOR3 CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos) override;	// 各分身毎の待機向きを算出
 
 private:
 

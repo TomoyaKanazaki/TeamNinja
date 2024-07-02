@@ -113,6 +113,8 @@ public:
 	bool GimmickHighJump(const int nNumClone);	// ギミックのハイジャンプ
 	void GimmickLowJump(void);					// ギミックの小ジャンプ
 	bool GimmickLand(void);						// ギミックの飛び降り着地
+	D3DXVECTOR3 GetVec3Sizing() const override
+	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -179,6 +181,9 @@ private:
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;		// 中心座標
 	bool m_bClone;					// 分身操作可能フラグ
+	bool m_bGetCamera;				// カメラの取得
+	float m_fCameraRot;				// カメラの角度
+	float m_fStickRot;				// スティックの角度
 
 };
 

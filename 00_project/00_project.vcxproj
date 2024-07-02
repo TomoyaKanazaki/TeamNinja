@@ -181,6 +181,7 @@
     <ClInclude Include="Resource\debugproc.h" />
     <ClInclude Include="Resource\deltaTime.h" />
     <ClInclude Include="Resource\DepthShadow.h" />
+    <ClInclude Include="Resource\editChanger.h" />
     <ClInclude Include="Resource\editCheckPoint.h" />
     <ClInclude Include="Resource\editCollPolygon.h" />
     <ClInclude Include="Resource\editEvent.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyAttack.h" />
     <ClInclude Include="Resource\enemyCaveat.h" />
+    <ClInclude Include="Resource\enemyNavigation.h" />
     <ClInclude Include="Resource\enemyOther.h" />
     <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyWolf.h" />
@@ -346,6 +348,7 @@
     <ClCompile Include="Resource\debugproc.cpp" />
     <ClCompile Include="Resource\deltaTime.cpp" />
     <ClCompile Include="Resource\DepthShadow.cpp" />
+    <ClCompile Include="Resource\editChanger.cpp" />
     <ClCompile Include="Resource\editCheckPoint.cpp" />
     <ClCompile Include="Resource\editCollPolygon.cpp" />
     <ClCompile Include="Resource\editEvent.cpp" />
@@ -370,6 +373,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyAttack.cpp" />
     <ClCompile Include="Resource\enemyCaveat.cpp" />
+    <ClCompile Include="Resource\enemyNavigation.cpp" />
     <ClCompile Include="Resource\enemyOther.cpp" />
     <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyWolf.cpp" />

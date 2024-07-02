@@ -117,7 +117,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bClone		(true),			// 分身操作可能フラグ
 	m_bGimmickClone	(false),		// ギミッククローンの生成フラグ
 	m_fGimmickTimer	(0.0f),			// ギミッククローンの生成タイマー
-	m_fTempStick	(0.0f)			// スティックの入力角を保存する変数
+	m_fTempStick	(0.0f),			// スティックの入力角を保存する変数
+	m_bGetCamera	(false),		// カメラ取得フラグ
+	m_fCameraRot	(0.0f),			// カメラの角度
+	m_fStickRot		(0.0f)			// スティックの角度
 {
 
 }
@@ -727,16 +730,28 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	// スティックの傾きから移動量を設定
 	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
 	if (pad::DEAD_ZONE < fSpeed)
-	{ // デッドゾーン以上の場合
-
+	{
 		// スティック向きを取得
 		float fStickRot = pPad->GetPressLStickRot() - (D3DX_PI * 0.5f);
 
+		// スティックの角度を比較
+		if(fabsf(m_fStickRot - fStickRot) > 0.1f)
+		{
+			m_bGetCamera = false;
+		}
+
+		// スティックの角度を保存
+		m_fStickRot = fStickRot;
+
 		// カメラの向きを取得
-		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+		if (!m_bGetCamera)
+		{
+			m_fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+			m_bGetCamera = true;
+		}
 
 		// 移動の向きを算出
-		float fMoveRot = fStickRot + fCameraRot;
+		float fMoveRot = fStickRot + m_fCameraRot;
 
 		// 目標向きを設定
 		m_destRot.y = fMoveRot;
@@ -758,6 +773,11 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 			// 忍び足モーションにする
 			currentMotion = MOTION_STEALTHWALK;
 		}
+	}
+	else
+	{
+		// フラグを折る
+		m_bGetCamera = false;
 	}
 
 #ifdef _DEBUG

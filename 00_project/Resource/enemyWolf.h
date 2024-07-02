@@ -13,23 +13,15 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "enemy.h"
+#include "enemyAttack.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // 狼敵クラス
-class CEnemyWolf : public CEnemy
+class CEnemyWolf : public CEnemyAttack
 {
 public:
-	// ターゲット
-	enum ETarget
-	{
-		TARGET_NONE = 0,	// ターゲット無し
-		TARGET_PLAYER,		// プレイヤー
-		TARGET_CLONE,		// 分身
-		TARGET_MAX			// この列挙型の総数
-	};
 
 	// 状態列挙
 	enum EState
@@ -69,6 +61,9 @@ public:
 
 	void SetData(void) override;	// 情報の設定処理
 
+	float GetRadius(void) const override;			// 半径の取得処理
+	float GetHeight(void) const override;			// 高さの取得処理
+
 private:
 
 	// オーバーライド関数
@@ -86,12 +81,9 @@ private:
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime);	// 向きの更新 (補正量設定)
-	bool Approach(const D3DXVECTOR3& rPos);		// 接近の判定
 	void LookTarget(const D3DXVECTOR3& rPos);	// 目標位置の視認
 
 	// メンバ変数
-	D3DXVECTOR3 m_posTarget;	// 目標位置
-	ETarget m_target;			// 標的
 	EState m_state;				// 状態
 };
 
