@@ -43,6 +43,20 @@ namespace
 	const char* NAME_UP_SIZE_Z		= "U"; // Z軸拡大表示
 	const char* NAME_DOWN_SIZE_Z	= "J"; // Z軸縮小表示
 
+	const char* NAME_DIR[CCameraChanger::DIRECTION_MAX] = // 方向
+	{
+		"正面から", // 正面
+		"後方から", // 後方
+		"左から", // 左
+		"右から", // 右
+	};
+
+	const char* NAME_ROT[CCameraChanger::ROTATION_MAX] = // 角度
+	{
+		"デフォルト", // デフォルト
+		"上から", // 上
+		"下から" // 下
+	};
 }
 
 //===========================================
@@ -221,6 +235,8 @@ void CEditChanger::DrawDebugInfo(void)
 	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s[方向]\n", NAME_DIR[m_infoCreate.dir]);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%s[角度]\n", NAME_ROT[m_infoCreate.rot]);
 
 #endif	// _DEBUG
 }
