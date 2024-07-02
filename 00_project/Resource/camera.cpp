@@ -1276,7 +1276,14 @@ void CCamera::Around(void)
 void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 {
 	// カメラ方向変更判定リストの取得
-	if (CCameraChanger::GetList() == nullptr) { return; }
+	if (CCameraChanger::GetList() == nullptr)
+	{
+		// 情報を変更
+		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
+		m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+
+		return;
+	}
 	std::list<CCameraChanger*> list = CCameraChanger::GetList()->GetList();	// リストを取得
 
 	// リストの中身を確認する
