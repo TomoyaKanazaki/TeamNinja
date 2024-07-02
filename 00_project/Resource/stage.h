@@ -84,7 +84,8 @@ private:
 	static HRESULT LoadWall(const char* pString, FILE *pFile, CStage *pStage);			// 壁情報の読込
 	static HRESULT LoadScenery(const char* pString, FILE *pFile, CStage *pStage);		// 景色情報の読込
 	static HRESULT LoadSky(const char* pString, FILE *pFile, CStage *pStage);			// 空情報の読込
-	static HRESULT LoadLiquid(const char* pString, FILE *pFile, CStage *pStage);		// 液体情報の読込
+	static HRESULT LoadLiquid(const char* pString, FILE* pFile, CStage* pStage);		// 液体情報の読込
+	static HRESULT LoadChanger(const char* pString, FILE* pFile, CStage* pStage);		// カメラ変更地点情報の読込
 
 	// メンバ変数
 	SStageLimit	m_stageLimit;	// 範囲情報

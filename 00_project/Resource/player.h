@@ -181,6 +181,9 @@ private:
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;		// 中心座標
 	bool m_bClone;					// 分身操作可能フラグ
+	bool m_bGetCamera;				// カメラの取得
+	float m_fCameraRot;				// カメラの角度
+	float m_fStickRot;				// スティックの角度
 
 };
 

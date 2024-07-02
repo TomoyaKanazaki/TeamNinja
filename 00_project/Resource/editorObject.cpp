@@ -16,6 +16,7 @@
 #include "editActor.h"
 #include "editCheckPoint.h"
 #include "editGoalPoint.h"
+#include "editChanger.h"
 
 //************************************************************
 //	定数宣言
@@ -146,6 +147,10 @@ CEditorObject *CEditorObject::Create(CEditStage* pEditor, CEditStage::EType type
 
 	case CEditStage::TYPE_GIMMICK:
 		pEditorObject = new CEditActor(pEditor);		// エディットギミック TODO：あとでやる
+		break;
+
+	case CEditStage::TYPE_CHANGER:
+		pEditorObject = new CEditChanger(pEditor);		// エディットカメラ変更地点
 		break;
 
 	default:	// 例外処理

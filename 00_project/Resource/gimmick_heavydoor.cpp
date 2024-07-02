@@ -241,6 +241,22 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx)
 	return posWait;
 }
 
+//===========================================
+//  各分身毎の待機向きを算出
+//===========================================
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// 向きを更新
+	D3DXVECTOR3 rotWait = GetVec3Rotation();
+	rotWait.y += D3DX_PI;			// 待機向きをギミック向きの反対にする (向かい合う形にする)
+	useful::NormalizeRot(rotWait);	// 向きを正規化
+
+	return rotWait;
+}
+
 //============================================================
 // 扉を上げる
 //============================================================

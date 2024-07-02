@@ -119,14 +119,36 @@ D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx)
 
 	// 差分ベクトル方向に傾けて座標を設定
 	D3DXVECTOR3 posWait = D3DXVECTOR3
-		(
-			posThis.x + cosf(fRot) * DISTANCE_CENTER,
-			posThis.y,
-			posThis.z + sinf(fRot) * DISTANCE_CENTER
-		);
+	(
+		posThis.x + cosf(fRot) * DISTANCE_CENTER,
+		posThis.y,
+		posThis.z + sinf(fRot) * DISTANCE_CENTER
+	);
 
 	// 算出した座標を返す
 	return posWait;
+}
+
+//===========================================
+//  各分身毎の待機向きを算出
+//===========================================
+D3DXVECTOR3 CGimmickJumpTable::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// 待機中心との差分を求める
+	D3DXVECTOR3 vecCenter = GetActionPoint() - rPos;
+
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+
+	// 向きを求める
+	D3DXVECTOR3 rot = VEC3_ZERO;
+	rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+
+	// 算出した向きを返す
+	return rot;
 }
 
 //===========================================

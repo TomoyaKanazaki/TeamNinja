@@ -58,7 +58,7 @@ private:
 	void UpdateOffset(void) override;		// オフセット座標更新
 
 	// メンバ関数
-	void UpdateSizing(void);	// 大きさ更新
+	void UpdateSize(void);	// 大きさ更新
 
 	// メンバ変数
 	CCollisionCube* m_pCube;	// キューブ情報
