@@ -13,6 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
+#include "enemyNavigation.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -39,6 +40,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
+m_pNav(nullptr),
 m_state(STATE_CRAWL)
 {
 
@@ -78,6 +80,14 @@ HRESULT CEnemyStalk::Init(void)
 //============================================================
 void CEnemyStalk::Uninit(void)
 {
+	if (m_pNav != nullptr)
+	{ // ナビが NULL じゃない場合
+
+		// ナビの終了処理
+		m_pNav->Uninit();
+		m_pNav = nullptr;
+	}
+
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -115,6 +125,9 @@ void CEnemyStalk::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+
+	// ナビゲーションを生成
+	m_pNav = CEnemyNav::Create(GetVec3Position());
 }
 
 //============================================================
@@ -145,8 +158,41 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	{
 	case CEnemyStalk::STATE_CRAWL:
 
-		// 巡回処理
-		nCurMotion = Crawl();
+		//// 巡回処理
+		//nCurMotion = Crawl();
+
+		if (m_pNav != nullptr)
+		{ // ナビゲーションが NULL じゃない場合
+
+			D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
+			D3DXVECTOR3 Move = GetMovePosition();
+			float fDiff;
+
+			// 向きの差分
+			fDiff = rotDest.y - pRot->y;
+
+			// 向きの正規化
+			useful::NormalizeRot(fDiff);
+
+			// 向きを補正
+			pRot->y += fDiff * 0.5f;
+
+			// 向きの正規化
+			useful::NormalizeRot(pRot->y);
+
+			// ナビの更新処理
+			m_pNav->Update
+			(
+				pPos,				// 位置
+				GetOldPosition(),	// 前回の位置
+				pRot,				// 向き
+				&rotDest,			// 目的の向き
+				&Move				// 移動量
+			);
+
+			SetDestRotation(rotDest);
+			SetMovePosition(Move);
+		}
 
 		break;
 

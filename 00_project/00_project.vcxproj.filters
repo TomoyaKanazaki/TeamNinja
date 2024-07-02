@@ -183,9 +183,6 @@
     <ClInclude Include="Resource\chiefCollSphere.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\camera_change.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\collManager.h">
       <Filter>Collide</Filter>
     </ClInclude>
@@ -549,6 +546,15 @@
     <ClInclude Include="Resource\sky.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\editChanger.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\camera_change.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyNavigation.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -669,9 +675,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\chiefCollSphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\camera_change.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\collision.cpp">
@@ -1036,6 +1039,15 @@
     </ClCompile>
     <ClCompile Include="Resource\wave.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editChanger.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\camera_change.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyNavigation.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

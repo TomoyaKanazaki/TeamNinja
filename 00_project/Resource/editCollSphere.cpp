@@ -132,7 +132,7 @@ void CEditCollSphere::Update(void)
 	CEditorCollShape::Update();
 
 	// 大きさの更新
-	UpdateSizing();
+	UpdateSize();
 
 	// 位置を反映
 	m_pSphere->SetOffset(m_pSphere->GetPos());
@@ -233,7 +233,7 @@ void CEditCollSphere::UpdateOffset(void)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditCollSphere::UpdateSizing(void)
+void CEditCollSphere::UpdateSize(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 

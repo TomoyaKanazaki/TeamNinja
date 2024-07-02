@@ -148,9 +148,6 @@ HRESULT CGameManager::Init(void)
 #if 1
 	// 橋
 	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
-
-	// カメラチェンジャー
-	CCameraChanger::Create(D3DXVECTOR3(700.0f, 0.0f, -500.0f), D3DXVECTOR3(1000.0f, 100.0f, 300.0f), CCameraChanger::DIRECTION_RIGHT, CCameraChanger::ROTATION_DOWN);
 #endif
 
 // 小原用ギミック置き場

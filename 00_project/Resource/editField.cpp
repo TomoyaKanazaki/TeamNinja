@@ -157,7 +157,7 @@ void CEditField::Update(void)
 	CEditorObject::Update();
 
 	// 大きさの更新
-	UpdateSizing();
+	UpdateSize();
 
 	// テクスチャ分割の更新
 	UpdateTexPart();
@@ -275,7 +275,7 @@ void CEditField::UpdateRotation(void)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditField::UpdateSizing(void)
+void CEditField::UpdateSize(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 

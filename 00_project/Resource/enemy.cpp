@@ -241,9 +241,6 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 			return nullptr;
 		}
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// 位置を設定
 		pEnemy->SetVec3Position(rPos);
 
@@ -252,6 +249,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		// 種類を設定
 		pEnemy->m_type = type;
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;

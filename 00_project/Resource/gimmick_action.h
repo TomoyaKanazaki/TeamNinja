@@ -49,9 +49,13 @@ public:
 	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
 	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
 	void SetActionPoint(const D3DXVECTOR3& pos);				// 待機位置の設定
-	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 待機位置の設定
-	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx)			// 各分身毎の待機位置を算出
+	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 待機位置の取得
+
+	// 仮想関数
+	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx)	// 各分身毎の待機位置を算出
 	{ assert(false); return GetVec3Position(); }
+	virtual D3DXVECTOR3 CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)	// 各分身毎の待機向きを算出
+	{ assert(false); return GetVec3Rotation(); }
 
 private:
 
