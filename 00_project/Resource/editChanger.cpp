@@ -306,11 +306,11 @@ void CEditChanger::UpdateSize(void)
 		{
 			m_infoCreate.size.y -= INIT_SIZE.y;
 		}
-		if (pKeyboard->IsPress(KEY_UP_SIZE_Z))
+		if (pKeyboard->IsTrigger(KEY_UP_SIZE_Z))
 		{
 			m_infoCreate.size.z += INIT_SIZE.z;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_SIZE_Z))
+		if (pKeyboard->IsTrigger(KEY_DOWN_SIZE_Z))
 		{
 			m_infoCreate.size.z -= INIT_SIZE.z;
 		}
