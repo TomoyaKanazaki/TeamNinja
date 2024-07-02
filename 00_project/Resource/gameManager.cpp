@@ -116,7 +116,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森マップ用仮ギミック置き場
-#if 1
+#if 0
 
 	// ジャンプ台
 	CGimmick::Create(D3DXVECTOR3(3825.0f, 300.0f, 25.0f), D3DXVECTOR3(50.0f, 0.0f, 200.0f), CGimmick::TYPE_JUMPTABLE, 4);
@@ -234,22 +234,22 @@ void CGameManager::Update(const float fDeltaTime)
 {
 #ifdef _DEBUG // カメラ切り替え
 	DebugProc::Print(DebugProc::POINT_CENTER, "キーボードの C を押すと何かが起こる!？\n");
-	if (GET_INPUTKEY->IsTrigger(DIK_C))
-	{
-		// 状態を切り替え
-		bCamera = !bCamera;
+	//if (GET_INPUTKEY->IsTrigger(DIK_C))
+	//{
+	//	// 状態を切り替え
+	//	bCamera = !bCamera;
 
-		if (bCamera)
-		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-			GET_MANAGER->GetCamera()->SetDestTps();
-		}
-		else
-		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
-			GET_MANAGER->GetCamera()->SetDestAround();
-		}
-	}
+	//	if (bCamera)
+	//	{
+	//		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+	//		GET_MANAGER->GetCamera()->SetDestTps();
+	//	}
+	//	else
+	//	{
+	//		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+	//		GET_MANAGER->GetCamera()->SetDestAround();
+	//	}
+	//}
 #endif
 
 	switch (m_state)
