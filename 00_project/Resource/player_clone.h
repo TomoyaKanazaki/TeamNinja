@@ -74,8 +74,6 @@ public:
 	{
 		ACTION_CHASE = 0,		// 通常の行動
 		ACTION_MOVE,			// 歩行
-		ACTION_MOVE_TO_WAIT,	// 待機位置への移動
-		ACTION_WAIT,			// ギミック待機
 		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
 		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
