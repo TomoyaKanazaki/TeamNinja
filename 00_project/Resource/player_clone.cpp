@@ -884,6 +884,21 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
 {
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力
+	UpdateGravity();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 位置の適用
+	SetVec3Position(pos);
+
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
 
@@ -906,6 +921,21 @@ CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
 	// マテリアルカラーを変えてわかりやすくする
 	SetAllMaterial(material::Yellow());
 #endif
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力
+	UpdateGravity();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 位置の適用
+	SetVec3Position(pos);
 
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
@@ -1019,8 +1049,25 @@ CPlayerClone::EMotion CPlayerClone::UpdateFall(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 {
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力
+	UpdateGravity();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 位置の適用
+	SetVec3Position(pos);
+
+	// 作動した瞬間の場合ジャンプ台打ち上げモーションを返す
 	if (m_pGimmick->GetMoment()) { return MOTION_CATAPULT; }
 
+	// ジャンプ台待機モーションを返す
 	return MOTION_JUMP_IDOL;
 }
 
@@ -1029,8 +1076,25 @@ CPlayerClone::EMotion CPlayerClone::UpdateJumpTable(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateHeavyDoor(const float fDeltaTime)
 {
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力
+	UpdateGravity();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 位置の適用
+	SetVec3Position(pos);
+
+	// ギミック作動中の扉上げモーションを返す
 	if (m_pGimmick->IsActive()) { return MOTION_OPEN; }
 
+	// ジャンプ台待機モーションを返す
 	return MOTION_JUMP_IDOL;
 }
 
@@ -1039,6 +1103,7 @@ CPlayerClone::EMotion CPlayerClone::UpdateHeavyDoor(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 {
+	// 梯子モーションを返す
 	return MOTION_LADDER;
 }
 
@@ -1047,8 +1112,25 @@ CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 {
+	// ギミック作動中の梯子モーションを返す
 	if (m_pGimmick->IsActive()) { return MOTION_LADDER; }
 
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力
+	UpdateGravity();
+
+	// 移動
+	pos += m_move * fDeltaTime;
+
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 位置の適用
+	SetVec3Position(pos);
+
+	// 待機モーションを返す
 	return MOTION_IDOL;
 }
 
@@ -1259,15 +1341,12 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_OPEN:	// 扉上げモーション
 
-		// TODO：扉上げやめたとき降ろすよ
-#if 0
-		if (IsMotionFinish() && )
+		if (IsMotionFinish() && GetGimmick() == nullptr)
 		{ // モーションが再生終了した場合
 
 			// 現在のモーションの設定
 			SetMotion(nMotion, BLEND_FRAME_LAND);
 		}
-#endif
 		break;
 	}
 }
@@ -1611,7 +1690,7 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	pos += vecTarget * 0.1f;
 
 	// 位置を適用する
-	SetVec3Position(pos);
+	SetVec3Position(posTarget);
 
 	// ギミック待機向きを適用する
 	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, pos));
