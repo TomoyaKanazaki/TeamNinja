@@ -122,6 +122,16 @@ namespace
 		const float	LIMIT_ROT_LOW = 1.1f;				// X下回転の制限値
 		const float	MAX_SUB_DIS = 1500.0f;				// 下方向カメラの距離減算量
 	}
+
+	// 望遠カメラ情報
+	namespace telephoto
+	{
+		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);	// カメラ視点の補正係数
+		const D3DXVECTOR3 REV_POSR = D3DXVECTOR3(1.0f, 0.35f, 1.0f);	// カメラ注視点の補正係数
+		const float	REV_ROT = 0.1f;			// カメラ向きの補正係数
+		const float	INIT_DIS = 700.0f;		// 追従カメラの距離
+		const float	INIT_HEIGHT = 1200.0f;	// 追従カメラの高さ
+	}
 }
 
 //************************************************************
@@ -283,6 +293,13 @@ void CCamera::Update(const float fDeltaTime)
 
 		//回り込みの更新
 		Around();
+
+		break;
+
+	case STATE_TELEPHOTO:	// 望遠
+
+		//回り込みの更新
+		Telephoto();
 
 		break;
 
@@ -1223,16 +1240,16 @@ void CCamera::Around(void)
 	// プレイヤー情報の取得
 	CPlayer* player = GET_PLAYER;
 
-	// 変数宣言
-	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
-	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
-	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
-
 	// プレイヤーの座標を取得
 	D3DXVECTOR3 posPlayer = player->GetVec3Position();
 
 	// 目標の角度を算出
 	CalcAround(posPlayer);
+
+	// 変数宣言
+	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
+	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
+	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
 	 
 	// 差分向きを計算
 	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
@@ -1276,7 +1293,14 @@ void CCamera::Around(void)
 void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 {
 	// カメラ方向変更判定リストの取得
-	if (CCameraChanger::GetList() == nullptr) { return; }
+	if (CCameraChanger::GetList() == nullptr)
+	{
+		// 情報を変更
+		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
+		m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+
+		return;
+	}
 	std::list<CCameraChanger*> list = CCameraChanger::GetList()->GetList();	// リストを取得
 
 	// リストの中身を確認する
@@ -1294,72 +1318,59 @@ void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 	// 情報を変更
 	m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
 	m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
+}
 
-	return;
+//===========================================
+//  望遠処理
+//===========================================
+void CCamera::Telephoto()
+{
+	// プレイヤー情報を取得
+	CPlayer* player = GET_PLAYER;
 
-	// プレイヤーに最も近い基準線を取得する
-	CField::EZ eLine = CField::CalcNearLine();
+	// プレイヤー座標を取得
+	D3DXVECTOR3 posPlayer = player->GetVec3Position();
 
-	// 基準線に合わせてカメラの角度を変更する
-	switch (eLine)
-	{
-	case CField::Z_MIDDLE: // 中心
-		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
-		m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
-		break;
+	// プレイヤーの身長を取得
+	float fHeightPlayer = player->GetHeight();
 
-	case CField::Z_FRONT: // 手前
-		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI;
-		m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
-		break;
+	// 変数宣言
+	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
+	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
+	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
 
-	case CField::Z_BACK: // 奥
-		m_aCamera[TYPE_MAIN].destRot.y = 0.0f;
-		m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
-		break;
+	// 差分向きを計算
+	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
-	default:
-		assert(false);
-		break;
-	}
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot += diffRot * telephoto::REV_ROT;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
 
-	return;
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = telephoto::INIT_DIS;
 
-	// フィールドのリストを取得
-	CListManager<CField>* pListManager = CField::GetList();	// フィールドリストマネージャー
-	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
 
-	// z座標を取得する関数
-	float fMax = 0.0f, fMin = 0.0f;
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((telephoto::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
 
-	// 各フィールドのz座標を比較する
-	for (auto& rList : listField)
-	{
-		// z座標を取得
-		float fTemp = rList->GetVec3Position().z;
+	// 注視点の差分位置を計算
+	diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
 
-		// z座標が保存された座標より大きい場合上書き
-		if (fMax < fTemp) { fMax = fTemp; }
+	// 視点の差分位置を計算
+	diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
 
-		// z座標が保存された座標より小さい場合上書き
-		if (fMin > fTemp) { fMin = fTemp; }
-	}
+	// 注視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * telephoto::REV_POSR.x;
+	m_aCamera[TYPE_MAIN].posR.y += diffPosR.y * telephoto::REV_POSR.y;
+	m_aCamera[TYPE_MAIN].posR.z += diffPosR.z * telephoto::REV_POSR.z;
 
-	// プレイヤーのz座標をフィールドの割合に変換する
-	float fScale = (posPlayer.z - fMin) / (fMax - fMin);
-
-	// 割合からカメラの角度を設定する
-	if (fScale >= 1.0f) // 1以上の場合
-	{
-		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI;
-	}
-	else if (fScale <= 0.0f) // 0以下の場合
-	{
-		m_aCamera[TYPE_MAIN].rot.y = 0.0f;
-	}
-	else // 1 ~ 0の範囲内だった場合
-	{
-		m_aCamera[TYPE_MAIN].rot.y = D3DX_PI * fScale;
-	}
+	// 視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * telephoto::REV_POSV.x;
+	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * telephoto::REV_POSV.y;
+	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * telephoto::REV_POSV.z;
 }

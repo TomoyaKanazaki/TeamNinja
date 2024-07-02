@@ -116,7 +116,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森マップ用仮ギミック置き場
-#if 1
+#if 0
 
 	// ジャンプ台
 	CGimmick::Create(D3DXVECTOR3(3825.0f, 300.0f, 25.0f), D3DXVECTOR3(50.0f, 0.0f, 200.0f), CGimmick::TYPE_JUMPTABLE, 4);
@@ -148,32 +148,9 @@ HRESULT CGameManager::Init(void)
 #if 1
 	// 橋
 	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
-
-	// カメラチェンジャー
-	CCameraChanger::Create(D3DXVECTOR3(700.0f, 0.0f, -500.0f), D3DXVECTOR3(1000.0f, 100.0f, 300.0f), CCameraChanger::DIRECTION_RIGHT, CCameraChanger::ROTATION_DOWN);
 #endif
 
-// 小原用ギミック置き場
-#if 1
-	// 踏み台
-	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
-
-	//// 重い扉
-	//CGimmick::Create(D3DXVECTOR3(4500.0f, 301.0f, -300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
-
-	//// ジャンプ台
-	//CGimmick::Create(D3DXVECTOR3(7150.0f, 301.0f, -300.0f), D3DXVECTOR3(100.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 3);
-
-	//{ // 複数ボタン
-	//	std::vector<CGimmickMalti::SButton> vec;
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(6650.0f, 301.0f, 600.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7650.0f, 301.0f, 400.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(7400.0f, 701.0f, -300.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f)));
-	//	CGimmickMalti::Create(vec);
-	//}
-#endif
-
-// 藤田用ギミック置き場
+// ギミック置き場
 #if 1
 	// 梯子：手前
 	CGimmick::Create(D3DXVECTOR3(-1450.0f, 1.0f, 450.0f), D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 2);
@@ -188,6 +165,9 @@ HRESULT CGameManager::Init(void)
 	// 重ドア：中央
 	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
+	// 踏み台：最奥
+	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
+
 	{ // 複数ボタン：最奥
 		std::vector<CGimmickMalti::SButton> vec;
 		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(9900.0f, 0.0f, -2250.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
@@ -195,11 +175,6 @@ HRESULT CGameManager::Init(void)
 		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(10750.0f, 0.0f, -2350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 		CGimmickMalti::Create(vec);
 	}
-#endif
-
-	// 激重ドア
-#if 0
-	CGimmick::Create(D3DXVECTOR3(0.0f, 0.0f, 300.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 2);
 #endif
 
 	// わんわんおー
@@ -235,26 +210,6 @@ void CGameManager::Uninit(void)
 //============================================================
 void CGameManager::Update(const float fDeltaTime)
 {
-#ifdef _DEBUG // カメラ切り替え
-	DebugProc::Print(DebugProc::POINT_CENTER, "キーボードの C を押すと何かが起こる!？\n");
-	if (GET_INPUTKEY->IsTrigger(DIK_C))
-	{
-		// 状態を切り替え
-		bCamera = !bCamera;
-
-		if (bCamera)
-		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-			GET_MANAGER->GetCamera()->SetDestTps();
-		}
-		else
-		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
-			GET_MANAGER->GetCamera()->SetDestAround();
-		}
-	}
-#endif
-
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:

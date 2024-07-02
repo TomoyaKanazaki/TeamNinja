@@ -17,7 +17,7 @@ namespace
 {
 	const CObject::ELabel	LABEL		= CObject::LABEL_NONE;	// エフェクシアマネージャーのラベル
 	const CObject::EDim		DIM			= CObject::DIM_3D;		// エフェクシアマネージャーの次元
-	const int				PRIORITY	= 4;					// エフェクシアマネージャーの優先順位
+	const int				PRIORITY	= 7;					// エフェクシアマネージャーの優先順位
 }
 
 //************************************************************

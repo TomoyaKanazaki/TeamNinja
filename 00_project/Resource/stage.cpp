@@ -1351,12 +1351,12 @@ HRESULT CStage::LoadChanger(const char* pString, FILE* pFile, CStage* pStage)
 					// ファイルから文字列を読み込む
 					fscanf(pFile, "%s", &aTemp[0]);
 
-					if (strcmp(&aTemp[0], "TYPE") == 0)
+					if (strcmp(&aTemp[0], "DIR") == 0)
 					{
 						fscanf(pFile, "%s", &aTemp[0]); // =
 						fscanf(pFile, "%d", &nDir); // 方向の読込
 					}
-					if (strcmp(&aTemp[0], "TYPE") == 0)
+					if (strcmp(&aTemp[0], "ROT") == 0)
 					{
 						fscanf(pFile, "%s", &aTemp[0]); // =
 						fscanf(pFile, "%d", &nRot); // 角度の読み込み
