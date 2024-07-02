@@ -122,6 +122,31 @@ D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx)
 }
 
 //===========================================
+//  各分身毎の待機向きを算出
+//===========================================
+D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// TODO：向き計算どうしよ
+
+	// プレイヤーの位置を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// 待機位置を取得
+	D3DXVECTOR3 posThis = GetActionPoint();
+
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = posPlayer - posThis;
+
+	D3DXVECTOR3 rot = VEC3_ZERO;
+	rot.y = atan2f(-vecTarget.x, -vecTarget.z);
+
+	return rot;
+}
+
+//===========================================
 //  登る
 //===========================================
 bool CGimmickStep::Climb(CPlayer* player)

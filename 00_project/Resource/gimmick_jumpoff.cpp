@@ -114,3 +114,15 @@ D3DXVECTOR3 CGimmickJumpOff::CalcWaitPoint(const int Idx)
 	// TODO : 飛び降りの待機位置
 	return GetVec3Position();
 }
+
+//===========================================
+//  各分身毎の待機向きを算出
+//===========================================
+D3DXVECTOR3 CGimmickJumpOff::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+{
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
+
+	// TODO : 飛び降りの待機向き
+	return GetVec3Rotation();
+}

@@ -1613,31 +1613,8 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	// 位置を適用する
 	SetVec3Position(pos);
 
-	// 待機中心との差分を求める
-	D3DXVECTOR3 vecCenter = m_pGimmick->GetActionPoint() - pos;
-
-
-	switch (GetGimmick()->GetType())
-	{
-	case CGimmick::TYPE_HEAVYDOOR:
-	{
-		// 向きを更新
-		D3DXVECTOR3 rot = GetVec3Rotation();
-		SetVec3Rotation(D3DXVECTOR3(rot.x, D3DX_PI, rot.z));
-		break;
-	}
-	default:
-	{
-		// 差分ベクトルの向きを求める
-		float fRot = -atan2f(vecCenter.x, -vecCenter.z);
-
-		// 向きを更新
-		D3DXVECTOR3 rot = GetVec3Rotation();
-		SetVec3Rotation(D3DXVECTOR3(rot.x, fRot, rot.z));
-		break;
-	}
-	}
-
+	// ギミック待機向きを適用する
+	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, pos));
 
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
