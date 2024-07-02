@@ -971,9 +971,6 @@
     <ClCompile Include="Resource\rankingManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gameManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\player.cpp">
       <Filter>InGame\Player</Filter>
     </ClCompile>
@@ -1048,6 +1045,9 @@
     </ClCompile>
     <ClCompile Include="Resource\enemyNavigation.cpp">
       <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gameManager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
