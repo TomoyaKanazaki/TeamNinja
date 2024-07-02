@@ -58,7 +58,7 @@ private:
 
 	// メンバ関数
 	void UpdateRot(void);			// 向き更新
-	void UpdateSizing(void);		// 大きさ更新
+	void UpdateSize(void);		// 大きさ更新
 
 	// メンバ変数
 	CCollisionPolygon* m_pPolygon;	// ポリゴン情報

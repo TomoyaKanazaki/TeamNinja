@@ -155,7 +155,7 @@ void CEditCollPolygon::Update(void)
 	UpdateRot();
 
 	// 大きさの更新
-	UpdateSizing();
+	UpdateSize();
 
 	// 位置を反映
 	m_pPolygon->SetOffset(m_pPolygon->GetPos());
@@ -339,7 +339,7 @@ void CEditCollPolygon::UpdateRot(void)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditCollPolygon::UpdateSizing(void)
+void CEditCollPolygon::UpdateSize(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
