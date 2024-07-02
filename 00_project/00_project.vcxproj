@@ -206,6 +206,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyAttack.h" />
     <ClInclude Include="Resource\enemyCaveat.h" />
+    <ClInclude Include="Resource\enemyNavigation.h" />
     <ClInclude Include="Resource\enemyOther.h" />
     <ClInclude Include="Resource\enemyStalk.h" />
     <ClInclude Include="Resource\enemyWolf.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyAttack.cpp" />
     <ClCompile Include="Resource\enemyCaveat.cpp" />
+    <ClCompile Include="Resource\enemyNavigation.cpp" />
     <ClCompile Include="Resource\enemyOther.cpp" />
     <ClCompile Include="Resource\enemyStalk.cpp" />
     <ClCompile Include="Resource\enemyWolf.cpp" />
