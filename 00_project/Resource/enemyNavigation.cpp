@@ -31,7 +31,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNav::CEnemyNav() :
-	m_pCylinder(nullptr),
+	//m_pCylinder(nullptr),
 	m_posInit(VEC3_ZERO),	// 初期位置
 	m_posDest(VEC3_ZERO),	// 目標地点
 	m_state(STATE_STOP),	// 状態
@@ -63,13 +63,13 @@ HRESULT CEnemyNav::Init(void)
 //============================================================
 void CEnemyNav::Uninit(void)
 {
-	if (m_pCylinder != nullptr)
-	{ // シリンダーが NULL じゃない場合
+	//if (m_pCylinder != nullptr)
+	//{ // シリンダーが NULL じゃない場合
 
-		// シリンダーの終了処理
-		m_pCylinder->Uninit();
-		m_pCylinder = nullptr;
-	}
+	//	// シリンダーの終了処理
+	//	m_pCylinder->Uninit();
+	//	m_pCylinder = nullptr;
+	//}
 
 	// 自身を破棄
 	delete this;
@@ -141,16 +141,16 @@ CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit)
 		// 初期位置を設定
 		pNav->m_posInit = rPosInit;
 
-		pNav->m_pCylinder->Create
-		(
-			rPosInit,
-			VEC3_ZERO,
-			XCOL_WHITE,
-			POSGRID2(32, 8),
-			POSGRID2(4, 4),
-			MOVE_DISTANCE,
-			30.0f
-		);
+		//pNav->m_pCylinder->Create
+		//(
+		//	rPosInit,
+		//	VEC3_ZERO,
+		//	XCOL_WHITE,
+		//	POSGRID2(32, 8),
+		//	POSGRID2(4, 4),
+		//	MOVE_DISTANCE,
+		//	30.0f
+		//);
 
 		// 確保したアドレスを返す
 		return pNav;

@@ -57,7 +57,7 @@ private:
 	void CollisionWall(D3DXVECTOR3* pPos);	// 壁の当たり判定処理
 
 	// メンバ変数
-	CObjectMeshCylinder* m_pCylinder;		// メッシュシリンダーの情報
+	//CObjectMeshCylinder* m_pCylinder;		// メッシュシリンダーの情報
 	D3DXVECTOR3 m_posInit;	// 初期位置
 	D3DXVECTOR3 m_posDest;	// 目標地点
 	STATE m_state;			// 状態
