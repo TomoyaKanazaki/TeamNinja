@@ -147,7 +147,7 @@ void CEditCollCube::Update(void)
 	CEditorCollShape::Update();
 
 	// 大きさの更新
-	UpdateSizing();
+	UpdateSize();
 
 	// 位置を反映
 	m_pCube->SetOffset(m_pCube->GetPos());
@@ -288,7 +288,7 @@ void CEditCollCube::UpdateOffset(void)
 //============================================================
 //	大きさの更新処理
 //============================================================
-void CEditCollCube::UpdateSizing(void)
+void CEditCollCube::UpdateSize(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
