@@ -14,7 +14,7 @@
 //===========================================
 namespace
 {
-	const float FEILD_LINE = 3600.0f; // フィールドの基準Z線
+	const float FEILD_LINE = 2600.0f; // フィールドの基準Z線
 	const int ACTIVE_NUM = 5; // 発動に必要な人数
 }
 
@@ -69,7 +69,7 @@ void CGimmickCanon::Update(const float fDeltaTime)
 	// 発射処理
 	if (IsActive() && DistancePlayer() && !m_bShoot)
 	{
-		Shoot();
+		GET_PLAYER->SetShoot(m_fTarget);
 		m_bShoot = true;
 	}
 
@@ -132,22 +132,4 @@ CGimmickCanon* CGimmickCanon::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3&
 
 	// 確保したアドレスを返す
 	return pGimmick;
-}
-
-//===========================================
-//  発射
-//===========================================
-void CGimmickCanon::Shoot()
-{
-	// プレイヤー情報の取得
-	CPlayer* player = GET_PLAYER;
-
-	// プレイヤー座標を取得
-	D3DXVECTOR3 posPlayer = player->GetVec3Position();
-
-	// 目標地点を算出
-	D3DXVECTOR3 posTarget = D3DXVECTOR3(posPlayer.x, posPlayer.y, m_fTarget);
-
-	// 吹っ飛ばす
-	//player->SetShoot(posTarget);
 }

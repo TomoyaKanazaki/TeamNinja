@@ -611,8 +611,8 @@ void CPlayer::SetShoot(const float& posTarget)
 	// 状態を変更
 	m_state = STATE_SHOOT;
 
-	// 目標地点をから移動量を設定
-	
+	// 目標地点から移動量を設定
+	float moveZ = posTarget - GetVec3Position().z;
 }
 
 //==========================================

@@ -41,9 +41,6 @@ public:
 
 private:
 
-	// メンバ関数
-	void Shoot(); // 発射
-
 	// メンバ変数
 	float m_fTarget; // 目標位置
 	bool m_bShoot; // 発射済み
