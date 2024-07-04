@@ -53,6 +53,9 @@ public:
 		const float fDeltaTime	// デルタタイム
 	);
 
+	// セット・ゲット関係
+	void SetState(const EState state);		// 状態の設定処理
+
 	// 静的メンバ関数
 	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
 

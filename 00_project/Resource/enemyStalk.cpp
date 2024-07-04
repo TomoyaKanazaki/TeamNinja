@@ -201,6 +201,13 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 		break;
 	}
 
+	if (Collision(*pPos))
+	{ // “–‚½‚è”»’è‚ª true ‚¾‚Á‚½ê‡
+
+		// ’â~ó‘Ô‚É‚·‚é
+		m_pNav->SetState(CEnemyNav::STATE_STOP);
+	}
+
 	// Œ»İ‚Ìƒ‚[ƒVƒ‡ƒ“‚ğ•Ô‚·
 	return nCurMotion;
 }

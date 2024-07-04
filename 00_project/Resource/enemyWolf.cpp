@@ -170,6 +170,9 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		break;
 	}
 
+	// “–‚½‚è”»’èˆ—
+	Collision(*pPos);
+
 	// Œ»İ‚Ìƒ‚[ƒVƒ‡ƒ“‚ğ•Ô‚·
 	return nCurMotion;
 }

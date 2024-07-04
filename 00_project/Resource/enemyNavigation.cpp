@@ -147,6 +147,15 @@ void CEnemyNav::Update
 }
 
 //============================================================
+// ó‘Ô‚Ìİ’èˆ—
+//============================================================
+void CEnemyNav::SetState(const EState state)
+{
+	// ó‘Ô‚ğİ’è‚·‚é
+	m_state = state;
+}
+
+//============================================================
 // ¶¬ˆ—
 //============================================================
 CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth)

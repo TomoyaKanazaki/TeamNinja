@@ -82,6 +82,7 @@ protected:
 	virtual void UpdateLanding(D3DXVECTOR3* pPos) = 0;	// 着地更新
 
 	// メンバ関数
+	bool Collision(D3DXVECTOR3& rPos);				// 当たり判定処理
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);	// プレイヤーの探索処理
 	bool SearchClone(D3DXVECTOR3* pPos = nullptr, CPlayerClone** pClone = nullptr);	// 分身の探索処理
 
@@ -93,7 +94,7 @@ protected:
 private:
 
 	// メンバ関数
-	void CollisionActor(D3DXVECTOR3& rPos);		// アクターの当たり判定処理
+	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit);		// アクターの当たり判定処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト
