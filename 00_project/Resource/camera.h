@@ -34,12 +34,13 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,	// なにもしない状態
-		STATE_CONTROL,	// 操作状態
-		STATE_ROTATE,	// 回転状態
-		STATE_FOLLOW,	// 追従状態
-		STATE_TPS,		// 三人称状態
-		STATE_AROUND,	// 回り込み
+		STATE_NONE = 0,		// なにもしない状態
+		STATE_CONTROL,		// 操作状態
+		STATE_ROTATE,		// 回転状態
+		STATE_FOLLOW,		// 追従状態
+		STATE_TPS,			// 三人称状態
+		STATE_AROUND,		// 回り込み
+		STATE_TELEPHOTO,	// 望遠
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -109,6 +110,7 @@ public:
 	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
 	void SetDestTps(void);		// カメラ目標位置設定 (三人称)
 	void SetDestAround(void);	// カメラ目標位置設定 (回り込み)
+	void SetDestTelephoto(void);// カメラ目標位置設定 (回り込み)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -147,11 +149,13 @@ private:
 	// 金崎追加
 	void Around();										// 回り込み
 	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
+	void Telephoto();									// 望遠
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
+	float	m_fFov;		// 視野角
 };
 
 #endif	// _CAMERA_H_

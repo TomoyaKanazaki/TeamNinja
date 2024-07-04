@@ -117,6 +117,35 @@ namespace collision
 		bool* pSide = nullptr,	// 横からの判定
 		bool* pDown = nullptr	// 下からの判定
 	);
+	bool ResponseBox2D	// 三軸の矩形の衝突判定
+	( // 引数
+		D3DXVECTOR3& rCenterPos,	// 判定位置
+		D3DXVECTOR3& rCenterPosOld,	// 判定過去位置
+		D3DXVECTOR3 targetPos,		// 判定目標位置
+		D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+		D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+		D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+		D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+		D3DXVECTOR3* pMove = nullptr,	// 移動量
+		bool* pUp = nullptr,	// 上からの判定
+		bool* pSide = nullptr,	// 横からの判定
+		bool* pDown = nullptr	// 下からの判定
+	);
+	bool ResponseBox2D	// 三軸の矩形の衝突判定(向きの列挙判定入り)
+	( // 引数
+		D3DXVECTOR3& rCenterPos,	// 判定位置
+		D3DXVECTOR3& rCenterPosOld,	// 判定過去位置
+		D3DXVECTOR3 targetPos,		// 判定目標位置
+		D3DXVECTOR3 centerSizeUp,	// 判定サイズ(右・上・後)
+		D3DXVECTOR3 centerSizeDown,	// 判定サイズ(左・下・前)
+		D3DXVECTOR3 targetSizeUp,	// 判定目標サイズ(右・上・後)
+		D3DXVECTOR3 targetSizeDown,	// 判定目標サイズ(左・下・前)
+		const EAngle angle,			// 方向の列挙
+		D3DXVECTOR3* pMove = nullptr,	// 移動量
+		bool* pUp = nullptr,	// 上からの判定
+		bool* pSide = nullptr,	// 横からの判定
+		bool* pDown = nullptr	// 下からの判定
+	);
 	bool ResponseCircle3D	// 三軸の円の衝突判定
 	( // 引数
 		D3DXVECTOR3& rCenterPos,	// 判定位置

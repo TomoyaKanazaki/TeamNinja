@@ -28,7 +28,7 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 	D3DXVECTOR3 CalcWaitPoint(const int Idx) override;	// 各分身毎の待機位置を算出
-	D3DXVECTOR3 CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos) override;	// 各分身毎の待機向きを算出
+	D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone) override;	// 各分身毎の待機向きを算出
 
 private:
 
