@@ -121,7 +121,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_posShoot		(VEC3_ZERO)		// 吹っ飛ぶ目標
+	m_fShootZ		(0.0f)		// 吹っ飛ぶ目標
 {
 
 }
@@ -606,13 +606,13 @@ bool CPlayer::GimmickLand(void)
 //===========================================
 //  吹っ飛ぶ
 //==========================================~
-void CPlayer::SetShoot(const D3DXVECTOR3& posTarget)
+void CPlayer::SetShoot(const float& posTarget)
 {
 	// 状態を変更
 	m_state = STATE_SHOOT;
 
-	// 目標地点を設定
-	m_posShoot = posTarget;
+	// 目標地点をから移動量を設定
+	
 }
 
 //==========================================

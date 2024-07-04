@@ -115,7 +115,7 @@ public:
 	bool GimmickLand(void);						// ギミックの飛び降り着地
 	D3DXVECTOR3 GetVec3Sizing() const override
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
-	void SetShoot(const D3DXVECTOR3& posTarget); // 吹っ飛ぶ
+	void SetShoot(const float& fTarget); // 吹っ飛ぶ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -186,7 +186,7 @@ private:
 	bool m_bGetCamera;				// カメラの取得
 	float m_fCameraRot;				// カメラの角度
 	float m_fStickRot;				// スティックの角度
-	D3DXVECTOR3 m_posShoot;			// 吹っ飛ばし目標
+	float m_fShootZ;				// 吹っ飛ばし目標
 
 };
 

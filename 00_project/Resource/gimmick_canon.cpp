@@ -98,7 +98,7 @@ D3DXVECTOR3 CGimmickCanon::CalcWaitPoint(const int Idx)
 //===========================================
 //  待機位置の向きの計算
 //===========================================
-D3DXVECTOR3 CGimmickCanon::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+D3DXVECTOR3 CGimmickCanon::CalcWaitRotation(const int Idx, const CPlayerClone* pClone)
 {
 	// TODO モーションに合わせていい感じの処理を作る
 	return GetVec3Rotation();
@@ -149,5 +149,5 @@ void CGimmickCanon::Shoot()
 	D3DXVECTOR3 posTarget = D3DXVECTOR3(posPlayer.x, posPlayer.y, m_fTarget);
 
 	// 吹っ飛ばす
-	player->SetShoot(posTarget);
+	//player->SetShoot(posTarget);
 }
