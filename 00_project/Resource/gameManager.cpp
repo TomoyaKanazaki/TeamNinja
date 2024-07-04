@@ -240,22 +240,22 @@ void CGameManager::Uninit(void)
 void CGameManager::Update(const float fDeltaTime)
 {
 #ifdef _DEBUG // ƒJƒƒ‰Ø‚è‘Ö‚¦
-	//if (GET_INPUTKEY->IsTrigger(DIK_LSHIFT))
-	//{
-	//	// ó‘Ô‚ðØ‚è‘Ö‚¦
-	//	bCamera = !bCamera;
+	if (GET_INPUTKEY->IsTrigger(DIK_LSHIFT))
+	{
+		// ó‘Ô‚ðØ‚è‘Ö‚¦
+		bCamera = !bCamera;
 
-	//	if (bCamera)
-	//	{
-	//		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-	//		GET_MANAGER->GetCamera()->SetDestTps();
-	//	}
-	//	else
-	//	{
-	//		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TELEPHOTO);
-	//		GET_MANAGER->GetCamera()->SetDestTelephoto();
-	//	}
-	//}
+		if (bCamera)
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
+			GET_MANAGER->GetCamera()->SetDestTps();
+		}
+		else
+		{
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TELEPHOTO);
+			GET_MANAGER->GetCamera()->SetDestTelephoto();
+		}
+	}
 #endif
 
 	switch (m_state)
