@@ -202,20 +202,28 @@ D3DXVECTOR3 CGimmickPost::CalcWaitPoint(const int Idx)
 //===========================================
 //  各分身毎の待機向きを算出
 //===========================================
-D3DXVECTOR3 CGimmickPost::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+D3DXVECTOR3 CGimmickPost::CalcWaitRotation(const int Idx, const CPlayerClone* pClone)
 {
-	// 待機中心との差分を求める
-	D3DXVECTOR3 vecCenter = GetActionPoint() - rPos;
+	// 受け取ったインデックスが最大値を超えている場合警告
+	if (Idx > GetNumActive()) { assert(false); }
 
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+	// TODO：向き計算どうしよ
 
-	// 向きを求める
-	D3DXVECTOR3 rot = VEC3_ZERO;
-	rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+	// プレイヤーの位置を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// 待機位置を取得
+	D3DXVECTOR3 posThis = GetActionPoint();
+
+	// 目標方向との差分を求める
+	D3DXVECTOR3 vecTarget = posPlayer - posThis;
+
+	// 待機向きを求める
+	D3DXVECTOR3 rotWait = VEC3_ZERO;
+	rotWait.y = atan2f(-vecTarget.x, -vecTarget.z);
 
 	// 算出した向きを返す
-	return rot;
+	return rotWait;
 }
 
 //=========================================

@@ -8,13 +8,15 @@
 #include "manager.h"
 #include "player.h"
 #include "player_clone.h"
+#include "collision.h"
 
 //===========================================
 //  定数定義
 //===========================================
 namespace
 {
-	const float CLIMB_SPEED = 600.0f; // 1秒間に登る速度
+	const float CLIMB_SPEED	= 600.0f;	// 1秒間に登る速度
+	const float RADIUS_ROT	= 180.0f;	// 向きを変更しないプレイヤーとの距離
 }
 
 //=========================================
@@ -124,15 +126,17 @@ D3DXVECTOR3 CGimmickStep::CalcWaitPoint(const int Idx)
 //===========================================
 //  各分身毎の待機向きを算出
 //===========================================
-D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// TODO：向き計算どうしよ
-
 	// プレイヤーの位置を取得
 	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// プレイヤーに近い場合向きの変更は行わない
+	bool bHit = collision::Circle2D(pClone->GetVec3Position(), posPlayer, RADIUS_ROT, 0.0f);
+	if (bHit) { return pClone->GetVec3Rotation(); }
 
 	// 待機位置を取得
 	D3DXVECTOR3 posThis = GetActionPoint();
@@ -140,10 +144,12 @@ D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPo
 	// 目標方向との差分を求める
 	D3DXVECTOR3 vecTarget = posPlayer - posThis;
 
-	D3DXVECTOR3 rot = VEC3_ZERO;
-	rot.y = atan2f(-vecTarget.x, -vecTarget.z);
+	// 待機向きを求める
+	D3DXVECTOR3 rotWait = VEC3_ZERO;
+	rotWait.y = atan2f(-vecTarget.x, -vecTarget.z);
 
-	return rot;
+	// 算出した向きを返す
+	return rotWait;
 }
 
 //===========================================

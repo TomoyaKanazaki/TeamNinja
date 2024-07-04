@@ -133,7 +133,7 @@ HRESULT CPlayerClone::Init(void)
 	m_bJump			= true;				// ジャンプ状況
 	m_eGimmick		= GIMMICK_IGNORE;	// ギミックフラグ
 	m_bFind			= false;			// 発見フラグ
-	m_size			= D3DXVECTOR3(RADIUS, RADIUS, RADIUS);
+	m_size			= D3DXVECTOR3(RADIUS, HEIGHT, RADIUS);
 	m_pField		= nullptr;			// フィールドフラグ
 
 	// オブジェクトキャラクターの初期化
@@ -908,77 +908,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
 	return currentMotion;
 }
 
-#if 0
-//============================================================
-//	待機位置への移動時の更新処理
-//============================================================
-CPlayerClone::EMotion CPlayerClone::UpdateMoveToWait(const float fDeltaTime)
-{
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	// 重力
-	UpdateGravity();
-
-	// 移動
-	pos += m_move * fDeltaTime;
-
-	// 着地判定
-	UpdateLanding(pos);
-
-	// 位置の適用
-	SetVec3Position(pos);
-
-	// ギミックがnullの場合関数を抜ける
-	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
-
-	// 待機位置が遠かった場合移動モーションを返す
-	if (!Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick))) { return MOTION_DASH; }
-
-	// 発動可能の場合ギミック待機状態に変更
-	if(m_pGimmick->IsActive()) { m_Action = ACTION_WAIT; }
-
-	// 待機モーションを返す
-	return MOTION_IDOL;
-}
-
-//==========================================
-//  ギミック待機
-//==========================================
-CPlayerClone::EMotion CPlayerClone::UpdateWait(const float fDeltaTime)
-{
-#ifdef _DEBUG
-	// マテリアルカラーを変えてわかりやすくする
-	SetAllMaterial(material::Yellow());
-#endif
-
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	// 重力
-	UpdateGravity();
-
-	// 移動
-	pos += m_move * fDeltaTime;
-
-	// 着地判定
-	UpdateLanding(pos);
-
-	// 位置の適用
-	SetVec3Position(pos);
-
-	// ギミックがnullの場合関数を抜ける
-	if (m_pGimmick == nullptr) { assert(false); return MOTION_IDOL; }
-
-	// ギミックがアクティブ状態なら
-	if (!m_pGimmick->IsActive()) { return MOTION_IDOL; }
-
-
-
-	return MOTION_IDOL;
-}
-#endif
-
 //===========================================
 //  落とし穴警戒状態の更新処理
 //===========================================
@@ -1704,7 +1633,7 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	SetVec3Position(posTarget);
 
 	// ギミック待機向きを適用する
-	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, pos));
+	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, this));
 
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
