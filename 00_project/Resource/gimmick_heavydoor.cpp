@@ -244,7 +244,7 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx)
 //===========================================
 //  各分身毎の待機向きを算出
 //===========================================
-D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const D3DXVECTOR3& rPos)
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
