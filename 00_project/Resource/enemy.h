@@ -65,7 +65,7 @@ public:
 
 	// メンバ関数
 	inline D3DXVECTOR3 GetOldPosition(void) const			{ return m_oldPos; }				// 過去位置取得
-	inline void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }				// 目的の向き設定
+	inline void SetDestRotation(D3DXVECTOR3& rRot)			{ useful::NormalizeRot(rRot); m_destRot = rRot; }	// 目的の向き設定
 	inline D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }				// 目的の向き取得
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
