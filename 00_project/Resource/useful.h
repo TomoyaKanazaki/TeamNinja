@@ -88,7 +88,7 @@
 #define XCOL_BLUE		(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f))	// 青色(不透明)
 #define XCOL_AYELLOW	(D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.0f))	// 黄色(透明)
 #define XCOL_YELLOW		(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f))	// 黄色(不透明)
-#define XCOL_ACYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.0f))	// 水色(透明)
+#define XCOL_ACYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f))	// 水色(透明)
 #define XCOL_CYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f))	// 水色(不透明)
 
 // RenderState関係
