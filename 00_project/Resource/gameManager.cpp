@@ -121,7 +121,7 @@ HRESULT CGameManager::Init(void)
 	// ƒWƒƒƒ“ƒv‘ä
 	CGimmick::Create(D3DXVECTOR3(3375.0f, 300.0f, -150.0f), D3DXVECTOR3(50.0f, 0.0f, 1300.0f), CGimmick::TYPE_JUMPTABLE, 2);
 	CGimmick::Create(D3DXVECTOR3(3800.0f, 300.0f, 475.0f), D3DXVECTOR3(800.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 2);
-	CGimmick::Create(D3DXVECTOR3(4925.0f, 700.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 5);
+	CGimmick::Create(D3DXVECTOR3(4925.0f, 700.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
 	
 	// Žè‘O
 	CGimmick::Create(D3DXVECTOR3(8325.0f, 100.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 5);
