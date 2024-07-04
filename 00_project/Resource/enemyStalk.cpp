@@ -27,7 +27,9 @@ namespace
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
-	
+	const float SPEED = -290.0f;			// 速度
+	const float ROT_REV = 0.5f;				// 向きの補正係数
+
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
@@ -127,7 +129,7 @@ void CEnemyStalk::SetData(void)
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
 	// ナビゲーションを生成
-	m_pNav = CEnemyNav::Create(GetVec3Position());
+	m_pNav = CEnemyNav::Create(GetVec3Position(), 700.0f, 700.0f);
 }
 
 //============================================================
@@ -158,41 +160,8 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	{
 	case CEnemyStalk::STATE_CRAWL:
 
-		//// 巡回処理
-		//nCurMotion = Crawl();
-
-		if (m_pNav != nullptr)
-		{ // ナビゲーションが NULL じゃない場合
-
-			D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
-			D3DXVECTOR3 Move = GetMovePosition();
-			float fDiff;
-
-			// 向きの差分
-			fDiff = rotDest.y - pRot->y;
-
-			// 向きの正規化
-			useful::NormalizeRot(fDiff);
-
-			// 向きを補正
-			pRot->y += fDiff * 0.5f;
-
-			// 向きの正規化
-			useful::NormalizeRot(pRot->y);
-
-			// ナビの更新処理
-			m_pNav->Update
-			(
-				pPos,				// 位置
-				GetOldPosition(),	// 前回の位置
-				pRot,				// 向き
-				&rotDest,			// 目的の向き
-				&Move				// 移動量
-			);
-
-			SetDestRotation(rotDest);
-			SetMovePosition(Move);
-		}
+		// 巡回処理
+		nCurMotion = Crawl(pPos, pRot, fDeltaTime);
 
 		break;
 
@@ -206,7 +175,7 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	case CEnemyStalk::STATE_STALK:
 
 		// 追跡処理
-		nCurMotion = Stalk(pPos, pRot);
+		nCurMotion = Stalk(pPos, pRot, fDeltaTime);
 
 		break;
 
@@ -374,8 +343,31 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 // 巡回処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Crawl(void)
+CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
+	D3DXVECTOR3 Move = GetMovePosition();
+
+	if (m_pNav != nullptr)
+	{ // ナビゲーションが NULL じゃない場合
+
+		// 向きの移動処理
+		RotMove(*pRot, ROT_REV, fDeltaTime);
+
+		// ナビの更新処理
+		m_pNav->Update
+		(
+			pPos,		// 位置
+			pRot,		// 向き
+			&Move,		// 移動量
+			&rotDest,	// 目的の向き
+			RADIUS,		// 半径
+			HEIGHT,		// 高さ
+			SPEED,		// 速度
+			fDeltaTime	// デルタタイム
+		);
+	}
+
 	if (JudgeClone() ||
 		JudgePlayer())
 	{ // 分身かプレイヤーが目に入った場合
@@ -392,6 +384,9 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(void)
 		// 無対象にする
 		SetTarget(TARGET_NONE);
 	}
+
+	SetDestRotation(rotDest);
+	SetMovePosition(Move);
 
 	// 待機モーションを返す
 	return MOTION_IDOL;
@@ -416,7 +411,7 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(void)
 //============================================================
 // 追跡処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	if (JudgeClone() ||
 		JudgePlayer())
@@ -436,7 +431,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	}
 
 	// 移動処理
-	Move(pPos, pRot);
+	Move(pPos, *pRot, SPEED, fDeltaTime);
 
 	if (Approach(*pPos))
 	{ // 接近した場合

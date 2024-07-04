@@ -77,11 +77,11 @@ private:
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
 
 	// メンバ関数
-	EMotion Crawl(void);				// 巡回処理
-	EMotion Warning(void);				// 警告処理
-	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);	// 追跡処理
-	EMotion Attack(const D3DXVECTOR3& rPos);				// 攻撃処理
-	EMotion Upset(void);				// 動揺処理
+	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
+	EMotion Warning(void);						// 警告処理
+	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
+	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
+	EMotion Upset(void);						// 動揺処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;			// ナビゲーション

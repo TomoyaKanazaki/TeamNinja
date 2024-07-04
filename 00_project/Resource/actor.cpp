@@ -291,9 +291,6 @@ void CActor::Collision
 	bool& bJump						// ジャンプ状況
 )
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
 	// キューブ判定
 	for (auto cube : m_cube)
 	{
@@ -337,9 +334,6 @@ void CActor::Collision
 	bool& bHit						// 衝突判定
 )
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
 	// キューブ判定
 	for (auto cube : m_cube)
 	{
