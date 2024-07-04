@@ -23,8 +23,6 @@
 //************************************************************
 namespace
 {
-	const float MOVE = -290.0f;				// 移動量
-	const float ROT_REV = 0.5f;				// 向きの補正係数
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
 	const int DODGE_COUNT = 17;				// 回避カウント数
@@ -110,37 +108,36 @@ void CEnemyAttack::SetData(void)
 //============================================================
 // 移動処理
 //============================================================
-void CEnemyAttack::Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+void CEnemyAttack::Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime)
 {
-	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
-	float fDiff;
-
-	// 目的の向きを取得
-	destRot.y = atan2f(pPos->x - m_posTarget.x, pPos->z - m_posTarget.z);
-
-	// 向きの差分
-	fDiff = destRot.y - pRot->y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fDiff);
-
-	// 向きを補正
-	pRot->y += fDiff * ROT_REV;
-
-	// 向きの正規化
-	useful::NormalizeRot(pRot->y);
 
 	// 移動量を設定する
-	move.x = sinf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	move.z = cosf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.x = sinf(rRot.y) * fSpeed * fDeltaTime;
+	move.z = cosf(rRot.y) * fSpeed * fDeltaTime;
 
 	// 位置を移動する
 	*pPos += move;
 
 	// 情報を適用
-	SetDestRotation(destRot);
 	SetMovePosition(move);
+}
+
+//============================================================
+// 向きの移動処理
+//============================================================
+void CEnemyAttack::RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+	float fDiffRot = 0.0f;	// 差分向き
+
+	// 目標向きまでの差分を計算
+	fDiffRot = destRot.y - rRot.y;
+	useful::NormalizeRot(fDiffRot);	// 差分向きの正規化
+
+	// 向きの更新
+	rRot.y += fDiffRot * fDeltaTime * fRevRota;
+	useful::NormalizeRot(rRot.y);	// 向きの正規化
 }
 
 //============================================================

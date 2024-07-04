@@ -24,7 +24,7 @@ namespace
 	const float	RADIUS = 70.0f;				// 半径
 	const float HEIGHT = 20.0f;				// 身長
 
-	const float MOVE = 500.0f;	// 移動量
+	const float SPEED = -500.0f;			// 移動量
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
 	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
 	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
@@ -169,6 +169,9 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		assert(false);
 		break;
 	}
+
+	// 当たり判定処理
+	Collision(*pPos);
 
 	// 現在のモーションを返す
 	return nCurMotion;
@@ -390,7 +393,7 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	LookTarget(*pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, REV_ROTA_LOOK, fDeltaTime);
+	UpdateRotation(*pRot, fDeltaTime);
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
@@ -425,8 +428,11 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// デバッグ
 	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", GetTargetPos().x, GetTargetPos().y, GetTargetPos().z);
 
+	// 目標向きを目標位置方向にする
+	LookTarget(*pPos);
+
 	// 移動処理
-	UpdateMove(*pPos, *pRot, fDeltaTime);
+	Move(pPos, *pRot, SPEED, fDeltaTime);
 
 	if (Approach(*pPos))
 	{ // 接近した場合
@@ -530,26 +536,6 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 }
 
 //============================================================
-//	移動量・目標向きの更新処理
-//============================================================
-void CEnemyWolf::UpdateMove(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
-{
-	D3DXVECTOR3 move = GetMovePosition();		// 移動量
-
-	// 目標向きを目標位置方向にする
-	LookTarget(rPos);
-
-	// 移動量を設定する
-	move.x = sinf(rRot.y - D3DX_PI) * MOVE * fDeltaTime;
-	move.z = cosf(rRot.y - D3DX_PI) * MOVE * fDeltaTime;
-
-	// 位置を移動する
-	rPos += move;
-
-	SetMovePosition(move);		// 移動量を反映
-}
-
-//============================================================
 //	位置の更新処理
 //============================================================
 void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
@@ -582,29 +568,7 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	// 向きの更新
-	UpdateRotation(rRot, REV_ROTA, fDeltaTime);
-}
-
-//============================================================
-//	向きの更新処理 (補正量設定)
-//============================================================
-void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime)
-{
-	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
-	float fDiffRot = 0.0f;	// 差分向き
-
-	// 目標向きの正規化
-	useful::NormalizeRot(destRot.y);
-
-	// 目標向きまでの差分を計算
-	fDiffRot = destRot.y - rRot.y;
-	useful::NormalizeRot(fDiffRot);	// 差分向きの正規化
-
-	// 向きの更新
-	rRot.y += fDiffRot * fDeltaTime * fRevRota;
-	useful::NormalizeRot(rRot.y);	// 向きの正規化
-
-	SetDestRotation(destRot);	// 目標向きを反映
+	RotMove(rRot, REV_ROTA, fDeltaTime);
 }
 
 //============================================================

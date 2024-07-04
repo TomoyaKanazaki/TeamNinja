@@ -65,7 +65,7 @@ public:
 
 	// メンバ関数
 	inline D3DXVECTOR3 GetOldPosition(void) const			{ return m_oldPos; }				// 過去位置取得
-	inline void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }				// 目的の向き設定
+	inline void SetDestRotation(D3DXVECTOR3& rRot)			{ useful::NormalizeRot(rRot); m_destRot = rRot; }	// 目的の向き設定
 	inline D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }				// 目的の向き取得
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
@@ -82,6 +82,7 @@ protected:
 	virtual void UpdateLanding(D3DXVECTOR3* pPos) = 0;	// 着地更新
 
 	// メンバ関数
+	bool Collision(D3DXVECTOR3& rPos);				// 当たり判定処理
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);	// プレイヤーの探索処理
 	bool SearchClone(D3DXVECTOR3* pPos = nullptr, CPlayerClone** pClone = nullptr);	// 分身の探索処理
 
@@ -93,7 +94,7 @@ protected:
 private:
 
 	// メンバ関数
-	void CollisionActor(D3DXVECTOR3& rPos);		// アクターの当たり判定処理
+	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit);		// アクターの当たり判定処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト

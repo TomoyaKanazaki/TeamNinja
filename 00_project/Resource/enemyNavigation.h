@@ -13,7 +13,7 @@
 //************************************************************
 // 前方宣言
 //************************************************************
-class CObjectMeshCylinder;		// メッシュシリンダー
+class CObjectMeshCube;		// メッシュキューブ
 
 //************************************************************
 //	クラス定義
@@ -24,11 +24,11 @@ class CEnemyNav
 public:
 
 	// 状態
-	enum STATE
+	enum EState
 	{
 		STATE_STOP = 0,		// 停止状態
 		STATE_TURN,			// ターン状態
-		STATE_WALK,			// 歩行状態
+		STATE_MOVE,			// 移動状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -39,30 +39,46 @@ public:
 	~CEnemyNav();
 
 	// オーバーライド関数
-	HRESULT Init(void);					// 初期化
-	void Uninit(void);					// 終了
-	void Update(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove);		// 更新
+	HRESULT Init(void);		// 初期化
+	void Uninit(void);		// 終了
+	void Update				// 更新
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot,		// 向き
+		D3DXVECTOR3* pMove,		// 移動量
+		D3DXVECTOR3* pRotDest,	// 目的の向き
+		const float fRadius,	// 半径
+		const float fHeight,	// 高さ
+		const float fSpeed,		// 速度
+		const float fDeltaTime	// デルタタイム
+	);
+
+	// セット・ゲット関係
+	void SetState(const EState state);		// 状態の設定処理
 
 	// 静的メンバ関数
-	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit);		// 生成処理
+	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
 
 private:
 
 	// メンバ関数
-	void Stop(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRotDest);							// 停止状態処理
-	void Turn(D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove);		// ターン状態処理
-	void Walk(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pMove);		// 歩行状態処理
-
-	void CollisionActor(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld);	// アクターの当たり判定処理
-	void CollisionWall(D3DXVECTOR3* pPos);	// 壁の当たり判定処理
+	void StopFunc(D3DXVECTOR3* pRotDest);		// 停止状態処理
+	void TurnFunc					// ターン状態処理
+	(
+		D3DXVECTOR3* pRot,				// 向き
+		D3DXVECTOR3* pMove,				// 移動量
+		const D3DXVECTOR3& rRotDest,	// 目的の向き
+		const float fSpeed,				// 速度
+		const float fDeltaTime			// デルタタイム
+	);
+	void MoveFunc(const D3DXVECTOR3& rPos);		// 移動状態処理
 
 	// メンバ変数
-	//CObjectMeshCylinder* m_pCylinder;		// メッシュシリンダーの情報
-	D3DXVECTOR3 m_posInit;	// 初期位置
-	D3DXVECTOR3 m_posDest;	// 目標地点
-	STATE m_state;			// 状態
-	int m_nStopCount;		// 停止カウント
-	float m_fRotMove;		// 向きの移動量
+	CObjectMeshCube* m_pRange;		// 範囲
+	D3DXVECTOR3 m_posInit;			// 初期位置
+	D3DXVECTOR3 m_posDest;			// 目標位置
+	EState m_state;					// 状態
+	int m_nStopCount;				// 停止カウント
 };
 
 #endif	// _ACTOR_H_

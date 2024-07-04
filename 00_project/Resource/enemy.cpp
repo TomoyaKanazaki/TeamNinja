@@ -138,12 +138,6 @@ void CEnemy::Update(const float fDeltaTime)
 	// 状態更新
 	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
 
-	// アクターの当たり判定処理
-	CollisionActor(posEnemy);
-
-	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posEnemy, m_oldPos, GetRadius(), GetHeight(), m_move);
-
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
 
@@ -268,6 +262,27 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 }
 
 //============================================================
+// 当たり判定処理
+//============================================================
+bool CEnemy::Collision(D3DXVECTOR3& rPos)
+{
+	bool bHit = false;		// ヒット状況
+
+	// アクターの当たり判定処理
+	CollisionActor(rPos, bHit);
+
+	// 壁の当たり判定(ifを挟まないとヒット状況が上書きされる)
+	if (CScene::GetStage()->CollisionWall(rPos, m_oldPos, GetRadius(), GetHeight(), m_move))
+	{
+		// ヒット状況を true にする
+		bHit = true;
+	}
+
+	// ヒット状況を返す
+	return bHit;
+}
+
+//============================================================
 // プレイヤーの探索処理
 //============================================================
 bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
@@ -380,7 +395,7 @@ void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 // アクターの当たり判定処理
 //============================================================
-void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
+void CEnemy::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 {
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return; }
@@ -398,7 +413,8 @@ void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
 			GetRadius(),	// 半径
 			GetHeight(),	// 高さ
 			m_move,			// 移動量
-			m_bJump			// ジャンプ状況
+			m_bJump,		// ジャンプ状況
+			bHit			// ヒット状況
 		);
 	}
 }
