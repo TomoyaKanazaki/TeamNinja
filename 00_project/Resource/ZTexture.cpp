@@ -8,6 +8,26 @@
 //	インクルードファイル
 //************************************************************
 #include "ZTexture.h"
+#include "manager.h"
+#include "renderer.h"
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const UINT ZTEX_WIDTH	 = SCREEN_WIDTH;								//Zテクスチャの幅
+	const UINT ZTEX_HEIGHT	 = SCREEN_HEIGHT;								//Zテクスチャの高さ
+	const float VIEWING_ANGLE = 45.0f;										//視野角
+	const float NEAR_CLIP = 10.0f;											//描画最小深度
+	const float FAR_CLIP = 10000.0f;										//描画最大深度
+	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(0.0f, 1000.0f, 100.0f);		//視点
+	const D3DXVECTOR3 FOCUS_POINT = D3DXVECTOR3(0.0f, -10.0f, 0.0f);		//注視点
+	const D3DXVECTOR3 LOOK_UP = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				//上向きのベクトル *警告:書き換えるな*
+}
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CZTexture* CZTexture::m_pShader = nullptr;	// シェーダー情報
 
 // コンストラクタ
 CZTexture::CZTexture()
@@ -31,21 +51,22 @@ CZTexture::~CZTexture()
 	m_cpDevBuffer = NULL;	// デバイスバックバッファ
 	m_cpDevDepth = NULL;	// デバイス深度バッファ
 	m_cpEffect = NULL;		// Z値プロットエフェクト
-	m_cpDev = NULL;			// 描画デバイス
 }
 
 
 // 初期化メソッド
-bool CZTexture::Init(IDirect3DDevice9 &cpDev, UINT ZTexWidth, UINT ZTexHeight, D3DFORMAT ZTexFormat)
+bool CZTexture::Init()
 {
-	if (&cpDev == NULL) return false;
-	if (ZTexWidth == 0 || ZTexHeight == 0) return false;
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイス情報
+	if (pDevice == NULL) return false;
+	if (ZTEX_WIDTH == 0 || ZTEX_HEIGHT == 0) return false;
 
 	HRESULT hr;
 	ID3DXBuffer* pError = NULL;
 	// Z値プロットシェーダプログラムを読み込む
 	if (FAILED(D3DXCreateEffectFromFile(
-		&cpDev,
+		pDevice,
 		("data\\SHADER\\ZTexCreator.fx"),
 		NULL,
 		NULL,
@@ -72,11 +93,11 @@ bool CZTexture::Init(IDirect3DDevice9 &cpDev, UINT ZTexWidth, UINT ZTexHeight, D
 
 	// 指定のZ値テクスチャを生成
 	hr = D3DXCreateTexture(
-		&cpDev,
-		ZTexWidth, ZTexHeight,
+		pDevice,
+		ZTEX_WIDTH, ZTEX_HEIGHT,
 		1,
 		D3DUSAGE_RENDERTARGET,
-		ZTexFormat,
+		D3DFMT_A32B32G32R32F,
 		D3DPOOL_DEFAULT,
 		&m_cpZTex);
 	if (FAILED(hr))
@@ -84,16 +105,16 @@ bool CZTexture::Init(IDirect3DDevice9 &cpDev, UINT ZTexWidth, UINT ZTexHeight, D
 
 	m_cpZTex->GetSurfaceLevel(0, &m_cpZTexSurf);	// サーフェイス取得
 
-															// 描画デバイスに定義されているバッファの能力を取得
+	// 描画デバイスに定義されているバッファの能力を取得
 	IDirect3DSurface9 *pSurf;
-	cpDev.GetDepthStencilSurface(&pSurf);
+	pDevice->GetDepthStencilSurface(&pSurf);
 	D3DSURFACE_DESC Desc;
 	pSurf->GetDesc(&Desc);
 	pSurf->Release();
 
 	// 独自深度バッファを作成
-	hr = cpDev.CreateDepthStencilSurface(
-		ZTexWidth, ZTexHeight,
+	hr = pDevice->CreateDepthStencilSurface(
+		ZTEX_WIDTH, ZTEX_HEIGHT,
 		Desc.Format,
 		Desc.MultiSampleType,
 		Desc.MultiSampleQuality,
@@ -104,7 +125,9 @@ bool CZTexture::Init(IDirect3DDevice9 &cpDev, UINT ZTexWidth, UINT ZTexHeight, D
 	if (FAILED(hr))
 		return false;
 
-	m_cpDev = &cpDev;
+	D3DXMatrixPerspectiveFovLH(&m_matProj, D3DXToRadian(VIEWING_ANGLE), (ZTEX_WIDTH / ZTEX_HEIGHT), NEAR_CLIP, FAR_CLIP);
+	D3DXMatrixLookAtLH(&m_matView, &VIEW_POINT, &FOCUS_POINT, &LOOK_UP);
+
 	m_bPass = false;
 	return true;
 }
@@ -134,20 +157,22 @@ void CZTexture::SetProjMatrix(D3DXMATRIX *pMat)
 // 描画の開始を宣言する
 HRESULT CZTexture::Begin()
 {
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイス情報
 	// 初期化が正しく行われているかチェック
 	if (m_cpDepthBuff == NULL || m_cpZTex == NULL)
 		return E_FAIL;
 
 	// デバイスが持っているバッファを一時保存
-	m_cpDev->GetRenderTarget(0, &m_cpDevBuffer);
-	m_cpDev->GetDepthStencilSurface(&m_cpDevDepth);
+	pDevice->GetRenderTarget(0, &m_cpDevBuffer);
+	pDevice->GetDepthStencilSurface(&m_cpDevDepth);
 
 	// デバイスにZ値テクスチャサーフェイスと深度バッファを設定
-	m_cpDev->SetRenderTarget(0, m_cpZTexSurf);
-	m_cpDev->SetDepthStencilSurface(m_cpDepthBuff);
+	pDevice->SetRenderTarget(0, m_cpZTexSurf);
+	pDevice->SetDepthStencilSurface(m_cpDepthBuff);
 
 	// 各サーフェイスを初期化
-	m_cpDev->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0);
+	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB(255, 255, 255, 255), 1.0f, 0);
 
 	// プログラマブルシェーダのテクニックを設定
 	m_cpEffect->SetTechnique(m_hTechnique);
@@ -192,18 +217,20 @@ HRESULT CZTexture::EndPass()
 // 描画の終了を宣言する
 HRESULT CZTexture::End()
 {
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイス情報
 	m_cpEffect->End();
 
 	// デバイスに元のサーフェイスを戻す
-	m_cpDev->SetRenderTarget(0, m_cpDevBuffer);
-	m_cpDev->SetDepthStencilSurface(m_cpDevDepth);
+	pDevice->SetRenderTarget(0, m_cpDevBuffer);
+	pDevice->SetDepthStencilSurface(m_cpDevDepth);
 
 	m_cpDevBuffer = NULL;
 	m_cpDevDepth = NULL;
 
 	// 固定機能に戻す
-	m_cpDev->SetVertexShader(NULL);
-	m_cpDev->SetPixelShader(NULL);
+	pDevice->SetVertexShader(NULL);
+	pDevice->SetPixelShader(NULL);
 	m_bPass = false;
 	return S_OK;
 }
@@ -214,4 +241,62 @@ bool CZTexture::GetZTex(IDirect3DTexture9 **cpTex)
 {
 	*cpTex = m_cpZTex;
 	return true;
+}
+
+//============================================================
+//	生成処理
+//============================================================
+CZTexture* CZTexture::Create(void)
+{
+	// インスタンス使用中
+	assert(m_pShader == nullptr);
+
+	// トゥーンシェーダーの生成
+	m_pShader = new CZTexture;
+	if (m_pShader == nullptr)
+	{ // 生成に失敗した場合
+
+		assert(false);
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// トゥーンシェーダーの初期化
+		if (FAILED(m_pShader->Init()))
+		{ // 初期化に失敗した場合
+
+			// トゥーンシェーダーの破棄
+			SAFE_DELETE(m_pShader);
+			return nullptr;
+		}
+
+		// 確保したアドレスを返す
+		return m_pShader;
+	}
+}
+
+//============================================================
+//	取得処理
+//============================================================
+CZTexture* CZTexture::GetInstance(void)
+{
+	// インスタンス未使用
+	assert(m_pShader != nullptr);
+
+	// トゥーンシェーダーのポインタを返す
+	return m_pShader;
+}
+
+//============================================================
+//	破棄処理
+//============================================================
+void CZTexture::Release(void)
+{
+	// トゥーンシェーダーの終了
+	assert(m_pShader != nullptr);
+	m_pShader->EndPass();
+	m_pShader->End();
+	// メモリ開放
+	SAFE_DELETE(m_pShader);
 }

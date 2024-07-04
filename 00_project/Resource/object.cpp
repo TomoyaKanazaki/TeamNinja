@@ -631,6 +631,62 @@ void CObject::DrawAll(void)
 		}
 	}
 }
+//============================================================
+//	Zテクスチャ用全描画処理
+//============================================================
+void CObject::DrawAll_ZShader(void)
+{
+	// ポインタを宣言
+	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
+
+	// ロード中の場合抜ける
+	assert(pLoading != nullptr);
+	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
+
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
+
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
+
+			// オブジェクトの先頭を代入
+			CObject* pObject = m_apTop[nCntDim][nCntPri];
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
+
+				// 次のオブジェクトを代入
+				CObject* pObjectNext = pObject->m_pNext;
+
+#ifdef _DEBUG
+
+				if (!pObject->m_bDebugDisp)
+				{ // 表示しない場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+#endif	// _DEBUG
+
+				if (!pObject->m_bDraw
+					|| pObject->m_bDeath)
+				{ // 自動描画がOFF、または死亡している場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+				// オブジェクトの描画
+				pObject->Draw();
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+			}
+		}
+	}
+}
 
 //============================================================
 //	全死亡処理

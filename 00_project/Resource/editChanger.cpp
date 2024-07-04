@@ -67,7 +67,7 @@ m_pChanger(nullptr),
 m_bSave(false)
 {
 	// メンバ変数をクリア
-	memset(&m_infoCreate, 0, sizeof(m_infoCreate)); // フィールド配置情報
+	memset(&m_infoCreate, 0, sizeof(m_infoCreate)); // 配置情報
 }
 
 //===========================================
@@ -145,11 +145,11 @@ void CEditChanger::Update(void)
 	// 角度の変更
 	ChangeRotation();
 
-	// フィールドの生成
-	CreateField();
+	// 生成
+	Create();
 
-	// フィールドの破棄
-	ReleaseField();
+	// 破棄
+	Release();
 
 	// 位置を反映
 	m_pChanger->SetVec3Position(GetVec3Position());
@@ -360,19 +360,17 @@ void CEditChanger::ChangeRotation(void)
 }
 
 //===========================================
-//	フィールドの生成処理
+//	生成処理
 //===========================================
-void CEditChanger::CreateField(void)
+void CEditChanger::Create(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
-	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	D3DXCOLOR colChanger = XCOL_WHITE;			// 色保存用
 
-	// フィールドを配置
+	// 配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
 	{
 		//----------------------------------------------------
-		//	フィールドの情報を配置用に変更
+		//	情報を配置用に変更
 		//----------------------------------------------------
 		// 自動更新・自動描画をONにする
 		m_pChanger->SetEnableUpdate(true);
@@ -390,32 +388,34 @@ void CEditChanger::CreateField(void)
 			m_infoCreate.rot // 角度
 		);
 		assert(m_pChanger != nullptr);
+
+		InitAllColor();
 	}
 }
 
 //===========================================
-//	フィールドの破棄処理
+//	破棄処理
 //===========================================
-void CEditChanger::ReleaseField(void)
+void CEditChanger::Release(void)
 {
 	CInputKeyboard *pKeyboard = GET_INPUTKEY;	// キーボード情報
 	bool bRelease = false;	// 破棄状況
 
-	// フィールドを削除
+	// 削除
 	if (pKeyboard->IsTrigger(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
 		bRelease = true;
 	}
 
-	// フィールドの削除判定
-	DeleteCollisionField(bRelease);
+	// 削除判定
+	DeleteCollision(bRelease);
 }
 
 //===========================================
-//	フィールドの削除判定
+//	削除判定
 //===========================================
-void CEditChanger::DeleteCollisionField(const bool bRelase)
+void CEditChanger::DeleteCollision(const bool bRelase)
 {
 	// リストを取得
 	CListManager<CCameraChanger> *pListManager = CCameraChanger::GetList();
@@ -480,8 +480,28 @@ void CEditChanger::DeleteCollisionField(const bool bRelase)
 		{ // 判定外だった場合
 
 			// 通常色を設定
-			rList->SetCubeColor(XCOL_WHITE);
+			rList->SetCubeColor(XCOL_ACYAN);
 		}
+	}
+}
+
+//===========================================
+//  色全初期化
+//===========================================
+void CEditChanger::InitAllColor(void)
+{
+	CListManager<CCameraChanger>* pListManager = CCameraChanger::GetList(); // リストマネージャー
+	if (pListManager == nullptr) { return; } // リスト未使用の場合抜ける
+	std::list<CCameraChanger*> listField = pListManager->GetList(); // リスト情報
+
+	for (auto& rList : listField)
+	{ // 数分繰り返す
+
+		// 同じアドレスだった場合次へ
+		if (rList == m_pChanger) { continue; }
+
+		// 通常色を設定
+		rList->SetCubeColor(XCOL_ACYAN);
 	}
 }
 
@@ -553,8 +573,8 @@ HRESULT CEditChanger::Save(void)
 	// 読み込み終了文字列を書き出し
 	file << "END_STAGE_CHANGERSET" << std::endl;
 
-	// フィールドの削除判定
-	DeleteCollisionField(false);
+	// 削除判定
+	DeleteCollision(false);
 
 	// 保存済みにする
 	m_bSave = true;

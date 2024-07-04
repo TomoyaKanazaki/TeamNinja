@@ -120,7 +120,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fTempStick	(0.0f),			// スティックの入力角を保存する変数
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
-	m_fStickRot		(0.0f)			// スティックの角度
+	m_fStickRot		(0.0f),			// スティックの角度
+	m_fShootZ		(0.0f)		// 吹っ飛ぶ目標
 {
 
 }
@@ -284,6 +285,12 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 
 	case STATE_NORMAL:
+
+		// 通常状態の更新
+		currentMotion = UpdateNormal(fDeltaTime);
+		break;
+
+	case STATE_SHOOT:
 
 		// 通常状態の更新
 		currentMotion = UpdateNormal(fDeltaTime);
@@ -596,6 +603,18 @@ bool CPlayer::GimmickLand(void)
 	return true;
 }
 
+//===========================================
+//  吹っ飛ぶ
+//==========================================~
+void CPlayer::SetShoot(const float& posTarget)
+{
+	// 状態を変更
+	m_state = STATE_SHOOT;
+
+	// 目標地点をから移動量を設定
+	
+}
+
 //==========================================
 //  士気力の値を取得
 //==========================================
@@ -705,6 +724,16 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
+}
+
+//===========================================
+//  発射状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
+{
+
+	// TODO 発射されてる時のモーションを適用しなさい
+	return MOTION_IDOL;
 }
 
 //============================================================

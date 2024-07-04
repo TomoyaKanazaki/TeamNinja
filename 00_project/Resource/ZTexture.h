@@ -28,7 +28,7 @@ public:
 	// デストラクタ
 	~CZTexture();
 	// 初期化メソッド
-	bool Init(IDirect3DDevice9 &cpDev, UINT ZTexWidth, UINT ZTexHeight, D3DFORMAT ZTexFormat = D3DFMT_A32B32G32R32F);
+	bool Init();
 
 	// 描画対象オブジェクトのワールド変換行列を設定
 	void SetWorldMatrix(D3DXMATRIX *pMat);
@@ -58,9 +58,17 @@ public:
 	bool GetZTex(IDirect3DTexture9 **cpTex);
 
 	bool GetbPass(void) { return m_bPass; }
+
+	// 静的メンバ関数
+	static CZTexture* Create(void);		// 生成
+	static CZTexture* GetInstance(void);	// 取得
+	static void Release(void);				// 破棄
 private:
+
+	// 静的メンバ変数
+	static CZTexture* m_pShader;	// シェーダー情報
+
 	// メンバ変数
-	IDirect3DDevice9 * m_cpDev;					// 描画デバイス
 	IDirect3DTexture9 * m_cpZTex;				// Z値テクスチャ
 	IDirect3DSurface9 * m_cpZTexSurf;			// Z値テクスチャサーフェイス
 	IDirect3DSurface9 * m_cpDepthBuff;			// 深度バッファ
@@ -74,6 +82,8 @@ private:
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
 	D3DXHANDLE m_hTechnique;					// テクニックへのハンドル
+
+
 	bool m_bPass;
 };
 

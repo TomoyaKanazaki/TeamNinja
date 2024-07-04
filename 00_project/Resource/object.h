@@ -148,6 +148,7 @@ public:
 	static void	ReleaseAll(void);						// 全破棄
 	static void	UpdateAll(const float fDeltaTime);		// 全更新
 	static void	DrawAll(void);							// 全描画
+	static void	DrawAll_ZShader(void);					// Zテクスチャ用全描画
 	static int	GetNumAll(void) { return m_nNumAll; }	// 総数取得
 	static CObject *GetTop(const EDim dimension, const int nPriority) { return m_apTop[dimension][nPriority]; }	// 先頭オブジェクト取得
 	static CObject *GetCur(const EDim dimension, const int nPriority) { return m_apCur[dimension][nPriority]; }	// 最後尾オブジェクト取得
