@@ -555,6 +555,9 @@
     <ClInclude Include="Resource\enemyNavigation.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\gimmick_canon.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1048,6 +1051,9 @@
     </ClCompile>
     <ClCompile Include="Resource\gameManager.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_canon.cpp">
+      <Filter>InGame\Gimmick</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -74,7 +74,7 @@ public:
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
-		STATE_CLIMB,	// のぼる↑
+		STATE_SHOOT,	// 発射状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -115,6 +115,7 @@ public:
 	bool GimmickLand(void);						// ギミックの飛び降り着地
 	D3DXVECTOR3 GetVec3Sizing() const override
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
+	void SetShoot(const D3DXVECTOR3& posTarget); // 吹っ飛ぶ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -129,6 +130,7 @@ private:
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
+	EMotion UpdateShoot(const float fDeltaTime);	// 発射状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
@@ -184,6 +186,7 @@ private:
 	bool m_bGetCamera;				// カメラの取得
 	float m_fCameraRot;				// カメラの角度
 	float m_fStickRot;				// スティックの角度
+	D3DXVECTOR3 m_posShoot;			// 吹っ飛ばし目標
 
 };
 
