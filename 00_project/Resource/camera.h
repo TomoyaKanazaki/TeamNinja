@@ -110,6 +110,7 @@ public:
 	void SetDestFollow(void);	// カメラ目標位置設定 (追従)
 	void SetDestTps(void);		// カメラ目標位置設定 (三人称)
 	void SetDestAround(void);	// カメラ目標位置設定 (回り込み)
+	void SetDestTelephoto(void);// カメラ目標位置設定 (回り込み)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -154,6 +155,7 @@ private:
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
+	float	m_fFov;		// 視野角
 };
 
 #endif	// _CAMERA_H_

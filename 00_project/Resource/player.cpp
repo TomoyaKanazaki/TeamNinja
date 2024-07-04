@@ -761,6 +761,13 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
 		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
 
+#ifdef _DEBUG
+		if (pPad->IsPress(CInputPad::KEY_Y))
+		{
+			m_move.x *= 3.0f;
+			m_move.z *= 3.0f;
+		}
+#endif
 		// •àsƒ‚[ƒVƒ‡ƒ“‚É‚·‚é
 		currentMotion = MOTION_DASH;
 
