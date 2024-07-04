@@ -116,32 +116,61 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森マップ用仮ギミック置き場
-#if 0
+#if 1
 
 	// ジャンプ台
-	CGimmick::Create(D3DXVECTOR3(3825.0f, 300.0f, 25.0f), D3DXVECTOR3(50.0f, 0.0f, 200.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(6850.0f, 0.0f, 525.0f), D3DXVECTOR3(50.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(7850.0f, 50.0f, -475.0f), D3DXVECTOR3(50.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(8825.0f, 25.0f, -300.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(8875.0f, 100.0f, -50.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(9875.0f, 100.0f, -425.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(10150.0f, 50.0f, -659.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(3375.0f, 300.0f, -150.0f), D3DXVECTOR3(50.0f, 0.0f, 1300.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(3800.0f, 300.0f, 475.0f), D3DXVECTOR3(800.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(4925.0f, 700.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 5);
+	
+	// 手前
+	CGimmick::Create(D3DXVECTOR3(8325.0f, 100.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 5);
+	CGimmick::Create(D3DXVECTOR3(9625.0f, 500.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(10175.0f, 300.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 2);
+
+
+	CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 125.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -150.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -450.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 5);
+	CGimmick::Create(D3DXVECTOR3(10000.0f, 100.0f, 525.0f), D3DXVECTOR3(50.0f, 0.0f, 550.0f), CGimmick::TYPE_JUMPTABLE, 4);
+
+
+	// 飛び降り
+	CGimmick::Create(D3DXVECTOR3(5850.0f, 300.0f, 75.0f), D3DXVECTOR3(700.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPOFF, 3);
+	CGimmick::Create(D3DXVECTOR3(5225.0f, 300.0f, -550.0f), D3DXVECTOR3(550.0f, 0.0f, 500.0f), CGimmick::TYPE_JUMPOFF, 3);
+	CGimmick::Create(D3DXVECTOR3(6575.0f, 0.0f, 0.0f), D3DXVECTOR3(350.0f, 0.0f, 1600.0f), CGimmick::TYPE_JUMPOFF, 2);
+	
+	CGimmick::Create(D3DXVECTOR3(9800.0f, 100.0f, 725.0f), D3DXVECTOR3(250.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPOFF, 3);
+	CGimmick::Create(D3DXVECTOR3(9975.0f, 300.0f, -600.0f), D3DXVECTOR3(150.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPOFF, 3);
+	CGimmick::Create(D3DXVECTOR3(10525.0f, 0.0f, -600.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPOFF, 3);
+
 
 	// 踏み台
-	CGimmick::Create(D3DXVECTOR3(4150.0f, 550.0f, 0.0f), D3DXVECTOR3(50.0f, 0.0f, 200.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(1725.0f, 0.0f, -350.0f), D3DXVECTOR3(50.0f, 0.0f, 900.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(2575, 0.0f, 0.0f), D3DXVECTOR3(50.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(4575.0f, 300.0f, 450.0f), D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 4);
+	
+	CGimmick::Create(D3DXVECTOR3(5225.0f, 1400.0f, 75.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f), CGimmick::TYPE_STEP, 6);
+	CGimmick::Create(D3DXVECTOR3(4575.0f, 400.0f, -325.0f), D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(4175.0f, 400.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_STEP, 4);
+
+	// 手前側
+	CGimmick::Create(D3DXVECTOR3(7175.0f, 0.0f, -575.0f), D3DXVECTOR3(50.0f, 0.0f, 450.0f), CGimmick::TYPE_STEP, 1);
+
+
+	CGimmick::Create(D3DXVECTOR3(7175.0f, 0.0f, 475.0f), D3DXVECTOR3(50.0f, 0.0f, 650.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 425.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 4);
+	CGimmick::Create(D3DXVECTOR3(9350.0f, 500.0f, 725.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_STEP, 2);
+
 
 	// 橋
-	CGimmick::Create(D3DXVECTOR3(6800.0f, 0.0f, 1300.0f), D3DXVECTOR3(700.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 6);
-	CGimmick::Create(D3DXVECTOR3(10750.0f, 0.0f, 1300.0f), D3DXVECTOR3(700.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 6);
-	CGimmick::Create(D3DXVECTOR3(10750.0f, 0.0f, -1300.0f), D3DXVECTOR3(700.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 6);
-	CGimmick::Create(D3DXVECTOR3(7275.0f, 0.0f, -525.0f), D3DXVECTOR3(200.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 2);
-	CGimmick::Create(D3DXVECTOR3(7675.0f, 25.0f, -525.0f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(8125.0f, 75.0f, -200.0f), D3DXVECTOR3(500.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(8550.0f, 25.0f, -200.0f), D3DXVECTOR3(300.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(8625.0f, 50.0f, -500.0f), D3DXVECTOR3(350.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(9100.0f, 25.0f, -400.0f), D3DXVECTOR3(450.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(9625.0f, 25.0f, -375.0f), D3DXVECTOR3(450.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(10375.0f, 25.0f, 175.0f), D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_BRIDGE, 4);
+	CGimmick::Create(D3DXVECTOR3(7650.0f, 100.0f, -575.0f), D3DXVECTOR3(500.0f, 0.0f, 450.0f), CGimmick::TYPE_BRIDGE, 4);
+	CGimmick::Create(D3DXVECTOR3(8675.0f, 500.0f, 625.0f), D3DXVECTOR3(550.0f, 0.0f, 350.0f), CGimmick::TYPE_BRIDGE, 4);
+	CGimmick::Create(D3DXVECTOR3(8700.0f, 100.0f, -325.0f), D3DXVECTOR3(800.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 6);
+	CGimmick::Create(D3DXVECTOR3(8975.0f, 500.0f, -600.0f), D3DXVECTOR3(300.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 2);
+
+	
+
 #endif
 
 // 金崎用ギミック置き場
