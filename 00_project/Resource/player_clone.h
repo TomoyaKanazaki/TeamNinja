@@ -80,6 +80,7 @@ public:
 		ACTION_HEAVYDOOR,		// 重い扉
 		ACTION_STEP,			// 梯子
 		ACTION_BRIDGE,			// 橋
+		ACTION_BUTTON,			// ボタン
 		ACTION_MAX
 	};
 
@@ -139,14 +140,13 @@ private:
 	// メンバ関数
 	EMotion UpdateMove(const float fDeltaTime);			// 移動行動時の更新
 	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
-	EMotion UpdateMoveToWait(const float fDeltaTime);	// 待機位置への移動時の更新
-	EMotion UpdateWait(const float fDeltaTime);			// ギミック待機
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
 	EMotion UpdateHeavyDoor(const float fDeltaTime);	// 重い扉行動時の更新
 	EMotion UpdateStep(const float fDeltaTime);			// 梯子行動時の更新
 	EMotion UpdateBridge(const float fDeltaTime);		// 橋行動時の更新
+	EMotion UpdateButton(const float fDeltaTime);		// ボタン行動時の更新
 
 	void UpdateOldPosition(void);			// 過去位置の更新
 	void UpdateGravity(void);				// 重力の更新

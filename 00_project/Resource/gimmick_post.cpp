@@ -60,10 +60,16 @@ HRESULT CGimmickPost::Init(void)
 	// ボタンの生成
 	m_pButton = CObjectMeshCube::Create
 	( // 引数
-		VEC3_ZERO,
-		VEC3_ZERO,
-		VEC3_ZERO,
-		XCOL_BLUE
+		VEC3_ZERO,	// 位置
+		VEC3_ZERO,	// 向き
+		VEC3_ZERO,	// 大きさ
+		XCOL_BLUE,	// キューブ色
+		XCOL_BLACK,	// 縁取り色
+		CObjectMeshCube::BORDER_OFF,			// 縁取り状態
+		0.0f,									// 縁取り太さ
+		CObjectMeshCube::TEXSTATE_ONE,			// テクスチャ状態
+		CObjectMeshCube::SFaceTex(NONE_IDX),	// テクスチャ種類
+		CObjectMeshCube::ORIGIN_DOWN			// 原点
 	);
 	if (m_pButton == nullptr)
 	{ // 生成に失敗した場合
@@ -79,10 +85,16 @@ HRESULT CGimmickPost::Init(void)
 	// 縁の生成
 	m_pEdge = CObjectMeshCube::Create
 	( // 引数
-		VEC3_ZERO,
-		VEC3_ZERO,
-		VEC3_ZERO,
-		XCOL_WHITE
+		VEC3_ZERO,	// 位置
+		VEC3_ZERO,	// 向き
+		VEC3_ZERO,	// 大きさ
+		XCOL_WHITE,	// キューブ色
+		XCOL_BLACK,	// 縁取り色
+		CObjectMeshCube::BORDER_OFF,			// 縁取り状態
+		0.0f,									// 縁取り太さ
+		CObjectMeshCube::TEXSTATE_ONE,			// テクスチャ状態
+		CObjectMeshCube::SFaceTex(NONE_IDX),	// テクスチャ種類
+		CObjectMeshCube::ORIGIN_DOWN			// 原点
 	);
 	if (m_pEdge == nullptr)
 	{ // 生成に失敗した場合
@@ -178,8 +190,13 @@ void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 D3DXVECTOR3 CGimmickPost::CalcWaitPoint(const int Idx)
 {
-	// ギミック原点を返す
-	return GetVec3Position();
+	D3DXVECTOR3 posWait = GetVec3Position();	// 待機位置
+
+	// ギミック原点位置に踏み込んでるボタンの高さを与える
+	posWait.y += m_pButton->GetVec3Sizing().y * 2.0f;
+
+	// 算出した位置を返す
+	return posWait;
 }
 
 //===========================================

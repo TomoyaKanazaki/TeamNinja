@@ -252,21 +252,18 @@ void CPlayerClone::Update(const float fDeltaTime)
 			// 関数を抜ける
 			return;
 		}
-
 		break;
 
 	case ACTION_CHASE: // 追従
 
 		// 追従行動時の更新
 		currentMotion = UpdateChase(fDeltaTime);
-
 		break;
 
 	case ACTION_FALL_TO_WAIT: // 落とし穴警戒
 
 		// ギミック待機状態の更新
 		currentMotion = UpdateFallToWait(fDeltaTime);
-
 		break;
 
 	case ACTION_FALL: // 落とし穴落下
@@ -280,35 +277,36 @@ void CPlayerClone::Update(const float fDeltaTime)
 			Uninit();
 			return;
 		}
-
 		break;
 
 	case ACTION_JUMPTABLE: // ジャンプ台状態
 
 		// ギミック台状態の更新
 		currentMotion = UpdateJumpTable(fDeltaTime);
-
 		break;
 
 	case ACTION_HEAVYDOOR: // 重い扉
 
 		// 重い扉状態の更新
 		currentMotion = UpdateHeavyDoor(fDeltaTime);
-
 		break;
 
 	case ACTION_STEP: // 梯子
 
 		// 梯子状態の更新
 		currentMotion = UpdateStep(fDeltaTime);
-
 		break;
 
 	case ACTION_BRIDGE: // 橋
 
 		// 橋状態の更新
 		currentMotion = UpdateBridge(fDeltaTime);
+		break;
 
+	case ACTION_BUTTON: // ボタン
+
+		// ボタン状態の更新
+		currentMotion = UpdateButton(fDeltaTime);
 		break;
 
 	default:
@@ -450,7 +448,19 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		m_Action = ACTION_BRIDGE;
 		break;
 
-	default: // その他
+	case CGimmick::TYPE_POST:		// 設置
+
+		// ボタン状態に変更
+		m_Action = ACTION_BUTTON;
+		break;
+
+	case CGimmick::TYPE_JUMPOFF:	// 飛び降り
+
+		// TODO：飛び降り関数の作成
+		break;
+
+	default: // 例外処理
+		assert(false);
 		break;
 	}
 }
@@ -1122,6 +1132,15 @@ CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 	// 位置の適用
 	SetVec3Position(pos);
 
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
+//	ボタン行動時の更新処理
+//============================================================
+CPlayerClone::EMotion CPlayerClone::UpdateButton(const float fDeltaTime)
+{
 	// 待機モーションを返す
 	return MOTION_IDOL;
 }
