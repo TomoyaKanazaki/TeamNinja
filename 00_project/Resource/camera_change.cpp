@@ -125,6 +125,7 @@ void CCameraChanger::Update(const float fDeltaTime)
 	D3DXVECTOR3 sizePlayer = player->GetVec3Sizing(); // プレイヤーサイズ
 	D3DXVECTOR3 posThis = GetVec3Position(); // 自身の座標
 	D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
+	sizeThis.y *= 2.0f;
 
 	// フラグの更新
 	m_bChange = collision::Box3D(posThis, posPlayer, sizeThis, sizeThis, sizePlayer, sizePlayer);

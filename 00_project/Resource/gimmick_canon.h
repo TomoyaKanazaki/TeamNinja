@@ -1,27 +1,31 @@
 #pragma once
 //=========================================
 //
-//  橋のギミック(gimmick_bridge.h)
+//  大砲のギミック(gimmick_canon.h)
 //  Author : Tomoya Kanazaki
 //
 //=========================================
 #include "gimmick_action.h"
 
-//===========================================
-//  前方宣言
-//===========================================
-class CField;
-
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickBridge : public CGimmickAction
+class CGimmickCanon : public CGimmickAction
 {
 public:
 
+	// 目標のZ座標列挙
+	enum ETarget
+	{
+		TARGET_LEFT = -1, // 左側
+		TARGET_CENTER, // 中央
+		TARGET_RIGHT, // 右側
+		TARGET_MAX
+	};
+
 	// メンバ関数
-	CGimmickBridge();
-	~CGimmickBridge() override;
+	CGimmickCanon();
+	~CGimmickCanon() override;
 
 	HRESULT Init(void) override; // 初期化処理
 	void Uninit(void) override; // 終了処理
@@ -30,17 +34,17 @@ public:
 	D3DXVECTOR3 CalcWaitPoint(const int Idx) override; // 各分身毎の待機位置を算出
 	D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone) override; // 各分身毎の待機向きを算出
 
+	void SetTarget(const float fTarget) { m_fTarget = fTarget; } // 目標位置の設定
+
+	// 静的メンバ関数
+	static CGimmickCanon* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, ETarget eTarget);
+
 private:
 
 	// メンバ関数
-	void CalcConectPoint(); // 橋の端の計算処理
-	void SetWait(int nIdx) { m_nIdxWait = nIdx; } // 待機中心のインデックス設定
-	void Active(); // アクティブ状態の処理
+	void Shoot(); // 発射
 
 	// メンバ変数
-	bool m_bSet; // 設定済みフラグ
-	D3DXVECTOR3 m_ConectPoint[2]; // 橋の端
-	D3DXVECTOR3 m_vecToWait; // 中心座標から待機中心へのベクトル(単位ベクトル)
-	int m_nIdxWait; // 待機中心のインデックス
-	CField* m_pField; // アクティブ状態での足場
+	float m_fTarget; // 目標位置
+	bool m_bShoot; // 発射済み
 };

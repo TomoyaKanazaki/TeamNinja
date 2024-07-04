@@ -619,6 +619,164 @@ bool collision::ResponseBox3D
 }
 
 //============================================================
+//	2軸の矩形の衝突判定
+//============================================================
+bool collision::ResponseBox2D(D3DXVECTOR3& rCenterPos, D3DXVECTOR3& rCenterPosOld, D3DXVECTOR3 targetPos, D3DXVECTOR3 centerSizeUp, D3DXVECTOR3 centerSizeDown, D3DXVECTOR3 targetSizeUp, D3DXVECTOR3 targetSizeDown, D3DXVECTOR3* pMove, bool* pUp, bool* pSide, bool* pDown)
+{
+	// 変数を宣言
+	bool bHit = false;	// 衝突判定結果
+
+	// 左右の当たり判定
+	if (rCenterPos.y + centerSizeUp.y > targetPos.y - targetSizeDown.y
+		&& rCenterPos.y - centerSizeDown.y < targetPos.y + targetSizeUp.y
+		&& rCenterPos.z + centerSizeUp.z   > targetPos.z - targetSizeDown.z
+		&& rCenterPos.z - centerSizeDown.z < targetPos.z + targetSizeUp.z)
+	{ // 上下と前後の範囲内の場合
+
+		if (rCenterPos.x + centerSizeUp.x > targetPos.x - targetSizeDown.x
+			&& rCenterPosOld.x + centerSizeUp.x <= targetPos.x - targetSizeDown.x)
+		{ // 左からの当たり判定
+
+			// 位置を補正
+			rCenterPos.x = targetPos.x - targetSizeDown.x - centerSizeUp.x;
+
+			// 衝突状態にする
+			bHit = true;
+
+			if (pMove != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 移動量を初期化
+				pMove->x = 0.0f;
+			}
+
+			if (pSide != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 横に当たっている状態を設定
+				*pSide = true;
+			}
+		}
+		else if (rCenterPos.x - centerSizeDown.x < targetPos.x + targetSizeUp.x
+			&& rCenterPosOld.x - centerSizeDown.x >= targetPos.x + targetSizeUp.x)
+		{ // 右からの当たり判定
+
+			// 位置を補正
+			rCenterPos.x = targetPos.x + targetSizeUp.x + centerSizeDown.x;
+
+			// 衝突状態にする
+			bHit = true;
+
+			if (pMove != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 移動量を初期化
+				pMove->x = 0.0f;
+			}
+
+			if (pSide != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 横に当たっている状態を設定
+				*pSide = true;
+			}
+		}
+	}
+
+	// 前後の当たり判定
+	if (rCenterPos.x + centerSizeUp.x > targetPos.x - targetSizeDown.x
+		&& rCenterPos.x - centerSizeDown.x < targetPos.x + targetSizeUp.x
+		&& rCenterPos.y + centerSizeUp.y   > targetPos.y - targetSizeDown.y
+		&& rCenterPos.y - centerSizeDown.y < targetPos.y + targetSizeUp.y)
+	{ // 左右と上下の範囲内の場合
+
+		if (rCenterPos.z + centerSizeUp.z > targetPos.z - targetSizeDown.z
+			&& rCenterPosOld.z + centerSizeUp.z <= targetPos.z - targetSizeDown.z)
+		{ // 前からの当たり判定
+
+			// 位置を補正
+			rCenterPos.z = targetPos.z - targetSizeDown.z - centerSizeUp.z;
+
+			// 衝突状態にする
+			bHit = true;
+
+			if (pMove != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 移動量を初期化
+				pMove->z = 0.0f;
+			}
+
+			if (pSide != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 横に当たっている状態を設定
+				*pSide = true;
+			}
+		}
+		else if (rCenterPos.z - centerSizeDown.z < targetPos.z + targetSizeUp.z
+			&& rCenterPosOld.z - centerSizeDown.z >= targetPos.z + targetSizeUp.z)
+		{ // 後からの当たり判定
+
+			// 位置を補正
+			rCenterPos.z = targetPos.z + targetSizeUp.z + centerSizeDown.z;
+
+			// 衝突状態にする
+			bHit = true;
+
+			if (pMove != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 移動量を初期化
+				pMove->z = 0.0f;
+			}
+
+			if (pSide != nullptr)
+			{ // ポインタが使用されている場合
+
+				// 横に当たっている状態を設定
+				*pSide = true;
+			}
+		}
+	}
+
+	// 衝突判定を返す
+	return bHit;
+}
+
+//============================================================
+// 2軸の矩形の衝突判定(向きの列挙判定入り)
+//============================================================
+bool collision::ResponseBox2D(D3DXVECTOR3& rCenterPos, D3DXVECTOR3& rCenterPosOld, D3DXVECTOR3 targetPos, D3DXVECTOR3 centerSizeUp, D3DXVECTOR3 centerSizeDown, D3DXVECTOR3 targetSizeUp, D3DXVECTOR3 targetSizeDown, const EAngle angle, D3DXVECTOR3* pMove, bool* pUp, bool* pSide, bool* pDown)
+{
+	D3DXVECTOR3 tarSizeUp = VEC3_ZERO;
+	D3DXVECTOR3 tarSizeDown = VEC3_ZERO;
+
+	if (angle == EAngle::ANGLE_90 ||
+		angle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		// サイズを設定
+		tarSizeUp.x = targetSizeUp.z;
+		tarSizeUp.y = targetSizeUp.y;
+		tarSizeUp.z = targetSizeUp.x;
+		tarSizeDown.x = targetSizeDown.z;
+		tarSizeDown.y = targetSizeDown.y;
+		tarSizeDown.z = targetSizeDown.x;
+	}
+	else
+	{ // 上記以外
+
+		// サイズを設定
+		tarSizeUp = targetSizeUp;
+		tarSizeDown = targetSizeDown;
+	}
+
+	// 当たり判定処理
+	return ResponseBox2D(rCenterPos, rCenterPosOld, targetPos, centerSizeUp, centerSizeDown, tarSizeUp, tarSizeDown, pMove, pUp, pSide, pDown);
+}
+
+//============================================================
 //	三軸の円の衝突判定
 //============================================================
 bool collision::ResponseCircle3D

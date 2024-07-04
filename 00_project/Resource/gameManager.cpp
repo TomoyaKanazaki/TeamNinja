@@ -207,13 +207,13 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// ÇÌÇÒÇÌÇÒÇ®Å[
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 #endif
 
 	// Ç≥ÇﬁÇÁÇ¢
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 #endif
