@@ -48,7 +48,8 @@ namespace
 	const int	PRIORITY	= 3;				// プレイヤーの優先順位
 	const float	JUMP_MOVE	= 615.0f;			// 大ジャンプ上昇量
 	const float	STEP_MOVE	= JUMP_MOVE * 2.0f;	// 大ジャンプ上昇量
-	const float CANON_MOVE	= JUMP_MOVE * 5.0f;	// 吹っ飛ばし上昇量
+	const float	CANON_GRAVITY= 500.0f;			// 重力
+	const float CANON_MOVE	= CANON_GRAVITY * 30.0f;	// 吹っ飛ばし上昇量
 	const float REBOUND		= 500.0f;			// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
@@ -77,7 +78,7 @@ namespace
 	const int MAX_TENSION = 10000; // 士気力の最大値
 	const int INIT_TENSION = 5000; // 士気力の初期値
 	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
-	const int MAX_CLONE = 10; // 分身の最大数
+	const int MAX_CLONE = 15; // 分身の最大数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -122,7 +123,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_fShootZ		(0.0f)		// 吹っ飛ぶ目標
+	m_fShootTarget	(0.0f),			// 吹っ飛ぶ目標
+	m_fShootStart	(0.0f),			// 吹っ飛び開始地点
+	m_nCanonTime	(0)				// 吹っ飛び時間
 {
 
 }
@@ -612,12 +615,16 @@ void CPlayer::SetShoot(const float& posTarget)
 	// 状態を変更
 	m_state = STATE_SHOOT;
 	m_bJump = true;
+	m_nCanonTime = 0;
 
-	// 目標地点から移動量を算出
-	float moveZ = posTarget - GetVec3Position().z;
+	// 目標地点を設定
+	m_fShootTarget = posTarget;
+
+	// 開始地点を設定
+	m_fShootStart = GetVec3Position().z;
 
 	// 移動量を設定
-	SetMove(D3DXVECTOR3(0.0f, CANON_MOVE, moveZ));
+	m_move = D3DXVECTOR3(0.0f, 0.0f, m_fShootTarget - m_fShootStart);
 }
 
 //==========================================
@@ -736,27 +743,45 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
 {
+	// 吹っ飛び時間の更新
+	m_nCanonTime++;
+
 	// 自身の情報を取得
 	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// y座標の計算
+	float fTemp = 0.0f;
+	useful::Parabola
+	(
+		CANON_MOVE,
+		-CANON_GRAVITY,
+		m_nCanonTime,
+		&m_move.y,
+		&fTemp
+	);
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// アクターの当たり判定
+	CollisionActor(posPlayer);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
 
 	// 着地したら通常状態に遷移する
 	if (!m_bJump)
 	{
 		m_state = STATE_NORMAL;
+		m_move = VEC3_ZERO;
 	}
-
-	// 重力の更新
-	UpdateGravity();
-
-	// 位置更新
-	UpdatePosition(posPlayer, fDeltaTime);
-
-	// 着地判定
-	UpdateLanding(posPlayer, fDeltaTime);
 
 	// 向き更新
 	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 壁の当たり判定
+	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -1453,13 +1478,6 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	}
 
 	return true;
-}
-
-//===========================================
-//  発射の計算処理
-//===========================================
-void CPlayer::CalcShoot()
-{
 }
 
 //==========================================

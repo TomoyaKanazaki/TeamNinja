@@ -67,10 +67,13 @@ void CGimmickCanon::Uninit(void)
 void CGimmickCanon::Update(const float fDeltaTime)
 {
 	// ”­ŽËˆ—
-	if (IsActive() && DistancePlayer() && !m_bShoot)
+	if (IsActive() && DistancePlayer())
 	{
-		GET_PLAYER->SetShoot(m_fTarget);
-		m_bShoot = true;
+		if (!m_bShoot)
+		{
+			GET_PLAYER->SetShoot(m_fTarget);
+			m_bShoot = true;
+		}
 	}
 	else
 	{

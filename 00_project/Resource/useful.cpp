@@ -216,8 +216,8 @@ float useful::QuadraticCurve
 {
 	// 変数を宣言
 	float fPosY = 0.0f;		// Y座標
-	float fMax = fStart + ((fEnd - fStart) / 2.0f);		// 最高到達点のX座標
-	float fMagni = -fHeight / (((fEnd - fStart) / 2.0f) * ((fEnd - fStart) / 2.0f));	// 倍率
+	float fMax = (fEnd + fStart) * 0.5f;		// 最高到達点のX座標
+	float fMagni = -fHeight / (((fEnd - fStart) * 0.5f) * ((fEnd - fStart) * 0.5f));	// 倍率
 
 	// Y座標を設定する
 	fPosY = fMagni * ((fPosX - fMax) * (fPosX - fMax)) + fHeight;

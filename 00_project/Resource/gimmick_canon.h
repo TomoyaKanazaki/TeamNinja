@@ -17,9 +17,9 @@ public:
 	// 目標のZ座標列挙
 	enum ETarget
 	{
-		TARGET_RIGHT = -1, // 左側
+		TARGET_RIGHT = -1, // 右側
 		TARGET_CENTER, // 中央
-		TARGET_LEFT, // 右側
+		TARGET_LEFT, // 左側
 		TARGET_MAX
 	};
 
