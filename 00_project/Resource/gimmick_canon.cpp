@@ -72,6 +72,10 @@ void CGimmickCanon::Update(const float fDeltaTime)
 		GET_PLAYER->SetShoot(m_fTarget);
 		m_bShoot = true;
 	}
+	else
+	{
+		m_bShoot = false;
+	}
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -107,7 +111,7 @@ D3DXVECTOR3 CGimmickCanon::CalcWaitRotation(const int Idx, const CPlayerClone* p
 //===========================================
 //  生成処理
 //===========================================
-CGimmickCanon* CGimmickCanon::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, ETarget eTarget)
+CGimmickCanon* CGimmickCanon::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, ETarget eTarget)
 {
 	// ギミックの生成
 	CGimmickCanon* pGimmick = new CGimmickCanon;
@@ -122,7 +126,7 @@ CGimmickCanon* CGimmickCanon::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3&
 	pGimmick->SetVec3Position(rPos);
 
 	// サイズの設定
-	pGimmick->SetVec3Sizing(rRot);
+	pGimmick->SetVec3Sizing(rSize);
 
 	// 目標地点の設定
 	pGimmick->SetTarget(FEILD_LINE * eTarget);

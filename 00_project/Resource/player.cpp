@@ -48,6 +48,7 @@ namespace
 	const int	PRIORITY	= 3;				// プレイヤーの優先順位
 	const float	JUMP_MOVE	= 615.0f;			// 大ジャンプ上昇量
 	const float	STEP_MOVE	= JUMP_MOVE * 2.0f;	// 大ジャンプ上昇量
+	const float CANON_MOVE	= JUMP_MOVE * 5.0f;	// 吹っ飛ばし上昇量
 	const float REBOUND		= 500.0f;			// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
@@ -293,7 +294,7 @@ void CPlayer::Update(const float fDeltaTime)
 	case STATE_SHOOT:
 
 		// 通常状態の更新
-		currentMotion = UpdateNormal(fDeltaTime);
+		currentMotion = UpdateShoot(fDeltaTime);
 		break;
 
 	default:
@@ -610,9 +611,13 @@ void CPlayer::SetShoot(const float& posTarget)
 {
 	// 状態を変更
 	m_state = STATE_SHOOT;
+	m_bJump = true;
 
-	// 目標地点から移動量を設定
+	// 目標地点から移動量を算出
 	float moveZ = posTarget - GetVec3Position().z;
+
+	// 移動量を設定
+	SetMove(D3DXVECTOR3(0.0f, CANON_MOVE, moveZ));
 }
 
 //==========================================
@@ -731,6 +736,33 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
 {
+	// 自身の情報を取得
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 着地したら通常状態に遷移する
+	if (!m_bJump)
+	{
+		m_state = STATE_NORMAL;
+	}
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
 
 	// TODO 発射されてる時のモーションを適用しなさい
 	return MOTION_IDOL;
@@ -939,18 +971,22 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// 移動量を加算
 	rPos += m_move * fDeltaTime;
 
-	// 移動量を減衰
-	if (m_bJump)
-	{ // 空中の場合
+	// 発射状態中は減衰しない
+	if (m_state != STATE_SHOOT)
+	{
+		// 移動量を減衰
+		if (m_bJump)
+		{ // 空中の場合
 
-		m_move.x += (0.0f - m_move.x) * JUMP_REV;
-		m_move.z += (0.0f - m_move.z) * JUMP_REV;
-	}
-	else
-	{ // 地上の場合
+			m_move.x += (0.0f - m_move.x) * JUMP_REV;
+			m_move.z += (0.0f - m_move.z) * JUMP_REV;
+		}
+		else
+		{ // 地上の場合
 
-		m_move.x += (0.0f - m_move.x) * LAND_REV;
-		m_move.z += (0.0f - m_move.z) * LAND_REV;
+			m_move.x += (0.0f - m_move.x) * LAND_REV;
+			m_move.z += (0.0f - m_move.z) * LAND_REV;
+		}
 	}
 
 	// 中心座標の更新
@@ -1417,6 +1453,13 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	}
 
 	return true;
+}
+
+//===========================================
+//  発射の計算処理
+//===========================================
+void CPlayer::CalcShoot()
+{
 }
 
 //==========================================
