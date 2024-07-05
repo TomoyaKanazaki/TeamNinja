@@ -63,8 +63,13 @@ public:
 private:
 
 	// メンバ関数
-	void StopFunc(D3DXVECTOR3* pRotDest);		// 停止状態処理
-	void TurnFunc					// ターン状態処理
+	void StopFunc						// 停止状態処理
+	(
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rRot,		// 向き
+		D3DXVECTOR3* pRotDest			// 目的の向き
+	);
+	void TurnFunc						// ターン状態処理
 	(
 		D3DXVECTOR3* pRot,				// 向き
 		D3DXVECTOR3* pMove,				// 移動量
