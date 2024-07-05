@@ -19,10 +19,12 @@
 //************************************************************
 namespace
 {
-	const int STOP_COUNT = 300;				// 停止カウント
+	const int STOP_COUNT = 100;				// 停止カウント
 	const float ROT_CORRECT_DIFF = 0.01f;	// 向きを補正する差分
-	const int MOVE_COUNT_RAND = 20;			// 移動カウントのランダム数
-	const int MOVE_COUNT_MIN = 50;			// 移動カウントの最低保障
+	const int DEST_ROT_RAND = 101;			// 目的の向きのランダム数
+	const int DEST_ROT_MIN = 50;			// 目的の向きの最低保障
+	const int MOVE_COUNT_RAND = 30;			// 移動カウントのランダム数
+	const int MOVE_COUNT_MIN = 70;			// 移動カウントの最低保障
 }
 
 //************************************************************
@@ -96,7 +98,7 @@ void CEnemyNav::Update
 	case CEnemyNav::STATE_STOP:
 
 		// 停止状態処理
-		StopFunc(pRotDest);
+		StopFunc(*pPos, *pRot, pRotDest);
 
 		break;
 
@@ -190,8 +192,15 @@ CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit, const float fWidth, co
 //============================================================
 // 停止状態処理
 //============================================================
-void CEnemyNav::StopFunc(D3DXVECTOR3* pRotDest)
+void CEnemyNav::StopFunc
+(
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rRot,		// 向き
+	D3DXVECTOR3* pRotDest			// 目的の向き
+)
 {
+	float fRotInit = 0.0f;		// 初期地点への向き
+
 	// 状態カウントを加算する
 	m_nStateCount++;
 
@@ -204,8 +213,14 @@ void CEnemyNav::StopFunc(D3DXVECTOR3* pRotDest)
 		// ターン状態にする
 		m_state = STATE_TURN;
 
+		// 初期地点への向きを設定する
+		fRotInit = atan2f(rPos.x - m_posInit.x, rPos.z - m_posInit.z);
+
 		// 向きを設定する
-		pRotDest->y = useful::RandomRot();
+		pRotDest->y = fRotInit + ((float)(rand() % DEST_ROT_RAND - DEST_ROT_MIN) * 0.01f);
+
+		// 向きの正規化
+		useful::NormalizeRot(pRotDest->y);
 	}
 }
 
@@ -251,8 +266,16 @@ void CEnemyNav::MoveFunc(D3DXVECTOR3* pPos, const D3DXVECTOR3& rMove)
 	// 移動する
 	*pPos += rMove;
 
-	//if(m_nStateCount <= 0 ||
-	//	)
+	if (m_nStateCount <= 0 ||
+		CollisionRange(pPos))
+	{ // 歩き終えるか、範囲を超えた場合
+
+		// 状態カウントを0にする
+		m_nStateCount = 0;
+
+		// 停止状態にする
+		m_state = STATE_STOP;
+	}
 }
 
 //============================================================
@@ -260,10 +283,49 @@ void CEnemyNav::MoveFunc(D3DXVECTOR3* pPos, const D3DXVECTOR3& rMove)
 //============================================================
 bool CEnemyNav::CollisionRange(D3DXVECTOR3* pPos)
 {
-	//if (pPos->x >= m_posInit.x + m_MoveRange.x)
-	//{
-	//	pPos->x = m_posInit.x + m_MoveRange.x;
-	//}
+	// 範囲を超えたかどうか
+	bool bOver = false;
 
-	return true;
+	if (pPos->x >= m_posInit.x + m_MoveRange.x)
+	{ // 右端を超えた場合
+
+		// 位置を補正する
+		pPos->x = m_posInit.x + m_MoveRange.x;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->x <= m_posInit.x - m_MoveRange.x)
+	{ // 左端を超えた場合
+
+		// 位置を補正する
+		pPos->x = m_posInit.x - m_MoveRange.x;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->z >= m_posInit.z + m_MoveRange.y)
+	{ // 奥端を超えた場合
+
+		// 位置を補正する
+		pPos->z = m_posInit.z + m_MoveRange.y;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->z <= m_posInit.z - m_MoveRange.y)
+	{ // 手前端を超えた場合
+
+		// 位置を補正する
+		pPos->z = m_posInit.z - m_MoveRange.y;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	// 範囲状況を返す
+	return bOver;
 }

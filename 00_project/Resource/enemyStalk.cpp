@@ -206,6 +206,9 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		// 停止状態にする
 		m_pNav->SetState(CEnemyNav::STATE_STOP);
+
+		// 状態カウントを0にする
+		m_pNav->SetStateCount(0);
 	}
 
 	// 現在のモーションを返す
