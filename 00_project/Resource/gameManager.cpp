@@ -30,6 +30,7 @@
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
+#include "gimmick_canon.h"
 
 
 //************************************************************
@@ -188,9 +189,10 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 金崎用ギミック置き場
-#if 1
-	// 橋
-	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
+#if 0
+	// 吹っ飛ばし
+	CGimmickCanon::Create(D3DXVECTOR3(-2000.0f, 0.0f, 300.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmickCanon::TARGET_RIGHT);
+
 #endif
 
 // ギミック置き場
@@ -203,13 +205,10 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(-100.0f, 1.0f, -50.0f), D3DXVECTOR3(300.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 	// 橋：中央
-	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), D3DXVECTOR3(1000.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 6);
+	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), D3DXVECTOR3(850.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 7);
 
 	// 重ドア：中央
 	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
-
-	// 踏み台：最奥
-	CGimmick::Create(D3DXVECTOR3(2990.0f, 1.0f, 0.0f), D3DXVECTOR3(10.0f, 0.0f, 1600.0f), CGimmick::TYPE_STEP, 4);
 
 	{ // 複数ボタン：最奥
 		std::vector<CGimmickMalti::SButton> vec;
