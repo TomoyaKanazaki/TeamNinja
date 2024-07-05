@@ -12,8 +12,6 @@
 
 #include "objectMeshCube.h"
 
-#include "effect3D.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -21,10 +19,6 @@ namespace
 {
 	const int STOP_COUNT = 100;				// 停止カウント
 	const float ROT_CORRECT_DIFF = 0.01f;	// 向きを補正する差分
-	const int DEST_ROT_RAND = 101;			// 目的の向きのランダム数
-	const int DEST_ROT_MIN = 50;			// 目的の向きの最低保障
-	const int MOVE_COUNT_RAND = 30;			// 移動カウントのランダム数
-	const int MOVE_COUNT_MIN = 70;			// 移動カウントの最低保障
 }
 
 //************************************************************
@@ -135,7 +129,7 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const floa
 		pNav->SetPosInit(rPosInit);
 
 		// 移動範囲を設定
-		pNav->SetMoveRange(D3DXVECTOR3(fWidth, 0.0f, fDepth));
+		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
 
 		// 円柱を生成
 		pNav->m_pRangeCube = CObjectMeshCube::Create
@@ -216,9 +210,6 @@ void CEnemyNavRandom::TurnFunc
 		pMove->x = sinf(pRot->y) * fSpeed * fDeltaTime;
 		pMove->z = cosf(pRot->y) * fSpeed * fDeltaTime;
 	}
-
-	CEffect3D* p = CEffect3D::Create(GetPosDest(), 40.0f, CEffect3D::TYPE_NORMAL, 10, D3DXVECTOR3(0.0f, 5.0f, 0.0f), VEC3_ZERO, D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
-	p->SetPriority(6);
 }
 
 //============================================================
@@ -253,8 +244,8 @@ void CEnemyNavRandom::DestPosRandom(void)
 	D3DXVECTOR3 posDest = VEC3_ZERO;	// 目的の位置
 
 	// 目的の位置を設定する
-	posDest.x = GetPosInit().x + rand() % ((int)GetMoveRange().x + 1) - ((int)GetMoveRange().x * 0.5f);
-	posDest.z = GetPosInit().z + rand() % ((int)GetMoveRange().z + 1) - ((int)GetMoveRange().z * 0.5f);
+	posDest.x = GetPosInit().x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
+	posDest.z = GetPosInit().z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
 
 	// 目的位置を適用する
 	SetPosDest(posDest);
@@ -301,4 +292,58 @@ bool CEnemyNavRandom::PosCorrect(const float fDest, float* fTarget, const float 
 
 	// false を返す
 	return false;
+}
+
+//============================================================
+// 範囲との衝突
+//============================================================
+bool CEnemyNavRandom::CollisionRange(D3DXVECTOR3* pPos)
+{
+	D3DXVECTOR3 posInit = GetPosInit();		// 初期位置
+
+	// 範囲を超えたかどうか
+	bool bOver = false;
+
+	if (pPos->x >= posInit.x + m_MoveRange.x)
+	{ // 右端を超えた場合
+
+		// 位置を補正する
+		pPos->x = posInit.x + m_MoveRange.x;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->x <= posInit.x - m_MoveRange.x)
+	{ // 左端を超えた場合
+
+		// 位置を補正する
+		pPos->x = posInit.x - m_MoveRange.x;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->z >= posInit.z + m_MoveRange.z)
+	{ // 奥端を超えた場合
+
+		// 位置を補正する
+		pPos->z = posInit.z + m_MoveRange.z;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	if (pPos->z <= posInit.z - m_MoveRange.z)
+	{ // 手前端を超えた場合
+
+		// 位置を補正する
+		pPos->z = posInit.z - m_MoveRange.z;
+
+		// 範囲超えた
+		bOver = true;
+	}
+
+	// 範囲状況を返す
+	return bOver;
 }

@@ -64,11 +64,6 @@ protected:
 	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
 	void SetPosDest(const D3DXVECTOR3& rPosDest) { m_posDest = rPosDest; }	// 目標位置の設定処理
 	D3DXVECTOR3 GetPosDest(void) const { return m_posDest; }				// 目標位置の取得処理
-	void SetMoveRange(const D3DXVECTOR3& rRange) { m_MoveRange = rRange; }	// 移動範囲の設定処理
-	D3DXVECTOR3 GetMoveRange(void) const { return m_MoveRange; }			// 移動範囲の取得処理
-
-	// メンバ関数
-	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
 
 private:
 
@@ -96,7 +91,6 @@ private:
 	// メンバ変数
 	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_posDest;			// 目標位置
-	D3DXVECTOR3 m_MoveRange;		// 移動範囲
 	EState m_state;					// 状態
 	int m_nStateCount;				// 状態カウント
 };
