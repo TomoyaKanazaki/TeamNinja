@@ -83,7 +83,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	m_pShadow		(nullptr),			// 影の情報
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
-	m_Action		(ACTION_CHASE),		// 行動
+	m_Action		(ACTION_CHASE),		// 現在行動
+	m_OldAction		(ACTION_CHASE),		// 過去行動
 	m_fDeleteTimer	(0.0f),				// 自動消滅タイマー
 	m_fGimmickTimer	(0.0f),				// ギミック受付時間タイマー
 	m_pGimmick		(nullptr),			// ギミックのポインタ
@@ -120,7 +121,8 @@ HRESULT CPlayerClone::Init(void)
 	m_pShadow		= nullptr;			// 影の情報
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
-	m_Action		= ACTION_CHASE;		// 行動
+	m_Action		= ACTION_CHASE;		// 現在行動
+	m_OldAction		= ACTION_CHASE;		// 過去行動
 	m_fDeleteTimer	= 0.0f;				// 自動消滅タイマー
 	m_fGimmickTimer = 0.0f;				// ギミック受付時間タイマー
 	m_pGimmick		= nullptr;			// ギミックのポインタ
@@ -229,6 +231,24 @@ void CPlayerClone::Uninit(void)
 void CPlayerClone::Update(const float fDeltaTime)
 {
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+
+	if (m_OldAction == ACTION_BRIDGE
+	&&  m_Action != ACTION_BRIDGE)
+	{
+		// 腰の親モデルを初期化
+		GetParts(MODEL_WAIST)->SetParentModel(nullptr);
+
+		// 少しキャラクターを大きくする
+		SetVec3Scaling(VEC3_ONE);
+
+		// 寝そべってる向きを修正
+		D3DXVECTOR3 rotClone = GetVec3Rotation();	// 分身向きを取得
+		rotClone.x = rotClone.z = 0.0f;	// Y向き以外は初期化
+		SetVec3Rotation(rotClone);		// 向きを反映
+	}
+
+	// 過去行動の更新
+	m_OldAction = m_Action;
 
 	// 過去位置の更新
 	UpdateOldPosition();
@@ -1059,8 +1079,8 @@ CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 		SetVec3Scaling(D3DXVECTOR3(1.5f, 1.5f, 1.25f));	// TODO：定数
 
 		// 橋になる為のモーションを返す
-		if (m_nIdxGimmick == 0)	{ return MOTION_LADDER; }	// 先頭は梯子モーション
-		else					{ return MOTION_BRIDGE; }	// それ以降は橋モーション
+		if (m_nIdxGimmick == 0)	{ SetMotion(MOTION_LADDER); return MOTION_LADDER; }	// 先頭は梯子モーション
+		else					{ SetMotion(MOTION_BRIDGE); return MOTION_BRIDGE; }	// それ以降は橋モーション
 	}
 	else
 	{

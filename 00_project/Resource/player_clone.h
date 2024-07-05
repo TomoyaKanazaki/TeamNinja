@@ -191,7 +191,8 @@ private:
 	CShadow* m_pShadow;			// 影の情報
 	COrbit* m_pOrbit;			// 軌跡の情報
 	D3DXVECTOR3 m_move;			// 移動量
-	EAction m_Action;			// 行動
+	EAction m_Action;			// 現在行動
+	EAction m_OldAction;		// 過去行動
 	float m_fDeleteTimer;		// 自動消滅タイマー
 	float m_fGimmickTimer;		// ギミック受付時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ
