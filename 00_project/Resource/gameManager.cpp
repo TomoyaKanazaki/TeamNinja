@@ -30,6 +30,7 @@
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
+#include "gimmick_canon.h"
 
 
 //************************************************************
@@ -175,8 +176,9 @@ HRESULT CGameManager::Init(void)
 
 // 金崎用ギミック置き場
 #if 1
-	// 橋
-	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
+	// 吹っ飛ばし
+	CGimmickCanon::Create(D3DXVECTOR3(-2000.0f, 0.0f, 300.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmickCanon::TARGET_RIGHT);
+
 #endif
 
 // ギミック置き場
