@@ -124,15 +124,15 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(4925.0f, 700.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
 	
 	// 手前
-	CGimmick::Create(D3DXVECTOR3(8325.0f, 100.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 5);
+	/*CGimmick::Create(D3DXVECTOR3(8325.0f, 100.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 5);
 	CGimmick::Create(D3DXVECTOR3(9625.0f, 500.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 2);
-	CGimmick::Create(D3DXVECTOR3(10175.0f, 300.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(10175.0f, 300.0f, -600.0f), D3DXVECTOR3(50.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPTABLE, 2);*/
 
 
-	CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 125.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
-	CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -150.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
-	CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -450.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 5);
-	CGimmick::Create(D3DXVECTOR3(10000.0f, 100.0f, 525.0f), D3DXVECTOR3(50.0f, 0.0f, 550.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	//CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 125.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	/*CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -150.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	CGimmick::Create(D3DXVECTOR3(9175.0f, 100.0f, -450.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 5);*/
+	//CGimmick::Create(D3DXVECTOR3(10000.0f, 100.0f, 525.0f), D3DXVECTOR3(50.0f, 0.0f, 550.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 
 	// 飛び降り
@@ -155,21 +155,35 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(4175.0f, 400.0f, 75.0f), D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_STEP, 4);
 
 	// 手前側
-	CGimmick::Create(D3DXVECTOR3(7175.0f, 0.0f, -575.0f), D3DXVECTOR3(50.0f, 0.0f, 450.0f), CGimmick::TYPE_STEP, 1);
+	//CGimmick::Create(D3DXVECTOR3(7175.0f, 0.0f, -575.0f), D3DXVECTOR3(50.0f, 0.0f, 450.0f), CGimmick::TYPE_STEP, 1);
 
 
 	CGimmick::Create(D3DXVECTOR3(7175.0f, 0.0f, 475.0f), D3DXVECTOR3(50.0f, 0.0f, 650.0f), CGimmick::TYPE_STEP, 4);
-	CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 425.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 4);
-	CGimmick::Create(D3DXVECTOR3(9350.0f, 500.0f, 725.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_STEP, 2);
+	//CGimmick::Create(D3DXVECTOR3(9175.0f, 250.0f, 425.0f), D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 4);
+	//CGimmick::Create(D3DXVECTOR3(9350.0f, 500.0f, 725.0f), D3DXVECTOR3(50.0f, 0.0f, 150.0f), CGimmick::TYPE_STEP, 2);
 
 
 	// 橋
-	CGimmick::Create(D3DXVECTOR3(7650.0f, 100.0f, -575.0f), D3DXVECTOR3(500.0f, 0.0f, 450.0f), CGimmick::TYPE_BRIDGE, 4);
+	/*CGimmick::Create(D3DXVECTOR3(7650.0f, 100.0f, -575.0f), D3DXVECTOR3(500.0f, 0.0f, 450.0f), CGimmick::TYPE_BRIDGE, 4);*/
 	CGimmick::Create(D3DXVECTOR3(8675.0f, 500.0f, 625.0f), D3DXVECTOR3(550.0f, 0.0f, 350.0f), CGimmick::TYPE_BRIDGE, 4);
-	CGimmick::Create(D3DXVECTOR3(8700.0f, 100.0f, -325.0f), D3DXVECTOR3(800.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 6);
-	CGimmick::Create(D3DXVECTOR3(8975.0f, 500.0f, -600.0f), D3DXVECTOR3(300.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 2);
+	/*CGimmick::Create(D3DXVECTOR3(8700.0f, 100.0f, -325.0f), D3DXVECTOR3(800.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 6);
+	CGimmick::Create(D3DXVECTOR3(8975.0f, 500.0f, -600.0f), D3DXVECTOR3(300.0f, 0.0f, 250.0f), CGimmick::TYPE_BRIDGE, 2);*/
 
 	
+
+#endif
+
+// 森マップ用仮ギミック置き場②
+#if 0
+
+	// ジャンプ台
+	CGimmick::Create(D3DXVECTOR3(3375.0f, 300.0f, -150.0f), D3DXVECTOR3(50.0f, 0.0f, 1300.0f), CGimmick::TYPE_JUMPTABLE, 2);
+
+	// 踏み台
+	CGimmick::Create(D3DXVECTOR3(1725.0f, 0.0f, -350.0f), D3DXVECTOR3(50.0f, 0.0f, 900.0f), CGimmick::TYPE_STEP, 4);
+
+	// 橋
+	CGimmick::Create(D3DXVECTOR3(7650.0f, 100.0f, -575.0f), D3DXVECTOR3(500.0f, 0.0f, 450.0f), CGimmick::TYPE_BRIDGE, 4);
 
 #endif
 
@@ -240,7 +254,7 @@ void CGameManager::Uninit(void)
 void CGameManager::Update(const float fDeltaTime)
 {
 #ifdef _DEBUG // カメラ切り替え
-	if (GET_INPUTKEY->IsTrigger(DIK_LSHIFT))
+	if (GET_INPUTKEY->IsTrigger(DIK_RSHIFT))
 	{
 		// 状態を切り替え
 		bCamera = !bCamera;
