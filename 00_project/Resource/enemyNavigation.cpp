@@ -27,7 +27,6 @@ namespace
 CEnemyNav::CEnemyNav() :
 	m_posInit(VEC3_ZERO),	// 初期位置
 	m_posDest(VEC3_ZERO),	// 目標位置
-	m_MoveRange(VEC3_ZERO),	// 移動範囲
 	m_state(STATE_STOP),	// 状態
 	m_nStateCount(0)		// 状態カウント
 {
@@ -103,56 +102,4 @@ void CEnemyNav::Update
 
 		break;
 	}
-}
-
-//============================================================
-// 範囲との衝突
-//============================================================
-bool CEnemyNav::CollisionRange(D3DXVECTOR3* pPos)
-{
-	// 範囲を超えたかどうか
-	bool bOver = false;
-
-	if (pPos->x >= m_posInit.x + m_MoveRange.x)
-	{ // 右端を超えた場合
-
-		// 位置を補正する
-		pPos->x = m_posInit.x + m_MoveRange.x;
-
-		// 範囲超えた
-		bOver = true;
-	}
-
-	if (pPos->x <= m_posInit.x - m_MoveRange.x)
-	{ // 左端を超えた場合
-
-		// 位置を補正する
-		pPos->x = m_posInit.x - m_MoveRange.x;
-
-		// 範囲超えた
-		bOver = true;
-	}
-
-	if (pPos->z >= m_posInit.z + m_MoveRange.z)
-	{ // 奥端を超えた場合
-
-		// 位置を補正する
-		pPos->z = m_posInit.z + m_MoveRange.z;
-
-		// 範囲超えた
-		bOver = true;
-	}
-
-	if (pPos->z <= m_posInit.z - m_MoveRange.z)
-	{ // 手前端を超えた場合
-
-		// 位置を補正する
-		pPos->z = m_posInit.z - m_MoveRange.z;
-
-		// 範囲超えた
-		bOver = true;
-	}
-
-	// 範囲状況を返す
-	return bOver;
 }

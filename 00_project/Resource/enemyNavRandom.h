@@ -47,7 +47,7 @@ public:
 
 private:
 
-	// 純粋仮想メンバ関数
+	// メンバ関数
 	void StopFunc		// 停止状態処理
 	(
 		const D3DXVECTOR3& rPos,		// 位置
@@ -68,12 +68,13 @@ private:
 		const D3DXVECTOR3& rMove		// 移動量
 	) override;
 
-	// メンバ関数
 	void DestPosRandom(void);			// 位置のランダム処理
 	bool PosCorrect(const float fDest, float* fTarget, const float fMove);	// 位置の補正処理
+	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
 
 	// メンバ変数
 	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
+	D3DXVECTOR3 m_MoveRange;		// 移動範囲
 };
 
 #endif	// _ENEMY_NAV_RANDOM_H_
