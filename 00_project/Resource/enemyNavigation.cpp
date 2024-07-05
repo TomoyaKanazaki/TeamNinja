@@ -21,6 +21,8 @@ namespace
 {
 	const int STOP_COUNT = 300;				// 停止カウント
 	const float ROT_CORRECT_DIFF = 0.01f;	// 向きを補正する差分
+	const int MOVE_COUNT_RAND = 20;			// 移動カウントのランダム数
+	const int MOVE_COUNT_MIN = 50;			// 移動カウントの最低保障
 }
 
 //************************************************************
@@ -30,11 +32,12 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNav::CEnemyNav() :
-	m_pRange(nullptr),		// 範囲
+	m_pRangeCube(nullptr),	// 範囲
 	m_posInit(VEC3_ZERO),	// 初期位置
 	m_posDest(VEC3_ZERO),	// 目標位置
+	m_MoveRange(VEC2_ZERO),	// 移動範囲
 	m_state(STATE_STOP),	// 状態
-	m_nStopCount(0)			// 停止カウント
+	m_nStateCount(0)		// 状態カウント
 {
 
 }
@@ -61,12 +64,12 @@ HRESULT CEnemyNav::Init(void)
 //============================================================
 void CEnemyNav::Uninit(void)
 {
-	if (m_pRange != nullptr)
+	if (m_pRangeCube != nullptr)
 	{ // 範囲が NULL じゃない場合
 
 		// 範囲の終了処理
-		m_pRange->Uninit();
-		m_pRange = nullptr;
+		m_pRangeCube->Uninit();
+		m_pRangeCube = nullptr;
 	}
 
 	// 自身を破棄
@@ -107,7 +110,7 @@ void CEnemyNav::Update
 	case CEnemyNav::STATE_MOVE:
 
 		// 移動状態処理
-		MoveFunc(*pPos);
+		MoveFunc(pPos, *pMove);
 
 		break;
 
@@ -118,32 +121,6 @@ void CEnemyNav::Update
 
 		break;
 	}
-
-	//D3DXVECTOR3 posDest = m_posDest;
-	//D3DXVECTOR3 move = VEC3_ZERO;
-	//bool bJump = false;
-	//bool bHit = false;
-
-	//// アクターのリスト構造が無ければ抜ける
-	//if (CActor::GetList() == nullptr) { return; }
-
-	//// リストを取得
-	//std::list<CActor*> list = CActor::GetList()->GetList();
-
-	//for (auto actor : list)
-	//{
-	//	// 当たり判定処理
-	//	actor->Collision
-	//	(
-	//		posDest,	// 位置
-	//		rPos,		// 前回の位置
-	//		fRadius,	// 半径
-	//		fHeight,	// 高さ
-	//		move,		// 移動量
-	//		bJump,		// ジャンプ状況
-	//		bHit		// ヒット状況
-	//	);
-	//}
 }
 
 //============================================================
@@ -153,6 +130,15 @@ void CEnemyNav::SetState(const EState state)
 {
 	// 状態を設定する
 	m_state = state;
+}
+
+//============================================================
+// 状態カウントの設定処理
+//============================================================
+void CEnemyNav::SetStateCount(const int nCount)
+{
+	// 状態カウントを設定する
+	m_nStateCount = nCount;
 }
 
 //============================================================
@@ -184,8 +170,11 @@ CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit, const float fWidth, co
 		// 初期位置を設定
 		pNav->m_posInit = rPosInit;
 
+		// 移動範囲を設定
+		pNav->m_MoveRange = D3DXVECTOR2(fWidth, fDepth);
+
 		// 円柱を生成
-		pNav->m_pRange = CObjectMeshCube::Create
+		pNav->m_pRangeCube = CObjectMeshCube::Create
 		(
 			rPosInit,
 			VEC3_ZERO,
@@ -203,14 +192,14 @@ CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit, const float fWidth, co
 //============================================================
 void CEnemyNav::StopFunc(D3DXVECTOR3* pRotDest)
 {
-	// 停止カウントを加算する
-	m_nStopCount++;
+	// 状態カウントを加算する
+	m_nStateCount++;
 
-	if (m_nStopCount % STOP_COUNT == 0)
-	{ // 停止カウントが一定数になった場合
+	if (m_nStateCount % STOP_COUNT == 0)
+	{ // 状態カウントが一定数になった場合
 
-		// 停止カウントを0にする
-		m_nStopCount = 0;
+		// 状態カウントを0にする
+		m_nStateCount = 0;
 
 		// ターン状態にする
 		m_state = STATE_TURN;
@@ -245,13 +234,36 @@ void CEnemyNav::TurnFunc
 		// 移動量を設定する
 		pMove->x = sinf(pRot->y) * fSpeed * fDeltaTime;
 		pMove->z = cosf(pRot->y) * fSpeed * fDeltaTime;
+
+		// 状態カウントを設定する
+		m_nStateCount = rand() % MOVE_COUNT_RAND + MOVE_COUNT_MIN;
 	}
 }
 
 //============================================================
 // 移動状態処理
 //============================================================
-void CEnemyNav::MoveFunc(const D3DXVECTOR3& rPos)
+void CEnemyNav::MoveFunc(D3DXVECTOR3* pPos, const D3DXVECTOR3& rMove)
 {
+	// 状態カウントを減算する
+	m_nStateCount--;
 
+	// 移動する
+	*pPos += rMove;
+
+	//if(m_nStateCount <= 0 ||
+	//	)
+}
+
+//============================================================
+// 範囲との衝突
+//============================================================
+bool CEnemyNav::CollisionRange(D3DXVECTOR3* pPos)
+{
+	//if (pPos->x >= m_posInit.x + m_MoveRange.x)
+	//{
+	//	pPos->x = m_posInit.x + m_MoveRange.x;
+	//}
+
+	return true;
 }

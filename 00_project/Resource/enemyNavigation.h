@@ -55,6 +55,7 @@ public:
 
 	// セット・ゲット関係
 	void SetState(const EState state);		// 状態の設定処理
+	void SetStateCount(const int nCount);	// 状態カウントの設定処理
 
 	// 静的メンバ関数
 	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
@@ -71,14 +72,16 @@ private:
 		const float fSpeed,				// 速度
 		const float fDeltaTime			// デルタタイム
 	);
-	void MoveFunc(const D3DXVECTOR3& rPos);		// 移動状態処理
+	void MoveFunc(D3DXVECTOR3* pPos, const D3DXVECTOR3& rMove);		// 移動状態処理
+	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
 
 	// メンバ変数
-	CObjectMeshCube* m_pRange;		// 範囲
+	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
 	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_posDest;			// 目標位置
+	D3DXVECTOR2 m_MoveRange;		// 移動範囲
 	EState m_state;					// 状態
-	int m_nStopCount;				// 停止カウント
+	int m_nStateCount;				// 状態カウント
 };
 
 #endif	// _ACTOR_H_
