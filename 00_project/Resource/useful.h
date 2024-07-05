@@ -207,6 +207,21 @@ namespace useful
 		float *pMaxTime = nullptr,	// 最大経過時間
 		float *pMaxPosY = nullptr	// 最大到達Y座標
 	);
+	float QuadraticCurve			// 二次曲線処理(高さ)
+	( // 引数
+		const float fPosX,			// 位置(X軸)
+		const float fStart,			// 出発地点
+		const float fEnd,			// 終了地点
+		const float fHeight			// 最高高度
+	);
+	void Parabola					// 放物線処理
+	( // 引数
+		const float fVelo,			// 初速
+		const float fAdd,			// 重力
+		const int nCount,			// 経過時間
+		float* pGravity,			// 重力
+		float* pHeight				// 高さ
+	);
 
 	float RandomRot(void);				// ランダム向き取得
 	EAngle RotToFourDire(float fRot);	// 向きの四方向変換

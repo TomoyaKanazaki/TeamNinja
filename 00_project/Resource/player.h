@@ -148,6 +148,7 @@ private:
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
+	void CalcShoot(D3DXVECTOR3& rPos);			// 発射の計算処理
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
@@ -186,8 +187,9 @@ private:
 	bool m_bGetCamera;				// カメラの取得
 	float m_fCameraRot;				// カメラの角度
 	float m_fStickRot;				// スティックの角度
-	float m_fShootZ;				// 吹っ飛ばし目標
-
+	float m_fShootTarget;			// 吹っ飛ばし目標
+	float m_fShootStart;			// 吹っ飛ばし開始地点
+	int m_nCanonTime;				// 吹っ飛び時間
 };
 
 #endif	// _PLAYER_H_

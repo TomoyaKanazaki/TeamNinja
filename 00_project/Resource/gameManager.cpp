@@ -30,6 +30,7 @@
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
+#include "gimmick_canon.h"
 
 
 //************************************************************
@@ -136,13 +137,13 @@ HRESULT CGameManager::Init(void)
 
 
 	// 飛び降り
-	CGimmick::Create(D3DXVECTOR3(5850.0f, 300.0f, 75.0f), D3DXVECTOR3(700.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPOFF, 3);
+	/*CGimmick::Create(D3DXVECTOR3(5850.0f, 300.0f, 75.0f), D3DXVECTOR3(700.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPOFF, 3);
 	CGimmick::Create(D3DXVECTOR3(5225.0f, 300.0f, -550.0f), D3DXVECTOR3(550.0f, 0.0f, 500.0f), CGimmick::TYPE_JUMPOFF, 3);
 	CGimmick::Create(D3DXVECTOR3(6575.0f, 0.0f, 0.0f), D3DXVECTOR3(350.0f, 0.0f, 1600.0f), CGimmick::TYPE_JUMPOFF, 2);
 	
 	CGimmick::Create(D3DXVECTOR3(9800.0f, 100.0f, 725.0f), D3DXVECTOR3(250.0f, 0.0f, 150.0f), CGimmick::TYPE_JUMPOFF, 3);
 	CGimmick::Create(D3DXVECTOR3(9975.0f, 300.0f, -600.0f), D3DXVECTOR3(150.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPOFF, 3);
-	CGimmick::Create(D3DXVECTOR3(10525.0f, 0.0f, -600.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPOFF, 3);
+	CGimmick::Create(D3DXVECTOR3(10525.0f, 0.0f, -600.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f), CGimmick::TYPE_JUMPOFF, 3);*/
 
 
 	// 踏み台
@@ -175,8 +176,9 @@ HRESULT CGameManager::Init(void)
 
 // 金崎用ギミック置き場
 #if 0
-	// 橋
-	CGimmick::Create(D3DXVECTOR3(2775.0f, 300.0f, -350.0f), D3DXVECTOR3(650.0f, 0.0f, 300.0f), CGimmick::TYPE_BRIDGE, 4);
+	// 吹っ飛ばし
+	CGimmickCanon::Create(D3DXVECTOR3(-2000.0f, 0.0f, 300.0f), D3DXVECTOR3(50.0f, 0.0f, 50.0f), CGimmickCanon::TARGET_RIGHT);
+
 #endif
 
 // ギミック置き場
@@ -210,7 +212,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// さむらい
-#if 0
+#if 1
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 #endif

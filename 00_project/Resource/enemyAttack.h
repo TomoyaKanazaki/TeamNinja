@@ -63,7 +63,8 @@ public:
 	bool IsAttack(void) const { return m_bAttack; }						// 攻撃状況取得
 
 	// メンバ関数
-	void Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 移動処理
+	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理
+	void RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime);	// 向きの移動処理
 	bool Approach(const D3DXVECTOR3& rPos, const float fDis = 50.0f);				// 接近処理
 	bool JudgePlayer(void);		// プレイヤーの探索処理
 	bool JudgeClone(void);		// 分身の探索処理

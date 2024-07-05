@@ -558,6 +558,12 @@
     <ClInclude Include="Resource\gimmick_canon.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\enemyNavRandom.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyNavStreet.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1054,6 +1060,12 @@
     </ClCompile>
     <ClCompile Include="Resource\gimmick_canon.cpp">
       <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyNavRandom.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyNavStreet.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
