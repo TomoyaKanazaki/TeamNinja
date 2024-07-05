@@ -64,7 +64,8 @@ public:
 		MOTION_JUMP_IDOL,	// ジャンプ台待機モーション
 		MOTION_JUMP_WALK,	// ジャンプ台移動モーション
 		MOTION_CATAPULT,	// ジャンプ台打ち上げモーション
-		MOTION_LADDER,		// 梯子/橋モーション
+		MOTION_LADDER,		// 梯子/橋先頭モーション
+		MOTION_BRIDGE,		// 橋モーション
 		MOTION_OPEN,		// 扉上げモーション
 		MOTION_MAX			// この列挙型の総数
 	};
@@ -178,6 +179,9 @@ private:
 	bool CollisionActor();				// アクターとの当たり判定
 	bool CollisionWall();				// 壁との当たり判定
 	void CheckGimmick();				// ギミックとの当たり判定
+
+	// メンバ関数 (藤田追加)
+	CPlayerClone* GetGimmickNextClone();	// ギミックの次の分身取得
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
