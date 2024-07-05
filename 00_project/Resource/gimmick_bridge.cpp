@@ -15,7 +15,8 @@
 //===========================================
 namespace
 {
-	const float DISTANCE = 30.0f; // 待機位置との距離
+	const float DISTANCE = 30.0f;	// 待機位置との距離
+	const float ACTIVE_UP = 10.0f;	// 橋がかけられた際のY位置上昇量
 }
 
 //===========================================
@@ -73,8 +74,16 @@ void CGimmickBridge::Update(const float fDeltaTime)
 	if (!m_bSet) { CalcConectPoint(); }
 
 	// 橋を架ける
-	if (IsActive()) { Active(); }
-	else { SAFE_UNINIT(m_pField); }
+	if (IsActive())
+	{
+		Active();
+		SetEnableDraw(false);
+	}
+	else
+	{
+		SAFE_UNINIT(m_pField);
+		SetEnableDraw(true);
+	}
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -96,17 +105,6 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
-
-	/* TODO 関数の追加
-	* 関数の仕様
-	*  IsActive()がtrueの時に呼び出す
-	*  関数内で各分身の位置を計算して返り値に設定
-	* 
-	* if(IsActive())
-	* {
-	*	return function();
-	* }
-	*/
 
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
 	if (Idx == 0)
@@ -134,7 +132,7 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
 	}
 
 	// 待機位置を返す
-	return m_ConectPoint[m_nIdxWait] + (m_vecToWait * DISTANCE * (float)Idx);
+	return m_ConectPoint[m_nIdxWait] + (m_vecToWait * DISTANCE * (float)Idx) + D3DXVECTOR3(0.0f, ACTIVE_UP * (float)IsActive(), 0.0f);	// ギミック発動中なら少し上にずらす
 }
 
 //===========================================
@@ -145,18 +143,28 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// 待機中心との差分を求める
-	D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
+	if (IsActive())
+	{ // ギミック発動中の場合
 
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+		// 向きを寝そべる形にする
+		return D3DXVECTOR3(-HALF_PI, HALF_PI + (D3DX_PI * (float)m_nIdxWait), 0.0f);
+	}
+	else
+	{ // ギミック待機中の場合
 
-	// 向きを求める
-	D3DXVECTOR3 rot = VEC3_ZERO;
-	rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+		// 待機中心との差分を求める
+		D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
 
-	// 算出した向きを返す
-	return rot;
+		// 差分ベクトルの向きを求める
+		float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+
+		// 向きを求める
+		D3DXVECTOR3 rot = VEC3_ZERO;
+		rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+
+		// 算出した向きを返す
+		return rot;
+	}
 }
 
 //===========================================
@@ -207,7 +215,10 @@ void CGimmickBridge::Active()
 	{
 		// sizeを2次元に変換
 		D3DXVECTOR2 size = D3DXVECTOR2(GetVec3Sizing().x, GetVec3Sizing().z);
-		m_pField = CField::Create(CField::TYPE_BRIDGE, GetVec3Position(), GetVec3Rotation(), size, D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), POSGRID2(10, 10), POSGRID2(10, 10));
+
+		// TODO：位置上にあげる
+		m_pField = CField::Create(CField::TYPE_BRIDGE, GetVec3Position() + D3DXVECTOR3(0.0f, 25.0f, 0.0f), GetVec3Rotation(), size, D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), POSGRID2(10, 10), POSGRID2(10, 10));
+		m_pField->SetEnableDraw(false);
 	}
 
 	// TODO : 分身の配置を変更？

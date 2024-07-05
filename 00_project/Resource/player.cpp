@@ -76,7 +76,7 @@ namespace
 	const int MAX_TENSION = 10000; // 士気力の最大値
 	const int INIT_TENSION = 5000; // 士気力の初期値
 	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
-	const int MAX_CLONE = 10; // 分身の最大数
+	const int MAX_CLONE = 20; // 分身の最大数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間

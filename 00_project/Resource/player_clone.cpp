@@ -1044,25 +1044,44 @@ CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 {
 	// ギミック作動中の梯子モーションを返す
-	if (m_pGimmick->IsActive()) { return MOTION_LADDER; }
+	if (m_pGimmick->IsActive())
+	{
+		// 自分の次のギミック内分身を取得
+		CPlayerClone *pNextClone = GetGimmickNextClone();
+		if (pNextClone != nullptr)
+		{ // 次の分身がいた場合
 
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
+			// 腰の親モデルを初期化
+			pNextClone->GetParts(MODEL_WAIST)->SetParentModel(GetParts(MODEL_WAIST));
+		}
 
-	// 重力
-	UpdateGravity();
+		// 少しキャラクターを大きくする
+		SetVec3Scaling(D3DXVECTOR3(1.5f, 1.5f, 1.25f));	// TODO：定数
 
-	// 移動
-	pos += m_move * fDeltaTime;
+		// 橋になる為のモーションを返す
+		if (m_nIdxGimmick == 0)	{ return MOTION_LADDER; }	// 先頭は梯子モーション
+		else					{ return MOTION_BRIDGE; }	// それ以降は橋モーション
+	}
+	else
+	{
+		// 位置の取得
+		D3DXVECTOR3 pos = GetVec3Position();
 
-	// 着地判定
-	UpdateLanding(pos);
+		// 重力
+		UpdateGravity();
 
-	// 位置の適用
-	SetVec3Position(pos);
+		// 移動
+		pos += m_move * fDeltaTime;
 
-	// 待機モーションを返す
-	return MOTION_IDOL;
+		// 着地判定
+		UpdateLanding(pos);
+
+		// 位置の適用
+		SetVec3Position(pos);
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
 }
 
 //============================================================
@@ -1851,4 +1870,38 @@ void CPlayerClone::CheckGimmick()
 		assert(false);
 		break;
 	}
+}
+
+//===========================================
+//	ギミックの次の分身取得
+//===========================================
+CPlayerClone *CPlayerClone::GetGimmickNextClone()
+{
+	// 分身リストがない場合抜ける
+	if (m_pList == nullptr) { return nullptr; }
+
+	// ギミックがない場合抜ける
+	if (m_pGimmick == nullptr) { return nullptr; }
+
+	// 発動人数以上の次の分身が求められている場合
+	if (m_nIdxGimmick + 1 >= m_pGimmick->GetNumActive()) { return nullptr; }
+
+	std::list<CPlayerClone*> list = m_pList->GetList();	// 内部リスト
+	for (auto& rList : list)
+	{ // 要素数分繰り返す
+
+		// 違うギミックを持っている場合抜ける
+		if (rList->m_pGimmick != m_pGimmick) { continue; }
+
+		if (rList->m_nIdxGimmick == m_nIdxGimmick + 1)
+		{ // 次の分身を見つけた場合
+
+			// 分身を返す
+			return rList;
+		}
+	}
+
+	// ここきたらおかしいよん
+	assert(false);
+	return nullptr;
 }
