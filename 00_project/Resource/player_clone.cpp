@@ -230,6 +230,20 @@ void CPlayerClone::Update(const float fDeltaTime)
 {
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
+	if (m_Action != ACTION_BRIDGE)
+	{
+		// 腰の親モデルを初期化
+		GetParts(MODEL_WAIST)->SetParentModel(nullptr);
+
+		// 少しキャラクターを大きくする
+		SetVec3Scaling(VEC3_ONE);
+
+		// 寝そべってる向きを修正
+		D3DXVECTOR3 rotClone = GetVec3Rotation();	// 分身向きを取得
+		rotClone.x = rotClone.z = 0.0f;	// Y向き以外は初期化
+		SetVec3Rotation(rotClone);		// 向きを反映
+	}
+
 	// 過去位置の更新
 	UpdateOldPosition();
 
