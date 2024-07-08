@@ -26,6 +26,7 @@ namespace
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
 	const int DODGE_COUNT = 17;				// 回避カウント数
+	const float SHAKEOFF_RANGE = 1000.0f;	// 振り切れる距離
 }
 
 //************************************************************
@@ -202,6 +203,55 @@ bool CEnemyAttack::JudgeClone(void)
 
 	// true を返す
 	return true;
+}
+
+//============================================================
+// プレイヤーの振り切り処理
+//============================================================
+bool CEnemyAttack::ShakeOffPlayer(void)
+{
+	// 位置を取得する
+	m_posTarget = CScene::GetPlayer()->GetVec3Position();
+
+	// 円の判定を返す
+	return collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE);
+}
+
+//============================================================
+// 分身の振り切り処理
+//============================================================
+bool CEnemyAttack::ShakeOffClone(void)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
+	D3DXVECTOR3 posEnemy = GetVec3Position();		// 敵の位置
+
+	if (CPlayerClone::GetList() == nullptr ||
+		*CPlayerClone::GetList()->GetBegin() == nullptr)
+	{ // 分身のリストが無い場合
+
+		// falseを返す
+		return false;
+	}
+
+	for (int nCnt = 0; nCnt < CPlayerClone::GetList()->GetNumAll(); nCnt++)
+	{
+		// 分身の位置を取得する
+		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+
+		if (!collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE)) { continue; }
+
+		// 位置を設定する
+		m_posTarget = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+
+		// 分身の情報を設定する
+		m_pClone = *CPlayerClone::GetList()->GetIndex(nCnt);
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
 }
 
 //====================================================================================================================================================================================
