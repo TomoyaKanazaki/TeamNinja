@@ -284,6 +284,7 @@
     <ClInclude Include="Resource\particle2D.h" />
     <ClInclude Include="Resource\particle3D.h" />
     <ClInclude Include="Resource\pause.h" />
+    <ClInclude Include="Resource\plant.h" />
     <ClInclude Include="Resource\player.h" />
     <ClInclude Include="Resource\player_clone.h" />
     <ClInclude Include="Resource\precompile.h" />
@@ -454,6 +455,7 @@
     <ClCompile Include="Resource\particle2D.cpp" />
     <ClCompile Include="Resource\particle3D.cpp" />
     <ClCompile Include="Resource\pause.cpp" />
+    <ClCompile Include="Resource\plant.cpp" />
     <ClCompile Include="Resource\player.cpp" />
     <ClCompile Include="Resource\player_clone.cpp" />
     <ClCompile Include="Resource\precompile.cpp">
