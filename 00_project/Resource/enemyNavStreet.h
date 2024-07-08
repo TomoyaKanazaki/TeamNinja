@@ -43,7 +43,7 @@ public:
 	) override;
 
 	// 静的メンバ関数
-	static CEnemyNavStreet* Create(const D3DXVECTOR3& rPosInit, const std::vector<D3DXVECTOR3>& rRoute);		// 生成処理
+	static CEnemyNavStreet* Create(const std::vector<D3DXVECTOR3>& rRoute);		// 生成処理
 
 private:
 
@@ -72,6 +72,7 @@ private:
 
 	// メンバ変数
 	std::vector<D3DXVECTOR3> m_Route;	// 経路配列
+	int m_nNumRoute;					// 現在向かうルートの番号
 };
 
 #endif	// _ENEMY_NAV_STREET_H_

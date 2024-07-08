@@ -42,6 +42,9 @@ public:
 		const float fDeltaTime	// デルタタイム
 	) override;
 
+	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
+	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
+
 	// 静的メンバ関数
 	static CEnemyNavRandom* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
 
@@ -75,6 +78,7 @@ private:
 
 	// メンバ変数
 	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
+	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_MoveRange;		// 移動範囲
 };
 
