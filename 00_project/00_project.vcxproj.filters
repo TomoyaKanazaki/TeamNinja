@@ -564,6 +564,12 @@
     <ClInclude Include="Resource\enemyNavStreet.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\plant.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\multi_plant.h">
+      <Filter>Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1066,6 +1072,12 @@
     </ClCompile>
     <ClCompile Include="Resource\enemyNavStreet.cpp">
       <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\plant.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\multi_plant.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

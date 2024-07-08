@@ -5,12 +5,12 @@
 //  Author : Tomoya Kanazaki
 //
 //===========================================
-#include "object3D.h"
+#include "objectBillboard.h"
 
 //===========================================
 //  クラス定義
 //===========================================
-class CPlant : public CObject3D
+class CPlant : public CObjectBillboard
 {
 public:
 
@@ -18,10 +18,13 @@ public:
 	CPlant();
 	~CPlant();
 
-	virtual HRESULT Init(void) override;	// 初期化
-	virtual void Uninit(void) override;		// 終了
-	virtual void Update(const float fDeltaTime) override;		// 更新
-	virtual void Draw(CShader* pShader = nullptr) override;		// 描画
+	virtual HRESULT Init(void) override; // 初期化処理
+	virtual void Uninit(void) override; // 終了処理
+	virtual void Update(const float fDeltaTime) override; // 更新処理
+	virtual void Draw(CShader* pShader = nullptr) override; // 描画処理
+
+	// 静的メンバ関数
+	static CPlant* Create(const D3DXVECTOR3& rPos, const char* sPass);
 
 private:
 

@@ -1,95 +1,84 @@
 //===========================================
 //
-//  植物クラス(plant.cpp)
+//  植物管理クラス(multi_plant.cpp)
 //  Author : Tomoya Kanazaki
 //
 //===========================================
-#include "plant.h"
-#include "manager.h"
+#include "multi_plant.h"
 
 //===========================================
 //  定数定義
 //===========================================
 namespace
 {
-	const D3DXVECTOR3 POLYGON_SIZE = D3DXVECTOR3(30.0f, 60.0f, 0.0f);
+	// TODO ちゃんとした植物のテクスチャ用意する
+	const char* TEXTURE_FILE[] = // テクスチャファイル
+	{
+		"data\\TEXTURE\\test.png", // テストテクスチャ
+	};
 }
+
+//===========================================
+//  静的警告処理
+//===========================================
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CMultiPlant::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //===========================================
 //  コンストラクタ
 //===========================================
-CPlant::CPlant()
+CMultiPlant::CMultiPlant()
 {
 }
 
 //===========================================
 //  デストラクタ
 //===========================================
-CPlant::~CPlant()
+CMultiPlant::~CMultiPlant()
 {
 }
 
 //===========================================
 //  初期化処理
 //===========================================
-HRESULT CPlant::Init(void)
+HRESULT CMultiPlant::Init(void)
 {
-	// 親クラスの初期化
-	if (FAILED(CObjectBillboard::Init()))
-	{ // 初期化に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// 原点設定
-	SetOrigin(ORIGIN_DOWN);
-	
-	// 回転設定
-	SetRotate(ROTATE_LATERAL);
-
-	// サイズの設定
-	SetVec3Sizing(POLYGON_SIZE);
-
-	// 成功を返す
-	return S_OK;
+	return E_NOTIMPL;
 }
 
 //===========================================
 //  終了処理
 //===========================================
-void CPlant::Uninit(void)
+void CMultiPlant::Uninit(void)
 {
 	// 親クラスの終了
-	CObjectBillboard::Uninit();
+	CObject3D::Uninit();
 }
 
 //===========================================
 //  更新処理
 //===========================================
-void CPlant::Update(const float fDeltaTime)
+void CMultiPlant::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
-	CObjectBillboard::Update(fDeltaTime);
+	CObject3D::Update(fDeltaTime);
 }
 
 //===========================================
 //  描画処理
 //===========================================
-void CPlant::Draw(CShader* pShader)
+void CMultiPlant::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CObjectBillboard::Draw(pShader);
+	CObject3D::Draw(pShader);
 }
 
 //===========================================
 //  生成処理
 //===========================================
-CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
+CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type)
 {
 	// ギミックの生成
-	CPlant* pPlant = new CPlant;
+	CMultiPlant* pPlant = new CMultiPlant;
 
 	// メモリの確保に失敗した場合関数を抜ける
 	if (pPlant == nullptr) { assert(false); return nullptr; }
@@ -99,9 +88,6 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 
 	// 位置を設定
 	pPlant->SetVec3Position(rPos);
-
-	// テクスチャ割り当て
-	pPlant->BindTexture(GET_MANAGER->GetTexture()->Regist(sPass));
 
 	// 確保したアドレスを返す
 	return pPlant;
