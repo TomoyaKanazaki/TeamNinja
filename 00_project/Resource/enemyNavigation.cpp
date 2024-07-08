@@ -25,7 +25,6 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNav::CEnemyNav() :
-	m_posInit(VEC3_ZERO),	// 初期位置
 	m_posDest(VEC3_ZERO),	// 目標位置
 	m_state(STATE_STOP),	// 状態
 	m_nStateCount(0)		// 状態カウント

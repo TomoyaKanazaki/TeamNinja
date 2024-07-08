@@ -10,8 +10,6 @@
 #include "manager.h"
 #include "enemyNavStreet.h"
 
-#include "effect3D.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -27,7 +25,8 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyNavStreet::CEnemyNavStreet() : CEnemyNav()
+CEnemyNavStreet::CEnemyNavStreet() : CEnemyNav(),
+m_nNumRoute(0)	// 現在向かうルートの番号
 {
 
 }
@@ -96,7 +95,7 @@ void CEnemyNavStreet::Update
 //============================================================
 // 生成処理
 //============================================================
-CEnemyNavStreet* CEnemyNavStreet::Create(const D3DXVECTOR3& rPosInit, const std::vector<D3DXVECTOR3>& rRoute)
+CEnemyNavStreet* CEnemyNavStreet::Create(const std::vector<D3DXVECTOR3>& rRoute)
 {
 	// ナビゲーションの生成
 	CEnemyNavStreet* pNav = new CEnemyNavStreet;
@@ -118,9 +117,6 @@ CEnemyNavStreet* CEnemyNavStreet::Create(const D3DXVECTOR3& rPosInit, const std:
 			SAFE_DELETE(pNav);
 			return nullptr;
 		}
-
-		// 初期位置を設定
-		pNav->SetPosInit(rPosInit);
 
 		// 経路を設定
 		pNav->m_Route = rRoute;
@@ -155,7 +151,8 @@ void CEnemyNavStreet::StopFunc
 		// ターン状態にする
 		SetState(STATE_TURN);
 
-
+		// 位置を取得する
+		SetPosDest(m_Route.at(m_nNumRoute));
 
 		// 向きを設定する
 		pRotDest->y = atan2f(rPos.x - GetPosDest().x, rPos.z - GetPosDest().z);
@@ -210,6 +207,11 @@ void CEnemyNavStreet::MoveFunc
 	if (PosCorrect(posDest.x, &pPos->x, rMove.x) ||
 		PosCorrect(posDest.z, &pPos->z, rMove.z))
 	{ // 歩き終えるか、範囲を超えた場合
+
+		int nNumAll = m_Route.size();	// 場所の総数
+
+		// 向かう場所を次に進める
+		m_nNumRoute = (m_nNumRoute + 1) % nNumAll;
 
 		// 状態カウントを0にする
 		SetStateCount(0);

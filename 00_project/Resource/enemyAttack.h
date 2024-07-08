@@ -69,6 +69,8 @@ public:
 	bool Approach(const D3DXVECTOR3& rPos, const float fDis = 50.0f);				// 接近処理
 	bool JudgePlayer(void);		// プレイヤーの探索処理
 	bool JudgeClone(void);		// 分身の探索処理
+	bool ShakeOffPlayer(void);	// プレイヤーの振り切り処理
+	bool ShakeOffClone(void);	// 分身の振り切り処理
 
 	// TODO：う〇ちカス判定だから後で修正
 	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理

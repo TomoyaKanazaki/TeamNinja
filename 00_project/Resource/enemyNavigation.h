@@ -60,8 +60,6 @@ protected:
 
 	// セット・ゲット関係
 	int GetStateCount(void) const { return m_nStateCount; }					// 状態カウントの取得処理
-	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
-	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
 	void SetPosDest(const D3DXVECTOR3& rPosDest) { m_posDest = rPosDest; }	// 目標位置の設定処理
 	D3DXVECTOR3 GetPosDest(void) const { return m_posDest; }				// 目標位置の取得処理
 
@@ -89,7 +87,6 @@ private:
 	) = 0;
 
 	// メンバ変数
-	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_posDest;			// 目標位置
 	EState m_state;					// 状態
 	int m_nStateCount;				// 状態カウント

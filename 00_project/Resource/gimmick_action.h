@@ -48,8 +48,8 @@ public:
 	void SetMoment(bool moment) { m_bMoment = moment; }			// 発動中フラグの設定
 	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
 	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
-	void SetActionPoint(const D3DXVECTOR3& pos);				// 待機位置の設定
-	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 待機位置の取得
+	void SetActionPoint(const D3DXVECTOR3& pos);				// 発動判定位置の設定
+	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 発動判定位置の取得
 
 	// 仮想関数
 	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx)	// 各分身毎の待機位置を算出

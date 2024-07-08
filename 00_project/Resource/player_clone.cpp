@@ -1541,8 +1541,8 @@ void CPlayerClone::UpdateAction()
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { return; }
 
-	// 待機位置に向かう
-	Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
+	// 待機位置・向きを設定
+	Approach();
 }
 
 //==========================================
@@ -1657,8 +1657,9 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rP
 //===========================================
 //  目標位置に向かう処理
 //===========================================
-bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
+void CPlayerClone::Approach(void)
 {
+#if 0
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1667,13 +1668,15 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 
 	// 目標へのベクトルに倍率をかけ現在地に加算する
 	pos += vecTarget * 0.1f;
+#endif
 
-	// 位置を適用する
-	SetVec3Position(posTarget);
+	// ギミック待機位置を適用する
+	SetVec3Position(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
 
 	// ギミック待機向きを適用する
-	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, this));
+	SetVec3Rotation(m_pGimmick->CalcWaitRotation(m_nIdxGimmick, this));
 
+#if 0
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
 
@@ -1684,6 +1687,7 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	}
 
 	return false;
+#endif
 }
 
 //===========================================
