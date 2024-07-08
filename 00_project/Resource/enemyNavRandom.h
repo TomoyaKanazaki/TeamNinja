@@ -68,8 +68,9 @@ private:
 		const D3DXVECTOR3& rMove		// 移動量
 	) override;
 
-	void DestPosRandom(void);			// 位置のランダム処理
-	bool PosCorrect(const float fDest, float* fTarget, const float fMove);	// 位置の補正処理
+	void DestPosRandom(void);					// 位置のランダム処理
+	void DestPosMinCorrect(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRotDest);	// 目的の位置の最小値補正処理
+	bool PosCorrect(const float fDest, float* fTarget, const float fMove);			// 位置の補正処理
 	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
 
 	// メンバ変数
