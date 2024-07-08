@@ -172,7 +172,7 @@ private:
 		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
 	);
 	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget); // 目標の方向を向く処理
-	bool Approach(const D3DXVECTOR3& posTarget); /// 目標位置に向かう処理
+	void Approach(void);				// 目標位置に向かう処理
 	CPlayerClone* Block();				// 分身出させないよの処理
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
