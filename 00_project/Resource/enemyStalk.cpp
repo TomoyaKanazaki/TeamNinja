@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavigation.h"
+#include "enemyNavRandom.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -129,7 +129,7 @@ void CEnemyStalk::SetData(void)
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
 	// ナビゲーションを生成
-	m_pNav = CEnemyNav::Create(GetVec3Position(), 700.0f, 700.0f);
+	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 300.0f, 300.0f);
 }
 
 //============================================================
@@ -371,8 +371,6 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 			pRot,		// 向き
 			&Move,		// 移動量
 			&rotDest,	// 目的の向き
-			RADIUS,		// 半径
-			HEIGHT,		// 高さ
 			SPEED,		// 速度
 			fDeltaTime	// デルタタイム
 		);

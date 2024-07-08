@@ -36,57 +36,63 @@ public:
 	CEnemyNav();
 
 	// デストラクタ
-	~CEnemyNav();
+	virtual ~CEnemyNav();
 
 	// オーバーライド関数
-	HRESULT Init(void);		// 初期化
-	void Uninit(void);		// 終了
-	void Update				// 更新
+	virtual HRESULT Init(void);		// 初期化
+	virtual void Uninit(void);		// 終了
+	virtual void Update				// 更新
 	(
 		D3DXVECTOR3* pPos,		// 位置
 		D3DXVECTOR3* pRot,		// 向き
 		D3DXVECTOR3* pMove,		// 移動量
 		D3DXVECTOR3* pRotDest,	// 目的の向き
-		const float fRadius,	// 半径
-		const float fHeight,	// 高さ
 		const float fSpeed,		// 速度
 		const float fDeltaTime	// デルタタイム
 	);
 
 	// セット・ゲット関係
-	void SetState(const EState state);		// 状態の設定処理
-	void SetStateCount(const int nCount);	// 状態カウントの設定処理
+	void SetState(const EState state) { m_state = state; }				// 状態の設定処理
+	void SetStateCount(const int nCount) { m_nStateCount = nCount; }	// 状態カウントの設定処理
 
-	// 静的メンバ関数
-	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
+protected:
+
+	// セット・ゲット関係
+	EState GetState(void) const { return m_state; }							// 状態の取得処理
+	int GetStateCount(void) const { return m_nStateCount; }					// 状態カウントの取得処理
+	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
+	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
+	void SetPosDest(const D3DXVECTOR3& rPosDest) { m_posDest = rPosDest; }	// 目標位置の設定処理
+	D3DXVECTOR3 GetPosDest(void) const { return m_posDest; }				// 目標位置の取得処理
 
 private:
 
-	// メンバ関数
-	void StopFunc						// 停止状態処理
+	// 純粋仮想メンバ関数
+	virtual void StopFunc		// 停止状態処理
 	(
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rRot,		// 向き
 		D3DXVECTOR3* pRotDest			// 目的の向き
-	);
-	void TurnFunc						// ターン状態処理
+	) = 0;
+	virtual void TurnFunc		// ターン状態処理
 	(
 		D3DXVECTOR3* pRot,				// 向き
 		D3DXVECTOR3* pMove,				// 移動量
 		const D3DXVECTOR3& rRotDest,	// 目的の向き
 		const float fSpeed,				// 速度
 		const float fDeltaTime			// デルタタイム
-	);
-	void MoveFunc(D3DXVECTOR3* pPos, const D3DXVECTOR3& rMove);		// 移動状態処理
-	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
+	) = 0;
+	virtual void MoveFunc		// 移動状態処理
+	(
+		D3DXVECTOR3* pPos,				// 位置
+		const D3DXVECTOR3& rMove		// 移動量
+	) = 0;
 
 	// メンバ変数
-	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
 	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_posDest;			// 目標位置
-	D3DXVECTOR2 m_MoveRange;		// 移動範囲
 	EState m_state;					// 状態
 	int m_nStateCount;				// 状態カウント
 };
 
-#endif	// _ACTOR_H_
+#endif	// _ENEMY_NAVIGATION_H_
