@@ -12,7 +12,7 @@
 //===========================================
 namespace
 {
-	const D3DXVECTOR3 POLYGON_SIZE = D3DXVECTOR3(30.0f, 60.0f, 0.0f);
+	const D3DXVECTOR3 POLYGON_SIZE = D3DXVECTOR3(20.0f, 60.0f, 0.0f);
 }
 
 //===========================================
@@ -50,6 +50,9 @@ HRESULT CPlant::Init(void)
 
 	// サイズの設定
 	SetVec3Sizing(POLYGON_SIZE);
+
+	// ラベルの変更
+	SetLabel(LABEL_GIMMICK);
 
 	// リストマネージャーの生成
 	if (m_pList == nullptr)
