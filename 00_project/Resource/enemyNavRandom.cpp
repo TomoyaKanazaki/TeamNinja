@@ -19,6 +19,7 @@ namespace
 {
 	const int STOP_COUNT = 100;				// 停止カウント
 	const float ROT_CORRECT_DIFF = 0.01f;	// 向きを補正する差分
+	const float MIN_DISTANCE = 200.0f;		// 最低限の距離
 }
 
 //************************************************************
@@ -28,7 +29,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNavRandom::CEnemyNavRandom() : CEnemyNav(),
-m_pRangeCube(nullptr)	// 範囲
+m_pRangeCube(nullptr),	// 範囲
+m_posInit(VEC3_ZERO),	// 初期位置
+m_MoveRange(VEC3_ZERO)	// 移動範囲
 {
 
 }
@@ -126,7 +129,7 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const floa
 		}
 
 		// 初期位置を設定
-		pNav->SetPosInit(rPosInit);
+		pNav->m_posInit = rPosInit;
 
 		// 移動範囲を設定
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
@@ -175,6 +178,9 @@ void CEnemyNavRandom::StopFunc
 
 		// 向きを設定する
 		pRotDest->y = atan2f(rPos.x - GetPosDest().x, rPos.z - GetPosDest().z);
+
+		// 目的位置の最低限補正処理
+		DestPosMinCorrect(rPos, *pRotDest);
 
 		// 向きの正規化
 		useful::NormalizeRot(pRotDest->y);
@@ -244,10 +250,29 @@ void CEnemyNavRandom::DestPosRandom(void)
 	D3DXVECTOR3 posDest = VEC3_ZERO;	// 目的の位置
 
 	// 目的の位置を設定する
-	posDest.x = GetPosInit().x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
-	posDest.z = GetPosInit().z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
+	posDest.x = m_posInit.x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
+	posDest.z = m_posInit.z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
 
 	// 目的位置を適用する
+	SetPosDest(posDest);
+}
+
+//============================================================
+// 目的の位置の最小値補正処理
+//============================================================
+void CEnemyNavRandom::DestPosMinCorrect(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRotDest)
+{
+	D3DXVECTOR3 posDest = GetPosDest();		// 目的の位置
+
+	if (sqrtf((rPos.x - posDest.x) * (rPos.x - posDest.x) + (rPos.z - posDest.z) * (rPos.z - posDest.z)) <= MIN_DISTANCE)
+	{ // 最低限の距離以下の場合
+
+		// 目的の位置を少し先に延ばす
+		posDest.x -= sinf(rRotDest.y) * (m_MoveRange.x * 0.5f);
+		posDest.z -= cosf(rRotDest.y) * (m_MoveRange.z * 0.5f);
+	}
+
+	// 目的の位置を適用
 	SetPosDest(posDest);
 }
 
@@ -299,46 +324,44 @@ bool CEnemyNavRandom::PosCorrect(const float fDest, float* fTarget, const float 
 //============================================================
 bool CEnemyNavRandom::CollisionRange(D3DXVECTOR3* pPos)
 {
-	D3DXVECTOR3 posInit = GetPosInit();		// 初期位置
-
 	// 範囲を超えたかどうか
 	bool bOver = false;
 
-	if (pPos->x >= posInit.x + m_MoveRange.x)
+	if (pPos->x >= m_posInit.x + m_MoveRange.x)
 	{ // 右端を超えた場合
 
 		// 位置を補正する
-		pPos->x = posInit.x + m_MoveRange.x;
+		pPos->x = m_posInit.x + m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->x <= posInit.x - m_MoveRange.x)
+	if (pPos->x <= m_posInit.x - m_MoveRange.x)
 	{ // 左端を超えた場合
 
 		// 位置を補正する
-		pPos->x = posInit.x - m_MoveRange.x;
+		pPos->x = m_posInit.x - m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z >= posInit.z + m_MoveRange.z)
+	if (pPos->z >= m_posInit.z + m_MoveRange.z)
 	{ // 奥端を超えた場合
 
 		// 位置を補正する
-		pPos->z = posInit.z + m_MoveRange.z;
+		pPos->z = m_posInit.z + m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z <= posInit.z - m_MoveRange.z)
+	if (pPos->z <= m_posInit.z - m_MoveRange.z)
 	{ // 手前端を超えた場合
 
 		// 位置を補正する
-		pPos->z = posInit.z - m_MoveRange.z;
+		pPos->z = m_posInit.z - m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;

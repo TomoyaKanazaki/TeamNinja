@@ -18,6 +18,8 @@
 #include "gimmick_heavydoor.h"
 #include "gimmick_bridge.h"
 
+#include "multi_plant.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -227,6 +229,9 @@ CGimmick* CGimmick::Create
 		// 色の設定
 		pGimmick->SetColor(XCOL_YELLOW);
 #endif
+
+		// 植物の生成
+		CMultiPlant::Create(rPos, rSize, pGimmick->m_type, nNumActive);
 
 		// 確保したアドレスを返す
 		return pGimmick;

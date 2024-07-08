@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavRandom.h"
+#include "enemyNavStreet.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -28,7 +28,7 @@ namespace
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
 	const float SPEED = -290.0f;			// 速度
-	const float ROT_REV = 0.5f;				// 向きの補正係数
+	const float ROT_REV = 4.0f;				// 向きの補正係数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
@@ -128,8 +128,14 @@ void CEnemyStalk::SetData(void)
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
+	std::vector<D3DXVECTOR3> p;
+
+	p.push_back(D3DXVECTOR3(700.0f, 0.0f, -180.0f));
+	p.push_back(D3DXVECTOR3(400.0f, 0.0f, -250.0f));
+	p.push_back(D3DXVECTOR3(800.0f, 0.0f, -100.0f));
+
 	// ナビゲーションを生成
-	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 300.0f, 300.0f);
+	m_pNav = CEnemyNavStreet::Create(p);
 }
 
 //============================================================
@@ -356,7 +362,8 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
-	D3DXVECTOR3 Move = GetMovePosition();
+	D3DXVECTOR3 Move = GetMovePosition();		// 移動量
+	EMotion motion = MOTION_IDOL;				// モーション
 
 	if (m_pNav != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
@@ -374,11 +381,31 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 			SPEED,		// 速度
 			fDeltaTime	// デルタタイム
 		);
+
+		switch (m_pNav->GetState())
+		{
+		case CEnemyNav::STATE_MOVE:
+
+			// 移動モーションを設定
+			motion = MOTION_WALK;
+
+			break;
+
+		default:
+
+			break;
+		}
 	}
 
 	if (JudgeClone() ||
 		JudgePlayer())
 	{ // 分身かプレイヤーが目に入った場合
+
+		// 停止状態にする
+		m_pNav->SetState(CEnemyNav::STATE_STOP);
+
+		// 状態カウントを0にする
+		m_pNav->SetStateCount(0);
 
 		// 警告状態にする
 		m_state = STATE_WARNING;
@@ -397,7 +424,7 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	SetMovePosition(Move);
 
 	// 待機モーションを返す
-	return MOTION_IDOL;
+	return motion;
 }
 
 //============================================================
@@ -421,9 +448,12 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(void)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	if (JudgeClone() ||
-		JudgePlayer())
+	if (ShakeOffClone() ||
+		ShakeOffPlayer())
 	{ // 分身かプレイヤーが目に入った場合
+
+		// 目標位置の視認処理
+		LookTarget(*pPos);
 
 		// 攻撃判定を false にする
 		SetEnableAttack(false);
@@ -437,6 +467,9 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 待機モーションを返す
 		return MOTION_IDOL;
 	}
+
+	// 向きの移動処理
+	RotMove(*pRot, ROT_REV, fDeltaTime);
 
 	// 移動処理
 	Move(pPos, *pRot, SPEED, fDeltaTime);

@@ -42,6 +42,9 @@ public:
 		const float fDeltaTime	// デルタタイム
 	) override;
 
+	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
+	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
+
 	// 静的メンバ関数
 	static CEnemyNavRandom* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
 
@@ -68,12 +71,14 @@ private:
 		const D3DXVECTOR3& rMove		// 移動量
 	) override;
 
-	void DestPosRandom(void);			// 位置のランダム処理
-	bool PosCorrect(const float fDest, float* fTarget, const float fMove);	// 位置の補正処理
+	void DestPosRandom(void);					// 位置のランダム処理
+	void DestPosMinCorrect(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRotDest);	// 目的の位置の最小値補正処理
+	bool PosCorrect(const float fDest, float* fTarget, const float fMove);			// 位置の補正処理
 	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
 
 	// メンバ変数
 	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
+	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_MoveRange;		// 移動範囲
 };
 

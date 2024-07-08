@@ -262,6 +262,7 @@
     <ClInclude Include="Resource\motion.h" />
     <ClInclude Include="Resource\multiModel.h" />
     <ClInclude Include="Resource\multiValue.h" />
+    <ClInclude Include="Resource\multi_plant.h" />
     <ClInclude Include="Resource\object.h" />
     <ClInclude Include="Resource\object2D.h" />
     <ClInclude Include="Resource\object3D.h" />
@@ -284,6 +285,7 @@
     <ClInclude Include="Resource\particle2D.h" />
     <ClInclude Include="Resource\particle3D.h" />
     <ClInclude Include="Resource\pause.h" />
+    <ClInclude Include="Resource\plant.h" />
     <ClInclude Include="Resource\player.h" />
     <ClInclude Include="Resource\player_clone.h" />
     <ClInclude Include="Resource\precompile.h" />
@@ -432,6 +434,7 @@
     <ClCompile Include="Resource\motion.cpp" />
     <ClCompile Include="Resource\multiModel.cpp" />
     <ClCompile Include="Resource\multiValue.cpp" />
+    <ClCompile Include="Resource\multi_plant.cpp" />
     <ClCompile Include="Resource\object.cpp" />
     <ClCompile Include="Resource\object2D.cpp" />
     <ClCompile Include="Resource\object3D.cpp" />
@@ -454,6 +457,7 @@
     <ClCompile Include="Resource\particle2D.cpp" />
     <ClCompile Include="Resource\particle3D.cpp" />
     <ClCompile Include="Resource\pause.cpp" />
+    <ClCompile Include="Resource\plant.cpp" />
     <ClCompile Include="Resource\player.cpp" />
     <ClCompile Include="Resource\player_clone.cpp" />
     <ClCompile Include="Resource\precompile.cpp">
