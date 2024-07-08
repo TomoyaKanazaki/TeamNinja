@@ -15,24 +15,28 @@ namespace
 	// TODO ちゃんとした植物のテクスチャ用意する
 	const char* TEXTURE_FILE[] = // テクスチャファイル
 	{
-		"data\\TEXTURE\\test.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
+		"data\\TEXTURE\\flower.png", // テストテクスチャ
 	};
 
-	const float PERMISSION = 0.02f; // 重なりの許容範囲
+	const float PERMISSION = 0.05f; // 重なりの許容範囲
 }
 
 //===========================================
 //  静的警告処理
 //===========================================
-static_assert(NUM_ARRAY(TEXTURE_FILE) == CMultiPlant::TYPE_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(TEXTURE_FILE) == CGimmick::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //===========================================
 //  コンストラクタ
 //===========================================
 CMultiPlant::CMultiPlant() : CObject3D(),
-m_Type(CMultiPlant::TYPE_MAX),
-m_pos(VEC3_ZERO),
-m_size(VEC3_ZERO),
+m_Type(CGimmick::TYPE_MAX),
 m_nNum(0),
 m_bGrow(false)
 {
@@ -53,6 +57,9 @@ HRESULT CMultiPlant::Init(void)
 	// 親クラスの初期化
 	if (FAILED(CObject3D::Init())){ assert(false); return E_FAIL; }
 
+	// ラベルの変更
+	SetLabel(LABEL_GIMMICK);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -71,9 +78,6 @@ void CMultiPlant::Uninit(void)
 //===========================================
 void CMultiPlant::Update(const float fDeltaTime)
 {
-	// 植物の生成
-	if (!m_bGrow) { Grow(); }
-
 	// 親クラスの更新
 	CObject3D::Update(fDeltaTime);
 }
@@ -90,7 +94,7 @@ void CMultiPlant::Draw(CShader* pShader)
 //===========================================
 //  生成処理
 //===========================================
-CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const EType type, int nNum)
+CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSize, const CGimmick::EType type, int nNum)
 {
 	// ギミックの生成
 	CMultiPlant* pPlant = new CMultiPlant;
@@ -112,6 +116,9 @@ CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSi
 
 	// 生成数の設定
 	pPlant->m_nNum = nNum;
+
+	// 花の生成
+	pPlant->Grow();
 
 	// 確保したアドレスを返す
 	return pPlant;
@@ -143,7 +150,7 @@ void CMultiPlant::Grow()
 			for (int j = 0; j < m_nNum; ++j)
 			{
 				// 重なりすぎた場合ループを抜ける
-				if (pos[j].x - fTemp < PERMISSION)
+				if (fabsf(pos[j].x - fTemp) < PERMISSION)
 				{
 					bHit = true;
 					break;
@@ -171,7 +178,7 @@ void CMultiPlant::Grow()
 			for (int j = 0; j < m_nNum; ++j)
 			{
 				// 重なりすぎた場合ループを抜ける
-				if (pos[j].y - fTemp < PERMISSION)
+				if (fabsf(pos[j].y - fTemp) < PERMISSION)
 				{
 					bHit = true;
 					break;
@@ -189,11 +196,13 @@ void CMultiPlant::Grow()
 		}
 
 		// 生成した乱数から座標を算出
+		D3DXVECTOR3 posThis = GetVec3Position();
+		D3DXVECTOR3 sizeThis = GetVec3Sizing() * 0.3f;
 		D3DXVECTOR3 posPlant = D3DXVECTOR3
 		(
-			m_pos.x + (m_size.x * pos[i].x),
-			m_pos.y,
-			m_pos.z + (m_size.z * pos[i].y)
+			posThis.x + (sizeThis.x * pos[i].x),
+			posThis.y,
+			posThis.z + (sizeThis.z * pos[i].y)
 		);
 
 		// 植物を生成
