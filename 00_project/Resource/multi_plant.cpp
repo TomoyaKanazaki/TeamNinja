@@ -26,7 +26,10 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CMultiPlant::TYPE_MAX, "ERROR : Type Co
 //===========================================
 //  コンストラクタ
 //===========================================
-CMultiPlant::CMultiPlant()
+CMultiPlant::CMultiPlant() : CObject3D(),
+m_Type(CMultiPlant::TYPE_MAX),
+m_pos(VEC3_ZERO),
+m_size(VEC3_ZERO)
 {
 }
 
@@ -42,7 +45,11 @@ CMultiPlant::~CMultiPlant()
 //===========================================
 HRESULT CMultiPlant::Init(void)
 {
-	return E_NOTIMPL;
+	// 親クラスの初期化
+	if (FAILED(CObject3D::Init())){ assert(false); return E_FAIL; }
+
+	// 成功を返す
+	return S_OK;
 }
 
 //===========================================
@@ -88,6 +95,12 @@ CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSi
 
 	// 位置を設定
 	pPlant->SetVec3Position(rPos);
+
+	// サイズを設定
+	pPlant->SetVec3Sizing(rSize);
+
+	// タイプの設定
+	pPlant->m_Type = type;
 
 	// 確保したアドレスを返す
 	return pPlant;

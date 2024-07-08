@@ -16,6 +16,11 @@ namespace
 }
 
 //===========================================
+//  静的メンバ変数宣言
+//===========================================
+CListManager<CPlant>* CPlant::m_pList = nullptr; // オブジェクトリスト
+
+//===========================================
 //  コンストラクタ
 //===========================================
 CPlant::CPlant()
@@ -35,13 +40,7 @@ CPlant::~CPlant()
 HRESULT CPlant::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CObjectBillboard::Init()))
-	{ // 初期化に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	if (FAILED(CObjectBillboard::Init())) { assert(false); return E_FAIL; }
 
 	// 原点設定
 	SetOrigin(ORIGIN_DOWN);
@@ -51,6 +50,16 @@ HRESULT CPlant::Init(void)
 
 	// サイズの設定
 	SetVec3Sizing(POLYGON_SIZE);
+
+	// リストマネージャーの生成
+	if (m_pList == nullptr)
+	{
+		m_pList = CListManager<CPlant>::Create();
+		if (m_pList == nullptr) { assert(false); return E_FAIL; }
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
 
 	// 成功を返す
 	return S_OK;
@@ -105,4 +114,12 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 
 	// 確保したアドレスを返す
 	return pPlant;
+}
+
+//===========================================
+//  リスト取得
+//===========================================
+CListManager<CPlant>* CPlant::GetList(void)
+{
+	return m_pList;
 }
