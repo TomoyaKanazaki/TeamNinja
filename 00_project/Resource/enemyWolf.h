@@ -79,7 +79,6 @@ private:
 	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 動揺状態時の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
-	void LookTarget(const D3DXVECTOR3& rPos);	// 目標位置の視認
 
 	// メンバ変数
 	EState m_state;				// 状態

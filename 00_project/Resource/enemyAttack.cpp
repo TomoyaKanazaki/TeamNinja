@@ -141,6 +141,19 @@ void CEnemyAttack::RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float 
 }
 
 //============================================================
+//	目標位置の視認処理
+//============================================================
+void CEnemyAttack::LookTarget(const D3DXVECTOR3& rPos)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+
+	// 目標向きを求める
+	destRot.y = atan2f(rPos.x - GetTargetPos().x, rPos.z - GetTargetPos().z);
+
+	SetDestRotation(destRot);	// 目標向きを反映
+}
+
+//============================================================
 // 接近処理
 //============================================================
 bool CEnemyAttack::Approach(const D3DXVECTOR3& rPos, const float fDis)

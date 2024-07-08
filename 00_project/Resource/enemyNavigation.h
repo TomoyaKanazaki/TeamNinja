@@ -53,12 +53,12 @@ public:
 
 	// セット・ゲット関係
 	void SetState(const EState state) { m_state = state; }				// 状態の設定処理
+	EState GetState(void) const { return m_state; }						// 状態の取得処理
 	void SetStateCount(const int nCount) { m_nStateCount = nCount; }	// 状態カウントの設定処理
 
 protected:
 
 	// セット・ゲット関係
-	EState GetState(void) const { return m_state; }							// 状態の取得処理
 	int GetStateCount(void) const { return m_nStateCount; }					// 状態カウントの取得処理
 	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
 	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
