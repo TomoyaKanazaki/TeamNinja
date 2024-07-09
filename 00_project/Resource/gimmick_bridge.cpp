@@ -85,6 +85,17 @@ void CGimmickBridge::Update(const float fDeltaTime)
 		SetEnableDraw(true);
 	}
 
+#ifdef _DEBUG
+	if (GET_INPUTKEY->IsTrigger(DIK_NUMPADENTER))
+	{
+		int i = GetAngle();
+		++i;
+		i %= ANGLE_MAX;
+		m_eAngle = (EAngle)i;
+		CalcConectPoint();
+	}
+#endif
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -178,27 +189,31 @@ void CGimmickBridge::CalcConectPoint()
 	// 自身のサイズを取得
 	D3DXVECTOR3 size = GetVec3Sizing();
 
+	// 自身の方向を取得
+	EAngle angle = GetAngle();
+
 	// 計算を行う
-	if (size.x < size.z) // z方向に架かる場合
+	switch (angle)
 	{
-		// 中心座標にサイズ * 0.5を加算する
-		m_ConectPoint[0] = pos + D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
-		m_ConectPoint[1] = pos - D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
-	}
-	else if (size.x > size.z) // x方向に架かる場合
-	{
-		// 中心座標にサイズ * 0.5を加算する
+	// x軸方向に架ける
+	case ANGLE_90:
+	case ANGLE_270:
+
 		m_ConectPoint[0] = pos + D3DXVECTOR3(size.x * 0.5f, 0.0f, 0.0f);
 		m_ConectPoint[1] = pos - D3DXVECTOR3(size.x * 0.5f, 0.0f, 0.0f);
-	}
-	else // xzのサイズが一致している場合
-	{
-		// 本当は一致させないでほしい。
+		break;
+
+	// z軸方向に架ける
+	case ANGLE_0:
+	case ANGLE_180:
+
+		m_ConectPoint[0] = pos + D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
+		m_ConectPoint[1] = pos - D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
+		break;
+
+	default:
 		assert(false);
-		
-		// 中心座標にサイズ * 0.5を加算する
-		m_ConectPoint[0] = pos + D3DXVECTOR3(size.x * 0.5f, 0.0f, size.z * 0.5f);
-		m_ConectPoint[1] = pos - D3DXVECTOR3(size.x * 0.5f, 0.0f, size.z * 0.5f);
+		break;
 	}
 }
 

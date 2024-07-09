@@ -141,16 +141,16 @@ D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const CPlayerClone* pC
 	switch (angle)
 	{
 	case ANGLE_0:
-		rotWait.y = D3DXToRadian(0.0f);
+		rotWait.y = 0.0f;
 		break;
 	case ANGLE_90:
-		rotWait.y = D3DXToRadian(90.0f);
+		rotWait.y = D3DX_PI * 0.5f;
 		break;
 	case ANGLE_180:
-		rotWait.y = D3DXToRadian(180.0f);
+		rotWait.y = D3DX_PI;
 		break;
 	case ANGLE_270:
-		rotWait.y = D3DXToRadian(270.0f);
+		rotWait.y = D3DX_PI * 1.5f;
 		break;
 	default:
 		break;
