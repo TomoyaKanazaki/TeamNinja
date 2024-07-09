@@ -105,6 +105,9 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx, const CPlayerClone* pCl
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
+	
+	// 方向の取得
+	EAngle angle = GetAngle();
 
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
 	if (Idx == 0 && !IsActive())
@@ -115,19 +118,43 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx, const CPlayerClone* pCl
 		// プレイヤーと2点を結ぶベクトルを算出
 		D3DXVECTOR3 vecToPlayer[2] = { posPlayer - m_ConectPoint[0], posPlayer - m_ConectPoint[1] };
 
+		// 2点を結ぶベクトル
+		D3DXVECTOR3 vecToWait = VEC3_ZERO;
+
+		// xzの片軸を分身の位置にする
+		switch (angle)
+		{
+		case ANGLE_90:
+		case ANGLE_270:
+			m_ConectPoint[0].z = pClone->GetVec3Position().z;
+			m_ConectPoint[1].z = pClone->GetVec3Position().z;
+			break;
+
+		case ANGLE_0:
+		case ANGLE_180:
+			m_ConectPoint[0].x = pClone->GetVec3Position().x;
+			m_ConectPoint[1].x = pClone->GetVec3Position().x;
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+
 		// 距離の2乗が小さい方の配列番号を保存
 		if (vecToPlayer[0].x * vecToPlayer[0].x + vecToPlayer[0].z * vecToPlayer[0].z <=
 			vecToPlayer[1].x * vecToPlayer[1].x + vecToPlayer[1].z * vecToPlayer[1].z)
 		{
 			m_nIdxWait = 0;
+			vecToWait = m_ConectPoint[0] - m_ConectPoint[1];
 		}
 		else
 		{
 			m_nIdxWait = 1;
+			vecToWait = m_ConectPoint[1] - m_ConectPoint[0];
 		}
 
-		// 中心から待機中心へのベクトルを算出し正規化する
-		D3DXVECTOR3 vecToWait = m_ConectPoint[m_nIdxWait] - GetVec3Position();
+		// 待機中心同士を結ぶベクトルを算出し正規化する
 		D3DXVec3Normalize(&m_vecToWait, &vecToWait);
 	}
 
@@ -178,7 +205,7 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 	// 向きを求める
 	D3DXVECTOR3 rot = VEC3_ZERO;
-	rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+	rot.y = atan2f(m_vecToWait.x, m_vecToWait.z);
 
 	// 算出した向きを返す
 	return rot;
