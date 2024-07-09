@@ -1509,7 +1509,7 @@ void CPlayerClone::UpdateReAction()
 		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
 
 		// 矩形の外の場合次に進む
-		if (!collision::Box2D
+		if (!collision::Box3D
 		(
 			pos,			// 判定位置
 			posGimmick,		// 判定目標位置

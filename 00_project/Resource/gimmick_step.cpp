@@ -132,7 +132,29 @@ D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const CPlayerClone* pC
 	if (Idx > GetNumActive()) { assert(false); }
 
 	// ‘Ò‹@Œü‚«‚ğİ’è
-	D3DXVECTOR3 rotWait = GetVec3Rotation();
+	D3DXVECTOR3 rotWait = VEC3_ZERO;
+
+	// •ûŒü‚ğæ“¾
+	EAngle angle = GetAngle();
+
+	// y²‚ğ•ÏX
+	switch (angle)
+	{
+	case ANGLE_0:
+		rotWait.y = D3DXToRadian(0.0f);
+		break;
+	case ANGLE_90:
+		rotWait.y = D3DXToRadian(90.0f);
+		break;
+	case ANGLE_180:
+		rotWait.y = D3DXToRadian(180.0f);
+		break;
+	case ANGLE_270:
+		rotWait.y = D3DXToRadian(270.0f);
+		break;
+	default:
+		break;
+	}
 
 	// Zo‚µ‚½Œü‚«‚ğ•Ô‚·
 	return rotWait;
