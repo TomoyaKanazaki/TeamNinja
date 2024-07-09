@@ -214,7 +214,7 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }

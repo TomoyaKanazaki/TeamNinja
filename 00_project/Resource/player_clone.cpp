@@ -1671,7 +1671,7 @@ void CPlayerClone::Approach(void)
 #endif
 
 	// ギミック待機位置を適用する
-	SetVec3Position(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
+	SetVec3Position(m_pGimmick->CalcWaitPoint(m_nIdxGimmick, this));
 
 	// ギミック待機向きを適用する
 	SetVec3Rotation(m_pGimmick->CalcWaitRotation(m_nIdxGimmick, this));

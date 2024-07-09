@@ -31,7 +31,7 @@ public:
 	void Uninit(void) override; // 終了処理
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
-	D3DXVECTOR3 CalcWaitPoint(const int Idx) override; // 各分身毎の待機位置を算出
+	D3DXVECTOR3 CalcWaitPoint(const int Idx, const CPlayerClone* pClone) override; // 各分身毎の待機位置を算出
 	D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone) override; // 各分身毎の待機向きを算出
 
 	void SetTarget(const float fTarget) { m_fTarget = fTarget; } // 目標位置の設定
