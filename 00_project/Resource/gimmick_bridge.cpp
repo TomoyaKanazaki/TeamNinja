@@ -200,9 +200,6 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 		return D3DXVECTOR3(-HALF_PI, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
 
-	// ‘Ò‹@’†S‚Æ‚Ì·•ª‚ğ‹‚ß‚é
-	D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
-
 	// Œü‚«‚ğ‹‚ß‚é
 	D3DXVECTOR3 rot = VEC3_ZERO;
 	rot.y = atan2f(m_vecToWait.x, m_vecToWait.z);
