@@ -11,6 +11,7 @@
 #include "enemyNavRandom.h"
 
 #include "objectMeshCube.h"
+#include "enemy.h"
 
 //************************************************************
 //	定数宣言
@@ -19,7 +20,7 @@ namespace
 {
 	const int STOP_COUNT = 100;				// 停止カウント
 	const float ROT_CORRECT_DIFF = 0.01f;	// 向きを補正する差分
-	const float MIN_DISTANCE = 200.0f;		// 最低限の距離
+	const float MIN_DISTANCE = 250.0f;		// 最低限の距離
 }
 
 //************************************************************
@@ -30,7 +31,6 @@ namespace
 //============================================================
 CEnemyNavRandom::CEnemyNavRandom() : CEnemyNav(),
 m_pRangeCube(nullptr),	// 範囲
-m_posInit(VEC3_ZERO),	// 初期位置
 m_MoveRange(VEC3_ZERO)	// 移動範囲
 {
 
@@ -82,12 +82,11 @@ void CEnemyNavRandom::Uninit(void)
 //============================================================
 void CEnemyNavRandom::Update
 (
-	D3DXVECTOR3* pPos,		// 位置
-	D3DXVECTOR3* pRot,		// 向き
-	D3DXVECTOR3* pMove,		// 移動量
-	D3DXVECTOR3* pRotDest,	// 目的の向き
-	const float fSpeed,		// 速度
-	const float fDeltaTime	// デルタタイム
+	D3DXVECTOR3* pPos,			// 位置
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
 )
 {
 	// ナビの更新処理
@@ -95,8 +94,7 @@ void CEnemyNavRandom::Update
 	(
 		pPos,		// 位置
 		pRot,		// 向き
-		pMove,		// 移動量
-		pRotDest,	// 目的の向き
+		pEnemy,		// 敵の情報
 		fSpeed,		// 速度
 		fDeltaTime	// デルタタイム
 	);
@@ -105,7 +103,7 @@ void CEnemyNavRandom::Update
 //============================================================
 // 生成処理
 //============================================================
-CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth)
+CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWidth, const float fDepth)
 {
 	// ナビゲーションの生成
 	CEnemyNavRandom* pNav = new CEnemyNavRandom;
@@ -128,16 +126,13 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const floa
 			return nullptr;
 		}
 
-		// 初期位置を設定
-		pNav->m_posInit = rPosInit;
-
 		// 移動範囲を設定
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
 
 		// 円柱を生成
 		pNav->m_pRangeCube = CObjectMeshCube::Create
 		(
-			rPosInit,
+			pos,
 			VEC3_ZERO,
 			D3DXVECTOR3(fWidth, 10.0f, fDepth),
 			XCOL_WHITE
@@ -153,13 +148,14 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const floa
 //============================================================
 void CEnemyNavRandom::StopFunc
 (
-	const D3DXVECTOR3& rPos,		// 位置
-	const D3DXVECTOR3& rRot,		// 向き
-	D3DXVECTOR3* pRotDest			// 目的の向き
+	const D3DXVECTOR3& rPos,	// 位置
+	CEnemy* pEnemy				// 敵の情報
 )
 {
-	// 状態カウントを取得する
-	int nStateCount = GetStateCount();
+	int nStateCount = GetStateCount();					// 状態カウントを取得する
+	D3DXVECTOR3 posDest = GetPosDest();					// 目的の位置を取得する
+	D3DXVECTOR3 posInit = pEnemy->GetPosInit();			// 初期位置を取得する
+	D3DXVECTOR3 rotDest = pEnemy->GetDestRotation();	// 目的の向きを取得する
 
 	// 状態カウントを加算する
 	nStateCount++;
@@ -173,21 +169,28 @@ void CEnemyNavRandom::StopFunc
 		// ターン状態にする
 		SetState(STATE_TURN);
 
-		// 目的位置のランダム処理
-		DestPosRandom();
+		// 目的の位置を設定する
+		posDest.x = posInit.x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
+		posDest.z = posInit.z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
 
 		// 向きを設定する
-		pRotDest->y = atan2f(rPos.x - GetPosDest().x, rPos.z - GetPosDest().z);
+		rotDest.y = atan2f(rPos.x - posDest.x, rPos.z - posDest.z);
 
-		// 目的位置の最低限補正処理
-		DestPosMinCorrect(rPos, *pRotDest);
+		if (sqrtf((rPos.x - posDest.x) * (rPos.x - posDest.x) + (rPos.z - posDest.z) * (rPos.z - posDest.z)) <= MIN_DISTANCE)
+		{ // 最低限の距離以下の場合
+
+			// 目的の位置を少し先に延ばす
+			posDest.x -= sinf(rotDest.y) * (m_MoveRange.x * 0.5f);
+			posDest.z -= cosf(rotDest.y) * (m_MoveRange.z * 0.5f);
+		}
 
 		// 向きの正規化
-		useful::NormalizeRot(pRotDest->y);
+		useful::NormalizeRot(rotDest.y);
 	}
 
-	// 状態カウントを適用する
-	SetStateCount(nStateCount);
+	SetStateCount(nStateCount);			// 状態カウントを適用
+	pEnemy->SetDestRotation(rotDest);	// 目的の向きを適用
+	SetPosDest(posDest);				// 目的の位置を適用
 }
 
 //============================================================
@@ -195,27 +198,31 @@ void CEnemyNavRandom::StopFunc
 //============================================================
 void CEnemyNavRandom::TurnFunc
 (
-	D3DXVECTOR3* pRot,				// 向き
-	D3DXVECTOR3* pMove,				// 移動量
-	const D3DXVECTOR3& rRotDest,	// 目的の向き
-	const float fSpeed,				// 速度
-	const float fDeltaTime			// デルタタイム
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
 )
 {
-	if (pRot->y <= rRotDest.y + ROT_CORRECT_DIFF &&
-		pRot->y >= rRotDest.y - ROT_CORRECT_DIFF)
+	D3DXVECTOR3 rotDest = pEnemy->GetDestRotation();	// 目的の向きを取得
+	D3DXVECTOR3 move = pEnemy->GetMovePosition();		// 移動量を取得
+
+	if (pRot->y <= rotDest.y + ROT_CORRECT_DIFF &&
+		pRot->y >= rotDest.y - ROT_CORRECT_DIFF)
 	{ // 向きが目的に近づいた場合
 
 		// 向きを補正する
-		pRot->y = rRotDest.y;
+		pRot->y = rotDest.y;
 
 		// 移動状態にする
 		SetState(STATE_MOVE);
 
 		// 移動量を設定する
-		pMove->x = sinf(pRot->y) * fSpeed * fDeltaTime;
-		pMove->z = cosf(pRot->y) * fSpeed * fDeltaTime;
+		move.x = sinf(pRot->y) * fSpeed * fDeltaTime;
+		move.z = cosf(pRot->y) * fSpeed * fDeltaTime;
 	}
+
+	pEnemy->SetMovePosition(move);		// 移動量を適用
 }
 
 //============================================================
@@ -223,15 +230,17 @@ void CEnemyNavRandom::TurnFunc
 //============================================================
 void CEnemyNavRandom::MoveFunc
 (
-	D3DXVECTOR3* pPos, 
-	const D3DXVECTOR3& rMove
+	D3DXVECTOR3* pPos,			// 位置
+	CEnemy* pEnemy				// 敵の情報
 )
 {
-	D3DXVECTOR3 posDest = GetPosDest();		// 目的の位置
+	D3DXVECTOR3 posDest = GetPosDest();				// 目的の位置を取得
+	D3DXVECTOR3 move = pEnemy->GetMovePosition();	// 移動量を取得
+	D3DXVECTOR3 posInit = pEnemy->GetPosInit();		// 初期位置を取得
 
-	if (PosCorrect(posDest.x,&pPos->x,rMove.x) ||
-		PosCorrect(posDest.z, &pPos->z, rMove.z) ||
-		CollisionRange(pPos))
+	if (PosCorrect(posDest.x, &pPos->x, move.x) ||
+		PosCorrect(posDest.z, &pPos->z, move.z) ||
+		CollisionRange(pPos, posInit))
 	{ // 歩き終えるか、範囲を超えた場合
 
 		// 状態カウントを0にする
@@ -240,40 +249,6 @@ void CEnemyNavRandom::MoveFunc
 		// 停止状態にする
 		SetState(STATE_STOP);
 	}
-}
-
-//============================================================
-// 位置のランダム処理
-//============================================================
-void CEnemyNavRandom::DestPosRandom(void)
-{
-	D3DXVECTOR3 posDest = VEC3_ZERO;	// 目的の位置
-
-	// 目的の位置を設定する
-	posDest.x = m_posInit.x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
-	posDest.z = m_posInit.z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
-
-	// 目的位置を適用する
-	SetPosDest(posDest);
-}
-
-//============================================================
-// 目的の位置の最小値補正処理
-//============================================================
-void CEnemyNavRandom::DestPosMinCorrect(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRotDest)
-{
-	D3DXVECTOR3 posDest = GetPosDest();		// 目的の位置
-
-	if (sqrtf((rPos.x - posDest.x) * (rPos.x - posDest.x) + (rPos.z - posDest.z) * (rPos.z - posDest.z)) <= MIN_DISTANCE)
-	{ // 最低限の距離以下の場合
-
-		// 目的の位置を少し先に延ばす
-		posDest.x -= sinf(rRotDest.y) * (m_MoveRange.x * 0.5f);
-		posDest.z -= cosf(rRotDest.y) * (m_MoveRange.z * 0.5f);
-	}
-
-	// 目的の位置を適用
-	SetPosDest(posDest);
 }
 
 //============================================================
@@ -322,46 +297,46 @@ bool CEnemyNavRandom::PosCorrect(const float fDest, float* fTarget, const float 
 //============================================================
 // 範囲との衝突
 //============================================================
-bool CEnemyNavRandom::CollisionRange(D3DXVECTOR3* pPos)
+bool CEnemyNavRandom::CollisionRange(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosInit)
 {
 	// 範囲を超えたかどうか
 	bool bOver = false;
 
-	if (pPos->x >= m_posInit.x + m_MoveRange.x)
+	if (pPos->x >= rPosInit.x + m_MoveRange.x)
 	{ // 右端を超えた場合
 
 		// 位置を補正する
-		pPos->x = m_posInit.x + m_MoveRange.x;
+		pPos->x = rPosInit.x + m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->x <= m_posInit.x - m_MoveRange.x)
+	if (pPos->x <= rPosInit.x - m_MoveRange.x)
 	{ // 左端を超えた場合
 
 		// 位置を補正する
-		pPos->x = m_posInit.x - m_MoveRange.x;
+		pPos->x = rPosInit.x - m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z >= m_posInit.z + m_MoveRange.z)
+	if (pPos->z >= rPosInit.z + m_MoveRange.z)
 	{ // 奥端を超えた場合
 
 		// 位置を補正する
-		pPos->z = m_posInit.z + m_MoveRange.z;
+		pPos->z = rPosInit.z + m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z <= m_posInit.z - m_MoveRange.z)
+	if (pPos->z <= rPosInit.z - m_MoveRange.z)
 	{ // 手前端を超えた場合
 
 		// 位置を補正する
-		pPos->z = m_posInit.z - m_MoveRange.z;
+		pPos->z = rPosInit.z - m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;

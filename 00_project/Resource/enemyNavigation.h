@@ -13,6 +13,7 @@
 //************************************************************
 // 前方宣言
 //************************************************************
+class CEnemy;				// 敵の情報
 class CObjectMeshCube;		// メッシュキューブ
 
 //************************************************************
@@ -43,12 +44,11 @@ public:
 	virtual void Uninit(void);		// 終了
 	virtual void Update				// 更新
 	(
-		D3DXVECTOR3* pPos,		// 位置
-		D3DXVECTOR3* pRot,		// 向き
-		D3DXVECTOR3* pMove,		// 移動量
-		D3DXVECTOR3* pRotDest,	// 目的の向き
-		const float fSpeed,		// 速度
-		const float fDeltaTime	// デルタタイム
+		D3DXVECTOR3* pPos,			// 位置
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
 	);
 
 	// セット・ゲット関係
@@ -66,24 +66,24 @@ protected:
 private:
 
 	// 純粋仮想メンバ関数
-	virtual void StopFunc		// 停止状態処理
+	virtual void StopFunc	// 停止状態処理
 	(
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rRot,		// 向き
-		D3DXVECTOR3* pRotDest			// 目的の向き
+		const D3DXVECTOR3& rPos,	// 位置
+		CEnemy* pEnemy				// 敵の情報
 	) = 0;
-	virtual void TurnFunc		// ターン状態処理
+
+	virtual void TurnFunc	// ターン状態処理
 	(
-		D3DXVECTOR3* pRot,				// 向き
-		D3DXVECTOR3* pMove,				// 移動量
-		const D3DXVECTOR3& rRotDest,	// 目的の向き
-		const float fSpeed,				// 速度
-		const float fDeltaTime			// デルタタイム
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
 	) = 0;
-	virtual void MoveFunc		// 移動状態処理
+
+	virtual void MoveFunc	// 移動状態処理
 	(
-		D3DXVECTOR3* pPos,				// 位置
-		const D3DXVECTOR3& rMove		// 移動量
+		D3DXVECTOR3* pPos,			// 位置
+		CEnemy* pEnemy				// 敵の情報
 	) = 0;
 
 	// メンバ変数

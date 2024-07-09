@@ -49,6 +49,7 @@ public:
 		STATE_STALK,		// ’ÇÕó‘Ô
 		STATE_ATTACK,		// UŒ‚ó‘Ô
 		STATE_UPSET,		// “®—hó‘Ô
+		STATE_RETURN,		// ‰ñ‹Aó‘Ô
 		STATE_MAX			// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

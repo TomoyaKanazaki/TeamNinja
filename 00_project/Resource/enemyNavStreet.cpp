@@ -10,6 +10,8 @@
 #include "manager.h"
 #include "enemyNavStreet.h"
 
+#include "enemy.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -72,12 +74,11 @@ void CEnemyNavStreet::Uninit(void)
 //============================================================
 void CEnemyNavStreet::Update
 (
-	D3DXVECTOR3* pPos,		// 位置
-	D3DXVECTOR3* pRot,		// 向き
-	D3DXVECTOR3* pMove,		// 移動量
-	D3DXVECTOR3* pRotDest,	// 目的の向き
-	const float fSpeed,		// 速度
-	const float fDeltaTime	// デルタタイム
+	D3DXVECTOR3* pPos,			// 位置
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
 )
 {
 	// ナビの更新処理
@@ -85,8 +86,7 @@ void CEnemyNavStreet::Update
 	(
 		pPos,		// 位置
 		pRot,		// 向き
-		pMove,		// 移動量
-		pRotDest,	// 目的の向き
+		pEnemy,		// 敵の情報
 		fSpeed,		// 速度
 		fDeltaTime	// デルタタイム
 	);
@@ -131,13 +131,13 @@ CEnemyNavStreet* CEnemyNavStreet::Create(const std::vector<D3DXVECTOR3>& rRoute)
 //============================================================
 void CEnemyNavStreet::StopFunc
 (
-	const D3DXVECTOR3& rPos,		// 位置
-	const D3DXVECTOR3& rRot,		// 向き
-	D3DXVECTOR3* pRotDest			// 目的の向き
+	const D3DXVECTOR3& rPos,	// 位置
+	CEnemy* pEnemy				// 敵の情報
 )
 {
-	// 状態カウントを取得する
-	int nStateCount = GetStateCount();
+	int nStateCount = GetStateCount();					// 状態カウントを取得する
+	D3DXVECTOR3 posDest = GetPosDest();					// 目的の位置を取得する
+	D3DXVECTOR3 rotDest = pEnemy->GetDestRotation();	// 目的の向きを取得する
 
 	// 状態カウントを加算する
 	nStateCount++;
@@ -151,18 +151,19 @@ void CEnemyNavStreet::StopFunc
 		// ターン状態にする
 		SetState(STATE_TURN);
 
-		// 位置を取得する
-		SetPosDest(m_Route.at(m_nNumRoute));
+		// 目的の位置を設定
+		posDest = m_Route.at(m_nNumRoute);
 
 		// 向きを設定する
-		pRotDest->y = atan2f(rPos.x - GetPosDest().x, rPos.z - GetPosDest().z);
+		rotDest.y = atan2f(rPos.x - posDest.x, rPos.z - posDest.z);
 
 		// 向きの正規化
-		useful::NormalizeRot(pRotDest->y);
+		useful::NormalizeRot(rotDest.y);
 	}
 
-	// 状態カウントを適用する
-	SetStateCount(nStateCount);
+	SetStateCount(nStateCount);			// 状態カウントを適用
+	SetPosDest(posDest);				// 目的の位置を適用
+	pEnemy->SetDestRotation(rotDest);	// 目的の向きを適用
 }
 
 //============================================================
@@ -170,27 +171,31 @@ void CEnemyNavStreet::StopFunc
 //============================================================
 void CEnemyNavStreet::TurnFunc
 (
-	D3DXVECTOR3* pRot,				// 向き
-	D3DXVECTOR3* pMove,				// 移動量
-	const D3DXVECTOR3& rRotDest,	// 目的の向き
-	const float fSpeed,				// 速度
-	const float fDeltaTime			// デルタタイム
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
 )
 {
-	if (pRot->y <= rRotDest.y + ROT_CORRECT_DIFF &&
-		pRot->y >= rRotDest.y - ROT_CORRECT_DIFF)
+	D3DXVECTOR3 rotDest = pEnemy->GetDestRotation();	// 目的の向きを取得
+	D3DXVECTOR3 move = pEnemy->GetMovePosition();		// 移動量を取得
+
+	if (pRot->y <= rotDest.y + ROT_CORRECT_DIFF &&
+		pRot->y >= rotDest.y - ROT_CORRECT_DIFF)
 	{ // 向きが目的に近づいた場合
 
 		// 向きを補正する
-		pRot->y = rRotDest.y;
+		pRot->y = rotDest.y;
 
 		// 移動状態にする
 		SetState(STATE_MOVE);
 
 		// 移動量を設定する
-		pMove->x = sinf(pRot->y) * fSpeed * fDeltaTime;
-		pMove->z = cosf(pRot->y) * fSpeed * fDeltaTime;
+		move.x = sinf(pRot->y) * fSpeed * fDeltaTime;
+		move.z = cosf(pRot->y) * fSpeed * fDeltaTime;
 	}
+
+	pEnemy->SetMovePosition(move);		// 移動量を適用
 }
 
 //============================================================
@@ -198,14 +203,15 @@ void CEnemyNavStreet::TurnFunc
 //============================================================
 void CEnemyNavStreet::MoveFunc
 (
-	D3DXVECTOR3* pPos,
-	const D3DXVECTOR3& rMove
+	D3DXVECTOR3* pPos,			// 位置
+	CEnemy* pEnemy				// 敵の情報
 )
 {
-	D3DXVECTOR3 posDest = GetPosDest();		// 目的の位置
+	D3DXVECTOR3 posDest = GetPosDest();				// 目的の位置
+	D3DXVECTOR3 move = pEnemy->GetMovePosition();	// 移動量を取得
 
-	if (PosCorrect(posDest.x, &pPos->x, rMove.x) ||
-		PosCorrect(posDest.z, &pPos->z, rMove.z))
+	if (PosCorrect(posDest.x, &pPos->x, move.x) ||
+		PosCorrect(posDest.z, &pPos->z, move.z))
 	{ // 歩き終えるか、範囲を超えた場合
 
 		int nNumAll = m_Route.size();	// 場所の総数

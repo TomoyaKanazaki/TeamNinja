@@ -46,6 +46,7 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
 m_pItem(nullptr),			// 持ち物の情報
 m_oldPos(VEC3_ZERO),		// 過去位置
+m_posInit(VEC3_ZERO),		// 初期位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
 m_type(TYPE_STALK),			// 種類
@@ -243,6 +244,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const E
 
 		// 種類を設定
 		pEnemy->m_type = type;
+
+		// 初期位置を設定
+		pEnemy->m_posInit = rPos;
 
 		// 情報の設定処理
 		pEnemy->SetData();

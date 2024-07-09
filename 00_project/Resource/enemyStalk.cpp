@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavStreet.h"
+#include "enemyNavRandom.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -128,14 +128,8 @@ void CEnemyStalk::SetData(void)
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
-	std::vector<D3DXVECTOR3> p;
-
-	p.push_back(D3DXVECTOR3(700.0f, 0.0f, -180.0f));
-	p.push_back(D3DXVECTOR3(400.0f, 0.0f, -250.0f));
-	p.push_back(D3DXVECTOR3(800.0f, 0.0f, -100.0f));
-
 	// ナビゲーションを生成
-	m_pNav = CEnemyNavStreet::Create(p);
+	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 500.0f, 500.0f);
 }
 
 //============================================================
@@ -361,8 +355,6 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
-	D3DXVECTOR3 Move = GetMovePosition();		// 移動量
 	EMotion motion = MOTION_IDOL;				// モーション
 
 	if (m_pNav != nullptr)
@@ -376,8 +368,7 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		(
 			pPos,		// 位置
 			pRot,		// 向き
-			&Move,		// 移動量
-			&rotDest,	// 目的の向き
+			this,		// 敵の情報
 			SPEED,		// 速度
 			fDeltaTime	// デルタタイム
 		);
@@ -419,9 +410,6 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 無対象にする
 		SetTarget(TARGET_NONE);
 	}
-
-	SetDestRotation(rotDest);
-	SetMovePosition(Move);
 
 	// 待機モーションを返す
 	return motion;
