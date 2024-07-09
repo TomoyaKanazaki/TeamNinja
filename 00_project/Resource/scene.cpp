@@ -27,9 +27,9 @@
 //************************************************************
 namespace
 {
-	const char *SETUP_STAGE = "data\\TXT\\stage_forest.txt";	// セットアップテキスト相対パス
-	const char *SETUP_ACTOR = "data\\TXT\\actor.txt";			// セットアップテキスト相対パス
-	const char *SETUP_POINT = "data\\TXT\\point.txt";			// セットアップテキスト相対パス
+	const char *SETUP_STAGE = "data\\TXT\\STAGE\\FOREST00\\stage.txt";		// セットアップテキスト相対パス
+	const char *SETUP_ACTOR = "data\\TXT\\\\STAGE\\FOREST00\\actor.txt";	// セットアップテキスト相対パス
+	const char *SETUP_POINT = "data\\TXT\\\\STAGE\\FOREST00\\point.txt";	// セットアップテキスト相対パス
 }
 
 //************************************************************

@@ -36,8 +36,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_ATTACK,		// 攻撃モーション
 		MOTION_UPSET,		// 動揺モーション
-		MOTION_FALL,		// 落下モーション
-		MOTION_LANDING,		// 着地モーション
+		MOTION_FALL,		// TODO：落下モーション
+		MOTION_LANDING,		// TODO：着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -49,6 +49,7 @@ public:
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
+		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
 		STATE_FADEIN,		// フェードイン状態
 		STATE_MAX			// この列挙型の総数
@@ -84,12 +85,14 @@ private:
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
 	EMotion Upset(void);						// 動揺処理
-	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);							// フェードアウト処理
+	EMotion Caution(void);						// 警戒処理
+	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;			// ナビゲーション
 	EState m_state;				// 状態
+	int m_nStateCount;			// 状態カウント
 	float m_fAlpha;				// 透明度
 };
 
