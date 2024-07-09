@@ -64,14 +64,6 @@ void CStage::Uninit(void)
 }
 
 //============================================================
-//	更新処理
-//============================================================
-void CStage::Update(const float fDeltaTime)
-{
-
-}
-
-//============================================================
 //	ステージ範囲の設定処理
 //============================================================
 void CStage::SetLimit(const SLimit& rLimit)
@@ -317,6 +309,51 @@ void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
 }
 
 //============================================================
+//	ステージの割当処理
+//============================================================
+HRESULT CStage::BindStage(const SPass& rPass)
+{
+	// ステージのセットアップの読込
+	if (FAILED(LoadSetup(rPass.sStage.c_str())))
+	{ // 読み込みに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// アクターのセットアップの読込
+	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// チェックポイントのセットアップの読込
+	if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ゴールポイントのセットアップの読込
+	if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
 //	キルY座標との当たり判定
 //============================================================
 bool CStage::CollisionKillY(const D3DXVECTOR3& rPos)
@@ -405,7 +442,7 @@ float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
 //============================================================
 //	生成処理
 //============================================================
-CStage *CStage::Create(const SPass& rPass)
+CStage *CStage::Create(void)
 {
 	// ステージの生成
 	CStage *pStage = new CStage;
@@ -420,42 +457,6 @@ CStage *CStage::Create(const SPass& rPass)
 		// ステージの初期化
 		if (FAILED(pStage->Init()))
 		{ // 初期化に失敗した場合
-
-			// ステージの破棄
-			SAFE_DELETE(pStage);
-			return nullptr;
-		}
-
-		// セットアップの読込
-		if (FAILED(LoadSetup(rPass.sStage.c_str(), pStage)))
-		{ // 読み込みに失敗した場合
-
-			// ステージの破棄
-			SAFE_DELETE(pStage);
-			return nullptr;
-		}
-
-		// アクターのセットアップの読込
-		if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
-		{ // セットアップに失敗した場合
-
-			// ステージの破棄
-			SAFE_DELETE(pStage);
-			return nullptr;
-		}
-
-		// チェックポイントのセットアップの読込
-		if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
-		{ // セットアップに失敗した場合
-
-			// ステージの破棄
-			SAFE_DELETE(pStage);
-			return nullptr;
-		}
-
-		// ゴールポイントのセットアップの読込
-		if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
-		{ // セットアップに失敗した場合
 
 			// ステージの破棄
 			SAFE_DELETE(pStage);
@@ -483,7 +484,7 @@ void CStage::Release(CStage *&prStage)
 //============================================================
 //	セットアップ処理
 //============================================================
-HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
+HRESULT CStage::LoadSetup(const char* pPass)
 {
 	// 変数を宣言
 	int nEnd = 0;	// テキスト読み込み終了の確認用
@@ -513,7 +514,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 範囲情報の読込
-			if (FAILED(LoadLimit(&aString[0], pFile, pStage)))
+			if (FAILED(LoadLimit(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -522,7 +523,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 地面の読込
-			else if (FAILED(LoadField(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadField(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -531,7 +532,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 壁の読込
-			else if (FAILED(LoadWall(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadWall(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -540,7 +541,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 景色の読込
-			else if (FAILED(LoadScenery(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadScenery(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -549,7 +550,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 空の読込
-			else if (FAILED(LoadSky(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadSky(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -558,7 +559,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 
 			// 液体の読込
-			else if (FAILED(LoadLiquid(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadLiquid(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -567,7 +568,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 			}
 			
 			// カメラ変更地点の読込
-			else if (FAILED(LoadChanger(&aString[0], pFile, pStage)))
+			else if (FAILED(LoadChanger(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -596,7 +597,7 @@ HRESULT CStage::LoadSetup(const char* pPass, CStage *pStage)
 //============================================================
 //	範囲情報の読込処理
 //============================================================
-HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadLimit(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	SLimit limit;	// ステージ範囲の代入用
@@ -604,8 +605,8 @@ HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -693,7 +694,7 @@ HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
 		} while (strcmp(&aString[0], "END_LIMITSET") != 0);	// 読み込んだ文字列が END_LIMITSET ではない場合ループ
 
 		// ステージ範囲の設定
-		pStage->SetLimit(limit);
+		SetLimit(limit);
 	}
 
 	// 成功を返す
@@ -703,7 +704,7 @@ HRESULT CStage::LoadLimit(const char* pString, FILE *pFile, CStage *pStage)
 //============================================================
 //	地面情報の読込処理
 //============================================================
-HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadField(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	int nType = 0;					// 種類の代入用
@@ -717,8 +718,8 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -817,7 +818,7 @@ HRESULT CStage::LoadField(const char* pString, FILE *pFile, CStage *pStage)
 //============================================================
 //	壁情報の読込処理
 //============================================================
-HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadWall(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	int nType = 0;					// 種類の代入用
@@ -831,8 +832,8 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -931,7 +932,7 @@ HRESULT CStage::LoadWall(const char* pString, FILE *pFile, CStage *pStage)
 //============================================================
 //	景色情報の読込処理
 //============================================================
-HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadScenery(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
@@ -947,8 +948,8 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -1052,7 +1053,7 @@ HRESULT CStage::LoadScenery(const char* pString, FILE *pFile, CStage *pStage)
 //============================================================
 //	空情報の読込処理
 //============================================================
-HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadSky(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
@@ -1067,8 +1068,8 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -1166,7 +1167,7 @@ HRESULT CStage::LoadSky(const char* pString, FILE *pFile, CStage *pStage)
 //============================================================
 //	液体情報の読込処理
 //============================================================
-HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
+HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile)
 {
 	// 変数を宣言
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
@@ -1184,8 +1185,8 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 	// 変数配列を宣言
 	char aString[MAX_STRING];	// テキストの文字列の代入用
 
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr)
-	{ // 文字列・ファイル・ステージが存在しない場合
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
 
 		// 失敗を返す
 		assert(false);
@@ -1322,10 +1323,10 @@ HRESULT CStage::LoadLiquid(const char* pString, FILE *pFile, CStage *pStage)
 //===========================================
 //  カメラ変更地点情報の読込
 //===========================================
-HRESULT CStage::LoadChanger(const char* pString, FILE* pFile, CStage* pStage)
+HRESULT CStage::LoadChanger(const char* pString, FILE* pFile)
 {
 	// 読込に失敗した場合関数を抜ける
-	if (pString == nullptr || pFile == nullptr || pStage == nullptr) { assert(false); return E_FAIL; }
+	if (pString == nullptr || pFile == nullptr) { assert(false); return E_FAIL; }
 
 	// オブジェクトの設定
 	if (strcmp(pString, "STAGE_CHANGERSET") == 0) // 読込開始フラグ

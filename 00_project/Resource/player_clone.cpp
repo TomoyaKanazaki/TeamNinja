@@ -1160,7 +1160,7 @@ void CPlayerClone::UpdateRotation(D3DXVECTOR3& rRot)
 //============================================================
 void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
-	CStage *pStage = CScene::GetStage();	// ステージ情報
+	CStage *pStage = GET_STAGE;	// ステージ情報
 
 	// TODO
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d\n", m_pOldField == m_pCurField);

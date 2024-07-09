@@ -276,7 +276,7 @@ bool CEnemy::Collision(D3DXVECTOR3& rPos)
 	CollisionActor(rPos, bHit);
 
 	// 壁の当たり判定(ifを挟まないとヒット状況が上書きされる)
-	if (CScene::GetStage()->CollisionWall(rPos, m_oldPos, GetRadius(), GetHeight(), m_move))
+	if (GET_STAGE->CollisionWall(rPos, m_oldPos, GetRadius(), GetHeight(), m_move))
 	{
 		// ヒット状況を true にする
 		bHit = true;
@@ -381,7 +381,7 @@ void CEnemy::UpdateGravity(void)
 //============================================================
 void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 {
-	CStage *pStage = CScene::GetStage();	// ステージ情報
+	CStage *pStage = GET_STAGE;	// ステージ情報
 
 	// ジャンプしている状態にする
 	m_bJump = true;
