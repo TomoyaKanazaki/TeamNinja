@@ -18,26 +18,24 @@
 #include "sceneGame.h"
 #include "sceneResult.h"
 #include "sceneRanking.h"
-
 #include "collManager.h"
-#include "stage.h"
 #include "player.h"
+#include "stage.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char *SETUP_STAGE = "data\\TXT\\stage_forest.txt";	// セットアップテキスト相対パス
-	const char *SETUP_ACTOR = "data\\TXT\\actor.txt";			// セットアップテキスト相対パス
-	const char *SETUP_POINT = "data\\TXT\\point.txt";			// セットアップテキスト相対パス
+	const char *SETUP_STAGE = "data\\TXT\\STAGE\\FOREST00\\stage.txt";		// セットアップテキスト相対パス
+	const char *SETUP_ACTOR = "data\\TXT\\\\STAGE\\FOREST00\\actor.txt";	// セットアップテキスト相対パス
+	const char *SETUP_POINT = "data\\TXT\\\\STAGE\\FOREST00\\point.txt";	// セットアップテキスト相対パス
 }
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CCollManager* CScene::m_pCollManager = nullptr;	// 当たり判定マネージャー
-CStage *CScene::m_pStage = nullptr;	// ステージの情報
 
 //************************************************************
 //	親クラス [CScene] のメンバ関数
@@ -73,24 +71,17 @@ HRESULT CScene::Init(void)
 		return E_FAIL;
 	}
 
-	// TODO：ステージ読込
+	// プレイヤーの生成
+	CPlayer::Create(m_mode);
+
+	// TODO：ここ別のとこで保存しとこうね
 	CStage::SPass pass;
 	pass.sStage = SETUP_STAGE;
 	pass.sActor = SETUP_ACTOR;
 	pass.sPoint = SETUP_POINT;
 
-	// ステージの生成
-	m_pStage = CStage::Create(pass);
-	if (m_pStage == nullptr)
-	{ // 非使用中の場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// プレイヤーの生成
-	CPlayer::Create(m_mode);
+	// ステージの割当
+	GET_STAGE->BindStage(pass);
 
 	// 成功を返す
 	return S_OK;
@@ -103,9 +94,6 @@ void CScene::Uninit(void)
 {
 	// 当たり判定の終了
 	SAFE_UNINIT(m_pCollManager);
-
-	// ステージの破棄
-	SAFE_REF_RELEASE(m_pStage);
 }
 
 //============================================================
@@ -119,10 +107,6 @@ void CScene::Update(const float fDeltaTime)
 	CCamera				*pCamera	= pManager->GetCamera();	// カメラ
 	CRenderer			*pRenderer	= pManager->GetRenderer();	// レンダラー
 	CEffekseerManager	*pEffekseer	= pManager->GetEffekseer();	// エフェクシア
-
-	// ステージの更新
-	assert(m_pStage != nullptr);
-	m_pStage->Update(fDeltaTime);
 
 	// ライトの更新
 	assert(pLight != nullptr);
@@ -206,25 +190,13 @@ CCollManager *CScene::GetCollManager(void)
 }
 
 //============================================================
-//	ステージ取得処理
-//============================================================
-CStage *CScene::GetStage(void)
-{
-	// インスタンス未使用
-	assert(m_pStage != nullptr);
-
-	// ステージのポインタを返す
-	return m_pStage;
-}
-
-//============================================================
 //	プレイヤー取得処理
 //============================================================
 CPlayer *CScene::GetPlayer(void)
 {
 	CListManager<CPlayer> *pListManager = CPlayer::GetList();				// プレイヤーリストマネージャー
-	if (pListManager == nullptr)		 { return nullptr; }				// リスト未使用の場合抜ける
-	if (pListManager->GetNumAll() != 1)  { assert(false); return nullptr; }	// プレイヤーが1人ではない場合抜ける
+	if (pListManager == nullptr)		{ return nullptr; }					// リスト未使用の場合抜ける
+	if (pListManager->GetNumAll() != 1)	{ assert(false); return nullptr; }	// プレイヤーが1人ではない場合抜ける
 	CPlayer *pPlayer = pListManager->GetList().front();						// プレイヤーの情報
 
 	// プレイヤーのポインタを返す

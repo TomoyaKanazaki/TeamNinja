@@ -20,6 +20,7 @@
 namespace
 {
 	const char* TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
+
 	const float ROT_SPEED = 0.01f;		// 向きの速度
 	const float RADIUS = 50.0f;			// 半径
 }

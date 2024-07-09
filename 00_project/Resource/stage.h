@@ -67,7 +67,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(const float fDeltaTime);	// 更新
+	HRESULT BindStage(const SPass& rPass);	// ステージ割当
 	void SetLimit(const SLimit& rLimit);	// 範囲設定
 	SLimit GetLimit(void) const;			// 範囲取得
 
@@ -81,19 +81,19 @@ public:
 	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得
 
 	// 静的メンバ関数
-	static CStage *Create(const SPass& rPass);	// 生成
-	static void Release(CStage *&prStage);		// 破棄
+	static CStage *Create(void);			// 生成
+	static void Release(CStage *&prStage);	// 破棄
 
 private:
-	// 静的メンバ関数
-	static HRESULT LoadSetup(const char* pPass, CStage *pStage);	// セットアップ
-	static HRESULT LoadLimit(const char* pString, FILE *pFile, CStage *pStage);		// 範囲情報の読込
-	static HRESULT LoadField(const char* pString, FILE *pFile, CStage *pStage);		// 地面情報の読込
-	static HRESULT LoadWall(const char* pString, FILE *pFile, CStage *pStage);		// 壁情報の読込
-	static HRESULT LoadScenery(const char* pString, FILE *pFile, CStage *pStage);	// 景色情報の読込
-	static HRESULT LoadSky(const char* pString, FILE *pFile, CStage *pStage);		// 空情報の読込
-	static HRESULT LoadLiquid(const char* pString, FILE* pFile, CStage* pStage);	// 液体情報の読込
-	static HRESULT LoadChanger(const char* pString, FILE* pFile, CStage* pStage);	// カメラ変更地点情報の読込
+	// メンバ関数
+	HRESULT LoadSetup(const char* pPass);					// セットアップ
+	HRESULT LoadLimit(const char* pString, FILE *pFile);	// 範囲情報の読込
+	HRESULT LoadField(const char* pString, FILE *pFile);	// 地面情報の読込
+	HRESULT LoadWall(const char* pString, FILE *pFile);		// 壁情報の読込
+	HRESULT LoadScenery(const char* pString, FILE *pFile);	// 景色情報の読込
+	HRESULT LoadSky(const char* pString, FILE *pFile);		// 空情報の読込
+	HRESULT LoadLiquid(const char* pString, FILE* pFile);	// 液体情報の読込
+	HRESULT LoadChanger(const char* pString, FILE* pFile);	// カメラ変更地点情報の読込
 
 	// メンバ変数
 	SLimit m_limit;	// 範囲情報

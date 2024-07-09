@@ -720,7 +720,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -781,7 +781,7 @@ CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -915,8 +915,9 @@ void CPlayer::UpdateSaveTeleport(void)
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 {
 	bool bLand = false;	// 着地フラグ
-	CStage *pStage = CScene::GetStage();	// ステージ情報
-	D3DXVECTOR3 move = m_move * fDeltaTime; //現在の移動速度を一時保存
+	CStage *pStage = GET_STAGE;	// ステージ情報
+	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
+
 	// 地面・制限位置の着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
