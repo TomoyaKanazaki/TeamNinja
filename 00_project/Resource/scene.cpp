@@ -74,14 +74,8 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-	// TODO：ここ別のとこで保存しとこうね
-	CStage::SPass pass;
-	pass.sStage = SETUP_STAGE;
-	pass.sActor = SETUP_ACTOR;
-	pass.sPoint = SETUP_POINT;
-
 	// ステージの割当
-	GET_STAGE->BindStage(pass);
+	GET_STAGE->BindStage("data\\TXT\\MAP\\FOREST00\\map.txt");	// TODO：今だけ確定で初期マップ読込
 
 	// 成功を返す
 	return S_OK;
