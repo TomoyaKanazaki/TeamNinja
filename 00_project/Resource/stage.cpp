@@ -18,9 +18,10 @@
 #include "scenery.h"
 #include "sky.h"
 #include "liquid.h"
+#include "camera_change.h"
 #include "actor.h"
 #include "checkpoint.h"
-#include "camera_change.h"
+#include "goal.h"
 
 //************************************************************
 //	定数宣言
@@ -70,6 +71,15 @@ HRESULT CStage::Init(void)
 
 	// チェックポイントのセットアップ
 	if (FAILED(CCheckPoint::LoadSetup()))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ゴールポイントのセットアップ
+	if (FAILED(CGoal::LoadSetup()))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
