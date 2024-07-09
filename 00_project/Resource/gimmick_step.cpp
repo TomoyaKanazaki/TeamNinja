@@ -131,22 +131,8 @@ D3DXVECTOR3 CGimmickStep::CalcWaitRotation(const int Idx, const CPlayerClone* pC
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// プレイヤーの位置を取得
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
-
-	// プレイヤーに近い場合向きの変更は行わない
-	bool bHit = collision::Circle2D(pClone->GetVec3Position(), posPlayer, RADIUS_ROT, 0.0f);
-	if (bHit) { return pClone->GetVec3Rotation(); }
-
-	// 待機位置を取得
-	D3DXVECTOR3 posThis = GetActionPoint();
-
-	// 目標方向との差分を求める
-	D3DXVECTOR3 vecTarget = posPlayer - posThis;
-
-	// 待機向きを求める
-	D3DXVECTOR3 rotWait = VEC3_ZERO;
-	rotWait.y = atan2f(-vecTarget.x, -vecTarget.z);
+	// 待機向きを設定
+	D3DXVECTOR3 rotWait = GetVec3Rotation();
 
 	// 算出した向きを返す
 	return rotWait;
