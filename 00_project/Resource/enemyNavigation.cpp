@@ -63,12 +63,11 @@ void CEnemyNav::Uninit(void)
 //============================================================
 void CEnemyNav::Update
 (
-	D3DXVECTOR3* pPos,		// 位置
-	D3DXVECTOR3* pRot,		// 向き
-	D3DXVECTOR3* pMove,		// 移動量
-	D3DXVECTOR3* pRotDest,	// 目的の向き
-	const float fSpeed,		// 速度
-	const float fDeltaTime	// デルタタイム
+	D3DXVECTOR3* pPos,			// 位置
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
 )
 {
 	switch (m_state)
@@ -76,21 +75,21 @@ void CEnemyNav::Update
 	case CEnemyNav::STATE_STOP:
 
 		// 停止状態処理
-		StopFunc(*pPos, *pRot, pRotDest);
+		StopFunc(*pPos, pEnemy);
 
 		break;
 
 	case CEnemyNav::STATE_TURN:
 
 		// ターン状態処理
-		TurnFunc(pRot, pMove, *pRotDest, fSpeed, fDeltaTime);
+		TurnFunc(pRot, pEnemy, fSpeed, fDeltaTime);
 
 		break;
 
 	case CEnemyNav::STATE_MOVE:
 
 		// 移動状態処理
-		MoveFunc(pPos, *pMove);
+		MoveFunc(pPos, pEnemy);
 
 		break;
 

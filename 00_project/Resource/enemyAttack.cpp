@@ -213,8 +213,18 @@ bool CEnemyAttack::ShakeOffPlayer(void)
 	// 位置を取得する
 	m_posTarget = CScene::GetPlayer()->GetVec3Position();
 
-	// 円の判定を返す
-	return collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE);
+	if (collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE) == true)
+	{ // 範囲内に入っている場合
+
+		// プレイヤーを標的にする
+		m_target = TARGET_PLAYER;
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
 }
 
 //============================================================
@@ -245,6 +255,9 @@ bool CEnemyAttack::ShakeOffClone(void)
 
 		// 分身の情報を設定する
 		m_pClone = *CPlayerClone::GetList()->GetIndex(nCnt);
+
+		// 分身を標的にする
+		m_target = TARGET_CLONE;
 
 		// true を返す
 		return true;

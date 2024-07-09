@@ -86,6 +86,10 @@ HRESULT CGimmick::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// デバッグの時以外は描画しない
+#ifndef _DEBUG
+	SetEnableDraw(false);
+#endif
 	// 成功を返す
 	return S_OK;
 }
@@ -220,19 +224,8 @@ CGimmick* CGimmick::Create
 		// 発動可能な分身の数を設定
 		pGimmick->m_nNumActive = nNumActive;
 
-		// TODO：Releaseでギミックどう見せるか
-#if 0
-#ifdef _DEBUG
 		// 色の設定
 		pGimmick->SetColor(XCOL_YELLOW);
-#else
-		// 色の設定
-		pGimmick->SetColor(XCOL_AWHITE);
-#endif // _DEBUG
-#else
-		// 色の設定
-		pGimmick->SetColor(XCOL_YELLOW);
-#endif
 
 		// 植物の生成
 		CMultiPlant::Create(rPos, rSize, pGimmick->m_type, nNumActive);

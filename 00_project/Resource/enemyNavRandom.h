@@ -34,51 +34,44 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update						// 更新
 	(
-		D3DXVECTOR3* pPos,		// 位置
-		D3DXVECTOR3* pRot,		// 向き
-		D3DXVECTOR3* pMove,		// 移動量
-		D3DXVECTOR3* pRotDest,	// 目的の向き
-		const float fSpeed,		// 速度
-		const float fDeltaTime	// デルタタイム
+		D3DXVECTOR3* pPos,			// 位置
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
 	) override;
 
-	void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置の設定処理
-	D3DXVECTOR3 GetPosInit(void) const { return m_posInit; }				// 初期位置の取得処理
-
 	// 静的メンバ関数
-	static CEnemyNavRandom* Create(const D3DXVECTOR3& rPosInit, const float fWidth, const float fDepth);		// 生成処理
+	static CEnemyNavRandom* Create(const D3DXVECTOR3& rPos, const float fWidth, const float fDepth);		// 生成処理
 
 private:
 
 	// メンバ関数
-	void StopFunc		// 停止状態処理
+	void StopFunc			// 停止状態処理
 	(
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rRot,		// 向き
-		D3DXVECTOR3* pRotDest			// 目的の向き
-	) override;
-	void TurnFunc		// ターン状態処理
-	(
-		D3DXVECTOR3* pRot,				// 向き
-		D3DXVECTOR3* pMove,				// 移動量
-		const D3DXVECTOR3& rRotDest,	// 目的の向き
-		const float fSpeed,				// 速度
-		const float fDeltaTime			// デルタタイム
-	) override;
-	void MoveFunc		// 移動状態処理
-	(
-		D3DXVECTOR3* pPos,				// 位置
-		const D3DXVECTOR3& rMove		// 移動量
+		const D3DXVECTOR3& rPos,	// 位置
+		CEnemy* pEnemy				// 敵の情報
 	) override;
 
-	void DestPosRandom(void);					// 位置のランダム処理
-	void DestPosMinCorrect(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRotDest);	// 目的の位置の最小値補正処理
+	void TurnFunc			// ターン状態処理
+	(
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
+	) override;
+
+	void MoveFunc			// 移動状態処理
+	(
+		D3DXVECTOR3* pPos,			// 位置
+		CEnemy* pEnemy				// 敵の情報
+	) override;
+
 	bool PosCorrect(const float fDest, float* fTarget, const float fMove);			// 位置の補正処理
-	bool CollisionRange(D3DXVECTOR3* pPos);		// 範囲との衝突
+	bool CollisionRange(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosInit);			// 範囲との衝突
 
 	// メンバ変数
 	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
-	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_MoveRange;		// 移動範囲
 };
 

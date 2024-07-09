@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavStreet.h"
+#include "enemyNavRandom.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -43,7 +43,8 @@ namespace
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
 m_pNav(nullptr),
-m_state(STATE_CRAWL)
+m_state(STATE_CRAWL),
+m_fAlpha(1.0f)
 {
 
 }
@@ -128,14 +129,8 @@ void CEnemyStalk::SetData(void)
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
-	std::vector<D3DXVECTOR3> p;
-
-	p.push_back(D3DXVECTOR3(700.0f, 0.0f, -180.0f));
-	p.push_back(D3DXVECTOR3(400.0f, 0.0f, -250.0f));
-	p.push_back(D3DXVECTOR3(800.0f, 0.0f, -100.0f));
-
 	// ナビゲーションを生成
-	m_pNav = CEnemyNavStreet::Create(p);
+	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 500.0f, 500.0f);
 }
 
 //============================================================
@@ -196,6 +191,20 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		// 動揺処理
 		nCurMotion = Upset();
+
+		break;
+
+	case CEnemyStalk::STATE_FADEOUT:
+
+		// フェードアウト処理
+		nCurMotion = FadeOut(pPos, pRot);
+
+		break;
+
+	case CEnemyStalk::STATE_FADEIN:
+
+		// フェードイン処理
+		nCurMotion = FadeIn();
 
 		break;
 
@@ -361,8 +370,6 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	D3DXVECTOR3 rotDest = GetDestRotation();	// 目的の向き
-	D3DXVECTOR3 Move = GetMovePosition();		// 移動量
 	EMotion motion = MOTION_IDOL;				// モーション
 
 	if (m_pNav != nullptr)
@@ -376,8 +383,7 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		(
 			pPos,		// 位置
 			pRot,		// 向き
-			&Move,		// 移動量
-			&rotDest,	// 目的の向き
+			this,		// 敵の情報
 			SPEED,		// 速度
 			fDeltaTime	// デルタタイム
 		);
@@ -419,9 +425,6 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 無対象にする
 		SetTarget(TARGET_NONE);
 	}
-
-	SetDestRotation(rotDest);
-	SetMovePosition(Move);
 
 	// 待機モーションを返す
 	return motion;
@@ -542,6 +545,75 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 {
+	if (GetMotionType() != MOTION_UPSET)
+	{ // 動揺モーションじゃなかった場合
+
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+
+		// 待機モーションにする
+		return MOTION_IDOL;
+	}
+
 	// 動揺モーションにする
 	return MOTION_UPSET;
+}
+
+//============================================================
+// フェードアウト処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+{
+	// 透明度を減算する
+	m_fAlpha -= 0.02f;
+
+	if (m_fAlpha <= 0.0f)
+	{ // 透明度が0以下になった場合
+
+		// フェードイン状態にする
+		m_state = STATE_FADEIN;
+
+		// 位置を設定する
+		*pPos = GetPosInit();
+
+		// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
+		SetOldPosition(*pPos);
+
+		// 向きを設定する
+		*pRot = VEC3_ZERO;
+
+		// 透明度を補正する
+		m_fAlpha = 0.0f;
+	}
+
+	// 透明度を適用
+	SetAlpha(m_fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
+}
+
+//============================================================
+// フェードイン処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
+{
+	// 透明度を減算する
+	m_fAlpha += 0.02f;
+
+	if (m_fAlpha >= 1.0f)
+	{ // 透明度が一定数以上になった場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 透明度を補正する
+		m_fAlpha = 1.0f;
+	}
+
+	// 透明度を適用
+	SetAlpha(m_fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
 }
