@@ -26,9 +26,9 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\FIELD\\soil003.png",	// 土テクスチャ
+		"data\\TEXTURE\\FIELD\\soil005.png",	// 土テクスチャ
 		"data\\TEXTURE\\FIELD\\soil004.png",	// 草土テクスチャ
-		"data\\TEXTURE\\FIELD\\soil005.png",	// 草テクスチャ
+		"data\\TEXTURE\\FIELD\\soil003.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\OldWood002.jpg",	// 床テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\FIELD\\Mud000.jpg",		// 泥テクスチャ

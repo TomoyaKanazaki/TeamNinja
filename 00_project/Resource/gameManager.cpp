@@ -119,8 +119,22 @@ HRESULT CGameManager::Init(void)
 #if 1
 
 	//=================================================
-	// []
+	// [ボタンのみ]
 	//=================================================
+	// ボタン
+	{ // 複数ボタン：最初１つ
+		std::vector<CGimmickMalti::SButton> vec;
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(1150.0f, 0.0f, -300.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
+		CGimmickMalti::Create(vec);
+	}
+
+	{ // 複数ボタン：次の３つ
+		std::vector<CGimmickMalti::SButton> vec;
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(4125.0f, 0.0f, 350.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, 350.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5650.0f, 0.0f, 350.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
+		CGimmickMalti::Create(vec);
+	}
 
 	// ジャンプ台：奥
 	///CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), EAngle::ANGLE_0, D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
@@ -128,13 +142,6 @@ HRESULT CGameManager::Init(void)
 
 	// ジャンプ台：手前
 
-
-	// 踏み台(梯子)：奥
-	///CGimmick::Create(D3DXVECTOR3(-1350.0f, 0.0f, 225.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1150.0f), CGimmick::TYPE_STEP, 1);
-
-
-	// 踏み台(梯子)：手前
-	
 
 	// 橋：奥
 	///CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), EAngle::ANGLE_0, D3DXVECTOR3(850.0f, 0.0f, 700.0f), CGimmick::TYPE_BRIDGE, 5);
