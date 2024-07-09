@@ -156,7 +156,7 @@ HRESULT CGimmickMalti::CreateButton(std::vector<SButton> vecButton)
 		CGimmick* pButton = CGimmick::Create
 		( // 引数
 			rButton.pos,			// 生成位置
-			EAngle::ANGLE_0,				// 生成角度
+			EAngle::ANGLE_0,		// 生成角度
 			rButton.size,			// 生成大きさ
 			CGimmick::TYPE_POST,	// ギミックラベル (ボタン)
 			NUM_CLONE				// ボタン押込に必要な人数

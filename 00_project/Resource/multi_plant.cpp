@@ -61,6 +61,9 @@ HRESULT CMultiPlant::Init(void)
 	// ƒ‰ƒxƒ‹‚Ì•ÏX
 	SetLabel(LABEL_GIMMICK);
 
+	// •`‰æİ’è‚Ì•ÏX
+	SetEnableDraw(false);
+
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
 }
