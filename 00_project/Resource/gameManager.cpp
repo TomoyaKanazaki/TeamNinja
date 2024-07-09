@@ -118,8 +118,11 @@ HRESULT CGameManager::Init(void)
 // 森マップ用仮ギミック置き場：[左側のやつ]
 #if 1
 
+	// 重ドア：中央
+	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+
 	// ジャンプ台：奥
-	CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 2);
+	CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
 	CGimmick::Create(D3DXVECTOR3(4574.0f, 300.0f, 450.0f), D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
 
@@ -143,6 +146,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(3175.0f, 300.0f, 100.0f), D3DXVECTOR3(350.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 3);
 	CGimmick::Create(D3DXVECTOR3(3400.0f, 300.0f, -350.0f), D3DXVECTOR3(50.0f, 0.0f, 900.0f), CGimmick::TYPE_STEP, 1);
 	CGimmick::Create(D3DXVECTOR3(3775.0f, 400.0f, 100.0f), D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 1);
+	CGimmick::Create(D3DXVECTOR3(4200.0f, 500.0f, 275.0f), D3DXVECTOR3(50.0f, 0.0f, 300.0f), CGimmick::TYPE_STEP, 3);
 	CGimmick::Create(D3DXVECTOR3(4550.0f, 400.0f, -125.0f), D3DXVECTOR3(800.0f, 0.0f, 400.0f), CGimmick::TYPE_STEP, 4);
 	CGimmick::Create(D3DXVECTOR3(5300.0f, 1400.0f, 75.0f), D3DXVECTOR3(200.0f, 0.0f, 200.0f), CGimmick::TYPE_STEP, 6);
 
@@ -166,7 +170,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(8850.0f, 350.0f, -375.0f), D3DXVECTOR3(350.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
 	// ジャンプ台：奥
-	CGimmick::Create(D3DXVECTOR3(7200.0f, 0.0f, 475.0f), D3DXVECTOR3(50.0f, 0.0f, 650.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	CGimmick::Create(D3DXVECTOR3(7200.0f, 0.0f, 475.0f), D3DXVECTOR3(50.0f, 0.0f, 650.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 
 	// 踏み台(梯子)：手前
