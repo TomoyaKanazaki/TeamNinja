@@ -149,22 +149,19 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 		// 向きを寝そべる形にする
 		return D3DXVECTOR3(-HALF_PI, HALF_PI + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
-	else
-	{ // ギミック待機中の場合
 
-		// 待機中心との差分を求める
-		D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
+	// 待機中心との差分を求める
+	D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
 
-		// 差分ベクトルの向きを求める
-		float fRot = -atan2f(vecCenter.x, -vecCenter.z);
+	// 差分ベクトルの向きを求める
+	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
 
-		// 向きを求める
-		D3DXVECTOR3 rot = VEC3_ZERO;
-		rot.y = -atan2f(vecCenter.x, -vecCenter.z);
+	// 向きを求める
+	D3DXVECTOR3 rot = VEC3_ZERO;
+	rot.y = -atan2f(vecCenter.x, -vecCenter.z);
 
-		// 算出した向きを返す
-		return rot;
-	}
+	// 算出した向きを返す
+	return rot;
 }
 
 //===========================================
