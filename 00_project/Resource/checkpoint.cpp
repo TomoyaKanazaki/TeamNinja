@@ -237,10 +237,7 @@ void CCheckPoint::CollisionPlayer(void)
 //============================================================
 HRESULT CCheckPoint::LoadSetup(void)
 {
-	// TODO：ステージに移行
-
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
 	// ファイルを開く
 	std::ifstream file(SETUP_TXT);	// ファイルストリーム
@@ -308,34 +305,6 @@ HRESULT CCheckPoint::LoadSetup(void)
 					}
 				}
 			} while (str != "END_STAGE_CHECKSET");	// END_STAGE_CHECKSETを読み込むまでループ
-		}
-		else if (str == "STAGE_GOALSET")
-		{
-			do
-			{ // END_STAGE_GOALSETを読み込むまでループ
-
-				// 文字列を読み込む
-				file >> str;
-
-				if (str == "POS")
-				{
-					file >> str;	// ＝を読込
-
-					// 位置を読込
-					file >> pos.x;
-					file >> pos.y;
-					file >> pos.z;
-				}
-			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
-
-			// チェックポイントの生成
-			if (CGoal::Create(pos) == nullptr)
-			{ // 確保に失敗した場合
-
-				// 失敗を返す
-				assert(false);
-				return E_FAIL;
-			}
 		}
 	}
 
