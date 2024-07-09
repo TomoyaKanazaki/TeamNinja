@@ -64,6 +64,7 @@ public:
 	static CListManager<CEnemy>* GetList(void);			// リスト取得
 
 	// メンバ関数
+	inline void SetOldPosition(const D3DXVECTOR3& rPosOld)	{ m_oldPos = rPosOld; }				// 過去位置設定
 	inline D3DXVECTOR3 GetOldPosition(void) const			{ return m_oldPos; }				// 過去位置取得
 	inline D3DXVECTOR3 GetPosInit(void) const				{ return m_posInit; }				// 初期位置取得
 	inline void SetDestRotation(D3DXVECTOR3& rRot)			{ useful::NormalizeRot(rRot); m_destRot = rRot; }	// 目的の向き設定
