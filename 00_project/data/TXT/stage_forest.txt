@@ -2243,6 +2243,16 @@ STAGE_WALLSET
 		PART	= 1 1
 		TEXPART	= 1 9
 	END_WALLSET
+	
+	WALLSET
+		TYPE	= 0
+		POS		= 3400.00 300.00 625.00
+		ROT		= 0.00 -90.00 0.00
+		SIZE	= 350.00 200.00
+		COL		= 1.00 1.00 1.00 1.00
+		PART	= 1 1
+		TEXPART	= 7 4
+	END_WALLSET
 
 END_STAGE_WALLSET
 
@@ -2291,13 +2301,6 @@ STAGE_CHANGERSET
 		ROT		= 0
 		POS		= 6800.00 0.00 0.00
 		SIZE	= 400.00 1400.00 800.00
-	END_CHANGERSET
-
-	CHANGERSET
-		DIR		= 3
-		ROT		= 0
-		POS		= 9150.00 0.00 0.00
-		SIZE	= 1950.00 900.00 800.00
 	END_CHANGERSET
 
 	CHANGERSET
@@ -2356,43 +2359,105 @@ STAGE_CHANGERSET
 		SIZE	= 400.00 575.00 275.00
 	END_CHANGERSET
 
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 8150.00 -100.00 0.00
+		SIZE	= 975.00 875.00 800.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 9325.00 -100.00 -475.00
+		SIZE	= 200.00 875.00 325.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 2
+		ROT		= 0
+		POS		= 11550.00 -100.00 575.00
+		SIZE	= 1025.00 650.00 225.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 9325.00 0.00 525.00
+		SIZE	= 200.00 825.00 275.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 2
+		ROT		= 0
+		POS		= 9675.00 600.00 0.00
+		SIZE	= 150.00 525.00 800.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 1
+		ROT		= 0
+		POS		= 10050.00 0.00 50.00
+		SIZE	= 925.00 300.00 200.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 9325.00 600.00 50.00
+		SIZE	= 200.00 525.00 200.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 10175.00 -100.00 525.00
+		SIZE	= 350.00 875.00 275.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 1
+		ROT		= 0
+		POS		= 10725.00 -100.00 300.00
+		SIZE	= 225.00 650.00 50.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 11350.00 -100.00 -475.00
+		SIZE	= 1525.00 875.00 325.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 11925.00 -100.00 100.00
+		SIZE	= 950.00 875.00 250.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 10400.00 600.00 100.00
+		SIZE	= 575.00 525.00 250.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 13300.00 -100.00 0.00
+		SIZE	= 425.00 725.00 800.00
+	END_CHANGERSET
+
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 12725.00 -100.00 575.00
+		SIZE	= 150.00 725.00 225.00
+	END_CHANGERSET
+
 END_STAGE_CHANGERSET
-
-#------------------------------------------------------------------------------
-#	景色の配置情報
-#------------------------------------------------------------------------------
-STAGE_SCENERYSET
-
-
-
-END_STAGE_SCENERYSET
-
-#------------------------------------------------------------------------------
-#	空の配置情報
-#------------------------------------------------------------------------------
-STAGE_SKYSET
-
-	SKYSET
-		TYPE = 0
-	    POS = 0.0 -200.0 0.0
-	    ROT = 0.0 0.0 0.0
-	    COL = 0.2 0.1 0.3 1.0
-	    PART = 32 32
-	    TEXPART = 1 1
-	    RADIUS = 30000.0
-	END_SKYSET
-
-    SKYSET
-        TYPE = 0
-        POS = 0.0 -200.0 0.0
-        ROT = 0.0 0.0 180.0
-        COL = 0.2 0.1 0.3 1.0
-        PART = 32 32
-        TEXPART = 1 1
-        RADIUS = 30000.0
-    END_SKYSET
-
-END_STAGE_SKYSET
 
 #------------------------------------------------------------------------------
 #	液体の配置情報
