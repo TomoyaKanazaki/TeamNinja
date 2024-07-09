@@ -43,7 +43,8 @@ namespace
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
 m_pNav(nullptr),
-m_state(STATE_CRAWL)
+m_state(STATE_CRAWL),
+m_fAlpha(1.0f)
 {
 
 }
@@ -190,6 +191,20 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		// 動揺処理
 		nCurMotion = Upset();
+
+		break;
+
+	case CEnemyStalk::STATE_FADEOUT:
+
+		// フェードアウト処理
+		nCurMotion = FadeOut(pPos, pRot);
+
+		break;
+
+	case CEnemyStalk::STATE_FADEIN:
+
+		// フェードイン処理
+		nCurMotion = FadeIn();
 
 		break;
 
@@ -530,6 +545,75 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 {
+	if (GetMotionType() != MOTION_UPSET)
+	{ // 動揺モーションじゃなかった場合
+
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+
+		// 待機モーションにする
+		return MOTION_IDOL;
+	}
+
 	// 動揺モーションにする
 	return MOTION_UPSET;
+}
+
+//============================================================
+// フェードアウト処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+{
+	// 透明度を減算する
+	m_fAlpha -= 0.02f;
+
+	if (m_fAlpha <= 0.0f)
+	{ // 透明度が0以下になった場合
+
+		// フェードイン状態にする
+		m_state = STATE_FADEIN;
+
+		// 位置を設定する
+		*pPos = GetPosInit();
+
+		// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
+		SetOldPosition(*pPos);
+
+		// 向きを設定する
+		*pRot = VEC3_ZERO;
+
+		// 透明度を補正する
+		m_fAlpha = 0.0f;
+	}
+
+	// 透明度を適用
+	SetAlpha(m_fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
+}
+
+//============================================================
+// フェードイン処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
+{
+	// 透明度を減算する
+	m_fAlpha += 0.02f;
+
+	if (m_fAlpha >= 1.0f)
+	{ // 透明度が一定数以上になった場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 透明度を補正する
+		m_fAlpha = 1.0f;
+	}
+
+	// 透明度を適用
+	SetAlpha(m_fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
 }
