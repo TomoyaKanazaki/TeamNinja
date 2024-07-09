@@ -20,7 +20,7 @@
 namespace
 {
 	const char* TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
-	const char *SETUP_TXT = "data\\TXT\\point.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\TXT\\STAGE\\FOREST00\\point.txt";	// セットアップテキスト相対パス
 
 	const float ROT_SPEED = 0.01f;		// 向きの速度
 	const float RADIUS = 50.0f;			// 半径

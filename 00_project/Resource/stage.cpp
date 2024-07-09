@@ -29,7 +29,7 @@
 namespace
 {
 	// TODO：仮で別ファイルから読込
-	const char *SETUP_TXT = "data\\TXT\\stage_forest.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\TXT\\STAGE\\FOREST00\\stage.txt";	// セットアップテキスト相対パス
 }
 
 //************************************************************

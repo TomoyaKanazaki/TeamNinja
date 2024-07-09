@@ -67,7 +67,7 @@ namespace
 		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
 	};
 
-	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
+	const char *SETUP_TXT = "data\\TXT\\STAGE\\FOREST00\\actor.txt";	// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// アクターの優先順位
 }
 
