@@ -34,7 +34,7 @@ public:
 	// 静的メンバ関数
 	static CCheckPoint* Create(const D3DXVECTOR3& rPos);	// 生成処理
 	static CListManager<CCheckPoint>* GetList(void);		// リスト取得
-	static HRESULT LoadSetup(void);	// セットアップ
+	static HRESULT LoadSetup(const char* pPass);			// セットアップ
 
 private:
 

@@ -119,15 +119,15 @@ HRESULT CGameManager::Init(void)
 #if 1
 
 	// 重ドア：中央
-	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), EAngle::ANGLE_90, D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
+	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), EAngle::ANGLE_0, D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
 
 	// ジャンプ台：奥
-	CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(4574.0f, 300.0f, 450.0f), EAngle::ANGLE_90, D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
+	CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), EAngle::ANGLE_0, D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(4574.0f, 300.0f, 450.0f), EAngle::ANGLE_0, D3DXVECTOR3(750.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPTABLE, 3);
 
 
 	// ジャンプ台：手前
-	CGimmick::Create(D3DXVECTOR3(4950.0f, 700.0f, 75.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(4950.0f, 700.0f, 75.0f), EAngle::ANGLE_0, D3DXVECTOR3(50.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 
 	// 踏み台(梯子)：奥
@@ -150,7 +150,7 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(5300.0f, 1400.0f, 75.0f), EAngle::ANGLE_90, D3DXVECTOR3(200.0f, 0.0f, 200.0f), CGimmick::TYPE_STEP, 6);
 
 	// 橋：奥
-	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), EAngle::ANGLE_90, D3DXVECTOR3(850.0f, 0.0f, 700.0f), CGimmick::TYPE_BRIDGE, 5);
+	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), EAngle::ANGLE_0, D3DXVECTOR3(850.0f, 0.0f, 700.0f), CGimmick::TYPE_BRIDGE, 5);
 
 
 	// 橋：手前

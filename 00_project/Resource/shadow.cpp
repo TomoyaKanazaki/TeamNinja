@@ -255,7 +255,7 @@ D3DXVECTOR3 CShadow::SetDrawPosition(void)
 	{ // 全ての範囲外の場合
 
 		// 高さを制限位置に設定
-		posShadow.y = pStage->GetStageLimit().fField + PLUS_POSY;
+		posShadow.y = pStage->GetLimit().fField + PLUS_POSY;
 	}
 
 	// 影位置を返す
