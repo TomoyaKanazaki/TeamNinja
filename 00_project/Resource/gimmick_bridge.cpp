@@ -107,7 +107,7 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
 	if (Idx > GetNumActive()) { assert(false); }
 
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
-	if (Idx == 0)
+	if (Idx == 0 && !IsActive())
 	{
 		// プレイヤー座標を取得
 		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
