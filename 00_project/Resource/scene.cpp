@@ -24,6 +24,16 @@
 #include "player.h"
 
 //************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const char *SETUP_STAGE = "data\\TXT\\stage_forest.txt";	// セットアップテキスト相対パス
+	const char *SETUP_ACTOR = "data\\TXT\\actor.txt";			// セットアップテキスト相対パス
+	const char *SETUP_POINT = "data\\TXT\\point.txt";			// セットアップテキスト相対パス
+}
+
+//************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CCollManager* CScene::m_pCollManager = nullptr;	// 当たり判定マネージャー
@@ -63,8 +73,14 @@ HRESULT CScene::Init(void)
 		return E_FAIL;
 	}
 
+	// TODO：ステージ読込
+	CStage::SPass pass;
+	pass.sStage = SETUP_STAGE;
+	pass.sActor = SETUP_ACTOR;
+	pass.sPoint = SETUP_POINT;
+
 	// ステージの生成
-	m_pStage = CStage::Create(m_mode);
+	m_pStage = CStage::Create(pass);
 	if (m_pStage == nullptr)
 	{ // 非使用中の場合
 
