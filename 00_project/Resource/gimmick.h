@@ -69,6 +69,7 @@ public:
 	static CGimmick* Create				// 生成
 	(
 		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rRot,		// 角度
 		const D3DXVECTOR3& rSize,		// サイズ
 		const EType type,				// 種類
 		const int nNumActive			// 発動可能な分身の数

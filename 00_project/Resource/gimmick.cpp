@@ -133,6 +133,7 @@ void CGimmick::Draw(CShader* pShader)
 CGimmick* CGimmick::Create
 (
 	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rRot,		// 角度
 	const D3DXVECTOR3& rSize,		// サイズ
 	const EType type,				// 種類
 	const int nNumActive			// 発動可能な分身の数
@@ -206,6 +207,9 @@ CGimmick* CGimmick::Create
 
 		// 位置を設定
 		pGimmick->SetVec3Position(rPos);
+
+		// 向きを設定
+		pGimmick->SetVec3Rotation(rRot);
 
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);
