@@ -229,7 +229,7 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 }
 
 //===========================================
-//  ‘Ò‹@ˆÊ’u‚Ìİ’è
+//  ”­“®”»’èˆÊ’u‚Ìİ’è
 //===========================================
 void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
 {

@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavRandom.h"
+#include "enemyNavStreet.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -128,8 +128,14 @@ void CEnemyStalk::SetData(void)
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
 
+	std::vector<D3DXVECTOR3> p;
+
+	p.push_back(D3DXVECTOR3(700.0f, 0.0f, -180.0f));
+	p.push_back(D3DXVECTOR3(400.0f, 0.0f, -250.0f));
+	p.push_back(D3DXVECTOR3(800.0f, 0.0f, -100.0f));
+
 	// ナビゲーションを生成
-	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 300.0f, 300.0f);
+	m_pNav = CEnemyNavStreet::Create(p);
 }
 
 //============================================================

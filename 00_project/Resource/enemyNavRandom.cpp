@@ -29,7 +29,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNavRandom::CEnemyNavRandom() : CEnemyNav(),
-m_pRangeCube(nullptr)	// 範囲
+m_pRangeCube(nullptr),	// 範囲
+m_posInit(VEC3_ZERO),	// 初期位置
+m_MoveRange(VEC3_ZERO)	// 移動範囲
 {
 
 }
@@ -127,7 +129,7 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& rPosInit, const floa
 		}
 
 		// 初期位置を設定
-		pNav->SetPosInit(rPosInit);
+		pNav->m_posInit = rPosInit;
 
 		// 移動範囲を設定
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
@@ -248,8 +250,8 @@ void CEnemyNavRandom::DestPosRandom(void)
 	D3DXVECTOR3 posDest = VEC3_ZERO;	// 目的の位置
 
 	// 目的の位置を設定する
-	posDest.x = GetPosInit().x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
-	posDest.z = GetPosInit().z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
+	posDest.x = m_posInit.x + rand() % ((int)m_MoveRange.x + 1) - ((int)m_MoveRange.x * 0.5f);
+	posDest.z = m_posInit.z + rand() % ((int)m_MoveRange.z + 1) - ((int)m_MoveRange.z * 0.5f);
 
 	// 目的位置を適用する
 	SetPosDest(posDest);
@@ -322,46 +324,44 @@ bool CEnemyNavRandom::PosCorrect(const float fDest, float* fTarget, const float 
 //============================================================
 bool CEnemyNavRandom::CollisionRange(D3DXVECTOR3* pPos)
 {
-	D3DXVECTOR3 posInit = GetPosInit();		// 初期位置
-
 	// 範囲を超えたかどうか
 	bool bOver = false;
 
-	if (pPos->x >= posInit.x + m_MoveRange.x)
+	if (pPos->x >= m_posInit.x + m_MoveRange.x)
 	{ // 右端を超えた場合
 
 		// 位置を補正する
-		pPos->x = posInit.x + m_MoveRange.x;
+		pPos->x = m_posInit.x + m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->x <= posInit.x - m_MoveRange.x)
+	if (pPos->x <= m_posInit.x - m_MoveRange.x)
 	{ // 左端を超えた場合
 
 		// 位置を補正する
-		pPos->x = posInit.x - m_MoveRange.x;
+		pPos->x = m_posInit.x - m_MoveRange.x;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z >= posInit.z + m_MoveRange.z)
+	if (pPos->z >= m_posInit.z + m_MoveRange.z)
 	{ // 奥端を超えた場合
 
 		// 位置を補正する
-		pPos->z = posInit.z + m_MoveRange.z;
+		pPos->z = m_posInit.z + m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;
 	}
 
-	if (pPos->z <= posInit.z - m_MoveRange.z)
+	if (pPos->z <= m_posInit.z - m_MoveRange.z)
 	{ // 手前端を超えた場合
 
 		// 位置を補正する
-		pPos->z = posInit.z - m_MoveRange.z;
+		pPos->z = m_posInit.z - m_MoveRange.z;
 
 		// 範囲超えた
 		bOver = true;

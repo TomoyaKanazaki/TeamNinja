@@ -25,6 +25,7 @@ namespace
 	};
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
+	const float SIZE_SCALE = 0.3f; // 生成範囲の倍率
 }
 
 //===========================================
@@ -197,7 +198,7 @@ void CMultiPlant::Grow()
 
 		// 生成した乱数から座標を算出
 		D3DXVECTOR3 posThis = GetVec3Position();
-		D3DXVECTOR3 sizeThis = GetVec3Sizing() * 0.3f;
+		D3DXVECTOR3 sizeThis = GetVec3Sizing() * SIZE_SCALE;
 		D3DXVECTOR3 posPlant = D3DXVECTOR3
 		(
 			posThis.x + (sizeThis.x * pos[i].x),

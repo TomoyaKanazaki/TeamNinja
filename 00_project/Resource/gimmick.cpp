@@ -173,7 +173,7 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_BRIDGE:		// èdÇ¢î‡
+	case CGimmick::TYPE_BRIDGE:		// ã¥
 
 		pGimmick = new CGimmickBridge;
 
