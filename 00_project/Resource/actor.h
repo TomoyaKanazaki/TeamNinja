@@ -128,8 +128,8 @@ public:
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
 		const D3DXVECTOR3& rScale = VEC3_ONE	// 拡大率
 	);
-	static CListManager<CActor>* GetList(void);	// リスト構造の取得処理
-	static HRESULT LoadSetup(void);	// セットアップ
+	static CListManager<CActor>* GetList(void);		// リスト構造の取得処理
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 private:
 
