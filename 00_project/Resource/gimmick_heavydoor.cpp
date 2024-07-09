@@ -214,7 +214,7 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
@@ -276,7 +276,7 @@ void CGimmickHeavyDoor::OpenTheDoor(D3DXVECTOR3& rPos)
 void CGimmickHeavyDoor::CloseTheDoor(D3DXVECTOR3& rPos)
 {
 	// 変数宣言
-	CStage *pStage = GET_MANAGER->GetScene()->GetStage();	// ステージ情報
+	CStage *pStage = GET_STAGE;	// ステージ情報
 
 	// 重力
 	m_move.y -= GRAVITY;

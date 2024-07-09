@@ -52,7 +52,7 @@ public:
 	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 発動判定位置の取得
 
 	// 仮想関数
-	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx)	// 各分身毎の待機位置を算出
+	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx, const CPlayerClone* pClone)	// 各分身毎の待機位置を算出
 	{ assert(false); return GetVec3Position(); }
 	virtual D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone)	// 各分身毎の待機向きを算出
 	{ assert(false); return GetVec3Rotation(); }

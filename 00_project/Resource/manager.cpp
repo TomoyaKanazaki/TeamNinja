@@ -19,7 +19,7 @@
 #include "model.h"
 #include "font.h"
 #include "character.h"
-#include "shader.h"
+#include "stage.h"
 #include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
@@ -54,6 +54,7 @@ CManager::CManager() :
 	m_pFade			(nullptr),	// フェードインスタンス
 	m_pLoading		(nullptr),	// ローディングインスタンス
 	m_pScene		(nullptr),	// シーンインスタンス
+	m_pStage		(nullptr),	// ステージインスタンス
 	m_pEffekseer	(nullptr),	// エフェクシアマネージャー
 	m_pRetention	(nullptr),	// データ保存マネージャー
 	m_pDebug		(nullptr)	// デバッグ
@@ -94,6 +95,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pFade			= nullptr;		// フェードインスタンス
 	m_pLoading		= nullptr;		// ローディングインスタンス
 	m_pScene		= nullptr;		// シーンインスタンス
+	m_pStage		= nullptr;		// ステージインスタンス
 	m_pEffekseer	= nullptr;		// エフェクシアマネージャー
 	m_pRetention	= nullptr;		// データ保存マネージャー
 	m_pDebug		= nullptr;		// デバッグ
@@ -262,6 +264,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	// ステージの生成
+	m_pStage = CStage::Create();
+	if (m_pStage == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// ローディングの生成
 	m_pLoading = CLoading::Create();
 	if (m_pLoading == nullptr)
@@ -393,6 +405,9 @@ void CManager::Uninit(void)
 
 	// エフェクシアの破棄
 	SAFE_UNINIT(m_pEffekseer);
+
+	// ステージの破棄
+	SAFE_REF_RELEASE(m_pStage);
 
 	// シーンの破棄
 	SAFE_REF_RELEASE(m_pScene);
@@ -996,6 +1011,18 @@ CScene *CManager::GetScene(void)
 
 	// シーンのポインタを返す
 	return m_pScene;
+}
+
+//============================================================
+//	ステージ取得処理
+//============================================================
+CStage *CManager::GetStage(void)
+{
+	// インスタンス未使用
+	assert(m_pStage != nullptr);
+
+	// ステージのポインタを返す
+	return m_pStage;
 }
 
 //============================================================

@@ -48,8 +48,9 @@
 #define GET_INPUTPAD	(CManager::GetInstance()->GetPad())			// パッド情報取得
 #define GET_RETENTION	(CManager::GetInstance()->GetRetention())	// データ保存情報取得
 #define GET_RENDERER	(CManager::GetInstance()->GetRenderer())	// レンダラー情報取得
+#define GET_STAGE		(CManager::GetInstance()->GetStage())		// ステージ情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
-#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー取得
+#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー情報取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生

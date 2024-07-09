@@ -101,13 +101,13 @@ void CGimmickBridge::Draw(CShader* pShader)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
-	if (Idx == 0)
+	if (Idx == 0 && !IsActive())
 	{
 		// プレイヤー座標を取得
 		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();

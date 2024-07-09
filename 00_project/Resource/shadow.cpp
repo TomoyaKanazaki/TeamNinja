@@ -234,7 +234,7 @@ D3DXVECTOR3 CShadow::SetDrawPosition(void)
 	D3DXVECTOR3 posShadow = VEC3_ZERO;	// 影位置
 
 	// ポインタを宣言
-	CStage *pStage = CScene::GetStage();	// ステージの情報
+	CStage *pStage = GET_STAGE;	// ステージの情報
 	if (pStage == nullptr)
 	{ // ステージが存在しない場合
 
