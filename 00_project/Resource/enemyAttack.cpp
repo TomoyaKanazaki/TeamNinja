@@ -248,7 +248,7 @@ bool CEnemyAttack::ShakeOffClone(void)
 		// 分身の位置を取得する
 		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
 
-		if (!collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE)) { continue; }
+		if (!collision::Circle2D(GetVec3Position(), pos, GetRadius(), SHAKEOFF_RANGE)) { continue; }
 
 		// 位置を設定する
 		m_posTarget = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
@@ -294,41 +294,30 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		CScene::GetPlayer()->GetRadius()
 	};
 
-	// ボックスの当たり判定
-	if (!collision::Box3D
-	(
-		rPos,				// 判定位置
-		posPlayer,			// 判定目標位置
-		ATTACK_COLLUP,		// 判定サイズ(右・上・後)
-		ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
-		sizeUpPlayer,		// 判定目標サイズ(右・上・後)
-		sizeDownPlayer		// 判定目標サイズ(左・下・前)
-	))
-	{ // 当たってなかった場合
+	// 回避カウントを加算する
+	m_nAttackCount++;
 
-		return;
-	}
+	if (m_nAttackCount >= DODGE_COUNT)
+	{ // 回避カウントを過ぎた場合
 
-	if (m_nAttackCount <= DODGE_COUNT)
-	{ // 回避カウント中
+		// ボックスの当たり判定
+		if (collision::Box3D
+		(
+			rPos,				// 判定位置
+			posPlayer,			// 判定目標位置
+			ATTACK_COLLUP,		// 判定サイズ(右・上・後)
+			ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
+			sizeUpPlayer,		// 判定目標サイズ(右・上・後)
+			sizeDownPlayer		// 判定目標サイズ(左・下・前)
+		))
+		{ // 当たってなかった場合
 
-		// 青色に変えておく
-		SetAllMaterial(material::Blue());
+			// 回避カウントを初期化する
+			m_nAttackCount = 0;
 
-		// 回避カウントを加算する
-		m_nAttackCount++;
-	}
-	else
-	{ // 上記以外
-
-		// 回避カウントを初期化する
-		m_nAttackCount = 0;
-
-		// マテリアルをリセット
-		ResetMaterial();
-
-		// ヒット処理
-		CScene::GetPlayer()->Hit(500);
+			// ヒット処理
+			CScene::GetPlayer()->Hit(500);
+		}
 
 		// 攻撃状況を true にする
 		m_bAttack = true;
