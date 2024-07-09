@@ -68,7 +68,8 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	SPass Regist(const char* pMapPass);		// マップパス登録
-	HRESULT BindStage(const SPass& rPass);	// ステージ割当
+	HRESULT BindStage(const char* pPass);	// ステージ割当 (パス)
+	HRESULT BindStage(const SPass& rPass);	// ステージ割当 (情報)
 	void SetLimit(const SLimit& rLimit);	// 範囲設定
 	SLimit GetLimit(void) const;			// 範囲取得
 
