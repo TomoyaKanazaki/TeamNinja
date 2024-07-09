@@ -96,7 +96,7 @@ void CGimmickCanon::Draw(CShader* pShader)
 //===========================================
 //  待機位置の計算処理
 //===========================================
-D3DXVECTOR3 CGimmickCanon::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickCanon::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// TODO モーションに合わせていい感じの処理を作る
 	return GetVec3Position();

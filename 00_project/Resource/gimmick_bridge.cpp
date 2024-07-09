@@ -85,17 +85,6 @@ void CGimmickBridge::Update(const float fDeltaTime)
 		SetEnableDraw(true);
 	}
 
-#ifdef _DEBUG
-	if (GET_INPUTKEY->IsTrigger(DIK_NUMPADENTER))
-	{
-		int i = GetAngle();
-		++i;
-		i %= ANGLE_MAX;
-		m_eAngle = (EAngle)i;
-		CalcConectPoint();
-	}
-#endif
-
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -112,13 +101,13 @@ void CGimmickBridge::Draw(CShader* pShader)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
 	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
-	if (Idx == 0)
+	if (Idx == 0 && !IsActive())
 	{
 		// プレイヤー座標を取得
 		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
@@ -156,16 +145,36 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 	if (IsActive())
 	{ // ギミック発動中の場合
+		// 方向を取得
+		EAngle angle = GetAngle();
+		float fTemp = 0.0f;
+
+		// y軸を設定
+		switch (angle)
+		{
+		case ANGLE_90:
+		case ANGLE_270:
+
+			fTemp = D3DX_PI * 0.5f;
+			break;
+
+		case ANGLE_0:
+		case ANGLE_180:
+
+			fTemp = 0.0f;
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
 
 		// 向きを寝そべる形にする
-		return D3DXVECTOR3(-HALF_PI, HALF_PI + (D3DX_PI * (float)m_nIdxWait), 0.0f);
+		return D3DXVECTOR3(-HALF_PI, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
 
 	// 待機中心との差分を求める
 	D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
-
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
 
 	// 向きを求める
 	D3DXVECTOR3 rot = VEC3_ZERO;
