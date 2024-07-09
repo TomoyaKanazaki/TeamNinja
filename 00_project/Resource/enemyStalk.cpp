@@ -29,6 +29,7 @@ namespace
 	const float HEIGHT = 80.0f;				// 身長
 	const float SPEED = -290.0f;			// 速度
 	const float ROT_REV = 4.0f;				// 向きの補正係数
+	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
@@ -44,6 +45,7 @@ namespace
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
 m_pNav(nullptr),
 m_state(STATE_CRAWL),
+m_nStateCount(0),
 m_fAlpha(1.0f)
 {
 
@@ -194,6 +196,13 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		break;
 
+	case CEnemyStalk::STATE_CAUTION:
+
+		// 警戒処理
+		nCurMotion = Caution();
+
+		break;
+
 	case CEnemyStalk::STATE_FADEOUT:
 
 		// フェードアウト処理
@@ -295,9 +304,6 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 
 			// 待機モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
-
-			// 巡回状態にする
-			m_state = STATE_CRAWL;
 		}
 
 		break;
@@ -545,11 +551,12 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 {
-	if (GetMotionType() != MOTION_UPSET)
+	if (GetMotionType() != MOTION_ATTACK &&
+		GetMotionType() != MOTION_UPSET)
 	{ // 動揺モーションじゃなかった場合
 
-		// フェードアウト状態にする
-		m_state = STATE_FADEOUT;
+		// 警戒状態にする
+		m_state = STATE_CAUTION;
 
 		// 待機モーションにする
 		return MOTION_IDOL;
@@ -557,6 +564,54 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 
 	// 動揺モーションにする
 	return MOTION_UPSET;
+}
+
+//============================================================
+// 警戒処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Caution(void)
+{
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount % CAUTION_STATE_COUNT == 0)
+	{ // 状態カウントが一定数になった場合
+
+		// 状態カウントを0にする
+		m_nStateCount = 0;
+
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+	}
+
+	if (JudgeClone() ||
+		JudgePlayer())
+	{ // 分身かプレイヤーが目に入った場合
+
+		// 状態カウントを0にする
+		m_nStateCount = 0;
+
+		// 停止状態にする
+		m_pNav->SetState(CEnemyNav::STATE_STOP);
+
+		// 状態カウントを0にする
+		m_pNav->SetStateCount(0);
+
+		// 警告状態にする
+		m_state = STATE_WARNING;
+
+		// 発見モーションを返す
+		return MOTION_FOUND;
+	}
+	else
+	{ // 上記以外
+
+		// 無対象にする
+		SetTarget(TARGET_NONE);
+	}
+
+	// TODO：攻撃モーションを返す
+	return MOTION_ATTACK;
 }
 
 //============================================================
