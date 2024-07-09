@@ -156,9 +156,32 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 	if (IsActive())
 	{ // ギミック発動中の場合
+		// 方向を取得
+		EAngle angle = GetAngle();
+		float fTemp = 0.0f;
+
+		// y軸を設定
+		switch (angle)
+		{
+		case ANGLE_90:
+		case ANGLE_270:
+
+			fTemp = D3DX_PI * 0.5f;
+			break;
+
+		case ANGLE_0:
+		case ANGLE_180:
+
+			fTemp = 0.0f;
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
 
 		// 向きを寝そべる形にする
-		return D3DXVECTOR3(-HALF_PI, HALF_PI + (D3DX_PI * (float)m_nIdxWait), 0.0f);
+		return D3DXVECTOR3(-HALF_PI, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
 
 	// 待機中心との差分を求める
