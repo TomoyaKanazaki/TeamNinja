@@ -35,6 +35,9 @@ CStage::CStage()
 {
 	// メンバ変数をクリア
 	memset(&m_limit, 0, sizeof(m_limit));	// 範囲情報
+
+	// マップパス連想配列をクリア
+	m_mapPass.clear();
 }
 
 //============================================================
@@ -53,6 +56,9 @@ HRESULT CStage::Init(void)
 	// メンバ変数を初期化
 	memset(&m_limit, 0, sizeof(m_limit));	// 範囲情報
 
+	// マップパス連想配列を初期化
+	m_mapPass.clear();
+
 	// 成功を返す
 	return S_OK;
 }
@@ -62,7 +68,84 @@ HRESULT CStage::Init(void)
 //============================================================
 void CStage::Uninit(void)
 {
+	// マップパス連想配列をクリア
+	m_mapPass.clear();
+}
 
+//============================================================
+//	マップパスの登録処理
+//============================================================
+CStage::SPass CStage::Regist(const char* pMapPass)
+{
+	// 既に生成済みかを検索
+	auto itr = m_mapPass.find(pMapPass);	// 引数のフォントを検索
+	if (itr != m_mapPass.end())
+	{ // 生成済みの場合
+
+		// 読込済みのフォント情報を返す
+		return itr->second;
+	}
+
+	// マップパス情報を読込
+	SPass tempPass;	// マップパス情報
+	if (FAILED(LoadPass(pMapPass, &tempPass)))
+	{ // 読込に失敗した場合
+
+		// 初期値を返す
+		assert(false);
+		return {};
+	}
+
+	// フォント情報を保存
+	m_mapPass.insert(std::make_pair(pMapPass, tempPass));
+
+	// 生成したマップパス情報を返す
+	return tempPass;
+}
+
+//============================================================
+//	ステージの割当処理
+//============================================================
+HRESULT CStage::BindStage(const SPass& rPass)
+{
+	// ステージのセットアップの読込
+	if (FAILED(LoadSetup(rPass.sStage.c_str())))
+	{ // 読み込みに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// アクターのセットアップの読込
+	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// チェックポイントのセットアップの読込
+	if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ゴールポイントのセットアップの読込
+	if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================
@@ -311,51 +394,6 @@ void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
 }
 
 //============================================================
-//	ステージの割当処理
-//============================================================
-HRESULT CStage::BindStage(const SPass& rPass)
-{
-	// ステージのセットアップの読込
-	if (FAILED(LoadSetup(rPass.sStage.c_str())))
-	{ // 読み込みに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// アクターのセットアップの読込
-	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// チェックポイントのセットアップの読込
-	if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// ゴールポイントのセットアップの読込
-	if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// 成功を返す
-	return S_OK;
-}
-
-//============================================================
 //	キルY座標との当たり判定
 //============================================================
 bool CStage::CollisionKillY(const D3DXVECTOR3& rPos)
@@ -374,7 +412,7 @@ bool CStage::CollisionKillY(const D3DXVECTOR3& rPos)
 //============================================================
 //	地面の範囲内の取得処理
 //============================================================
-bool CStage::IsFieldPositionRange(const D3DXVECTOR3&rPos)
+bool CStage::IsFieldPositionRange(const D3DXVECTOR3& rPos)
 {
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
@@ -399,7 +437,7 @@ bool CStage::IsFieldPositionRange(const D3DXVECTOR3&rPos)
 //============================================================
 //	地面の着地位置の取得処理
 //============================================================
-float CStage::GetFieldPositionHeight(const D3DXVECTOR3&rPos)
+float CStage::GetFieldPositionHeight(const D3DXVECTOR3& rPos)
 {
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
@@ -481,6 +519,67 @@ void CStage::Release(CStage *&prStage)
 
 	// メモリ開放
 	SAFE_DELETE(prStage);
+}
+
+//============================================================
+//	パス情報の読込処理
+//============================================================
+HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
+{
+	// ファイルを開く
+	std::ifstream file(pMapPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "マップパスセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// ステージ読込パスを読込
+
+			// ステージ読込パスを保存
+			pPassInfo->sStage = str;
+		}
+		else if (str == "ACTOR_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// アクター読込パスを読込
+
+			// アクター読込パスを保存
+			pPassInfo->sActor = str;
+		}
+		else if (str == "POINT_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// ポイント読込パスを読込
+
+			// ポイント読込パスを保存
+			pPassInfo->sPoint = str;
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

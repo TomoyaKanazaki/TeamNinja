@@ -23,16 +23,6 @@
 #include "stage.h"
 
 //************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const char *SETUP_STAGE = "data\\TXT\\STAGE\\FOREST00\\stage.txt";		// セットアップテキスト相対パス
-	const char *SETUP_ACTOR = "data\\TXT\\\\STAGE\\FOREST00\\actor.txt";	// セットアップテキスト相対パス
-	const char *SETUP_POINT = "data\\TXT\\\\STAGE\\FOREST00\\point.txt";	// セットアップテキスト相対パス
-}
-
-//************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CCollManager* CScene::m_pCollManager = nullptr;	// 当たり判定マネージャー
@@ -74,14 +64,8 @@ HRESULT CScene::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create(m_mode);
 
-	// TODO：ここ別のとこで保存しとこうね
-	CStage::SPass pass;
-	pass.sStage = SETUP_STAGE;
-	pass.sActor = SETUP_ACTOR;
-	pass.sPoint = SETUP_POINT;
-
 	// ステージの割当
-	GET_STAGE->BindStage(pass);
+	GET_STAGE->BindStage(GET_STAGE->Regist("data\\TXT\\MAP\\FOREST00\\map.txt"));	// TODO：今だけ確定で初期マップ読込
 
 	// 成功を返す
 	return S_OK;

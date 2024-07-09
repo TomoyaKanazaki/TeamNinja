@@ -67,6 +67,7 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
+	SPass Regist(const char* pMapPass);		// マップパス登録
 	HRESULT BindStage(const SPass& rPass);	// ステージ割当
 	void SetLimit(const SLimit& rLimit);	// 範囲設定
 	SLimit GetLimit(void) const;			// 範囲取得
@@ -83,6 +84,7 @@ public:
 	// 静的メンバ関数
 	static CStage *Create(void);			// 生成
 	static void Release(CStage *&prStage);	// 破棄
+	static HRESULT LoadPass(const char* pMapPass, SPass* pPassInfo);	// パス情報読込
 
 private:
 	// メンバ関数
@@ -96,6 +98,7 @@ private:
 	HRESULT LoadChanger(const char* pString, FILE* pFile);	// カメラ変更地点情報の読込
 
 	// メンバ変数
+	std::map<std::string, SPass> m_mapPass;	// マップパス連想配列
 	SLimit m_limit;	// 範囲情報
 };
 
