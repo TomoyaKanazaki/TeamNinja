@@ -76,8 +76,6 @@ public:
 		const int nNumActive			// 発動可能な分身の数
 	);
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
-protected:
-	EAngle m_eAngle;	// 角度
 
 private:
 
@@ -85,6 +83,7 @@ private:
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
 	EType m_type;		// 種類
 	int m_nNumActive;	// 発動可能な数
+	EAngle m_eAngle;	// 角度
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト

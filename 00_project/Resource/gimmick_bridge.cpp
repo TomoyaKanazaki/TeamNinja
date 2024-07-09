@@ -85,17 +85,6 @@ void CGimmickBridge::Update(const float fDeltaTime)
 		SetEnableDraw(true);
 	}
 
-#ifdef _DEBUG
-	if (GET_INPUTKEY->IsTrigger(DIK_NUMPADENTER))
-	{
-		int i = GetAngle();
-		++i;
-		i %= ANGLE_MAX;
-		m_eAngle = (EAngle)i;
-		CalcConectPoint();
-	}
-#endif
-
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -186,9 +175,6 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 	// 待機中心との差分を求める
 	D3DXVECTOR3 vecCenter = GetActionPoint() - pClone->GetVec3Position();
-
-	// 差分ベクトルの向きを求める
-	float fRot = -atan2f(vecCenter.x, -vecCenter.z);
 
 	// 向きを求める
 	D3DXVECTOR3 rot = VEC3_ZERO;
