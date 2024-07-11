@@ -82,7 +82,7 @@ private:
 
 	// メンバ関数
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
-	EMotion Warning(void);						// 警告処理
+	EMotion Warning(D3DXVECTOR3* pPos);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
 	EMotion Upset(void);						// 動揺処理
@@ -95,7 +95,6 @@ private:
 	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
 	EState m_state;						// 状態
 	int m_nStateCount;					// 状態カウント
-	float m_fAlpha;						// 透明度
 };
 
 #endif	// _ENEMY_CHASE_H_

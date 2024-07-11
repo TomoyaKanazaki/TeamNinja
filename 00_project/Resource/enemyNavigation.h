@@ -50,6 +50,8 @@ public:
 		const float fDeltaTime		// デルタタイム
 	);
 
+	virtual void NavReset(void);	// ナビゲーションのリセット処理
+
 	// セット・ゲット関係
 	void SetState(const EState state) { m_state = state; }				// 状態の設定処理
 	EState GetState(void) const { return m_state; }						// 状態の取得処理
