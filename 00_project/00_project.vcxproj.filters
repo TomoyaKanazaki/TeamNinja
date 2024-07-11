@@ -537,9 +537,6 @@
     <ClInclude Include="Resource\enemyNavigation.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_canon.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemyNavRandom.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
@@ -560,6 +557,9 @@
     </ClInclude>
     <ClInclude Include="Resource\selectManager.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\transpoint.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1037,9 +1037,6 @@
     <ClCompile Include="Resource\gameManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_canon.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemyNavRandom.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
@@ -1060,6 +1057,9 @@
     </ClCompile>
     <ClCompile Include="Resource\selectManager.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\transpoint.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

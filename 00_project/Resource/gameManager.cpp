@@ -29,7 +29,6 @@
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
-#include "gimmick_canon.h"
 
 //************************************************************
 //	’è”éŒ¾
