@@ -16,6 +16,12 @@
 #include "enemyAttack.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CEnemyNav;		// 敵のナビゲーション
+class CEnemyChaseRange;	// 敵の追跡範囲処理
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // 狼敵クラス
@@ -31,6 +37,8 @@ public:
 		STATE_FOUND,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
+		STATE_FADEOUT,		// フェードアウト状態
+		STATE_FADEIN,		// フェードイン状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -70,18 +78,23 @@ private:
 	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override;	// 状態の更新処理
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
+	void NavMoitonSet(int* pMotion);				// ナビゲーションによるモーションの設定処理
 
 	// メンバ関数
-	int UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回状態時の更新
-	int UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 警告状態時の更新
-	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡状態時の更新
-	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 攻撃状態時の更新
-	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 動揺状態時の更新
+	int UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 巡回状態時の更新
+	int UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 警告状態時の更新
+	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 追跡状態時の更新
+	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 攻撃状態時の更新
+	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 動揺状態時の更新
+	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// フェードアウト状態時の更新
+	int UpdateFadeIn(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// フェードイン状態時の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 
 	// メンバ変数
-	EState m_state;				// 状態
+	CEnemyNav* m_pNav;					// ナビゲーションの情報
+	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
+	EState m_state;						// 状態
 };
 
 #endif	// _ENEMY_CHASE_H_

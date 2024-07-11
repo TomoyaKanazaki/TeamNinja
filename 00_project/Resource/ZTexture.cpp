@@ -60,7 +60,6 @@ bool CZTexture::Init()
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイス情報
 	if (pDevice == NULL) return false;
-	if (ZTEX_WIDTH == 0 || ZTEX_HEIGHT == 0) return false;
 
 	HRESULT hr;
 	ID3DXBuffer* pError = NULL;

@@ -14,23 +14,11 @@
 #include "camera.h"
 #include "effekseerManager.h"
 #include "sceneTitle.h"
-#include "sceneTutorial.h"
+#include "sceneSelect.h"
 #include "sceneGame.h"
-#include "sceneResult.h"
-#include "sceneRanking.h"
 #include "collManager.h"
 #include "player.h"
 #include "stage.h"
-
-//************************************************************
-//	定数宣言
-//************************************************************
-//namespace
-//{
-//	const char *SETUP_STAGE = "data\\TXT\\MAP\\FOREST00\\stage.txt";		// セットアップテキスト相対パス
-//	const char *SETUP_ACTOR = "data\\TXT\\MAP\\FOREST00\\actor.txt";	// セットアップテキスト相対パス
-//	const char *SETUP_POINT = "data\\TXT\\MAP\\FOREST00\\point.txt";	// セットアップテキスト相対パス
-//}
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -133,20 +121,12 @@ CScene *CScene::Create(EMode mode)
 		pScene = new CSceneTitle(mode);
 		break;
 
-	case MODE_TUTORIAL:
-		pScene = new CSceneTutorial(mode);
+	case MODE_SELECT:
+		pScene = new CSceneSelect(mode);
 		break;
 
 	case MODE_GAME:
 		pScene = new CSceneGame(mode);
-		break;
-
-	case MODE_RESULT:
-		pScene = new CSceneResult(mode);
-		break;
-
-	case MODE_RANKING:
-		pScene = new CSceneRanking(mode);
 		break;
 
 	default:	// 例外処理

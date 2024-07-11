@@ -393,16 +393,7 @@
     <ClInclude Include="Resource\sceneGame.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\sceneRanking.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneResult.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\sceneTitle.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTutorial.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Resource\scenery.h">
@@ -465,16 +456,7 @@
     <ClInclude Include="Resource\orbit.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\tutorialManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\titleManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resultManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\rankingManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gameManager.h">
@@ -555,9 +537,6 @@
     <ClInclude Include="Resource\enemyNavigation.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_canon.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemyNavRandom.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
@@ -572,6 +551,15 @@
     </ClInclude>
     <ClInclude Include="Resource\enemyChaseRange.h">
       <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneSelect.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\selectManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\transpoint.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -905,16 +893,7 @@
     <ClCompile Include="Resource\sceneGame.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\sceneRanking.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneResult.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\sceneTitle.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTutorial.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\scenery.cpp">
@@ -977,16 +956,7 @@
     <ClCompile Include="Resource\orbit.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\tutorialManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\titleManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\resultManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\rankingManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\player.cpp">
@@ -1067,9 +1037,6 @@
     <ClCompile Include="Resource\gameManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_canon.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemyNavRandom.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
@@ -1084,6 +1051,15 @@
     </ClCompile>
     <ClCompile Include="Resource\enemyChaseRange.cpp">
       <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneSelect.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\selectManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\transpoint.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

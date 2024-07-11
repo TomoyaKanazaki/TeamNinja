@@ -12,6 +12,7 @@
 #include "object.h"
 #include "renderer.h"
 #include "scene.h"
+#include "sceneSelect.h"
 #include "sceneGame.h"
 #include "editManager.h"
 #include "debugproc.h"
@@ -39,12 +40,12 @@ namespace
 #define NAME_2D_DISP		("F4")		// 2Dオブジェクト表示ON/OFF表示
 #define KEY_EDITMODE		(DIK_F5)	// エディターモードON/OFFキー
 #define NAME_EDITMODE		("F5")		// エディターモードON/OFF表示
-#define KEY_PAUSE_DISP		(DIK_F6)	// ポーズ表示ON/OFFキー
-#define NAME_PAUSE_DISP		("F6")		// ポーズ表示ON/OFF表示
-#define KEY_RESULT_TRANS	(DIK_F7)	// リザルト遷移キー
-#define NAME_RESULT_TRANS	("F7")		// リザルト遷移表示
-#define KEY_ACTOR_DISP		(DIK_F8)	// アクターの当たり判定表示ON/OFFキー
-#define NAME_ACTOR_TRANS	("F8")		// アクターの当たり判定表示ON/OFF表示
+#define KEY_ACTOR_DISP		(DIK_F6)	// アクターの当たり判定表示ON/OFFキー
+#define NAME_ACTOR_TRANS	("F6")		// アクターの当たり判定表示ON/OFF表示
+#define KEY_PAUSE_DISP		(DIK_F7)	// ポーズ表示ON/OFFキー
+#define NAME_PAUSE_DISP		("F7")		// ポーズ表示ON/OFF表示
+#define KEY_RESULT_TRANS	(DIK_F8)	// リザルト遷移キー
+#define NAME_RESULT_TRANS	("F8")		// リザルト遷移表示
 
 //************************************************************
 //	親クラス [CDebug] のメンバ関数
@@ -232,15 +233,18 @@ void CDebug::UpdateDebugControl(void)
 	// 2Dオブジェクト表示変更
 	ChangeDisp2D();
 
-	// アクター当たり判定表示変更
-	ChangeActorDisp();
-
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
 		break;
 
-	case CScene::MODE_TUTORIAL:
+	case CScene::MODE_SELECT:
+
+		// エディターモード変更
+		ChangeEditMode();
+
+		// アクター当たり判定表示変更
+		ChangeActorDisp();
 		break;
 
 	case CScene::MODE_GAME:
@@ -248,18 +252,11 @@ void CDebug::UpdateDebugControl(void)
 		// エディターモード変更
 		ChangeEditMode();
 
+		// アクター当たり判定表示変更
+		ChangeActorDisp();
+
 		// ポーズ表示変更
 		ChangeDispPause();
-
-		// リザルト遷移
-		ResultTrans();
-
-		break;
-
-	case CScene::MODE_RESULT:
-		break;
-
-	case CScene::MODE_RANKING:
 		break;
 
 	default:
@@ -294,22 +291,17 @@ void CDebug::DrawDebugControl(void)
 	case CScene::MODE_TITLE:
 		break;
 
-	case CScene::MODE_TUTORIAL:
+	case CScene::MODE_SELECT:
+
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
 		break;
 
 	case CScene::MODE_GAME:
 
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：エディットモードのON/OFF\n", NAME_EDITMODE);
-		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
-		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：リザルト遷移\n", NAME_RESULT_TRANS);
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
-
-		break;
-
-	case CScene::MODE_RESULT:
-		break;
-
-	case CScene::MODE_RANKING:
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：ポーズ描画のON/OFF\n", NAME_PAUSE_DISP);
 		break;
 
 	default:
@@ -460,8 +452,24 @@ void CDebug::ChangeEditMode(void)
 {
 	if (GET_INPUTKEY->IsTrigger(KEY_EDITMODE))
 	{
+		// エディットマネージャー取得
+		CEditManager *pEdit = nullptr;
+		switch (GET_MANAGER->GetMode())
+		{
+		case CScene::MODE_SELECT:
+			CSceneSelect::GetEditManager();
+			break;
+
+		case CScene::MODE_GAME:
+			CSceneGame::GetEditManager();
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+
 		// エディット状況のフラグを反転
-		CEditManager *pEdit = CSceneGame::GetEditManager();
 		pEdit->SetEnableEdit(!pEdit->IsEdit());
 	}
 }
@@ -475,18 +483,6 @@ void CDebug::ChangeDispPause(void)
 	{
 		// ポーズの表示状況を設定
 		CSceneGame::GetPause()->SetEnableDebugDisp(!CSceneGame::GetPause()->IsDebugDisp());
-	}
-}
-
-//============================================================
-//	リザルト遷移処理
-//============================================================
-void CDebug::ResultTrans(void)
-{
-	if (GET_INPUTKEY->IsTrigger(KEY_RESULT_TRANS))
-	{
-		// リザルト画面に遷移
-		GET_MANAGER->SetLoadScene(CScene::MODE_RESULT);
 	}
 }
 
