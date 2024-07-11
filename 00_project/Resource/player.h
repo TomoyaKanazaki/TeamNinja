@@ -74,7 +74,6 @@ public:
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
-		STATE_SHOOT,	// 発射状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -115,7 +114,6 @@ public:
 	bool GimmickLand(void);						// ギミックの飛び降り着地
 	D3DXVECTOR3 GetVec3Sizing() const override
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
-	void SetShoot(const float& fTarget); // 吹っ飛ぶ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -148,7 +146,6 @@ private:
 	void SaveReset();		// 直前のチェックポイントに帰る
 	void CallClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
-	void CalcShoot(D3DXVECTOR3& rPos);			// 発射の計算処理
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定

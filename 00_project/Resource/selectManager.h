@@ -1,26 +1,20 @@
-#if 0
 //============================================================
 //
-//	ゲームマネージャーヘッダー [gameManager.h]
+//	セレクトマネージャーヘッダー [selectManager.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _GAMEMANAGER_H_
-#define _GAMEMANAGER_H_
-
-//************************************************************
-//	インクルードファイル
-//************************************************************
-#include "retentionManager.h"
+#ifndef _SELECTMANAGER_H_
+#define _SELECTMANAGER_H_
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// ゲームマネージャークラス
-class CGameManager
+// セレクトマネージャークラス
+class CSelectManager
 {
 public:
 	// 状態列挙
@@ -32,10 +26,10 @@ public:
 	};
 
 	// コンストラクタ
-	CGameManager();
+	CSelectManager();
 
 	// デストラクタ
-	~CGameManager();
+	~CSelectManager();
 
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
@@ -43,17 +37,14 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 	void SetState(const EState state);		// 状態設定
 	EState GetState(void) const;			// 状態取得
-	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
 	// 静的メンバ関数
-	static CGameManager *Create(void);	// 生成
-	static void Release(CGameManager *&prGameManager);		// 破棄
+	static CSelectManager *Create(void);	// 生成
+	static void Release(CSelectManager *&prSelectManager);		// 破棄
 
 private:
-
 	// メンバ変数
 	EState m_state;	// 状態
 };
 
-#endif	// _GAMEMANAGER_H_
-#endif
+#endif	// _SELECTMANAGER_H_

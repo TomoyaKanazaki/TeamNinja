@@ -1669,6 +1669,9 @@ void CPlayerClone::Approach(void)
 	// 目標へのベクトルに倍率をかけ現在地に加算する
 	pos += vecTarget * 0.1f;
 #endif
+	
+	// 移動量を初期化する
+	m_move = VEC3_ZERO;
 
 	// ギミック待機位置を適用する
 	SetVec3Position(m_pGimmick->CalcWaitPoint(m_nIdxGimmick, this));

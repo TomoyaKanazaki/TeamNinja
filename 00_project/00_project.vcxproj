@@ -235,7 +235,6 @@
     <ClInclude Include="Resource\gimmick_action.h" />
     <ClInclude Include="Resource\gimmick_boob.h" />
     <ClInclude Include="Resource\gimmick_bridge.h" />
-    <ClInclude Include="Resource\gimmick_canon.h" />
     <ClInclude Include="Resource\gimmick_decayed.h" />
     <ClInclude Include="Resource\gimmick_heavydoor.h" />
     <ClInclude Include="Resource\gimmick_malti.h" />
@@ -291,23 +290,20 @@
     <ClInclude Include="Resource\player_clone.h" />
     <ClInclude Include="Resource\precompile.h" />
     <ClInclude Include="Resource\random.h" />
-    <ClInclude Include="Resource\rankingManager.h" />
     <ClInclude Include="Resource\renderer.h" />
     <ClInclude Include="Resource\renderState.h" />
     <ClInclude Include="Resource\resource.h" />
-    <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\retentionManager.h" />
     <ClInclude Include="Resource\scene.h" />
     <ClInclude Include="Resource\sceneGame.h" />
-    <ClInclude Include="Resource\sceneRanking.h" />
-    <ClInclude Include="Resource\sceneResult.h" />
     <ClInclude Include="Resource\scenery.h" />
+    <ClInclude Include="Resource\sceneSelect.h" />
     <ClInclude Include="Resource\sceneTitle.h" />
-    <ClInclude Include="Resource\sceneTutorial.h" />
     <ClInclude Include="Resource\screen.h" />
     <ClInclude Include="Resource\scroll2D.h" />
     <ClInclude Include="Resource\scrollMeshField.h" />
     <ClInclude Include="Resource\scrollMeshRing.h" />
+    <ClInclude Include="Resource\selectManager.h" />
     <ClInclude Include="Resource\shader.h" />
     <ClInclude Include="Resource\shaderMono.h" />
     <ClInclude Include="Resource\shaderToon.h" />
@@ -323,7 +319,6 @@
     <ClInclude Include="Resource\timerUI.h" />
     <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
-    <ClInclude Include="Resource\tutorialManager.h" />
     <ClInclude Include="Resource\useful.h" />
     <ClInclude Include="Resource\value.h" />
     <ClInclude Include="Resource\valueUI.h" />
@@ -408,7 +403,6 @@
     <ClCompile Include="Resource\gimmick_action.cpp" />
     <ClCompile Include="Resource\gimmick_boob.cpp" />
     <ClCompile Include="Resource\gimmick_bridge.cpp" />
-    <ClCompile Include="Resource\gimmick_canon.cpp" />
     <ClCompile Include="Resource\gimmick_decayed.cpp" />
     <ClCompile Include="Resource\gimmick_heavydoor.cpp" />
     <ClCompile Include="Resource\gimmick_malti.cpp" />
@@ -469,22 +463,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Resource\random.cpp" />
-    <ClCompile Include="Resource\rankingManager.cpp" />
     <ClCompile Include="Resource\renderer.cpp" />
     <ClCompile Include="Resource\renderState.cpp" />
-    <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\retentionManager.cpp" />
     <ClCompile Include="Resource\scene.cpp" />
     <ClCompile Include="Resource\sceneGame.cpp" />
-    <ClCompile Include="Resource\sceneRanking.cpp" />
-    <ClCompile Include="Resource\sceneResult.cpp" />
     <ClCompile Include="Resource\scenery.cpp" />
+    <ClCompile Include="Resource\sceneSelect.cpp" />
     <ClCompile Include="Resource\sceneTitle.cpp" />
-    <ClCompile Include="Resource\sceneTutorial.cpp" />
     <ClCompile Include="Resource\screen.cpp" />
     <ClCompile Include="Resource\scroll2D.cpp" />
     <ClCompile Include="Resource\scrollMeshField.cpp" />
     <ClCompile Include="Resource\scrollMeshRing.cpp" />
+    <ClCompile Include="Resource\selectManager.cpp" />
     <ClCompile Include="Resource\shader.cpp" />
     <ClCompile Include="Resource\shaderMono.cpp" />
     <ClCompile Include="Resource\shaderToon.cpp" />
@@ -500,7 +491,6 @@
     <ClCompile Include="Resource\timerUI.cpp" />
     <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />
-    <ClCompile Include="Resource\tutorialManager.cpp" />
     <ClCompile Include="Resource\useful.cpp" />
     <ClCompile Include="Resource\value.cpp" />
     <ClCompile Include="Resource\valueUI.cpp" />
