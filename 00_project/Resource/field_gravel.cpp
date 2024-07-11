@@ -1,10 +1,10 @@
 //==========================================
 //
-//  砂利道ギミック(gimmick_gravel.cpp)
+//  砂利道ギミック(field_gravel.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_gravel.h"
+#include "field_gravel.h"
 #include "player_clone.h"
 #include "player.h"
 

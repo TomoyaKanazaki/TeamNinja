@@ -11,12 +11,12 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-#include "gimmick_gravel.h"
-#include "gimmick_boob.h"
-#include "gimmick_cleen.h"
-#include "gimmick_fall.h"
-#include "gimmick_decayed.h"
-#include "gimmick_water.h"
+#include "field_gravel.h"
+#include "field_boob.h"
+#include "field_cleen.h"
+#include "field_fall.h"
+#include "field_decayed.h"
+#include "field_water.h"
 #include "player.h"
 
 //************************************************************

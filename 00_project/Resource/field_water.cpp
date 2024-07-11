@@ -1,10 +1,10 @@
 //==========================================
 //
-//  水場ギミック(gimmick_water.cpp)
+//  水場ギミック(field_water.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_water.h"
+#include "field_water.h"
 #include "player_clone.h"
 #include "player.h"
 

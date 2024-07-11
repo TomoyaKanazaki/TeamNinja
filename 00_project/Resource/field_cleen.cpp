@@ -1,17 +1,17 @@
 //==========================================
 //
-//  泥ギミック(gimmick_boob.cpp)
+//  掃除したての床ギミック(field_cleen.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_boob.h"
+#include "field_cleen.h"
 #include "player_clone.h"
 #include "player.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickBoob::CGimmickBoob() : CField()
+CGimmickCleen::CGimmickCleen() : CField()
 {
 
 }
@@ -19,7 +19,7 @@ CGimmickBoob::CGimmickBoob() : CField()
 //==========================================
 //  デストラクタ
 //==========================================
-CGimmickBoob::~CGimmickBoob()
+CGimmickCleen::~CGimmickCleen()
 {
 
 }
@@ -27,7 +27,7 @@ CGimmickBoob::~CGimmickBoob()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CGimmickBoob::Init(void)
+HRESULT CGimmickCleen::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CField::Init()))
@@ -45,7 +45,7 @@ HRESULT CGimmickBoob::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CGimmickBoob::Uninit(void)
+void CGimmickCleen::Uninit(void)
 {
 	// 親クラスの終了
 	CField::Uninit();
@@ -54,7 +54,7 @@ void CGimmickBoob::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CGimmickBoob::Update(const float fDeltaTime)
+void CGimmickCleen::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
@@ -63,42 +63,44 @@ void CGimmickBoob::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CGimmickBoob::Draw(CShader* pShader)
+void CGimmickCleen::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CField::Draw(pShader);
 }
 
 //===========================================
-//  文字列(フラグ)の追加
+//  当たっていた場合の処理
 //===========================================
-void CGimmickBoob::Hit(CPlayerClone* pClone)
+void CGimmickCleen::Hit(CPlayerClone* pClone)
 {
-	// 分身にフラグを追加する
+	// 分身に文字列を渡す
 	pClone->AddFrags(GetFlag());
 }
 
 //=========================================
-//  文字列(フラグ)の削除
+//  当たっていない場合の処理
 //===========================================
-void CGimmickBoob::Miss(CPlayerClone* pClone)
+void CGimmickCleen::Miss(CPlayerClone* pClone)
 {
-
+	// 分身からフラグを削除する
+	pClone->SabFrags(GetFlag());
 }
-//===
-// ========================================
-//  文字列(フラグ)の追加
+
 //===========================================
-void CGimmickBoob::Hit(CPlayer* pPlayer)
+//  当たっている場合の処理
+//===========================================
+void CGimmickCleen::Hit(CPlayer* pPlayer)
 {
-	// 分身にフラグを追加する
+	// 分身に文字列を渡す
 	pPlayer->AddFrags(GetFlag());
 }
 
-//=========================================
-//  文字列(フラグ)の削除
 //===========================================
-void CGimmickBoob::Miss(CPlayer* pPlayer)
+//  当たっていない場合の処理
+//===========================================
+void CGimmickCleen::Miss(CPlayer* pPlayer)
 {
-
+	// 分身からフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

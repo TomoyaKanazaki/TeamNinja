@@ -122,6 +122,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
+	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr)		// 前回乗ってた地面
 {
@@ -790,6 +791,14 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
 
 		// 橋に乗っている場合移動量を消す
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
+		{
+			m_move.z = 0.0f;
+		}
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_ZBRIDGE)) != std::string::npos)
+		{
+			m_move.x = 0.0f;
+		}
 
 #ifdef _DEBUG
 		if (pPad->IsPress(CInputPad::KEY_Y))

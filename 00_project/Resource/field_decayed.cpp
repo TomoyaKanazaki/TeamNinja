@@ -1,10 +1,10 @@
 //=========================================
 //
-//  落とし穴ギミック (gimmick_fall.cpp)
+//  朽ちた床ギミック (field_decayed.cpp)
 //  Author : Tomoya kanazaki
 //
 //=========================================
-#include "gimmick_fall.h"
+#include "field_decayed.h"
 #include "manager.h"
 #include "player_clone.h"
 #include "player.h"
@@ -17,19 +17,19 @@ namespace
 	const int FALL_NUM = 3; // 上に乗ることのできる分身の数
 }
 
-//==========================================
+//=========================================
 //  コンストラクタ
-//==========================================
-CGimmickFall::CGimmickFall() : CField(),
-m_bFall(false) // 落下フラグ
+//=========================================
+CGimmickDecayed::CGimmickDecayed() : CField(),
+m_bFall(false) // 落ちるフラグ
 {
 
 }
 
-//==========================================
+//=========================================
 //  デストラクタ
-//==========================================
-CGimmickFall::~CGimmickFall()
+//=========================================
+CGimmickDecayed::~CGimmickDecayed()
 {
 
 }
@@ -37,7 +37,7 @@ CGimmickFall::~CGimmickFall()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickFall::Init(void)
+HRESULT CGimmickDecayed::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CField::Init()))
@@ -55,7 +55,7 @@ HRESULT CGimmickFall::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickFall::Uninit(void)
+void CGimmickDecayed::Uninit(void)
 {
 	// 親クラスの終了
 	CField::Uninit();
@@ -64,8 +64,10 @@ void CGimmickFall::Uninit(void)
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickFall::Update(const float fDeltaTime)
+void CGimmickDecayed::Update(const float fDeltaTime)
 {
+	if (m_bFall) { DebugProc::Print(DebugProc::POINT_CENTER, "落ちるon\n"); }
+
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
 }
@@ -73,7 +75,7 @@ void CGimmickFall::Update(const float fDeltaTime)
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickFall::Draw(CShader* pShader)
+void CGimmickDecayed::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CField::Draw(pShader);
@@ -82,7 +84,7 @@ void CGimmickFall::Draw(CShader* pShader)
 //===========================================
 //  当たっていた場合の処理
 //===========================================
-void CGimmickFall::Hit(CPlayerClone* pClone)
+void CGimmickDecayed::Hit(CPlayerClone* pClone)
 {
 	// 分身に文字列を渡す
 	pClone->AddFrags(GetFlag());
@@ -90,14 +92,14 @@ void CGimmickFall::Hit(CPlayerClone* pClone)
 	// 分身に自身の情報を渡す
 	pClone->SetField(this);
 
-	// 分身数をカウント
-	Count();
+	// 落下フラグがoffの場合分身の数を計算
+	if (!m_bFall) { Count(); }
 }
 
 //==========================================
 //  当たっていない場合の処理
 //==========================================
-void CGimmickFall::Miss(CPlayerClone* pClone)
+void CGimmickDecayed::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
@@ -109,28 +111,28 @@ void CGimmickFall::Miss(CPlayerClone* pClone)
 //===========================================
 //  当たっていた場合の処理
 //===========================================
-void CGimmickFall::Hit(CPlayer* pPlayer)
+void CGimmickDecayed::Hit(CPlayer* pPlayer)
 {
-	// 分身に文字列を渡す
+	// プレイヤーに文字列を渡す
 	pPlayer->AddFrags(GetFlag());
 
-	// 分身数をカウント
-	Count();
+	// 落下フラグがoffの場合分身の数を計算
+	if (!m_bFall) { Count(); }
 }
 
 //==========================================
 //  当たっていない場合の処理
 //==========================================
-void CGimmickFall::Miss(CPlayer* pPlayer)
+void CGimmickDecayed::Miss(CPlayer* pPlayer)
 {
-	// 分身からフラグを削除する
+	// プレイヤーからフラグを削除する
 	pPlayer->SabFrags(GetFlag());
 }
 
 //===========================================
 //  乗っているキャラクター総数の計算処理
 //===========================================
-void CGimmickFall::Count()
+void CGimmickDecayed::Count()
 {
 	// 分身のリスト構造が無ければ抜ける
 	if (CPlayerClone::GetList() == nullptr) { return; }
@@ -150,7 +152,7 @@ void CGimmickFall::Count()
 	}
 
 	// 分身の数が最大数未満の場合関数を抜ける
-	if (nNum < FALL_NUM) { m_bFall = false; return; }
+	if (nNum < FALL_NUM) { return; }
 
 	// 落下フラグを立てる
 	m_bFall = true;

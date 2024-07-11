@@ -186,9 +186,6 @@ private:
 	bool m_bGetCamera;				// カメラの取得
 	float m_fCameraRot;				// カメラの角度
 	float m_fStickRot;				// スティックの角度
-	float m_fShootTarget;			// 吹っ飛ばし目標
-	float m_fShootStart;			// 吹っ飛ばし開始地点
-	int m_nCanonTime;				// 吹っ飛び時間
 	std::string m_sFrags;			// ギミックフラグの文字列
 	CField* m_pCurField;			// 現在の地面
 	CField* m_pOldField;			// 過去の地面
