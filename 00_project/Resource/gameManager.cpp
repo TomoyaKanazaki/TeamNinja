@@ -122,32 +122,25 @@ HRESULT CGameManager::Init(void)
 	// [ボタンのみ]
 	//=================================================
 	// ボタン
-	{ // 複数ボタン：最初１つ
-		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(1150.0f, 0.0f, -300.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
-		CGimmickMalti::Create(vec);
-	}
-
 	{ // 複数ボタン：次の３つ
 		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(4125.0f, 0.0f, 350.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, 350.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, -600.0f), D3DXVECTOR3(250.0f, 0.0f, 250.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(4125.0f, 0.0f, 350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, 350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, -600.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 		CGimmickMalti::Create(vec);
 	}
 
-	// ジャンプ台：奥
-	///CGimmick::Create(D3DXVECTOR3(-575.0f, 150.0f, 425.0f), EAngle::ANGLE_0, D3DXVECTOR3(650.0f, 0.0f, 750.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	// ジャンプ台
+	CGimmick::Create(D3DXVECTOR3(8050.0f, 0.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(8850.0f, 250.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(14100.0f, 150.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(14700.0f, 150.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
+	CGimmick::Create(D3DXVECTOR3(17300.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
 
 
-	// ジャンプ台：手前
 
-
-	// 橋：奥
-	///CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), EAngle::ANGLE_0, D3DXVECTOR3(850.0f, 0.0f, 700.0f), CGimmick::TYPE_BRIDGE, 5);
-
-
-	// 橋：手前
+	// 橋
+	CGimmick::Create(D3DXVECTOR3(14400.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 5);
 #endif
 
 // 森02マップ用ギミック置き場
