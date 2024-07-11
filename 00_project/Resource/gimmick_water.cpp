@@ -6,6 +6,7 @@
 //==========================================
 #include "gimmick_water.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
@@ -69,7 +70,7 @@ void CGimmickWater::Draw(CShader* pShader)
 }
 
 //===========================================
-//  文字列(フラグ)の追加
+//  当たっていた場合の処理
 //===========================================
 void CGimmickWater::Hit(CPlayerClone* pClone)
 {
@@ -80,11 +81,32 @@ void CGimmickWater::Hit(CPlayerClone* pClone)
 	pClone->SabFrags(GetFlag(TYPE_BOOB));
 }
 
-//=========================================
-//  文字列(フラグ)の削除
-//===========================================
+//==========================================
+//  当たっていない場合の処理
+//==========================================
 void CGimmickWater::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickWater::Hit(CPlayer* pPlayer)
+{
+	// 分身にフラグを追加する
+	pPlayer->AddFrags(GetFlag());
+
+	// 泥フラグを削除する
+	pPlayer->SabFrags(GetFlag(TYPE_BOOB));
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickWater::Miss(CPlayer* pPlayer)
+{
+	// 分身からフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

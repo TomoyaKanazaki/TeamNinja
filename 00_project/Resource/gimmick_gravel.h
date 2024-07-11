@@ -23,7 +23,12 @@ public:
 	void Uninit(void) override;
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
+
+private:
+
 	void Hit(CPlayerClone* pClone) override;	// •ªg‚É“–‚½‚Á‚Ä‚¢‚½‚Ìˆ—
 	void Miss(CPlayerClone* pClone) override;	// •ªg‚É“–‚½‚Á‚Ä‚¢‚È‚¢‚Ìˆ—
+	void Hit(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
+	void Miss(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
 
 };

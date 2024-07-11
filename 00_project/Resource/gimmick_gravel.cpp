@@ -6,6 +6,7 @@
 //==========================================
 #include "gimmick_gravel.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
@@ -69,7 +70,7 @@ void CGimmickGravel::Draw(CShader* pShader)
 }
 
 //===========================================
-//  文字列(フラグ)の追加
+//  当たっていた場合の処理
 //===========================================
 void CGimmickGravel::Hit(CPlayerClone* pClone)
 {
@@ -77,11 +78,29 @@ void CGimmickGravel::Hit(CPlayerClone* pClone)
 	pClone->AddFrags(GetFlag());
 }
 
-//=========================================
-//  文字列(フラグ)の削除
-//===========================================
+//==========================================
+//  当たっていない場合の処理
+//==========================================
 void CGimmickGravel::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickGravel::Hit(CPlayer* pPlayer)
+{
+	// 分身に文字列を渡す
+	pPlayer->AddFrags(GetFlag());
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickGravel::Miss(CPlayer* pPlayer)
+{
+	// 分身からフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

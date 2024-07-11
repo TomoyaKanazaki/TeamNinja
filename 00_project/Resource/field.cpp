@@ -37,6 +37,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 朽ちた床テクスチャ
 		"data\\TEXTURE\\FIELD\\Water.png",		// 水テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// ドブテクスチャ
+		"data\\TEXTURE\\test.png",				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
 		"data\\TEXTURE\\test.png"				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
 	};
 	const char FLAG[] =	// フラグ配列
@@ -52,7 +53,8 @@ namespace
 		'd',	// 朽ちた床
 		'w',	// 水
 		'u',	// ドブ
-		'r',	// 橋
+		'x',	// 橋
+		'z',	// 橋
 	};
 
 	const float ZLINE[] = // フィールドの基準線
@@ -324,7 +326,7 @@ void CField::SetType(const EType type)
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 
 		// 橋だった場合描画をオフにする
-		if (type == TYPE_BRIDGE)
+		if (type == TYPE_XBRIDGE || type == TYPE_ZBRIDGE)
 		{
 			SetEnableDraw(false);
 		}
@@ -337,7 +339,6 @@ void CField::SetType(const EType type)
 //============================================================
 void CField::Hit(CPlayerClone* pClone)
 {
-
 }
 
 //============================================================
@@ -345,7 +346,20 @@ void CField::Hit(CPlayerClone* pClone)
 //============================================================
 void CField::Miss(CPlayerClone* pClone)
 {
+}
 
+//===========================================
+//  プレイヤーに当たっていた時の処理
+//===========================================
+void CField::Hit(CPlayer* pPlayer)
+{
+}
+
+//===========================================
+//  プレイヤーに当たっていないときの処理
+//===========================================
+void CField::Miss(CPlayer* pPlayer)
+{
 }
 
 //===========================================

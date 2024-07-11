@@ -19,6 +19,7 @@
 //  前方宣言
 //************************************************************
 class CPlayerClone;	// プレイヤーの分身クラス
+class CPlayer;		// プレイヤークラス
 
 //************************************************************
 //	クラス定義
@@ -41,7 +42,8 @@ public:
 		TYPE_DECAYED,	// 朽ちた床
 		TYPE_WATER,		// 水
 		TYPE_GUTTER,	// ドブ
-		TYPE_BRIDGE,	// 橋
+		TYPE_XBRIDGE,	// 橋
+		TYPE_ZBRIDGE,	// 橋
 		TYPE_MAX,		// この列挙型の総数
 		TYPE_NONE		// 存在しない種類
 	};
@@ -78,6 +80,8 @@ public:
 	// 仮想関数
 	virtual void Hit(CPlayerClone* pClone);		// 分身に当たっていた時の処理
 	virtual void Miss(CPlayerClone* pClone);	// 分身に当たっていない時の処理
+	virtual void Hit(CPlayer* pClone);		// プレイヤーに当たっていた時の処理
+	virtual void Miss(CPlayer* pClone);	// プレイヤーに当たっていない時の処理
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化

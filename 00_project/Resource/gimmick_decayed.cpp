@@ -7,6 +7,7 @@
 #include "gimmick_decayed.h"
 #include "manager.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  定数定義
@@ -105,6 +106,27 @@ void CGimmickDecayed::Miss(CPlayerClone* pClone)
 
 	// 分身からフィールドを削除する
 	pClone->DeleteField(this);
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickDecayed::Hit(CPlayer* pPlayer)
+{
+	// プレイヤーに文字列を渡す
+	pPlayer->AddFrags(GetFlag());
+
+	// 落下フラグがoffの場合分身の数を計算
+	if (!m_bFall) { Count(); }
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickDecayed::Miss(CPlayer* pPlayer)
+{
+	// プレイヤーからフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }
 
 //===========================================

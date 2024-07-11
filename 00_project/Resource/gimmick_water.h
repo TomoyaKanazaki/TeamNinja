@@ -28,5 +28,7 @@ private:
 	// ƒƒ“ƒoŠÖ”
 	void Hit(CPlayerClone* pClone) override; // “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
 	void Miss(CPlayerClone* pClone) override; // “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
+	void Hit(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
+	void Miss(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
 
 };

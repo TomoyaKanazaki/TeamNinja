@@ -6,6 +6,7 @@
 //==========================================
 #include "gimmick_boob.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
@@ -81,6 +82,23 @@ void CGimmickBoob::Hit(CPlayerClone* pClone)
 //  文字列(フラグ)の削除
 //===========================================
 void CGimmickBoob::Miss(CPlayerClone* pClone)
+{
+
+}
+//===
+// ========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CGimmickBoob::Hit(CPlayer* pPlayer)
+{
+	// 分身にフラグを追加する
+	pPlayer->AddFrags(GetFlag());
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CGimmickBoob::Miss(CPlayer* pPlayer)
 {
 
 }
