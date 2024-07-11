@@ -561,6 +561,12 @@
     <ClInclude Include="Resource\field_water.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\field_Xbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_Zbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1059,6 +1065,12 @@
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\field_gravel.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Xbridge.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Zbridge.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
   </ItemGroup>

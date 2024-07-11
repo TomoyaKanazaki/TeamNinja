@@ -871,8 +871,11 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	CStage *pStage = GET_STAGE;	// ステージ情報
 	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
 
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
