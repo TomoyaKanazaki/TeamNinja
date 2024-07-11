@@ -375,6 +375,26 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 }
 
 //============================================================
+// ナビによるモーションの設定処理
+//============================================================
+void CEnemyStalk::NavMotionSet(EMotion* pMotion)
+{
+	switch (m_pNav->GetState())
+	{
+	case CEnemyNav::STATE_MOVE:
+
+		// 移動モーションを設定
+		*pMotion = MOTION_WALK;
+
+		break;
+
+	default:
+
+		break;
+	}
+}
+
+//============================================================
 // 巡回処理
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
@@ -403,19 +423,8 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 			fDeltaTime	// デルタタイム
 		);
 
-		switch (m_pNav->GetState())
-		{
-		case CEnemyNav::STATE_MOVE:
-
-			// 移動モーションを設定
-			motion = MOTION_WALK;
-
-			break;
-
-		default:
-
-			break;
-		}
+		// ナビによるモーション設定処理
+		NavMotionSet(&motion);
 	}
 
 	// 着地判定

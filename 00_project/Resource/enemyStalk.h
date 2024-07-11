@@ -79,6 +79,7 @@ private:
 	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override;	// 状態の更新処理
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
+	void NavMotionSet(EMotion* pMotion);			// ナビによるモーションの設定処理
 
 	// メンバ関数
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理

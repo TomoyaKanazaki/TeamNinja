@@ -353,11 +353,31 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 }
 
 //============================================================
+// ナビゲーションによるモーションの設定処理
+//============================================================
+void CEnemyWolf::NavMoitonSet(int* pMotion)
+{
+	switch (m_pNav->GetState())
+	{
+	case CEnemyNav::STATE_MOVE:
+
+		// 移動モーションを設定
+		*pMotion = MOTION_RUN;
+
+		break;
+
+	default:
+
+		break;
+	}
+}
+
+//============================================================
 //	巡回状態時の更新処理
 //============================================================
 int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	EMotion motion = MOTION_IDOL;	// モーション
+	int motion = MOTION_IDOL;	// モーション
 
 	// 重力の更新
 	UpdateGravity();
@@ -394,6 +414,9 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 
 			break;
 		}
+
+		// ナビゲーションによるモーションの設定処理
+		NavMoitonSet(&motion);
 	}
 
 	// 着地判定
