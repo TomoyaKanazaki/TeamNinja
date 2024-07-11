@@ -28,7 +28,7 @@
 //************************************************************
 namespace
 {
-	const char* INIT_MAPPASS = "data\\TXT\\MAP\\FOREST02\\map.txt";	// 初期マップパス
+	const char* INIT_MAPPASS = "data\\TXT\\MAP\\FOREST00\\map.txt";	// 初期マップパス
 }
 
 //************************************************************
