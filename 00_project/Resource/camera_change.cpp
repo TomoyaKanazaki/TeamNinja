@@ -82,7 +82,6 @@ HRESULT CCameraChanger::Init()
 
 	// 色を変更
 	D3DXCOLOR col = XCOL_ACYAN;
-	col.a = 0.5f;
 	SetCubeColor(col);
 
 	// 原点を設定
@@ -130,7 +129,7 @@ void CCameraChanger::Update(const float fDeltaTime)
 		D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
 
 		// フラグの更新
-		m_bChange = collision::Box3D(posThis, posPlayer, sizeThis, D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), sizePlayer, sizePlayer);
+		m_bChange = collision::Box3D(posThis, posPlayer, D3DXVECTOR3(sizeThis.x, sizeThis.y * 2.0f, sizeThis.z), D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), sizePlayer, sizePlayer);
 	}
 
 	// 親クラスの更新処理
