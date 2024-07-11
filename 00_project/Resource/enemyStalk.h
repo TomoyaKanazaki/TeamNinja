@@ -19,6 +19,7 @@
 // 前方宣言
 //************************************************************
 class CEnemyNav;		// 敵のナビゲーション
+class CEnemyChaseRange;	// 敵の追跡範囲処理
 
 //************************************************************
 //	クラス定義
@@ -90,10 +91,11 @@ private:
 	EMotion FadeIn(void);						// フェードイン処理
 
 	// メンバ変数
-	CEnemyNav* m_pNav;			// ナビゲーション
-	EState m_state;				// 状態
-	int m_nStateCount;			// 状態カウント
-	float m_fAlpha;				// 透明度
+	CEnemyNav* m_pNav;					// ナビゲーションの情報
+	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
+	EState m_state;						// 状態
+	int m_nStateCount;					// 状態カウント
+	float m_fAlpha;						// 透明度
 };
 
 #endif	// _ENEMY_CHASE_H_
