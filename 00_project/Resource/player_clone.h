@@ -21,7 +21,6 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
-class CField;	// 地面クラス
 class CGimmickAction;	// アクションギミッククラス
 class CField;	// フィールドクラス
 

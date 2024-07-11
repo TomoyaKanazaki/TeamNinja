@@ -24,7 +24,6 @@
 #include "shadow.h"
 #include "orbit.h"
 #include "object2D.h"
-#include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
 #include "cloneAngleUI.h"
@@ -123,9 +122,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_fShootTarget	(0.0f),			// 吹っ飛ぶ目標
-	m_fShootStart	(0.0f),			// 吹っ飛び開始地点
-	m_nCanonTime	(0)				// 吹っ飛び時間
+	m_sFrags		({}),			// フィールドフラグ
+	m_pCurField		(nullptr),		// 現在乗ってる地面
+	m_pOldField		(nullptr)		// 前回乗ってた地面
 {
 
 }
@@ -294,12 +293,6 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
-	case STATE_SHOOT:
-
-		// 通常状態の更新
-		currentMotion = UpdateShoot(fDeltaTime);
-		break;
-
 	default:
 		assert(false);
 		break;
@@ -398,11 +391,9 @@ CPlayer *CPlayer::Create(CScene::EMode mode)
 	switch (mode)
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
-	case CScene::MODE_RESULT:
-	case CScene::MODE_RANKING:
 		break;
 
-	case CScene::MODE_TUTORIAL:
+	case CScene::MODE_SELECT:
 	case CScene::MODE_GAME:
 		pPlayer = new CPlayer;
 		break;
@@ -607,26 +598,6 @@ bool CPlayer::GimmickLand(void)
 	return true;
 }
 
-//===========================================
-//  吹っ飛ぶ
-//==========================================~
-void CPlayer::SetShoot(const float& posTarget)
-{
-	// 状態を変更
-	m_state = STATE_SHOOT;
-	m_bJump = true;
-	m_nCanonTime = 0;
-
-	// 目標地点を設定
-	m_fShootTarget = posTarget;
-
-	// 開始地点を設定
-	m_fShootStart = GetVec3Position().z;
-
-	// 移動量を設定
-	m_move = D3DXVECTOR3(0.0f, 0.0f, m_fShootTarget - m_fShootStart);
-}
-
 //==========================================
 //  士気力の値を取得
 //==========================================
@@ -670,6 +641,33 @@ void CPlayer::RecoverJust()
 
 	// 回復エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CPlayer::AddFrags(const char cFrag)
+{
+	// 文字列内を検索に同じ文字が存在したら関数を抜ける
+	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
+
+	// 文字列に受け取ったフラグを追加する
+	m_sFrags += cFrag;
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CPlayer::SabFrags(const char cFrag)
+{
+	// 文字列内を検索し番号を取得する
+	size_t nIdx = m_sFrags.find(cFrag);
+
+	// 文字列内にフラグが存在しなかった場合関数を抜ける
+	if (nIdx == std::string::npos) { return; }
+
+	// 文字列からフラグを削除する
+	m_sFrags.erase(nIdx);
 }
 
 //============================================================
@@ -738,61 +736,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	return currentMotion;
 }
 
-//===========================================
-//  発射状態時の更新処理
-//===========================================
-CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
-{
-	// 吹っ飛び時間の更新
-	m_nCanonTime++;
-
-	// 自身の情報を取得
-	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
-	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-
-	// y座標の計算
-	float fTemp = 0.0f;
-	useful::Parabola
-	(
-		CANON_MOVE,
-		-CANON_GRAVITY,
-		m_nCanonTime,
-		&m_move.y,
-		&fTemp
-	);
-
-	// 位置更新
-	UpdatePosition(posPlayer, fDeltaTime);
-
-	// アクターの当たり判定
-	CollisionActor(posPlayer);
-
-	// 着地判定
-	UpdateLanding(posPlayer, fDeltaTime);
-
-	// 着地したら通常状態に遷移する
-	if (!m_bJump)
-	{
-		m_state = STATE_NORMAL;
-		m_move = VEC3_ZERO;
-	}
-
-	// 向き更新
-	UpdateRotation(rotPlayer, fDeltaTime);
-
-	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
-
-	// 位置を反映
-	SetVec3Position(posPlayer);
-
-	// 向きを反映
-	SetVec3Rotation(rotPlayer);
-
-	// TODO 発射されてる時のモーションを適用しなさい
-	return MOTION_IDOL;
-}
-
 //============================================================
 //	過去位置の更新処理
 //============================================================
@@ -846,6 +789,16 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
 		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
 		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
+
+		// 橋に乗っている場合移動量を消す
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
+		{
+			m_move.z = 0.0f;
+		}
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_ZBRIDGE)) != std::string::npos)
+		{
+			m_move.x = 0.0f;
+		}
 
 #ifdef _DEBUG
 		if (pPad->IsPress(CInputPad::KEY_Y))
@@ -930,6 +883,24 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		m_bJump = false;
 	}
 
+	if (m_pCurField != nullptr)
+	{ // 現在地面に着地している場合
+
+		// 当たっている状態にする
+		m_pCurField->Hit(this);
+	}
+
+	if (m_pCurField != m_pOldField)
+	{ // 前回と違う地面の場合
+
+		if (m_pOldField != nullptr)
+		{ // 前回地面に着地している場合
+
+			// 当たっていない状態にする
+			m_pOldField->Miss(this);
+		}
+	}
+
 	// 現在のモーション種類を取得
 	int nCurMotion = GetMotionType();
 
@@ -997,22 +968,18 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// 移動量を加算
 	rPos += m_move * fDeltaTime;
 
-	// 発射状態中は減衰しない
-	if (m_state != STATE_SHOOT)
-	{
-		// 移動量を減衰
-		if (m_bJump)
-		{ // 空中の場合
+	// 移動量を減衰
+	if (m_bJump)
+	{ // 空中の場合
 
-			m_move.x += (0.0f - m_move.x) * JUMP_REV;
-			m_move.z += (0.0f - m_move.z) * JUMP_REV;
-		}
-		else
-		{ // 地上の場合
+		m_move.x += (0.0f - m_move.x) * JUMP_REV;
+		m_move.z += (0.0f - m_move.z) * JUMP_REV;
+	}
+	else
+	{ // 地上の場合
 
-			m_move.x += (0.0f - m_move.x) * LAND_REV;
-			m_move.z += (0.0f - m_move.z) * LAND_REV;
-		}
+		m_move.x += (0.0f - m_move.x) * LAND_REV;
+		m_move.z += (0.0f - m_move.z) * LAND_REV;
 	}
 
 	// 中心座標の更新

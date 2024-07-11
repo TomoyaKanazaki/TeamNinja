@@ -15,8 +15,9 @@
 //===========================================
 namespace
 {
-	const float DISTANCE = 30.0f;	// 待機位置との距離
-	const float ACTIVE_UP = 10.0f;	// 橋がかけられた際のY位置上昇量
+	const float DISTANCE = 30.0f; // 待機位置との距離
+	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
+	const float FIELD_SIZE = 60.0f; // 橋の幅
 }
 
 //===========================================
@@ -256,15 +257,46 @@ void CGimmickBridge::CalcConectPoint()
 void CGimmickBridge::Active()
 {
 	// 足場を生成する
-	if (m_pField == nullptr)
+	if (m_pField != nullptr) { return; }
+
+	// 足場の座標を設定
+	D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;
+
+	// 足場のサイズ
+	D3DXVECTOR2 sizeField = VEC2_ZERO;
+
+	// 自身の方向を取得
+	EAngle angle = GetAngle();
+
+	// 橋の方向を決める
+	switch (angle)
 	{
-		// sizeを2次元に変換
-		D3DXVECTOR2 size = D3DXVECTOR2(GetVec3Sizing().x, GetVec3Sizing().z);
+	// x軸方向に架ける
+	case ANGLE_90:
+	case ANGLE_270:
 
-		// TODO：位置上にあげる
-		m_pField = CField::Create(CField::TYPE_BRIDGE, GetVec3Position() + D3DXVECTOR3(0.0f, 25.0f, 0.0f), GetVec3Rotation(), size, D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), POSGRID2(10, 10), POSGRID2(10, 10));
-		m_pField->SetEnableDraw(false);
+		sizeField.x = fabsf(m_ConectPoint[0].x - m_ConectPoint[1].x);
+		sizeField.y = FIELD_SIZE;
+
+		// 生成
+		m_pField = CField::Create(CField::TYPE_XBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+
+		break;
+
+	// z軸方向に架ける
+	case ANGLE_0:
+	case ANGLE_180:
+
+		sizeField.x = FIELD_SIZE;
+		sizeField.y = fabsf(m_ConectPoint[0].z - m_ConectPoint[1].z);
+
+		// 生成
+		m_pField = CField::Create(CField::TYPE_ZBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+
+		break;
+
+	default:
+		assert(false);
+		break;
 	}
-
-	// TODO : 分身の配置を変更？
 }

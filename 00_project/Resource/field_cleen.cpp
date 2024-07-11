@@ -1,11 +1,12 @@
 //==========================================
 //
-//  掃除したての床ギミック(gimmick_cleen.cpp)
+//  掃除したての床ギミック(field_cleen.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_cleen.h"
+#include "field_cleen.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
@@ -84,4 +85,22 @@ void CGimmickCleen::Miss(CPlayerClone* pClone)
 {
 	// 分身からフラグを削除する
 	pClone->SabFrags(GetFlag());
+}
+
+//===========================================
+//  当たっている場合の処理
+//===========================================
+void CGimmickCleen::Hit(CPlayer* pPlayer)
+{
+	// 分身に文字列を渡す
+	pPlayer->AddFrags(GetFlag());
+}
+
+//===========================================
+//  当たっていない場合の処理
+//===========================================
+void CGimmickCleen::Miss(CPlayer* pPlayer)
+{
+	// 分身からフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

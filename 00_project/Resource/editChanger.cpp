@@ -170,10 +170,12 @@ bool CEditChanger::IsSave(void)
 	// •Û‘¶ó‹µ‚ğ•Ô‚·
 	return m_bSave;
 
-#endif
+#else	// NDEBUG
 
 	// false‚ğ•Ô‚·
 	return false;
+
+#endif	// _DEBUG
 }
 
 //===========================================
