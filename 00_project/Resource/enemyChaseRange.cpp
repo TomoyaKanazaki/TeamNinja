@@ -71,7 +71,7 @@ void CEnemyChaseRange::Uninit(void)
 //============================================================
 //	XVˆ—
 //============================================================
-bool CEnemyChaseRange::ChaseRange(D3DXVECTOR3* pPos, const float fDeltaTime)
+bool CEnemyChaseRange::ChaseRange(D3DXVECTOR3* pPos)
 {
 	// ”ÍˆÍ‚ğ’´‚¦‚½‚©‚Ç‚¤‚©
 	bool bOver = false;
