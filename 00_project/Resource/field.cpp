@@ -322,6 +322,12 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+
+		// 橋だった場合描画をオフにする
+		if (type == TYPE_BRIDGE)
+		{
+			SetEnableDraw(false);
+		}
 	}
 	else { assert(false); }	// 範囲外
 }

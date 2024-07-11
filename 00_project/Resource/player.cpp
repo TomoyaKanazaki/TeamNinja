@@ -294,12 +294,6 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
-	case STATE_SHOOT:
-
-		// 通常状態の更新
-		currentMotion = UpdateShoot(fDeltaTime);
-		break;
-
 	default:
 		assert(false);
 		break;
@@ -605,26 +599,6 @@ bool CPlayer::GimmickLand(void)
 	PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 
 	return true;
-}
-
-//===========================================
-//  吹っ飛ぶ
-//==========================================~
-void CPlayer::SetShoot(const float& posTarget)
-{
-	// 状態を変更
-	m_state = STATE_SHOOT;
-	m_bJump = true;
-	m_nCanonTime = 0;
-
-	// 目標地点を設定
-	m_fShootTarget = posTarget;
-
-	// 開始地点を設定
-	m_fShootStart = GetVec3Position().z;
-
-	// 移動量を設定
-	m_move = D3DXVECTOR3(0.0f, 0.0f, m_fShootTarget - m_fShootStart);
 }
 
 //==========================================
@@ -997,22 +971,18 @@ void CPlayer::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// 移動量を加算
 	rPos += m_move * fDeltaTime;
 
-	// 発射状態中は減衰しない
-	if (m_state != STATE_SHOOT)
-	{
-		// 移動量を減衰
-		if (m_bJump)
-		{ // 空中の場合
+	// 移動量を減衰
+	if (m_bJump)
+	{ // 空中の場合
 
-			m_move.x += (0.0f - m_move.x) * JUMP_REV;
-			m_move.z += (0.0f - m_move.z) * JUMP_REV;
-		}
-		else
-		{ // 地上の場合
+		m_move.x += (0.0f - m_move.x) * JUMP_REV;
+		m_move.z += (0.0f - m_move.z) * JUMP_REV;
+	}
+	else
+	{ // 地上の場合
 
-			m_move.x += (0.0f - m_move.x) * LAND_REV;
-			m_move.z += (0.0f - m_move.z) * LAND_REV;
-		}
+		m_move.x += (0.0f - m_move.x) * LAND_REV;
+		m_move.z += (0.0f - m_move.z) * LAND_REV;
 	}
 
 	// 中心座標の更新
