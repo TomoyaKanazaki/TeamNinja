@@ -65,7 +65,8 @@ HRESULT CScene::Init(void)
 	CPlayer::Create(m_mode);
 
 	// ステージの割当
-	GET_STAGE->BindStage("data\\TXT\\MAP\\FOREST00\\map.txt");	// TODO：今だけ確定で初期マップ読込
+	CStage* pStage = GET_STAGE;	// ステージ情報
+	pStage->BindStage(pStage->GetInitMapPass().c_str());
 
 	// 成功を返す
 	return S_OK;
