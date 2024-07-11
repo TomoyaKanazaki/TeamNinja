@@ -41,11 +41,13 @@ public:
 		const D3DXVECTOR3& rPos,			// 位置
 		const D3DXVECTOR3& rRot = VEC3_ZERO	// 向き
 	);
+	static void Collision	// 遷移ポイントとの当たり判定
+	( // 引数
+		const D3DXVECTOR3& rPos,	// 位置
+		const float fRadius			// 半径
+	);
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
-
-	// メンバ関数
-
 
 private:
 	// 静的メンバ変数
@@ -53,7 +55,7 @@ private:
 
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
-	const char* m_pTransMapPass;	// 遷移先マップパス
+	const std::string m_sTransMapPass;	// 遷移先マップパス
 };
 
 #endif	// _TRANSPOINT_H_

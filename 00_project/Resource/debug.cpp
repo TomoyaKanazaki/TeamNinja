@@ -457,11 +457,11 @@ void CDebug::ChangeEditMode(void)
 		switch (GET_MANAGER->GetMode())
 		{
 		case CScene::MODE_SELECT:
-			CSceneSelect::GetEditManager();
+			pEdit = CSceneSelect::GetEditManager();
 			break;
 
 		case CScene::MODE_GAME:
-			CSceneGame::GetEditManager();
+			pEdit = CSceneGame::GetEditManager();
 			break;
 
 		default:
@@ -470,6 +470,7 @@ void CDebug::ChangeEditMode(void)
 		}
 
 		// エディット状況のフラグを反転
+		assert(pEdit != nullptr);
 		pEdit->SetEnableEdit(!pEdit->IsEdit());
 	}
 }
