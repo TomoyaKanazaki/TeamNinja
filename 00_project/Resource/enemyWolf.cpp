@@ -12,6 +12,9 @@
 #include "renderer.h"
 #include "deltaTime.h"
 
+#include "enemyNavRandom.h"
+#include "enemyChaseRange.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -28,6 +31,7 @@ namespace
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
 	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
 	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
+	const float FADE_ALPHA_TRANS = 0.02f;	// フェード時の透明度の遷移定数
 
 	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
@@ -40,6 +44,8 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemyAttack(),
+m_pNav(nullptr),		// ナビゲーションの情報
+m_pChaseRange(nullptr),	// 追跡範囲の情報
 m_state(STATE_CRAWL)	// 状態
 {
 
@@ -79,6 +85,12 @@ HRESULT CEnemyWolf::Init(void)
 //============================================================
 void CEnemyWolf::Uninit(void)
 {
+	// ナビゲーション情報の破棄処理
+	SAFE_UNINIT(m_pNav);
+
+	// 追跡範囲の破棄処理
+	SAFE_UNINIT(m_pChaseRange);
+
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -106,7 +118,11 @@ void CEnemyWolf::Draw(CShader* pShader)
 //============================================================
 void CEnemyWolf::SetData(void)
 {
+	// ナビゲーションの情報を生成
+	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 200.0f, 200.0f);
 
+	// 追跡範囲を生成
+	m_pChaseRange = CEnemyChaseRange::Create(GetVec3Position(), 300.0f, 200.0f);
 }
 
 //============================================================
@@ -163,6 +179,20 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 
 		// 動揺状態時の更新
 		nCurMotion = UpdateUpset(pPos, pRot, fDeltaTime);
+		break;
+
+	case STATE_FADEOUT:	// フェードアウト状態
+
+		// フェードアウト時の更新
+		nCurMotion = UpdateFadeOut(pPos, pRot, fDeltaTime);
+
+		break;
+
+	case STATE_FADEIN:	// フェードイン状態
+
+		// フェードイン時の更新
+		nCurMotion = UpdateFadeIn(pPos, pRot, fDeltaTime);
+
 		break;
 
 	default:	// 例外処理
@@ -323,25 +353,81 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 }
 
 //============================================================
+// ナビゲーションによるモーションの設定処理
+//============================================================
+void CEnemyWolf::NavMoitonSet(int* pMotion)
+{
+	switch (m_pNav->GetState())
+	{
+	case CEnemyNav::STATE_MOVE:
+
+		// 移動モーションを設定
+		*pMotion = MOTION_RUN;
+
+		break;
+
+	default:
+
+		break;
+	}
+}
+
+//============================================================
 //	巡回状態時の更新処理
 //============================================================
 int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	int motion = MOTION_IDOL;	// モーション
+
 	// 重力の更新
 	UpdateGravity();
 
-	// 位置更新
-	UpdatePosition(*pPos, fDeltaTime);
-
-	// 着地判定
-	UpdateLanding(pPos);
+	// 敵を落下させる
+	pPos->y += GetMovePosition().y * fDeltaTime;
 
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
+	if (m_pNav != nullptr)
+	{ // ナビゲーションが NULL じゃない場合
+
+		// ナビの更新処理
+		m_pNav->Update
+		(
+			pPos,		// 位置
+			pRot,		// 向き
+			this,		// 敵の情報
+			SPEED,		// 速度
+			fDeltaTime	// デルタタイム
+		);
+
+		switch (m_pNav->GetState())
+		{
+		case CEnemyNav::STATE_MOVE:
+
+			// 移動モーションを設定
+			motion = MOTION_RUN;
+
+			break;
+
+		default:
+
+			break;
+		}
+
+		// ナビゲーションによるモーションの設定処理
+		NavMoitonSet(&motion);
+	}
+
+	// 着地判定
+	UpdateLanding(pPos);
+
 	if (JudgeClone() || 
 		JudgePlayer())
 	{ // 分身かプレイヤーが目に入った場合
+
+		// ナビゲーションリセット処理
+		m_pNav->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_CAVEAT;
@@ -357,7 +443,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	SetTarget(TARGET_NONE);
 
 	// 待機モーションを返す
-	return MOTION_IDOL;
+	return motion;
 }
 
 //============================================================
@@ -411,9 +497,9 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 //============================================================
 int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	if (!JudgeClone() &&
-		!JudgePlayer())
-	{ // 分身が目に入った場合
+	if (!ShakeOffClone() &&
+		!ShakeOffPlayer())
+	{ // 分身が目に入っていない場合
 
 		// 動揺状態にする
 		m_state = STATE_UPSET;
@@ -425,11 +511,11 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		return MOTION_TURN;
 	}
 
-	// デバッグ
-	DebugProc::Print(DebugProc::POINT_RIGHT, "発見!!目的地：%f %f %f", GetTargetPos().x, GetTargetPos().y, GetTargetPos().z);
-
 	// 目標向きを目標位置方向にする
 	LookTarget(*pPos);
+
+	// 攻撃判定を false にする
+	SetEnableAttack(false);
 
 	// 移動処理
 	Move(pPos, *pRot, SPEED, fDeltaTime);
@@ -455,6 +541,23 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
+
+	if (m_pChaseRange != nullptr &&
+		m_pChaseRange->ChaseRange(pPos))
+	{ // 追跡範囲から出た場合
+
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+
+		// ナビゲーションリセット処理
+		m_pNav->NavReset();
+
+		// 移動量をリセットする
+		SetMovePosition(VEC3_ZERO);
+
+		// ターゲットを無対象にする
+		SetTarget(TARGET_NONE);
+	}
 
 	// 走行モーションを返す
 	return MOTION_RUN;
@@ -533,6 +636,73 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 
 	// 動揺モーションにする
 	return MOTION_TURN;
+}
+
+//============================================================
+// フェードアウト状態時の更新
+//============================================================
+int CEnemyWolf::UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	// 透明度を取得
+	float fAlpha = GetAlpha();
+
+	// 透明度を減算する
+	fAlpha -= FADE_ALPHA_TRANS;
+
+	if (fAlpha <= 0.0f)
+	{ // 透明度が0以下になった場合
+
+		// フェードイン状態にする
+		m_state = STATE_FADEIN;
+
+		// 位置を設定する
+		*pPos = GetPosInit();
+
+		// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
+		SetOldPosition(*pPos);
+
+		// 向きを設定する
+		*pRot = VEC3_ZERO;
+
+		// 透明度を補正する
+		fAlpha = 0.0f;
+	}
+
+	// 透明度を適用
+	CObjectChara::SetAlpha(fAlpha);
+	CEnemyAttack::SetAlpha(fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
+}
+
+//============================================================
+// フェードイン状態時の更新
+//============================================================
+int CEnemyWolf::UpdateFadeIn(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+{
+	// 透明度を取得
+	float fAlpha = GetAlpha();
+
+	// 透明度を減算する
+	fAlpha += FADE_ALPHA_TRANS;
+
+	if (fAlpha >= 1.0f)
+	{ // 透明度が一定数以上になった場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 透明度を補正する
+		fAlpha = 1.0f;
+	}
+
+	// 透明度を適用
+	CObjectChara::SetAlpha(fAlpha);
+	CEnemyAttack::SetAlpha(fAlpha);
+
+	// 待機モーションにする
+	return MOTION_IDOL;
 }
 
 //============================================================

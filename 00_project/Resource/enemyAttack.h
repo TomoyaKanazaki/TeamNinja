@@ -59,6 +59,8 @@ public:
 	void SetTarget(const ETarget target) { m_target = target; }			// 標的設定
 	ETarget GetTarget(void) const { return m_target; }					// 標的取得
 	int GetAttackCount(void) const { return m_nAttackCount; }			// 攻撃カウント取得
+	void SetAlpha(const float fAlpha) { m_fAlpha = fAlpha; }			// 透明度設定
+	float GetAlpha(void) const { return m_fAlpha; }						// 透明度取得
 	void SetEnableAttack(const bool bAttack) { m_bAttack = bAttack; }	// 攻撃状況設定
 	bool IsAttack(void) const { return m_bAttack; }						// 攻撃状況取得
 
@@ -87,6 +89,7 @@ private:
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
 	ETarget m_target;			// 標的
 	int m_nAttackCount;			// 攻撃カウント
+	float m_fAlpha;				// 透明度
 	bool m_bAttack;				// 攻撃状況TODO：後で変更
 };
 
