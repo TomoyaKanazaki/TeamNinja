@@ -24,7 +24,6 @@
 #include "shadow.h"
 #include "orbit.h"
 #include "object2D.h"
-#include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
 #include "cloneAngleUI.h"
@@ -398,11 +397,9 @@ CPlayer *CPlayer::Create(CScene::EMode mode)
 	switch (mode)
 	{ // ÉÇÅ[ÉhÇ≤Ç∆ÇÃèàóù
 	case CScene::MODE_TITLE:
-	case CScene::MODE_RESULT:
-	case CScene::MODE_RANKING:
 		break;
 
-	case CScene::MODE_TUTORIAL:
+	case CScene::MODE_SELECT:
 	case CScene::MODE_GAME:
 		pPlayer = new CPlayer;
 		break;

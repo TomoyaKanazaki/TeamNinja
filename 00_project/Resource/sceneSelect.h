@@ -1,15 +1,14 @@
-#if 0
 //============================================================
 //
-//	ゲーム画面ヘッダー [sceneGame.h]
+//	セレクト画面ヘッダー [sceneSelect.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _SCENE_GAME_H_
-#define _SCENE_GAME_H_
+#ifndef _SCENE_SELECT_H_
+#define _SCENE_SELECT_H_
 
 //************************************************************
 //	インクルードファイル
@@ -19,26 +18,21 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CGameManager;	// ゲームマネージャークラス
-class CTimerUI;		// タイマーUIクラス
-class CCinemaScope;	// シネマスコープクラス
-class CPause;		// ポーズクラス
-class CHitStop;		// ヒットストップクラス
-class CFlash;		// フラッシュクラス
-class CEditManager;	// エディットマネージャークラス
+class CSelectManager;	// セレクトマネージャークラス
+class CEditManager;		// エディットマネージャークラス
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// ゲーム画面クラス
-class CSceneGame : public CScene
+// セレクト画面クラス
+class CSceneSelect : public CScene
 {
 public:
 	// コンストラクタ
-	explicit CSceneGame(const EMode mode);
+	explicit CSceneSelect(const EMode mode);
 
 	// デストラクタ
-	~CSceneGame() override;
+	~CSceneSelect() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -46,24 +40,13 @@ public:
 	void Update(const float fDeltaTime) override;	// 更新
 
 	// 静的メンバ関数
-	static CGameManager	*GetGameManager(void);	// ゲームマネージャー取得
-	static CTimerUI		*GetTimerUI(void);		// タイマーUI取得
-	static CCinemaScope	*GetCinemaScope(void);	// シネマスコープ取得
-	static CPause		*GetPause(void);		// ポーズ取得
-	static CHitStop		*GetHitStop(void);		// ヒットストップ取得
-	static CFlash		*GetFlash(void);		// フラッシュ取得
-	static CEditManager	*GetEditManager(void);	// エディターマネージャー取得
+	static CSelectManager	*GetSelectManager(void);	// セレクトマネージャー取得
+	static CEditManager		*GetEditManager(void);		// エディターマネージャー取得
 
 private:
 	// 静的メンバ変数
-	static CGameManager	*m_pGameManager;	// ゲームマネージャー
-	static CTimerUI		*m_pTimerUI;		// タイマーUI
-	static CCinemaScope	*m_pCinemaScope;	// シネマスコープ
-	static CPause		*m_pPause;			// ポーズ
-	static CHitStop		*m_pHitStop;		// ヒットストップ
-	static CFlash		*m_pFlash;			// フラッシュ
-	static CEditManager *m_pEditManager;	// エディターマネージャー
+	static CSelectManager	*m_pSelectManager;	// セレクトマネージャー
+	static CEditManager		*m_pEditManager;	// エディターマネージャー
 };
 
-#endif	// _SCENE_GAME_H_
-#endif
+#endif	// _SCENE_SELECT_H_

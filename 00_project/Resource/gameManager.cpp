@@ -14,7 +14,6 @@
 #include "sceneGame.h"
 #include "cinemaScope.h"
 #include "timerUI.h"
-#include "rankingManager.h"
 #include "retentionManager.h"
 #include "camera.h"
 #include "player.h"
@@ -361,17 +360,11 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
 
-	// リザルト情報を保存
-	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
-
-	// リザルト画面に遷移
-	GET_MANAGER->SetLoadScene(CScene::MODE_RESULT, GAMEEND_WAITTIME);
-
 	if (win == CRetentionManager::WIN_CLEAR)
 	{ // 勝利していた場合
 
 		// ランキングに設定
-		CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());
+		//CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());	// TODO：ここでインゲームリザルトへ...
 	}
 	else
 	{
