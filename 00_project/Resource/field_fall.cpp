@@ -1,12 +1,13 @@
 //=========================================
 //
-//  落とし穴ギミック (gimmick_fall.cpp)
+//  落とし穴ギミック (field_fall.cpp)
 //  Author : Tomoya kanazaki
 //
 //=========================================
-#include "gimmick_fall.h"
+#include "field_fall.h"
 #include "manager.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  定数定義
@@ -103,6 +104,27 @@ void CGimmickFall::Miss(CPlayerClone* pClone)
 
 	// 分身からフィールドを削除する
 	pClone->DeleteField(this);
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickFall::Hit(CPlayer* pPlayer)
+{
+	// 分身に文字列を渡す
+	pPlayer->AddFrags(GetFlag());
+
+	// 分身数をカウント
+	Count();
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickFall::Miss(CPlayer* pPlayer)
+{
+	// 分身からフラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }
 
 //===========================================

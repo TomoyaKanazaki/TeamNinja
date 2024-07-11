@@ -1,7 +1,7 @@
 #pragma once
 //=========================================
 //
-//  落とし穴ヘッダー (gimmick_fall.h)
+//  朽ちた床ヘッダー (field_decayed.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
@@ -10,13 +10,13 @@
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickFall : public CField
+class CGimmickDecayed : public CField
 {
 public:
 
 	// メンバ関数
-	CGimmickFall();
-	~CGimmickFall() override;
+	CGimmickDecayed();
+	~CGimmickDecayed() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -30,9 +30,12 @@ private:
 	// メンバ関数
 	void Hit(CPlayerClone* pClone) override; // 当たっていた場合の処理
 	void Miss(CPlayerClone* pClone) override; // 当たっていない場合の処理
+	void Hit(CPlayer* pPlayer) override; // 当たっていた場合の処理
+	void Miss(CPlayer* pPlayer) override; // 当たっていない場合の処理
+
 	void Count(); // 乗っているキャラクター総数の計算処理
 
 	// メンバ変数
-	bool m_bFall; // 落下フラグ
+	bool m_bFall; // 床抜けフラグ
 
 };
