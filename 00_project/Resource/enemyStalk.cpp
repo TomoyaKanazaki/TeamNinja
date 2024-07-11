@@ -14,6 +14,7 @@
 
 #include "multiModel.h"
 #include "enemyNavRandom.h"
+#include "enemyChaseRange.h"
 #include "enemy_item.h"
 
 //************************************************************
@@ -44,6 +45,7 @@ namespace
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
 m_pNav(nullptr),
+m_pChaseRange(nullptr),
 m_state(STATE_CRAWL),
 m_nStateCount(0),
 m_fAlpha(1.0f)
@@ -85,13 +87,11 @@ HRESULT CEnemyStalk::Init(void)
 //============================================================
 void CEnemyStalk::Uninit(void)
 {
-	if (m_pNav != nullptr)
-	{ // ナビが NULL じゃない場合
+	// ナビゲーションの終了処理
+	SAFE_UNINIT(m_pNav);
 
-		// ナビの終了処理
-		m_pNav->Uninit();
-		m_pNav = nullptr;
-	}
+	// 追跡範囲の終了処理
+	SAFE_UNINIT(m_pChaseRange);
 
 	// 敵の終了
 	CEnemyAttack::Uninit();
@@ -133,6 +133,9 @@ void CEnemyStalk::SetData(void)
 
 	// ナビゲーションを生成
 	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 500.0f, 500.0f);
+
+	// 追跡範囲を生成
+	m_pChaseRange = CEnemyChaseRange::Create(GetVec3Position(), 800.0f, 300.0f);
 }
 
 //============================================================
@@ -491,6 +494,26 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 		// 攻撃モーションを返す
 		return MOTION_ATTACK;
+	}
+
+	if (m_pChaseRange != nullptr &&
+		m_pChaseRange->ChaseRange(pPos))
+	{ // 追跡範囲から出た場合
+
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+
+		// 停止状態にする
+		m_pNav->SetState(CEnemyNav::STATE_STOP);
+
+		// 状態カウントを0にする
+		m_pNav->SetStateCount(0);
+
+		// 移動量をリセットする
+		SetMovePosition(VEC3_ZERO);
+
+		// ターゲットを無対象にする
+		SetTarget(TARGET_NONE);
 	}
 
 	// デバッグ
