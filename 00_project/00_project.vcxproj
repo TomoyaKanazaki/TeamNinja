@@ -206,6 +206,7 @@
     <ClInclude Include="Resource\enemy.h" />
     <ClInclude Include="Resource\enemyAttack.h" />
     <ClInclude Include="Resource\enemyCaveat.h" />
+    <ClInclude Include="Resource\enemyChaseRange.h" />
     <ClInclude Include="Resource\enemyNavigation.h" />
     <ClInclude Include="Resource\enemyNavRandom.h" />
     <ClInclude Include="Resource\enemyNavStreet.h" />
@@ -378,6 +379,7 @@
     <ClCompile Include="Resource\enemy.cpp" />
     <ClCompile Include="Resource\enemyAttack.cpp" />
     <ClCompile Include="Resource\enemyCaveat.cpp" />
+    <ClCompile Include="Resource\enemyChaseRange.cpp" />
     <ClCompile Include="Resource\enemyNavigation.cpp" />
     <ClCompile Include="Resource\enemyNavRandom.cpp" />
     <ClCompile Include="Resource\enemyNavStreet.cpp" />

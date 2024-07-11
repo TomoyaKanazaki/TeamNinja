@@ -570,6 +570,9 @@
     <ClInclude Include="Resource\multi_plant.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\enemyChaseRange.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1078,6 +1081,9 @@
     </ClCompile>
     <ClCompile Include="Resource\multi_plant.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyChaseRange.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
