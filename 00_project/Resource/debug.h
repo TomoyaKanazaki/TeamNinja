@@ -34,6 +34,7 @@ public:
 	void MeasureFps(const DWORD dwCurrentTime);	// FPS測定
 	void AddFrameCount(void);		// フレームカウント加算
 	int  GetFps(void) const;		// FPS取得
+	bool GetEnableShader(void) const; //シェーダー使用取得
 	void SetFillMode(void);			// 塗りつぶしモード設定
 	void UpdateDebugControl(void);	// デバッグ操作更新
 	void DrawDebugControl(void);	// デバッグ操作表示
@@ -53,7 +54,8 @@ private:
 	void ChangeFillMode(void);		// 塗りつぶしモード変更
 	void ChangeDisp2D(void);		// 2Dオブジェクト表示変更
 	void ChangeEditMode(void);		// エディターモード変更
-	void ChangeDispPause(void);		// ポーズ表示変更
+	void ChangeDispPause(void);		// ポーズ
+	void ChangeEnableShader(void);	// シェーダー描画変更
 	void ResultTrans(void);			// リザルト遷移
 	void ChangeActorDisp(void);		// アクター当たり判定表示変更
 
@@ -62,6 +64,7 @@ private:
 	bool m_bDisp2D;	// 2D表示状況
 	bool m_bDisp3D;	// 3D表示状況
 	bool m_bDispActor;		// アクターの当たり判定の表示状況
+	bool m_bEnableShader;	//シェーダーの有効状態
 	DWORD m_dwFrameCount;	// フレームカウント
 	DWORD m_dwFPSLastTime;	// 最後にFPSを計測した時刻
 	D3DFILLMODE m_fillMode;	// 塗りつぶしモード
