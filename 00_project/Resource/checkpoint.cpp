@@ -17,9 +17,8 @@
 //==========================================
 namespace
 {
-	// TODO：仮で別ファイルから読込→一旦元に戻した
-	const char *SETUP_TXT	= "data\\TXT\\point.txt";	// セットアップテキスト相対パス
-	const float RADIUS		= 50.0f;	// 半径
+
+	const float RADIUS = 50.0f;	// 半径
 	D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 	D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
 }
@@ -235,15 +234,12 @@ void CCheckPoint::CollisionPlayer(void)
 //============================================================
 //	セットアップ処理
 //============================================================
-HRESULT CCheckPoint::LoadSetup(void)
+HRESULT CCheckPoint::LoadSetup(const char* pPass)
 {
-	// TODO：ステージに移行
-
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
 
 	// ファイルを開く
-	std::ifstream file(SETUP_TXT);	// ファイルストリーム
+	std::ifstream file(pPass);	// ファイルストリーム
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
@@ -308,34 +304,6 @@ HRESULT CCheckPoint::LoadSetup(void)
 					}
 				}
 			} while (str != "END_STAGE_CHECKSET");	// END_STAGE_CHECKSETを読み込むまでループ
-		}
-		else if (str == "STAGE_GOALSET")
-		{
-			do
-			{ // END_STAGE_GOALSETを読み込むまでループ
-
-				// 文字列を読み込む
-				file >> str;
-
-				if (str == "POS")
-				{
-					file >> str;	// ＝を読込
-
-					// 位置を読込
-					file >> pos.x;
-					file >> pos.y;
-					file >> pos.z;
-				}
-			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
-
-			// チェックポイントの生成
-			if (CGoal::Create(pos) == nullptr)
-			{ // 確保に失敗した場合
-
-				// 失敗を返す
-				assert(false);
-				return E_FAIL;
-			}
 		}
 	}
 

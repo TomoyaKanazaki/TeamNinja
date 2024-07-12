@@ -32,6 +32,7 @@ class CModel;				// モデルクラス
 class CFont;				// フォントクラス
 class CCharacter;			// キャラクタークラス
 class CLoading;				// ローディングクラス
+class CStage;				// ステージクラス
 class CEffekseerManager;	// エフェクシアマネージャークラス
 class CRetentionManager;	// データ保存マネージャークラス
 class CDebug;				// デバッグクラス
@@ -100,6 +101,7 @@ public:
 	CFade				*GetFade(void);			// フェード取得
 	CLoading			*GetLoading(void);		// ローディング取得
 	CScene				*GetScene(void);		// シーン取得
+	CStage				*GetStage(void);		// ステージ取得
 	CEffekseerManager	*GetEffekseer(void);	// エフェクシアマネージャー取得
 	CRetentionManager	*GetRetention(void);	// データ保存マネージャー取得
 	CDebug				*GetDebug(void);		// デバッグ取得
@@ -126,6 +128,7 @@ private:
 	CFade				*m_pFade;		// フェードインスタンス
 	CLoading			*m_pLoading;	// ローディングインスタンス
 	CScene				*m_pScene;		// シーンインスタンス
+	CStage				*m_pStage;		// ステージインスタンス
 	CEffekseerManager	*m_pEffekseer;	// エフェクシアマネージャー
 	CRetentionManager	*m_pRetention;	// データ保存マネージャー
 	CDebug				*m_pDebug;		// デバッグ

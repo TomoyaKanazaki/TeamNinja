@@ -45,9 +45,10 @@ private:
 	void UpdateSize(void); // 大きさ更新
 	void ChangeDirection(void); // 方向変更
 	void ChangeRotation(void); // 角度変更
-	void CreateField(void); // フィールド生成
-	void ReleaseField(void); // フィールド破棄
-	void DeleteCollisionField(const bool bRelase); // フィールドの削除判定
+	void Create(void); // フィールド生成
+	void Release(void); // フィールド破棄
+	void DeleteCollision(const bool bRelase); // フィールドの削除判定
+	void InitAllColor(void); // フィールドの色全初期化
 
 	// メンバ変数
 	CCameraChanger* m_pChanger; // オブジェクト情報

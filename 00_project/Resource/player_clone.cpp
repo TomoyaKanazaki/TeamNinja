@@ -29,6 +29,8 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 
+#include "camera.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -56,7 +58,9 @@ namespace
 	const int ORBIT_PART = 10;	// 分割数
 
 	const float DISTANCE = 45.0f; // プレイヤーとの距離
-	const float TIMER = 10.0f; // 自動消滅タイマー
+	const float WALK_TIMER = 10.0f; // 自動消滅タイマー
+	const float GIMMICK_TIMER = 20.0f; // 自動消滅タイマー
+	const float DELETE_DISTNCE = 1000.0f; // ギミックになってから消えるまでの距離
 
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
@@ -64,7 +68,6 @@ namespace
 	const float FALL_RETURN_SPEED = 5.0f; // 落とし穴からもとに戻る移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
-	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
 	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
 }
 
@@ -83,7 +86,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
-	m_Action		(ACTION_CHASE),		// 行動
+	m_Action		(ACTION_CHASE),		// 現在行動
+	m_OldAction		(ACTION_CHASE),		// 過去行動
 	m_fDeleteTimer	(0.0f),				// 自動消滅タイマー
 	m_fGimmickTimer	(0.0f),				// ギミック受付時間タイマー
 	m_pGimmick		(nullptr),			// ギミックのポインタ
@@ -120,7 +124,8 @@ HRESULT CPlayerClone::Init(void)
 
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
-	m_Action		= ACTION_CHASE;		// 行動
+	m_Action		= ACTION_CHASE;		// 現在行動
+	m_OldAction		= ACTION_CHASE;		// 過去行動
 	m_fDeleteTimer	= 0.0f;				// 自動消滅タイマー
 	m_fGimmickTimer = 0.0f;				// ギミック受付時間タイマー
 	m_pGimmick		= nullptr;			// ギミックのポインタ
@@ -218,6 +223,24 @@ void CPlayerClone::Update(const float fDeltaTime)
 {
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
+	if (m_OldAction == ACTION_BRIDGE
+	&&  m_Action != ACTION_BRIDGE)
+	{
+		// 腰の親モデルを初期化
+		GetParts(MODEL_WAIST)->SetParentModel(nullptr);
+
+		// 少しキャラクターを大きくする
+		SetVec3Scaling(VEC3_ONE);
+
+		// 寝そべってる向きを修正
+		D3DXVECTOR3 rotClone = GetVec3Rotation();	// 分身向きを取得
+		rotClone.x = rotClone.z = 0.0f;	// Y向き以外は初期化
+		SetVec3Rotation(rotClone);		// 向きを反映
+	}
+
+	// 過去行動の更新
+	m_OldAction = m_Action;
+
 	// 過去位置の更新
 	UpdateOldPosition();
 
@@ -300,6 +323,13 @@ void CPlayerClone::Update(const float fDeltaTime)
 	default:
 		assert(false);
 		break;
+	}
+
+	// アクティブ状態の更新
+	if (UpdateActive(fDeltaTime))
+	{
+		Delete(m_Action);
+		return;
 	}
 
 	// 壁の当たり判定
@@ -436,6 +466,24 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		assert(false);
 		break;
 	}
+
+	// ギミックタイマーを初期値に設定する
+	m_fGimmickTimer = GIMMICK_TIMER;
+}
+
+//===========================================
+//  ギミックの削除
+//===========================================
+void CPlayerClone::DeleteGimmick()
+{
+	// ギミックが元々nullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
+
+	// ギミックの総数を減らす
+	m_pGimmick->SabNumClone();
+
+	// ギミックのポインタをnullにする
+	m_pGimmick = nullptr;
 }
 
 //===========================================
@@ -547,44 +595,6 @@ CPlayerClone* CPlayerClone::Create(void)
 //==========================================
 //  生成処理(歩行)
 //==========================================
-CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
-{
-	// ポインタを宣言
-	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
-
-	// 生成に失敗した場合nullを返す
-	if (pPlayer == nullptr) { return nullptr; }
-
-	// プレイヤーの初期化
-	if (FAILED(pPlayer->Init()))
-	{ // 初期化に失敗した場合
-
-		// プレイヤーの破棄
-		SAFE_DELETE(pPlayer);
-		return nullptr;
-	}
-
-	// 向きを設定
-	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
-	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
-	pPlayer->SetVec3Rotation(rot);		// 向き設定
-
-	// 移動量を設定
-	pPlayer->m_move = move;
-
-	// 行動を設定
-	pPlayer->m_Action = ACTION_MOVE;
-
-	// 自動消滅タイマーを設定
-	pPlayer->m_fDeleteTimer = TIMER;
-
-	// 確保したアドレスを返す
-	return pPlayer->Block();
-}
-
-//==========================================
-//  生成処理(歩行)
-//==========================================
 CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move)
 {
 	// ポインタを宣言
@@ -617,7 +627,7 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 	pPlayer->m_Action = ACTION_MOVE;
 
 	// 自動消滅タイマーを設定
-	pPlayer->m_fDeleteTimer = TIMER;
+	pPlayer->m_fDeleteTimer = WALK_TIMER;
 
 	// 確保したアドレスを返す
 	return pPlayer->Block();
@@ -676,13 +686,16 @@ void CPlayerClone::Delete(const int nNum)
 	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
 	// 分身を取得
-	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
+	CPlayerClone* pClone = *m_pList->GetIndex(nNum);
+
+	// 分身所持しているギミックを削除
+	pClone->DeleteGimmick();
 
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
-	pAvatar->Uninit();
+	pClone->Uninit();
 }
 
 //============================================================
@@ -706,10 +719,10 @@ void CPlayerClone::Delete(const EAction act)
 		bDelete[i] = false;
 
 		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+		CPlayerClone* pClone = *m_pList->GetIndex(i);
 
 		// 分身の削除フラグをオン
-		if (pAvatar->GetAction() == act)
+		if (pClone->GetAction() == act)
 		{
 			bDelete[i] = true;
 		}
@@ -724,6 +737,24 @@ void CPlayerClone::Delete(const EAction act)
 
 	// 削除フラグを削除
 	delete[] bDelete;
+}
+
+//===========================================
+//  選択消去処理
+//===========================================
+void CPlayerClone::Delete(CPlayerClone* pClone)
+{
+	// リスト情報がない場合停止する
+	if (pClone == nullptr) { assert(false); return; }
+
+	// 分身所持しているギミックを削除
+	pClone->DeleteGimmick();
+
+	// 消去のエフェクトを生成する
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// 分身の終了
+	pClone->Uninit();
 }
 
 //============================================================
@@ -758,7 +789,6 @@ void CPlayerClone::CallBack()
 		if (pClone->GetAction() == ACTION_FALL) { continue; }
 
 		// ギミックフラグをリセット
-		pClone->m_fGimmickTimer = 0.0f;
 		pClone->m_eGimmick = GIMMICK_IGNORE;
 		pClone->m_bFind = true;
 
@@ -1017,25 +1047,44 @@ CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 {
 	// ギミック作動中の梯子モーションを返す
-	if (m_pGimmick->IsActive()) { return MOTION_LADDER; }
+	if (m_pGimmick->IsActive())
+	{
+		// 自分の次のギミック内分身を取得
+		CPlayerClone *pNextClone = GetGimmickNextClone();
+		if (pNextClone != nullptr)
+		{ // 次の分身がいた場合
 
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
+			// 腰の親モデルを初期化
+			pNextClone->GetParts(MODEL_WAIST)->SetParentModel(GetParts(MODEL_WAIST));
+		}
 
-	// 重力
-	UpdateGravity();
+		// 少しキャラクターを大きくする
+		SetVec3Scaling(D3DXVECTOR3(1.5f, 1.5f, 1.25f));	// TODO：定数
 
-	// 移動
-	pos += m_move * fDeltaTime;
+		// 橋になる為のモーションを返す
+		if (m_nIdxGimmick == 0)	{ SetMotion(MOTION_LADDER); return MOTION_LADDER; }	// 先頭は梯子モーション
+		else					{ SetMotion(MOTION_BRIDGE); return MOTION_BRIDGE; }	// それ以降は橋モーション
+	}
+	else
+	{
+		// 位置の取得
+		D3DXVECTOR3 pos = GetVec3Position();
 
-	// 着地判定
-	UpdateLanding(pos);
+		// 重力
+		UpdateGravity();
 
-	// 位置の適用
-	SetVec3Position(pos);
+		// 移動
+		pos += m_move * fDeltaTime;
 
-	// 待機モーションを返す
-	return MOTION_IDOL;
+		// 着地判定
+		UpdateLanding(pos);
+
+		// 位置の適用
+		SetVec3Position(pos);
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
 }
 
 //============================================================
@@ -1094,7 +1143,7 @@ void CPlayerClone::UpdateRotation(D3DXVECTOR3& rRot)
 //============================================================
 void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 {
-	CStage *pStage = CScene::GetStage();	// ステージ情報
+	CStage *pStage = GET_STAGE;	// ステージ情報
 
 	// TODO
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d\n", m_pOldField == m_pCurField);
@@ -1443,7 +1492,7 @@ void CPlayerClone::UpdateReAction()
 		sizeGimmick = gimmick->GetVec3Sizing() * 0.5f;
 
 		// 矩形の外の場合次に進む
-		if (!collision::Box2D
+		if (!collision::Box3D
 		(
 			pos,			// 判定位置
 			posGimmick,		// 判定目標位置
@@ -1475,8 +1524,28 @@ void CPlayerClone::UpdateAction()
 	// ギミックがnullの場合関数を抜ける
 	if (m_pGimmick == nullptr) { return; }
 
-	// 待機位置に向かう
-	Approach(m_pGimmick->CalcWaitPoint(m_nIdxGimmick));
+	// 待機位置・向きを設定
+	Approach();
+}
+
+//===========================================
+//  アクティブ状態での処理
+//===========================================
+bool CPlayerClone::UpdateActive(const float fDeltaTime)
+{
+	// ギミックがnullの場合falseを返す
+	if (m_pGimmick == nullptr) { return false; }
+
+	// アクティブ状態でない場合falseを返す
+	if (!m_pGimmick->IsActive()) { return false; }
+
+	// ギミックタイマーを減少
+	m_fGimmickTimer -= fDeltaTime;
+
+	// ギミックタイマーが0を下回ってる場合trueを返す
+	if (m_fGimmickTimer <= 0.0f) { return true; }
+
+	return false;
 }
 
 //==========================================
@@ -1591,8 +1660,9 @@ void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rP
 //===========================================
 //  目標位置に向かう処理
 //===========================================
-bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
+void CPlayerClone::Approach(void)
 {
+#if 0
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1601,13 +1671,18 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 
 	// 目標へのベクトルに倍率をかけ現在地に加算する
 	pos += vecTarget * 0.1f;
+#endif
+	
+	// 移動量を初期化する
+	m_move = VEC3_ZERO;
 
-	// 位置を適用する
-	SetVec3Position(posTarget);
+	// ギミック待機位置を適用する
+	SetVec3Position(m_pGimmick->CalcWaitPoint(m_nIdxGimmick, this));
 
 	// ギミック待機向きを適用する
-	SetVec3Rotation(GetGimmick()->CalcWaitRotation(m_nIdxGimmick, this));
+	SetVec3Rotation(m_pGimmick->CalcWaitRotation(m_nIdxGimmick, this));
 
+#if 0
 	// 移動量のスカラー値を算出
 	float fScalar = vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z;
 
@@ -1618,6 +1693,7 @@ bool CPlayerClone::Approach(const D3DXVECTOR3& posTarget)
 	}
 
 	return false;
+#endif
 }
 
 //===========================================
@@ -1824,4 +1900,38 @@ void CPlayerClone::CheckGimmick()
 		assert(false);
 		break;
 	}
+}
+
+//===========================================
+//	ギミックの次の分身取得
+//===========================================
+CPlayerClone *CPlayerClone::GetGimmickNextClone()
+{
+	// 分身リストがない場合抜ける
+	if (m_pList == nullptr) { return nullptr; }
+
+	// ギミックがない場合抜ける
+	if (m_pGimmick == nullptr) { return nullptr; }
+
+	// 発動人数以上の次の分身が求められている場合
+	if (m_nIdxGimmick + 1 >= m_pGimmick->GetNumActive()) { return nullptr; }
+
+	std::list<CPlayerClone*> list = m_pList->GetList();	// 内部リスト
+	for (auto& rList : list)
+	{ // 要素数分繰り返す
+
+		// 違うギミックを持っている場合抜ける
+		if (rList->m_pGimmick != m_pGimmick) { continue; }
+
+		if (rList->m_nIdxGimmick == m_nIdxGimmick + 1)
+		{ // 次の分身を見つけた場合
+
+			// 分身を返す
+			return rList;
+		}
+	}
+
+	// ここきたらおかしいよん
+	assert(false);
+	return nullptr;
 }

@@ -15,19 +15,24 @@
 #include "player.h"
 #include "player_clone.h"
 #include "multiModel.h"
-
 #include "collision.h"
+#include "enemyNavigation.h"
+#include "enemyNavStreet.h"
+#include "enemyNavRandom.h"
+#include "enemyChaseRange.h"
+
+#include "enemyStalk.h"
+#include "enemyWolf.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const float MOVE = -290.0f;				// 移動量
-	const float ROT_REV = 0.5f;				// 向きの補正係数
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
 	const int DODGE_COUNT = 17;				// 回避カウント数
+	const float SHAKEOFF_RANGE = 1000.0f;	// 振り切れる距離
 }
 
 //************************************************************
@@ -37,10 +42,14 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyAttack::CEnemyAttack() : CEnemy(),
+m_pNav(nullptr),			// ナビゲーションの情報
+m_pChaseRange(nullptr),		// 追跡範囲の情報
 m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
+m_type(TYPE_STALK),			// 種類
+m_fAlpha(1.0f),				// 透明度
 m_bAttack(false)			// 攻撃状況
 {
 
@@ -77,6 +86,12 @@ HRESULT CEnemyAttack::Init(void)
 //============================================================
 void CEnemyAttack::Uninit(void)
 {
+	// ナビゲーションの終了処理
+	SAFE_UNINIT(m_pNav);
+
+	// 追跡範囲の終了処理
+	SAFE_UNINIT(m_pChaseRange);
+
 	// 敵の終了
 	CEnemy::Uninit();
 }
@@ -110,37 +125,49 @@ void CEnemyAttack::SetData(void)
 //============================================================
 // 移動処理
 //============================================================
-void CEnemyAttack::Move(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+void CEnemyAttack::Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime)
 {
-	D3DXVECTOR3 destRot = GetDestRotation();	// 目的の向き
 	D3DXVECTOR3 move = GetMovePosition();		// 移動量
-	float fDiff;
-
-	// 目的の向きを取得
-	destRot.y = atan2f(pPos->x - m_posTarget.x, pPos->z - m_posTarget.z);
-
-	// 向きの差分
-	fDiff = destRot.y - pRot->y;
-
-	// 向きの正規化
-	useful::NormalizeRot(fDiff);
-
-	// 向きを補正
-	pRot->y += fDiff * ROT_REV;
-
-	// 向きの正規化
-	useful::NormalizeRot(pRot->y);
 
 	// 移動量を設定する
-	move.x = sinf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
-	move.z = cosf(pRot->y) * MOVE * GET_MANAGER->GetDeltaTime()->GetTime();
+	move.x = sinf(rRot.y) * fSpeed * fDeltaTime;
+	move.z = cosf(rRot.y) * fSpeed * fDeltaTime;
 
 	// 位置を移動する
 	*pPos += move;
 
 	// 情報を適用
-	SetDestRotation(destRot);
 	SetMovePosition(move);
+}
+
+//============================================================
+// 向きの移動処理
+//============================================================
+void CEnemyAttack::RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+	float fDiffRot = 0.0f;	// 差分向き
+
+	// 目標向きまでの差分を計算
+	fDiffRot = destRot.y - rRot.y;
+	useful::NormalizeRot(fDiffRot);	// 差分向きの正規化
+
+	// 向きの更新
+	rRot.y += fDiffRot * fDeltaTime * fRevRota;
+	useful::NormalizeRot(rRot.y);	// 向きの正規化
+}
+
+//============================================================
+//	目標位置の視認処理
+//============================================================
+void CEnemyAttack::LookTarget(const D3DXVECTOR3& rPos)
+{
+	D3DXVECTOR3 destRot = GetDestRotation();	// 目標向き
+
+	// 目標向きを求める
+	destRot.y = atan2f(rPos.x - GetTargetPos().x, rPos.z - GetTargetPos().z);
+
+	SetDestRotation(destRot);	// 目標向きを反映
 }
 
 //============================================================
@@ -194,6 +221,68 @@ bool CEnemyAttack::JudgeClone(void)
 	return true;
 }
 
+//============================================================
+// プレイヤーの振り切り処理
+//============================================================
+bool CEnemyAttack::ShakeOffPlayer(void)
+{
+	// 位置を取得する
+	m_posTarget = CScene::GetPlayer()->GetVec3Position();
+
+	if (collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE) == true)
+	{ // 範囲内に入っている場合
+
+		// プレイヤーを標的にする
+		m_target = TARGET_PLAYER;
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
+}
+
+//============================================================
+// 分身の振り切り処理
+//============================================================
+bool CEnemyAttack::ShakeOffClone(void)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
+	D3DXVECTOR3 posEnemy = GetVec3Position();		// 敵の位置
+
+	if (CPlayerClone::GetList() == nullptr ||
+		*CPlayerClone::GetList()->GetBegin() == nullptr)
+	{ // 分身のリストが無い場合
+
+		// falseを返す
+		return false;
+	}
+
+	for (int nCnt = 0; nCnt < CPlayerClone::GetList()->GetNumAll(); nCnt++)
+	{
+		// 分身の位置を取得する
+		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+
+		if (!collision::Circle2D(GetVec3Position(), pos, GetRadius(), SHAKEOFF_RANGE)) { continue; }
+
+		// 位置を設定する
+		m_posTarget = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+
+		// 分身の情報を設定する
+		m_pClone = *CPlayerClone::GetList()->GetIndex(nCnt);
+
+		// 分身を標的にする
+		m_target = TARGET_CLONE;
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
+}
+
 //====================================================================================================================================================================================
 // TODO：ここから下はう〇ちカス判定だから後で修正
 //====================================================================================================================================================================================
@@ -221,41 +310,30 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		CScene::GetPlayer()->GetRadius()
 	};
 
-	// ボックスの当たり判定
-	if (!collision::Box3D
-	(
-		rPos,				// 判定位置
-		posPlayer,			// 判定目標位置
-		ATTACK_COLLUP,		// 判定サイズ(右・上・後)
-		ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
-		sizeUpPlayer,		// 判定目標サイズ(右・上・後)
-		sizeDownPlayer		// 判定目標サイズ(左・下・前)
-	))
-	{ // 当たってなかった場合
+	// 回避カウントを加算する
+	m_nAttackCount++;
 
-		return;
-	}
+	if (m_nAttackCount >= DODGE_COUNT)
+	{ // 回避カウントを過ぎた場合
 
-	if (m_nAttackCount <= DODGE_COUNT)
-	{ // 回避カウント中
+		// ボックスの当たり判定
+		if (collision::Box3D
+		(
+			rPos,				// 判定位置
+			posPlayer,			// 判定目標位置
+			ATTACK_COLLUP,		// 判定サイズ(右・上・後)
+			ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
+			sizeUpPlayer,		// 判定目標サイズ(右・上・後)
+			sizeDownPlayer		// 判定目標サイズ(左・下・前)
+		))
+		{ // 当たってなかった場合
 
-		// 青色に変えておく
-		SetAllMaterial(material::Blue());
+			// 回避カウントを初期化する
+			m_nAttackCount = 0;
 
-		// 回避カウントを加算する
-		m_nAttackCount++;
-	}
-	else
-	{ // 上記以外
-
-		// 回避カウントを初期化する
-		m_nAttackCount = 0;
-
-		// マテリアルをリセット
-		ResetMaterial();
-
-		// ヒット処理
-		CScene::GetPlayer()->Hit(500);
+			// ヒット処理
+			CScene::GetPlayer()->Hit(500);
+		}
 
 		// 攻撃状況を true にする
 		m_bAttack = true;
@@ -327,4 +405,165 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 
 	// 攻撃状況を true にする
 	m_bAttack = true;
+}
+
+//============================================================
+//	生成処理(一定範囲移動敵)
+//============================================================
+CEnemyAttack* CEnemyAttack::Create
+(
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot,	// 向き
+	const EType type,			// 種類
+	const float fMoveWidth,		// 移動幅
+	const float fMoveDepth,		// 移動奥行
+	const float fChaseWidth,	// 追跡幅
+	const float fChaseDepth		// 追跡奥行
+)
+{
+	// ポインタを宣言
+	CEnemyAttack* pEnemy = nullptr;	// 敵情報
+
+	switch (type)
+	{
+	case TYPE_STALK:
+
+		// 追跡敵を生成
+		pEnemy = new CEnemyStalk;
+
+		break;
+
+	case TYPE_WOLF:
+
+		// 犬敵を生成
+		pEnemy = new CEnemyWolf;
+
+		break;
+
+	default:	// 例外処理
+		assert(false);
+		break;
+	}
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->m_type = type;
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
+
+		// 追跡範囲を生成
+		pEnemy->m_pChaseRange = CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth);
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
+}
+
+//============================================================
+//	生成処理(ルート巡回移動敵)
+//============================================================
+CEnemyAttack* CEnemyAttack::Create
+(
+	const D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rRot,				// 向き
+	const EType type,						// 種類
+	const std::vector<D3DXVECTOR3> route,	// ルートの配列
+	const float fChaseWidth,				// 追跡幅
+	const float fChaseDepth					// 追跡奥行
+)
+{
+	// ポインタを宣言
+	CEnemyAttack* pEnemy = nullptr;	// 敵情報
+
+	switch (type)
+	{
+	case TYPE_STALK:
+
+		// 追跡敵を生成
+		pEnemy = new CEnemyStalk;
+
+		break;
+
+	case TYPE_WOLF:
+
+		// 犬敵を生成
+		pEnemy = new CEnemyWolf;
+
+		break;
+
+	default:	// 例外処理
+		assert(false);
+		break;
+	}
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->m_type = type;
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
+
+		// 追跡範囲を生成
+		pEnemy->m_pChaseRange = CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth);
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
 }

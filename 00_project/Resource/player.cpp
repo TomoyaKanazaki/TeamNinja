@@ -24,13 +24,13 @@
 #include "shadow.h"
 #include "orbit.h"
 #include "object2D.h"
-#include "rankingManager.h"
 #include "stage.h"
 #include "field.h"
 #include "cloneAngleUI.h"
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
+#include "transpoint.h"
 #include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
@@ -48,6 +48,8 @@ namespace
 	const int	PRIORITY	= 3;				// プレイヤーの優先順位
 	const float	JUMP_MOVE	= 615.0f;			// 大ジャンプ上昇量
 	const float	STEP_MOVE	= JUMP_MOVE * 2.0f;	// 大ジャンプ上昇量
+	const float	CANON_GRAVITY= 500.0f;			// 重力
+	const float CANON_MOVE	= CANON_GRAVITY * 30.0f;	// 吹っ飛ばし上昇量
 	const float REBOUND		= 500.0f;			// ジャンプの跳ね返り
 	const float	GRAVITY		= 60.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
@@ -76,7 +78,7 @@ namespace
 	const int MAX_TENSION = 10000; // 士気力の最大値
 	const int INIT_TENSION = 5000; // 士気力の初期値
 	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
-	const int MAX_CLONE = 10; // 分身の最大数
+	const int MAX_CLONE = 20; // 分身の最大数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -120,7 +122,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_fShootZ		(0.0f)		// 吹っ飛ぶ目標
+	m_sFrags		({}),			// フィールドフラグ
+	m_pCurField		(nullptr),		// 現在乗ってる地面
+	m_pOldField		(nullptr)		// 前回乗ってた地面
 {
 	
 }
@@ -278,12 +282,6 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
-	case STATE_SHOOT:
-
-		// 通常状態の更新
-		currentMotion = UpdateNormal(fDeltaTime);
-		break;
-
 	default:
 		assert(false);
 		break;
@@ -367,11 +365,9 @@ CPlayer *CPlayer::Create(CScene::EMode mode)
 	switch (mode)
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
-	case CScene::MODE_RESULT:
-	case CScene::MODE_RANKING:
 		break;
 
-	case CScene::MODE_TUTORIAL:
+	case CScene::MODE_SELECT:
 	case CScene::MODE_GAME:
 		pPlayer = new CPlayer;
 		break;
@@ -576,18 +572,6 @@ bool CPlayer::GimmickLand(void)
 	return true;
 }
 
-//===========================================
-//  吹っ飛ぶ
-//==========================================~
-void CPlayer::SetShoot(const float& posTarget)
-{
-	// 状態を変更
-	m_state = STATE_SHOOT;
-
-	// 目標地点をから移動量を設定
-	
-}
-
 //==========================================
 //  士気力の値を取得
 //==========================================
@@ -631,6 +615,33 @@ void CPlayer::RecoverJust()
 
 	// 回復エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
+}
+
+//===========================================
+//  文字列(フラグ)の追加
+//===========================================
+void CPlayer::AddFrags(const char cFrag)
+{
+	// 文字列内を検索に同じ文字が存在したら関数を抜ける
+	if (m_sFrags.find(cFrag) != std::string::npos) { return; }
+
+	// 文字列に受け取ったフラグを追加する
+	m_sFrags += cFrag;
+}
+
+//=========================================
+//  文字列(フラグ)の削除
+//===========================================
+void CPlayer::SabFrags(const char cFrag)
+{
+	// 文字列内を検索し番号を取得する
+	size_t nIdx = m_sFrags.find(cFrag);
+
+	// 文字列内にフラグが存在しなかった場合関数を抜ける
+	if (nIdx == std::string::npos) { return; }
+
+	// 文字列からフラグを削除する
+	m_sFrags.erase(nIdx);
 }
 
 //============================================================
@@ -681,7 +692,10 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// ステージ遷移の更新
+	UpdateTrans(posPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -697,16 +711,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
-}
-
-//===========================================
-//  発射状態時の更新処理
-//===========================================
-CPlayer::EMotion CPlayer::UpdateShoot(const float fDeltaTime)
-{
-
-	// TODO 発射されてる時のモーションを適用しなさい
-	return MOTION_IDOL;
 }
 
 //============================================================
@@ -762,6 +766,16 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
 		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
 		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
+
+		// 橋に乗っている場合移動量を消す
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
+		{
+			m_move.z = 0.0f;
+		}
+		if (m_sFrags.find(CField::GetFlag(CField::TYPE_ZBRIDGE)) != std::string::npos)
+		{
+			m_move.x = 0.0f;
+		}
 
 #ifdef _DEBUG
 		if (pPad->IsPress(CInputPad::KEY_Y))
@@ -831,10 +845,14 @@ void CPlayer::UpdateSaveTeleport(void)
 bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 {
 	bool bLand = false;	// 着地フラグ
-	CStage *pStage = CScene::GetStage();	// ステージ情報
-	D3DXVECTOR3 move = m_move * fDeltaTime; //現在の移動速度を一時保存
+	CStage *pStage = GET_STAGE;	// ステージ情報
+	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
+
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
@@ -843,6 +861,24 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+	}
+
+	if (m_pCurField != nullptr)
+	{ // 現在地面に着地している場合
+
+		// 当たっている状態にする
+		m_pCurField->Hit(this);
+	}
+
+	if (m_pCurField != m_pOldField)
+	{ // 前回と違う地面の場合
+
+		if (m_pOldField != nullptr)
+		{ // 前回地面に着地している場合
+
+			// 当たっていない状態にする
+			m_pOldField->Miss(this);
+		}
 	}
 
 	// 現在のモーション種類を取得
@@ -1163,6 +1199,26 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
+}
+
+//==========================================
+//	ステージ遷移の更新処理
+//==========================================
+void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
+{
+	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	if (pPad->IsTrigger(CInputPad::KEY_B))
+	{
+		// 触れている遷移ポイントを取得
+		CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
+
+		// 遷移ポイントに触れていない場合抜ける
+		if (pHitTrans == nullptr) { return; }
+
+		// 遷移ポイントのマップパスに遷移
+		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
+		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+	}
 }
 
 //==========================================
@@ -1553,6 +1609,7 @@ void CPlayer::DebugCloneControl(void)
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
 	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 pos = GetVec3Position();
 
 	if (pKey->IsTrigger(DIK_I))
 	{ // 前関係移動
@@ -1565,7 +1622,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1576,7 +1633,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1587,7 +1644,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_K))
@@ -1601,7 +1658,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1612,7 +1669,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1623,7 +1680,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_J))
@@ -1635,7 +1692,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 	else if (pKey->IsTrigger(DIK_L))
 	{ // 右関係移動
@@ -1646,7 +1703,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 }
 

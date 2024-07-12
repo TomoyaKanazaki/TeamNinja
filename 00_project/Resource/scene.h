@@ -14,7 +14,6 @@
 //	前方宣言
 //************************************************************
 class CCollManager;	// 当たり判定マネージャークラス
-class CStage;		// ステージクラス
 class CPlayer;		// プレイヤークラス
 
 //************************************************************
@@ -28,10 +27,8 @@ public:
 	enum EMode
 	{
 		MODE_TITLE = 0,	// タイトル画面
-		MODE_TUTORIAL,	// チュートリアル画面
+		MODE_SELECT,	// セレクト画面
 		MODE_GAME,		// ゲーム画面
-		MODE_RESULT,	// リザルト画面
-		MODE_RANKING,	// ランキング画面
 		MODE_MAX		// この列挙型の総数
 	};
 
@@ -51,8 +48,7 @@ public:
 	static void Release(CScene *&prScene);	// 破棄
 
 	static CCollManager *GetCollManager(void);	// 当たり判定マネージャー取得
-	static CStage *GetStage(void);		// ステージ取得
-	static CPlayer *GetPlayer(void);	// プレイヤー取得
+	static CPlayer *GetPlayer(void);			// プレイヤー取得
 
 	// メンバ関数
 	void SetMode(const EMode mode);	// モード設定
@@ -61,7 +57,6 @@ public:
 private:
 	// 静的メンバ変数
 	static CCollManager *m_pCollManager;	// 当たり判定マネージャー
-	static CStage *m_pStage;	// ステージ情報
 
 	// メンバ変数
 	EMode m_mode;	// モード

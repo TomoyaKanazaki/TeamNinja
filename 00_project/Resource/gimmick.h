@@ -38,7 +38,6 @@ public:
 		TYPE_JUMPOFF,			// 飛び降り
 		TYPE_HEAVYDOOR,			// 重い扉
 		TYPE_BRIDGE,			// 橋
-		TYPE_CANON,				// 吹っ飛ばすやつ
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -55,6 +54,7 @@ public:
 	virtual void Draw(CShader* pShader = nullptr) override;		// 描画
 
 	// セット・ゲット関係
+	EAngle GetAngle() const { return m_eAngle; }				// 方向の取得
 	void SetType(const EType type) { m_type = type; }			// 種類の設定処理
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
 	void SetNumActive(const int nNum) { m_nNumActive = nNum; }	// 発動可能人数の設定処理
@@ -69,11 +69,13 @@ public:
 	static CGimmick* Create				// 生成
 	(
 		const D3DXVECTOR3& rPos,		// 位置
+		const EAngle& eAngle,			// 角度
 		const D3DXVECTOR3& rSize,		// サイズ
 		const EType type,				// 種類
 		const int nNumActive			// 発動可能な分身の数
 	);
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 private:
 
@@ -81,6 +83,7 @@ private:
 	CListManager<CGimmick>::AIterator m_iterator;	// イテレーター
 	EType m_type;		// 種類
 	int m_nNumActive;	// 発動可能な数
+	EAngle m_eAngle;	// 角度
 
 	// 静的メンバ変数
 	static CListManager<CGimmick>* m_pList;			// オブジェクトリスト

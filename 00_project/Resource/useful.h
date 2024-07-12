@@ -48,8 +48,9 @@
 #define GET_INPUTPAD	(CManager::GetInstance()->GetPad())			// パッド情報取得
 #define GET_RETENTION	(CManager::GetInstance()->GetRetention())	// データ保存情報取得
 #define GET_RENDERER	(CManager::GetInstance()->GetRenderer())	// レンダラー情報取得
+#define GET_STAGE		(CManager::GetInstance()->GetStage())		// ステージ情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
-#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー取得
+#define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー情報取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生
@@ -88,7 +89,7 @@
 #define XCOL_BLUE		(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f))	// 青色(不透明)
 #define XCOL_AYELLOW	(D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.0f))	// 黄色(透明)
 #define XCOL_YELLOW		(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f))	// 黄色(不透明)
-#define XCOL_ACYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.0f))	// 水色(透明)
+#define XCOL_ACYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f))	// 水色(透明)
 #define XCOL_CYAN		(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f))	// 水色(不透明)
 
 // RenderState関係
@@ -206,6 +207,21 @@ namespace useful
 		const float fTime,			// 経過時間
 		float *pMaxTime = nullptr,	// 最大経過時間
 		float *pMaxPosY = nullptr	// 最大到達Y座標
+	);
+	float QuadraticCurve			// 二次曲線処理(高さ)
+	( // 引数
+		const float fPosX,			// 位置(X軸)
+		const float fStart,			// 出発地点
+		const float fEnd,			// 終了地点
+		const float fHeight			// 最高高度
+	);
+	void Parabola					// 放物線処理
+	( // 引数
+		const float fVelo,			// 初速
+		const float fAdd,			// 重力
+		const int nCount,			// 経過時間
+		float* pGravity,			// 重力
+		float* pHeight				// 高さ
 	);
 
 	float RandomRot(void);				// ランダム向き取得

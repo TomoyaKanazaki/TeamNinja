@@ -142,5 +142,6 @@ MOTIONPASS = data\MOTION\PLAYER\landing.txt				# 着地モーション
 MOTIONPASS = data\MOTION\CLONE\jump_standby.txt			# ジャンプ台待機モーション
 MOTIONPASS = data\MOTION\CLONE\jump_standby_walk.txt	# ジャンプ台待機移動モーション
 MOTIONPASS = data\MOTION\CLONE\catapult.txt				# ジャンプ台打ち上げモーション
-MOTIONPASS = data\MOTION\CLONE\ladder.txt				# 梯子/橋モーション
+MOTIONPASS = data\MOTION\CLONE\ladder.txt				# 梯子/橋先頭モーション
+MOTIONPASS = data\MOTION\CLONE\bridge.txt				# 橋モーション
 MOTIONPASS = data\MOTION\CLONE\open.txt					# 扉上げモーション

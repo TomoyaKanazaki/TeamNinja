@@ -28,7 +28,7 @@ public:
 		TYPE_SOIL = 0,	// 土テクスチャ
 		TYPE_WEED_SOIL,	// 草土テクスチャ
 		TYPE_WEED,		// 草テクスチャ
-		TUPE_WATER,		// 水テクスチャ
+		TYPE_WATER,		// 水テクスチャ
 		TYPE_MAX		// この列挙型の総数
 	};
 

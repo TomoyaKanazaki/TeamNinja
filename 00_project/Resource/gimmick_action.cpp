@@ -26,7 +26,6 @@ namespace
 		true, // 飛び降り
 		false, // 重い扉
 		false, // 橋
-		true // 吹っ飛ばすやつ
 	};
 }
 
@@ -219,6 +218,30 @@ bool CGimmickAction::DistancePlayer()
 	return bHit;
 }
 
+//===========================================
+//  分身の総数を加算
+//===========================================
+void CGimmickAction::AddNumClone()
+{
+	// 総数が必要数に達していたら関数を抜ける
+	if (m_nNumClone >= GetNumActive()) { return; }
+	
+	// 加算
+	++m_nNumClone;
+}
+
+//===========================================
+//  分身の総数を減算
+//===========================================
+void CGimmickAction::SabNumClone()
+{
+	// 総数が0に以下の場合関数を抜ける
+	if (m_nNumClone <= 0) { return; }
+
+	// 減算
+	--m_nNumClone;
+}
+
 //==========================================
 //	リスト取得処理
 //==========================================
@@ -229,7 +252,7 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 }
 
 //===========================================
-//  待機位置の設定
+//  発動判定位置の設定
 //===========================================
 void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
 {

@@ -18,9 +18,6 @@
 #include "actor.h"
 
 #include "enemy_item.h"
-#include "enemyStalk.h"
-#include "enemyCaveat.h"
-#include "enemyWolf.h"
 
 //************************************************************
 //	定数宣言
@@ -29,7 +26,7 @@ namespace
 {
 	const int	PRIORITY = 3;			// 敵の優先順位
 	const float	GRAVITY = 60.0f;		// 重力
-	const float VIEW_RANGE = 1000.0f;	// 視界の範囲
+	const float VIEW_RANGE = 700.0f;	// 視界の範囲
 }
 
 //************************************************************
@@ -46,9 +43,9 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
 m_pItem(nullptr),			// 持ち物の情報
 m_oldPos(VEC3_ZERO),		// 過去位置
+m_posInit(VEC3_ZERO),		// 初期位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(TYPE_STALK),			// 種類
 m_bJump(false)				// 着地状況
 {
 
@@ -138,12 +135,6 @@ void CEnemy::Update(const float fDeltaTime)
 	// 状態更新
 	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
 
-	// アクターの当たり判定処理
-	CollisionActor(posEnemy);
-
-	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(posEnemy, m_oldPos, GetRadius(), GetHeight(), m_move);
-
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
 
@@ -175,82 +166,33 @@ void CEnemy::Draw(CShader* pShader)
 }
 
 //============================================================
-//	生成処理
-//============================================================
-CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const EType type)
-{
-	// ポインタを宣言
-	CEnemy* pEnemy = nullptr;	// 敵情報
-
-	switch (type)
-	{
-	case TYPE_STALK:
-
-		// 追跡敵を生成
-		pEnemy = new CEnemyStalk;
-
-		break;
-
-	case TYPE_CAVEAT:
-
-		// 警告敵を生成
-		pEnemy = new CEnemyCaveat;
-
-		break;
-
-	case TYPE_WOLF:
-
-		// 犬敵を生成
-		pEnemy = new CEnemyWolf;
-
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
-
-	if (pEnemy == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 敵の初期化
-		if (FAILED(pEnemy->Init()))
-		{ // 初期化に失敗した場合
-
-			// 敵の破棄
-			SAFE_DELETE(pEnemy);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pEnemy->SetVec3Position(rPos);
-
-		// 向きを設定
-		pEnemy->SetVec3Rotation(rRot);
-
-		// 種類を設定
-		pEnemy->m_type = type;
-
-		// 情報の設定処理
-		pEnemy->SetData();
-
-		// 確保したアドレスを返す
-		return pEnemy;
-	}
-}
-
-//============================================================
 //	リスト取得処理
 //============================================================
 CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// 当たり判定処理
+//============================================================
+bool CEnemy::Collision(D3DXVECTOR3& rPos)
+{
+	bool bHit = false;		// ヒット状況
+
+	// アクターの当たり判定処理
+	CollisionActor(rPos, bHit);
+
+	// 壁の当たり判定(ifを挟まないとヒット状況が上書きされる)
+	if (GET_STAGE->CollisionWall(rPos, m_oldPos, GetRadius(), GetHeight(), m_move))
+	{
+		// ヒット状況を true にする
+		bHit = true;
+	}
+
+	// ヒット状況を返す
+	return bHit;
 }
 
 //============================================================
@@ -348,7 +290,7 @@ void CEnemy::UpdateGravity(void)
 //============================================================
 void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 {
-	CStage *pStage = CScene::GetStage();	// ステージ情報
+	CStage *pStage = GET_STAGE;	// ステージ情報
 
 	// ジャンプしている状態にする
 	m_bJump = true;
@@ -366,7 +308,7 @@ void CEnemy::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 // アクターの当たり判定処理
 //============================================================
-void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
+void CEnemy::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 {
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return; }
@@ -384,7 +326,8 @@ void CEnemy::CollisionActor(D3DXVECTOR3& rPos)
 			GetRadius(),	// 半径
 			GetHeight(),	// 高さ
 			m_move,			// 移動量
-			m_bJump			// ジャンプ状況
+			m_bJump,		// ジャンプ状況
+			bHit			// ヒット状況
 		);
 	}
 }

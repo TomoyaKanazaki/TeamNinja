@@ -13,7 +13,7 @@
 //************************************************************
 // 前方宣言
 //************************************************************
-class CObjectMeshCylinder;		// メッシュシリンダー
+class CEnemy;				// 敵の情報
 
 //************************************************************
 //	クラス定義
@@ -24,11 +24,11 @@ class CEnemyNav
 public:
 
 	// 状態
-	enum STATE
+	enum EState
 	{
 		STATE_STOP = 0,		// 停止状態
 		STATE_TURN,			// ターン状態
-		STATE_WALK,			// 歩行状態
+		STATE_MOVE,			// 移動状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -36,33 +36,61 @@ public:
 	CEnemyNav();
 
 	// デストラクタ
-	~CEnemyNav();
+	virtual ~CEnemyNav();
 
 	// オーバーライド関数
-	HRESULT Init(void);					// 初期化
-	void Uninit(void);					// 終了
-	void Update(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove);		// 更新
+	virtual HRESULT Init(void);		// 初期化
+	virtual void Uninit(void);		// 終了
+	virtual void Update				// 更新
+	(
+		D3DXVECTOR3* pPos,			// 位置
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
+	);
 
-	// 静的メンバ関数
-	static CEnemyNav* Create(const D3DXVECTOR3& rPosInit);		// 生成処理
+	virtual void NavReset(void);	// ナビゲーションのリセット処理
+
+	// セット・ゲット関係
+	void SetState(const EState state) { m_state = state; }				// 状態の設定処理
+	EState GetState(void) const { return m_state; }						// 状態の取得処理
+	void SetStateCount(const int nCount) { m_nStateCount = nCount; }	// 状態カウントの設定処理
+
+protected:
+
+	// セット・ゲット関係
+	int GetStateCount(void) const { return m_nStateCount; }					// 状態カウントの取得処理
+	void SetPosDest(const D3DXVECTOR3& rPosDest) { m_posDest = rPosDest; }	// 目標位置の設定処理
+	D3DXVECTOR3 GetPosDest(void) const { return m_posDest; }				// 目標位置の取得処理
 
 private:
 
-	// メンバ関数
-	void Stop(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRotDest);							// 停止状態処理
-	void Turn(D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove);		// ターン状態処理
-	void Walk(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pMove);		// 歩行状態処理
+	// 純粋仮想メンバ関数
+	virtual void StopFunc	// 停止状態処理
+	(
+		const D3DXVECTOR3& rPos,	// 位置
+		CEnemy* pEnemy				// 敵の情報
+	) = 0;
 
-	void CollisionActor(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld);	// アクターの当たり判定処理
-	void CollisionWall(D3DXVECTOR3* pPos);	// 壁の当たり判定処理
+	virtual void TurnFunc	// ターン状態処理
+	(
+		D3DXVECTOR3* pRot,			// 向き
+		CEnemy* pEnemy,				// 敵の情報
+		const float fSpeed,			// 速度
+		const float fDeltaTime		// デルタタイム
+	) = 0;
+
+	virtual void MoveFunc	// 移動状態処理
+	(
+		D3DXVECTOR3* pPos,			// 位置
+		CEnemy* pEnemy				// 敵の情報
+	) = 0;
 
 	// メンバ変数
-	//CObjectMeshCylinder* m_pCylinder;		// メッシュシリンダーの情報
-	D3DXVECTOR3 m_posInit;	// 初期位置
-	D3DXVECTOR3 m_posDest;	// 目標地点
-	STATE m_state;			// 状態
-	int m_nStopCount;		// 停止カウント
-	float m_fRotMove;		// 向きの移動量
+	D3DXVECTOR3 m_posDest;			// 目標位置
+	EState m_state;					// 状態
+	int m_nStateCount;				// 状態カウント
 };
 
-#endif	// _ACTOR_H_
+#endif	// _ENEMY_NAVIGATION_H_

@@ -21,7 +21,6 @@
 //************************************************************
 class CShadow;	// 影クラス
 class COrbit;	// 軌跡クラス
-class CField;	// 地面クラス
 class CGimmickAction;	// アクションギミッククラス
 class CField;	// フィールドクラス
 
@@ -64,7 +63,8 @@ public:
 		MOTION_JUMP_IDOL,	// ジャンプ台待機モーション
 		MOTION_JUMP_WALK,	// ジャンプ台移動モーション
 		MOTION_CATAPULT,	// ジャンプ台打ち上げモーション
-		MOTION_LADDER,		// 梯子/橋モーション
+		MOTION_LADDER,		// 梯子/橋先頭モーション
+		MOTION_BRIDGE,		// 橋モーション
 		MOTION_OPEN,		// 扉上げモーション
 		MOTION_MAX			// この列挙型の総数
 	};
@@ -110,9 +110,9 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);	// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
-	void DeleteGimmick() { m_pGimmick = nullptr; } // 所持しているギミックを削除
-	void SetField(CField* field);	// フィールドのポインタを受け取る
-	void DeleteField(CField* field);				// 所持しているフィールドを削除
+	void DeleteGimmick();						// 所持しているギミックを削除
+	void SetField(CField* field);				// フィールドのポインタを受け取る
+	void DeleteField(CField* field);			// 所持しているフィールドを削除
 
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const { return m_pGimmick; }	// 所持ギミックを取得
@@ -126,11 +126,11 @@ public:
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
-	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
 	static void Delete(const int nNum);												// 消去処理
 	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
+	static void Delete(CPlayerClone* pClone);									// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static void CallBack();															// 分身を呼び戻す
 	static float GetRadius();														// 半径の取得
@@ -160,6 +160,7 @@ private:
 	void UpdateIgnore(); // 無視する状態での更新
 	void UpdateReAction(); // 反応する状態での更新
 	void UpdateAction(); // 反応した状態での更新
+	bool UpdateActive(const float fDeltaTime); // アクティブ状態での処理
 
 	// メンバ関数 (金崎追加)
 	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
@@ -171,13 +172,16 @@ private:
 		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
 	);
 	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget); // 目標の方向を向く処理
-	bool Approach(const D3DXVECTOR3& posTarget); /// 目標位置に向かう処理
+	void Approach(void);				// 目標位置に向かう処理
 	CPlayerClone* Block();				// 分身出させないよの処理
 	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
 	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
 	bool CollisionActor();				// アクターとの当たり判定
 	bool CollisionWall();				// 壁との当たり判定
 	void CheckGimmick();				// ギミックとの当たり判定
+
+	// メンバ関数 (藤田追加)
+	CPlayerClone* GetGimmickNextClone();	// ギミックの次の分身取得
 
 	// 静的メンバ変数
 	static CListManager<CPlayerClone>* m_pList;	// オブジェクトリスト
@@ -187,7 +191,8 @@ private:
 
 	COrbit* m_pOrbit;			// 軌跡の情報
 	D3DXVECTOR3 m_move;			// 移動量
-	EAction m_Action;			// 行動
+	EAction m_Action;			// 現在行動
+	EAction m_OldAction;		// 過去行動
 	float m_fDeleteTimer;		// 自動消滅タイマー
 	float m_fGimmickTimer;		// ギミック受付時間タイマー
 	CGimmickAction* m_pGimmick;	// ギミックのポインタ

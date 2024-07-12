@@ -42,8 +42,18 @@ public:
 	// デストラクタ
 	~CStage();
 
-	// ステージ範囲構造体
-	struct SStageLimit
+	// 読込パス構造体
+	struct SPass
+	{
+		std::string sStage;		// ステージ情報パス
+		std::string sActor;		// アクター情報パス
+		std::string sGimmick;	// ギミック情報パス
+		std::string sPoint;		// ポイント情報パス
+		std::string sTrans;		// 遷移ポイント情報パス
+	};
+
+	// 範囲構造体
+	struct SLimit
 	{
 		ELimit mode;		// 制限モード
 		D3DXVECTOR3 center;	// 中心座標
@@ -59,9 +69,14 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(const float fDeltaTime);			// 更新
-	void SetStageLimit(const SStageLimit& rLimit);	// ステージ範囲設定
-	SStageLimit GetStageLimit(void) const;			// ステージ範囲取得
+	SPass Regist(const char* pMapPass);		// マップパス登録
+	HRESULT BindStage(const char* pPass);	// ステージ割当 (パス)
+	HRESULT BindStage(const SPass& rPass);	// ステージ割当 (情報)
+
+	void SetInitMapPass(const std::string& rMapPass)	{ m_sInitMapPass = rMapPass; }	// 初期化マップパス設定
+	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
+	void SetLimit(const SLimit& rLimit)	{ m_limit = rLimit; }	// 範囲設定
+	SLimit GetLimit(void) const			{ return m_limit;	}	// 範囲取得
 
 	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);	// 範囲外の着地判定
 	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地
@@ -73,22 +88,25 @@ public:
 	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得
 
 	// 静的メンバ関数
-	static CStage *Create(const CScene::EMode mode);	// 生成
-	static void Release(CStage *&prStage);				// 破棄
+	static CStage *Create(void);			// 生成
+	static void Release(CStage *&prStage);	// 破棄
+	static HRESULT LoadPass(const char* pMapPass, SPass* pPassInfo);	// パス情報読込
 
 private:
-	// 静的メンバ関数
-	static HRESULT LoadSetup(const CScene::EMode mode, CStage *pStage);					// セットアップ
-	static HRESULT LoadLimit(const char* pString, FILE *pFile, CStage *pStage);			// 範囲情報の読込
-	static HRESULT LoadField(const char* pString, FILE *pFile, CStage *pStage);			// 地面情報の読込
-	static HRESULT LoadWall(const char* pString, FILE *pFile, CStage *pStage);			// 壁情報の読込
-	static HRESULT LoadScenery(const char* pString, FILE *pFile, CStage *pStage);		// 景色情報の読込
-	static HRESULT LoadSky(const char* pString, FILE *pFile, CStage *pStage);			// 空情報の読込
-	static HRESULT LoadLiquid(const char* pString, FILE* pFile, CStage* pStage);		// 液体情報の読込
-	static HRESULT LoadChanger(const char* pString, FILE* pFile, CStage* pStage);		// カメラ変更地点情報の読込
+	// メンバ関数
+	HRESULT LoadSetup(const char* pPass);					// セットアップ
+	HRESULT LoadLimit(const char* pString, FILE *pFile);	// 範囲情報の読込
+	HRESULT LoadField(const char* pString, FILE *pFile);	// 地面情報の読込
+	HRESULT LoadWall(const char* pString, FILE *pFile);		// 壁情報の読込
+	HRESULT LoadScenery(const char* pString, FILE *pFile);	// 景色情報の読込
+	HRESULT LoadSky(const char* pString, FILE *pFile);		// 空情報の読込
+	HRESULT LoadLiquid(const char* pString, FILE* pFile);	// 液体情報の読込
+	HRESULT LoadChanger(const char* pString, FILE* pFile);	// カメラ変更地点情報の読込
 
 	// メンバ変数
-	SStageLimit	m_stageLimit;	// 範囲情報
+	std::map<std::string, SPass> m_mapPass;	// マップパス連想配列
+	std::string m_sInitMapPass;	// 初期化時に生成するマップのパス
+	SLimit m_limit;	// 範囲情報
 };
 
 #endif	// _STAGE_H_

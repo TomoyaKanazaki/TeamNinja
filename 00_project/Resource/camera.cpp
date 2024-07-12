@@ -118,7 +118,7 @@ namespace
 		const float	INIT_ROTX = 1.3f;		// 追従カメラの向きX初期値
 		const float CENTER_ROTX = 1.1f;		// 中心線の時のx
 
-		const int	LOOK_BOSS_FRAME = 18;				// 追従カメラのボス視認速度
+		const float LIMIT_DIFF = D3DX_PI * 0.2f;		// 回転速度の上限
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
 		const float	LIMIT_ROT_LOW = 1.1f;				// X下回転の制限値
 		const float	MAX_SUB_DIS = 1500.0f;				// 下方向カメラの距離減算量
@@ -298,14 +298,14 @@ void CCamera::Update(const float fDeltaTime)
 
 	case STATE_AROUND:	// 回り込み
 
-		//回り込みの更新
+		// 望遠の更新
 		Around();
 
 		break;
 
 	case STATE_TELEPHOTO:	// 望遠
 
-		//回り込みの更新
+		// 望遠の更新
 		Telephoto();
 
 		break;
@@ -1322,7 +1322,19 @@ void CCamera::Around(void)
 	 
 	// 差分向きを計算
 	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
-	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 差分向きを補正
+	if (diffRot.y < -around::LIMIT_DIFF)
+	{
+		diffRot.y = -around::LIMIT_DIFF;
+	}
+	if (diffRot.y > around::LIMIT_DIFF)
+	{
+		diffRot.y = around::LIMIT_DIFF;
+	}
+
+	// 差分向きを正規化
+	useful::NormalizeRot(diffRot);
 
 	// 現在向きの更新
 	m_aCamera[TYPE_MAIN].rot += diffRot * around::REV_ROT;
@@ -1344,6 +1356,8 @@ void CCamera::Around(void)
 
 	// 視点の差分位置を計算
 	diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	DebugProc::Print(DebugProc::POINT_CENTER, "差分 : %f, %f, %f\n", diffPosV.x, diffPosV.y, diffPosV.z);
 
 	// 注視点の現在位置を更新
 	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * around::REV_POSR.x;

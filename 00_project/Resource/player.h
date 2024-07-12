@@ -25,6 +25,7 @@ class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
 class CGauge2D;			// ゲージクラス
 class CCheckPoint;		// チェックポイントクラス
+class CField;			// フィールドクラス
 
 //************************************************************
 //	クラス定義
@@ -74,7 +75,6 @@ public:
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
-		STATE_SHOOT,	// 発射状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -115,7 +115,6 @@ public:
 	bool GimmickLand(void);						// ギミックの飛び降り着地
 	D3DXVECTOR3 GetVec3Sizing() const override
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
-	void SetShoot(const float& fTarget); // 吹っ飛ぶ
 
 	// メンバ関数 (金崎朋弥)
 	int GetTension() const;		// 士気力の値を取得
@@ -125,23 +124,25 @@ public:
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
 	CGauge2D* GetTensionGauge() const { return m_pTensionGauge; } // 士気力ゲージの取得
+	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
+	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 
 private:
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
-	EMotion UpdateShoot(const float fDeltaTime);	// 発射状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
 	void UpdateSaveTeleport(void);	// 保存位置の更新
 
-	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);							// 着地状況の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
+	void UpdateTrans(D3DXVECTOR3& rPos);	// ステージ遷移の更新
 
 	// メンバ関数 (金崎追加)
 	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
@@ -186,7 +187,9 @@ private:
 	bool m_bGetCamera;				// カメラの取得
 	float m_fCameraRot;				// カメラの角度
 	float m_fStickRot;				// スティックの角度
-	float m_fShootZ;				// 吹っ飛ばし目標
+	std::string m_sFrags;			// ギミックフラグの文字列
+	CField* m_pCurField;			// 現在の地面
+	CField* m_pOldField;			// 過去の地面
 
 };
 

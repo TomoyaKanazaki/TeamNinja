@@ -19,7 +19,7 @@
 //==========================================
 namespace
 {
-	const char* GOAL_TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
+	const char* TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
 
 	const float ROT_SPEED = 0.01f;		// 向きの速度
 	const float RADIUS = 50.0f;			// 半径
@@ -203,8 +203,75 @@ void CGoal::CollisionPlayer(void)
 	{ return; }
 
 	// ゴール時のUIを表示する
-	CPopUpUI::Create(GOAL_TEXTURE);
+	CPopUpUI::Create(TEXTURE);
 
 	// クリアフラグをオンにする
 	m_bClear = true;
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CGoal::LoadSetup(const char* pPass)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ゴールポイントセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_GOALSET")
+		{
+			do
+			{ // END_STAGE_GOALSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str == "POS")
+				{
+					file >> str;	// ＝を読込
+
+					// 位置を読込
+					file >> pos.x;
+					file >> pos.y;
+					file >> pos.z;
+				}
+			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
+
+			// チェックポイントの生成
+			if (CGoal::Create(pos) == nullptr)
+			{ // 確保に失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }

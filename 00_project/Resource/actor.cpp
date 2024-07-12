@@ -277,9 +277,6 @@ void CActor::Collision
 	bool& bJump						// ジャンプ状況
 )
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
 	// キューブ判定
 	for (auto cube : m_cube)
 	{
@@ -323,9 +320,6 @@ void CActor::Collision
 	bool& bHit						// 衝突判定
 )
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
 	// キューブ判定
 	for (auto cube : m_cube)
 	{
@@ -473,7 +467,7 @@ void CActor::BindCollision(void)
 //============================================================
 //	セットアップ処理
 //============================================================
-HRESULT CActor::LoadSetup(void)
+HRESULT CActor::LoadSetup(const char* pPass)
 {
 	int nType = 0;					// 種類の代入用
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
@@ -481,7 +475,7 @@ HRESULT CActor::LoadSetup(void)
 	D3DXVECTOR3 scale = VEC3_ONE;	// 拡大率の代入用
 
 	// ファイルを開く
-	std::ifstream file(SETUP_TXT);	// ファイルストリーム
+	std::ifstream file(pPass);	// ファイルストリーム
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 

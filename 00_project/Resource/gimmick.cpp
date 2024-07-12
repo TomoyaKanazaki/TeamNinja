@@ -18,6 +18,8 @@
 #include "gimmick_heavydoor.h"
 #include "gimmick_bridge.h"
 
+#include "multi_plant.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -84,6 +86,10 @@ HRESULT CGimmick::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// デバッグの時以外は描画しない
+#ifndef _DEBUG
+	SetEnableDraw(false);
+#endif
 	// 成功を返す
 	return S_OK;
 }
@@ -131,6 +137,7 @@ void CGimmick::Draw(CShader* pShader)
 CGimmick* CGimmick::Create
 (
 	const D3DXVECTOR3& rPos,		// 位置
+	const EAngle& eAngle,			// 角度
 	const D3DXVECTOR3& rSize,		// サイズ
 	const EType type,				// 種類
 	const int nNumActive			// 発動可能な分身の数
@@ -171,7 +178,7 @@ CGimmick* CGimmick::Create
 
 		break;
 
-	case CGimmick::TYPE_BRIDGE:		// 重い扉
+	case CGimmick::TYPE_BRIDGE:		// 橋
 
 		pGimmick = new CGimmickBridge;
 
@@ -205,6 +212,9 @@ CGimmick* CGimmick::Create
 		// 位置を設定
 		pGimmick->SetVec3Position(rPos);
 
+		// 向きを設定
+		pGimmick->m_eAngle = eAngle;
+
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);
 
@@ -214,19 +224,11 @@ CGimmick* CGimmick::Create
 		// 発動可能な分身の数を設定
 		pGimmick->m_nNumActive = nNumActive;
 
-		// TODO：Releaseでギミックどう見せるか
-#if 0
-#ifdef _DEBUG
 		// 色の設定
 		pGimmick->SetColor(XCOL_YELLOW);
-#else
-		// 色の設定
-		pGimmick->SetColor(XCOL_AWHITE);
-#endif // _DEBUG
-#else
-		// 色の設定
-		pGimmick->SetColor(XCOL_YELLOW);
-#endif
+
+		// 植物の生成
+		CMultiPlant::Create(rPos, rSize, pGimmick->m_type, nNumActive);
 
 		// 確保したアドレスを返す
 		return pGimmick;
@@ -240,4 +242,115 @@ CListManager<CGimmick>* CGimmick::GetList(void)
 {
 	// リスト構造を返す
 	return m_pList;
+}
+
+//============================================================
+// セットアップ処理
+//============================================================
+HRESULT CGimmick::LoadSetup(const char* pPass)
+{
+	D3DXVECTOR3 pos		= VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 size	= VEC3_ZERO;	// 大きさの代入用
+	int nAngle	= 0;	// 向きの代入用
+	int nType	= 0;	// 種類の代入用
+	int nNumAct	= 0;	// 必要人数の代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ギミックセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_GIMMICKSET")
+		{
+			do
+			{ // END_STAGE_GIMMICKSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "GIMMICKSET")
+				{
+					do
+					{ // END_GIMMICKSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+						else if (str == "ANGLE")
+						{
+							file >> str;	// ＝を読込
+							file >> nAngle;	// 向きを読込
+						}
+						else if (str == "SIZE")
+						{
+							file >> str;	// ＝を読込
+
+							// 大きさを読込
+							file >> size.x;
+							file >> size.y;
+							file >> size.z;
+						}
+						else if (str == "TYPE")
+						{
+							file >> str;	// ＝を読込
+							file >> nType;	// 種類を読込
+						}
+						else if (str == "NUMACT")
+						{
+							file >> str;		// ＝を読込
+							file >> nNumAct;	// 必要人数を読込
+						}
+					} while (str != "END_GIMMICKSET");	// END_GIMMICKSETを読み込むまでループ
+
+					// ギミックの生成
+					if (CGimmick::Create(pos, (EAngle)nAngle, size, (CGimmick::EType)nType, nNumAct) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_GIMMICKSET");	// END_STAGE_GIMMICKSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }

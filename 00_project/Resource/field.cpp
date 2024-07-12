@@ -11,12 +11,14 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-#include "gimmick_gravel.h"
-#include "gimmick_boob.h"
-#include "gimmick_cleen.h"
-#include "gimmick_fall.h"
-#include "gimmick_decayed.h"
-#include "gimmick_water.h"
+#include "field_gravel.h"
+#include "field_boob.h"
+#include "field_cleen.h"
+#include "field_fall.h"
+#include "field_decayed.h"
+#include "field_water.h"
+#include "field_Xbridge.h"
+#include "field_Zbridge.h"
 #include "player.h"
 
 //************************************************************
@@ -26,9 +28,9 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\FIELD\\soil003.png",	// 土テクスチャ
+		"data\\TEXTURE\\FIELD\\soil005.png",	// 土テクスチャ
 		"data\\TEXTURE\\FIELD\\soil004.png",	// 草土テクスチャ
-		"data\\TEXTURE\\FIELD\\soil005.png",	// 草テクスチャ
+		"data\\TEXTURE\\FIELD\\soil003.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\OldWood002.jpg",	// 床テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\FIELD\\Mud000.jpg",		// 泥テクスチャ
@@ -37,6 +39,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 朽ちた床テクスチャ
 		"data\\TEXTURE\\FIELD\\Water.png",		// 水テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// ドブテクスチャ
+		"data\\TEXTURE\\test.png",				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
 		"data\\TEXTURE\\test.png"				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
 	};
 	const char FLAG[] =	// フラグ配列
@@ -52,7 +55,8 @@ namespace
 		'd',	// 朽ちた床
 		'w',	// 水
 		'u',	// ドブ
-		' ',	// 橋
+		'x',	// 橋
+		'z',	// 橋
 	};
 
 	const float ZLINE[] = // フィールドの基準線
@@ -229,6 +233,13 @@ CField *CField::Create
 		pField = new CGimmickWater;
 		break;
 
+	case TYPE_XBRIDGE:
+		pField = new CGimmickXBridge;
+		break;
+
+	case TYPE_ZBRIDGE:
+		pField = new CGimmickZBridge;
+		break;
 	default:
 		pField = new CField;
 		break;
@@ -322,6 +333,12 @@ void CField::SetType(const EType type)
 
 		// テクスチャを登録・割当
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
+
+		// 橋だった場合描画をオフにする
+		if (type == TYPE_XBRIDGE || type == TYPE_ZBRIDGE)
+		{
+			SetEnableDraw(false);
+		}
 	}
 	else { assert(false); }	// 範囲外
 }
@@ -331,7 +348,6 @@ void CField::SetType(const EType type)
 //============================================================
 void CField::Hit(CPlayerClone* pClone)
 {
-
 }
 
 //============================================================
@@ -339,7 +355,20 @@ void CField::Hit(CPlayerClone* pClone)
 //============================================================
 void CField::Miss(CPlayerClone* pClone)
 {
+}
 
+//===========================================
+//  プレイヤーに当たっていた時の処理
+//===========================================
+void CField::Hit(CPlayer* pPlayer)
+{
+}
+
+//===========================================
+//  プレイヤーに当たっていないときの処理
+//===========================================
+void CField::Miss(CPlayer* pPlayer)
+{
 }
 
 //===========================================

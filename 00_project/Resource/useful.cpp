@@ -204,6 +204,48 @@ D3DXVECTOR2 useful::CalcMoveParabola
 }
 
 //============================================================
+//	二次曲線処理
+//============================================================
+float useful::QuadraticCurve
+(
+	const float fPosX,			// 位置(X軸)
+	const float fStart,			// 出発地点
+	const float fEnd,			// 終了地点
+	const float fHeight			// 最高高度
+)
+{
+	// 変数を宣言
+	float fPosY = 0.0f;		// Y座標
+	float fMax = (fEnd + fStart) * 0.5f;		// 最高到達点のX座標
+	float fMagni = -fHeight / (((fEnd - fStart) * 0.5f) * ((fEnd - fStart) * 0.5f));	// 倍率
+
+	// Y座標を設定する
+	fPosY = fMagni * ((fPosX - fMax) * (fPosX - fMax)) + fHeight;
+
+	// Y座標を返す
+	return fPosY;
+}
+
+//============================================================
+//	放物線処理
+//============================================================
+void useful::Parabola
+( // 引数
+	const float fVelo,			// 初速
+	const float fAdd,			// 重力
+	const int nCount,			// 経過時間
+	float* pGravity,			// 重力
+	float* pHeight				// 高さ
+)
+{
+	// 重力を設定する
+	*pGravity = fVelo + fAdd * nCount;
+
+	// 高さを設定する
+	*pHeight = (fVelo * nCount) + (0.5f * fAdd * (nCount * nCount));
+}
+
+//============================================================
 //	ランダム向き取得
 //============================================================
 float useful::RandomRot(void)

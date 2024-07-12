@@ -188,7 +188,7 @@ void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickPost::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickPost::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	D3DXVECTOR3 posWait = GetVec3Position();	// 待機位置
 

@@ -225,7 +225,7 @@
     <ClInclude Include="Resource\editCollSphere.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editEvent.h">
+    <ClInclude Include="Resource\editGimmick.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editField.h">
@@ -243,9 +243,6 @@
     <ClInclude Include="Resource\editorCollShape.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorGimmick.h">
-      <Filter>Map\Editter</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\editorObject.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
@@ -261,22 +258,7 @@
     <ClInclude Include="Resource\gimmick_action.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_boob.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gimmick_bridge.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_cleen.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_decayed.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_fall.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_gravel.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick_heavydoor.h">
@@ -295,9 +277,6 @@
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick_step.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_water.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemy.h">
@@ -393,16 +372,7 @@
     <ClInclude Include="Resource\sceneGame.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\sceneRanking.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneResult.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\sceneTitle.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\sceneTutorial.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Resource\scenery.h">
@@ -465,16 +435,7 @@
     <ClInclude Include="Resource\orbit.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\tutorialManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\titleManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\resultManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\rankingManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gameManager.h">
@@ -555,11 +516,59 @@
     <ClInclude Include="Resource\enemyNavigation.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_canon.h">
+    <ClInclude Include="Resource\enemyNavRandom.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyNavStreet.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\plant.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\multi_plant.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\enemyChaseRange.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneSelect.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\selectManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\transpoint.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_boob.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\ToonShadow.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_cleen.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_decayed.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_fall.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_gravel.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_water.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_Xbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_Zbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editEnemyAttack.h">
+      <Filter>Map\Editter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -725,7 +734,7 @@
     <ClCompile Include="Resource\editCollSphere.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editEvent.cpp">
+    <ClCompile Include="Resource\editGimmick.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editField.cpp">
@@ -743,9 +752,6 @@
     <ClCompile Include="Resource\editorCollShape.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorGimmick.cpp">
-      <Filter>Map\Editter</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\editorObject.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
@@ -761,22 +767,7 @@
     <ClCompile Include="Resource\gimmick_action.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_boob.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\gimmick_bridge.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_cleen.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_decayed.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_fall.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_gravel.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_heavydoor.cpp">
@@ -795,9 +786,6 @@
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_step.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_water.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemy.cpp">
@@ -893,16 +881,7 @@
     <ClCompile Include="Resource\sceneGame.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\sceneRanking.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneResult.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\sceneTitle.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneTutorial.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\scenery.cpp">
@@ -965,16 +944,7 @@
     <ClCompile Include="Resource\orbit.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\tutorialManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\titleManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\resultManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\rankingManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\player.cpp">
@@ -1055,11 +1025,59 @@
     <ClCompile Include="Resource\gameManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_canon.cpp">
+    <ClCompile Include="Resource\enemyNavRandom.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyNavStreet.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\plant.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\multi_plant.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyChaseRange.cpp">
+      <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneSelect.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\selectManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\transpoint.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_water.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\ToonShadow.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_boob.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_cleen.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_decayed.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_fall.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_gravel.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Xbridge.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Zbridge.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editEnemyAttack.cpp">
+      <Filter>Map\Editter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

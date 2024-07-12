@@ -9,19 +9,13 @@
 //************************************************************
 #include "manager.h"
 #include "enemyNavigation.h"
-#include "deltaTime.h"
-
-#include "actor.h"
-#include "objectMeshCylinder.h"
-#include "stage.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const float MOVE_DISTANCE = -700.0f;	// 移動する範囲
-	const int STOP_COUNT = 300;				// 停止カウント
+
 }
 
 //************************************************************
@@ -31,12 +25,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNav::CEnemyNav() :
-	//m_pCylinder(nullptr),
-	m_posInit(VEC3_ZERO),	// 初期位置
-	m_posDest(VEC3_ZERO),	// 目標地点
+	m_posDest(VEC3_ZERO),	// 目標位置
 	m_state(STATE_STOP),	// 状態
-	m_nStopCount(0),		// 停止カウント
-	m_fRotMove(0.0f)		// 向きの移動量
+	m_nStateCount(0)		// 状態カウント
 {
 
 }
@@ -63,14 +54,6 @@ HRESULT CEnemyNav::Init(void)
 //============================================================
 void CEnemyNav::Uninit(void)
 {
-	//if (m_pCylinder != nullptr)
-	//{ // シリンダーが NULL じゃない場合
-
-	//	// シリンダーの終了処理
-	//	m_pCylinder->Uninit();
-	//	m_pCylinder = nullptr;
-	//}
-
 	// 自身を破棄
 	delete this;
 }
@@ -78,28 +61,35 @@ void CEnemyNav::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CEnemyNav::Update(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove)
+void CEnemyNav::Update
+(
+	D3DXVECTOR3* pPos,			// 位置
+	D3DXVECTOR3* pRot,			// 向き
+	CEnemy* pEnemy,				// 敵の情報
+	const float fSpeed,			// 速度
+	const float fDeltaTime		// デルタタイム
+)
 {
 	switch (m_state)
 	{
 	case CEnemyNav::STATE_STOP:
 
 		// 停止状態処理
-		Stop(pPos,rPosOld, pRotDest);
+		StopFunc(*pPos, pEnemy);
 
 		break;
 
 	case CEnemyNav::STATE_TURN:
 
 		// ターン状態処理
-		Turn(pRot, pRotDest, pMove);
+		TurnFunc(pRot, pEnemy, fSpeed, fDeltaTime);
 
 		break;
 
-	case CEnemyNav::STATE_WALK:
+	case CEnemyNav::STATE_MOVE:
 
-		// 歩行状態処理
-		Walk(pPos, rPosOld, pRot, pMove);
+		// 移動状態処理
+		MoveFunc(pPos, pEnemy);
 
 		break;
 
@@ -113,200 +103,13 @@ void CEnemyNav::Update(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR
 }
 
 //============================================================
-// 生成処理
+// ナビゲーションのリセット処理
 //============================================================
-CEnemyNav* CEnemyNav::Create(const D3DXVECTOR3& rPosInit)
+void CEnemyNav::NavReset(void)
 {
-	// ナビゲーションの生成
-	CEnemyNav* pNav = new CEnemyNav;
+	// 停止状態にする
+	m_state = CEnemyNav::STATE_STOP;
 
-	if (pNav == nullptr)
-	{ // 生成に失敗した場合
-
-		// NULL を返す
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// アクターの初期化
-		if (FAILED(pNav->Init()))
-		{ // 初期化に失敗した場合
-
-			// アクターの破棄
-			SAFE_DELETE(pNav);
-			return nullptr;
-		}
-
-		// 初期位置を設定
-		pNav->m_posInit = rPosInit;
-
-		//pNav->m_pCylinder->Create
-		//(
-		//	rPosInit,
-		//	VEC3_ZERO,
-		//	XCOL_WHITE,
-		//	POSGRID2(32, 8),
-		//	POSGRID2(4, 4),
-		//	MOVE_DISTANCE,
-		//	30.0f
-		//);
-
-		// 確保したアドレスを返す
-		return pNav;
-	}
-}
-
-//============================================================
-// 停止状態処理
-//============================================================
-void CEnemyNav::Stop(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRotDest)
-{
-	// 停止させる
-	m_nStopCount++;
-
-	if (m_nStopCount % STOP_COUNT == 0)
-	{ // 停止カウントが一定数の場合
-
-		float fRotToDestPos = useful::RandomRot();
-
-		// 目的位置を設定
-		m_posDest.x = m_posInit.x + sinf(fRotToDestPos) * MOVE_DISTANCE;
-		m_posDest.z = m_posInit.z + cosf(fRotToDestPos) * MOVE_DISTANCE;
-
-		// アクターの当たり判定処理
-		CollisionActor(pPos, rPosOld);
-
-		// 壁の当たり判定処理
-		//CollisionWall(pPos);
-
-		// 向きを設定する
-		pRotDest->y = atan2f(pPos->x - m_posDest.x, pPos->z - m_posDest.z);
-
-		// 状態をクリアする
-		m_state = STATE_TURN;
-	}
-}
-
-//============================================================
-// ターン状態処理
-//============================================================
-void CEnemyNav::Turn(D3DXVECTOR3* pRot, D3DXVECTOR3* pRotDest, D3DXVECTOR3* pMove)
-{
-	if (pRot->y <= pRotDest->y + 0.01f &&
-		pRot->y >= pRotDest->y - 0.01f)
-	{ // 向きが目的に近づいた場合
-
-		// 向きを補正する
-		pRot->y = pRotDest->y;
-
-		// 歩行状態にする
-		m_state = STATE_WALK;
-
-		// 移動量を設定する
-		pMove->x = sinf(pRot->y) * -290.0f * GET_MANAGER->GetDeltaTime()->GetTime();
-		pMove->z = cosf(pRot->y) * -290.0f * GET_MANAGER->GetDeltaTime()->GetTime();
-	}
-}
-
-//============================================================
-// 歩行状態処理
-//============================================================
-void CEnemyNav::Walk(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld, D3DXVECTOR3* pRot, D3DXVECTOR3* pMove)
-{
-	bool bX = false, bZ = false;
-
-	// 移動量を設定する
-	pMove->x = sinf(pRot->y) * -290.0f * GET_MANAGER->GetDeltaTime()->GetTime();
-	pMove->z = cosf(pRot->y) * -290.0f * GET_MANAGER->GetDeltaTime()->GetTime();
-
-	// 移動する
-	pPos->x += pMove->x;
-	pPos->z += pMove->z;
-
-	// 左右の当たり判定
-	if (pPos->x >= m_posDest.x &&
-		rPosOld.x <= m_posDest.x)
-	{ // 左からの当たり判定
-
-		// 位置を補正
-		pPos->x = m_posDest.x;
-
-		bX = true;
-	}
-	else if (pPos->x <= m_posDest.x &&
-		rPosOld.x >= m_posDest.x)
-	{ // 右からの当たり判定
-
-		// 位置を補正
-		pPos->x = m_posDest.x;
-
-		bX = true;
-	}
-
-	// 前後の当たり判定
-	if (pPos->z >= m_posDest.z &&
-		rPosOld.z <= m_posDest.z)
-	{ // 前からの当たり判定
-
-		// 位置を補正
-		pPos->z = m_posDest.z;
-
-		bZ = true;
-	}
-	else if (pPos->z <= m_posDest.z &&
-		rPosOld.z >= m_posDest.z)
-	{ // 後からの当たり判定
-
-		// 位置を補正
-		pPos->z = m_posDest.z;
-
-		bZ = true;
-	}
-
-	if (bX && bZ)
-	{
-		// 停止状態にする
-		m_state = STATE_STOP;
-	}
-}
-
-//============================================================
-// アクターの当たり判定処理
-//============================================================
-void CEnemyNav::CollisionActor(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosOld)
-{
-	D3DXVECTOR3 move = VEC3_ZERO;
-	bool bJump = false;
-
-	// アクターのリスト構造が無ければ抜ける
-	if (CActor::GetList() == nullptr) { return; }
-
-	// リストを取得
-	std::list<CActor*> list = CActor::GetList()->GetList();
-
-	for (auto actor : list)
-	{
-		// 当たり判定処理
-		actor->Collision
-		(
-			m_posDest,	// 位置
-			*pPos,		// 前回の位置
-			40.0f,		// 半径
-			40.0f,		// 高さ
-			move,		// 移動量
-			bJump		// ジャンプ状況
-		);
-	}
-}
-
-//============================================================
-// 壁の当たり判定処理
-//============================================================
-void CEnemyNav::CollisionWall(D3DXVECTOR3* pPos)
-{
-	D3DXVECTOR3 move = VEC3_ZERO;
-
-	// 壁の当たり判定
-	CScene::GetStage()->CollisionWall(m_posDest, *pPos, 40.0f, 40.0f, move);
+	// 状態カウントを0にする
+	m_nStateCount = 0;
 }

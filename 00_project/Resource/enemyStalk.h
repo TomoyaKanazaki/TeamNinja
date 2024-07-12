@@ -19,6 +19,7 @@
 // 前方宣言
 //************************************************************
 class CEnemyNav;		// 敵のナビゲーション
+class CEnemyChaseRange;	// 敵の追跡範囲処理
 
 //************************************************************
 //	クラス定義
@@ -36,8 +37,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_ATTACK,		// 攻撃モーション
 		MOTION_UPSET,		// 動揺モーション
-		MOTION_FALL,		// 落下モーション
-		MOTION_LANDING,		// 着地モーション
+		MOTION_FALL,		// TODO：落下モーション
+		MOTION_LANDING,		// TODO：着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -49,6 +50,9 @@ public:
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
+		STATE_CAUTION,		// 警戒状態
+		STATE_FADEOUT,		// フェードアウト状態
+		STATE_FADEIN,		// フェードイン状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -75,17 +79,21 @@ private:
 	int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override;	// 状態の更新処理
 	void UpdateMotion(int nMotion, const float fDeltaTime) override;	// モーションの更新処理
 	void UpdateLanding(D3DXVECTOR3* pPos) override;	// 着地更新
+	void NavMotionSet(EMotion* pMotion);			// ナビによるモーションの設定処理
 
 	// メンバ関数
-	EMotion Crawl(void);				// 巡回処理
-	EMotion Warning(void);				// 警告処理
-	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);	// 追跡処理
-	EMotion Attack(const D3DXVECTOR3& rPos);				// 攻撃処理
-	EMotion Upset(void);				// 動揺処理
+	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
+	EMotion Warning(D3DXVECTOR3* pPos);			// 警告処理
+	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
+	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
+	EMotion Upset(void);						// 動揺処理
+	EMotion Caution(void);						// 警戒処理
+	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
+	EMotion FadeIn(void);						// フェードイン処理
 
 	// メンバ変数
-	CEnemyNav* m_pNav;			// ナビゲーション
-	EState m_state;				// 状態
+	EState m_state;						// 状態
+	int m_nStateCount;					// 状態カウント
 };
 
 #endif	// _ENEMY_CHASE_H_

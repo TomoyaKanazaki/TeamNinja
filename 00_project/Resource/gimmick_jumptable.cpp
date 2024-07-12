@@ -99,19 +99,19 @@ void CGimmickJumpTable::Draw(CShader* pShader)
 //===========================================
 //  各分身毎の待機位置を算出
 //===========================================
-D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx)
+D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx, const CPlayerClone* pClone)
 {
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// プレイヤーの位置を取得
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+	// TODO：ここに打ち上げモーション中なら抜ける処理記述
+	//if ()
 
-	// 待機位置を取得
-	D3DXVECTOR3 posThis = GetActionPoint();
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 posAction = GetActionPoint();				// 発動判定位置
 
 	// 目標方向との差分を求める
-	D3DXVECTOR3 vecTarget = posPlayer - posThis;
+	D3DXVECTOR3 vecTarget = posPlayer - posAction;
 
 	// 差分ベクトルの向きを求める
 	float fRot = atan2f(vecTarget.x, -vecTarget.z) + (((D3DX_PI * 2.0f) / GetNumActive()) * Idx);
@@ -120,9 +120,9 @@ D3DXVECTOR3 CGimmickJumpTable::CalcWaitPoint(const int Idx)
 	// 差分ベクトル方向に傾けて座標を設定
 	D3DXVECTOR3 posWait = D3DXVECTOR3
 	(
-		posThis.x + cosf(fRot) * DISTANCE_CENTER,
-		posThis.y,
-		posThis.z + sinf(fRot) * DISTANCE_CENTER
+		posAction.x + cosf(fRot) * DISTANCE_CENTER,
+		posAction.y,
+		posAction.z + sinf(fRot) * DISTANCE_CENTER
 	);
 
 	// 算出した座標を返す
