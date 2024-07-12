@@ -225,7 +225,7 @@
     <ClInclude Include="Resource\editCollSphere.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editEvent.h">
+    <ClInclude Include="Resource\editGimmick.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editField.h">
@@ -241,9 +241,6 @@
       <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorCollShape.h">
-      <Filter>Map\Editter</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\editorGimmick.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
     <ClInclude Include="Resource\editorObject.h">
@@ -725,7 +722,7 @@
     <ClCompile Include="Resource\editCollSphere.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editEvent.cpp">
+    <ClCompile Include="Resource\editGimmick.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editField.cpp">
@@ -741,9 +738,6 @@
       <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorCollShape.cpp">
-      <Filter>Map\Editter</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\editorGimmick.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
     <ClCompile Include="Resource\editorObject.cpp">
