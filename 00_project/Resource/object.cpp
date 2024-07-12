@@ -12,6 +12,7 @@
 #include "loading.h"
 #include "ZTexture.h"
 #include "ToonShadow.h"
+#include "debug.h"
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -597,9 +598,18 @@ void CObject::UpdateAll(const float fDeltaTime)
 //============================================================
 void CObject::DrawAll(void)
 {
-	DrawAll_ZShader();
-	DrawAll_ToonShadow();
-	DrawAll_Compensate();
+	CDebug * pDeb = GET_MANAGER->GetDebug();
+	//デバッグ時のシェーダー切り替え	
+	if (pDeb->GetEnableShader())
+	{
+		DrawAll_ZShader();
+		DrawAll_ToonShadow();
+		DrawAll_Compensate();
+	}
+	else
+	{
+		DrawAll_Default();
+	}
 
 	//CZTexture::GetInstance()->DrawSprite();
 }

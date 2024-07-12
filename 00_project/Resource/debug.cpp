@@ -46,7 +46,8 @@ namespace
 #define NAME_PAUSE_DISP		("F7")		// ポーズ表示ON/OFF表示
 #define KEY_RESULT_TRANS	(DIK_F8)	// リザルト遷移キー
 #define NAME_RESULT_TRANS	("F8")		// リザルト遷移表示
-
+#define KEY_SHADER_ENABLE	(DIK_F9)	// シェーダー切り替えキー
+#define NAME_SHADER_ENABLE	("F9")		// シェーダー切り替え表示
 //************************************************************
 //	親クラス [CDebug] のメンバ関数
 //************************************************************
@@ -60,6 +61,7 @@ CDebug::CDebug() :
 	m_bDisp2D			(false),				// 2D表示状況
 	m_bDisp3D			(false),				// 3D表示状況
 	m_bDispActor		(false),				// アクターの当たり判定の表示状況
+	m_bEnableShader		(false),				// シェーダーの使用状態
 	m_dwFrameCount		(0),					// フレームカウント
 	m_dwFPSLastTime		(0),					// 最後にFPSを計測した時刻
 	m_fillMode			(D3DFILL_SOLID),		// 塗りつぶしモード
@@ -198,6 +200,23 @@ int CDebug::GetFps(void) const { return 0; }
 #endif	// _DEBUG
 
 //============================================================
+//	シェーダー状態取得処理
+//============================================================
+#ifdef _DEBUG
+
+bool CDebug::GetEnableShader(void) const
+{
+	// FPSを返す
+	return m_bEnableShader;
+}
+
+#else	// NDEBUG
+
+bool CDebug::GetEnableShader(void) { return true; }
+
+#endif	// _DEBUG
+
+//============================================================
 //	塗りつぶしモード設定処理
 //============================================================
 #ifdef _DEBUG
@@ -263,6 +282,8 @@ void CDebug::UpdateDebugControl(void)
 		assert(false);
 		break;
 	}
+	// シェーダー描画切り替え
+	ChangeEnableShader();
 }
 
 #else	// NDEBUG
@@ -308,6 +329,7 @@ void CDebug::DrawDebugControl(void)
 		assert(false);
 		break;
 	}
+	DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：シェーダーの有効化/無効化\n", NAME_SHADER_ENABLE);
 }
 
 #else	// NDEBUG
@@ -484,6 +506,16 @@ void CDebug::ChangeDispPause(void)
 	{
 		// ポーズの表示状況を設定
 		CSceneGame::GetPause()->SetEnableDebugDisp(!CSceneGame::GetPause()->IsDebugDisp());
+	}
+}
+//============================================================
+//	シェーダー描画変更処理
+//============================================================
+void CDebug::ChangeEnableShader(void)
+{
+	if (GET_INPUTKEY->IsTrigger(KEY_SHADER_ENABLE))
+	{
+		m_bEnableShader = !m_bEnableShader;
 	}
 }
 
