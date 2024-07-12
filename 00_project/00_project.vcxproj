@@ -184,10 +184,9 @@
     <ClInclude Include="Resource\editChanger.h" />
     <ClInclude Include="Resource\editCheckPoint.h" />
     <ClInclude Include="Resource\editCollPolygon.h" />
-    <ClInclude Include="Resource\editEvent.h" />
+    <ClInclude Include="Resource\editGimmick.h" />
     <ClInclude Include="Resource\editField.h" />
     <ClInclude Include="Resource\editGoalPoint.h" />
-    <ClInclude Include="Resource\editorGimmick.h" />
     <ClInclude Include="Resource\editManager.h" />
     <ClInclude Include="Resource\editor.h" />
     <ClInclude Include="Resource\editCollision.h" />
@@ -225,6 +224,8 @@
     <ClInclude Include="Resource\fadeStateOut.h" />
     <ClInclude Include="Resource\fadeStateWait.h" />
     <ClInclude Include="Resource\field.h" />
+    <ClInclude Include="Resource\field_Xbridge.h" />
+    <ClInclude Include="Resource\field_Zbridge.h" />
     <ClInclude Include="Resource\flash.h" />
     <ClInclude Include="Resource\font.h" />
     <ClInclude Include="Resource\fontChar.h" />
@@ -353,10 +354,9 @@
     <ClCompile Include="Resource\editChanger.cpp" />
     <ClCompile Include="Resource\editCheckPoint.cpp" />
     <ClCompile Include="Resource\editCollPolygon.cpp" />
-    <ClCompile Include="Resource\editEvent.cpp" />
+    <ClCompile Include="Resource\editGimmick.cpp" />
     <ClCompile Include="Resource\editField.cpp" />
     <ClCompile Include="Resource\editGoalPoint.cpp" />
-    <ClCompile Include="Resource\editorGimmick.cpp" />
     <ClCompile Include="Resource\editManager.cpp" />
     <ClCompile Include="Resource\editor.cpp" />
     <ClCompile Include="Resource\editCollision.cpp" />
@@ -394,6 +394,8 @@
     <ClCompile Include="Resource\fadeStateOut.cpp" />
     <ClCompile Include="Resource\fadeStateWait.cpp" />
     <ClCompile Include="Resource\field.cpp" />
+    <ClCompile Include="Resource\field_Xbridge.cpp" />
+    <ClCompile Include="Resource\field_Zbridge.cpp" />
     <ClCompile Include="Resource\flash.cpp" />
     <ClCompile Include="Resource\font.cpp" />
     <ClCompile Include="Resource\fontChar.cpp" />

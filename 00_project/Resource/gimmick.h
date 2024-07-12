@@ -38,7 +38,6 @@ public:
 		TYPE_JUMPOFF,			// ”ò‚Ñ~‚è
 		TYPE_HEAVYDOOR,			// d‚¢”à
 		TYPE_BRIDGE,			// ‹´
-		TYPE_CANON,				// ‚Á”ò‚Î‚·‚â‚Â
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

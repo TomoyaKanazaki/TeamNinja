@@ -16,6 +16,7 @@
 #include "editActor.h"
 #include "editCheckPoint.h"
 #include "editGoalPoint.h"
+#include "editGimmick.h"
 #include "editChanger.h"
 
 //************************************************************
@@ -146,7 +147,7 @@ CEditorObject *CEditorObject::Create(CEditStage* pEditor, CEditStage::EType type
 		break;
 
 	case CEditStage::TYPE_GIMMICK:
-		pEditorObject = new CEditActor(pEditor);		// エディットギミック TODO：あとでやる
+		pEditorObject = new CEditGimmick(pEditor);		// エディットギミック
 		break;
 
 	case CEditStage::TYPE_CHANGER:

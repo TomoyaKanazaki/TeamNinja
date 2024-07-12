@@ -875,8 +875,11 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	CStage *pStage = GET_STAGE;	// ステージ情報
 	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
 
+	// 前回の着地地面を保存
+	m_pOldField = m_pCurField;
+
 	// 地面・制限位置の着地判定
-	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move)
+	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
 	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
@@ -1633,6 +1636,7 @@ void CPlayer::DebugCloneControl(void)
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
 	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 pos = GetVec3Position();
 
 	if (pKey->IsTrigger(DIK_I))
 	{ // 前関係移動
@@ -1645,7 +1649,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1656,7 +1660,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1667,7 +1671,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_K))
@@ -1681,7 +1685,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1692,7 +1696,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1703,7 +1707,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_J))
@@ -1715,7 +1719,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 	else if (pKey->IsTrigger(DIK_L))
 	{ // 右関係移動
@@ -1726,7 +1730,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 }
 

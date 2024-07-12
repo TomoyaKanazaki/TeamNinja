@@ -17,6 +17,8 @@
 #include "field_fall.h"
 #include "field_decayed.h"
 #include "field_water.h"
+#include "field_Xbridge.h"
+#include "field_Zbridge.h"
 #include "player.h"
 
 //************************************************************
@@ -231,6 +233,13 @@ CField *CField::Create
 		pField = new CGimmickWater;
 		break;
 
+	case TYPE_XBRIDGE:
+		pField = new CGimmickXBridge;
+		break;
+
+	case TYPE_ZBRIDGE:
+		pField = new CGimmickZBridge;
+		break;
 	default:
 		pField = new CField;
 		break;
