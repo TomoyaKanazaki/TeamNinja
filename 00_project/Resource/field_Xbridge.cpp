@@ -1,16 +1,17 @@
 //==========================================
 //
-//  水場ギミック(gimmick_water.cpp)
+//  水場ギミック(field_Xbridge.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_water.h"
+#include "field_Xbridge.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickWater::CGimmickWater() : CField()
+CGimmickXBridge::CGimmickXBridge() : CField()
 {
 
 }
@@ -18,7 +19,7 @@ CGimmickWater::CGimmickWater() : CField()
 //==========================================
 //  デストラクタ
 //==========================================
-CGimmickWater::~CGimmickWater()
+CGimmickXBridge::~CGimmickXBridge()
 {
 
 }
@@ -26,7 +27,7 @@ CGimmickWater::~CGimmickWater()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CGimmickWater::Init(void)
+HRESULT CGimmickXBridge::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CField::Init()))
@@ -44,7 +45,7 @@ HRESULT CGimmickWater::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CGimmickWater::Uninit(void)
+void CGimmickXBridge::Uninit(void)
 {
 	// 親クラスの終了
 	CField::Uninit();
@@ -53,7 +54,7 @@ void CGimmickWater::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CGimmickWater::Update(const float fDeltaTime)
+void CGimmickXBridge::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
@@ -62,29 +63,44 @@ void CGimmickWater::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CGimmickWater::Draw(CShader* pShader)
+void CGimmickXBridge::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CField::Draw(pShader);
 }
 
 //===========================================
-//  文字列(フラグ)の追加
+//  当たっていた場合の処理
 //===========================================
-void CGimmickWater::Hit(CPlayerClone* pClone)
+void CGimmickXBridge::Hit(CPlayerClone* pClone)
 {
-	// 分身にフラグを追加する
+	// フラグを追加する
 	pClone->AddFrags(GetFlag());
-
-	// 泥フラグを削除する
-	pClone->SabFrags(GetFlag(TYPE_BOOB));
 }
 
-//=========================================
-//  文字列(フラグ)の削除
-//===========================================
-void CGimmickWater::Miss(CPlayerClone* pClone)
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickXBridge::Miss(CPlayerClone* pClone)
 {
-	// 分身からフラグを削除する
+	// フラグを削除する
 	pClone->SabFrags(GetFlag());
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickXBridge::Hit(CPlayer* pPlayer)
+{
+	// フラグを追加する
+	pPlayer->AddFrags(GetFlag());
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickXBridge::Miss(CPlayer* pPlayer)
+{
+	// フラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

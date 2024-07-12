@@ -1,7 +1,7 @@
 #pragma once
 //==========================================
 //
-//  泥ギミック(gimmick_boob.h)
+//  水場ギミック(field_Xbridge.h)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
@@ -10,13 +10,13 @@
 //==========================================
 //  クラス定義
 //==========================================
-class CGimmickBoob : public CField
+class CGimmickXBridge : public CField
 {
 public:
 
 	// メンバ関数
-	CGimmickBoob();
-	~CGimmickBoob() override;
+	CGimmickXBridge();
+	~CGimmickXBridge() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -28,5 +28,7 @@ private:
 	// メンバ関数
 	void Hit(CPlayerClone* pClone) override; // 当たっていた場合の処理
 	void Miss(CPlayerClone* pClone) override; // 当たっていない場合の処理
+	void Hit(CPlayer* pPlayer) override; // 当たっていた場合の処理
+	void Miss(CPlayer* pPlayer) override; // 当たっていない場合の処理
 
 };

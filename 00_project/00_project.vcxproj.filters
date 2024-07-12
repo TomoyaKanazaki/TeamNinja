@@ -258,22 +258,7 @@
     <ClInclude Include="Resource\gimmick_action.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_boob.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gimmick_bridge.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_cleen.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_decayed.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_fall.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_gravel.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick_heavydoor.h">
@@ -292,9 +277,6 @@
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\gimmick_step.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\gimmick_water.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemy.h">
@@ -558,6 +540,30 @@
     <ClInclude Include="Resource\transpoint.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\field_boob.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_cleen.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_decayed.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_fall.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_gravel.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_water.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_Xbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\field_Zbridge.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -755,22 +761,7 @@
     <ClCompile Include="Resource\gimmick_action.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_boob.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\gimmick_bridge.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_cleen.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_decayed.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_fall.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_gravel.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_heavydoor.cpp">
@@ -789,9 +780,6 @@
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_step.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_water.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemy.cpp">
@@ -1054,6 +1042,30 @@
     </ClCompile>
     <ClCompile Include="Resource\transpoint.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_water.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_boob.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_cleen.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_decayed.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_fall.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_gravel.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Xbridge.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\field_Zbridge.cpp">
+      <Filter>InGame\Gimmick</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

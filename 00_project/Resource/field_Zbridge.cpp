@@ -1,16 +1,17 @@
 //==========================================
 //
-//  掃除したての床ギミック(gimmick_cleen.cpp)
+//  Z方向の橋ギミック(field_Zbridge.cpp)
 //  Author : Tomoya Kanazaki
 // 
 //==========================================
-#include "gimmick_cleen.h"
+#include "field_Zbridge.h"
 #include "player_clone.h"
+#include "player.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickCleen::CGimmickCleen() : CField()
+CGimmickZBridge::CGimmickZBridge() : CField()
 {
 
 }
@@ -18,7 +19,7 @@ CGimmickCleen::CGimmickCleen() : CField()
 //==========================================
 //  デストラクタ
 //==========================================
-CGimmickCleen::~CGimmickCleen()
+CGimmickZBridge::~CGimmickZBridge()
 {
 
 }
@@ -26,7 +27,7 @@ CGimmickCleen::~CGimmickCleen()
 //==========================================
 //  初期化処理
 //==========================================
-HRESULT CGimmickCleen::Init(void)
+HRESULT CGimmickZBridge::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CField::Init()))
@@ -44,7 +45,7 @@ HRESULT CGimmickCleen::Init(void)
 //==========================================
 //  終了処理
 //==========================================
-void CGimmickCleen::Uninit(void)
+void CGimmickZBridge::Uninit(void)
 {
 	// 親クラスの終了
 	CField::Uninit();
@@ -53,7 +54,7 @@ void CGimmickCleen::Uninit(void)
 //==========================================
 //  更新処理
 //==========================================
-void CGimmickCleen::Update(const float fDeltaTime)
+void CGimmickZBridge::Update(const float fDeltaTime)
 {
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
@@ -62,7 +63,7 @@ void CGimmickCleen::Update(const float fDeltaTime)
 //==========================================
 //  描画処理
 //==========================================
-void CGimmickCleen::Draw(CShader* pShader)
+void CGimmickZBridge::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CField::Draw(pShader);
@@ -71,17 +72,35 @@ void CGimmickCleen::Draw(CShader* pShader)
 //===========================================
 //  当たっていた場合の処理
 //===========================================
-void CGimmickCleen::Hit(CPlayerClone* pClone)
+void CGimmickZBridge::Hit(CPlayerClone* pClone)
 {
-	// 分身に文字列を渡す
+	// フラグを追加する
 	pClone->AddFrags(GetFlag());
 }
 
-//=========================================
+//==========================================
 //  当たっていない場合の処理
-//===========================================
-void CGimmickCleen::Miss(CPlayerClone* pClone)
+//==========================================
+void CGimmickZBridge::Miss(CPlayerClone* pClone)
 {
-	// 分身からフラグを削除する
+	// フラグを削除する
 	pClone->SabFrags(GetFlag());
+}
+
+//===========================================
+//  当たっていた場合の処理
+//===========================================
+void CGimmickZBridge::Hit(CPlayer* pPlayer)
+{
+	// フラグを追加する
+	pPlayer->AddFrags(GetFlag());
+}
+
+//==========================================
+//  当たっていない場合の処理
+//==========================================
+void CGimmickZBridge::Miss(CPlayer* pPlayer)
+{
+	// フラグを削除する
+	pPlayer->SabFrags(GetFlag());
 }

@@ -278,6 +278,9 @@ void CGimmickBridge::Active()
 		sizeField.x = fabsf(m_ConectPoint[0].x - m_ConectPoint[1].x);
 		sizeField.y = FIELD_SIZE;
 
+		// ê∂ê¨
+		m_pField = CField::Create(CField::TYPE_XBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+
 		break;
 
 	// zé≤ï˚å¸Ç…âÀÇØÇÈ
@@ -287,13 +290,13 @@ void CGimmickBridge::Active()
 		sizeField.x = FIELD_SIZE;
 		sizeField.y = fabsf(m_ConectPoint[0].z - m_ConectPoint[1].z);
 
+		// ê∂ê¨
+		m_pField = CField::Create(CField::TYPE_ZBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+
 		break;
 
 	default:
 		assert(false);
 		break;
 	}
-
-	// ê∂ê¨
-	m_pField = CField::Create(CField::TYPE_BRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
 }
