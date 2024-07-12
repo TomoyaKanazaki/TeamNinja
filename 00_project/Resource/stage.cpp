@@ -22,6 +22,7 @@
 #include "actor.h"
 #include "checkpoint.h"
 #include "goal.h"
+#include "transpoint.h"
 
 //************************************************************
 //	定数宣言
@@ -139,6 +140,7 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	}
 
 	// アクターのセットアップの読込
+	if (!rPass.sActor.empty())	// パスが指定されている場合
 	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
 	{ // セットアップに失敗した場合
 
@@ -147,22 +149,35 @@ HRESULT CStage::BindStage(const SPass& rPass)
 		return E_FAIL;
 	}
 
-	// チェックポイントのセットアップの読込
-	if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
-	{ // セットアップに失敗した場合
+	if (!rPass.sPoint.empty())
+	{ // パスが指定されている場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+		// チェックポイントのセットアップの読込
+		if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
+		{ // セットアップに失敗した場合
 
-	// ゴールポイントのセットアップの読込
-	if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
-	{ // セットアップに失敗した場合
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
+		// ゴールポイントのセットアップの読込
+		if (FAILED(CGoal::LoadSetup(rPass.sPoint.c_str())))
+		{ // セットアップに失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 遷移ポイントのセットアップの読込
+		if (FAILED(CTransPoint::LoadSetup(rPass.sPoint.c_str())))
+		{ // セットアップに失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
 	}
 
 	// 成功を返す

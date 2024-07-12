@@ -12,7 +12,6 @@
 #include "sound.h"
 #include "camera.h"
 #include "stage.h"
-
 #include "selectManager.h"
 #include "editManager.h"
 
@@ -21,7 +20,7 @@
 //************************************************************
 namespace
 {
-	const char* INIT_MAPPASS = "data\\TXT\\MAP\\FOREST02\\map.txt";	// 初期マップパス
+	const char* INIT_MAPPASS = "data\\TXT\\MAP\\SELECT00\\map.txt";	// 初期マップパス
 }
 
 //************************************************************

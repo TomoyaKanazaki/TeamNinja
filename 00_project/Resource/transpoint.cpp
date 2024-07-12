@@ -17,7 +17,7 @@
 //************************************************************
 namespace
 {
-	const char*	MODEL_FILE	= "data\\MODEL\\MAP\\arena000.x";	// モデルファイル
+	const char*	MODEL_PASS	= "data\\MODEL\\GATE\\gate001.x";	// モデルファイル
 	const int	PRIORITY	= 3;		// 遷移ポイントの優先順位
 	const float	RADIUS		= 120.0f;	// 遷移ポイントに触れられる半径
 }
@@ -61,8 +61,8 @@ HRESULT CTransPoint::Init(void)
 		return E_FAIL;
 	}
 
-	// 遷移ポイントモデルを登録・割当
-	BindModel(MODEL_FILE);
+	// 遷移ポイントモデルを割当
+	BindModel(MODEL_PASS);
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -139,12 +139,7 @@ void CTransPoint::Draw(CShader *pShader)
 //============================================================
 //	生成処理
 //============================================================
-CTransPoint *CTransPoint::Create
-(
-	const char* pPass,			// 遷移先マップパス
-	const D3DXVECTOR3& rPos,	// 位置
-	const D3DXVECTOR3& rRot		// 向き
-)
+CTransPoint *CTransPoint::Create(const char* pPass, const D3DXVECTOR3& rPos)
 {
 	// 遷移ポイントの生成
 	CTransPoint *pTransPoint = new CTransPoint(pPass);
@@ -168,34 +163,18 @@ CTransPoint *CTransPoint::Create
 		// 位置を設定
 		pTransPoint->SetVec3Position(rPos);
 
-		// 向きを設定
-		pTransPoint->SetVec3Rotation(rRot);
-
 		// 確保したアドレスを返す
 		return pTransPoint;
 	}
 }
 
 //============================================================
-//	リスト取得処理
-//============================================================
-CListManager<CTransPoint> *CTransPoint::GetList(void)
-{
-	// オブジェクトリストを返す
-	return m_pList;
-}
-
-//============================================================
 //	遷移ポイントとの当たり判定
 //============================================================
-void CTransPoint::Collision
-(
-	const D3DXVECTOR3& rPos,	// 位置
-	const float fRadius			// 半径
-)
+CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius)
 {
 	// 遷移ポイントがない場合抜ける
-	if (m_pList == nullptr) { return; }
+	if (m_pList == nullptr) { return nullptr; }
 
 	std::list<CTransPoint*> list = m_pList->GetList();	// 内部リスト
 	for (const auto& rList : list)
@@ -214,12 +193,109 @@ void CTransPoint::Collision
 		if (bHit)
 		{ // 当たっている場合
 
-#if 0
-			// 遷移ポイントのマップパスに遷移
-			GET_STAGE->SetInitMapPass(rList->m_sTransMapPass.c_str());
-			GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
-#endif
-			return;
+			// 当たっている遷移ポイントを返す
+			return rList;
 		}
 	}
+
+	// 何一つ当たっていない場合nullptrを返す
+	return nullptr;
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CTransPoint> *CTransPoint::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CTransPoint::LoadSetup(const char* pPass)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	std::string sTrans;	// 遷移先マップパスの代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "遷移ポイントセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_TRANSSET")
+		{
+			do
+			{ // END_STAGE_TRANSSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "TRANSSET")
+				{
+					do
+					{ // END_TRANSSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "TRANS_PASS")
+						{
+							file >> str;	// ＝を読込
+							file >> sTrans;	// 遷移先マップパスを読込
+						}
+						else if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+					} while (str != "END_TRANSSET");	// END_TRANSSETを読み込むまでループ
+
+					// 遷移ポイントの生成
+					if (CTransPoint::Create(sTrans.c_str(), pos) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_TRANSSET");	// END_STAGE_TRANSSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
