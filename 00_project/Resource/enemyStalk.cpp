@@ -13,7 +13,7 @@
 #include "deltaTime.h"
 
 #include "multiModel.h"
-#include "enemyNavRandom.h"
+#include "enemyNavigation.h"
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
 
@@ -45,8 +45,6 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
-m_pNav(nullptr),
-m_pChaseRange(nullptr),
 m_state(STATE_CRAWL),
 m_nStateCount(0)
 {
@@ -87,12 +85,6 @@ HRESULT CEnemyStalk::Init(void)
 //============================================================
 void CEnemyStalk::Uninit(void)
 {
-	// ナビゲーションの終了処理
-	SAFE_UNINIT(m_pNav);
-
-	// 追跡範囲の終了処理
-	SAFE_UNINIT(m_pChaseRange);
-
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -130,12 +122,6 @@ void CEnemyStalk::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
-
-	// ナビゲーションを生成
-	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 500.0f, 500.0f);
-
-	// 追跡範囲を生成
-	m_pChaseRange = CEnemyChaseRange::Create(GetVec3Position(), 800.0f, 300.0f);
 }
 
 //============================================================
@@ -231,11 +217,8 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	if (Collision(*pPos))
 	{ // 当たり判定が true だった場合
 
-		// 停止状態にする
-		m_pNav->SetState(CEnemyNav::STATE_STOP);
-
-		// 状態カウントを0にする
-		m_pNav->SetStateCount(0);
+		// ナビゲーションのリセット処理
+		GetNavigation()->NavReset();
 	}
 
 	// 現在のモーションを返す
@@ -379,7 +362,7 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 void CEnemyStalk::NavMotionSet(EMotion* pMotion)
 {
-	switch (m_pNav->GetState())
+	switch (GetNavigation()->GetState())
 	{
 	case CEnemyNav::STATE_MOVE:
 
@@ -410,11 +393,11 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	if (m_pNav != nullptr)
+	if (GetNavigation() != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
 
 		// ナビの更新処理
-		m_pNav->Update
+		GetNavigation()->Update
 		(
 			pPos,		// 位置
 			pRot,		// 向き
@@ -435,7 +418,7 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
-		m_pNav->NavReset();
+		GetNavigation()->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_WARNING;
@@ -520,15 +503,15 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		return MOTION_ATTACK;
 	}
 
-	if (m_pChaseRange != nullptr &&
-		m_pChaseRange->ChaseRange(pPos))
+	if (GetChaseRange() != nullptr &&
+		GetChaseRange()->ChaseRange(pPos))
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
 		m_state = STATE_FADEOUT;
 
 		// ナビゲーションリセット処理
-		m_pNav->NavReset();
+		GetNavigation()->NavReset();
 
 		// 移動量をリセットする
 		SetMovePosition(VEC3_ZERO);
@@ -633,7 +616,7 @@ CEnemyStalk::EMotion CEnemyStalk::Caution(void)
 		m_nStateCount = 0;
 
 		// ナビゲーションリセット処理
-		m_pNav->NavReset();
+		GetNavigation()->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_WARNING;

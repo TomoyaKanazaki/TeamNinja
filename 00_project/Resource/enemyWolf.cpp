@@ -12,7 +12,7 @@
 #include "renderer.h"
 #include "deltaTime.h"
 
-#include "enemyNavRandom.h"
+#include "enemyNavigation.h"
 #include "enemyChaseRange.h"
 
 //************************************************************
@@ -44,8 +44,6 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemyAttack(),
-m_pNav(nullptr),		// ナビゲーションの情報
-m_pChaseRange(nullptr),	// 追跡範囲の情報
 m_state(STATE_CRAWL)	// 状態
 {
 
@@ -85,12 +83,6 @@ HRESULT CEnemyWolf::Init(void)
 //============================================================
 void CEnemyWolf::Uninit(void)
 {
-	// ナビゲーション情報の破棄処理
-	SAFE_UNINIT(m_pNav);
-
-	// 追跡範囲の破棄処理
-	SAFE_UNINIT(m_pChaseRange);
-
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -118,11 +110,7 @@ void CEnemyWolf::Draw(CShader* pShader)
 //============================================================
 void CEnemyWolf::SetData(void)
 {
-	// ナビゲーションの情報を生成
-	m_pNav = CEnemyNavRandom::Create(GetVec3Position(), 200.0f, 200.0f);
 
-	// 追跡範囲を生成
-	m_pChaseRange = CEnemyChaseRange::Create(GetVec3Position(), 300.0f, 200.0f);
 }
 
 //============================================================
@@ -357,7 +345,7 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 void CEnemyWolf::NavMoitonSet(int* pMotion)
 {
-	switch (m_pNav->GetState())
+	switch (GetNavigation()->GetState())
 	{
 	case CEnemyNav::STATE_MOVE:
 
@@ -388,11 +376,11 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
-	if (m_pNav != nullptr)
+	if (GetNavigation() != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
 
 		// ナビの更新処理
-		m_pNav->Update
+		GetNavigation()->Update
 		(
 			pPos,		// 位置
 			pRot,		// 向き
@@ -401,7 +389,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 			fDeltaTime	// デルタタイム
 		);
 
-		switch (m_pNav->GetState())
+		switch (GetNavigation()->GetState())
 		{
 		case CEnemyNav::STATE_MOVE:
 
@@ -427,7 +415,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
-		m_pNav->NavReset();
+		GetNavigation()->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_CAVEAT;
@@ -542,15 +530,15 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 向き更新
 	UpdateRotation(*pRot, fDeltaTime);
 
-	if (m_pChaseRange != nullptr &&
-		m_pChaseRange->ChaseRange(pPos))
+	if (GetChaseRange() != nullptr &&
+		GetChaseRange()->ChaseRange(pPos))
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
 		m_state = STATE_FADEOUT;
 
 		// ナビゲーションリセット処理
-		m_pNav->NavReset();
+		GetNavigation()->NavReset();
 
 		// 移動量をリセットする
 		SetMovePosition(VEC3_ZERO);

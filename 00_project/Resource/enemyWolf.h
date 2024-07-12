@@ -92,8 +92,6 @@ private:
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 
 	// メンバ変数
-	CEnemyNav* m_pNav;					// ナビゲーションの情報
-	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
 	EState m_state;						// 状態
 };
 

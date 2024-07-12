@@ -194,6 +194,7 @@
     <ClInclude Include="Resource\editCollCylinder.h" />
     <ClInclude Include="Resource\editCollSphere.h" />
     <ClInclude Include="Resource\editActor.h" />
+    <ClInclude Include="Resource\editEnemyAttack.h" />
     <ClInclude Include="Resource\editorCollShape.h" />
     <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="Resource\editCollCylinder.cpp" />
     <ClCompile Include="Resource\editCollSphere.cpp" />
     <ClCompile Include="Resource\editActor.cpp" />
+    <ClCompile Include="Resource\editEnemyAttack.cpp" />
     <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editorCollShape.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
