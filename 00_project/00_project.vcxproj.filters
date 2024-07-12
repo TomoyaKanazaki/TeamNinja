@@ -558,6 +558,9 @@
     <ClInclude Include="Resource\gimmick_canon.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\ToonShadow.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1055,6 +1058,9 @@
     <ClCompile Include="Resource\gimmick_canon.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\ToonShadow.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
@@ -1078,6 +1084,9 @@
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="data\SHADER\shaderToon.fx">
+      <Filter>シェーダー ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\Toonshadow.fx">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
   </ItemGroup>

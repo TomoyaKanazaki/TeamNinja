@@ -10,20 +10,9 @@
 #include "ZTexture.h"
 #include "manager.h"
 #include "renderer.h"
-//************************************************************
-//	定数宣言
-//************************************************************
-namespace
-{
-	const UINT ZTEX_WIDTH	 = SCREEN_WIDTH;								//Zテクスチャの幅
-	const UINT ZTEX_HEIGHT	 = SCREEN_HEIGHT;								//Zテクスチャの高さ
-	const float VIEWING_ANGLE = 45.0f;										//視野角
-	const float NEAR_CLIP = 10.0f;											//描画最小深度
-	const float FAR_CLIP = 10000.0f;										//描画最大深度
-	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(0.0f, 1000.0f, 100.0f);		//視点
-	const D3DXVECTOR3 FOCUS_POINT = D3DXVECTOR3(0.0f, -10.0f, 0.0f);		//注視点
-	const D3DXVECTOR3 LOOK_UP = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				//上向きのベクトル *警告:書き換えるな*
-}
+#include "object2D.h"
+#include "texture.h"
+
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -60,7 +49,7 @@ bool CZTexture::Init()
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイス情報
 	if (pDevice == NULL) return false;
-	if (ZTEX_WIDTH == 0 || ZTEX_HEIGHT == 0) return false;
+	if constexpr (ZTEX_WIDTH == 0 || ZTEX_HEIGHT == 0) return false;
 
 	HRESULT hr;
 	ID3DXBuffer* pError = NULL;
@@ -90,6 +79,7 @@ bool CZTexture::Init()
 	m_hTechnique = m_cpEffect->GetTechniqueByName("ZValuePlotTec");
 	if (!m_hWorldMat || !m_hViewMat || !m_hProjMat || !m_hTechnique)
 		return false;
+
 
 	// 指定のZ値テクスチャを生成
 	hr = D3DXCreateTexture(
@@ -128,7 +118,9 @@ bool CZTexture::Init()
 	D3DXMatrixPerspectiveFovLH(&m_matProj, D3DXToRadian(VIEWING_ANGLE), (ZTEX_WIDTH / ZTEX_HEIGHT), NEAR_CLIP, FAR_CLIP);
 	D3DXMatrixLookAtLH(&m_matView, &VIEW_POINT, &FOCUS_POINT, &LOOK_UP);
 
-	m_bPass = false;
+	D3DXCreateSprite(pDevice, &m_pSprite);// スプライト作成
+
+	m_bBegin = false;
 	return true;
 }
 
@@ -180,7 +172,7 @@ HRESULT CZTexture::Begin()
 	// シェーダの開始を宣言
 	UINT Tmp;
 	m_cpEffect->Begin(&Tmp, 0);
-	m_bPass = true;
+	m_bBegin = true;
 	return S_OK;
 }
 
@@ -231,7 +223,7 @@ HRESULT CZTexture::End()
 	// 固定機能に戻す
 	pDevice->SetVertexShader(NULL);
 	pDevice->SetPixelShader(NULL);
-	m_bPass = false;
+	m_bBegin = false;
 	return S_OK;
 }
 
@@ -251,7 +243,7 @@ CZTexture* CZTexture::Create(void)
 	// インスタンス使用中
 	assert(m_pShader == nullptr);
 
-	// トゥーンシェーダーの生成
+	// シェーダーの生成
 	m_pShader = new CZTexture;
 	if (m_pShader == nullptr)
 	{ // 生成に失敗した場合
@@ -262,11 +254,11 @@ CZTexture* CZTexture::Create(void)
 	else
 	{ // 生成に成功した場合
 
-		// トゥーンシェーダーの初期化
+		// 初期化
 		if (FAILED(m_pShader->Init()))
 		{ // 初期化に失敗した場合
 
-			// トゥーンシェーダーの破棄
+			// 破棄
 			SAFE_DELETE(m_pShader);
 			return nullptr;
 		}
@@ -281,10 +273,12 @@ CZTexture* CZTexture::Create(void)
 //============================================================
 CZTexture* CZTexture::GetInstance(void)
 {
-	// インスタンス未使用
-	assert(m_pShader != nullptr);
+	if (m_pShader == nullptr)
+	{
+		m_pShader = CZTexture::Create();
+	}
 
-	// トゥーンシェーダーのポインタを返す
+	// ポインタを返す
 	return m_pShader;
 }
 
@@ -293,10 +287,22 @@ CZTexture* CZTexture::GetInstance(void)
 //============================================================
 void CZTexture::Release(void)
 {
-	// トゥーンシェーダーの終了
+	// 終了
 	assert(m_pShader != nullptr);
-	m_pShader->EndPass();
-	m_pShader->End();
 	// メモリ開放
 	SAFE_DELETE(m_pShader);
+}
+//============================================================
+//	スプライト描画処理
+//============================================================
+void CZTexture::DrawSprite()
+{
+	//スケーリング
+	D3DXMATRIX SpriteScaleMat;
+	D3DXMatrixScaling(&SpriteScaleMat, 0.25f, 0.25f, 1.0f);
+	m_pSprite->SetTransform(&SpriteScaleMat);
+	//描画
+	m_pSprite->Begin(0);
+	m_pSprite->Draw(m_cpZTex, NULL, NULL, NULL, 0xffffffff);
+	m_pSprite->End();
 }

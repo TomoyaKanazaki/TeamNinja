@@ -80,7 +80,7 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),			// 影の情報
+	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
 	m_Action		(ACTION_CHASE),		// 行動
@@ -117,7 +117,7 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;			// 影の情報
+
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
 	m_Action		= ACTION_CHASE;		// 行動
@@ -148,15 +148,6 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 影の生成
-	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
-	if (m_pShadow == nullptr)
-	{ // 非使用中の場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
 
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
@@ -202,9 +193,6 @@ HRESULT CPlayerClone::Init(void)
 //============================================================
 void CPlayerClone::Uninit(void)
 {
-	// 影の終了
-	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
-	SAFE_UNINIT(m_pShadow);
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
@@ -317,8 +305,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 壁の当たり判定
 	(void)CollisionWall();
 
-	// 影の更新
-	m_pShadow->Update(fDeltaTime);
+	
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -332,22 +319,8 @@ void CPlayerClone::Update(const float fDeltaTime)
 //============================================================
 void CPlayerClone::Draw(CShader* pShader)
 {
-	CToonShader* pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
-	if (pToonShader->IsEffectOK())
-	{ // エフェクトが使用可能な場合
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pToonShader);
-	}
-	else
-	{ // エフェクトが使用不可能な場合
-
-		// エフェクトエラー
-		assert(false);
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pShader);
-	}
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
 }
 
 //============================================================
@@ -357,7 +330,7 @@ void CPlayerClone::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
-	m_pShadow->SetEnableUpdate(bUpdate);	// 影
+	
 }
 
 //============================================================
@@ -367,7 +340,7 @@ void CPlayerClone::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-	m_pShadow->SetEnableDraw(bDraw);	// 影
+
 }
 
 //============================================================

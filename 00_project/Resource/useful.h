@@ -214,6 +214,7 @@ namespace useful
 	void NormalizeRot(D3DXVECTOR3& rRot);			// 三軸向きの正規化
 	void StandardizePathPart(std::string *pPath);	// パス区切りの標準化
 	void VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta);		// ベクトルの向き変換
+	D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);
 	void RotToVec(const float fPhi, const float fTheta, D3DXVECTOR3 *pVec);	// 向きのベクトル変換
 	float GetTexWidthFromAspect(const float fHeight, const int nTexID);		// 縦幅からアスペクト比を考慮した横幅取得
 	float GetTexHeightFromAspect(const float fWidth, const int nTexID);		// 横幅からアスペクト比を考慮した縦幅取得

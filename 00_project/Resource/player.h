@@ -165,7 +165,7 @@ private:
 
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
-	CShadow		*m_pShadow;			// 影の情報
+
 	COrbit		*m_pOrbit;			// 軌跡の情報
 	D3DXVECTOR3	m_oldPos;			// 過去位置
 	D3DXVECTOR3	m_move;				// 移動量

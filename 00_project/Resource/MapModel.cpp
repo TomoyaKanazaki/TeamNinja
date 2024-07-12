@@ -129,25 +129,8 @@ void CMapModel::Update(const float fDeltaTime)
 //<==============================================
 void CMapModel::Draw(CShader* pShader)
 {
-	//トゥーンシェーダー情報を取得
-	CToonShader* pToonShader = CToonShader::GetInstance();
-
-	//エフェクトの使用ができる場合
-	if (pToonShader->IsEffectOK())
-	{
-
-		//トゥーンシェーダーを使った描画をする
-		CObjectModel::Draw(pToonShader);
-	}
-	//使用できない場合
-	else
-	{ 
-		//エフェクトエラー
-		assert(false);
-
 		//オブジェクトモデルの描画
 		CObjectModel::Draw(pShader);
-	}
 }
 //<==============================================
 //モデル変更処理

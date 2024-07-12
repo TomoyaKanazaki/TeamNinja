@@ -81,7 +81,8 @@ private:
 	HRESULT SetOriginMaterial(const LPD3DXBUFFER pBuffMat, const int nNumMat);	// 元マテリアル設定
 	void DrawNormal(void);	// 通常描画
 	void DrawShader(CShader *pShader);	// シェーダー描画
-
+	void DrawZTexture(void);			//Zテクスチャ書き込み
+	void DrawToonShadow(void);			// トゥーン影シェーダー描画
 	// メンバ変数
 	CRenderState	*m_pRenderState;	// レンダーステートの情報
 	D3DXMATERIAL	*m_pMat;			// マテリアルへのポインタ

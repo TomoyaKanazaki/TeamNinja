@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
@@ -327,6 +328,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
@@ -524,6 +526,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="data\SHADER\shaderToon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\Toonshadow.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>

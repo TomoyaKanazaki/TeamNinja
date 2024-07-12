@@ -103,7 +103,6 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),		// 影の情報
 	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
@@ -123,7 +122,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fStickRot		(0.0f),			// スティックの角度
 	m_fShootZ		(0.0f)		// 吹っ飛ぶ目標
 {
-
+	
 }
 
 //============================================================
@@ -140,7 +139,6 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;		// 影の情報
 	m_pOrbit		= nullptr;		// 軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
@@ -168,15 +166,7 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 影の生成
-	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
-	if (m_pShadow == nullptr)
-	{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
 
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
@@ -239,9 +229,7 @@ void CPlayer::Uninit(void)
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
 	
-	// 影の終了
-	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
-	SAFE_UNINIT(m_pShadow);
+	
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
@@ -301,8 +289,7 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// 影の更新
-	m_pShadow->Update(fDeltaTime);
+
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -344,22 +331,8 @@ void CPlayer::Update(const float fDeltaTime)
 //============================================================
 void CPlayer::Draw(CShader *pShader)
 {
-	CToonShader	*pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
-	if (pToonShader->IsEffectOK())
-	{ // エフェクトが使用可能な場合
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pToonShader);
-	}
-	else
-	{ // エフェクトが使用不可能な場合
-
-		// エフェクトエラー
-		assert(false);
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pShader);
-	}
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
 }
 
 //============================================================
@@ -369,7 +342,7 @@ void CPlayer::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
-	m_pShadow->SetEnableUpdate(bUpdate);	// 影
+
 }
 
 //============================================================
@@ -379,7 +352,7 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-	m_pShadow->SetEnableDraw(bDraw);	// 影
+
 }
 
 //============================================================

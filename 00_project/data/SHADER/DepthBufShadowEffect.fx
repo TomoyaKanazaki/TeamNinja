@@ -74,8 +74,8 @@ VS_OUTPUT DepthBufShadow_VS( float4 Pos : POSITION , float3 Norm : NORMAL, float
 // ピクセルシェーダ
 float4 DepthBufShadow_PS( float4 Col : COLOR, float4 ZCalcTex : TEXCOORD1 , VS_OUTPUT In) : COLOR
 {
-   // ライト目線によるZ値の再算出
-   float ZValue = ZCalcTex.z / ZCalcTex.w;
+	// ライト目線によるZ値の再算出
+	float ZValue = ZCalcTex.z / ZCalcTex.w;
 	float d = distance(In.PosWVP.xyz, m_EyePos.xyz);
 	
 	float f = (m_Far - d) / (m_Far - m_Near);

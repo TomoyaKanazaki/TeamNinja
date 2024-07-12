@@ -163,22 +163,8 @@ void CEnemy::Update(const float fDeltaTime)
 //============================================================
 void CEnemy::Draw(CShader* pShader)
 {
-	CToonShader	*pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
-	if (pToonShader->IsEffectOK())
-	{ // エフェクトが使用可能な場合
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pToonShader);
-	}
-	else
-	{ // エフェクトが使用不可能な場合
-
-		// エフェクトエラー
-		assert(false);
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pShader);
-	}
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
 
 	if (m_pItem != nullptr)
 	{ // アイテムを持っている場合

@@ -11,7 +11,8 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-
+#include "ZTexture.h"
+#include "ToonShadow.h"
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -37,6 +38,8 @@ CObjectMeshWall::CObjectMeshWall(const CObject::ELabel label, const CObject::EDi
 	m_nNumIdx		(0),			// 必要インデックス数
 	m_nTextureID	(0)				// テクスチャインデックス
 {
+	SetEnableZDraw(true);			// 深度書き込み有効化
+	SetEnableShadowDraw(true);			// 影書き込み有効化
 	// メンバ変数をクリア
 	memset(&m_meshWall, 0, sizeof(m_meshWall));	// メッシュウォールの情報
 }
@@ -154,17 +157,19 @@ void CObjectMeshWall::Draw(CShader *pShader)
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(object::FVF_VERTEX_3D);
 
-	if (pShader == nullptr)
-	{ // シェーダーが使用されていない場合
-
-		// 通常描画
-		DrawNormal();
+	if (CZTexture::GetInstance()->GetIsBegin())
+	{
+		//Zテクスチャ描画
+		DrawZTexture();
+	}
+	else if (CToonShadow::GetInstance()->IsBegin())
+	{
+		DrawToonShadow();
 	}
 	else
-	{ // シェーダーが使用されている場合
-
-		// シェーダー描画
-		DrawShader(pShader);
+	{
+		// 通常描画
+		DrawNormal();
 	}
 
 	// レンダーステートを再設定
@@ -609,4 +614,72 @@ void CObjectMeshWall::DrawShader(CShader *pShader)
 	// 描画終了
 	pShader->EndPass();
 	pShader->End();
+}
+
+//============================================================
+//	Zシェーダー描画処理
+//============================================================
+void  CObjectMeshWall::DrawZTexture(void)
+{
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+	CZTexture* pZShader = CZTexture::GetInstance();
+	// マトリックス情報を設定
+	pZShader->SetWorldMatrix(&m_meshWall.mtxWorld);
+	pZShader->SetParamToEffect();
+	pZShader->BeginPass();
+	// テクスチャの設定
+	pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(m_nTextureID));
+
+	// ポリゴンの描画
+	pDevice->DrawIndexedPrimitive
+	( // 引数
+		D3DPT_TRIANGLESTRIP,	// プリミティブの種類
+		0,
+		0,
+		m_nNumVtx,		// 使用する頂点数
+		0,				// インデックスバッファの開始地点
+		m_nNumIdx - 2	// プリミティブ (ポリゴン) 数
+	);
+}
+
+//============================================================
+//	影描画処理
+//============================================================
+void CObjectMeshWall::DrawToonShadow()
+{
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+	CToonShadow* pShader = CToonShadow::GetInstance();
+	// 描画開始
+
+	pShader->BeginPass(0);
+
+	// マトリックス情報を設定
+	pShader->SetMatrix(&m_meshWall.mtxWorld);
+
+	
+
+	// テクスチャを設定
+	pShader->SetTexture(m_nTextureID);
+
+	// 状態変更の伝達
+	pShader->CommitChanges();
+
+	// テクスチャの設定
+	pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(m_nTextureID));
+
+	// ポリゴンの描画
+	pDevice->DrawIndexedPrimitive
+	( // 引数
+		D3DPT_TRIANGLESTRIP,	// プリミティブの種類
+		0,
+		0,
+		m_nNumVtx,		// 使用する頂点数
+		0,				// インデックスバッファの開始地点
+		m_nNumIdx - 2	// プリミティブ (ポリゴン) 数
+	);
+
+	// 描画終了
+	pShader->EndPass();
 }
