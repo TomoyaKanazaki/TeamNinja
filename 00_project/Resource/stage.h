@@ -48,6 +48,7 @@ public:
 		std::string sStage;	// ステージ情報パス
 		std::string sActor;	// アクター情報パス
 		std::string sPoint;	// ポイント情報パス
+		std::string sTrans;	// 遷移ポイント情報パス
 	};
 
 	// 範囲構造体
