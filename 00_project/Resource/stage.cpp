@@ -20,6 +20,7 @@
 #include "liquid.h"
 #include "camera_change.h"
 #include "actor.h"
+#include "gimmick.h"
 #include "checkpoint.h"
 #include "goal.h"
 #include "transpoint.h"
@@ -140,8 +141,18 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	}
 
 	// アクターのセットアップの読込
-	if (!rPass.sActor.empty())	// パスが指定されている場合
+	if (!rPass.sActor.empty())		// パスが指定されている場合
 	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ギミックのセットアップの読込
+	if (!rPass.sGimmick.empty())	// パスが指定されている場合
+	if (FAILED(CGimmick::LoadSetup(rPass.sGimmick.c_str())))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
@@ -214,7 +225,6 @@ bool CStage::LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECT
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
-
 	CField *pCurField = nullptr;	// 着地予定の地面
 	float fCurPos = m_limit.fField;	// 着地予定のY座標
 	bool bLand = false;				// 地面の着地判定
@@ -281,7 +291,6 @@ bool CStage::LandFieldPositionTop(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, CField*
 	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
 	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
 	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
-
 	CField *pCurField = nullptr;	// 着地予定の地面
 	float fCurPos = m_limit.fField;	// 着地予定のY座標
 	bool bLand = false;				// 地面の着地判定
@@ -582,6 +591,14 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 
 			// アクター読込パスを保存
 			pPassInfo->sActor = str;
+		}
+		else if (str == "GIMMICK_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// ギミック読込パスを読込
+
+			// ギミック読込パスを保存
+			pPassInfo->sGimmick = str;
 		}
 		else if (str == "POINT_PASS")
 		{

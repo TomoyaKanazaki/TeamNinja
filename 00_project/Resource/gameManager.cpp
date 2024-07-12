@@ -114,7 +114,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森00マップ用ギミック置き場
-#if 1
+#if 0
 
 	//=================================================
 	// [ボタンのみ]
@@ -142,7 +142,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森02マップ用ギミック置き場
-#if 1
+#if 0
 
 	//=================================================
 	// [左側のやつ]
@@ -244,13 +244,13 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// わんわんおー
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
 #endif
 
 	// さむらい
-#if 1
+#if 0
 	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
 #endif

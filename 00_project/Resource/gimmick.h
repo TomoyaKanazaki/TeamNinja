@@ -75,6 +75,7 @@ public:
 		const int nNumActive			// 発動可能な分身の数
 	);
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 private:
 
