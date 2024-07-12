@@ -564,7 +564,7 @@
     <ClInclude Include="Resource\field_Zbridge.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editorChara.h">
+    <ClInclude Include="Resource\editEnemyAttack.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1070,7 +1070,7 @@
     <ClCompile Include="Resource\field_Zbridge.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\editorChara.cpp">
+    <ClCompile Include="Resource\editEnemyAttack.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
   </ItemGroup>
