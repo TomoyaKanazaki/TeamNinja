@@ -62,6 +62,7 @@ namespace
 		"重い扉",
 		"橋",
 	};
+	const int NUM_ACTIVE_MIN = 1;		// 発動可能人数の最小値
 }
 
 //************************************************************
@@ -105,10 +106,11 @@ HRESULT CEditGimmick::Init(void)
 #if _DEBUG
 
 	// メンバ変数を初期化
-	m_pGimmick = nullptr;					// ギミック
-	m_infoCreate.type = CGimmick::EType(0);	// 種類
-	m_infoCreate.size = INIT_SIZE;			// 大きさ
-	m_bSave = false;						// 保存状況
+	m_pGimmick = nullptr;						// ギミック
+	m_infoCreate.type = CGimmick::EType(0);		// 種類
+	m_infoCreate.size = INIT_SIZE;				// 大きさ
+	m_infoCreate.nNumActive = NUM_ACTIVE_MIN;	// 発動可能人数
+	m_bSave = false;							// 保存状況
 
 	// 親クラスの初期化
 	if (FAILED(CEditorObject::Init()))
@@ -414,7 +416,8 @@ void CEditGimmick::UpdateNumActive(void)
 	{
 		m_infoCreate.nNumActive++;
 	}
-	if (pKeyboard->IsTrigger(KEY_DOWN_NUM_ACTIVE))
+	if (pKeyboard->IsTrigger(KEY_DOWN_NUM_ACTIVE) &&
+		m_infoCreate.nNumActive > NUM_ACTIVE_MIN)
 	{
 		m_infoCreate.nNumActive--;
 	}
@@ -512,14 +515,14 @@ void CEditGimmick::DeleteCollisionGimmick(const bool bRelase)
 		D3DXVECTOR3 sizeThisGimmick = m_pGimmick->GetVec3Sizing();	// 自身の地面の大きさ
 		sizeThis.x = sizeThisGimmick.x;	// 判定サイズXを設定
 		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeThis.z = sizeThisGimmick.y;	// 判定サイズZを設定
+		sizeThis.z = sizeThisGimmick.z;	// 判定サイズZを設定
 		sizeThis *= 0.5f;				// 判定サイズを半分に
 
 		// 対象の大きさを設定
 		D3DXVECTOR3 sizeOtherGimmick = rList->GetVec3Sizing();	// 対象の地面の大きさ
 		sizeOther.x = sizeOtherGimmick.x;	// 判定サイズXを設定
 		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
-		sizeOther.z = sizeOtherGimmick.y;	// 判定サイズZを設定
+		sizeOther.z = sizeOtherGimmick.z;	// 判定サイズZを設定
 		sizeOther *= 0.5f;				// 判定サイズを半分に
 
 		// 矩形の当たり判定
