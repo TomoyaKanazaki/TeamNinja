@@ -221,7 +221,7 @@ void CEditGimmick::Update(void)
 	m_pGimmick->SetVec3Position(GetVec3Position());
 
 	// Œü‚«‚ð”½‰f
-	m_pGimmick->SetVec3Rotation(GetVec3Rotation());
+	m_pGimmick->SetVec3Rotation(VEC3_ZERO);
 
 	// –îˆó‚ÌˆÊ’u‚ð”½‰f
 	m_pAngleSign->SetVec3Position(GetVec3Position() + ANGLE_SHIFT);
@@ -389,7 +389,13 @@ void CEditGimmick::ChangeType(void)
 	// Ží—Þ‚ð•ÏX
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
-		m_infoCreate.type = (CGimmick::EType)((m_infoCreate.type + 1) % CGimmick::TYPE_MAX);
+		do
+		{ // Ží—Þ‚ªƒ{ƒ^ƒ“‚¶‚á‚È‚©‚Á‚½ê‡ŒJ‚è•Ô‚·
+
+			// Ží—Þ‚ð1‚Âi‚ß‚é
+			m_infoCreate.type = (CGimmick::EType)((m_infoCreate.type + 1) % CGimmick::TYPE_MAX);
+
+		} while (m_infoCreate.type == CGimmick::TYPE_POST);
 
 		// I—¹ˆ—
 		m_pGimmick->Uninit();
@@ -663,7 +669,7 @@ HRESULT CEditGimmick::Save(void)
 		file << "	GIMMICKSET" << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 		file << "		ANGLE	= " << angle << std::endl;
-		file << "		SIZE	= " << size.x << " " << size.z << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
 		file << "		TYPE	= " << type << std::endl;
 		file << "		NUMACT	= " << nNumActive << std::endl;
 		file << "	END_GIMMICKSET\n" << std::endl;

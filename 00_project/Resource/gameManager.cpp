@@ -19,7 +19,7 @@
 #include "player.h"
 #include "multiModel.h"
 
-#include "enemy.h"
+#include "enemyAttack.h"
 #include "checkpoint.h"
 #include "popupUI.h"
 #include "goal.h"
@@ -114,35 +114,37 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // 森00マップ用ギミック置き場
-#if 1
+#if 0
+
+	
+
+	// ジャンプ台
+	//CGimmick::Create(D3DXVECTOR3(8050.0f, 0.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 3);
+
+
+
+	// 橋
+	//CGimmick::Create(D3DXVECTOR3(14400.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 5);
+
 
 	//=================================================
 	// [ボタンのみ]
 	//=================================================
 	// ボタン
-	{ // 複数ボタン：次の３つ
-		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(4125.0f, 0.0f, 350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, 350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(5125.0f, 0.0f, -600.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		CGimmickMalti::Create(vec);
-	}
-
-	// ジャンプ台
-	CGimmick::Create(D3DXVECTOR3(8050.0f, 0.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(8850.0f, 250.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(14100.0f, 150.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(14700.0f, 150.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
-	CGimmick::Create(D3DXVECTOR3(18100.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 1100.0f), CGimmick::TYPE_JUMPTABLE, 4);
-
-
-
-	// 橋
-	CGimmick::Create(D3DXVECTOR3(14400.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 5);
+	//{ // 複数ボタン：３つ
+	//	std::vector<CGimmickMalti::SButton> vec;
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17900.0f, 1200.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//  vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	// 
+	//	CGimmickMalti::Create(vec);
+	//}
 #endif
 
 // 森02マップ用ギミック置き場
-#if 1
+#if 0
 
 	//=================================================
 	// [左側のやつ]
@@ -244,15 +246,15 @@ HRESULT CGameManager::Init(void)
 #endif
 
 	// わんわんおー
-#if 1
-	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
-	CEnemy::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
+#if 0
+	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
 	// さむらい
-#if 1
-	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
-	CEnemy::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
+#if 0
+	CEnemyAttack::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyAttack::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
 	// 回り込みカメラの設定

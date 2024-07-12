@@ -30,6 +30,7 @@ namespace object
 	const int DEFAULT_PRIO	= 3;	// デフォルトの優先順位
 }
 
+
 //************************************************************
 //	構造体定義
 //************************************************************
@@ -128,6 +129,8 @@ public:
 	virtual void SetPriority(const int nPriority);			// 優先順位設定
 	virtual void SetEnableUpdate(const bool bUpdate);		// 更新状況設定
 	virtual void SetEnableDraw(const bool bDraw);			// 描画状況設定
+	virtual void SetEnableZDraw(const bool bDraw);			// 描画状況設定
+	virtual void SetEnableShadowDraw(const bool bDraw);			// 描画状況設定
 	virtual void SetVec2Position(const D3DXVECTOR2& rPos);	// 二軸の位置設定
 	virtual void SetVec3Position(const D3DXVECTOR3& rPos);	// 三軸の位置設定
 	virtual void SetVec3Rotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -148,7 +151,10 @@ public:
 	static void	ReleaseAll(void);						// 全破棄
 	static void	UpdateAll(const float fDeltaTime);		// 全更新
 	static void	DrawAll(void);							// 全描画
+	static void	DrawAll_Default(void);					// 固定パイプラインを使用した全描画
 	static void	DrawAll_ZShader(void);					// Zテクスチャ用全描画
+	static void	DrawAll_ToonShadow(void);				// Zテクスチャ用全描画
+	static void	DrawAll_Compensate(void);				// Zテクスチャ用全描画
 	static int	GetNumAll(void) { return m_nNumAll; }	// 総数取得
 	static CObject *GetTop(const EDim dimension, const int nPriority) { return m_apTop[dimension][nPriority]; }	// 先頭オブジェクト取得
 	static CObject *GetCur(const EDim dimension, const int nPriority) { return m_apCur[dimension][nPriority]; }	// 最後尾オブジェクト取得
@@ -160,6 +166,8 @@ public:
 	DWORD	GetUniqueID(void) const		{ return m_dwID; }		// ユニークID取得
 	bool	IsUpdate(void) const		{ return m_bUpdate; }	// 更新状況取得
 	bool	IsDraw(void) const			{ return m_bDraw; }		// 描画状況取得
+	bool	IsZDraw(void) const			{ return m_bZDraw; }	// 描画状況取得
+	bool	IsShadowDraw(void) const	{ return m_bShadow; }	// 描画状況取得
 	bool	IsDeath(void) const			{ return m_bDeath; }	// 死亡フラグ取得
 	CObject	*GetObject(void)			{ return this; }		// オブジェクト取得
 	CObject	*GetPrev(void) const		{ return m_pPrev; }		// 前オブジェクト取得
@@ -193,6 +201,9 @@ private:
 	DWORD	m_dwID;			// 自身のユニークID
 	bool	m_bUpdate;		// 自身の更新状況
 	bool	m_bDraw;		// 自身の描画状況
+	bool	m_bZDraw;		// Zシェーダー有効時の自身の描画状況
+	bool	m_bShadow;		// シャドウシェーダー有効時の自身の描画状況
+
 	bool	m_bDeath;		// 自身の死亡フラグ
 	CObject	*m_pPrev;		// 前のオブジェクトへのポインタ
 	CObject	*m_pNext;		// 次のオブジェクトへのポインタ

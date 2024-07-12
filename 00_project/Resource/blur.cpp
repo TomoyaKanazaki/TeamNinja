@@ -212,6 +212,7 @@ void CBlur::Update(const float fDeltaTime)
 			m_oldObject.erase(m_oldObject.begin());
 		}
 	}
+	
 }
 
 //============================================================

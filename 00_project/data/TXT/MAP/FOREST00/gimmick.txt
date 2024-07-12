@@ -1,0 +1,65 @@
+#==============================================================================
+#
+#	ギミックのセットアップ [gimmick.txt]
+#	Author : 小原 立暉 & 藤田 勇一
+#
+#==============================================================================
+STAGE_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 4425.00 0.00 -300.00
+		ANGLE	= 0
+		SIZE	= 50.00 0.00 1000.00
+		TYPE	= 0
+		NUMACT	= 3
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 5225.00 200.00 -300.00
+		ANGLE	= 0
+		SIZE	= 50.00 0.00 1000.00
+		TYPE	= 0
+		NUMACT	= 4
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 15625.00 650.00 -250.00
+		ANGLE	= 0
+		SIZE	= 50.00 0.00 1100.00
+		TYPE	= 0
+		NUMACT	= 5
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 9675.00 300.00 -400.00
+		ANGLE	= 0
+		SIZE	= 50.00 0.00 800.00
+		TYPE	= 0
+		NUMACT	= 3
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 10275.00 300.00 -400.00
+		ANGLE	= 0
+		SIZE	= 50.00 0.00 800.00
+		TYPE	= 0
+		NUMACT	= 3
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 9975.00 650.00 -400.00
+		ANGLE	= 3
+		SIZE	= 650.00 0.00 800.00
+		TYPE	= 5
+		NUMACT	= 5
+	END_GIMMICKSET
+	
+	GIMMICKSET
+		POS		= 11400.00 650.00 -50.00
+		ANGLE	= 0
+		SIZE	= 400.00 0.00 50.00
+		TYPE	= 4
+		NUMACT	= 4
+	END_GIMMICKSET
+	
+END_STAGE_GIMMICKSET

@@ -31,15 +31,6 @@ class CEnemy : public CObjectChara
 {
 public:
 
-	// 種類
-	enum EType
-	{
-		TYPE_STALK = 0,		// しつこい敵
-		TYPE_CAVEAT,		// 警告敵
-		TYPE_WOLF,			// 狼敵
-		TYPE_MAX			// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CEnemy();
 
@@ -55,12 +46,6 @@ public:
 	virtual void SetData(void) = 0;	// 情報の設定処理
 
 	// 静的メンバ関数
-	static CEnemy* Create	// 生成
-	( // 引数
-		const D3DXVECTOR3& rPos,	// 位置
-		const D3DXVECTOR3& rRot,	// 向き
-		const EType type			// 種類
-	);
 	static CListManager<CEnemy>* GetList(void);			// リスト取得
 
 	// メンバ関数
@@ -91,7 +76,8 @@ protected:
 	void UpdateOldPosition(void) { m_oldPos = GetVec3Position(); }	// 過去位置更新
 	void UpdateGravity(void);	// 重力更新
 
-	bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
+	inline void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置設定(生成時のみ設定)
+	inline bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
 
 private:
 
@@ -108,7 +94,6 @@ private:
 	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
-	EType m_type;					// 種類
 	bool m_bJump;					// ジャンプ状況
 };
 

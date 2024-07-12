@@ -33,6 +33,9 @@ CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dime
 
 	// 判定情報配列をクリア
 	m_vecColl.clear();
+
+	SetEnableZDraw(true);			// 深度書き込み有効化
+	SetEnableShadowDraw(true);			// 影書き込み有効化
 }
 
 //============================================================

@@ -353,7 +353,25 @@ void useful::VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta)
 	// 仰角の計算
 	*pTheta = atan2f(sqrtf((rVec.x * rVec.x) + (rVec.y * rVec.y)), rVec.z);
 }
+//============================================================
+//	ベクトルの向き変換(丹野)
+//============================================================
+D3DXVECTOR3 useful::VectorToAngles(const D3DXVECTOR3& vector)
+{
+	D3DXVECTOR3 angles;
 
+	// Yaw（ヨー）を計算
+	angles.y = atan2f(vector.x, vector.z);
+
+	// Pitch（ピッチ）を計算
+	angles.x = atan2f(vector.y, sqrt(vector.x * vector.x + vector.z * vector.z));
+
+	// Roll（ロール）は0度に設定
+	angles.z = 0.0f;
+
+
+	return angles;
+}
 //============================================================
 //	向きのベクトル変換
 //============================================================

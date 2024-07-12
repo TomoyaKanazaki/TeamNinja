@@ -10,7 +10,9 @@
 #include "object.h"
 #include "manager.h"
 #include "loading.h"
-
+#include "ZTexture.h"
+#include "ToonShadow.h"
+#include "debug.h"
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
@@ -66,7 +68,8 @@ CObject::CObject(const ELabel label, const EDim dimension, const int nPriority)
 	m_bUpdate	= true;			// 更新状況
 	m_bDraw		= true;			// 描画状況
 	m_bDeath	= false;		// 死亡フラグ
-
+	m_bZDraw	= false;		// 描画状況(Zテクスチャ)
+	m_bShadow	= false;		// 描画状況(シャドウ)
 #ifdef _DEBUG
 
 	// 自身の表示をONにする
@@ -297,7 +300,22 @@ void CObject::SetEnableDraw(const bool bDraw)
 	// 引数の描画状況を設定
 	m_bDraw = bDraw;
 }
-
+//============================================================
+//	Z描画状況の設定処理
+//============================================================
+void CObject::SetEnableZDraw(const bool bDraw)
+{
+	// 引数の描画状況を設定
+	m_bZDraw = bDraw;
+}
+//============================================================
+//	シャドウ描画状況の設定処理
+//============================================================
+void CObject::SetEnableShadowDraw(const bool bDraw)
+{
+	// 引数の描画状況を設定
+	m_bShadow = bDraw;
+}
 //============================================================
 //	二軸の位置の設定処理
 //============================================================
@@ -519,7 +537,7 @@ void CObject::ReleaseAll(void)
 			}
 		}
 	}
-
+	CZTexture::GetInstance()->Release();
 	// 全死亡処理
 	DeathAll();
 }
@@ -580,61 +598,25 @@ void CObject::UpdateAll(const float fDeltaTime)
 //============================================================
 void CObject::DrawAll(void)
 {
-	// ポインタを宣言
-	CLoading *pLoading = GET_MANAGER->GetLoading();	// ローディング
-
-	// ロード中の場合抜ける
-	assert(pLoading != nullptr);
-	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
-
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
-
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
-
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
-
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
-
-#ifdef _DEBUG
-
-				if (!pObject->m_bDebugDisp)
-				{ // 表示しない場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
-
-#endif	// _DEBUG
-
-				if (!pObject->m_bDraw
-				||   pObject->m_bDeath)
-				{ // 自動描画がOFF、または死亡している場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
-
-				// オブジェクトの描画
-				pObject->Draw();
-
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
-			}
-		}
+	CDebug * pDeb = GET_MANAGER->GetDebug();
+	//デバッグ時のシェーダー切り替え	
+	if (pDeb->GetEnableShader())
+	{
+		DrawAll_ZShader();
+		DrawAll_ToonShadow();
+		DrawAll_Compensate();
 	}
+	else
+	{
+		DrawAll_Default();
+	}
+
+	//CZTexture::GetInstance()->DrawSprite();
 }
 //============================================================
-//	Zテクスチャ用全描画処理
+//	固定パイプラインを使用した全描画処理
 //============================================================
-void CObject::DrawAll_ZShader(void)
+void CObject::DrawAll_Default(void)
 {
 	// ポインタを宣言
 	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
@@ -687,7 +669,199 @@ void CObject::DrawAll_ZShader(void)
 		}
 	}
 }
+//============================================================
+//	固定パイプラインを使用した補完処理
+//============================================================
+void CObject::DrawAll_Compensate(void)
+{
+	// ポインタを宣言
+	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
 
+	// ロード中の場合抜ける
+	assert(pLoading != nullptr);
+	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
+
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
+
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
+
+			// オブジェクトの先頭を代入
+			CObject* pObject = m_apTop[nCntDim][nCntPri];
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
+
+				// 次のオブジェクトを代入
+				CObject* pObjectNext = pObject->m_pNext;
+
+#ifdef _DEBUG
+
+				if (!pObject->m_bDebugDisp)
+				{ // 表示しない場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+#endif	// _DEBUG
+
+				if (!pObject->m_bDraw
+					|| pObject->m_bDeath)
+				{ // 自動描画がOFF、または死亡している場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+				if (!pObject->IsShadowDraw() && !pObject->IsZDraw())
+				{
+					// オブジェクトの描画
+					pObject->Draw();
+				}
+				
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+			}
+		}
+	}
+}
+//============================================================
+//	Zテクスチャ用全描画処理
+//============================================================
+void CObject::DrawAll_ZShader(void)
+{
+	// ポインタを宣言
+	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
+
+	// ロード中の場合抜ける
+	assert(pLoading != nullptr);
+	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
+
+	//Zテクスチャ生成シェーダーを開始
+	CZTexture* pZShader = CZTexture::GetInstance();
+
+	pZShader->Begin();
+	
+
+	for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+	{ // 優先順位の総数分繰り返す
+
+		// オブジェクトの先頭を代入
+		CObject* pObject = m_apTop[DIM_3D][nCntPri];
+		while (pObject != nullptr)
+		{ // オブジェクトが使用されている場合繰り返す
+
+			// 次のオブジェクトを代入
+			CObject* pObjectNext = pObject->m_pNext;
+
+#ifdef _DEBUG
+
+			if (!pObject->m_bDebugDisp)
+			{ // 表示しない場合
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+				continue;
+			}
+
+#endif	// _DEBUG
+
+			if (!pObject->m_bDraw
+				|| pObject->m_bDeath)
+			{ // 自動描画がOFF、または死亡している場合
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+				continue;
+			}
+			
+			if (pObject->IsShadowDraw())
+			{
+				// オブジェクトの描画
+				pObject->Draw();
+				pZShader->EndPass();
+			}
+
+			// 次のオブジェクトへのポインタを代入
+			pObject = pObjectNext;
+
+		}
+	}
+
+	//終了
+
+	pZShader->End();
+}
+//============================================================
+// 影用全描画処理
+//============================================================
+void CObject::DrawAll_ToonShadow(void)
+{
+	// ポインタを宣言
+	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
+
+	// ロード中の場合抜ける
+	assert(pLoading != nullptr);
+	if (pLoading->GetState() != CLoading::LOAD_NONE) { return; }
+
+	//Zテクスチャ生成シェーダーを開始
+	CToonShadow* pShader = CToonShadow::GetInstance();
+
+	pShader->Begin();
+	pShader->SetShadowMap();
+
+	for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+	{ // 優先順位の総数分繰り返す
+
+		// オブジェクトの先頭を代入
+		CObject* pObject = m_apTop[DIM_3D][nCntPri];
+		while (pObject != nullptr)
+		{ // オブジェクトが使用されている場合繰り返す
+
+			// 次のオブジェクトを代入
+			CObject* pObjectNext = pObject->m_pNext;
+
+#ifdef _DEBUG
+
+			if (!pObject->m_bDebugDisp)
+			{ // 表示しない場合
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+				continue;
+			}
+
+#endif	// _DEBUG
+
+			if (!pObject->m_bDraw
+				|| pObject->m_bDeath)
+			{ // 自動描画がOFF、または死亡している場合
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+				continue;
+			}
+
+			if (pObject->IsShadowDraw())
+			{
+				// オブジェクトの描画
+				pObject->Draw();
+				pShader->EndPass();
+			}
+
+			// 次のオブジェクトへのポインタを代入
+			pObject = pObjectNext;
+
+		}
+	}
+
+	//終了
+
+	pShader->End();
+}
 //============================================================
 //	全死亡処理
 //============================================================

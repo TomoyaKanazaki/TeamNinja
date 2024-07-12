@@ -12,7 +12,8 @@
 #include "renderer.h"
 #include "texture.h"
 #include "renderState.h"
-
+#include "ZTexture.h"
+#include "ToonShadow.h"
 //************************************************************
 //	子クラス [CMultiModel] のメンバ関数
 //************************************************************
@@ -21,7 +22,8 @@
 //============================================================
 CMultiModel::CMultiModel(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObjectModel(label, dimension, nPriority), m_pParent(nullptr)
 {
-
+	SetEnableZDraw(true);			// 深度書き込み有効化
+	SetEnableShadowDraw(true);			// 影書き込み有効化
 }
 
 //============================================================
@@ -135,20 +137,37 @@ void CMultiModel::Draw(CShader *pShader)
 	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
 
+
+
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
 
-	if (pShader == nullptr)
-	{ // シェーダーが使用されていない場合
 
-		// 通常描画
-		DrawNormal();
+	if (CZTexture::GetInstance()->GetIsBegin())
+	{
+		//シェーダーにパラメータを投げる
+		CZTexture* pZTex = CZTexture::GetInstance();
+		pZTex->SetWorldMatrix(&mtxWorld);
+		pZTex->SetParamToEffect();
+		pZTex->BeginPass();
+		//Zテクスチャ描画
+		DrawZTexture();
+		pZTex->EndPass();
+	}
+	else if(CToonShadow::GetInstance()->IsBegin())	
+	{
+		//シェーダーにパラメータを投げる
+		CToonShadow* pZTex = CToonShadow::GetInstance();
+		pZTex->SetMatrix(&mtxWorld);
+
+		pZTex->BeginPass(0);
+		DrawToonShadow();
+		pZTex->EndPass();
 	}
 	else
-	{ // シェーダーが使用されている場合
-
-		// シェーダー描画
-		DrawShader(pShader);
+	{
+		// 通常描画
+		DrawNormal();
 	}
 
 	// 保存していたマテリアルを戻す
@@ -240,14 +259,14 @@ void CMultiModel::DrawNormal(void)
 	// 変数を宣言
 	CModel::SModel modelData = GetModelData();	// モデルの情報
 	D3DXVECTOR3	scale = GetVec3Scaling();		// モデルの拡大率
-	D3DXMATRIX	mtxWorld = GetMtxWorld();		// ワールドマトリックス
 
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
 
 	for (int nCntMat = 0; nCntMat < (int)modelData.dwNumMat; nCntMat++)
 	{ // マテリアルの数分繰り返す
-
+		CZTexture* pZTex = CZTexture::GetInstance();
+		pZTex->BeginPass();
 		// マテリアルの設定
 		pDevice->SetMaterial(&GetPtrMaterial(nCntMat)->MatD3D);
 
@@ -327,4 +346,87 @@ void CMultiModel::DrawShader(CShader *pShader)
 	// 描画終了
 	pShader->EndPass();
 	pShader->End();
+}
+//============================================================
+//	Zシェーダー描画処理
+//============================================================
+void  CMultiModel::DrawZTexture(void)
+{
+	// 変数を宣言
+	CModel::SModel modelData = GetModelData();	// モデルの情報
+	D3DXVECTOR3	scale = GetVec3Scaling();		// モデルの拡大率
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	for (int nCntMat = 0; nCntMat < (int)modelData.dwNumMat; nCntMat++)
+	{ // マテリアルの数分繰り返す
+		CZTexture* pZTex = CZTexture::GetInstance();
+		pZTex->BeginPass();
+		// マテリアルの設定
+		pDevice->SetMaterial(&GetPtrMaterial(nCntMat)->MatD3D);
+
+		// テクスチャの設定
+		pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(modelData.pTextureID[nCntMat]));
+
+		if (scale != VEC3_ONE)
+		{ // 拡大率が変更されている場合
+
+			// 頂点法線の自動正規化を有効にする
+			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		}
+
+		// モデルの描画
+		modelData.pMesh->DrawSubset(nCntMat);
+
+		// 頂点法線の自動正規化を無効にする
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+		pZTex->EndPass();
+	}
+}
+//============================================================
+//	トゥーン影描画処理
+//============================================================
+void CMultiModel::DrawToonShadow(void)
+{
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+	CToonShadow* pShader = CToonShadow::GetInstance();
+	CModel::SModel modelData = GetModelData();	// モデルの情報
+	D3DXVECTOR3	scale = GetVec3Scaling();		// モデルの拡大率
+	D3DXMATRIX	mtxWorld = GetMtxWorld();		// ワールドマトリックス
+	// マトリックス情報を設定
+	pShader->SetMatrix(&mtxWorld);
+	for (int nCntMat = 0; nCntMat < (int)modelData.dwNumMat; nCntMat++)
+	{ // マテリアルの数分繰り返す
+		pShader->BeginPass(0);
+		// マテリアルの設定
+		pDevice->SetMaterial(&GetPtrMaterial(nCntMat)->MatD3D);
+
+		// テクスチャの設定
+		pDevice->SetTexture(0, GET_MANAGER->GetTexture()->GetPtr(modelData.pTextureID[nCntMat]));
+
+		// マテリアルを設定
+		pShader->SetMaterial(GetPtrMaterial(nCntMat)->MatD3D);
+
+		// テクスチャを設定
+		pShader->SetTexture(modelData.pTextureID[nCntMat]);
+
+		// 状態変更の伝達
+		pShader->CommitChanges();
+
+		if (scale != VEC3_ONE)
+		{ // 拡大率が変更されている場合
+
+			// 頂点法線の自動正規化を有効にする
+			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		}
+
+		// モデルの描画
+		modelData.pMesh->DrawSubset(nCntMat);
+
+		// 頂点法線の自動正規化を無効にする
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+		pShader->EndPass();
+	}
 }

@@ -93,7 +93,8 @@ private:
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画
 	void DrawShader(CShader *pShader);	// シェーダー描画
-
+	void DrawZTexture(void);			//Zテクスチャ書き込み
+	void DrawToonShadow(void);			//影書き込み
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;	// インデックスバッファへのポインタ
