@@ -142,6 +142,7 @@ private:
 	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
+	void UpdateTrans(D3DXVECTOR3& rPos);	// ステージ遷移の更新
 
 	// メンバ関数 (金崎追加)
 	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
@@ -165,7 +166,7 @@ private:
 
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
-	CShadow		*m_pShadow;			// 影の情報
+
 	COrbit		*m_pOrbit;			// 軌跡の情報
 	D3DXVECTOR3	m_oldPos;			// 過去位置
 	D3DXVECTOR3	m_move;				// 移動量

@@ -110,9 +110,9 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);	// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetGimmick(CGimmickAction* gimmick);	// ギミックのポインタを受け取る
-	void DeleteGimmick() { m_pGimmick = nullptr; } // 所持しているギミックを削除
-	void SetField(CField* field);	// フィールドのポインタを受け取る
-	void DeleteField(CField* field);				// 所持しているフィールドを削除
+	void DeleteGimmick();						// 所持しているギミックを削除
+	void SetField(CField* field);				// フィールドのポインタを受け取る
+	void DeleteField(CField* field);			// 所持しているフィールドを削除
 
 	EAction GetAction() const			{ return m_Action; }	// 行動を取得
 	CGimmickAction* GetGimmick() const { return m_pGimmick; }	// 所持ギミックを取得
@@ -126,11 +126,11 @@ public:
 
 	// 静的メンバ関数
 	static CPlayerClone* Create();													// 生成
-	static CPlayerClone* Create(const D3DXVECTOR3& move);							// 生成(歩行型)
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
 	static void Delete(const int nNum);												// 消去処理
 	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
+	static void Delete(CPlayerClone* pClone);									// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static void CallBack();															// 分身を呼び戻す
 	static float GetRadius();														// 半径の取得
@@ -160,6 +160,7 @@ private:
 	void UpdateIgnore(); // 無視する状態での更新
 	void UpdateReAction(); // 反応する状態での更新
 	void UpdateAction(); // 反応した状態での更新
+	bool UpdateActive(const float fDeltaTime); // アクティブ状態での処理
 
 	// メンバ関数 (金崎追加)
 	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
@@ -187,7 +188,7 @@ private:
 
 	// メンバ変数
 	CListManager<CPlayerClone>::AIterator m_iterator;	// イテレーター
-	CShadow* m_pShadow;			// 影の情報
+
 	COrbit* m_pOrbit;			// 軌跡の情報
 	D3DXVECTOR3 m_move;			// 移動量
 	EAction m_Action;			// 現在行動

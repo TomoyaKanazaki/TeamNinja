@@ -52,7 +52,8 @@ private:
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画
 	void DrawShader(CShader *pShader);	// シェーダー描画
-
+	void DrawZTexture(void);			//Zテクスチャ書き
+	void DrawToonShadow(void);			//影書き込み
 	// メンバ変数
 	CObject *m_pParent;	// 親オブジェクトへのポインタ
 };

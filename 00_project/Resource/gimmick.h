@@ -38,7 +38,6 @@ public:
 		TYPE_JUMPOFF,			// 飛び降り
 		TYPE_HEAVYDOOR,			// 重い扉
 		TYPE_BRIDGE,			// 橋
-		TYPE_CANON,				// 吹っ飛ばすやつ
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -76,6 +75,7 @@ public:
 		const int nNumActive			// 発動可能な分身の数
 	);
 	static CListManager<CGimmick>* GetList(void);	// リスト取得
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 private:
 

@@ -97,7 +97,7 @@ HRESULT CEditGoalPoint::Init(void)
 	}
 
 	// ƒ‚ƒfƒ‹‚ğŠ„‚è“–‚Ä‚é
-	m_pPoint->BindModel("data\\MODEL\\ENEMY\\BOSS_DRAGON\\03_head.x");
+	m_pPoint->BindModel("data\\MODEL\\Kunai\\Kunai000.x");
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;

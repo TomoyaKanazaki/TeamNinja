@@ -15,7 +15,20 @@
 //************************************************************
 #include "main.h"
 
-
+//************************************************************
+//	定数宣言
+//************************************************************
+namespace
+{
+	const UINT ZTEX_WIDTH = SCREEN_WIDTH;								//Zテクスチャの幅
+	const UINT ZTEX_HEIGHT = SCREEN_HEIGHT;								//Zテクスチャの高さ
+	const float VIEWING_ANGLE = 45.0f;										//視野角
+	const float NEAR_CLIP = 10.0f;											//描画最小深度
+	const float FAR_CLIP = 30000.0f;										//描画最大深度
+	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(-1600.0f, 2000.0f, 1000.0f);		//視点
+	const D3DXVECTOR3 FOCUS_POINT = D3DXVECTOR3(-1700.0f, -10.0f, 0.0f);		//注視点
+	const D3DXVECTOR3 LOOK_UP = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				//上向きのベクトル *警告:書き換えるな*
+}
 //************************************************************
 //	クラス定義
 //************************************************************
@@ -51,18 +64,24 @@ public:
 	// パスの終了を宣言する
 	HRESULT EndPass();
 
+	void DrawSprite();
+
 	// 登録されているパラメータ情報をエフェクトにセット
 	bool SetParamToEffect();
 
 	// Z値テクスチャを取得する
 	bool GetZTex(IDirect3DTexture9 **cpTex);
 
-	bool GetbPass(void) { return m_bPass; }
+	bool GetIsBegin(void) { return m_bBegin; }
 
 	// 静的メンバ関数
 	static CZTexture* Create(void);		// 生成
 	static CZTexture* GetInstance(void);	// 取得
 	static void Release(void);				// 破棄
+
+	D3DXMATRIX GetViewMtx() { return m_matView; }
+	D3DXMATRIX GetProjMtx() { return m_matProj; }
+
 private:
 
 	// 静的メンバ変数
@@ -82,9 +101,9 @@ private:
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
 	D3DXHANDLE m_hTechnique;					// テクニックへのハンドル
+	ID3DXSprite* m_pSprite;						//シャドウ用スプライト
 
-
-	bool m_bPass;
+	bool m_bBegin;
 };
 
 #endif	// _ZTexture_H_

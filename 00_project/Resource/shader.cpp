@@ -26,7 +26,7 @@ CShader::CShader() :
 	m_pMtxView			(nullptr),	// ビューマトリックス
 	m_pMtxProjection	(nullptr)	// プロジェクションマトリックス
 {
-
+	m_bBegin = false;
 }
 
 //============================================================
@@ -135,6 +135,7 @@ void CShader::Begin(void)
 
 	// 開始
 	m_pEffect->Begin(nullptr, 0);
+	m_bBegin = true;
 }
 
 //============================================================
@@ -168,6 +169,7 @@ void CShader::End(void)
 
 	// 終了
 	m_pEffect->End();
+	m_bBegin = false;
 }
 
 //============================================================

@@ -92,8 +92,6 @@ private:
 	EMotion FadeIn(void);						// フェードイン処理
 
 	// メンバ変数
-	CEnemyNav* m_pNav;					// ナビゲーションの情報
-	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
 	EState m_state;						// 状態
 	int m_nStateCount;					// 状態カウント
 };

@@ -49,7 +49,7 @@ public:
 	void CommitChanges(void);				// 状態変更の伝達
 	bool IsEffectOK(void) const;			// エフェクト使用可能状況の取得
 	LPD3DXEFFECT GetEffect(void) const;		// エフェクトポインタ取得
-
+	bool IsBegin(void) { return m_bBegin; };			// エフェクト使用可能状況の取得
 	// 静的メンバ関数
 	static HRESULT Create(void);	// 生成
 	static void Release(void);		// 破棄
@@ -69,6 +69,7 @@ private:
 	D3DXHANDLE m_pMtxWorld;			// ワールドマトリックス
 	D3DXHANDLE m_pMtxView;			// ビューマトリックス
 	D3DXHANDLE m_pMtxProjection;	// プロジェクションマトリックス
+	bool m_bBegin;
 };
 
 #endif	// _SHADER_H_

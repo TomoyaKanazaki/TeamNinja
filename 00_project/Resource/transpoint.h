@@ -35,19 +35,13 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CTransPoint *Create	// 生成
-	( // 引数
-		const char* pPass,					// 遷移先マップパス
-		const D3DXVECTOR3& rPos,			// 位置
-		const D3DXVECTOR3& rRot = VEC3_ZERO	// 向き
-	);
-	static void Collision	// 遷移ポイントとの当たり判定
-	( // 引数
-		const D3DXVECTOR3& rPos,	// 位置
-		const float fRadius			// 半径
-	);
+	static CTransPoint *Create(const char* pPass, const D3DXVECTOR3& rPos);			// 生成
+	static CTransPoint* Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
+
+	// メンバ関数
+	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
 
 private:
 	// 静的メンバ変数

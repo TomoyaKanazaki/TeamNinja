@@ -30,6 +30,7 @@
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
+#include "transpoint.h"
 #include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
@@ -104,7 +105,6 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),		// 影の情報
 	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
@@ -126,7 +126,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr)		// 前回乗ってた地面
 {
-
+	
 }
 
 //============================================================
@@ -143,7 +143,6 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;		// 影の情報
 	m_pOrbit		= nullptr;		// 軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
@@ -171,15 +170,7 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 影の生成
-	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
-	if (m_pShadow == nullptr)
-	{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
 
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
@@ -242,9 +233,7 @@ void CPlayer::Uninit(void)
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
 	
-	// 影の終了
-	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
-	SAFE_UNINIT(m_pShadow);
+	
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
@@ -298,8 +287,7 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// 影の更新
-	m_pShadow->Update(fDeltaTime);
+
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -341,22 +329,8 @@ void CPlayer::Update(const float fDeltaTime)
 //============================================================
 void CPlayer::Draw(CShader *pShader)
 {
-	CToonShader	*pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
-	if (pToonShader->IsEffectOK())
-	{ // エフェクトが使用可能な場合
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pToonShader);
-	}
-	else
-	{ // エフェクトが使用不可能な場合
-
-		// エフェクトエラー
-		assert(false);
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pShader);
-	}
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
 }
 
 //============================================================
@@ -366,7 +340,7 @@ void CPlayer::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
-	m_pShadow->SetEnableUpdate(bUpdate);	// 影
+
 }
 
 //============================================================
@@ -376,7 +350,7 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-	m_pShadow->SetEnableDraw(bDraw);	// 影
+
 }
 
 //============================================================
@@ -719,6 +693,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// ステージ遷移の更新
+	UpdateTrans(posPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -1225,6 +1202,26 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
+//	ステージ遷移の更新処理
+//==========================================
+void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
+{
+	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	if (pPad->IsTrigger(CInputPad::KEY_B))
+	{
+		// 触れている遷移ポイントを取得
+		CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
+
+		// 遷移ポイントに触れていない場合抜ける
+		if (pHitTrans == nullptr) { return; }
+
+		// 遷移ポイントのマップパスに遷移
+		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
+		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+	}
+}
+
+//==========================================
 //  分身の処理
 //==========================================
 void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
@@ -1612,6 +1609,7 @@ void CPlayer::DebugCloneControl(void)
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
 	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 pos = GetVec3Position();
 
 	if (pKey->IsTrigger(DIK_I))
 	{ // 前関係移動
@@ -1624,7 +1622,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1635,7 +1633,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1646,7 +1644,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_K))
@@ -1660,7 +1658,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1671,7 +1669,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1682,7 +1680,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_J))
@@ -1694,7 +1692,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 	else if (pKey->IsTrigger(DIK_L))
 	{ // 右関係移動
@@ -1705,7 +1703,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 }
 

@@ -106,6 +106,8 @@ private:
 	// メンバ関数
 	void DrawNormal(void);	// 通常描画
 	void DrawShader(CShader *pShader);	// シェーダー描画
+	void DrawZTexture(void);
+	void DrawToonShadow(void);
 	D3DXVECTOR3 GetNormalLeft(VERTEX_3D *pVtx);			// 法線の取得 (左)
 	D3DXVECTOR3 GetNormalLeftTop(VERTEX_3D *pVtx);		// 法線の取得 (左上)
 	D3DXVECTOR3 GetNormalLeftBottom(VERTEX_3D *pVtx);	// 法線の取得 (左下)

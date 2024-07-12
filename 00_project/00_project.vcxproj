@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
     <ClInclude Include="Resource\blur.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Resource\editCollCylinder.h" />
     <ClInclude Include="Resource\editCollSphere.h" />
     <ClInclude Include="Resource\editActor.h" />
+    <ClInclude Include="Resource\editEnemyAttack.h" />
     <ClInclude Include="Resource\editorCollShape.h" />
     <ClInclude Include="Resource\editorObject.h" />
     <ClInclude Include="Resource\editStage.h" />
@@ -329,6 +331,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
     <ClCompile Include="Resource\blur.cpp" />
@@ -364,6 +367,7 @@
     <ClCompile Include="Resource\editCollCylinder.cpp" />
     <ClCompile Include="Resource\editCollSphere.cpp" />
     <ClCompile Include="Resource\editActor.cpp" />
+    <ClCompile Include="Resource\editEnemyAttack.cpp" />
     <ClCompile Include="Resource\editorObject.cpp" />
     <ClCompile Include="Resource\editorCollShape.cpp" />
     <ClCompile Include="Resource\editStage.cpp" />
@@ -528,6 +532,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="data\SHADER\shaderToon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\Toonshadow.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>

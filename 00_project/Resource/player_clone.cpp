@@ -29,6 +29,8 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 
+#include "camera.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -56,7 +58,9 @@ namespace
 	const int ORBIT_PART = 10;	// 分割数
 
 	const float DISTANCE = 45.0f; // プレイヤーとの距離
-	const float TIMER = 10.0f; // 自動消滅タイマー
+	const float WALK_TIMER = 10.0f; // 自動消滅タイマー
+	const float GIMMICK_TIMER = 20.0f; // 自動消滅タイマー
+	const float DELETE_DISTNCE = 1000.0f; // ギミックになってから消えるまでの距離
 
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
@@ -64,7 +68,6 @@ namespace
 	const float FALL_RETURN_SPEED = 5.0f; // 落とし穴からもとに戻る移動速度倍率
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
-	const float GIMMICK_TIME = 0.5f; // 分身が生まれてからギミックを受け付けることのできる時間
 	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
 }
 
@@ -80,7 +83,7 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //	コンストラクタ
 //============================================================
 CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
-	m_pShadow		(nullptr),			// 影の情報
+	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
 	m_Action		(ACTION_CHASE),		// 現在行動
@@ -118,7 +121,7 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-	m_pShadow		= nullptr;			// 影の情報
+
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
 	m_Action		= ACTION_CHASE;		// 現在行動
@@ -150,15 +153,6 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 影の生成
-	m_pShadow = CShadow::Create(CShadow::TEXTURE_NORMAL, SHADOW_SIZE, this);
-	if (m_pShadow == nullptr)
-	{ // 非使用中の場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
 
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
@@ -204,9 +198,6 @@ HRESULT CPlayerClone::Init(void)
 //============================================================
 void CPlayerClone::Uninit(void)
 {
-	// 影の終了
-	m_pShadow->DeleteObjectParent();	// 親オブジェクトを削除
-	SAFE_UNINIT(m_pShadow);
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
@@ -334,11 +325,17 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
+	// アクティブ状態の更新
+	if (UpdateActive(fDeltaTime))
+	{
+		Delete(m_Action);
+		return;
+	}
+
 	// 壁の当たり判定
 	(void)CollisionWall();
 
-	// 影の更新
-	m_pShadow->Update(fDeltaTime);
+	
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -352,22 +349,8 @@ void CPlayerClone::Update(const float fDeltaTime)
 //============================================================
 void CPlayerClone::Draw(CShader* pShader)
 {
-	CToonShader* pToonShader = CToonShader::GetInstance();	// トゥーンシェーダー情報
-	if (pToonShader->IsEffectOK())
-	{ // エフェクトが使用可能な場合
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pToonShader);
-	}
-	else
-	{ // エフェクトが使用不可能な場合
-
-		// エフェクトエラー
-		assert(false);
-
-		// オブジェクトキャラクターの描画
-		CObjectChara::Draw(pShader);
-	}
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
 }
 
 //============================================================
@@ -377,7 +360,7 @@ void CPlayerClone::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
-	m_pShadow->SetEnableUpdate(bUpdate);	// 影
+	
 }
 
 //============================================================
@@ -387,7 +370,7 @@ void CPlayerClone::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-	m_pShadow->SetEnableDraw(bDraw);	// 影
+
 }
 
 //============================================================
@@ -483,6 +466,24 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		assert(false);
 		break;
 	}
+
+	// ギミックタイマーを初期値に設定する
+	m_fGimmickTimer = GIMMICK_TIMER;
+}
+
+//===========================================
+//  ギミックの削除
+//===========================================
+void CPlayerClone::DeleteGimmick()
+{
+	// ギミックが元々nullの場合関数を抜ける
+	if (m_pGimmick == nullptr) { return; }
+
+	// ギミックの総数を減らす
+	m_pGimmick->SabNumClone();
+
+	// ギミックのポインタをnullにする
+	m_pGimmick = nullptr;
 }
 
 //===========================================
@@ -594,44 +595,6 @@ CPlayerClone* CPlayerClone::Create(void)
 //==========================================
 //  生成処理(歩行)
 //==========================================
-CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& move)
-{
-	// ポインタを宣言
-	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
-
-	// 生成に失敗した場合nullを返す
-	if (pPlayer == nullptr) { return nullptr; }
-
-	// プレイヤーの初期化
-	if (FAILED(pPlayer->Init()))
-	{ // 初期化に失敗した場合
-
-		// プレイヤーの破棄
-		SAFE_DELETE(pPlayer);
-		return nullptr;
-	}
-
-	// 向きを設定
-	D3DXVECTOR3 rot = VEC3_ZERO;		// 向き
-	rot.y = atan2f(-move.x, -move.z);	// 向きを移動量から求める
-	pPlayer->SetVec3Rotation(rot);		// 向き設定
-
-	// 移動量を設定
-	pPlayer->m_move = move;
-
-	// 行動を設定
-	pPlayer->m_Action = ACTION_MOVE;
-
-	// 自動消滅タイマーを設定
-	pPlayer->m_fDeleteTimer = TIMER;
-
-	// 確保したアドレスを返す
-	return pPlayer->Block();
-}
-
-//==========================================
-//  生成処理(歩行)
-//==========================================
 CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move)
 {
 	// ポインタを宣言
@@ -664,7 +627,7 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 	pPlayer->m_Action = ACTION_MOVE;
 
 	// 自動消滅タイマーを設定
-	pPlayer->m_fDeleteTimer = TIMER;
+	pPlayer->m_fDeleteTimer = WALK_TIMER;
 
 	// 確保したアドレスを返す
 	return pPlayer->Block();
@@ -723,13 +686,16 @@ void CPlayerClone::Delete(const int nNum)
 	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
 	// 分身を取得
-	CPlayerClone* pAvatar = *m_pList->GetIndex(nNum);
+	CPlayerClone* pClone = *m_pList->GetIndex(nNum);
+
+	// 分身所持しているギミックを削除
+	pClone->DeleteGimmick();
 
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pAvatar->GetVec3Position(), pAvatar->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
-	pAvatar->Uninit();
+	pClone->Uninit();
 }
 
 //============================================================
@@ -753,10 +719,10 @@ void CPlayerClone::Delete(const EAction act)
 		bDelete[i] = false;
 
 		// 分身を取得
-		CPlayerClone* pAvatar = *m_pList->GetIndex(i);
+		CPlayerClone* pClone = *m_pList->GetIndex(i);
 
 		// 分身の削除フラグをオン
-		if (pAvatar->GetAction() == act)
+		if (pClone->GetAction() == act)
 		{
 			bDelete[i] = true;
 		}
@@ -771,6 +737,24 @@ void CPlayerClone::Delete(const EAction act)
 
 	// 削除フラグを削除
 	delete[] bDelete;
+}
+
+//===========================================
+//  選択消去処理
+//===========================================
+void CPlayerClone::Delete(CPlayerClone* pClone)
+{
+	// リスト情報がない場合停止する
+	if (pClone == nullptr) { assert(false); return; }
+
+	// 分身所持しているギミックを削除
+	pClone->DeleteGimmick();
+
+	// 消去のエフェクトを生成する
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// 分身の終了
+	pClone->Uninit();
 }
 
 //============================================================
@@ -805,7 +789,6 @@ void CPlayerClone::CallBack()
 		if (pClone->GetAction() == ACTION_FALL) { continue; }
 
 		// ギミックフラグをリセット
-		pClone->m_fGimmickTimer = 0.0f;
 		pClone->m_eGimmick = GIMMICK_IGNORE;
 		pClone->m_bFind = true;
 
@@ -1543,6 +1526,26 @@ void CPlayerClone::UpdateAction()
 
 	// 待機位置・向きを設定
 	Approach();
+}
+
+//===========================================
+//  アクティブ状態での処理
+//===========================================
+bool CPlayerClone::UpdateActive(const float fDeltaTime)
+{
+	// ギミックがnullの場合falseを返す
+	if (m_pGimmick == nullptr) { return false; }
+
+	// アクティブ状態でない場合falseを返す
+	if (!m_pGimmick->IsActive()) { return false; }
+
+	// ギミックタイマーを減少
+	m_fGimmickTimer -= fDeltaTime;
+
+	// ギミックタイマーが0を下回ってる場合trueを返す
+	if (m_fGimmickTimer <= 0.0f) { return true; }
+
+	return false;
 }
 
 //==========================================
