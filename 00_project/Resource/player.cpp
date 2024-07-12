@@ -30,6 +30,7 @@
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
+#include "transpoint.h"
 #include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
@@ -720,6 +721,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
+	// ステージ遷移の更新
+	UpdateTrans(posPlayer);
+
 	// 位置を反映
 	SetVec3Position(posPlayer);
 
@@ -1222,6 +1226,26 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 
 	// 透明状況を返す
 	return bAlpha;
+}
+
+//==========================================
+//	ステージ遷移の更新処理
+//==========================================
+void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
+{
+	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	if (pPad->IsTrigger(CInputPad::KEY_B))
+	{
+		// 触れている遷移ポイントを取得
+		CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
+
+		// 遷移ポイントに触れていない場合抜ける
+		if (pHitTrans == nullptr) { return; }
+
+		// 遷移ポイントのマップパスに遷移
+		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
+		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+	}
 }
 
 //==========================================
