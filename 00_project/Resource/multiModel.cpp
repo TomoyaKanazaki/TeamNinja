@@ -152,6 +152,7 @@ void CMultiModel::Draw(CShader *pShader)
 		pZTex->BeginPass();
 		//Zテクスチャ描画
 		DrawZTexture();
+		pZTex->EndPass();
 	}
 	else if(CToonShadow::GetInstance()->IsBegin())	
 	{
@@ -161,6 +162,7 @@ void CMultiModel::Draw(CShader *pShader)
 
 		pZTex->BeginPass(0);
 		DrawToonShadow();
+		pZTex->EndPass();
 	}
 	else
 	{

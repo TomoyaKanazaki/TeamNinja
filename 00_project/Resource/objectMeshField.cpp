@@ -1267,7 +1267,10 @@ void CObjectMeshField::DrawToonShadow()
 
 	// マトリックス情報を設定
 	pShader->SetMatrix(&m_meshField.mtxWorld);
-
+	//色をリセット
+	pShader->SetDiffuse(XCOL_WHITE);
+	pShader->SetAmbient(XCOL_BLACK);
+	pShader->SetEmissive(XCOL_BLACK);
 
 
 	// テクスチャを設定

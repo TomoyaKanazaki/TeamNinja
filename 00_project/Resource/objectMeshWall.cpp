@@ -654,6 +654,11 @@ void CObjectMeshWall::DrawToonShadow()
 	// 描画開始
 
 	pShader->BeginPass(0);
+	//色をリセット
+
+	pShader->SetDiffuse(XCOL_WHITE);
+	pShader->SetAmbient(XCOL_BLACK);
+	pShader->SetEmissive(XCOL_BLACK);
 
 	// マトリックス情報を設定
 	pShader->SetMatrix(&m_meshWall.mtxWorld);
