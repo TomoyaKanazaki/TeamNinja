@@ -14,6 +14,7 @@
 #include "stage.h"
 
 #include "collision.h"
+#include "object3D.h"
 
 //************************************************************
 //	マクロ定義
@@ -44,10 +45,13 @@
 namespace
 {
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_gimmick.txt";	// セーブテキストパス
+	const char* ANGLE_TEXTURE = "data\\TEXTURE\\EDITOR\\Angle.png";	// 方向のテクスチャ
 
 	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(editstage::SIZE, 0.0f, editstage::SIZE);	// 大きさ
-	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
-	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
+	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
+	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
+	const D3DXVECTOR3 ANGLE_SIZE = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 矢印のサイズ
+	const D3DXVECTOR3 ANGLE_SHIFT = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	// 矢印の高さ
 
 	const char* TYPE_NAME[] =	// オブジェクトタイプ名
 	{
@@ -78,6 +82,7 @@ CEditGimmick::CEditGimmick(CEditStage* pEditor) : CEditorObject(pEditor)
 
 	// メンバ変数をクリア
 	m_pGimmick = nullptr;	// ギミック情報
+	m_pAngleSign = nullptr;	// 矢印の情報
 	m_bSave = false;		// 保存状況
 	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// ギミック配置情報
 
@@ -133,6 +138,24 @@ HRESULT CEditGimmick::Init(void)
 		return E_FAIL;
 	}
 
+	// 方向を生成
+	m_pAngleSign = CObject3D::Create
+	(
+		GetVec3Position() + ANGLE_SHIFT,
+		ANGLE_SIZE,
+		GetVec3Rotation()
+	);
+	if (m_pAngleSign == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// テクスチャの割り当て処理
+	m_pAngleSign->BindTexture(ANGLE_TEXTURE);
+
 	// 成功を返す
 	return S_OK;
 
@@ -159,6 +182,9 @@ void CEditGimmick::Uninit(void)
 
 	// ギミックの終了
 	SAFE_UNINIT(m_pGimmick);
+
+	// 方向の終了
+	SAFE_UNINIT(m_pAngleSign);
 
 #endif	// _DEBUG
 }
@@ -193,6 +219,12 @@ void CEditGimmick::Update(void)
 
 	// 向きを反映
 	m_pGimmick->SetVec3Rotation(GetVec3Rotation());
+
+	// 矢印の位置を反映
+	m_pAngleSign->SetVec3Position(GetVec3Position() + ANGLE_SHIFT);
+
+	// 矢印の向きを反映
+	m_pAngleSign->SetVec3Rotation(GetVec3Rotation());
 
 #endif	// _DEBUG
 }
@@ -355,10 +387,20 @@ void CEditGimmick::ChangeType(void)
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
 		m_infoCreate.type = (CGimmick::EType)((m_infoCreate.type + 1) % CGimmick::TYPE_MAX);
-	}
 
-	// 種類を反映
-	m_pGimmick->SetType(m_infoCreate.type);
+		// 終了処理
+		m_pGimmick->Uninit();
+
+		// ギミックを再生成する
+		m_pGimmick = CGimmick::Create
+		( // 引数
+			GetVec3Position(),			// 位置
+			GetAngle(),					// 方向
+			m_infoCreate.size,			// サイズ
+			m_infoCreate.type,			// 種類
+			m_infoCreate.nNumActive		// 発動可能人数
+		);
+	}
 }
 
 //============================================================
@@ -468,14 +510,14 @@ void CEditGimmick::DeleteCollisionGimmick(const bool bRelase)
 		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
 
 		// 自身の大きさを設定
-		D3DXVECTOR2 sizeThisGimmick = m_pGimmick->GetVec2Sizing();	// 自身の地面の大きさ
+		D3DXVECTOR3 sizeThisGimmick = m_pGimmick->GetVec3Sizing();	// 自身の地面の大きさ
 		sizeThis.x = sizeThisGimmick.x;	// 判定サイズXを設定
 		sizeThis.y = editstage::SIZE;	// 判定サイズYを設定
 		sizeThis.z = sizeThisGimmick.y;	// 判定サイズZを設定
 		sizeThis *= 0.5f;				// 判定サイズを半分に
 
 		// 対象の大きさを設定
-		D3DXVECTOR2 sizeOtherGimmick = rList->GetVec2Sizing();	// 対象の地面の大きさ
+		D3DXVECTOR3 sizeOtherGimmick = rList->GetVec3Sizing();	// 対象の地面の大きさ
 		sizeOther.x = sizeOtherGimmick.x;	// 判定サイズXを設定
 		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
 		sizeOther.z = sizeOtherGimmick.y;	// 判定サイズZを設定
