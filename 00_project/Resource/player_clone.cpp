@@ -29,6 +29,8 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 
+#include "camera.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -58,6 +60,7 @@ namespace
 	const float DISTANCE = 45.0f; // プレイヤーとの距離
 	const float WALK_TIMER = 10.0f; // 自動消滅タイマー
 	const float GIMMICK_TIMER = 20.0f; // 自動消滅タイマー
+	const float DELETE_DISTNCE = 1000.0f; // ギミックになってから消えるまでの距離
 
 	const float DASH_SPEED = 30.0f; // ダッシュモーションになる速度
 	const float STEALTH_SPEED = 1.0f; // 忍び足モーションになる速度
@@ -337,7 +340,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// アクティブ状態の更新
 	if (UpdateActive(fDeltaTime))
 	{
-		Delete(this);
+		Delete(m_Action);
 		return;
 	}
 
@@ -1568,8 +1571,6 @@ bool CPlayerClone::UpdateActive(const float fDeltaTime)
 
 	// ギミックタイマーが0を下回ってる場合trueを返す
 	if (m_fGimmickTimer <= 0.0f) { return true; }
-
-	// TODO 離れたらのやつも作る
 
 	return false;
 }

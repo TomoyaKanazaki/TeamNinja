@@ -21,7 +21,6 @@ namespace
 		"data\\TEXTURE\\flower.png", // テストテクスチャ
 		"data\\TEXTURE\\flower.png", // テストテクスチャ
 		"data\\TEXTURE\\flower.png", // テストテクスチャ
-		"data\\TEXTURE\\flower.png", // テストテクスチャ
 	};
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
