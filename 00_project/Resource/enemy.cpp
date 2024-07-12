@@ -18,9 +18,6 @@
 #include "actor.h"
 
 #include "enemy_item.h"
-#include "enemyStalk.h"
-#include "enemyCaveat.h"
-#include "enemyWolf.h"
 
 //************************************************************
 //	定数宣言
@@ -49,7 +46,6 @@ m_oldPos(VEC3_ZERO),		// 過去位置
 m_posInit(VEC3_ZERO),		// 初期位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_type(TYPE_STALK),			// 種類
 m_bJump(false)				// 着地状況
 {
 
@@ -180,79 +176,6 @@ void CEnemy::Draw(CShader* pShader)
 
 		// アイテムのオフセット処理
 		m_pItem->Draw(pShader);
-	}
-}
-
-//============================================================
-//	生成処理
-//============================================================
-CEnemy* CEnemy::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const EType type)
-{
-	// ポインタを宣言
-	CEnemy* pEnemy = nullptr;	// 敵情報
-
-	switch (type)
-	{
-	case TYPE_STALK:
-
-		// 追跡敵を生成
-		pEnemy = new CEnemyStalk;
-
-		break;
-
-	case TYPE_CAVEAT:
-
-		// 警告敵を生成
-		pEnemy = new CEnemyCaveat;
-
-		break;
-
-	case TYPE_WOLF:
-
-		// 犬敵を生成
-		pEnemy = new CEnemyWolf;
-
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
-
-	if (pEnemy == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 敵の初期化
-		if (FAILED(pEnemy->Init()))
-		{ // 初期化に失敗した場合
-
-			// 敵の破棄
-			SAFE_DELETE(pEnemy);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pEnemy->SetVec3Position(rPos);
-
-		// 向きを設定
-		pEnemy->SetVec3Rotation(rRot);
-
-		// 種類を設定
-		pEnemy->m_type = type;
-
-		// 初期位置を設定
-		pEnemy->m_posInit = rPos;
-
-		// 情報の設定処理
-		pEnemy->SetData();
-
-		// 確保したアドレスを返す
-		return pEnemy;
 	}
 }
 

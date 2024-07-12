@@ -663,7 +663,7 @@ HRESULT CEditGimmick::Save(void)
 		file << "	GIMMICKSET" << std::endl;
 		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
 		file << "		ANGLE	= " << angle << std::endl;
-		file << "		SIZE	= " << size.x << " " << size.z << std::endl;
+		file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
 		file << "		TYPE	= " << type << std::endl;
 		file << "		NUMACT	= " << nNumActive << std::endl;
 		file << "	END_GIMMICKSET\n" << std::endl;
