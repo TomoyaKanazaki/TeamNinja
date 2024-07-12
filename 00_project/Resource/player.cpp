@@ -1612,6 +1612,7 @@ void CPlayer::DebugCloneControl(void)
 	CInputKeyboard* pKey = GET_INPUTKEY;
 	float fStickRot = 0.0f;
 	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 pos = GetVec3Position();
 
 	if (pKey->IsTrigger(DIK_I))
 	{ // 前関係移動
@@ -1624,7 +1625,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1635,7 +1636,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1646,7 +1647,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_K))
@@ -1660,7 +1661,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else if (pKey->IsTrigger(DIK_L))
 		{
@@ -1671,7 +1672,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 		else
 		{
@@ -1682,7 +1683,7 @@ void CPlayer::DebugCloneControl(void)
 			move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 			// 歩く分身を出す
-			CPlayerClone::Create(move);
+			CPlayerClone::Create(pos, move);
 		}
 	}
 	else if (pKey->IsTrigger(DIK_J))
@@ -1694,7 +1695,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 	else if (pKey->IsTrigger(DIK_L))
 	{ // 右関係移動
@@ -1705,7 +1706,7 @@ void CPlayer::DebugCloneControl(void)
 		move.z = cosf(fStickRot - D3DX_PI) * 7.0f;
 
 		// 歩く分身を出す
-		CPlayerClone::Create(move);
+		CPlayerClone::Create(pos, move);
 	}
 }
 
