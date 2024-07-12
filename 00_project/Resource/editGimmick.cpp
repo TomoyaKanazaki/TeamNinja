@@ -15,6 +15,8 @@
 
 #include "collision.h"
 #include "object3D.h"
+#include "gimmick_malti.h"
+#include "gimmick_post.h"
 
 //************************************************************
 //	マクロ定義
@@ -636,6 +638,19 @@ HRESULT CEditGimmick::Save(void)
 
 		// 同じアドレスだった場合次へ
 		if (rList == m_pGimmick) { continue; }
+
+// TODO：マルチの読込も作るんだぞ小原君
+#if 1
+
+		if (typeid(*rList) == typeid(CGimmickMalti) ||
+			typeid(*rList) == typeid(CGimmickPost))
+		{ // マルチギミック関連はセーブしない
+
+			continue;
+		}
+
+#endif // 1
+
 
 		// 書き出す情報を取得
 		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
