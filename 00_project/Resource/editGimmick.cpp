@@ -221,7 +221,7 @@ void CEditGimmick::Update(void)
 	m_pGimmick->SetVec3Position(GetVec3Position());
 
 	// Œü‚«‚ð”½‰f
-	m_pGimmick->SetVec3Rotation(GetVec3Rotation());
+	m_pGimmick->SetVec3Rotation(VEC3_ZERO);
 
 	// –îˆó‚ÌˆÊ’u‚ð”½‰f
 	m_pAngleSign->SetVec3Position(GetVec3Position() + ANGLE_SHIFT);
