@@ -31,4 +31,7 @@ private:
 	void Hit(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚½ê‡‚Ìˆ—
 	void Miss(CPlayer* pPlayer) override; // “–‚½‚Á‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
 
+	// ƒƒ“ƒo•Ï”
+	bool m_bLiquid;
+
 };

@@ -19,9 +19,13 @@ namespace
 {
 	const char *TEXTURE_FILE[][CLiquid::LIQUID_MAX] =	// テクスチャファイル
 	{
-		{ // マグマテクスチャ
-			"data\\TEXTURE\\lava000.png",	// マグマ (下)
-			"data\\TEXTURE\\lava001.png",	// マグマ (上)
+		{ // 水テクスチャ
+			"data\\TEXTURE\\FIELD\\Water000.jpg",
+			"data\\TEXTURE\\FIELD\\Water003.png",
+		},
+		{ // 泥テクスチャ
+			"data\\TEXTURE\\FIELD\\mud000.jpg",
+			"data\\TEXTURE\\FIELD\\mud001.jpg",
 		},
 	};
 
@@ -45,7 +49,7 @@ CListManager<CLiquid> *CLiquid::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CLiquid::CLiquid() : CObject(CObject::LABEL_LIQUID, CObject::DIM_3D, PRIORITY),
-	m_type			(TYPE_LAVA),	// 種類
+	m_type			(TYPE_WATER),	// 種類
 	m_fMaxUp		(0.0f),			// 波の最高上昇量
 	m_fSinRot		(0.0f),			// 波打ち向き
 	m_fAddSinRot	(0.0f),			// 波打ち向き加算量
@@ -70,7 +74,7 @@ HRESULT CLiquid::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_apLiquid[0], 0, sizeof(m_apLiquid));	// 液体の情報
-	m_type			= TYPE_LAVA;	// 種類
+	m_type			= TYPE_WATER;	// 種類
 	m_fMaxUp		= 0.0f;			// 波の最高上昇量
 	m_fSinRot		= 0.0f;			// 波打ち向き
 	m_fAddSinRot	= 0.0f;			// 波打ち向き加算量

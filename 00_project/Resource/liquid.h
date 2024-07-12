@@ -26,7 +26,8 @@ public:
 	// 種類列挙
 	enum EType
 	{
-		TYPE_LAVA = 0,	// マグマ
+		TYPE_WATER = 0,	// 水
+		TYPE_BOOB,		// 泥
 		TYPE_MAX		// この列挙型の総数
 	};
 
@@ -77,16 +78,16 @@ public:
 	// 静的メンバ関数
 	static CLiquid *Create	// 生成
 	( // 引数
-		const EType type,			// 種類
-		const D3DXVECTOR3& rPos,	// 位置
-		const D3DXVECTOR3& rRot,	// 向き
-		const D3DXVECTOR2& rSize,	// 大きさ
-		const D3DXCOLOR& rCol,		// 色
-		const POSGRID2& rPart,		// 分割数
-		const STexMove& rTexMove,	// テクスチャ移動量
-		const float fMaxUp,			// 波の最高上昇量
-		const float fAddSinRot,		// 波打ち向き加算量
-		const float fAddVtxRot		// 隣波の向き加算量
+		const EType type,				// 種類
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rRot,		// 向き
+		const D3DXVECTOR2& rSize,		// 大きさ
+		const D3DXCOLOR& rCol,			// 色
+		const POSGRID2& rPart,			// 分割数
+		const STexMove& rTexMove,		// テクスチャ移動量
+		const float fMaxUp = 0.0f,		// 波の最高上昇量
+		const float fAddSinRot = 0.0f,	// 波打ち向き加算量
+		const float fAddVtxRot = 0.0f	// 隣波の向き加算量
 	);
 	static CListManager<CLiquid> *GetList(void);	// リスト取得
 
