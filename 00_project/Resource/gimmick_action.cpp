@@ -26,7 +26,6 @@ namespace
 		true, // ”ò‚Ñ~‚è
 		false, // d‚¢”à
 		false, // ‹´
-		true // ‚Á”ò‚Î‚·‚â‚Â
 	};
 }
 
