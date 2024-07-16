@@ -23,6 +23,7 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
+#include "enemyAmbush.h"
 #include "effekseerControl.h"
 
 //************************************************************
@@ -35,6 +36,11 @@ namespace
 	const int DODGE_COUNT = 17;				// 回避カウント数
 	const float SHAKEOFF_RANGE = 1000.0f;	// 振り切れる距離
 }
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CEnemyAttack>* CEnemyAttack::m_pList = nullptr;			// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CEnemyAttack] のメンバ関数
@@ -78,6 +84,23 @@ HRESULT CEnemyAttack::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CEnemyAttack>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -92,6 +115,16 @@ void CEnemyAttack::Uninit(void)
 
 	// 追跡範囲の終了処理
 	SAFE_UNINIT(m_pChaseRange);
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
 
 	// 敵の終了
 	CEnemy::Uninit();
@@ -121,6 +154,15 @@ void CEnemyAttack::Draw(CShader* pShader)
 void CEnemyAttack::SetData(void)
 {
 
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CEnemyAttack>* CEnemyAttack::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
 }
 
 //============================================================

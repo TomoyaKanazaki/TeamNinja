@@ -61,6 +61,9 @@ public:
 
 	void SetData(void) override;	// 情報の設定処理
 
+	// 静的メンバ関数
+	static CListManager<CEnemyAttack>* GetList(void);			// リスト取得
+
 	// セット・ゲット関係
 	CEnemyNav* GetNavigation(void) const		{ return m_pNav; }			// ナビゲーションの情報取得
 	CEnemyChaseRange* GetChaseRange(void) const { return m_pChaseRange; }	// 追跡範囲の情報
@@ -117,7 +120,11 @@ private:
 	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override = 0;	// 状態の更新処理
 	virtual void UpdateMotion(int nMotion, const float fDeltaTime) override = 0;	// モーションの更新処理
 
+	// 静的メンバ変数
+	static CListManager<CEnemyAttack>* m_pList;		// オブジェクトリスト
+
 	// メンバ変数
+	CListManager<CEnemyAttack>::AIterator m_iterator;	// イテレーター
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
 	CPlayerClone* m_pClone;		// 分身の情報
