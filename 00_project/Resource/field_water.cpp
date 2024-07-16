@@ -7,11 +7,13 @@
 #include "field_water.h"
 #include "player_clone.h"
 #include "player.h"
+#include "liquid.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickWater::CGimmickWater() : CField()
+CGimmickWater::CGimmickWater() : CField(),
+m_bLiquid(false)
 {
 
 }
@@ -38,6 +40,9 @@ HRESULT CGimmickWater::Init(void)
 		return E_FAIL;
 	}
 
+	// 描画を消す
+	SetEnableDraw(false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -56,6 +61,22 @@ void CGimmickWater::Uninit(void)
 //==========================================
 void CGimmickWater::Update(const float fDeltaTime)
 {
+	// リキッドの生成
+	if (!m_bLiquid)
+	{
+		m_bLiquid = true;
+		CLiquid::Create
+		(
+			CLiquid::TYPE_WATER,
+			GetVec3Position(),
+			GetVec3Rotation(),
+			GetVec2Sizing(),
+			D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.8f),
+			GetTexPattern(),
+			CLiquid::STexMove(D3DXVECTOR2(0.0025f, 0.0025f), D3DXVECTOR2(-0.0025f, -0.0025f))
+		);
+	}
+
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
 }

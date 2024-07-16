@@ -389,7 +389,13 @@ void CEditGimmick::ChangeType(void)
 	// 種類を変更
 	if (pKeyboard->IsTrigger(KEY_TYPE))
 	{
-		m_infoCreate.type = (CGimmick::EType)((m_infoCreate.type + 1) % CGimmick::TYPE_MAX);
+		do
+		{ // 種類がボタンじゃなかった場合繰り返す
+
+			// 種類を1つ進める
+			m_infoCreate.type = (CGimmick::EType)((m_infoCreate.type + 1) % CGimmick::TYPE_MAX);
+
+		} while (m_infoCreate.type == CGimmick::TYPE_POST);
 
 		// 終了処理
 		m_pGimmick->Uninit();

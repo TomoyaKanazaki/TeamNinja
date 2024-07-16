@@ -30,7 +30,11 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyNavRandom::CEnemyNavRandom() : CEnemyNav(),
+#ifdef _DEBUG
+
 m_pRangeCube(nullptr),	// 範囲
+
+#endif
 m_MoveRange(VEC3_ZERO)	// 移動範囲
 {
 
@@ -65,13 +69,12 @@ HRESULT CEnemyNavRandom::Init(void)
 //============================================================
 void CEnemyNavRandom::Uninit(void)
 {
-	if (m_pRangeCube != nullptr)
-	{ // 範囲が NULL じゃない場合
+#ifdef _DEBUG
 
-		// 範囲の終了処理
-		m_pRangeCube->Uninit();
-		m_pRangeCube = nullptr;
-	}
+	// 範囲の終了処理
+	SAFE_UNINIT(m_pRangeCube);
+
+#endif
 
 	// ナビの終了処理
 	CEnemyNav::Uninit();
@@ -129,6 +132,8 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWi
 		// 移動範囲を設定
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
 
+#ifdef _DEBUG
+
 		// キューブを生成
 		pNav->m_pRangeCube = CObjectMeshCube::Create
 		(
@@ -137,6 +142,8 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWi
 			D3DXVECTOR3(fWidth, 10.0f, fDepth),
 			XCOL_WHITE
 		);
+
+#endif // _DEBUG
 
 		// 確保したアドレスを返す
 		return pNav;
