@@ -639,6 +639,34 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 	return pPlayer;
 }
 
+//===========================================
+//  全消去処理
+//===========================================
+void CPlayerClone::Delete()
+{
+	// リスト情報がない場合停止する
+	if (m_pList == nullptr) { return; }
+
+	// 分身の総数を取得
+	int nAll = m_pList->GetNumAll();
+
+	// 分身を全て終了する
+	for (int i = 0; i < nAll; ++i)
+	{
+		// 分身を取得
+		CPlayerClone* pClone = *m_pList->GetIndex(i);
+
+		// 分身が所持しているギミックを削除
+		pClone->DeleteGimmick();
+
+		// 消去のエフェクトを生成する
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+		// 分身の終了
+		pClone->Uninit();
+	}
+}
+
 //============================================================
 // 消去処理
 //============================================================
@@ -650,10 +678,13 @@ void CPlayerClone::Delete(const int nNum)
 	// 現在の総数よりも上の数字が指定されていた場合停止する
 	if (m_pList->GetNumAll() <= nNum) { assert(false); return; }
 
+	// ０未満の場合停止する
+	if (0 > nNum) { assert(false); return; }
+
 	// 分身を取得
 	CPlayerClone* pClone = *m_pList->GetIndex(nNum);
 
-	// 分身所持しているギミックを削除
+	// 分身が所持しているギミックを削除
 	pClone->DeleteGimmick();
 
 	// 消去のエフェクトを生成する
@@ -729,58 +760,6 @@ CListManager<CPlayerClone>* CPlayerClone::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
-}
-
-//==========================================
-//  分身を追従に変更
-//==========================================
-void CPlayerClone::CallBack()
-{
-	// リスト情報がない場合停止する
-	if (m_pList == nullptr) { return; }
-
-	// 総数を取得
-	int nNum = m_pList->GetNumAll();
-
-	// 追従と歩行以外の行動を追従に変更
-	for (int i = 0; i < nNum; ++i)
-	{
-		// 分身を取得
-		CPlayerClone* pClone = *m_pList->GetIndex(i);
-
-		// 追従させたくない場合は次に進む
-		if (pClone->GetAction() == ACTION_MOVE) { continue; }
-		if (pClone->GetAction() == ACTION_CHASE) { continue; }
-		if (pClone->GetAction() == ACTION_FALL) { continue; }
-
-		// ギミックフラグをリセット
-		pClone->m_eGimmick = GIMMICK_IGNORE;
-		pClone->m_bFind = true;
-
-		// ギミックの保有分身数を減らす
-		if (pClone->m_pGimmick != nullptr)
-		{
-			pClone->m_pGimmick->SetNumClone(pClone->m_pGimmick->GetNumClone() - 1);
-		}
-
-		// 保存しているギミックを初期化する
-		pClone->m_pGimmick = nullptr;
-		pClone->m_pField = nullptr;
-
-		// ギミック内管理番号をリセットする
-		pClone->m_nIdxGimmick = -1;
-
-		// 移動量をリセットする
-		pClone->m_move = VEC3_ZERO;
-
-#ifdef _DEBUG
-		// マテリアルを変更
-		pClone->ResetMaterial();
-#endif
-
-		// 追従状態にする
-		pClone->SetAction(ACTION_CHASE);
-	}
 }
 
 //===========================================

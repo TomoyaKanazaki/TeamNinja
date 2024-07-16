@@ -128,11 +128,11 @@ public:
 	// 静的メンバ関数
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
-	static void Delete(const int nNum);												// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
-	static void Delete(CPlayerClone* pClone);									// 選択消去処理 (金崎追加)
+	static void Delete();															// 全消去処理 (金崎追加)
+	static void Delete(const int nNum);												// 選択消去処理 (金崎追加)
+	static void Delete(const EAction act);											// 選択消去処理 (金崎追加)
+	static void Delete(CPlayerClone* pClone);										// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
-	static void CallBack();															// 分身を呼び戻す
 	static float GetRadius();														// 半径の取得
 	static float GetHeight();														// 身長の取得
 

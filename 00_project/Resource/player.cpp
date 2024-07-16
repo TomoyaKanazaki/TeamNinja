@@ -1398,8 +1398,8 @@ void CPlayer::CallClone()
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
-	// 分身を追従する
-	CPlayerClone::CallBack();
+	// 分身を削除する
+	CPlayerClone::Delete();
 }
 
 //===========================================
