@@ -37,6 +37,7 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
+#include "enemyAttack.h"
 
 //************************************************************
 //	定数宣言
@@ -1446,6 +1447,48 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	}
 
 	return true;
+}
+
+//===========================================
+//  回避処理
+//===========================================
+bool CPlayer::Avert(D3DXVECTOR3& rPos)
+{
+	// 攻撃する敵のリストを取得
+	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
+
+	// リストがnullの場合falseを返す
+	if (CEnemyAttack::GetList() == nullptr) { return false; }
+
+	// 攻撃範囲を取得
+	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();
+	D3DXVECTOR3 coliisionDown = CEnemyAttack::GetAttackDown();
+
+	// 全ての敵を確認する
+	for (CEnemyAttack* enemy : list)
+	{
+		// 回避可能状態でない場合次に進む
+		if (!enemy->IsAttack()) { continue; }
+
+		// ボックスの当たり判定
+		if (!collision::Box3D
+		(
+			rPos,				// 判定位置
+			enemy->GetVec3Position(),			// 判定目標位置
+			GetVec3Sizing(),	// 判定サイズ(右・上・後)
+			GetVec3Sizing(),	// 判定サイズ(左・下・前)
+			coliisionUp,		// 判定目標サイズ(右・上・後)
+			coliisionDown		// 判定目標サイズ(左・下・前)
+		))
+		{
+			// 当たっていない場合は次に進む
+			continue;
+		}
+
+		// スティック入力の取得
+	}
+
+	return false;
 }
 
 //==========================================
