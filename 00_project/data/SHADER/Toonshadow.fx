@@ -114,7 +114,7 @@ VS_OUTPUT VS
 	mat = mul(s_mtxWorld, s_mtxView);
 	mat = mul(mat, s_mtxProj);
 	outVertex.pos = mul(inPos, mat);
-	outVertex.PosWVP = outVertex.pos;
+	outVertex.PosWVP = mul(inPos, s_mtxWorld);
 	outVertex.tex = inTex;
 	// ライトの目線によるワールドビュー射影変換をする
 	mat = mul(s_mtxWorld, s_mtxLightView);

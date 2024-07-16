@@ -76,8 +76,13 @@ private:
 	bool CollisionRange(D3DXVECTOR3* pPos, const D3DXVECTOR3& rPosInit);			// 範囲との衝突
 
 	// メンバ変数
-	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
 	D3DXVECTOR3 m_MoveRange;		// 移動範囲
+
+#ifdef _DEBUG
+
+	CObjectMeshCube* m_pRangeCube;	// 範囲のブロック
+
+#endif
 };
 
 #endif	// _ENEMY_NAV_RANDOM_H_
