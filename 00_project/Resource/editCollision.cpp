@@ -847,16 +847,16 @@ void CEditCollision::ManagerSave(void)
 //============================================================
 void CEditCollision::InitAllColorCollCube(void)
 {
+#ifdef _DEBUG
+
 	for (auto& rCube : m_cube)
 	{ // コリジョンキューブ数分繰り返す
 
-#ifdef _DEBUG
-
 		// 通常色を設定
 		rCube.GetCube()->GetCube()->SetCubeColor(COL);
+	}
 
 #endif // _DEBUG
-	}
 }
 
 //============================================================
@@ -864,16 +864,16 @@ void CEditCollision::InitAllColorCollCube(void)
 //============================================================
 void CEditCollision::InitAllColorCollCylinder(void)
 {
+#ifdef _DEBUG
+
 	for (auto& rCylinder : m_cylinder)
 	{ // コリジョンシリンダー数分繰り返す
 
-#ifdef _DEBUG
-
 		// 通常色を設定
 		rCylinder.GetCylinder()->GetTube()->SetColor(COL);
+	}
 
 #endif // _DEBUG
-	}
 }
 
 //============================================================
@@ -881,16 +881,16 @@ void CEditCollision::InitAllColorCollCylinder(void)
 //============================================================
 void CEditCollision::InitAllColorCollSphere(void)
 {
+#ifdef _DEBUG
+
 	for (auto& rSphere : m_sphere)
 	{ // コリジョンスフィア数分繰り返す
 
-#ifdef _DEBUG
-
 		// 通常色を設定
 		rSphere.GetSphere()->GetSphere()->SetColor(COL);
+	}
 
 #endif // _DEBUG
-	}
 }
 
 //============================================================
@@ -898,16 +898,16 @@ void CEditCollision::InitAllColorCollSphere(void)
 //============================================================
 void CEditCollision::InitAllColorCollPolygon(void)
 {
+#ifdef _DEBUG
+
 	for (auto& rPolygon : m_polygon)
 	{ // コリジョンスフィア数分繰り返す
 
-#ifdef _DEBUG
-
 		// 通常色を設定
 		rPolygon.GetPolygon()->GetPolygon()->SetColor(COL);
+	}
 
 #endif // _DEBUG
-	}
 }
 
 //============================================================

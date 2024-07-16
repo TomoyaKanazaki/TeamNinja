@@ -73,7 +73,8 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
+	const float	DODGE_MOVE = 400.0f;	// 通常の移動量
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int MAX_TENSION = 10000; // 士気力の最大値
@@ -170,8 +171,6 @@ HRESULT CPlayer::Init(void)
 
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
-
-
 
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
@@ -293,8 +292,6 @@ void CPlayer::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -541,9 +538,6 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
-	// 追従している分身を消す
-	CPlayerClone::Delete();
-
 	return true;
 }
 
@@ -711,7 +705,8 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	SetVec3Rotation(rotPlayer);
 
 	// 分身の処理
-	ControlClone(posPlayer, rotPlayer, fDeltaTime);
+	if(ControlClone(posPlayer, rotPlayer, fDeltaTime))
+	{ currentMotion = MOTION_DODGE; }
 
 	// 保存位置の更新
 	UpdateSaveTeleport();
@@ -725,19 +720,40 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 {
-	// モーション情報の取得
-	CMotion* pMotion = GetMotion();
-
-	// 回避モーション中の場合モーションの終了判定を確認
-	if (pMotion->GetType() == MOTION_DODGE)
+	// 回避モーション以外の場合通常状態になる
+	if (GetMotion()->GetType() != MOTION_DODGE)
 	{
-		// モーションが終了していた場合
-		if (pMotion->IsFinish())
-		{
-			m_state = STATE_NORMAL; // 通常状態に戻る
-			return MOTION_IDOL; // 待機モーションにする
-		}
+		m_state = STATE_NORMAL; // 通常状態に戻る
+		return MOTION_IDOL; // 待機モーションにする
 	}
+
+	// 向きの取得
+	float rot = GetVec3Rotation().y;
+
+	// 移動方向の算出
+	m_move.x = sinf(rot) * DODGE_MOVE;
+	m_move.z = cosf(rot) * DODGE_MOVE;
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// アクターの当たり判定
+	CollisionActor(pos);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	return MOTION_DODGE;
 }
@@ -1163,6 +1179,17 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 
 		break;
+
+	case MOTION_DODGE:	// 回避モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+		}
+
+		break;
 	}
 }
 
@@ -1253,37 +1280,13 @@ void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 //==========================================
 //  分身の処理
 //==========================================
-void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
+bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	// 操作可能フラグを確認
-	if (!m_bClone) { return; }
+	if (!m_bClone) { return false; }
 
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
-
-	// 追従分身の削除
-	if (pPad->IsTrigger(CInputPad::KEY_RB))
-	{
-		// リストが存在しない場合に削除しない
-		if (CPlayerClone::GetList() != nullptr)
-		{
-			CPlayerClone::Delete();
-		}
-	}
-
-	// 分身を呼び戻す
-	CallClone();
-
-	// 回避処理を呼び出す
-	if (Dodge(rPos, pPad))
-	{
-		// 回避状態に変更
-		m_state = STATE_DODGE;
-		return;
-	}
-
-	// ギミックの直接生成ができる場合関数を抜ける
-	if (CreateGimmick(fDeltaTime)) { return; }
 
 #ifdef _DEBUG
 
@@ -1299,25 +1302,35 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 
 #endif
 
-	// 分身の数が上限だった場合関数を抜ける
-	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return; }
-
-	// 士気力が0なら関数を抜ける
-	if (m_pTensionGauge->GetNum() <= 0) { return; }
+	// 分身を削除
+	DelelteClone();
 
 	// 右スティックの入力がない場合関数を抜ける
-	if (!pPad->GetTriggerRStick()) { return; }
+	if (!pPad->GetTriggerRStick()) { return false; }
 
-	// TODO：士気力の減る量考えて！
-#if 0
-#ifndef _DEBUG
-	// 士気力が減少する
-	m_pTensionGauge->AddNum(-500);
-#endif
-#endif
+	// 回避処理を呼び出す
+	if (Dodge(rPos, pPad))
+	{
+		// 移動方向の算出
+		m_move.x = sinf(rRot.y) * DODGE_MOVE;
+		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
-	// プレイヤーの方向を取得
-	float fRotPlayer = GetVec3Rotation().y;
+		// エフェクトを出す
+		GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 25.0f);
+
+		// 回避状態に変更
+		m_state = STATE_DODGE;
+		return true;
+	}
+
+	// 分身の数が上限だった場合関数を抜ける
+	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return false; }
+
+	// 士気力が0なら関数を抜ける
+	if (m_pTensionGauge->GetNum() <= 0) { return false; }
+
+	// ギミックの直接生成ができる場合関数を抜ける
+	if (CreateGimmick(fDeltaTime)) { return false; }
 
 	// スティック入力の方向を取得する
 	float fRotStick = pPad->GetPressRStickRot();
@@ -1326,40 +1339,23 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = fRotStick + fCameraRot;
+	float fTemp = -(fRotStick + fCameraRot);
 	useful::NormalizeRot(fTemp);
-
-	// プレイヤー方向からスティックの方向を減算
-	float fRot = fRotPlayer - (fTemp - D3DX_PI * 0.5f);
-	useful::NormalizeRot(fRot);
 
 	// 分身の位置を算出
 	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
 	(
-		DISTANCE_CLONE * cosf(-fTemp),
+		DISTANCE_CLONE * cosf(fTemp),
 		0.0f,
-		DISTANCE_CLONE * sinf(-fTemp)
+		DISTANCE_CLONE * sinf(fTemp)
 	);
-
-	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
-	if (fabsf(fRot) >= STICK_ERROR)
-	{
-		// 生成に失敗していた場合ギミック生成待機になる
-		if (CPlayerClone::Create() == nullptr)
-		{
-			m_bGimmickClone = true;
-			m_fGimmickTimer = 0.0f;
-			m_fTempStick = fTemp;
-		}
-		return;
-	}
 
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		CLONE_MOVE * cosf(-fTemp),
+		CLONE_MOVE * cosf(fTemp),
 		0.0f,
-		CLONE_MOVE * sinf(-fTemp)
+		CLONE_MOVE * sinf(fTemp)
 	);
 
 	// 歩く分身を出す
@@ -1367,8 +1363,10 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	{
 		m_bGimmickClone = true;
 		m_fGimmickTimer = 0.0f;
-		m_fTempStick = fTemp;
+		m_fTempStick = -fTemp;
 	}
+
+	return false;
 }
 
 //==========================================
@@ -1389,7 +1387,7 @@ void CPlayer::SaveReset()
 //==========================================
 //  分身を呼び戻す
 //==========================================
-void CPlayer::CallClone()
+void CPlayer::DelelteClone()
 {
 	// パッドの入力情報を取得する
 	CInputPad* pPad = GET_INPUTPAD;
@@ -1397,8 +1395,8 @@ void CPlayer::CallClone()
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
-	// 分身を追従する
-	CPlayerClone::CallBack();
+	// 分身を削除する
+	CPlayerClone::Delete();
 }
 
 //===========================================
@@ -1490,9 +1488,6 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
-	// 右スティック入力がない場合falseを返す
-	if (!pPad->GetTriggerRStick()) { return false; }
-
 	// 攻撃する敵のリストを取得
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 

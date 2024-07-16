@@ -14,6 +14,8 @@
 #include "sceneGame.h"
 #include "cinemaScope.h"
 #include "timerUI.h"
+#include "hitstop.h"
+#include "resultManager.h"
 #include "retentionManager.h"
 #include "camera.h"
 #include "player.h"
@@ -37,9 +39,15 @@ namespace
 {
 	const char* MAP_TXT			= "data\\TXT\\map.txt";			// マップ情報のパス
 	const char* START_TEXTURE	= "data\\TEXTURE\\start.png";	// 開始のテクスチャ
+	const char* END_TEXTURE[] =	// 終了のテクスチャ
+	{
+		nullptr,					// テクスチャ無し
+		"data\\TEXTURE\\end.png",	// 敗北のテクスチャ
+		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
+	};
 
-	const float GAMEEND_WAITTIME	= 2.0f;	// リザルト画面への遷移余韻フレーム
-	const char* END_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
+	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(15.0f, 1.8f, 0.25f);	// リザルト遷移時のカメラ揺れ
+	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
 	bool bCamera = false;
@@ -53,7 +61,8 @@ namespace
 //	コンストラクタ
 //============================================================
 CGameManager::CGameManager() :
-	m_state	(STATE_NONE)	// 状態
+	m_pResult	(nullptr),		// リザルトマネージャー
+	m_state		(STATE_NONE)	// 状態
 {
 
 }
@@ -72,7 +81,18 @@ CGameManager::~CGameManager()
 HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
-	m_state = STATE_NORMAL;	// 状態
+	m_pResult	= nullptr;		// リザルトマネージャー
+	m_state		= STATE_NORMAL;	// 状態
+
+	// リザルトマネージャーの生成
+	m_pResult = CResultManager::Create();
+	if (m_pResult == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
@@ -206,7 +226,8 @@ HRESULT CGameManager::Init(void)
 //============================================================
 void CGameManager::Uninit(void)
 {
-
+	// リザルトマネージャーの破棄
+	SAFE_REF_RELEASE(m_pResult);
 }
 
 //============================================================
@@ -255,6 +276,13 @@ void CGameManager::Update(const float fDeltaTime)
 		break;
 
 	case STATE_RESULT:
+
+		if (!CSceneGame::GetHitStop()->IsStop())
+		{ // ヒットストップが終わった場合
+
+			// リザルトマネージャーの更新
+			m_pResult->Update(fDeltaTime);
+		}
 		break;
 
 	default:	// 例外処理
@@ -274,8 +302,14 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
 
-	// 
-	CPopUpUI::Create(END_TEXTURE);
+	// ヒットストップの設定
+	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME);
+
+	// カメラ揺れの設定
+	GET_MANAGER->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CLEAR_SWING);
+
+	// リザルト情報の保存
+	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;

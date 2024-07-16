@@ -148,9 +148,9 @@ private:
 	void UpdateTrans(D3DXVECTOR3& rPos);	// ステージ遷移の更新
 
 	// メンバ関数 (金崎追加)
-	void ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
+	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
 	void SaveReset();		// 直前のチェックポイントに帰る
-	void CallClone();		// 分身を呼び戻す処理
+	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
 
