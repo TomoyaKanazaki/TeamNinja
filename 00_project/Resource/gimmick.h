@@ -62,8 +62,12 @@ public:
 	virtual bool IsSet() { return bool(); }						// 設置ギミックのフラグ取得用
 
 	// 当たり判定
-	virtual void CollisionClone() {}							// クローンとの当たり判定
-	virtual bool CollisionPlayer() { return false; }			// プレイヤーとの当たり判定
+	virtual void CollisionClone() {}					// クローンとの当たり判定
+	virtual bool CollisionPlayer() { return false; }	// プレイヤーとの当たり判定
+
+#ifdef _DEBUG
+	virtual const std::vector<CGimmick*> GetVectorButton(void) { assert(false); return {}; }	// ボタン動的配列取得
+#endif // _DEBUG
 
 	// 静的メンバ関数
 	static CGimmick* Create				// 生成

@@ -147,3 +147,4 @@ MOTIONPASS = data\MOTION\PLAYER\minijump.txt	# 小ジャンプモーション
 MOTIONPASS = data\MOTION\PLAYER\highjump.txt	# 大ジャンプモーション
 MOTIONPASS = data\MOTION\PLAYER\fall.txt		# 落下モーション
 MOTIONPASS = data\MOTION\PLAYER\landing.txt		# 着地モーション
+MOTIONPASS = data\MOTION\PLAYER\dodge.txt		# 回避モーション

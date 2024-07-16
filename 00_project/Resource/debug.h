@@ -32,13 +32,13 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	void MeasureFps(const DWORD dwCurrentTime);	// FPS測定
-	void AddFrameCount(void);		// フレームカウント加算
-	int  GetFps(void) const;		// FPS取得
-	bool GetEnableShader(void) const; //シェーダー使用取得
-	void SetFillMode(void);			// 塗りつぶしモード設定
-	void UpdateDebugControl(void);	// デバッグ操作更新
-	void DrawDebugControl(void);	// デバッグ操作表示
-	void DrawDebugData(void);		// デバッグ情報表示
+	void AddFrameCount(void);			// フレームカウント加算
+	int  GetFps(void) const;			// FPS取得
+	bool GetEnableShader(void) const;	// シェーダー使用取得
+	void SetFillMode(void);				// 塗りつぶしモード設定
+	void UpdateDebugControl(void);		// デバッグ操作更新
+	void DrawDebugControl(void);		// デバッグ操作表示
+	void DrawDebugData(void);			// デバッグ情報表示
 
 	// 静的メンバ関数
 	static CDebug *Create(void);			// 生成
@@ -56,7 +56,6 @@ private:
 	void ChangeEditMode(void);		// エディターモード変更
 	void ChangeDispPause(void);		// ポーズ
 	void ChangeEnableShader(void);	// シェーダー描画変更
-	void ResultTrans(void);			// リザルト遷移
 	void ChangeActorDisp(void);		// アクター当たり判定表示変更
 
 	// メンバ変数

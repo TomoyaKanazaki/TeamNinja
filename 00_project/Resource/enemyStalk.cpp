@@ -163,7 +163,7 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	case CEnemyStalk::STATE_WARNING:
 
 		// 警告処理
-		nCurMotion = Warning(pPos);
+		nCurMotion = Warning(pPos, fDeltaTime);
 
 		break;
 
@@ -352,25 +352,25 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 	// 現在のモーション種類を取得
 	int nCurMotion = GetMotionType();
 
-	//// 落下モーションのフラグを設定
-	//bool bTypeFall = nCurMotion == MOTION_FALL;
+	// 落下モーションのフラグを設定
+	bool bTypeFall = nCurMotion == MOTION_FALL;
 
-	//if (!IsJump())
-	//{ // 空中にいない場合
+	if (!IsJump())
+	{ // 空中にいない場合
 
-	//	if (bTypeFall)
-	//	{ // モーションが落下中の場合
+		if (bTypeFall)
+		{ // モーションが落下中の場合
 
-	//		// 着地モーションを指定
-	//		SetMotion(MOTION_LANDING);
-	//	}
-	//}
-	//else
-	//{ // 空中にいる場合
+			// 着地モーションを指定
+			SetMotion(MOTION_LANDING);
+		}
+	}
+	else
+	{ // 空中にいる場合
 
-	//	// 落下モーションを指定
-	//	SetMotion(MOTION_FALL);
-	//}
+		// 落下モーションを指定
+		SetMotion(MOTION_FALL);
+	}
 }
 
 //============================================================
@@ -453,13 +453,13 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 //============================================================
 // 警告処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos)
+CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaTime)
 {
 	// 重力の更新
 	UpdateGravity();
 
-	// 着地判定
-	UpdateLanding(pPos);
+	// 敵を落下させる
+	pPos->y += GetMovePosition().y * fDeltaTime;
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
@@ -467,6 +467,9 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos)
 		// 追跡状態にする
 		m_state = STATE_STALK;
 	}
+
+	// 着地判定
+	UpdateLanding(pPos);
 
 	// 歩行状態を返す
 	return MOTION_WALK;
@@ -486,6 +489,9 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 		// 回避受付フラグを false にする
 		SetEnableDodge(false);
+
+		// 攻撃カウントをリセットする
+		SetAttackCount(0);
 	}
 	else
 	{ // 上記以外
@@ -517,6 +523,9 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 			// 回避受付フラグを true にする
 			SetEnableDodge(true);
+
+			// 攻撃カウントをリセットする
+			SetAttackCount(0);
 		}
 
 		// 攻撃状態にする
