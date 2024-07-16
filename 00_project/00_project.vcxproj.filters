@@ -570,6 +570,9 @@
     <ClInclude Include="Resource\editEnemyAttack.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\enemyAmbush.h">
+      <Filter>InGame\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1078,6 +1081,9 @@
     </ClCompile>
     <ClCompile Include="Resource\editEnemyAttack.cpp">
       <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\enemyAmbush.cpp">
+      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
