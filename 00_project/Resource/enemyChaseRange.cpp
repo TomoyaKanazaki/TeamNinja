@@ -151,6 +151,8 @@ CEnemyChaseRange* CEnemyChaseRange::Create(const D3DXVECTOR3& pos, const float f
 		pNav->m_fWidth = fWidth;	// 幅
 		pNav->m_fDepth = fDepth;	// 奥行
 
+#ifdef _DEBUG
+
 		// キューブを生成
 		pNav->m_pRangeCube = CObjectMeshCube::Create
 		(
@@ -159,6 +161,8 @@ CEnemyChaseRange* CEnemyChaseRange::Create(const D3DXVECTOR3& pos, const float f
 			D3DXVECTOR3(fWidth, 10.0f, fDepth),
 			XCOL_CYAN
 		);
+
+#endif // _DEBUG
 
 		// 確保したアドレスを返す
 		return pNav;

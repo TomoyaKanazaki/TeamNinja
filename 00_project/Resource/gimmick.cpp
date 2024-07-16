@@ -209,11 +209,11 @@ CGimmick* CGimmick::Create
 			return nullptr;
 		}
 
-		// 位置を設定
-		pGimmick->SetVec3Position(rPos);
-
 		// 向きを設定
 		pGimmick->m_eAngle = eAngle;
+
+		// 位置を設定
+		pGimmick->SetVec3Position(rPos);
 
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);
