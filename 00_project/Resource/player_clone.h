@@ -73,8 +73,7 @@ public:
 	// 行動パターン
 	enum EAction
 	{
-		ACTION_CHASE = 0,		// 通常の行動
-		ACTION_MOVE,			// 歩行
+		ACTION_MOVE = 0,		// 歩行
 		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
 		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
@@ -139,7 +138,6 @@ public:
 private:
 	// メンバ関数
 	EMotion UpdateMove(const float fDeltaTime);			// 移動行動時の更新
-	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
@@ -163,14 +161,6 @@ private:
 	bool UpdateActive(const float fDeltaTime); // アクティブ状態での処理
 
 	// メンバ関数 (金崎追加)
-	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
-	CPlayerClone::EMotion Chase	// ついていく処理
-	( // 引数
-		D3DXVECTOR3* pPosThis,			// 自身の位置
-		D3DXVECTOR3* pRotThis,			// 自身の向き
-		const D3DXVECTOR3& rPosTarget,	// ついていくやつの位置
-		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
-	);
 	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget); // 目標の方向を向く処理
 	void Approach(void);				// 目標位置に向かう処理
 	CPlayerClone* Block();				// 分身出させないよの処理

@@ -1306,7 +1306,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 #endif
 
 	// 分身を呼び戻す
-	CallClone();
+	DelelteClone();
 
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return false; }
@@ -1390,7 +1390,7 @@ void CPlayer::SaveReset()
 //==========================================
 //  分身を呼び戻す
 //==========================================
-void CPlayer::CallClone()
+void CPlayer::DelelteClone()
 {
 	// パッドの入力情報を取得する
 	CInputPad* pPad = GET_INPUTPAD;

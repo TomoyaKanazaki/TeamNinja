@@ -86,8 +86,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3
 	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
-	m_Action		(ACTION_CHASE),		// 現在行動
-	m_OldAction		(ACTION_CHASE),		// 過去行動
+	m_Action		(ACTION_MOVE),		// 現在行動
+	m_OldAction		(ACTION_MOVE),		// 過去行動
 	m_fDeleteTimer	(0.0f),				// 自動消滅タイマー
 	m_fGimmickTimer	(0.0f),				// ギミック受付時間タイマー
 	m_pGimmick		(nullptr),			// ギミックのポインタ
@@ -124,8 +124,8 @@ HRESULT CPlayerClone::Init(void)
 
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
-	m_Action		= ACTION_CHASE;		// 現在行動
-	m_OldAction		= ACTION_CHASE;		// 過去行動
+	m_Action		= ACTION_MOVE;		// 現在行動
+	m_OldAction		= ACTION_MOVE;		// 過去行動
 	m_fDeleteTimer	= 0.0f;				// 自動消滅タイマー
 	m_fGimmickTimer = 0.0f;				// ギミック受付時間タイマー
 	m_pGimmick		= nullptr;			// ギミックのポインタ
@@ -263,12 +263,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 			// 関数を抜ける
 			return;
 		}
-		break;
-
-	case ACTION_CHASE: // 追従
-
-		// 追従行動時の更新
-		currentMotion = UpdateChase(fDeltaTime);
 		break;
 
 	case ACTION_FALL_TO_WAIT: // 落とし穴警戒
@@ -496,9 +490,6 @@ void CPlayerClone::SetField(CField* field)
 
 	// 引数をポインタに設定する
 	m_pField = field;
-
-	// 追従分身なら関数を抜ける
-	if (m_Action == ACTION_CHASE) { return; }
 
 	// 落下系フラグの場合警戒状態に変更
 	const char flag = m_pField->GetFlag();
@@ -807,49 +798,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 
 	// 位置を反映
 	SetVec3Position(posClone);
-
-	// 現在のモーションを返す
-	return currentMotion;
-}
-
-//============================================================
-//	追従行動時の更新処理
-//============================================================
-CPlayerClone::EMotion CPlayerClone::UpdateChase(const float fDeltaTime)
-{
-	D3DXVECTOR3 posClone = GetVec3Position();	// クローン位置
-	D3DXVECTOR3 rotClone = GetVec3Rotation();	// クローン向き
-	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
-
-	// 重力の更新
-	UpdateGravity();
-
-	// 一つ前を追いかけて、その際のモーションを返す
-	currentMotion = ChasePrev(&posClone, &rotClone);
-
-	// 移動
-	posClone += m_move * fDeltaTime;
-
-	// 着地判定
-	UpdateLanding(posClone, &currentMotion);
-
-	// 向きの更新
-	UpdateRotation(rotClone);
-
-	// 位置を反映
-	SetVec3Position(posClone);
-
-	// 向きを反映
-	SetVec3Rotation(rotClone);
-
-	// 落下するならしろ
-	if (m_pField != nullptr)
-	{
-		if (m_pField->IsFall())
-		{
-			m_Action = ACTION_FALL;
-		}
-	}
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -1493,100 +1441,6 @@ bool CPlayerClone::UpdateActive(const float fDeltaTime)
 }
 
 //==========================================
-//  前についていく処理
-//==========================================
-CPlayerClone::EMotion CPlayerClone::ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis)
-{
-	// リストを取得する
-	std::list<CPlayerClone*> list = m_pList->GetList();
-	auto itrBegin = list.begin();
-	auto itrEnd = list.end();
-
-	// プレイヤー位置・向きを取得する
-	CPlayer *pPlayer = GET_PLAYER; // プレイヤー情報
-	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position(); // プレイヤー位置
-	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation(); // プレイヤー向き
-
-	// 一つ前のポインタを保存する変数
-	CPlayerClone* prev = *itrBegin;
-
-	// 自身のポインタを走査する
-	for (auto itr = itrBegin; itr != itrEnd; ++itr)
-	{
-		// 自身ではない場合一つ前を保存して次に進む
-		if (*itr != this) { prev = *itr; continue; }
-
-		// 自身が先頭だった場合プレイヤーに追従し関数を抜ける
-		if (this == *itrBegin) { return Chase(pPosThis, pRotThis, posPlayer, rotPlayer); }
-
-		// 自身の追従する相手を選択する
-		while (1)
-		{
-			// 一つ前のポインタを保存する
-			--itr;
-			prev = *itr;
-
-			// 前が追従していない場合
-			if (prev->GetAction() != ACTION_CHASE)
-			{
-				// 一つ前が先頭でない場合次に進む
-				if (prev != *itrBegin) { continue; }
-
-				// プレイヤーに追従し関数を抜ける
-				return Chase(pPosThis, pRotThis, posPlayer, rotPlayer);
-			}
-
-			// 一つ前に追従し関数を抜ける
-			return Chase(pPosThis, pRotThis, prev->GetVec3Position(), prev->GetVec3Rotation());
-		}
-	}
-
-	// ここに来たらバグすぎきもすぎわろたんぬ
-	assert(false);
-	return MOTION_IDOL;
-}
-
-//==========================================
-//  ついていく処理
-//==========================================
-CPlayerClone::EMotion CPlayerClone::Chase
-(
-	D3DXVECTOR3* pPosThis,			// 自身の位置
-	D3DXVECTOR3* pRotThis,			// 自身の向き
-	const D3DXVECTOR3& rPosTarget,	// ついていくやつの位置
-	const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
-)
-{
-	// 一つ前に対して後ろ移動
-	D3DXVECTOR3 posTarget = CalcPrevBack(rPosTarget, rRotPrev);
-
-	// 目標地点へのベクトルを求める
-	D3DXVECTOR3 vecTarget = posTarget - *pPosThis;
-
-	// 目標へのベクトルに倍率をかけ現在地に加算する
-	vecTarget.y = 0.0f;
-	*pPosThis += vecTarget * 0.1f;
-
-	// 目標の方向を向く処理
-	ViewTarget(*pPosThis, rPosTarget);
-
-	// 移動量のスカラー値を算出
-	float fScalar = sqrtf(vecTarget.x * vecTarget.x + vecTarget.z * vecTarget.z);
-	if (fScalar > DASH_SPEED)
-	{
-		return MOTION_DASH;
-	}
-	else if (fScalar > STEALTH_SPEED)
-	{
-		return MOTION_STEALTHWALK;
-	}
-	else
-	{
-		return MOTION_IDOL;
-	}
-}
-
-//==========================================
 //  目標の方向を向く処理
 //==========================================
 void CPlayerClone::ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget)
@@ -1672,76 +1526,6 @@ CPlayerClone* CPlayerClone::Block()
 
 	// ヒットしていなければ生成できる
 	return this;
-}
-
-//===========================================
-//  初期位置を算出する処理
-//===========================================
-D3DXVECTOR3 CPlayerClone::CalcStartPos() const
-{
-	// リストを取得する
-	std::list<CPlayerClone*> list = m_pList->GetList();
-	auto itrBegin = list.begin();
-	auto itrEnd = list.end();
-
-	// プレイヤー位置・向きを取得する
-	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
-	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
-	D3DXVECTOR3 rotPlayer = pPlayer->GetVec3Rotation();	// プレイヤー向き
-
-	// 一つ前のポインタを保存する変数
-	CPlayerClone* prev = *itrBegin;
-
-	// 自身のポインタを走査する
-	for (auto itr = itrBegin; itr != itrEnd; ++itr)
-	{
-		// 自身ではない場合一つ前を保存して次に進む
-		if (*itr != this) { prev = *itr; continue; }
-
-		// 自身が先頭だった場合プレイヤーの後ろの位置を返す
-		if (this == *itrBegin)
-		{
-			return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-		}
-
-		// 自身の追従する相手を選択する
-		while (1)
-		{
-			// 一つ前のポインタを保存する
-			--itr;
-			prev = *itr;
-
-			// 前が追従していない場合
-			if (prev->GetAction() != ACTION_CHASE)
-			{
-				// 一つ前が先頭でない場合次に進む
-				if (prev != *itrBegin) { continue; }
-
-				// プレイヤーに追従し関数を抜ける
-				return CalcPrevBack(GET_PLAYER->GetVec3Position(), GET_PLAYER->GetVec3Rotation());
-			}
-
-			// 一つ前に追従し関数を抜ける
-			return CalcPrevBack(prev->GetVec3Position(), prev->GetVec3Rotation());
-		}
-	}
-
-	// ここには来ない
-	assert(false);
-	return D3DXVECTOR3();
-}
-
-//==========================================
-//  一つ前の対象の後ろを算出
-//==========================================
-D3DXVECTOR3 CPlayerClone::CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const
-{
-	return pos + D3DXVECTOR3
-	(
-		sinf(rot.y) * DISTANCE,
-		0.0f,
-		cosf(rot.y) * DISTANCE
-	);
 }
 
 //==========================================
