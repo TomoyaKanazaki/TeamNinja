@@ -613,3 +613,19 @@ CEnemyAttack* CEnemyAttack::Create
 		return pEnemy;
 	}
 }
+
+//===========================================
+//  “–‚½‚è”»’è‚ÌŽæ“¾
+//===========================================
+D3DXVECTOR3 CEnemyAttack::GetAttackUp()
+{
+	return ATTACK_COLLUP;
+}
+
+//===========================================
+//  “–‚½‚è”»’è‚ÌŽæ“¾
+//===========================================
+D3DXVECTOR3 CEnemyAttack::GetAttackDown()
+{
+	return ATTACK_COLLDOWN;
+}

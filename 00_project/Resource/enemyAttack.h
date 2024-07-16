@@ -113,6 +113,8 @@ public:
 		const float fChaseWidth,				// ’ÇÕ•
 		const float fChaseDepth					// ’ÇÕ‰œs
 	);
+	static D3DXVECTOR3 GetAttackUp();	// “–‚½‚è”»’è‚Ìæ“¾
+	static D3DXVECTOR3 GetAttackDown();	// “–‚½‚è”»’è‚Ìæ“¾
 
 private:
 
