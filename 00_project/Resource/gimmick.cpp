@@ -280,8 +280,7 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 		}
 		else if (str == "STAGE_GIMMICKSET")
 		{
-			do
-			{ // END_STAGE_GIMMICKSETを読み込むまでループ
+			do { // END_STAGE_GIMMICKSETを読み込むまでループ
 
 				// 文字列を読み込む
 				file >> str;
@@ -292,10 +291,11 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 					// 一行全て読み込む
 					std::getline(file, str);
 				}
+
+				// 通常ギミックの読込
 				else if (str == "GIMMICKSET")
 				{
-					do
-					{ // END_GIMMICKSETを読み込むまでループ
+					do { // END_GIMMICKSETを読み込むまでループ
 
 						// 文字列を読み込む
 						file >> str;
@@ -337,6 +337,63 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 
 					// ギミックの生成
 					if (CGimmick::Create(pos, (EAngle)nAngle, size, (CGimmick::EType)nType, nNumAct) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+
+				// ボタンギミックの読込
+				else if (str == "BUTTON_GIMMICKSET")
+				{
+					std::vector<CGimmickMalti::SButton> vecButton;	// ボタン情報配列
+					do { // END_BUTTON_GIMMICKSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str.front() == '#')
+						{ // コメントアウトされている場合
+
+							// 一行全て読み込む
+							std::getline(file, str);
+						}
+						else if (str == "BUTTONSET")
+						{
+							do { // END_BUTTONSETを読み込むまでループ
+
+								// 文字列を読み込む
+								file >> str;
+
+								if (str == "POS")
+								{
+									file >> str;	// ＝を読込
+
+									// 位置を読込
+									file >> pos.x;
+									file >> pos.y;
+									file >> pos.z;
+								}
+								else if (str == "SIZE")
+								{
+									file >> str;	// ＝を読込
+
+									// 大きさを読込
+									file >> size.x;
+									file >> size.y;
+									file >> size.z;
+								}
+							} while (str != "END_BUTTONSET");	// END_BUTTONSETを読み込むまでループ
+
+							// ボタン情報を最後尾に追加
+							vecButton.push_back(CGimmickMalti::SButton(pos, size));
+						}
+					} while (str != "END_BUTTON_GIMMICKSET");	// END_BUTTON_GIMMICKSETを読み込むまでループ
+
+					// ギミックボタン統括クラスの生成
+					if (CGimmickMalti::Create(vecButton) == nullptr)
 					{ // 確保に失敗した場合
 
 						// 失敗を返す
