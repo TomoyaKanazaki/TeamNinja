@@ -651,7 +651,7 @@ void CPlayerClone::Delete()
 	int nAll = m_pList->GetNumAll();
 
 	// 分身を全て終了する
-	for (int i = 0; i < nAll; ++i)
+	for (int i = nAll - 1; i >= 0; --i)
 	{
 		// 分身を取得
 		CPlayerClone* pClone = *m_pList->GetIndex(i);
