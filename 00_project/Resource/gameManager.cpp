@@ -43,6 +43,7 @@ namespace
 
 	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
 	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
+	const char* END_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
 
 #ifdef _DEBUG
 	bool bCamera = false;
@@ -356,6 +357,8 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	if (win == CRetentionManager::WIN_CLEAR)
 	{ // 勝利していた場合
+
+		CPopUpUI::Create(END_TEXTURE);
 
 		// ランキングに設定
 		//CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());	// TODO：ここでインゲームリザルトへ...
