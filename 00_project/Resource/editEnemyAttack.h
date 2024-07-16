@@ -24,16 +24,29 @@
 //class CEditEnemyAttack : public CEditorObject
 //{
 //public:
+//
+//	// ナビゲーションの種類
+//	enum ENavType
+//	{
+//		NAVTYPE_RANDOM = 0,	// ランダムナビ
+//		NAVTYPE_STREET,		// 巡回ナビ
+//		NAVTYPE_MAX			// この列挙型の総数
+//	};
+//
 //	// コンストラクタ
 //	CEditEnemyAttack(CEditStage* pEditor);
 //
 //	// デストラクタ
 //	~CEditEnemyAttack() override;
 //
-//	// アクター情報構造体
+//	// 敵情報構造体
 //	struct SInfo
 //	{
 //		CEnemyAttack::EType type;	// 種類
+//		float fMoveWidth;			// 移動範囲幅
+//		float fMoveDepth;			// 移動範囲奥行
+//		float fChaseWidth;			// 追跡範囲幅
+//		float fChaseDepth;			// 追跡範囲奥行
 //	};
 //
 //	// オーバーライド関数
@@ -48,23 +61,18 @@
 //	void DrawDebugInfo(void) override;		// 情報表示描画
 //
 //private:
-//	// オーバーライド関数
-//	void UpdatePosition(void) override;		// 位置更新
-//	void UpdateRotation(void) override;		// 向き更新
 //
 //	// メンバ関数
-//	void UpdateScaling(void);	// 大きさ更新
 //	void ChangeType(void);		// 種類更新
-//	void RotCorrect(void);		// 向きの補正処理
-//	void CreateActor(void);		// アクター生成
-//	void ReleaseActor(void);	// アクター破棄
-//	void DeleteCollisionActor(const bool bRelase);	// アクターの削除判定
-//	void InitAllColorActor(void);					// アクターの色全初期化
+//	void CreateActor(void);		// 敵生成
+//	void ReleaseActor(void);	// 敵破棄
+//	void DeleteCollisionActor(const bool bRelase);	// 敵の削除判定
+//	void InitAllColorActor(void);					// 敵の色全初期化
 //
 //	// メンバ変数
-//	CActor* m_pActor;	// アクター情報
-//	SInfo m_infoCreate;	// アクター配置情報
-//	bool m_bSave;		// 保存状況
+//	CEnemyAttack* m_pEnemy;	// 敵の情報
+//	SInfo m_infoCreate;		// 敵配置情報
+//	bool m_bSave;			// 保存状況
 //};
 //
 //#endif	// _EDIT_ACTOR_H_
