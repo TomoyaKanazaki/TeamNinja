@@ -28,8 +28,10 @@
 #define NAME_CREATE		("0")	// 生成表示
 #define KEY_RELEASE		(DIK_9)	// 破棄キー
 #define NAME_RELEASE	("9")	// 破棄表示
-#define KEY_TYPE		(DIK_4)	// 種類変更キー
-#define NAME_TYPE		("4")	// 種類変更表示
+#define KEY_UP_TYPE		(DIK_4)	// 種類前進変更キー
+#define NAME_UP_TYPE	("4")	// 種類前進変更表示
+#define KEY_DOWN_TYPE	(DIK_5)	// 種類後進変更キー
+#define NAME_DOWN_TYPE	("5")	// 種類後進変更表示
 
 #define KEY_UP_SIZE		(DIK_T)	// 拡大キー
 #define NAME_UP_SIZE	("T")	// 拡大表示
@@ -233,7 +235,7 @@ void CEditActor::DrawDebugControl(void)
 	CEditorObject::DrawDebugControl();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s+%s]\n", NAME_UP_SIZE, NAME_DOWN_SIZE, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s/%s]\n", NAME_UP_TYPE, NAME_DOWN_TYPE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
 
@@ -444,7 +446,7 @@ void CEditActor::ChangeType(void)
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
 	// 種類を変更
-	if (pKeyboard->IsTrigger(KEY_TYPE))
+	if (pKeyboard->IsTrigger(KEY_UP_TYPE))
 	{
 		m_infoCreate.type = (CActor::EType)((m_infoCreate.type + 1) % CActor::TYPE_MAX);
 
@@ -498,6 +500,64 @@ void CEditActor::ChangeType(void)
 		if (!m_pActor->GetCube().empty())
 		{ // キューブの当たり判定が存在していた場合
 			
+			// 方向の設定処理
+			SetAngle(useful::RotToFourDire(GetVec3Rotation().y));
+		}
+	}
+	else if (pKeyboard->IsTrigger(KEY_DOWN_TYPE))
+	{
+		m_infoCreate.type = (CActor::EType)((m_infoCreate.type + (CActor::TYPE_MAX - 1)) % CActor::TYPE_MAX);
+
+		if (!CScene::GetCollManager()->GetCollInfo(m_infoCreate.type).m_cube.empty())
+		{ // キューブの情報が入っている場合
+
+			// 向きの補正処理
+			RotCorrect();
+		}
+
+		// モデルを生成し直す
+		m_pActor->Uninit();
+		m_pActor = CActor::Create(m_infoCreate.type, GetVec3Position(), GetVec3Rotation(), m_infoCreate.scale);
+
+		for (auto& rCube : m_pActor->GetCube())
+		{ // コリジョンキューブ数分繰り返す
+
+			// 大きさを設定する
+			rCube->SetWidth(rCube->GetWidth() / m_infoCreate.scale.x);
+			rCube->SetHeight(rCube->GetHeight() / m_infoCreate.scale.y);
+			rCube->SetDepth(rCube->GetDepth() / m_infoCreate.scale.z);
+		}
+
+		for (auto& rCylinder : m_pActor->GetCylinder())
+		{ // コリジョンシリンダー数分繰り返す
+
+			// 大きさを設定する
+			rCylinder->SetRadius(rCylinder->GetRadius() / m_infoCreate.scale.x);
+			rCylinder->SetHeight(rCylinder->GetHeight() / m_infoCreate.scale.y);
+		}
+
+		for (auto& rSphere : m_pActor->GetSphere())
+		{ // コリジョンスフィア数分繰り返す
+
+			// 大きさを設定する
+			rSphere->SetRadius(rSphere->GetRadius() / m_infoCreate.scale.x);
+		}
+
+		for (auto& rPolygon : m_pActor->GetPolygon())
+		{ // コリジョンポリゴン数分繰り返す
+
+			// 大きさを設定する
+			rPolygon->SetSize(D3DXVECTOR3
+			(
+				rPolygon->GetSize().x / m_infoCreate.scale.x,
+				rPolygon->GetSize().y / m_infoCreate.scale.y,
+				rPolygon->GetSize().z / m_infoCreate.scale.z
+			));
+		}
+
+		if (!m_pActor->GetCube().empty())
+		{ // キューブの当たり判定が存在していた場合
+
 			// 方向の設定処理
 			SetAngle(useful::RotToFourDire(GetVec3Rotation().y));
 		}

@@ -37,6 +37,7 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
+#include "enemyAttack.h"
 
 //************************************************************
 //	定数宣言
@@ -280,6 +281,12 @@ void CPlayer::Update(const float fDeltaTime)
 
 		// 通常状態の更新
 		currentMotion = UpdateNormal(fDeltaTime);
+		break;
+
+	case STATE_DODGE:
+
+		// 回避状態の更新
+		currentMotion = UpdateDodge(fDeltaTime);
 		break;
 
 	default:
@@ -711,6 +718,15 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
+}
+
+//===========================================
+//  回避状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
+{
+
+	return EMotion();
 }
 
 //============================================================
@@ -1245,6 +1261,14 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 分身を呼び戻す
 	CallClone();
 
+	// 回避処理を呼び出す
+	if (Dodge(rPos, pPad))
+	{
+		// 回避状態に変更
+		m_state = STATE_DODGE;
+		return;
+	}
+
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return; }
 
@@ -1446,6 +1470,52 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	}
 
 	return true;
+}
+
+//===========================================
+//  回避処理
+//===========================================
+bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
+{
+	// 右スティック入力がない場合falseを返す
+	if (!pPad->GetTriggerRStick()) { return false; }
+
+	// 攻撃する敵のリストを取得
+	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
+
+	// リストがnullの場合falseを返す
+	if (CEnemyAttack::GetList() == nullptr) { return false; }
+
+	// 攻撃範囲を取得
+	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();
+	D3DXVECTOR3 coliisionDown = CEnemyAttack::GetAttackDown();
+
+	// 全ての敵を確認する
+	for (CEnemyAttack* enemy : list)
+	{
+		// 回避可能状態でない場合次に進む
+		if (!enemy->IsDodge()) { continue; }
+
+		// ボックスの当たり判定
+		if (!collision::Box3D
+		(
+			rPos,				// 判定位置
+			enemy->GetVec3Position(),			// 判定目標位置
+			GetVec3Sizing(),	// 判定サイズ(右・上・後)
+			GetVec3Sizing(),	// 判定サイズ(左・下・前)
+			coliisionUp,		// 判定目標サイズ(右・上・後)
+			coliisionDown		// 判定目標サイズ(左・下・前)
+		))
+		{
+			// 当たっていない場合は次に進む
+			continue;
+		}
+
+		// 回避に成功しtrueを返す
+		return true;
+	}
+
+	return false;
 }
 
 //==========================================

@@ -502,14 +502,27 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 目標向きを目標位置方向にする
 	LookTarget(*pPos);
 
-	// 攻撃判定を false にする
-	SetEnableAttack(false);
+	// 回避受付フラグを false にする
+	SetEnableDodge(false);
+
+	// 攻撃カウントをリセットする
+	SetAttackCount(0);
 
 	// 移動処理
 	Move(pPos, *pRot, SPEED, fDeltaTime);
 
 	if (Approach(*pPos))
 	{ // 接近した場合
+
+		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
+		{ // 目標がプレイヤーの場合
+
+			// 回避受付フラグを true にする
+			SetEnableDodge(true);
+
+			// 攻撃カウントをリセットする
+			SetAttackCount(0);
+		}
 
 		// 攻撃状態にする
 		m_state = STATE_ATTACK;
