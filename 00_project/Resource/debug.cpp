@@ -212,7 +212,7 @@ bool CDebug::GetEnableShader(void) const
 
 #else	// NDEBUG
 
-bool CDebug::GetEnableShader(void) { return true; }
+bool CDebug::GetEnableShader(void) const { return true; }
 
 #endif	// _DEBUG
 
