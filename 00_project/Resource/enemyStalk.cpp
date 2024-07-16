@@ -24,12 +24,14 @@ namespace
 {
 	const char* SETUP_TXT = "data\\CHARACTER\\enemy.txt";	// セットアップテキスト相対パス
 	const int	BLEND_FRAME_OTHER = 5;		// モーションの基本的なブレンドフレーム
+	const int	BLEND_FRAME_UPSET = 8;		// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND = 15;		// モーション着地のブレンドフレーム
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
 	const float SPEED = -290.0f;			// 速度
 	const float ROT_REV = 4.0f;				// 向きの補正係数
+	const int UPSET_STATE_COUNT = 3;		// 動揺状態のカウント数
 	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
@@ -46,7 +48,8 @@ namespace
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
 m_state(STATE_CRAWL),
-m_nStateCount(0)
+m_nStateCount(0),
+m_nNumUpsetLoop(0)
 {
 
 }
@@ -288,8 +291,21 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// 待機モーションの設定
-			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+			// 動揺モーションのループ数を加算する
+			m_nNumUpsetLoop++;
+
+			if (m_nNumUpsetLoop < UPSET_STATE_COUNT)
+			{ // 動揺モーションのループ回数が一定数未満の場合
+
+				// 待機モーションの設定
+				SetMotion(MOTION_UPSET, BLEND_FRAME_UPSET);
+			}
+			else
+			{ // 上記以外
+
+				// 待機モーションの設定
+				SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+			}
 		}
 
 		break;
@@ -468,8 +484,8 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 目標位置の視認処理
 		LookTarget(*pPos);
 
-		// 攻撃判定を false にする
-		SetEnableAttack(false);
+		// 回避受付フラグを false にする
+		SetEnableDodge(false);
 	}
 	else
 	{ // 上記以外
@@ -495,6 +511,13 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 	if (Approach(*pPos))
 	{ // 接近した場合
+
+		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
+		{ // 目標がプレイヤーの場合
+
+			// 回避受付フラグを true にする
+			SetEnableDodge(true);
+		}
 
 		// 攻撃状態にする
 		m_state = STATE_ATTACK;
@@ -575,12 +598,14 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 {
-	if (GetMotionType() != MOTION_ATTACK &&
-		GetMotionType() != MOTION_UPSET)
-	{ // 動揺モーションじゃなかった場合
+	if (m_nNumUpsetLoop >= UPSET_STATE_COUNT)
+	{ // 一定時間経過した場合
 
 		// 警戒状態にする
 		m_state = STATE_CAUTION;
+
+		// 動揺モーションのループ数を0にする
+		m_nNumUpsetLoop = 0;
 
 		// 待機モーションにする
 		return MOTION_IDOL;
@@ -631,8 +656,8 @@ CEnemyStalk::EMotion CEnemyStalk::Caution(void)
 		SetTarget(TARGET_NONE);
 	}
 
-	// TODO：攻撃モーションを返す
-	return MOTION_ATTACK;
+	// TODO：待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================
