@@ -283,6 +283,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
+	case STATE_DODGE:
+
+		// 回避状態の更新
+		currentMotion = UpdateDodge(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -712,6 +718,15 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
+}
+
+//===========================================
+//  回避状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
+{
+
+	return EMotion();
 }
 
 //============================================================
@@ -1246,6 +1261,14 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 分身を呼び戻す
 	CallClone();
 
+	// 回避処理を呼び出す
+	if (Dodge(rPos, pPad))
+	{
+		// 回避状態に変更
+		m_state = STATE_DODGE;
+		return;
+	}
+
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return; }
 
@@ -1452,8 +1475,11 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 //  回避処理
 //===========================================
-bool CPlayer::Avert(D3DXVECTOR3& rPos)
+bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
+	// 右スティック入力がない場合falseを返す
+	if (!pPad->GetTriggerRStick()) { return false; }
+
 	// 攻撃する敵のリストを取得
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
@@ -1468,7 +1494,7 @@ bool CPlayer::Avert(D3DXVECTOR3& rPos)
 	for (CEnemyAttack* enemy : list)
 	{
 		// 回避可能状態でない場合次に進む
-		if (!enemy->IsAttack()) { continue; }
+		if (!enemy->IsDodge()) { continue; }
 
 		// ボックスの当たり判定
 		if (!collision::Box3D
@@ -1485,7 +1511,8 @@ bool CPlayer::Avert(D3DXVECTOR3& rPos)
 			continue;
 		}
 
-		// スティック入力の取得
+		// 回避に成功しtrueを返す
+		return true;
 	}
 
 	return false;
