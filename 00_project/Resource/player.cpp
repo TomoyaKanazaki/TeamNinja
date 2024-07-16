@@ -737,9 +737,6 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	m_move.x = sinf(rot) * DODGE_MOVE;
 	m_move.z = cosf(rot) * DODGE_MOVE;
 
-	// エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), m_move, 25.0f);
-
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1310,6 +1307,13 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 回避処理を呼び出す
 	if (Dodge(rPos, pPad))
 	{
+		// 移動方向の算出
+		m_move.x = sinf(rRot.y) * DODGE_MOVE;
+		m_move.z = cosf(rRot.y) * DODGE_MOVE;
+
+		// エフェクトを出す
+		GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 25.0f);
+
 		// 回避状態に変更
 		m_state = STATE_DODGE;
 		return true;
