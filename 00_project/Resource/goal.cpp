@@ -196,9 +196,6 @@ void CGoal::CollisionPlayer(void)
 	if (!collision::CirclePillar(pos, Player->GetVec3Position(), RADIUS, Player->GetRadius()))
 	{ return; }
 
-	// ゴール時のUIを表示する
-	CPopUpUI::Create(TEXTURE);
-
 	// クリアフラグをオンにする
 	m_bClear = true;
 }
