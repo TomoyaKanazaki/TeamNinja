@@ -94,6 +94,7 @@ private:
 	// メンバ変数
 	EState m_state;						// 状態
 	int m_nStateCount;					// 状態カウント
+	int m_nNumUpsetLoop;				// 動揺モーションのループ回数
 };
 
 #endif	// _ENEMY_CHASE_H_

@@ -49,6 +49,11 @@ public:
 	
 	void SetOnlyDiffuse(const D3DXCOLOR& rDiffuse);			// 拡散光のみ設定
 
+	void SetFog(const D3DXCOLOR& rColor, const float& rNear, const float& rFar);	//フォグパラメータまとめて設定
+	void SetFogColor(const D3DXCOLOR& rColor);				//フォグ色
+	void SetFogNear(const float& rNear);					//フォグ開始距離
+	void SetFogFar(const float& rFar);						//フォグ終了距離
+
 	void SetShadowMap();									//シャドウマッピング用のデータ設定
 
 	// 静的メンバ関数
@@ -75,6 +80,9 @@ private:
 	D3DXHANDLE m_hLightProjMat;	// ライト射影変換行列ハンドル
 	D3DXHANDLE m_hShadowMapTex;	// シャドウマップテクスチャハンドル
 	
+	D3DXHANDLE m_hFogColor;		//フォグ色
+	D3DXHANDLE m_hFogNear;		//フォグ開始距離
+	D3DXHANDLE m_hFogFar;		//フォグ終了距離
 };
 
 #endif	// _TOON_SHADOW_H_
