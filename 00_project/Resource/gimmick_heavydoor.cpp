@@ -26,7 +26,8 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 MOVEUP	= D3DXVECTOR3(0.0f, 60.0f, 0.0f);	// 扉が上がる移動量
+	const D3DXVECTOR3 WAIT_OFFSET	= D3DXVECTOR3(65.0f, 0.0f, 65.0f);	// 待機位置のオフセット
+	const D3DXVECTOR3 MOVEUP		= D3DXVECTOR3(0.0f, 60.0f, 0.0f);	// 扉が上がる移動量
 	const float GRAVITY	= 360.0f;	// 重力
 	const float CLONE_UP = 2.0f;	// 分身の身長に加算する値
 }
@@ -196,11 +197,38 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 親クラスの位置設定
 	CGimmickAction::SetVec3Position(rPos);
 
-	// 枠の位置設定
-	m_pGateModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 65.0f));
+	// 方向の設定
+	D3DXVECTOR3 rot = VEC3_ZERO;
+	switch (GetAngle())
+	{
+	case EAngle::ANGLE_0: // 0
+		rot = D3DXVECTOR3(0.0f, D3DX_PI * 0.0f, 0.0f);
+		break;
 
-	// 扉の位置設定
-	m_pDoorModel->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.0f, 65.0f));
+	case EAngle::ANGLE_90: // 1.57
+		rot = D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f);
+		break;
+
+	case EAngle::ANGLE_180: // 3.14
+		rot = D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, 0.0f);
+		break;
+
+	case EAngle::ANGLE_270: // 4.71
+		rot = D3DXVECTOR3(0.0f, D3DX_PI * 1.5f, 0.0f);
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 見た目の方向設定
+	m_pGateModel->SetVec3Rotation(rot);
+	m_pDoorModel->SetVec3Rotation(rot);
+
+	// 見た目の位置設定
+	m_pGateModel->SetVec3Position(rPos);
+	m_pDoorModel->SetVec3Position(rPos);
 }
 
 //============================================================
@@ -223,6 +251,36 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* 
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
+	// 角度を取得
+	EAngle angle = GetAngle();
+	float rot = 0.0f;
+	switch (angle)
+	{
+	case EAngle::ANGLE_0: // 0
+		rot = D3DX_PI * 0.0f;
+		break;
+
+	case EAngle::ANGLE_90: // 1.57
+		rot = D3DX_PI * 0.5f;
+		break;
+
+	case EAngle::ANGLE_180: // 3.14
+		rot = D3DX_PI * 1.0f;
+		break;
+
+	case EAngle::ANGLE_270: // 4.71
+		rot = D3DX_PI * 1.5f;
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 待機位置の中心を算出
+	pos.x += sinf(rot) * WAIT_OFFSET.x;
+	pos.z += cosf(rot) * WAIT_OFFSET.z;
+
 	// 最大数を取得
 	int nNumActive = GetNumActive();
 
@@ -232,13 +290,37 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* 
 	// 自身の横幅を取得
 	D3DXVECTOR3 size = GetVec3Sizing();
 
-	// 待機位置の相対値を算出
-	float fValue = (size.x / (float)(nNumActive + 1)) * (Idx + 1);
-
-	// 待機位置を設定
+	// 待機位置の算出
 	D3DXVECTOR3 posWait = pos;
-	posWait.x += fValue - (size.x * 0.5f);
+	float fValue = 0.0f;
+	switch (angle)
+	{
+	case EAngle::ANGLE_0: // 0
+	case EAngle::ANGLE_180: // 3.14
 
+		// 待機位置の相対値を算出
+		fValue = (size.x / (float)(nNumActive + 1)) * (Idx + 1);
+
+		// 待機位置を設定
+		posWait.x += fValue - (size.x * 0.5f);
+		break;
+
+	case EAngle::ANGLE_90: // 1.57
+	case EAngle::ANGLE_270: // 4.71
+
+		// 待機位置の相対値を算出
+		fValue = (size.z / (float)(nNumActive + 1)) * (Idx + 1);
+
+		// 待機位置を設定
+		posWait.z += fValue - (size.z * 0.5f);
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 待機位置を返す
 	return posWait;
 }
 
