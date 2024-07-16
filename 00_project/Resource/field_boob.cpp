@@ -7,11 +7,13 @@
 #include "field_boob.h"
 #include "player_clone.h"
 #include "player.h"
+#include "liquid.h"
 
 //==========================================
 //  コンストラクタ
 //==========================================
-CGimmickBoob::CGimmickBoob() : CField()
+CGimmickBoob::CGimmickBoob() : CField(),
+m_bLiquid(false)
 {
 
 }
@@ -38,6 +40,9 @@ HRESULT CGimmickBoob::Init(void)
 		return E_FAIL;
 	}
 
+	// 描画を消す
+	SetEnableDraw(false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -56,6 +61,22 @@ void CGimmickBoob::Uninit(void)
 //==========================================
 void CGimmickBoob::Update(const float fDeltaTime)
 {
+	// リキッドの生成
+	if (!m_bLiquid)
+	{
+		m_bLiquid = true;
+		CLiquid::Create
+		(
+			CLiquid::TYPE_BOOB,
+			GetVec3Position(),
+			GetVec3Rotation(),
+			GetVec2Sizing(),
+			D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.8f),
+			GetTexPattern(),
+			CLiquid::STexMove(D3DXVECTOR2(0.0005f, 0.0005f), D3DXVECTOR2(-0.0005f, -0.0005f))
+		);
+	}
+
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
 }
@@ -85,7 +106,7 @@ void CGimmickBoob::Miss(CPlayerClone* pClone)
 {
 
 }
-//===
+
 // ========================================
 //  文字列(フラグ)の追加
 //===========================================
