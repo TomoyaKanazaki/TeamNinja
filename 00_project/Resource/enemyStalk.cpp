@@ -484,8 +484,8 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 目標位置の視認処理
 		LookTarget(*pPos);
 
-		// 攻撃判定を false にする
-		SetEnableAttack(false);
+		// 回避受付フラグを false にする
+		SetEnableDodge(false);
 	}
 	else
 	{ // 上記以外
@@ -511,6 +511,13 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 	if (Approach(*pPos))
 	{ // 接近した場合
+
+		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
+		{ // 目標がプレイヤーの場合
+
+			// 回避受付フラグを true にする
+			SetEnableDodge(true);
+		}
 
 		// 攻撃状態にする
 		m_state = STATE_ATTACK;

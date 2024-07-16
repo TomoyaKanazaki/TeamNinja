@@ -76,8 +76,8 @@ public:
 	int GetAttackCount(void) const				{ return m_nAttackCount; }	// 攻撃カウント取得
 	void SetAlpha(const float fAlpha)			{ m_fAlpha = fAlpha; }		// 透明度設定
 	float GetAlpha(void) const					{ return m_fAlpha; }		// 透明度取得
-	void SetEnableAttack(const bool bAttack)	{ m_bAttack = bAttack; }	// 攻撃状況設定
-	bool IsAttack(void) const					{ return m_bAttack; }		// 攻撃状況取得
+	void SetEnableDodge(const bool bAttack)		{ m_bDodge = bAttack; }		// 回避受付フラグ設定
+	bool IsDodge(void) const					{ return m_bDodge; }		// 回避受付フラグ取得
 
 	// メンバ関数
 	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理
@@ -135,7 +135,7 @@ private:
 	EType m_type;				// 種類
 	int m_nAttackCount;			// 攻撃カウント
 	float m_fAlpha;				// 透明度
-	bool m_bAttack;				// 攻撃状況TODO：後で変更
+	bool m_bDodge;				// 回避受付フラグ
 };
 
 #endif	// _ENEMY_CHASE_H_
