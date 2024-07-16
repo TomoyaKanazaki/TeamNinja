@@ -98,7 +98,8 @@ void CRetentionManager::Release(CRetentionManager *&prRetentionManager)
 //============================================================
 void CRetentionManager::SetResult(const EWin win, const float fTime)
 {
-	if (win <= WIN_NONE || win >= WIN_MAX) { assert(false); return; }	// Ÿ—˜‚ª³‹K‚Å‚Í‚È‚¢
+	// Ÿ—˜‚ª³‹K’l‚Å‚Í‚È‚¢ê‡”²‚¯‚é
+	if (win <= WIN_NONE || win >= WIN_MAX) { assert(false); return; }
 
 	// ˆø”‚ÌƒNƒŠƒAó‹µ‚ğİ’è
 	m_result.win = win;
