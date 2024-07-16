@@ -35,14 +35,10 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 POS_NAME	 = D3DXVECTOR3(0.0f, 60.0f, 400.0f);	// 名前の表示位置
-	const D3DXVECTOR3 POS_SKIP	 = D3DXVECTOR3(1092.0f, 673.0f, 0.0f);	// スキップ操作の表示位置
-	const D3DXVECTOR3 SIZE_SKIP	 = D3DXVECTOR3(381.0f, 77.0f, 0.0f);	// スキップ操作の表示大きさ
-	const int CHANGE_UI_PRIORITY = 5;		// シネマスコープ終了時のUI優先順位
-	const float GAMEEND_WAITTIME = 2.0f;	// リザルト画面への遷移余韻フレーム
+	const char* MAP_TXT			= "data\\TXT\\map.txt";			// マップ情報のパス
+	const char* START_TEXTURE	= "data\\TEXTURE\\start.png";	// 開始のテクスチャ
 
-	const char* MAP_TXT = "data\\TXT\\map.txt"; // マップ情報のパス
-	const char* START_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
+	const float GAMEEND_WAITTIME	= 2.0f;	// リザルト画面への遷移余韻フレーム
 
 #ifdef _DEBUG
 	bool bCamera = false;
@@ -79,39 +75,6 @@ HRESULT CGameManager::Init(void)
 
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
-
-#if 0
-	CEnemy::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_STALK);
-	CEnemy::Create(D3DXVECTOR3(-600.0f, 0.0f, -500.0f), VEC3_ZERO, CEnemy::TYPE_CAVEAT);
-	CEnemy::Create(D3DXVECTOR3(600.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemy::TYPE_WOLF);
-
-	CGimmick::Create(D3DXVECTOR3(400.0f, 0.0f, -1000.0f), EAngle::ANGLE_0, D3DXVECTOR3(300.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 2);
-	CGimmick::Create(D3DXVECTOR3(800.0f, 0.0f, -1300.0f), EAngle::ANGLE_0, D3DXVECTOR3(100.0f, 0.0f, 100.0f), CGimmick::TYPE_JUMPTABLE, 2);
-	CGimmick::Create(D3DXVECTOR3(-400.0f, 0.0f, -500.0f), EAngle::ANGLE_0, D3DXVECTOR3(200.0f, 0.0f, 50.0f), CGimmick::TYPE_STEP, 2);
-
-	CGimmick::Create(D3DXVECTOR3(-1000.0f, 0.0f, -500.0f), EAngle::ANGLE_0, D3DXVECTOR3(100.0f, 0.0f, 50.0f), CGimmick::TYPE_JUMPOFF, 2);
-	CGimmick::Create(D3DXVECTOR3(-1400.0f, 0.0f, -300.0f), EAngle::ANGLE_0, D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 6);
-
-	CMapModel::Create(D3DXVECTOR3(-800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE1);
-
-	CMapModel::Create(D3DXVECTOR3(-400.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE2);
-
-	CMapModel::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE3);
-
-	CMapModel::Create(D3DXVECTOR3(400.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE4);
-
-	CMapModel::Create(D3DXVECTOR3(1200.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE5);
-
-	CMapModel::Create(D3DXVECTOR3(1500.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE6);
-
-	CMapModel::Create(D3DXVECTOR3(1800.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE7);
-
-	CMapModel::Create(D3DXVECTOR3(2100.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE8);
-
-	CMapModel::Create(D3DXVECTOR3(2400.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE9);
-
-	CMapModel::Create(D3DXVECTOR3(2700.0f, 0.0f, 0.0f), VEC3_ZERO, CMapModel::MODEL_TYPE_HOUSE10);
-#endif
 
 // 森00マップ用ギミック置き場
 #if 0
@@ -217,41 +180,13 @@ HRESULT CGameManager::Init(void)
 	CGimmick::Create(D3DXVECTOR3(12075.0f, 550.0f, -200.0f), EAngle::ANGLE_0, D3DXVECTOR3(400.0f, 0.0f, 350.0f), CGimmick::TYPE_BRIDGE, 3);
 #endif
 
-// 金崎用ギミック置き場
-#if 0
-#endif
-
-// ギミック置き場
-#if 0
-	// 梯子：手前
-	CGimmick::Create(D3DXVECTOR3(-1450.0f, 1.0f, 450.0f), VEC3_ZERO, D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 2);
-	CGimmick::Create(D3DXVECTOR3(-950.0f, 151.0f, 450.0f), VEC3_ZERO, D3DXVECTOR3(200.0f, 0.0f, 700.0f), CGimmick::TYPE_STEP, 6);
-
-	// ジャンプ台：手前
-	CGimmick::Create(D3DXVECTOR3(-100.0f, 1.0f, -50.0f), VEC3_ZERO, D3DXVECTOR3(300.0f, 0.0f, 300.0f), CGimmick::TYPE_JUMPTABLE, 4);
-
-	// 橋：中央
-	CGimmick::Create(D3DXVECTOR3(600.0f, 600.0f, 450.0f), VEC3_ZERO, D3DXVECTOR3(850.0f, 0.0f, 150.0f), CGimmick::TYPE_BRIDGE, 7);
-
-	// 重ドア：中央
-	CGimmick::Create(D3DXVECTOR3(600.0f, 1.0f, 100.0f), VEC3_ZERO, D3DXVECTOR3(400.0f, 0.0f, 100.0f), CGimmick::TYPE_HEAVYDOOR, 4);
-
-	{ // 複数ボタン：最奥
-		std::vector<CGimmickMalti::SButton> vec;
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(9900.0f, 0.0f, -2250.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(10550.0f, 0.0f, -3200.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(10750.0f, 0.0f, -2350.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-		CGimmickMalti::Create(vec);
-	}
-#endif
-
-	// わんわんおー
+// わんわんおー
 #if 0
 	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
-	// さむらい
+// さむらい
 #if 1
 	CEnemyAttack::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyAttack::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
@@ -316,31 +251,15 @@ void CGameManager::Update(const float fDeltaTime)
 				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
 			}
 		}
+		break;
 
+	case STATE_RESULT:
 		break;
 
 	default:	// 例外処理
 		assert(false);
 		break;
 	}
-}
-
-//============================================================
-//	状態設定処理
-//============================================================
-void CGameManager::SetState(const EState state)
-{
-	// 状態を設定
-	m_state = state;
-}
-
-//============================================================
-//	状態取得処理
-//============================================================
-CGameManager::EState CGameManager::GetState(void) const
-{
-	// 状態を返す
-	return m_state;
 }
 
 //============================================================
@@ -354,16 +273,8 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
 
-	if (win == CRetentionManager::WIN_CLEAR)
-	{ // 勝利していた場合
-
-		// ランキングに設定
-		//CRankingManager::Set(CSceneGame::GetTimerUI()->GetTime());	// TODO：ここでインゲームリザルトへ...
-	}
-	else
-	{
-
-	}
+	// リザルト状態にする
+	m_state = STATE_RESULT;
 }
 
 //============================================================
