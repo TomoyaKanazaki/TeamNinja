@@ -57,7 +57,7 @@ m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
 m_type(TYPE_STALK),			// 種類
 m_fAlpha(1.0f),				// 透明度
-m_bAttack(false)			// 攻撃状況
+m_bDodge(false)				// 回避受付フラグ
 {
 
 }
@@ -137,6 +137,15 @@ void CEnemyAttack::Update(const float fDeltaTime)
 {
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
+
+	if (m_bDodge)
+	{
+		SetAllMaterial(material::Blue());
+	}
+	else
+	{
+		ResetMaterial();
+	}
 }
 
 //============================================================
@@ -335,8 +344,8 @@ bool CEnemyAttack::ShakeOffClone(void)
 //============================================================
 void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 {
-	// 攻撃判定が true の場合抜ける
-	if (m_bAttack == true) { return; }
+	// 回避受付フラグが false の場合、抜ける
+	if (m_bDodge == false) { return; }
 
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
@@ -378,8 +387,8 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			CScene::GetPlayer()->Hit(500);
 		}
 
-		// 攻撃状況を true にする
-		m_bAttack = true;
+		// 回避受付フラグを false にする
+		m_bDodge = false;
 	}
 }
 
@@ -391,8 +400,7 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	// 分身の情報が存在しない場合抜ける
 	if (CPlayerClone::GetList() == nullptr ||
 		*CPlayerClone::GetList()->GetBegin() == nullptr ||
-		m_pClone == nullptr ||
-		m_bAttack == true)
+		m_pClone == nullptr)
 	{
 		return;
 	}
@@ -449,8 +457,8 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	// 分身との戦闘エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 20.0f);
 
-	// 攻撃状況を true にする
-	m_bAttack = true;
+	// 回避受付フラグを false にする
+	m_bDodge = false;
 }
 
 //============================================================
