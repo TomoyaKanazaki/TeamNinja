@@ -140,7 +140,9 @@ HRESULT CToonShadow::Init(void)
 			m_hShadowMapTex = pEffect->GetParameterByName(nullptr, "s_texShadowMap");		// シャドウマップテクスチャ
 			m_hEyePos = pEffect->GetParameterByName(nullptr, "s_EyePos");					// 視点
 
-
+			m_hFogColor = pEffect->GetParameterByName(nullptr, "s_FogColor");				// フォグ色
+			m_hFogNear = pEffect->GetParameterByName(nullptr, "s_FogNear");					// フォグ開始距離
+			m_hFogFar = pEffect->GetParameterByName(nullptr, "s_FogFar");					// フォグ終了距離
 
 
 			// トゥーンマップテクスチャを設定
@@ -297,6 +299,45 @@ void CToonShadow::SetOnlyDiffuse(const D3DXCOLOR& rDiffuse)
 
 	// 放射光の設定
 	SetEmissive(XCOL_ABLACK);
+}
+
+//============================================================
+//	フォグ設定処理
+//============================================================
+void CToonShadow::SetFog(const D3DXCOLOR& rColor, const float& rNear, const float& rFar)
+{
+	// フォグ色の設定
+	D3DXVECTOR4 Color = D3DXVECTOR4(rColor.r, rColor.g, rColor.b, rColor.a);
+	GetEffect()->SetVector(m_hFogColor, &Color);
+	// 開始距離
+	GetEffect()->SetFloat(m_hFogNear, rNear);
+	//終了距離
+	GetEffect()->SetFloat(m_hFogFar, rFar);
+}
+//============================================================
+//	フォグ色設定処理
+//============================================================
+void CToonShadow::SetFogColor(const D3DXCOLOR& rColor)
+{
+	// フォグ色の設定
+	D3DXVECTOR4 Color = D3DXVECTOR4(rColor.r, rColor.g, rColor.b, rColor.a);
+	GetEffect()->SetVector(m_hFogColor, &Color);
+}
+//============================================================
+//	フォグ開始距離設定処理
+//============================================================
+void CToonShadow::SetFogNear(const float& rNear)
+{
+	// 開始距離
+	GetEffect()->SetFloat(m_hFogNear, rNear);
+}
+//============================================================
+//	フォグ終了距離設定処理
+//============================================================
+void CToonShadow::SetFogFar(const float& rFar)
+{
+	// 開始距離
+	GetEffect()->SetFloat(m_hFogFar, rFar);
 }
 //============================================================
 //	シャドウマッピング設定処理
