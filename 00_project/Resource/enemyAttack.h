@@ -65,19 +65,20 @@ public:
 	static CListManager<CEnemyAttack>* GetList(void);			// リスト取得
 
 	// セット・ゲット関係
-	CEnemyNav* GetNavigation(void) const		{ return m_pNav; }			// ナビゲーションの情報取得
-	CEnemyChaseRange* GetChaseRange(void) const { return m_pChaseRange; }	// 追跡範囲の情報
-	void SetClone(CPlayerClone* pClone)			{ m_pClone = pClone; }		// 分身の情報設定
-	CPlayerClone* GetClone(void) const			{ return m_pClone; }		// 分身の情報取得
-	void SetTargetPos(const D3DXVECTOR3& pos)	{ m_posTarget = pos; }		// 目標の位置設定
-	D3DXVECTOR3 GetTargetPos(void) const		{ return m_posTarget; }		// 目標の位置取得
-	void SetTarget(const ETarget target)		{ m_target = target; }		// 標的設定
-	ETarget GetTarget(void) const				{ return m_target; }		// 標的取得
-	int GetAttackCount(void) const				{ return m_nAttackCount; }	// 攻撃カウント取得
-	void SetAlpha(const float fAlpha)			{ m_fAlpha = fAlpha; }		// 透明度設定
-	float GetAlpha(void) const					{ return m_fAlpha; }		// 透明度取得
-	void SetEnableDodge(const bool bAttack)		{ m_bDodge = bAttack; }		// 回避受付フラグ設定
-	bool IsDodge(void) const					{ return m_bDodge; }		// 回避受付フラグ取得
+	CEnemyNav* GetNavigation(void) const		{ return m_pNav; }				// ナビゲーションの情報取得
+	CEnemyChaseRange* GetChaseRange(void) const { return m_pChaseRange; }		// 追跡範囲の情報
+	void SetClone(CPlayerClone* pClone)			{ m_pClone = pClone; }			// 分身の情報設定
+	CPlayerClone* GetClone(void) const			{ return m_pClone; }			// 分身の情報取得
+	void SetTargetPos(const D3DXVECTOR3& pos)	{ m_posTarget = pos; }			// 目標の位置設定
+	D3DXVECTOR3 GetTargetPos(void) const		{ return m_posTarget; }			// 目標の位置取得
+	void SetTarget(const ETarget target)		{ m_target = target; }			// 標的設定
+	ETarget GetTarget(void) const				{ return m_target; }			// 標的取得
+	void SetAttackCount(const int nCount)		{ m_nAttackCount = nCount; }	// 攻撃カウント設定
+	int GetAttackCount(void) const				{ return m_nAttackCount; }		// 攻撃カウント取得
+	void SetAlpha(const float fAlpha)			{ m_fAlpha = fAlpha; }			// 透明度設定
+	float GetAlpha(void) const					{ return m_fAlpha; }			// 透明度取得
+	void SetEnableDodge(const bool bAttack)		{ m_bDodge = bAttack; }			// 回避受付フラグ設定
+	bool IsDodge(void) const					{ return m_bDodge; }			// 回避受付フラグ取得
 
 	// メンバ関数
 	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理

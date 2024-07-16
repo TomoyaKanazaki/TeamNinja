@@ -31,8 +31,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_ATTACK,		// 攻撃モーション
 		MOTION_UPSET,		// 動揺モーション
-		MOTION_FALL,		// TODO：落下モーション
-		MOTION_LANDING,		// TODO：着地モーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
