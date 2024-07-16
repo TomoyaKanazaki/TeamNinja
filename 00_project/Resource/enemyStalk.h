@@ -31,8 +31,8 @@ public:
 		MOTION_FOUND,		// 発見モーション
 		MOTION_ATTACK,		// 攻撃モーション
 		MOTION_UPSET,		// 動揺モーション
-		MOTION_FALL,		// TODO：落下モーション
-		MOTION_LANDING,		// TODO：着地モーション
+		MOTION_FALL,		// 落下モーション
+		MOTION_LANDING,		// 着地モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -77,7 +77,7 @@ private:
 
 	// メンバ関数
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
-	EMotion Warning(D3DXVECTOR3* pPos);			// 警告処理
+	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
 	EMotion Upset(void);						// 動揺処理
