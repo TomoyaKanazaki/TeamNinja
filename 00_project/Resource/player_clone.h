@@ -3,6 +3,7 @@
 //	プレイヤーの分身ヘッダー [player_clone.h]
 //	Author：小原立暉
 //	Adder ：藤田勇一
+//	Adder ：金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -125,7 +126,6 @@ public:
 	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; }	//ギミックフラグの設定
 
 	// 静的メンバ関数
-	static CPlayerClone* Create();													// 生成
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
 	static void Delete(const int nNum);												// 消去処理

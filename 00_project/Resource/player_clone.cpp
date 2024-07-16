@@ -557,41 +557,6 @@ bool CPlayerClone::GetFrags(const char cFrag)
 	return m_sFrags.find(cFrag) != std::string::npos;
 }
 
-//============================================================
-//	生成処理
-//============================================================
-CPlayerClone* CPlayerClone::Create(void)
-{
-	// ポインタを宣言
-	CPlayerClone* pPlayer = new CPlayerClone;	// プレイヤー情報
-	if (pPlayer == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// プレイヤーの初期化
-		if (FAILED(pPlayer->Init()))
-		{ // 初期化に失敗した場合
-
-			// プレイヤーの破棄
-			SAFE_DELETE(pPlayer);
-			return nullptr;
-		}
-
-		// 発見フラグを立てる
-		pPlayer->m_bFind = true;
-
-		// 位置を設定する
-		pPlayer->SetVec3Position(pPlayer->CalcStartPos());
-
-		// 確保したアドレスを返す
-		return pPlayer->Block();
-	}
-}
-
 //==========================================
 //  生成処理(歩行)
 //==========================================
