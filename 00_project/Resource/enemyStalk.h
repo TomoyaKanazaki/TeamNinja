@@ -77,7 +77,7 @@ private:
 
 	// ƒƒ“ƒoŠÖ”
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// „‰ñˆ—
-	EMotion Warning(D3DXVECTOR3* pPos);			// Œxˆ—
+	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// Œxˆ—
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// ’ÇÕˆ—
 	EMotion Attack(const D3DXVECTOR3& rPos);	// UŒ‚ˆ—
 	EMotion Upset(void);						// “®—hˆ—
