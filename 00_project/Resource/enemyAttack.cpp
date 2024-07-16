@@ -23,6 +23,7 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
+#include "effekseerControl.h"
 
 //************************************************************
 //	定数宣言
@@ -402,6 +403,9 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 
 	// ヒット処理
 	pClone->Hit(20);
+
+	// 分身との戦闘エフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 20.0f);
 
 	// 攻撃状況を true にする
 	m_bAttack = true;
