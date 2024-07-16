@@ -44,6 +44,11 @@ public:
 	// 静的メンバ関数
 	static CGimmickMalti* Create(std::vector<SButton> vecButton); // 生成
 
+#ifdef _DEBUG
+	// メンバ関数
+	const std::vector<CGimmick*> GetVectorButton(void) override { return m_vecButton; }	// ボタン動的配列取得
+#endif // _DEBUG
+
 private:
 	// メンバ関数
 	HRESULT CreateButton(std::vector<SButton> vecButton);	// ボタン情報生成
