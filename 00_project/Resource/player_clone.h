@@ -84,15 +84,6 @@ public:
 		ACTION_MAX
 	};
 
-	// ギミック対応状態
-	enum EGimmick
-	{
-		GIMMICK_IGNORE = 0, // ギミックを無視する状態
-		GIMMICK_REACTION, // ギミックに反応する状態
-		GIMMICK_ACTION, // ギミックに反応した状態
-		GIMMICK_MAX
-	};
-
 	// コンストラクタ
 	CPlayerClone();
 
@@ -121,8 +112,6 @@ public:
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
-	EGimmick IsGimmickFrag() const { return m_eGimmick; }			// ギミックフラグの取得
-	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; }	//ギミックフラグの設定
 
 	// 静的メンバ関数
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
@@ -155,20 +144,14 @@ private:
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
-	void UpdateIgnore(); // 無視する状態での更新
-	void UpdateReAction(); // 反応する状態での更新
-	void UpdateAction(); // 反応した状態での更新
 	bool UpdateActive(const float fDeltaTime); // アクティブ状態での処理
 
 	// メンバ関数 (金崎追加)
-	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget); // 目標の方向を向く処理
-	void Approach(void);				// 目標位置に向かう処理
-	CPlayerClone* Block();				// 分身出させないよの処理
-	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
-	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
-	bool CollisionActor();				// アクターとの当たり判定
-	bool CollisionWall();				// 壁との当たり判定
-	void CheckGimmick();				// ギミックとの当たり判定
+	void CheckGimmick();	// ギミックの接触判定
+	void Approach();		// 目標位置に向かう処理
+	CPlayerClone* Block();	// 分身出させないよの処理
+	bool CollisionActor();	// アクターとの当たり判定
+	bool CollisionWall();	// 壁との当たり判定
 
 	// メンバ関数 (藤田追加)
 	CPlayerClone* GetGimmickNextClone();	// ギミックの次の分身取得
@@ -189,7 +172,6 @@ private:
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
 	float m_fFallStart;			// 落とし穴の落ちる前の高さ
-	EGimmick m_eGimmick;		// ギミックフラグ
 	bool m_bFind;				// 発見フラグ
 	D3DXVECTOR3 m_size;			// サイズ
 	CField* m_pField;			// フィールドフラグ

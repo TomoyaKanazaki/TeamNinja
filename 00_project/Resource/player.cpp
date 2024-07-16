@@ -538,9 +538,6 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
-	// 追従している分身を消す
-	CPlayerClone::Delete();
-
 	return true;
 }
 
@@ -1305,7 +1302,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 
 #endif
 
-	// 分身を呼び戻す
+	// 分身を削除
 	DelelteClone();
 
 	// 右スティックの入力がない場合関数を抜ける
