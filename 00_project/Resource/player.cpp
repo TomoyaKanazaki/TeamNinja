@@ -477,7 +477,7 @@ void CPlayer::SetSpawn(void)
 	SetAlpha(0.0f);
 
 	// 描画を再開
-	SetEnableDraw(true);		
+	SetEnableDraw(true);
 }
 
 //============================================================
@@ -725,8 +725,21 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 {
+	// モーション情報の取得
+	CMotion* pMotion = GetMotion();
 
-	return EMotion();
+	// 回避モーション中の場合モーションの終了判定を確認
+	if (pMotion->GetType() == MOTION_DODGE)
+	{
+		// モーションが終了していた場合
+		if (pMotion->IsFinish())
+		{
+			m_state = STATE_NORMAL; // 通常状態に戻る
+			return MOTION_IDOL; // 待機モーションにする
+		}
+	}
+
+	return MOTION_DODGE;
 }
 
 //============================================================

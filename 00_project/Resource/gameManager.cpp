@@ -39,6 +39,7 @@ namespace
 	const char* START_TEXTURE	= "data\\TEXTURE\\start.png";	// 開始のテクスチャ
 
 	const float GAMEEND_WAITTIME	= 2.0f;	// リザルト画面への遷移余韻フレーム
+	const char* END_TEXTURE = "data\\TEXTURE\\start.png";		// 開始のテクスチャ
 
 #ifdef _DEBUG
 	bool bCamera = false;
@@ -272,6 +273,9 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
+
+	// 
+	CPopUpUI::Create(END_TEXTURE);
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;

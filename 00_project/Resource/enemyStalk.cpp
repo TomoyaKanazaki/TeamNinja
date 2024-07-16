@@ -163,7 +163,7 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	case CEnemyStalk::STATE_WARNING:
 
 		// 警告処理
-		nCurMotion = Warning(pPos);
+		nCurMotion = Warning(pPos, fDeltaTime);
 
 		break;
 
@@ -453,10 +453,13 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 //============================================================
 // 警告処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos)
+CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaTime)
 {
 	// 重力の更新
 	UpdateGravity();
+
+	// 敵を落下させる
+	pPos->y += GetMovePosition().y * fDeltaTime;
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
