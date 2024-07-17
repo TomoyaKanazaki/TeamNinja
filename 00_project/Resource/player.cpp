@@ -74,7 +74,7 @@ namespace
 
 	const float	STEALTH_MOVE	= 300.0f;	// ”E‚Ñ‘«‚ÌˆÚ“®—Ê
 	const float	NORMAL_MOVE = 600.0f;	// ’Êí‚ÌˆÚ“®—Ê
-	const float	DODGE_MOVE = 400.0f;	// ’Êí‚ÌˆÚ“®—Ê
+	const float	DODGE_MOVE = 800.0f;	// ‰ñ”ğ‚ÌˆÚ“®—Ê
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // •ªg‚ÌˆÚ“®—Ê
 
 	const int MAX_TENSION = 10000; // m‹C—Í‚ÌÅ‘å’l
