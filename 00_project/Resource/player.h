@@ -17,6 +17,8 @@
 #include "objectChara.h"
 #include "scene.h"
 #include "retentionManager.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	前方宣言
@@ -194,6 +196,7 @@ private:
 	std::string m_sFrags;			// ギミックフラグの文字列
 	CField* m_pCurField;			// 現在の地面
 	CField* m_pOldField;			// 過去の地面
+	CEffekseer::CEffectData* m_pEffectdata; //エフェクト情報
 
 };
 

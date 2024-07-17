@@ -126,7 +126,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fStickRot		(0.0f),			// スティックの角度
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
-	m_pOldField		(nullptr)		// 前回乗ってた地面
+	m_pOldField		(nullptr),		// 前回乗ってた地面
+	m_pEffectdata	(nullptr)		// エフェクト情報
 {
 	
 }
@@ -232,11 +233,12 @@ void CPlayer::Uninit(void)
 {
 	// 士気力ゲージの終了
 	SAFE_UNINIT(m_pTensionGauge);
-	
-	
 
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
+
+	// エフェクトの終了
+	SAFE_DELETE(m_pEffectdata);
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -723,8 +725,14 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	// 回避モーション以外の場合通常状態になる
 	if (GetMotion()->GetType() != MOTION_DODGE)
 	{
-		m_state = STATE_NORMAL; // 通常状態に戻る
-		return MOTION_IDOL; // 待機モーションにする
+		// エフェクトを削除する
+		SAFE_DELETE(m_pEffectdata);
+
+		// 通常状態に戻る
+		m_state = STATE_NORMAL;
+
+		// 待機モーションにする
+		return MOTION_IDOL;
 	}
 
 	// 向きの取得
@@ -736,6 +744,9 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
+
+	// エフェクトの位置を設定する
+	m_pEffectdata->m_pos = pos;
 
 	// 重力の更新
 	UpdateGravity();
@@ -1316,7 +1327,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
 		// エフェクトを出す
-		GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 25.0f);
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
 
 		// 回避状態に変更
 		m_state = STATE_DODGE;
