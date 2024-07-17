@@ -18,9 +18,6 @@ namespace
 	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
 }
 
-// TODO : α提出用クリアフラグ。消せ。
-bool CGimmickMalti::m_bClear = false;
-
 //=========================================
 //  コンストラクタ
 //=========================================
@@ -86,12 +83,8 @@ void CGimmickMalti::Update(const float fDeltaTime)
 
 		// 1つでもフラグがoffならフラグをfalseにする
 		m_bActive = false;
-
 		break;
 	}
-
-	// TODO : α提出用クリアフラグ。消せ。
-	if (m_bActive) { m_bClear = true; }
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);

@@ -67,6 +67,7 @@ public:
 	// セット・ゲット関係
 	CEnemyNav* GetNavigation(void) const		{ return m_pNav; }				// ナビゲーションの情報取得
 	CEnemyChaseRange* GetChaseRange(void) const { return m_pChaseRange; }		// 追跡範囲の情報
+	EType GetType(void) const					{ return m_type; }				// 種類取得
 	void SetClone(CPlayerClone* pClone)			{ m_pClone = pClone; }			// 分身の情報設定
 	CPlayerClone* GetClone(void) const			{ return m_pClone; }			// 分身の情報取得
 	void SetTargetPos(const D3DXVECTOR3& pos)	{ m_posTarget = pos; }			// 目標の位置設定

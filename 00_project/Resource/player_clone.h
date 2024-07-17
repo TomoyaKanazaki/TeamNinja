@@ -3,6 +3,7 @@
 //	プレイヤーの分身ヘッダー [player_clone.h]
 //	Author：小原立暉
 //	Adder ：藤田勇一
+//	Adder ：金崎朋弥
 //
 //============================================================
 //************************************************************
@@ -72,8 +73,7 @@ public:
 	// 行動パターン
 	enum EAction
 	{
-		ACTION_CHASE = 0,		// 通常の行動
-		ACTION_MOVE,			// 歩行
+		ACTION_MOVE = 0,		// 歩行
 		ACTION_FALL_TO_WAIT,	// 落とし穴警戒
 		ACTION_FALL,			// 落とし穴落下
 		ACTION_JUMPTABLE,		// ジャンプ台
@@ -82,15 +82,6 @@ public:
 		ACTION_BRIDGE,			// 橋
 		ACTION_BUTTON,			// ボタン
 		ACTION_MAX
-	};
-
-	// ギミック対応状態
-	enum EGimmick
-	{
-		GIMMICK_IGNORE = 0, // ギミックを無視する状態
-		GIMMICK_REACTION, // ギミックに反応する状態
-		GIMMICK_ACTION, // ギミックに反応した状態
-		GIMMICK_MAX
 	};
 
 	// コンストラクタ
@@ -121,25 +112,21 @@ public:
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	bool GetFrags(const char cFrag);							// 文字列(フラグ)の取得
-	EGimmick IsGimmickFrag() const { return m_eGimmick; }			// ギミックフラグの取得
-	void SetGimmickFrag(EGimmick gimmick) { m_eGimmick = gimmick; }	//ギミックフラグの設定
 
 	// 静的メンバ関数
-	static CPlayerClone* Create();													// 生成
 	static CPlayerClone* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move);	// 生成(歩行型)
 	static CPlayerClone* Create(CGimmickAction* gimmick);							// 生成(直接ギミック)
-	static void Delete(const int nNum);												// 消去処理
-	static void Delete(const EAction act = ACTION_CHASE);							// 選択消去処理 (金崎追加)
-	static void Delete(CPlayerClone* pClone);									// 選択消去処理 (金崎追加)
+	static void Delete();															// 全消去処理 (金崎追加)
+	static void Delete(const int nNum);												// 選択消去処理 (金崎追加)
+	static void Delete(const EAction act);											// 選択消去処理 (金崎追加)
+	static void Delete(CPlayerClone* pClone);										// 選択消去処理 (金崎追加)
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
-	static void CallBack();															// 分身を呼び戻す
 	static float GetRadius();														// 半径の取得
 	static float GetHeight();														// 身長の取得
 
 private:
 	// メンバ関数
 	EMotion UpdateMove(const float fDeltaTime);			// 移動行動時の更新
-	EMotion UpdateChase(const float fDeltaTime);		// 追従行動時の更新
 	EMotion UpdateFallToWait(const float fDeltaTime);	// 落とし穴警戒
 	EMotion UpdateFall(const float fDeltaTime);			// 落とし穴落下
 	EMotion UpdateJumpTable(const float fDeltaTime);	// ジャンプ台行動時の更新
@@ -157,28 +144,14 @@ private:
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 
-	void UpdateIgnore(); // 無視する状態での更新
-	void UpdateReAction(); // 反応する状態での更新
-	void UpdateAction(); // 反応した状態での更新
 	bool UpdateActive(const float fDeltaTime); // アクティブ状態での処理
 
 	// メンバ関数 (金崎追加)
-	CPlayerClone::EMotion ChasePrev(D3DXVECTOR3* pPosThis, D3DXVECTOR3* pRotThis);	// 前についていく処理
-	CPlayerClone::EMotion Chase	// ついていく処理
-	( // 引数
-		D3DXVECTOR3* pPosThis,			// 自身の位置
-		D3DXVECTOR3* pRotThis,			// 自身の向き
-		const D3DXVECTOR3& rPosTarget,	// ついていくやつの位置
-		const D3DXVECTOR3& rRotPrev		// ついていくやつの向き
-	);
-	void ViewTarget(const D3DXVECTOR3& rPosThis, const D3DXVECTOR3& rPosTarget); // 目標の方向を向く処理
-	void Approach(void);				// 目標位置に向かう処理
-	CPlayerClone* Block();				// 分身出させないよの処理
-	D3DXVECTOR3 CalcStartPos() const;	// 初期位置を算出
-	D3DXVECTOR3 CalcPrevBack(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot) const;	// 一つ前の対象の後ろを算出
-	bool CollisionActor();				// アクターとの当たり判定
-	bool CollisionWall();				// 壁との当たり判定
-	void CheckGimmick();				// ギミックとの当たり判定
+	void CheckGimmick();	// ギミックの接触判定
+	void Approach();		// 目標位置に向かう処理
+	CPlayerClone* Block();	// 分身出させないよの処理
+	bool CollisionActor();	// アクターとの当たり判定
+	bool CollisionWall();	// 壁との当たり判定
 
 	// メンバ関数 (藤田追加)
 	CPlayerClone* GetGimmickNextClone();	// ギミックの次の分身取得
@@ -199,7 +172,6 @@ private:
 	std::string m_sFrags;		// ギミックフラグの文字列
 	int m_nIdxGimmick;			// ギミック内の管理番号
 	float m_fFallStart;			// 落とし穴の落ちる前の高さ
-	EGimmick m_eGimmick;		// ギミックフラグ
 	bool m_bFind;				// 発見フラグ
 	D3DXVECTOR3 m_size;			// サイズ
 	CField* m_pField;			// フィールドフラグ

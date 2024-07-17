@@ -573,6 +573,9 @@
     <ClInclude Include="Resource\enemyAmbush.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\resultManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1084,6 +1087,9 @@
     </ClCompile>
     <ClCompile Include="Resource\enemyAmbush.cpp">
       <Filter>InGame\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\resultManager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
