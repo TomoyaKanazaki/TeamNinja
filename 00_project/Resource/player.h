@@ -157,6 +157,8 @@ private:
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
+	void CreateTension(); // 士気力ゲージの生成
+	void UpdateTension(); // 士気力ゲージの更新
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
