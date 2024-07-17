@@ -25,7 +25,6 @@
 //************************************************************
 class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
-class CGauge2D;			// ゲージクラス
 class CCheckPoint;		// チェックポイントクラス
 class CField;			// フィールドクラス
 
@@ -121,13 +120,11 @@ public:
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
 
 	// メンバ関数 (金崎朋弥)
-	int GetTension() const;		// 士気力の値を取得
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
 	void RecoverJust();			// ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
-	CGauge2D* GetTensionGauge() const { return m_pTensionGauge; } // 士気力ゲージの取得
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 
@@ -186,7 +183,6 @@ private:
 	float		m_fTempStick;		// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
-	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
 	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;		// 中心座標
 	bool m_bClone;					// 分身操作可能フラグ

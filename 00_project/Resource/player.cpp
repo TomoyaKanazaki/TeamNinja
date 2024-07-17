@@ -31,7 +31,6 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "transpoint.h"
-#include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
 #include "effekseerControl.h"
@@ -114,7 +113,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
-	m_pTensionGauge	(nullptr),		// 士気力ゲージのポインタ
 	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
@@ -153,7 +151,6 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
-	m_pTensionGauge	= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -188,17 +185,6 @@ HRESULT CPlayer::Init(void)
 		return E_FAIL;
 	}
 
-	// 士気力ゲージを生成
-	m_pTensionGauge = CGauge2D::Create
-	(
-		MAX_TENSION, SPEED_TENSION, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
-	);
-	m_pTensionGauge->SetNum(INIT_TENSION);
-	m_pTensionGauge->SetLabel(LABEL_UI);
-
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
 
@@ -231,9 +217,6 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	// 士気力ゲージの終了
-	SAFE_UNINIT(m_pTensionGauge);
-
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
@@ -301,23 +284,11 @@ void CPlayer::Update(const float fDeltaTime)
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 
-	// デバッグ表示
-	DebugProc::Print(DebugProc::POINT_LEFT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-
 #ifdef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
-	// 士気力の変更
-	if (pKeyboard->IsTrigger(DIK_UP))
-	{
-		m_pTensionGauge->AddNum(100);
-	}
-	if (pKeyboard->IsTrigger(DIK_DOWN))
-	{
-		m_pTensionGauge->AddNum(-100);
-	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
 		RecoverCheckPoint();
@@ -422,9 +393,6 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
 
-	// 士気力を減少
-	m_pTensionGauge->AddNum(-nDamage);
-
 	return true;
 }
 
@@ -438,9 +406,6 @@ bool CPlayer::Hit(const int nDamage)
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
-
-	// 士気力を減少
-	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
@@ -576,33 +541,11 @@ bool CPlayer::GimmickLand(void)
 }
 
 //==========================================
-//  士気力の値を取得
-//==========================================
-int CPlayer::GetTension() const
-{
-	// 士気力ゲージが存在しない場合
-	if (m_pTensionGauge == nullptr) { return -1; }
-
-	// 士気力の値を返す
-	return m_pTensionGauge->GetNum();
-}
-
-//==========================================
 //  チェックポイントでの回復処理
 //==========================================
 void CPlayer::RecoverCheckPoint()
 {
-	// 現在の士気力を取得する
-	unsigned int nTension = GetTension();
 
-	// 士気力ゲージが存在しなかった場合関数を抜ける
-	if (nTension == -1) { return; }
-
-	// 最大値と現在値の差を求める
-	float fDiff = (float)(MAX_TENSION - nTension);
-
-	// 差分の半分の値で士気力を回復する
-	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
 }
 
 //==========================================
@@ -610,12 +553,6 @@ void CPlayer::RecoverCheckPoint()
 //==========================================
 void CPlayer::RecoverJust()
 {
-	// 士気力ゲージが存在しない場合
-	if (m_pTensionGauge == nullptr) { return; }
-
-	// 固定値で士気力を回復する
-	m_pTensionGauge->AddNum(JUST_RECOVER);
-
 	// 回復エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
 }
@@ -1337,9 +1274,6 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	// 分身の数が上限だった場合関数を抜ける
 	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return false; }
 
-	// 士気力が0なら関数を抜ける
-	if (m_pTensionGauge->GetNum() <= 0) { return false; }
-
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
 
@@ -1390,9 +1324,6 @@ void CPlayer::SaveReset()
 
 	// チェックポイントの座標に飛ぶ
 	SetVec3Position(m_pCheckPoint->GetVec3Position());
-
-	// セーブした時点での士気力にする
-	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
 
 //==========================================
