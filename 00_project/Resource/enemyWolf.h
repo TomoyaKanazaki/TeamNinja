@@ -36,8 +36,11 @@ public:
 		STATE_FOUND,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
 		STATE_UPSET,		// 動揺状態
+		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
 		STATE_FADEIN,		// フェードイン状態
+		STATE_STANCE,		// 構え状態
+		STATE_THREAT,		// 威嚇状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -102,17 +105,22 @@ private:
 
 	// メンバ関数
 	int UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 巡回状態時の更新
-	int UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 警告状態時の更新
+	int UpdateCaveat(D3DXVECTOR3* pPos, const float fDeltaTime);						// 警告状態時の更新
 	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 追跡状態時の更新
-	int UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 攻撃状態時の更新
-	int UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 動揺状態時の更新
-	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// フェードアウト状態時の更新
-	int UpdateFadeIn(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// フェードイン状態時の更新
+	int UpdateAttack(const D3DXVECTOR3& rPos);											// 攻撃状態時の更新
+	int UpdateUpset(D3DXVECTOR3* pRot, const float fDeltaTime);							// 動揺状態時の更新
+	int UpdateCaution(void);	// 警戒処理
+	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);							// フェードアウト状態時の更新
+	int UpdateFadeIn(void);		// フェードイン状態時の更新
+	int UpdateStance(void);		// 構え処理
+	int UpdateThreat(void);		// 威嚇処理
+	void SetState(const EState state);			// 状態の設定処理
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	EState m_state;						// 状態
+	int m_nStateCount;					// 状態カウント
 };
 
 #endif	// _ENEMY_CHASE_H_

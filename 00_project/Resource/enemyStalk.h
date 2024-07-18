@@ -52,6 +52,8 @@ public:
 		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
 		STATE_FADEIN,		// フェードイン状態
+		STATE_STANCE,		// 構え状態
+		STATE_THREAT,		// 威嚇状態
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -110,6 +112,9 @@ private:
 	EMotion Caution(void);						// 警戒処理
 	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理
+	EMotion Stance(void);						// 構え処理
+	EMotion Threat(void);						// 威嚇処理
+	void SetState(const EState state);			// 状態の設定処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報

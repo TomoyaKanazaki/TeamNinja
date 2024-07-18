@@ -33,14 +33,18 @@ namespace
 	const float HEIGHT = 80.0f;				// 身長
 	const float SPEED = -290.0f;			// 速度
 	const float ROT_REV = 4.0f;				// 向きの補正係数
-	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
-	const int UPSET_MOTION_COUNT = 340;		// 動揺状態のカウント数
-	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
 	const D3DXVECTOR3 ITEM_OFFSET = D3DXVECTOR3(-3.0f, -1.0f, 10.0f);		// アイテムのオフセット座標
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
+
+	// 状態管理関係
+	const int FOUND_STATE_COUNT = 59;		// 発見状態のカウント数
+	const int ATTACK_STATE_COUNT = 44;		// 攻撃状態のカウント数
+	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
+	const int UPSET_STATE_COUNT = 340;		// 動揺状態のカウント数
+	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 }
 
 //************************************************************
@@ -334,6 +338,20 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		break;
 
+	case CEnemyStalk::STATE_STANCE:
+
+		// 構え処理
+		nCurMotion = Stance();
+
+		break;
+
+	case CEnemyStalk::STATE_THREAT:
+
+		// 威嚇処理
+		nCurMotion = Threat();
+
+		break;
+
 	default:
 
 		// 停止
@@ -342,13 +360,21 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 		break;
 	}
 
-	if (Collision(*pPos) &&
-		m_pNav->GetState() == CEnemyNav::STATE_MOVE)
+	// 重力の更新
+	UpdateGravity();
+
+	// 敵を落下させる
+	pPos->y += GetMovePosition().y * fDeltaTime;
+
+	if (Collision(*pPos))
 	{ // 当たり判定が true かつ、移動状態の場合
 
 		// ナビゲーションのリセット処理
 		m_pNav->NavReset();
 	}
+
+	// 着地判定処理
+	UpdateLanding(pPos);
 
 	// 現在のモーションを返す
 	return nCurMotion;
@@ -418,10 +444,7 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		{ // モーションが再生終了した場合
 
 			// 待機モーションの設定
-			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
-
-			// 警戒状態にする
-			m_state = STATE_CAUTION;
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
 		}
 
 		break;
@@ -516,12 +539,6 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 {
 	EMotion motion = MOTION_IDOL;				// モーション
 
-	// 重力の更新
-	UpdateGravity();
-
-	// 敵を落下させる
-	pPos->y += GetMovePosition().y * fDeltaTime;
-
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
@@ -542,22 +559,28 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		NavMotionSet(&motion);
 	}
 
-	// 着地判定
-	UpdateLanding(pPos);
-
-	if ((JudgeClone() ||
-		JudgePlayer()) &&
-		GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
+	if (JudgeClone() ||
+		JudgePlayer())
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
 		m_pNav->NavReset();
 
-		// 警告状態にする
-		m_state = STATE_WARNING;
+		if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
+		{ // 範囲内に入った場合
 
-		// 発見モーションを返す
-		return MOTION_FOUND;
+			// 警告状態にする
+			SetState(STATE_WARNING);
+
+			// 発見モーションを返す
+			return MOTION_FOUND;
+		}
+
+		// 構え状態にする
+		SetState(STATE_STANCE);
+
+		// TODO：構えモーションを返す
+		return MOTION_WALK;
 	}
 
 	// 無対象にする
@@ -572,21 +595,15 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaTime)
 {
-	// 重力の更新
-	UpdateGravity();
+	// 状態カウントを加算する
+	m_nStateCount++;
 
-	// 敵を落下させる
-	pPos->y += GetMovePosition().y * fDeltaTime;
-
-	if (GetMotionType() != MOTION_FOUND)
-	{ // 発見モーションじゃなかった場合
+	if (m_nStateCount % FOUND_STATE_COUNT == 0)
+	{ // 一定時間経過した場合
 
 		// 追跡状態にする
-		m_state = STATE_STALK;
+		SetState(STATE_STALK);
 	}
-
-	// 着地判定
-	UpdateLanding(pPos);
 
 	// 歩行状態を返す
 	return MOTION_WALK;
@@ -597,40 +614,34 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaT
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	if (ShakeOffClone() ||
-		ShakeOffPlayer())
-	{ // 分身かプレイヤーが目に入った場合
-
-		// 目標位置の視認処理
-		LookTarget(*pPos);
-
-		// 回避受付フラグを false にする
-		SetEnableDodge(false);
-
-		// 攻撃カウントをリセットする
-		SetAttackCount(0);
-	}
-	else
-	{ // 上記以外
+	if (!ShakeOffClone() &&
+		!ShakeOffPlayer())
+	{ // 分身かプレイヤーが視界内にいない場合
 
 		// 巡回状態にする
-		m_state = STATE_CRAWL;
+		SetState(STATE_CRAWL);
+
+		// 標的を未設定にする
+		SetTarget(TARGET_NONE);
 
 		// 待機モーションを返す
 		return MOTION_IDOL;
 	}
 
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 回避受付フラグを false にする
+	SetEnableDodge(false);
+
+	// 攻撃カウントをリセットする
+	SetAttackCount(0);
+
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	// 重力の更新
-	UpdateGravity();
-
 	// 移動処理
 	Move(pPos, *pRot, SPEED, fDeltaTime);
-
-	// 着地判定
-	UpdateLanding(pPos);
 
 	if (Approach(*pPos))
 	{ // 接近した場合
@@ -646,7 +657,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		}
 
 		// 攻撃状態にする
-		m_state = STATE_ATTACK;
+		SetState(STATE_ATTACK);
 
 		// 攻撃モーションを返す
 		return MOTION_ATTACK;
@@ -657,7 +668,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
-		m_state = STATE_FADEOUT;
+		SetState(STATE_FADEOUT);
 
 		// ナビゲーションリセット処理
 		m_pNav->NavReset();
@@ -685,11 +696,14 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 		// プレイヤーの当たり判定処理
 		HitPlayer(rPos);
 
-		if (GetMotionType() != MOTION_ATTACK)
-		{ // 攻撃モーションじゃない場合
+		// 状態カウントを加算する
+		m_nStateCount++;
+
+		if (m_nStateCount % ATTACK_STATE_COUNT == 0)
+		{ // 一定カウント経過した場合
 
 			// 巡回状態にする
-			m_state = STATE_CRAWL;
+			SetState(STATE_CRAWL);
 		}
 
 		// 待機モーションにする
@@ -703,10 +717,7 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 		HitClone(rPos);
 
 		// 動揺状態にする
-		m_state = STATE_UPSET;
-
-		// 状態カウントを0にする
-		m_nStateCount = 0;
+		SetState(STATE_UPSET);
 
 		// 動揺モーションにする
 		return MOTION_UPSET;
@@ -733,7 +744,7 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTim
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	if (m_nStateCount <= UPSET_MOTION_COUNT)
+	if (m_nStateCount <= UPSET_STATE_COUNT)
 	{ // 一定カウント以下の場合
 
 		if (m_nStateCount % UPSET_CYCLE_COUNT == 0)
@@ -752,6 +763,12 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTim
 		// 攻撃モーションにする
 		return MOTION_ATTACK;
 	}
+	else
+	{ // 上記以外
+
+		// 警戒状態にする
+		SetState(STATE_CAUTION);
+	}
 
 	// 動揺モーションにする
 	return MOTION_UPSET;
@@ -768,25 +785,19 @@ CEnemyStalk::EMotion CEnemyStalk::Caution(void)
 	if (m_nStateCount % CAUTION_STATE_COUNT == 0)
 	{ // 状態カウントが一定数になった場合
 
-		// 状態カウントを0にする
-		m_nStateCount = 0;
-
 		// フェードアウト状態にする
-		m_state = STATE_FADEOUT;
+		SetState(STATE_FADEOUT);
 	}
 
 	if (JudgeClone() ||
 		JudgePlayer())
 	{ // 分身かプレイヤーが目に入った場合
 
-		// 状態カウントを0にする
-		m_nStateCount = 0;
-
 		// ナビゲーションリセット処理
 		m_pNav->NavReset();
 
 		// 警告状態にする
-		m_state = STATE_WARNING;
+		SetState(STATE_WARNING);
 
 		// 発見モーションを返す
 		return MOTION_FOUND;
@@ -817,7 +828,7 @@ CEnemyStalk::EMotion CEnemyStalk::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	{ // 透明度が0以下になった場合
 
 		// フェードイン状態にする
-		m_state = STATE_FADEIN;
+		SetState(STATE_FADEIN);
 
 		// 位置を設定する
 		*pPos = GetPosInit();
@@ -858,7 +869,7 @@ CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
 	{ // 透明度が一定数以上になった場合
 
 		// 巡回状態にする
-		m_state = STATE_CRAWL;
+		SetState(STATE_CRAWL);
 
 		// 透明度を補正する
 		fAlpha = 1.0f;
@@ -866,8 +877,62 @@ CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
 
 	// 透明度を適用
 	CObjectChara::SetAlpha(fAlpha);
-	CEnemyAttack::SetAlpha(fAlpha);
+	CEnemy::SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
+}
+
+//============================================================
+// 構え処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Stance(void)
+{
+	if (!JudgeClone() &&
+		!JudgePlayer())
+	{ // 分身もプレイヤーも視界から居なくなった場合
+
+		// 威嚇状態にする
+		SetState(STATE_THREAT);
+
+		// TODO：威嚇モーションを返す
+		return MOTION_FALL;
+	}
+
+	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
+	{ // 範囲内に入った場合
+
+		// 警告状態にする
+		SetState(STATE_WARNING);
+
+		// 発見モーションを返す
+		return MOTION_FOUND;
+	}
+
+	// TODO：構えモーションを返す
+	return MOTION_WALK;
+}
+
+//============================================================
+// 威嚇処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Threat(void)
+{
+	// フェードアウト状態にする
+	SetState(STATE_FADEOUT);
+
+	// TODO：歩行状態を返す
+	return MOTION_WALK;
+}
+
+//============================================================
+// 状態の設定処理
+//============================================================
+void CEnemyStalk::SetState(const EState state)
+{
+	// 状態を設定する
+	m_state = state;
+
+	// 状態カウントを0にする
+	m_nStateCount = 0;
 }
