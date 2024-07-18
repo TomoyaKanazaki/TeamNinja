@@ -26,9 +26,10 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(const float fDeltaTime);		// 更新
-	void Draw(void);							// 描画
-	void SetStop(const int nCounter);			// 停止状況設定
+	void Update(const float fDeltaTime);	// 更新
+	void Draw(void);						// 描画
+
+	void SetStop(const int nCounter, std::function<void(void)> funcEnd = nullptr);	// 停止状況設定
 	bool IsStop(void) const	{ return m_bStop; }	// 停止状況取得
 
 	// 静的メンバ関数
@@ -37,6 +38,7 @@ public:
 
 private:
 	// メンバ変数
+	std::function<void(void)> m_funcEndStop;	// 停止終了関数ポインタ
 	bool m_bStop;	// 停止状況
 	int m_nCounter;	// 停止時間
 };
