@@ -79,7 +79,7 @@ namespace
 
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
 
-	const int INIT_CLONE = 10; // 最初に使える分身の数
+	const int INIT_CLONE = 5; // 最初に使える分身の数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -1328,6 +1328,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 
 		// エフェクトを出す
 		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
+
+		// 士気力を増やす
+		CTension::Create();
 
 		// 回避状態に変更
 		m_state = STATE_DODGE;
