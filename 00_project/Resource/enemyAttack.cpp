@@ -23,6 +23,7 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
+#include "enemyAmbush.h"
 #include "effekseerControl.h"
 
 //************************************************************
@@ -31,10 +32,16 @@
 namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 17;				// 回避カウント数
-	const float SHAKEOFF_RANGE = 1000.0f;	// 振り切れる距離
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)5
+	const int DODGE_COUNT = 17;					// 回避カウント数
+	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
+	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
 }
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CEnemyAttack>* CEnemyAttack::m_pList = nullptr;			// オブジェクトリスト
 
 //************************************************************
 //	子クラス [CEnemyAttack] のメンバ関数
@@ -51,7 +58,7 @@ m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
 m_type(TYPE_STALK),			// 種類
 m_fAlpha(1.0f),				// 透明度
-m_bAttack(false)			// 攻撃状況
+m_bDodge(false)				// 回避受付フラグ
 {
 
 }
@@ -78,6 +85,23 @@ HRESULT CEnemyAttack::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CEnemyAttack>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -93,6 +117,16 @@ void CEnemyAttack::Uninit(void)
 	// 追跡範囲の終了処理
 	SAFE_UNINIT(m_pChaseRange);
 
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// 敵の終了
 	CEnemy::Uninit();
 }
@@ -104,6 +138,15 @@ void CEnemyAttack::Update(const float fDeltaTime)
 {
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
+
+	if (m_bDodge)
+	{
+		SetAllMaterial(material::Blue());
+	}
+	else
+	{
+		ResetMaterial();
+	}
 }
 
 //============================================================
@@ -121,6 +164,15 @@ void CEnemyAttack::Draw(CShader* pShader)
 void CEnemyAttack::SetData(void)
 {
 
+}
+
+//============================================================
+//	リスト取得処理
+//============================================================
+CListManager<CEnemyAttack>* CEnemyAttack::GetList(void)
+{
+	// オブジェクトリストを返す
+	return m_pList;
 }
 
 //============================================================
@@ -293,8 +345,8 @@ bool CEnemyAttack::ShakeOffClone(void)
 //============================================================
 void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 {
-	// 攻撃判定が true の場合抜ける
-	if (m_bAttack == true) { return; }
+	// 回避受付フラグが false の場合、抜ける
+	if (m_bDodge == false) { return; }
 
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
@@ -336,8 +388,8 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			CScene::GetPlayer()->Hit(500);
 		}
 
-		// 攻撃状況を true にする
-		m_bAttack = true;
+		// 回避受付フラグを false にする
+		m_bDodge = false;
 	}
 }
 
@@ -349,8 +401,7 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	// 分身の情報が存在しない場合抜ける
 	if (CPlayerClone::GetList() == nullptr ||
 		*CPlayerClone::GetList()->GetBegin() == nullptr ||
-		m_pClone == nullptr ||
-		m_bAttack == true)
+		m_pClone == nullptr)
 	{
 		return;
 	}
@@ -405,10 +456,10 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	pClone->Hit(20);
 
 	// 分身との戦闘エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 20.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
 
-	// 攻撃状況を true にする
-	m_bAttack = true;
+	// 回避受付フラグを false にする
+	m_bDodge = false;
 }
 
 //============================================================
@@ -570,4 +621,20 @@ CEnemyAttack* CEnemyAttack::Create
 		// 確保したアドレスを返す
 		return pEnemy;
 	}
+}
+
+//===========================================
+//  当たり判定の取得
+//===========================================
+D3DXVECTOR3 CEnemyAttack::GetAttackUp()
+{
+	return ATTACK_COLLUP;
+}
+
+//===========================================
+//  当たり判定の取得
+//===========================================
+D3DXVECTOR3 CEnemyAttack::GetAttackDown()
+{
+	return ATTACK_COLLDOWN;
 }

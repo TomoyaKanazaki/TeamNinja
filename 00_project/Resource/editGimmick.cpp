@@ -529,9 +529,9 @@ void CEditGimmick::DeleteCollisionGimmick(const bool bRelase)
 		// 対象の大きさを設定
 		D3DXVECTOR3 sizeOtherGimmick = rList->GetVec3Sizing();	// 対象の地面の大きさ
 		sizeOther.x = sizeOtherGimmick.x;	// 判定サイズXを設定
-		sizeOther.y = editstage::SIZE;	// 判定サイズYを設定
+		sizeOther.y = editstage::SIZE;		// 判定サイズYを設定
 		sizeOther.z = sizeOtherGimmick.z;	// 判定サイズZを設定
-		sizeOther *= 0.5f;				// 判定サイズを半分に
+		sizeOther *= 0.5f;					// 判定サイズを半分に
 
 		// 矩形の当たり判定
 		if (collision::Box3D
@@ -645,34 +645,52 @@ HRESULT CEditGimmick::Save(void)
 		// 同じアドレスだった場合次へ
 		if (rList == m_pGimmick) { continue; }
 
-// TODO：マルチの読込も作るんだぞ小原君
-#if 1
+		// ボタンの情報は書き出さないので抜ける
+		if (typeid(*rList) == typeid(CGimmickPost)) { continue; }
 
-		if (typeid(*rList) == typeid(CGimmickMalti) ||
-			typeid(*rList) == typeid(CGimmickPost))
-		{ // マルチギミック関連はセーブしない
+		else if (typeid(*rList) == typeid(CGimmickMalti))
+		{ // ボタン統括ギミックの場合
 
-			continue;
+			// ボタン読み込み開始文字列を書き出し
+			file << "	BUTTON_GIMMICKSET\n" << std::endl;
+
+			const std::vector<CGimmick*> vecButton = rList->GetVectorButton();	// ボタン情報配列
+			for (const auto& rVec : vecButton)
+			{ // 要素数分繰り返す
+
+				// 書き出す情報を取得
+				D3DXVECTOR3 pos = rVec->GetVec3Position();	// 位置
+				D3DXVECTOR3 size = rVec->GetVec3Sizing();	// サイズ
+
+				// 情報を書き出し
+				file << "		BUTTONSET" << std::endl;
+				file << "			POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+				file << "			SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
+				file << "		END_BUTTONSET\n" << std::endl;
+			}
+
+			// ボタン読み込み終了文字列を書き出し
+			file << "	END_BUTTON_GIMMICKSET\n" << std::endl;
 		}
+		else
+		{ // 通常ギミックの場合
 
-#endif // 1
+			// 書き出す情報を取得
+			D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
+			EAngle angle = rList->GetAngle();			// 方向
+			D3DXVECTOR3 size = rList->GetVec3Sizing();	// サイズ
+			CGimmick::EType type = rList->GetType();	// 種類
+			int nNumActive = rList->GetNumActive();		// 発動可能人数
 
-
-		// 書き出す情報を取得
-		D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
-		EAngle angle = rList->GetAngle();			// 方向
-		D3DXVECTOR3 size = rList->GetVec3Sizing();	// サイズ
-		CGimmick::EType type = rList->GetType();	// 種類
-		int nNumActive = rList->GetNumActive();		// 発動可能人数
-
-		// 情報を書き出し
-		file << "	GIMMICKSET" << std::endl;
-		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-		file << "		ANGLE	= " << angle << std::endl;
-		file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
-		file << "		TYPE	= " << type << std::endl;
-		file << "		NUMACT	= " << nNumActive << std::endl;
-		file << "	END_GIMMICKSET\n" << std::endl;
+			// 情報を書き出し
+			file << "	GIMMICKSET" << std::endl;
+			file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+			file << "		ANGLE	= " << angle << std::endl;
+			file << "		SIZE	= " << size.x << " " << size.y << " " << size.z << std::endl;
+			file << "		TYPE	= " << type << std::endl;
+			file << "		NUMACT	= " << nNumActive << std::endl;
+			file << "	END_GIMMICKSET\n" << std::endl;
+		}
 	}
 
 	// 読み込み終了文字列を書き出し

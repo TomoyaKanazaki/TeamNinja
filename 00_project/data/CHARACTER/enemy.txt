@@ -123,3 +123,5 @@ MOTIONPASS = data\MOTION\ENEMY\SAMURAI\walk.txt		# 歩行モーション
 MOTIONPASS = data\MOTION\ENEMY\SAMURAI\found.txt	# 発見モーション
 MOTIONPASS = data\MOTION\ENEMY\SAMURAI\attack.txt	# 攻撃モーション
 MOTIONPASS = data\MOTION\ENEMY\SAMURAI\upset.txt	# 動揺モーション
+MOTIONPASS = data\MOTION\ENEMY\SAMURAI\fall.txt		# 落下モーション
+MOTIONPASS = data\MOTION\ENEMY\SAMURAI\landing.txt	# 着地モーション

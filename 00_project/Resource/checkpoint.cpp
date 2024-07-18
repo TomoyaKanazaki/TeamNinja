@@ -212,9 +212,6 @@ void CCheckPoint::CollisionPlayer(void)
 	// プレイヤーに自身の情報を与える
 	Player->SetCheckPoint(this);
 
-	// 士気力を保存する
-	m_nSaveTension = Player->GetTension();
-
 	//現在のエフェクトを削除
 	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
 	if (!vEffect.empty())
