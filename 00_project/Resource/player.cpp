@@ -1434,11 +1434,11 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
-	// UŒ‚‚·‚é“G‚ÌƒŠƒXƒg‚ğæ“¾
-	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
-
 	// ƒŠƒXƒg‚ªnull‚Ìê‡false‚ğ•Ô‚·
 	if (CEnemyAttack::GetList() == nullptr) { return false; }
+
+	// UŒ‚‚·‚é“G‚ÌƒŠƒXƒg‚ğæ“¾
+	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// UŒ‚”ÍˆÍ‚ğæ“¾
 	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();

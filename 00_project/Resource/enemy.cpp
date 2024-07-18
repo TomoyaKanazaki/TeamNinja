@@ -24,9 +24,10 @@
 //************************************************************
 namespace
 {
-	const int	PRIORITY = 3;			// 敵の優先順位
-	const float	GRAVITY = 60.0f;		// 重力
-	const float VIEW_RANGE = 700.0f;	// 視界の範囲
+	const int	PRIORITY = 3;				// 敵の優先順位
+	const float	GRAVITY = 60.0f;			// 重力
+	const float VIEW_RANGE = 700.0f;		// 視界の範囲
+	const float SUB_VANISH_ALPHA = 0.02f;	// 消滅時の透明度の減算量
 }
 
 //************************************************************
@@ -46,7 +47,9 @@ m_oldPos(VEC3_ZERO),		// 過去位置
 m_posInit(VEC3_ZERO),		// 初期位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
-m_bJump(false)				// 着地状況
+m_fAlpha(1.0f),				// 透明度
+m_bJump(false),				// 着地状況
+m_bVanish(false)			// 消滅状況
 {
 
 }
@@ -126,26 +129,61 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	D3DXVECTOR3 posEnemy = GetVec3Position();	// 敵位置
-	D3DXVECTOR3 rotEnemy = GetVec3Rotation();	// 敵向き
+	if (m_bVanish)
+	{ // 消滅状況が true の場合
 
-	// 過去位置更新
-	UpdateOldPosition();
+		// 消滅時の透明度を減算する
+		m_fAlpha -= SUB_VANISH_ALPHA;
 
-	// 状態更新
-	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
+		// 透明度を適用する
+		CObjectChara::SetAlpha(m_fAlpha);
 
-	SetVec3Position(posEnemy);	// 位置を反映
-	SetVec3Rotation(rotEnemy);	// 向きを反映
+		if (m_pItem != nullptr)
+		{ // アイテムを持っている場合
 
-	// モーション・オブジェクトキャラクター更新
-	UpdateMotion(nCurMotion, fDeltaTime);
+			// アイテムのオフセット処理
+			m_pItem->Update(fDeltaTime);
 
-	if (m_pItem != nullptr)
-	{ // アイテムを持っている場合
+			// 透明度を設定する
+			m_pItem->SetAlpha(m_fAlpha);
+		}
 
-		// アイテムのオフセット処理
-		m_pItem->Update(fDeltaTime);
+		// 透明度が 0.0f 超過の場合、抜ける
+		if (m_fAlpha > 0.0f) { return; }
+
+		// 破棄処理
+		Uninit();
+
+		// この先の処理を行わない
+		return;
+	}
+	else
+	{ // 上記以外
+
+		D3DXVECTOR3 posEnemy = GetVec3Position();	// 敵位置
+		D3DXVECTOR3 rotEnemy = GetVec3Rotation();	// 敵向き
+
+		// 過去位置更新
+		UpdateOldPosition();
+
+		// 状態更新
+		int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
+
+		SetVec3Position(posEnemy);	// 位置を反映
+		SetVec3Rotation(rotEnemy);	// 向きを反映
+
+		// モーション・オブジェクトキャラクター更新
+		UpdateMotion(nCurMotion, fDeltaTime);
+
+		if (m_pItem != nullptr)
+		{ // アイテムを持っている場合
+
+			// アイテムのオフセット処理
+			m_pItem->Update(fDeltaTime);
+
+			// 透明度を設定する
+			m_pItem->SetAlpha(m_fAlpha);
+		}
 	}
 }
 
@@ -172,6 +210,21 @@ CListManager<CEnemy>* CEnemy::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+// 全敵の消滅処理
+//============================================================
+void CEnemy::VanishAll(void)
+{
+	// 敵のリストが NULL だった場合、抜ける
+	if (m_pList == nullptr) { return; }
+
+	// 全敵の消滅状況を true にする
+	for (auto& rEnemy : m_pList->GetList())
+	{
+		rEnemy->m_bVanish = true;
+	}
 }
 
 //============================================================
