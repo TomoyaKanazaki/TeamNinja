@@ -109,7 +109,6 @@ private:
 	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// フェードアウト状態時の更新
 	int UpdateFadeIn(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// フェードイン状態時の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
-	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報

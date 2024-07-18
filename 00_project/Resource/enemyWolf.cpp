@@ -313,8 +313,13 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		break;
 	}
 
-	// 当たり判定処理
-	Collision(*pPos);
+	if (Collision(*pPos) &&
+		m_pNav->GetState() == CEnemyNav::STATE_MOVE)
+	{ // 当たり判定が true かつ、移動状態の場合
+
+		// ナビゲーションのリセット処理
+		m_pNav->NavReset();
+	}
 
 	// 現在のモーションを返す
 	return nCurMotion;
@@ -499,7 +504,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	pPos->y += GetMovePosition().y * fDeltaTime;
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	if (m_pNav != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
@@ -536,7 +541,8 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	if (JudgeClone() || 
-		JudgePlayer())
+		JudgePlayer() &&
+		GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
@@ -548,9 +554,6 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		// 発見モーションを返す
 		return MOTION_FOUND;
 	}
-
-	// 巡回状態にする
-	m_state = STATE_CRAWL;
 
 	// 標的を未設定にする
 	SetTarget(TARGET_NONE);
@@ -592,7 +595,7 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	LookTarget(*pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
@@ -666,7 +669,7 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	if (GetChaseRange() != nullptr &&
 		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
@@ -704,7 +707,7 @@ int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA_LOOK, fDeltaTime);
 
 	switch (GetTarget())
 	{ // ターゲットごとの処理
@@ -758,7 +761,7 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	// 動揺モーションにする
 	return MOTION_TURN;
@@ -859,13 +862,4 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	}
 
 	SetMovePosition(move);	// 移動量を反映
-}
-
-//============================================================
-//	向きの更新処理
-//============================================================
-void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
-{
-	// 向きの更新
-	RotMove(rRot, REV_ROTA, fDeltaTime);
 }
