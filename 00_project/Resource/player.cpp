@@ -1309,6 +1309,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		// エフェクトを出す
 		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
 
+		// 士気力を増やす
+		CTension::Create();
+
 		// 回避状態に変更
 		m_state = STATE_DODGE;
 		return true;
