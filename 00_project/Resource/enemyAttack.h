@@ -76,8 +76,6 @@ public:
 	ETarget GetTarget(void) const					{ return m_target; }			// 標的取得
 	void SetAttackCount(const int nCount)			{ m_nAttackCount = nCount; }	// 攻撃カウント設定
 	int GetAttackCount(void) const					{ return m_nAttackCount; }		// 攻撃カウント取得
-	void SetAlpha(const float fAlpha)				{ m_fAlpha = fAlpha; }			// 透明度設定
-	float GetAlpha(void) const						{ return m_fAlpha; }			// 透明度取得
 	void SetEnableDodge(const bool bAttack)			{ m_bDodge = bAttack; }			// 回避受付フラグ設定
 	bool IsDodge(void) const						{ return m_bDodge; }			// 回避受付フラグ取得
 
@@ -116,7 +114,6 @@ private:
 	ETarget m_target;			// 標的
 	EType m_type;				// 種類
 	int m_nAttackCount;			// 攻撃カウント
-	float m_fAlpha;				// 透明度
 	bool m_bDodge;				// 回避受付フラグ
 };
 

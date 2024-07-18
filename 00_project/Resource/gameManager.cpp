@@ -19,7 +19,7 @@
 #include "retentionManager.h"
 #include "camera.h"
 #include "player.h"
-#include "multiModel.h"
+#include "player_clone.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -308,6 +308,12 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
+
+	// プレイヤーの操作を停止させる
+	GET_PLAYER->SetState(CPlayer::STATE_NONE);
+
+	// キャラクターたちを全て消滅させる
+	CPlayerClone::VanishAll();	// 分身
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;

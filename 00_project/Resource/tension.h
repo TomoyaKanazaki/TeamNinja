@@ -18,17 +18,29 @@ public:
 	CTension();
 	~CTension();
 
-	HRESULT Init(void) override; // 初期化処理
-	void Uninit(void) override; // 終了処理
+	HRESULT Init() override; // 初期化処理
+	void Uninit() override; // 終了処理
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
+	bool IsUse() { return m_bUse; } // 使用可能フラグの取得
+	bool SetUse(bool bUse) { m_bUse = bUse; } // 使用可能フラグの変更
+
 	// 静的メンバ関数
-	static CTension* Create();
+	static CTension* Create(); // 生成処理
+	static CListManager<CTension>* GetList();	// リスト取得
 
 private:
 
-	// メンバ変数
+	// メンバ関数
+	void CalcPosition(); // 座標の計算処理
+	void ChangeColor(); //色の変更
 
+	// メンバ変数
+	CListManager<CTension>::AIterator m_iterator;	// イテレーター
+	bool m_bUse; // 使用可能フラグ
+
+	// 静的メンバ変数
+	static CListManager<CTension>* m_pList;	// オブジェクトリスト
 
 };

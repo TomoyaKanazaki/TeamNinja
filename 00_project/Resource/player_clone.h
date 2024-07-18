@@ -81,6 +81,7 @@ public:
 		ACTION_STEP,			// 梯子
 		ACTION_BRIDGE,			// 橋
 		ACTION_BUTTON,			// ボタン
+		ACTION_VANISH,			// 消滅
 		ACTION_MAX
 	};
 
@@ -123,6 +124,12 @@ public:
 	static CListManager<CPlayerClone>* GetList(void);								// リスト取得
 	static float GetRadius();														// 半径の取得
 	static float GetHeight();														// 身長の取得
+
+	// 静的メンバ関数 (藤田追加)
+	static void VanishAll(void);	// 全消滅
+
+	// メンバ関数 (藤田追加)
+	void Vanish(void);	// 消滅
 
 private:
 	// メンバ関数
