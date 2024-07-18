@@ -79,7 +79,7 @@ namespace
 
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
 
-	const int INIT_CLONE = 10; // 最初に使える分身の数
+	const int INIT_CLONE = 5; // 最初に使える分身の数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -449,6 +449,26 @@ void CPlayer::SetSpawn(void)
 
 	// 描画を再開
 	SetEnableDraw(true);
+}
+
+//============================================================
+//	リザルトの設定処理
+//============================================================
+void CPlayer::SetResult(void)
+{
+	// 目標向きの計算
+	D3DXVECTOR3 rotDest = GET_MANAGER->GetCamera()->GetDestRotation();	// カメラ目標向きを取得
+	rotDest.y -= D3DX_PI;			// カメラ向きを反転
+	useful::NormalizeRot(rotDest);	// 向きを正規化
+
+	// 操作を停止させる
+	SetState(CPlayer::STATE_NONE);
+
+	// 目標向きをカメラ目線に
+	SetDestRotation(rotDest);
+
+	// 移動量を初期化
+	SetMove(VEC3_ZERO);
 }
 
 //============================================================
@@ -1309,25 +1329,16 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		// エフェクトを出す
 		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
 
+		// 士気力を増やす
+		CTension::Create();
+
 		// 回避状態に変更
 		m_state = STATE_DODGE;
 		return true;
 	}
 
-	// 士気力リストの取得
-	if (CTension::GetList() == nullptr) { assert(false); return false; }
-	std::list<CTension*> list = CTension::GetList()->GetList();
-
-	// 使用可能な士気力を確認する
-	bool bTension = false;
-	for (auto tension : list)
-	{
-		// １つでも使用可能ならループを抜ける
-		if (tension->IsUse()) { bTension = true; break; }
-	}
-
 	// 使用可能な士気力がなかった場合関数を抜ける
-	if (!bTension) { return false; }
+	if (CTension::GetUseNum() <= 0) { return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
@@ -1461,8 +1472,8 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			fTempDistance = fDistance;
 		}
 
-		// 距離が近い場合
-		if (pGimmick->CollisionPlayer())
+		// 距離が近くて使用可能な士気力が足りている場合
+		if (pGimmick->CollisionPlayer() && CTension::GetUseNum() >= pGimmick->GetNumActive())
 		{
 			// 直接ギミックになる分身を必要分生成
 			for (int i = 0; i < pGimmick->GetNumActive(); ++i)

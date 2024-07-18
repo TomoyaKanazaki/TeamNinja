@@ -343,8 +343,8 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	}
 
 	if (Collision(*pPos) &&
-		m_pNav->GetState() != CEnemyNav::STATE_STOP)
-	{ // 当たり判定が true かつ、停止状態以外の場合
+		m_pNav->GetState() == CEnemyNav::STATE_MOVE)
+	{ // 当たり判定が true かつ、移動状態の場合
 
 		// ナビゲーションのリセット処理
 		m_pNav->NavReset();

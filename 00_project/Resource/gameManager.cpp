@@ -20,6 +20,7 @@
 #include "camera.h"
 #include "player.h"
 #include "player_clone.h"
+#include "enemy.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -248,8 +249,8 @@ void CGameManager::Update(const float fDeltaTime)
 
 		if (bCamera)
 		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-			GET_MANAGER->GetCamera()->SetDestTps();
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+			GET_MANAGER->GetCamera()->SetDestAround();
 		}
 		else
 		{
@@ -313,11 +314,12 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
 
-	// プレイヤーの操作を停止させる
-	GET_PLAYER->SetState(CPlayer::STATE_NONE);
+	// プレイヤーをリザルト状態にする
+	GET_PLAYER->SetResult();
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身
+	CEnemy::VanishAll();		// 敵
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;

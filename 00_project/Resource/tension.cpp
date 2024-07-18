@@ -5,6 +5,7 @@
 //
 //===========================================
 #include "tension.h"
+#include "player_clone.h"
 
 //===========================================
 //  定数定義
@@ -19,7 +20,8 @@ namespace
 //===========================================
 //  静的メンバ変数宣言
 //===========================================
-CListManager<CTension>* CTension::m_pList = nullptr;	// オブジェクトリスト
+CListManager<CTension>* CTension::m_pList = nullptr; // オブジェクトリスト
+int CTension::m_nUseNum = 0; // 使用可能数
 
 //===========================================
 //  コンストラクタ
@@ -100,6 +102,9 @@ void CTension::Uninit(void)
 //===========================================
 void CTension::Update(const float fDeltaTime)
 {
+	// 使用可能状態の変更
+	SwitchUse();
+
 	// 座標の計算
 	CalcPosition();
 
@@ -130,9 +135,6 @@ CTension* CTension::Create()
 	if (pTension == nullptr) { assert(false); return nullptr; }
 
 	// 初期化処理
-	pTension->Init();
-
-	// 初期化処理
 	if (FAILED(pTension->Init())) { SAFE_DELETE(pTension); return nullptr; }
 
 	return pTension;
@@ -145,6 +147,25 @@ CListManager<CTension>* CTension::GetList()
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//===========================================
+//  使用可能数の取得
+//===========================================
+int CTension::GetUseNum()
+{
+	// リストが存在していない場合-1を返す
+	if (m_pList == nullptr) { return -1; }
+
+	// 使用可能な士気力を確認する
+	int nNum = 0;
+	for (auto tension : m_pList->GetList())
+	{
+		// 使用可能な場合加算
+		if (tension->IsUse()) { ++nNum; }
+	}
+
+	return nNum;
 }
 
 //===========================================
@@ -181,5 +202,32 @@ void CTension::ChangeColor()
 	else
 	{
 		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+	}
+}
+
+//===========================================
+//  使用可能状態の変更
+//===========================================
+void CTension::SwitchUse()
+{
+	// 一度使用可能にする
+	m_bUse = true;
+
+	// 分身のリストが無ければ関数を抜ける
+	if (CPlayerClone::GetList() == nullptr) { return; }
+
+	// 分身の総数を取得
+	int nNumClone = CPlayerClone::GetList()->GetNumAll();
+
+	// 士気力の総数を取得
+	int nNumTension = m_pList->GetNumAll();
+
+	// 分身と士気力の総数の差分を算出
+	int nNumUse = nNumTension - nNumClone;
+
+	// 自身のインデックスが差分よりも大きい場合は使用不可
+	if (nNumUse <= m_pList->GetIndex(this))
+	{
+		m_bUse = false;
 	}
 }
