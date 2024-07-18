@@ -37,6 +37,7 @@
 #include "effekseerManager.h"
 #include "gimmick_action.h"
 #include "enemyAttack.h"
+#include "tension.h"
 
 //************************************************************
 //	定数宣言
@@ -77,8 +78,8 @@ namespace
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
-	const char* TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
 
+	const int INIT_CLONE = 10; // 最初に使える分身の数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -125,7 +126,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pOldField		(nullptr),		// 前回乗ってた地面
 	m_pEffectdata	(nullptr)		// エフェクト情報
 {
-	memset(&m_pTension[0], 0, sizeof(m_pTension));
 }
 
 //============================================================
@@ -203,8 +203,11 @@ HRESULT CPlayer::Init(void)
 	// プレイヤーを出現させる
 	SetSpawn();
 
-	// 士気力ゲージを生成
-	CreateTension();
+	// 士気力ゲージの生成
+	for (int i = 0; i < INIT_CLONE; ++i)
+	{
+		CTension::Create();
+	}
 
 	// 開始エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
@@ -281,9 +284,6 @@ void CPlayer::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// 士気力ゲージの更新
-	UpdateTension();
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -1314,8 +1314,8 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		return true;
 	}
 
-	// 分身の数が上限だった場合関数を抜ける
-	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return false; }
+	// 使用可能な士気力がなかった場合関数を抜ける
+	if (CTension::GetUseNum() <= 0) { return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
@@ -1449,8 +1449,8 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			fTempDistance = fDistance;
 		}
 
-		// 距離が近い場合
-		if (pGimmick->CollisionPlayer())
+		// 距離が近くて使用可能な士気力が足りている場合
+		if (pGimmick->CollisionPlayer() && CTension::GetUseNum() >= pGimmick->GetNumActive())
 		{
 			// 直接ギミックになる分身を必要分生成
 			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
@@ -1509,75 +1509,6 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	}
 
 	return false;
-}
-
-//===========================================
-//  士気力ゲージの生成
-//===========================================
-void CPlayer::CreateTension()
-{
-	// たくさん生成
-	for (int i = 0; i < MAX_CLONE; ++i)
-	{
-		// 生成
-		m_pTension[i] = CObject2D::Create(VEC3_ZERO);
-
-		// 大きさを設定
-		m_pTension[i]->SetVec3Sizing(TENSION_SIZE);
-
-		// 位置を設定
-		m_pTension[i]->SetVec3Position
-		(D3DXVECTOR3(
-			(TENSION_SIZE.x * 0.5f) + (TENSION_SIZE.x * i),
-			TENSION_SIZE.y * 0.5f,
-			0.0f
-		));
-
-		// テクスチャを設定
-		m_pTension[i]->BindTexture(TENSION_TEXTURE);
-
-		// ラベルを設定
-		m_pTension[i]->SetLabel(CObject::LABEL_UI);
-	}
-}
-
-//===========================================
-//  士気力ゲージの更新
-//===========================================
-void CPlayer::UpdateTension()
-{
-	// 分身のリストが存在しない場合全てを不透明にして関数を抜ける
-	if (CPlayerClone::GetList() == nullptr)
-	{
-		for (int i = MAX_CLONE - 1; i >= 0; --i)
-		{
-			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		}
-
-		return;
-	}
-
-	// 分身の数を取得
-	int nClone = CPlayerClone::GetList()->GetNumAll();
-
-	// たくさん更新
-	for (int i = MAX_CLONE - 1; i >= 0; --i)
-	{
-		// 分身の数が0以下の場合
-		if (nClone <= 0)
-		{
-			// 不透明度を1.0にする
-			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		}
-		else
-		{
-			// 不透明度を0.5にする
-			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
-		}
-
-		// 士気力ゲージを適用してない分身の数を減らす
-		--nClone;
-	}
 }
 
 //==========================================

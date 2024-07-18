@@ -52,7 +52,7 @@ public:
 		TYPE_LILYPAD,			// ˜@‚Ì—t
 		TYPE_PLANT1,			// 4‚Â‚µ‚©‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‘
 		TYPE_PLANT2,			// ‘½‚­‚Â‚È‚ª‚Á‚Ä‚¢‚é‘
-		TYPE_BUSH,				// ‘‚Þ‚ç
+		TYPE_SHRUB,				// ’á–Ø
 		TYPE_HOUSE1,			// ‰Æ1
 		TYPE_HOUSE2,			// ‰Æ2
 		TYPE_HOUSE3,			// ‰Æ3
@@ -74,7 +74,6 @@ public:
 		TYPE_B_LATTICE,			// ’|‚ÌŠiŽq
 		TYPE_ROOFFLOOR1,		// œ‘g‚Ý‚Ý‚½‚¢‚È‰®ª— ‚Ì–Ø
 		TYPE_ROOFFLOOR2,		// ƒŒƒ“ƒK•¿•—‚Ì‰®ª— ‚Ì–Ø
-		TYPE_SHRUB,				// ’á–Ø
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

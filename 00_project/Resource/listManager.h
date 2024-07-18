@@ -35,6 +35,7 @@ public:
 	AIterator AddList(T *pObject);			// リスト追加
 	void DelList(const AIterator iterator);	// リスト削除
 	int GetNumAll(void);			// リスト内の要素数取得
+	int GetIndex(T* pObject);		// インデックスからポインタを取得
 	std::list<T*> GetList(void);	// リスト取得
 
 	// 静的メンバ関数
@@ -151,6 +152,24 @@ template<class T> int CListManager<T>::GetNumAll(void)
 {
 	// リスト内の要素数を返す
 	return (int)m_list.size();
+}
+
+//===========================================
+//  インデックスの取得処理
+//===========================================
+template<class T> int CListManager<T>::GetIndex(T* pObject)
+{
+	// 引数がnullの場合警告を表示
+	if (pObject == nullptr) { assert(false); return -1; }
+
+	// 引数を検索する
+	auto Idx = std::find(m_list.begin(), m_list.end(), pObject);
+
+	// 最後まで一致するものがなかった場合警告を表示
+	if (Idx == m_list.end()) { assert(false); return -1; }
+
+	// インデックスを返す
+	return (int)std::distance(m_list.begin(), Idx);
 }
 
 //============================================================

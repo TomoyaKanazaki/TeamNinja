@@ -545,8 +545,9 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	// 着地判定
 	UpdateLanding(pPos);
 
-	if (JudgeClone() ||
-		JudgePlayer())
+	if ((JudgeClone() ||
+		JudgePlayer()) &&
+		GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
@@ -652,7 +653,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	}
 
 	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(pPos))
+		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
