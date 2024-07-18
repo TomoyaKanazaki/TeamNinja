@@ -132,6 +132,7 @@ public:
 private:
 
 	// メンバ関数
+	EMotion UpdateNone(const float fDeltaTime);		// 何もしない状態時の更新
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
