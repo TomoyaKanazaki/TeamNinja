@@ -20,6 +20,7 @@
 #include "camera.h"
 #include "player.h"
 #include "player_clone.h"
+#include "enemy.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -314,6 +315,7 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身
+	CEnemy::VanishAll();		// 敵
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;
