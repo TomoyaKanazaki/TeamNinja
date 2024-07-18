@@ -110,6 +110,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetSpawn(void);						// 出現設定
+	void SetResult(void);						// リザルト設定
 	void SetState(const EState state);			// 状態設定
 	EState GetState(void) const;				// 状態取得
 	float GetRadius(void) const;				// 半径取得
