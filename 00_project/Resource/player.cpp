@@ -254,6 +254,9 @@ void CPlayer::Update(const float fDeltaTime)
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
+
+		// 何もしない状態時の更新
+		currentMotion = UpdateNone(fDeltaTime);
 		break;
 
 	case STATE_SPAWN:
@@ -586,6 +589,42 @@ void CPlayer::SabFrags(const char cFrag)
 
 	// 文字列からフラグを削除する
 	m_sFrags.erase(nIdx);
+}
+
+//============================================================
+//	何もしない状態時の更新処理
+//============================================================
+CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
+{
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// アクターの当たり判定
+	CollisionActor(posPlayer);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
+
+	// 現在のモーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================

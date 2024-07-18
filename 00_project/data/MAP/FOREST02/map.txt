@@ -7,6 +7,6 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS = data\TXT\MAP\FOREST02\stage.txt	# ステージ情報パス
-ACTOR_PASS = data\TXT\MAP\FOREST02\actor.txt	# アクター情報パス
-POINT_PASS = data\TXT\MAP\FOREST02\point.txt	# ポイント情報パス
+STAGE_PASS = data\MAP\FOREST02\stage.txt	# ステージ情報パス
+ACTOR_PASS = data\MAP\FOREST02\actor.txt	# アクター情報パス
+POINT_PASS = data\MAP\FOREST02\point.txt	# ポイント情報パス
