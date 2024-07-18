@@ -213,6 +213,10 @@ HRESULT CGameManager::Init(void)
 #if 1
 	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+
+	// 勝手に追加してごめぇんね(チュートリアルマップの敵)
+	CEnemyStalk::Create(D3DXVECTOR3(12950.0f, 650.0f, 100.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+
 #endif
 
 	// 回り込みカメラの設定
@@ -245,8 +249,8 @@ void CGameManager::Update(const float fDeltaTime)
 
 		if (bCamera)
 		{
-			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_TPS);
-			GET_MANAGER->GetCamera()->SetDestTps();
+			GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+			GET_MANAGER->GetCamera()->SetDestAround();
 		}
 		else
 		{
@@ -310,8 +314,8 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
 
-	// プレイヤーの操作を停止させる
-	GET_PLAYER->SetState(CPlayer::STATE_NONE);
+	// プレイヤーをリザルト状態にする
+	GET_PLAYER->SetResult();
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身
@@ -368,6 +372,7 @@ void CGameManager::Release(CGameManager *&prGameManager)
 //============================================================
 void CGameManager::UpdateResult(void)
 {
-	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
-	pPlayer->SetDestRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	// TODO
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_RESULT);
+	GET_MANAGER->GetCamera()->SetDestResult();
 }

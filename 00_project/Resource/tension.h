@@ -24,7 +24,6 @@ public:
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
 	bool IsUse() { return m_bUse; } // 使用可能フラグの取得
-	bool SetUse(bool bUse) { m_bUse = bUse; } // 使用可能フラグの変更
 
 	// 静的メンバ関数
 	static CTension* Create(); // 生成処理
@@ -36,6 +35,7 @@ private:
 	// メンバ関数
 	void CalcPosition(); // 座標の計算処理
 	void ChangeColor(); //色の変更
+	void SwitchUse(); // 使用可能状態の変更
 
 	// メンバ変数
 	CListManager<CTension>::AIterator m_iterator;	// イテレーター
