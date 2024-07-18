@@ -669,7 +669,7 @@ void CPlayerClone::Delete(const int nNum)
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// •ªg‚ÌI—¹
-	pClone->Uninit();
+	SAFE_UNINIT(pClone)
 }
 
 //============================================================

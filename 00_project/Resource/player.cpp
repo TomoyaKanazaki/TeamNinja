@@ -411,8 +411,11 @@ bool CPlayer::Hit(const int nDamage)
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
 
-	// ジャンプエフェクトを出す
+	// ヒットエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// 士気力が減少する
+	CTension::Vanish();
 
 	return true;
 }
