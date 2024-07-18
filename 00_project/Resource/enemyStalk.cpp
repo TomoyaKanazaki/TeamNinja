@@ -621,6 +621,9 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 巡回状態にする
 		SetState(STATE_CRAWL);
 
+		// 標的を未設定にする
+		SetTarget(TARGET_NONE);
+
 		// 待機モーションを返す
 		return MOTION_IDOL;
 	}
@@ -874,7 +877,7 @@ CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
 
 	// 透明度を適用
 	CObjectChara::SetAlpha(fAlpha);
-	CEnemyAttack::SetAlpha(fAlpha);
+	CEnemy::SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
@@ -918,7 +921,7 @@ CEnemyStalk::EMotion CEnemyStalk::Threat(void)
 	// フェードアウト状態にする
 	SetState(STATE_FADEOUT);
 
-	// 歩行状態を返す
+	// TODO：歩行状態を返す
 	return MOTION_WALK;
 }
 
