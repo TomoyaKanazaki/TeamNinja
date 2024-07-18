@@ -456,16 +456,11 @@ void CPlayer::SetSpawn(void)
 //============================================================
 void CPlayer::SetResult(void)
 {
-	// 目標向きの計算
-	D3DXVECTOR3 rotDest = GET_MANAGER->GetCamera()->GetDestRotation();	// カメラ目標向きを取得
-	rotDest.y -= D3DX_PI;			// カメラ向きを反転
-	useful::NormalizeRot(rotDest);	// 向きを正規化
-
 	// 操作を停止させる
 	SetState(CPlayer::STATE_NONE);
 
 	// 目標向きをカメラ目線に
-	SetDestRotation(rotDest);
+	SetDestRotation(GET_MANAGER->GetCamera()->GetDestRotation());
 
 	// 移動量を初期化
 	SetMove(VEC3_ZERO);

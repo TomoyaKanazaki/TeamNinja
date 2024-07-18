@@ -368,6 +368,7 @@ void CGameManager::Release(CGameManager *&prGameManager)
 //============================================================
 void CGameManager::UpdateResult(void)
 {
-	CPlayer* pPlayer = GET_PLAYER;	// ƒvƒŒƒCƒ„[î•ñ
-	pPlayer->SetDestRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	// TODO
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_RESULT);
+	GET_MANAGER->GetCamera()->SetDestResult();
 }
