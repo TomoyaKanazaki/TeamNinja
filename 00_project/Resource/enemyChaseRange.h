@@ -34,7 +34,8 @@ public:
 	void Uninit(void);		// 終了
 
 	// メンバ関数
-	bool ChaseRange(D3DXVECTOR3* pPos);		// 追跡範囲処理
+	bool ChaseRange(const D3DXVECTOR3& rInitPos, D3DXVECTOR3* pPos);					// 追跡範囲処理
+	bool InsideTargetPos(const D3DXVECTOR3& rInitPos, const D3DXVECTOR3& rTargetPos);	// ターゲットが範囲内にいるかの処理
 
 	// 静的メンバ関数
 	static CEnemyChaseRange* Create(const D3DXVECTOR3& rPos, const float fWidth, const float fDepth);		// 生成処理
@@ -42,7 +43,6 @@ public:
 private:
 
 	// メンバ変数
-	D3DXVECTOR3 m_pos;	// 位置
 	float m_fWidth;		// 幅
 	float m_fDepth;		// 奥行
 

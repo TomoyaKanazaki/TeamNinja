@@ -669,7 +669,7 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateRotation(*pRot, fDeltaTime);
 
 	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(pPos))
+		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
