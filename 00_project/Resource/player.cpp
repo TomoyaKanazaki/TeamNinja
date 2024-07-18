@@ -455,6 +455,21 @@ void CPlayer::SetSpawn(void)
 }
 
 //============================================================
+//	リザルトの設定処理
+//============================================================
+void CPlayer::SetResult(void)
+{
+	// 操作を停止させる
+	SetState(CPlayer::STATE_NONE);
+
+	// 目標向きをカメラ目線に
+	SetDestRotation(GET_MANAGER->GetCamera()->GetDestRotation());
+
+	// 移動量を初期化
+	SetMove(VEC3_ZERO);
+}
+
+//============================================================
 //	状態の設定処理
 //============================================================
 void CPlayer::SetState(const EState state)
