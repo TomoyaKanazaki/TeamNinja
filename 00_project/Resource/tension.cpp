@@ -19,7 +19,8 @@ namespace
 //===========================================
 //  静的メンバ変数宣言
 //===========================================
-CListManager<CTension>* CTension::m_pList = nullptr;	// オブジェクトリスト
+CListManager<CTension>* CTension::m_pList = nullptr; // オブジェクトリスト
+int CTension::m_nUseNum = 0; // 使用可能数
 
 //===========================================
 //  コンストラクタ
@@ -145,6 +146,25 @@ CListManager<CTension>* CTension::GetList()
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//===========================================
+//  使用可能数の取得
+//===========================================
+int CTension::GetUseNum()
+{
+	// リストが存在していない場合-1を返す
+	if (m_pList == nullptr) { return -1; }
+
+	// 使用可能な士気力を確認する
+	int nNum = 0;
+	for (auto tension : m_pList->GetList())
+	{
+		// 使用可能な場合加算
+		if (tension->IsUse()) { ++nNum; }
+	}
+
+	return nNum;
 }
 
 //===========================================

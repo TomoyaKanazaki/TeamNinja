@@ -28,7 +28,8 @@ public:
 
 	// 静的メンバ関数
 	static CTension* Create(); // 生成処理
-	static CListManager<CTension>* GetList();	// リスト取得
+	static CListManager<CTension>* GetList(); // リスト取得
+	static int GetUseNum(); // 使用可能な士気力の取得
 
 private:
 
@@ -42,5 +43,6 @@ private:
 
 	// 静的メンバ変数
 	static CListManager<CTension>* m_pList;	// オブジェクトリスト
+	static int m_nUseNum; // 使用可能な士気力の数
 
 };
