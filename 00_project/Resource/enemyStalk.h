@@ -80,7 +80,7 @@ private:
 	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
-	EMotion Upset(void);						// 動揺処理
+	EMotion Upset(D3DXVECTOR3* pRot, const float fDeltaTime);			// 動揺処理
 	EMotion Caution(void);						// 警戒処理
 	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理
@@ -88,7 +88,6 @@ private:
 	// メンバ変数
 	EState m_state;						// 状態
 	int m_nStateCount;					// 状態カウント
-	int m_nNumUpsetLoop;				// 動揺モーションのループ回数
 };
 
 #endif	// _ENEMY_CHASE_H_

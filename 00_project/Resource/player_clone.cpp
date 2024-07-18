@@ -921,6 +921,9 @@ CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 {
+	// 移動
+	Approach();
+
 	// ギミック作動中の梯子モーションを返す
 	if (m_pGimmick->IsActive())
 	{
@@ -942,9 +945,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 	}
 	else
 	{
-		// 移動
-		Approach();
-
 		// 重力
 		UpdateGravity();
 

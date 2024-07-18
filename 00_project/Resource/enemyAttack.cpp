@@ -32,10 +32,10 @@
 namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)5
 	const int DODGE_COUNT = 17;					// 回避カウント数
 	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
-	const float DIVERSION_EFFECT_SCALE = 10.0f;	// 分身との戦闘エフェクトの大きさ
+	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
 }
 
 //************************************************************

@@ -258,12 +258,6 @@ void CGameManager::Update(const float fDeltaTime)
 	{ // 状態ごとの処理
 	case STATE_NONE:
 	case STATE_NORMAL:
-		
-		// 士気力が0の場合リザルトに
-		if (GET_PLAYER->GetTension() == 0) 
-		{
-			TransitionResult(CRetentionManager::EWin::WIN_FAILED);
-		}
 
 		// ゴールしていた場合リザルト
 		if (CGoal::GetGoal() != nullptr)
