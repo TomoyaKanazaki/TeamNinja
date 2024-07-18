@@ -564,6 +564,14 @@ void CCamera::SetDestTelephoto(void)
 }
 
 //============================================================
+//	カメラの目標位置の設定処理 (リザルト)
+//============================================================
+void CCamera::SetDestResult(void)
+{
+	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y;
+}
+
+//============================================================
 //	視点の設定処理
 //============================================================
 void CCamera::SetPositionV(const D3DXVECTOR3& rPosV)
@@ -887,7 +895,48 @@ void CCamera::Release(CCamera *&prCamera)
 //============================================================
 void CCamera::Result(void)
 {
+	// カメラがリザルト状態以外なら抜ける
+	if (m_state != STATE_RESULT) { return; }
 
+	CPlayer* pPlayer = GET_PLAYER;		// プレイヤー情報
+	D3DXVECTOR3 diffPosV = VEC3_ZERO;	// 視点の差分位置
+	D3DXVECTOR3 diffPosR = VEC3_ZERO;	// 注視点の差分位置
+	D3DXVECTOR3 diffRot  = VEC3_ZERO;	// 差分向き
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 向きを設定
+	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = follow::INIT_ROTX;
+
+	// 向きを正規化
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = follow::INIT_DIS;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 
+	D3DXVECTOR3 posLook = pPlayer->GetVec3Position();
+	posLook.x += sinf(pPlayer->GetVec3Rotation().y) * 100.0f;
+	posLook.z += cosf(pPlayer->GetVec3Rotation().y) * 100.0f;
+
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = posLook;
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
 }
 
 //============================================================
