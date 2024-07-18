@@ -43,7 +43,7 @@ namespace
 		"data\\MODEL\\LilyPad\\LilyPad000.x",			// 蓮の葉
 		"data\\MODEL\\Plant\\Plant000.x",				// 4つしかつながっていない草
 		"data\\MODEL\\Plant\\Plant001.x",				// 多くつながっている草
-		"data\\MODEL\\Plant\\Bush000.x",				// 草むら
+		"data\\MODEL\\Shrub\\Shrub000.x",				// 低木
 		"data\\MODEL\\House\\House000.x",				// 家1
 		"data\\MODEL\\House\\House001.x",				// 家2
 		"data\\MODEL\\House\\House002.x",				// 家3
@@ -64,7 +64,7 @@ namespace
 		"data\\MODEL\\Stairs\\WoodStairs001.x",			// 階段
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
-		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
+		"data\\MODEL\\RoofFloor\\FloorRooftop003.x"		// レンガ柄風の屋根裏の木
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス

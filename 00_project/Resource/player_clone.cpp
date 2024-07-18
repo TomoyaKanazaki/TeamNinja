@@ -304,6 +304,12 @@ void CPlayerClone::Update(const float fDeltaTime)
 		currentMotion = UpdateButton(fDeltaTime);
 		break;
 
+	case ACTION_VANISH: // 消滅
+
+		// 分身の消滅
+		Vanish();
+		return;
+
 	default:
 		assert(false);
 		break;
@@ -345,7 +351,6 @@ void CPlayerClone::SetEnableUpdate(const bool bUpdate)
 {
 	// 引数の更新状況を設定
 	CObject::SetEnableUpdate(bUpdate);		// 自身
-	
 }
 
 //============================================================
@@ -355,7 +360,6 @@ void CPlayerClone::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-
 }
 
 //============================================================
@@ -753,6 +757,35 @@ float CPlayerClone::GetHeight()
 }
 
 //============================================================
+//	全消滅処理
+//============================================================
+void CPlayerClone::VanishAll(void)
+{
+	// 分身リストがない場合抜ける
+	if (m_pList == nullptr) { return; }
+
+	std::list<CPlayerClone*> list = m_pList->GetList();	// 内部リスト
+	for (auto& rList : list)
+	{ // 要素数分繰り返す
+
+		// 分身の消滅行動にする
+		rList->m_Action = ACTION_VANISH;
+	}
+}
+
+//============================================================
+//	分身の消滅処理
+//============================================================
+void CPlayerClone::Vanish(void)
+{
+	// 消去のエフェクトを生成する
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// 分身の終了
+	Uninit();
+}
+
+//============================================================
 //	移動行動時の更新処理
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
@@ -921,6 +954,9 @@ CPlayerClone::EMotion CPlayerClone::UpdateStep(const float fDeltaTime)
 //============================================================
 CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 {
+	// 移動
+	Approach();
+
 	// ギミック作動中の梯子モーションを返す
 	if (m_pGimmick->IsActive())
 	{
@@ -942,9 +978,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 	}
 	else
 	{
-		// 移動
-		Approach();
-
 		// 重力
 		UpdateGravity();
 

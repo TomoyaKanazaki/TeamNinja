@@ -13,6 +13,8 @@
 #include "deltaTime.h"
 
 #include "enemyNavigation.h"
+#include "enemyNavStreet.h"
+#include "enemyNavRandom.h"
 #include "enemyChaseRange.h"
 
 //************************************************************
@@ -44,6 +46,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemyAttack(),
+m_pNav(nullptr),		// ナビゲーションの情報
 m_state(STATE_CRAWL)	// 状態
 {
 
@@ -83,6 +86,9 @@ HRESULT CEnemyWolf::Init(void)
 //============================================================
 void CEnemyWolf::Uninit(void)
 {
+	// ナビゲーションの終了処理
+	SAFE_UNINIT(m_pNav);
+
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -129,6 +135,125 @@ float CEnemyWolf::GetHeight(void) const
 {
 	// 身長を返す
 	return HEIGHT;
+}
+
+//============================================================
+//	生成処理(一定範囲移動敵)
+//============================================================
+CEnemyWolf* CEnemyWolf::Create
+(
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot,	// 向き
+	const EType type,			// 種類
+	const float fMoveWidth,		// 移動幅
+	const float fMoveDepth,		// 移動奥行
+	const float fChaseWidth,	// 追跡幅
+	const float fChaseDepth		// 追跡奥行
+)
+{
+	// 敵を生成
+	CEnemyWolf* pEnemy = new CEnemyWolf;
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->SetType(type);
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
+
+		// 追跡範囲を生成
+		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
+}
+
+//============================================================
+//	生成処理(ルート巡回移動敵)
+//============================================================
+CEnemyWolf* CEnemyWolf::Create
+(
+	const D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rRot,				// 向き
+	const EType type,						// 種類
+	const std::vector<D3DXVECTOR3> route,	// ルートの配列
+	const float fChaseWidth,				// 追跡幅
+	const float fChaseDepth					// 追跡奥行
+)
+{
+	// 敵を生成
+	CEnemyWolf* pEnemy = new CEnemyWolf;
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->SetType(type);
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
+
+		// 追跡範囲を生成
+		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
 }
 
 //============================================================
@@ -188,8 +313,13 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		break;
 	}
 
-	// 当たり判定処理
-	Collision(*pPos);
+	if (Collision(*pPos) &&
+		m_pNav->GetState() == CEnemyNav::STATE_MOVE)
+	{ // 当たり判定が true かつ、移動状態の場合
+
+		// ナビゲーションのリセット処理
+		m_pNav->NavReset();
+	}
 
 	// 現在のモーションを返す
 	return nCurMotion;
@@ -345,7 +475,7 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 void CEnemyWolf::NavMoitonSet(int* pMotion)
 {
-	switch (GetNavigation()->GetState())
+	switch (m_pNav->GetState())
 	{
 	case CEnemyNav::STATE_MOVE:
 
@@ -374,13 +504,13 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	pPos->y += GetMovePosition().y * fDeltaTime;
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
-	if (GetNavigation() != nullptr)
+	if (m_pNav != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
 
 		// ナビの更新処理
-		GetNavigation()->Update
+		m_pNav->Update
 		(
 			pPos,		// 位置
 			pRot,		// 向き
@@ -389,7 +519,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 			fDeltaTime	// デルタタイム
 		);
 
-		switch (GetNavigation()->GetState())
+		switch (m_pNav->GetState())
 		{
 		case CEnemyNav::STATE_MOVE:
 
@@ -411,11 +541,12 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	if (JudgeClone() || 
-		JudgePlayer())
+		JudgePlayer() &&
+		GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_CAVEAT;
@@ -423,9 +554,6 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		// 発見モーションを返す
 		return MOTION_FOUND;
 	}
-
-	// 巡回状態にする
-	m_state = STATE_CRAWL;
 
 	// 標的を未設定にする
 	SetTarget(TARGET_NONE);
@@ -467,7 +595,7 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	LookTarget(*pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	if (GetMotionType() != MOTION_FOUND)
 	{ // 発見モーションじゃなかった場合
@@ -541,17 +669,17 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(pPos))
+		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// フェードアウト状態にする
 		m_state = STATE_FADEOUT;
 
 		// ナビゲーションリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 
 		// 移動量をリセットする
 		SetMovePosition(VEC3_ZERO);
@@ -579,7 +707,7 @@ int CEnemyWolf::UpdateAttack(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA_LOOK, fDeltaTime);
 
 	switch (GetTarget())
 	{ // ターゲットごとの処理
@@ -633,7 +761,7 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	UpdateLanding(pPos);
 
 	// 向き更新
-	UpdateRotation(*pRot, fDeltaTime);
+	RotMove(*pRot, REV_ROTA, fDeltaTime);
 
 	// 動揺モーションにする
 	return MOTION_TURN;
@@ -665,13 +793,16 @@ int CEnemyWolf::UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float 
 		// 向きを設定する
 		*pRot = VEC3_ZERO;
 
+		// 目的の向きを設定する(復活後に無意味に向いてしまうため)
+		SetDestRotation(*pRot);
+
 		// 透明度を補正する
 		fAlpha = 0.0f;
 	}
 
 	// 透明度を適用
 	CObjectChara::SetAlpha(fAlpha);
-	CEnemyAttack::SetAlpha(fAlpha);
+	CEnemy::SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
@@ -731,13 +862,4 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	}
 
 	SetMovePosition(move);	// 移動量を反映
-}
-
-//============================================================
-//	向きの更新処理
-//============================================================
-void CEnemyWolf::UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime)
-{
-	// 向きの更新
-	RotMove(rRot, REV_ROTA, fDeltaTime);
 }

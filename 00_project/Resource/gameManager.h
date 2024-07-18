@@ -55,6 +55,9 @@ public:
 	static void Release(CGameManager *&prGameManager);	// 破棄
 
 private:
+	// メンバ関数
+	void UpdateResult(void);	// リザルト更新
+
 	// メンバ変数
 	CResultManager *m_pResult;	// リザルトマネージャー
 	EState m_state;	// 状態

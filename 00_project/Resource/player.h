@@ -17,15 +17,17 @@
 #include "objectChara.h"
 #include "scene.h"
 #include "retentionManager.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	前方宣言
 //************************************************************
 class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
-class CGauge2D;			// ゲージクラス
 class CCheckPoint;		// チェックポイントクラス
 class CField;			// フィールドクラス
+class CObject2D;		// オブジェクト2D
 
 //************************************************************
 //	クラス定義
@@ -108,6 +110,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetSpawn(void);						// 出現設定
+	void SetResult(void);						// リザルト設定
 	void SetState(const EState state);			// 状態設定
 	EState GetState(void) const;				// 状態取得
 	float GetRadius(void) const;				// 半径取得
@@ -119,18 +122,18 @@ public:
 	{ return D3DXVECTOR3(GetRadius(), GetHeight(), GetRadius()); } // サイズの取得
 
 	// メンバ関数 (金崎朋弥)
-	int GetTension() const;		// 士気力の値を取得
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
 	void RecoverJust();			// ジャストアクションでの回復処理
 	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
-	CGauge2D* GetTensionGauge() const { return m_pTensionGauge; } // 士気力ゲージの取得
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 
 private:
+
 	// メンバ関数
+	EMotion UpdateNone(const float fDeltaTime);		// 何もしない状態時の更新
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
@@ -184,16 +187,16 @@ private:
 	float		m_fTempStick;		// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
-	CGauge2D* m_pTensionGauge;		// 士気力ゲージのポインタ
-	CCheckPoint* m_pCheckPoint;		// セーブしたチェックポイント
-	D3DXVECTOR3 m_posCenter;		// 中心座標
-	bool m_bClone;					// 分身操作可能フラグ
-	bool m_bGetCamera;				// カメラの取得
-	float m_fCameraRot;				// カメラの角度
-	float m_fStickRot;				// スティックの角度
-	std::string m_sFrags;			// ギミックフラグの文字列
-	CField* m_pCurField;			// 現在の地面
-	CField* m_pOldField;			// 過去の地面
+	CCheckPoint* m_pCheckPoint;				// セーブしたチェックポイント
+	D3DXVECTOR3 m_posCenter;				// 中心座標
+	bool m_bClone;							// 分身操作可能フラグ
+	bool m_bGetCamera;						// カメラの取得
+	float m_fCameraRot;						// カメラの角度
+	float m_fStickRot;						// スティックの角度
+	std::string m_sFrags;					// ギミックフラグの文字列
+	CField* m_pCurField;					// 現在の地面
+	CField* m_pOldField;					// 過去の地面
+	CEffekseer::CEffectData* m_pEffectdata;	//エフェクト情報
 
 };
 
