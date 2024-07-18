@@ -1314,20 +1314,8 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		return true;
 	}
 
-	// 士気力リストの取得
-	if (CTension::GetList() == nullptr) { assert(false); return false; }
-	std::list<CTension*> list = CTension::GetList()->GetList();
-
-	// 使用可能な士気力を確認する
-	bool bTension = false;
-	for (auto tension : list)
-	{
-		// １つでも使用可能ならループを抜ける
-		if (tension->IsUse()) { bTension = true; break; }
-	}
-
 	// 使用可能な士気力がなかった場合関数を抜ける
-	if (!bTension) { return false; }
+	if (CTension::GetUseNum() <= 0) { return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
@@ -1461,8 +1449,8 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 			fTempDistance = fDistance;
 		}
 
-		// 距離が近い場合
-		if (pGimmick->CollisionPlayer())
+		// 距離が近くて使用可能な士気力が足りている場合
+		if (pGimmick->CollisionPlayer() && CTension::GetUseNum() >= pGimmick->GetNumActive())
 		{
 			// 直接ギミックになる分身を必要分生成
 			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
