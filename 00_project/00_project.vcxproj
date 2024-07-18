@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Resource\enemyAmbush.h" />
     <ClInclude Include="Resource\resultManager.h" />
+    <ClInclude Include="Resource\tension.h" />
     <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
@@ -335,6 +336,7 @@
   <ItemGroup>
     <ClCompile Include="Resource\enemyAmbush.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
+    <ClCompile Include="Resource\tension.cpp" />
     <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />

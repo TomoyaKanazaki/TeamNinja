@@ -242,12 +242,8 @@ void CSceneGame::Update(const float fDeltaTime)
 		assert(m_pCinemaScope != nullptr);
 		m_pCinemaScope->Update(fDeltaTime);
 
-		if (m_pGameManager->GetState() != CGameManager::STATE_RESULT)
-		{ // ゲームがリザルト状態ではない場合
-
-			// シーンの更新
-			CScene::Update(fDeltaTime);
-		}
+		// シーンの更新
+		CScene::Update(fDeltaTime);
 	}
 	else if (m_pHitStop->IsStop())
 	{ // ヒットストップ中の場合

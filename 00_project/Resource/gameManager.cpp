@@ -21,7 +21,8 @@
 #include "player.h"
 #include "multiModel.h"
 
-#include "enemyAttack.h"
+#include "enemyStalk.h"
+#include "enemyWolf.h"
 #include "checkpoint.h"
 #include "popupUI.h"
 #include "goal.h"
@@ -46,7 +47,7 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(15.0f, 1.8f, 0.25f);	// リザルト遷移時のカメラ揺れ
+	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(18.0f, 2.2f, 0.35f);	// リザルト遷移時のカメラ揺れ
 	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
@@ -203,14 +204,14 @@ HRESULT CGameManager::Init(void)
 
 // わんわんおー
 #if 0
-	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyAttack::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
 // さむらい
 #if 1
-	CEnemyAttack::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyAttack::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
 	// 回り込みカメラの設定
@@ -276,6 +277,9 @@ void CGameManager::Update(const float fDeltaTime)
 
 			// リザルトマネージャーの更新
 			m_pResult->Update(fDeltaTime);
+
+			// TODO
+			UpdateResult();
 		}
 		break;
 
@@ -349,4 +353,13 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
+}
+
+//============================================================
+//	リザルトの更新処理
+//============================================================
+void CGameManager::UpdateResult(void)
+{
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	pPlayer->SetDestRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }
