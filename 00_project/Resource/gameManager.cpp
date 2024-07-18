@@ -47,7 +47,7 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(15.0f, 1.8f, 0.25f);	// リザルト遷移時のカメラ揺れ
+	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(18.0f, 2.2f, 0.35f);	// リザルト遷移時のカメラ揺れ
 	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
@@ -277,6 +277,9 @@ void CGameManager::Update(const float fDeltaTime)
 
 			// リザルトマネージャーの更新
 			m_pResult->Update(fDeltaTime);
+
+			// TODO
+			UpdateResult();
 		}
 		break;
 
@@ -350,4 +353,13 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
+}
+
+//============================================================
+//	リザルトの更新処理
+//============================================================
+void CGameManager::UpdateResult(void)
+{
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	pPlayer->SetDestRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }

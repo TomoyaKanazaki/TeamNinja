@@ -76,15 +76,13 @@ namespace
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
-	const int MAX_TENSION = 10000; // 士気力の最大値
-	const int INIT_TENSION = 5000; // 士気力の初期値
-	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
-	const int MAX_CLONE = 20; // 分身の最大数
+	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
+	const char* TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
+
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
-	const float GIMMICK_SET_DISTANCE = 10000.0f; // 直接ギミック分身の生成可能範囲
 
 	// ブラーの情報
 	namespace blurInfo
@@ -127,7 +125,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_pOldField		(nullptr),		// 前回乗ってた地面
 	m_pEffectdata	(nullptr)		// エフェクト情報
 {
-	
+	memset(&m_pTension[0], 0, sizeof(m_pTension));
 }
 
 //============================================================
@@ -205,6 +203,9 @@ HRESULT CPlayer::Init(void)
 	// プレイヤーを出現させる
 	SetSpawn();
 
+	// 士気力ゲージを生成
+	CreateTension();
+
 	// 開始エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
 
@@ -277,6 +278,9 @@ void CPlayer::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+
+	// 士気力ゲージの更新
+	UpdateTension();
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -1466,6 +1470,75 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	}
 
 	return false;
+}
+
+//===========================================
+//  士気力ゲージの生成
+//===========================================
+void CPlayer::CreateTension()
+{
+	// たくさん生成
+	for (int i = 0; i < MAX_CLONE; ++i)
+	{
+		// 生成
+		m_pTension[i] = CObject2D::Create(VEC3_ZERO);
+
+		// 大きさを設定
+		m_pTension[i]->SetVec3Sizing(TENSION_SIZE);
+
+		// 位置を設定
+		m_pTension[i]->SetVec3Position
+		(D3DXVECTOR3(
+			(TENSION_SIZE.x * 0.5f) + (TENSION_SIZE.x * i),
+			TENSION_SIZE.y * 0.5f,
+			0.0f
+		));
+
+		// テクスチャを設定
+		m_pTension[i]->BindTexture(TENSION_TEXTURE);
+
+		// ラベルを設定
+		m_pTension[i]->SetLabel(CObject::LABEL_UI);
+	}
+}
+
+//===========================================
+//  士気力ゲージの更新
+//===========================================
+void CPlayer::UpdateTension()
+{
+	// 分身のリストが存在しない場合全てを不透明にして関数を抜ける
+	if (CPlayerClone::GetList() == nullptr)
+	{
+		for (int i = MAX_CLONE - 1; i >= 0; --i)
+		{
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		return;
+	}
+
+	// 分身の数を取得
+	int nClone = CPlayerClone::GetList()->GetNumAll();
+
+	// たくさん更新
+	for (int i = MAX_CLONE - 1; i >= 0; --i)
+	{
+		// 分身の数が0以下の場合
+		if (nClone <= 0)
+		{
+			// 不透明度を1.0にする
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			// 不透明度を0.5にする
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+		}
+
+		// 士気力ゲージを適用してない分身の数を減らす
+		--nClone;
+	}
 }
 
 //==========================================
