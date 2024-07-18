@@ -1315,7 +1315,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	}
 
 	// 士気力リストの取得
-	if (CTension::GetList() != nullptr) { assert(false); return false; }
+	if (CTension::GetList() == nullptr) { assert(false); return false; }
 	std::list<CTension*> list = CTension::GetList()->GetList();
 
 	// 使用可能な士気力を確認する
