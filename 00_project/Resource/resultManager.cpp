@@ -23,13 +23,14 @@ namespace
 	namespace fade
 	{
 		const D3DXVECTOR3	SIZE	= D3DXVECTOR3(SCREEN_SIZE.x, 1770.0f, 0.0f);		// フェード大きさ
-		const D3DXCOLOR		COL		= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.88f);				// フェード色
+		const D3DXCOLOR		COL		= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);				// フェード色
 		const D3DXVECTOR3 UP_POS	= D3DXVECTOR3(SCREEN_CENT.x, -900.0f, 0.0f);		// フェード上位置
 		const D3DXVECTOR3 CENT_POS	= D3DXVECTOR3(SCREEN_CENT.x, SCREEN_CENT.y, 0.0f);	// フェード中央位置
 		const D3DXVECTOR3 DOWN_POS	= D3DXVECTOR3(SCREEN_CENT.x, SCREEN_HEIGHT + 900.0f, 0.0f);		// フェード下位置
 		const D3DXVECTOR3 UP_MIDDLE_POS		= D3DXVECTOR3(CENT_POS.x, UP_POS.y + 300.0f, 0.0f);		// フェード上中央位置
 		const D3DXVECTOR3 DOWN_MIDDLE_POS	= D3DXVECTOR3(CENT_POS.x, DOWN_POS.y - 300.0f, 0.0f);	// フェード下中央位置
 
+		const float	FADEWAIT_TIME	= 1.2f;		// フェード開始待機時間
 		const float	WAIT_TIME		= 0.15f;	// フェード待機時間
 		const float	ADD_MOVE		= 0.65f;	// フェード移動量
 		const float	ADD_ACCEL_MOVE	= 2.1f;		// フェード加速移動量
@@ -65,10 +66,10 @@ CResultManager::~CResultManager()
 HRESULT CResultManager::Init(void)
 {
 	// メンバ変数を初期化
-	m_pFade		= nullptr;		// フェード情報
-	m_state		= STATE_FADEIN;	// 状態
-	m_fMoveY	= 0.0f;			// 縦移動量
-	m_nCurTime	= 0.0f;			// 現在の待機時間
+	m_pFade		= nullptr;			// フェード情報
+	m_state		= STATE_FADEWAIT;	// 状態
+	m_fMoveY	= 0.0f;				// 縦移動量
+	m_nCurTime	= 0.0f;				// 現在の待機時間
 
 	// フェードの生成
 	m_pFade = CObject2D::Create
@@ -113,6 +114,12 @@ void CResultManager::Update(const float fDeltaTime)
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
+		break;
+
+	case STATE_FADEWAIT:
+
+		// フェード待機の更新
+		UpdateFadeWait(fDeltaTime);
 		break;
 
 	case STATE_FADEIN:
@@ -218,6 +225,24 @@ void CResultManager::Release(CResultManager *&prResultManager)
 
 	// メモリ開放
 	SAFE_DELETE(prResultManager);
+}
+
+//============================================================
+//	フェード待機の更新処理
+//============================================================
+void CResultManager::UpdateFadeWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_nCurTime += fDeltaTime;
+	if (m_nCurTime >= fade::FADEWAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_nCurTime = 0;
+
+		// フェードイン状態にする
+		m_state = STATE_FADEIN;
+	}
 }
 
 //============================================================

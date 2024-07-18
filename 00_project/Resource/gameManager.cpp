@@ -48,7 +48,6 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(18.0f, 2.2f, 0.35f);	// リザルト遷移時のカメラ揺れ
 	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
@@ -301,9 +300,6 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
-
-	// カメラ揺れの設定
-	GET_MANAGER->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CLEAR_SWING);
 
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());

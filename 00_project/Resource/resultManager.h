@@ -26,6 +26,7 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,			// 何もしない状態
+		STATE_FADEWAIT,			// フェード待機状態
 		STATE_FADEIN,			// フェードイン状態
 		STATE_FADEIN_WAIT,		// フェードイン待機状態
 		STATE_FADEIN_ACCEL,		// フェードイン加速状態
@@ -56,6 +57,7 @@ public:
 
 private:
 	// メンバ関数
+	void UpdateFadeWait(const float fDeltaTime);		// フェード待機更新
 	void UpdateFadeIn(const float fDeltaTime);			// フェードイン更新
 	void UpdateFadeInWait(const float fDeltaTime);		// フェードイン待機更新
 	void UpdateFadeInAccel(const float fDeltaTime);		// フェードイン加速更新
