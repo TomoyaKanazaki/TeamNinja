@@ -16,6 +16,11 @@
 #include "enemyAttack.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CEnemyNav;		// 敵のナビゲーション
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // 狼敵クラス
@@ -66,6 +71,27 @@ public:
 	float GetRadius(void) const override;			// 半径の取得処理
 	float GetHeight(void) const override;			// 高さの取得処理
 
+	// 静的メンバ関数
+	static CEnemyWolf* Create	// 生成
+	( // 引数
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rRot,	// 向き
+		const EType type,			// 種類
+		const float fMoveWidth,		// 移動幅
+		const float fMoveDepth,		// 移動奥行
+		const float fChaseWidth,	// 追跡幅
+		const float fChaseDepth		// 追跡奥行
+	);
+	static CEnemyWolf* Create	// 生成
+	( // 引数
+		const D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rRot,				// 向き
+		const EType type,						// 種類
+		const std::vector<D3DXVECTOR3> route,	// ルートの配列
+		const float fChaseWidth,				// 追跡幅
+		const float fChaseDepth					// 追跡奥行
+	);
+
 private:
 
 	// オーバーライド関数
@@ -86,6 +112,7 @@ private:
 	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
 
 	// メンバ変数
+	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	EState m_state;						// 状態
 };
 

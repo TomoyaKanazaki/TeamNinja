@@ -19,7 +19,6 @@
 // 前方宣言
 //************************************************************
 class CPlayerClone;		// 分身の情報
-class CEnemyNav;		// 敵のナビゲーション
 class CEnemyChaseRange;	// 敵の追跡範囲
 
 //************************************************************
@@ -65,20 +64,22 @@ public:
 	static CListManager<CEnemyAttack>* GetList(void);			// リスト取得
 
 	// セット・ゲット関係
-	CEnemyNav* GetNavigation(void) const		{ return m_pNav; }				// ナビゲーションの情報取得
-	CEnemyChaseRange* GetChaseRange(void) const { return m_pChaseRange; }		// 追跡範囲の情報
-	void SetClone(CPlayerClone* pClone)			{ m_pClone = pClone; }			// 分身の情報設定
-	CPlayerClone* GetClone(void) const			{ return m_pClone; }			// 分身の情報取得
-	void SetTargetPos(const D3DXVECTOR3& pos)	{ m_posTarget = pos; }			// 目標の位置設定
-	D3DXVECTOR3 GetTargetPos(void) const		{ return m_posTarget; }			// 目標の位置取得
-	void SetTarget(const ETarget target)		{ m_target = target; }			// 標的設定
-	ETarget GetTarget(void) const				{ return m_target; }			// 標的取得
-	void SetAttackCount(const int nCount)		{ m_nAttackCount = nCount; }	// 攻撃カウント設定
-	int GetAttackCount(void) const				{ return m_nAttackCount; }		// 攻撃カウント取得
-	void SetAlpha(const float fAlpha)			{ m_fAlpha = fAlpha; }			// 透明度設定
-	float GetAlpha(void) const					{ return m_fAlpha; }			// 透明度取得
-	void SetEnableDodge(const bool bAttack)		{ m_bDodge = bAttack; }			// 回避受付フラグ設定
-	bool IsDodge(void) const					{ return m_bDodge; }			// 回避受付フラグ取得
+	void SetChaseRange(CEnemyChaseRange* pChace)	{ assert(m_pChaseRange == nullptr); m_pChaseRange = pChace; }		// 追跡範囲の情報
+	CEnemyChaseRange* GetChaseRange(void) const		{ return m_pChaseRange; }		// 追跡範囲の情報
+	void SetType(const EType type)					{ m_type = type; }				// 種類設定
+	EType GetType(void) const						{ return m_type; }				// 種類取得
+	void SetClone(CPlayerClone* pClone)				{ m_pClone = pClone; }			// 分身の情報設定
+	CPlayerClone* GetClone(void) const				{ return m_pClone; }			// 分身の情報取得
+	void SetTargetPos(const D3DXVECTOR3& pos)		{ m_posTarget = pos; }			// 目標の位置設定
+	D3DXVECTOR3 GetTargetPos(void) const			{ return m_posTarget; }			// 目標の位置取得
+	void SetTarget(const ETarget target)			{ m_target = target; }			// 標的設定
+	ETarget GetTarget(void) const					{ return m_target; }			// 標的取得
+	void SetAttackCount(const int nCount)			{ m_nAttackCount = nCount; }	// 攻撃カウント設定
+	int GetAttackCount(void) const					{ return m_nAttackCount; }		// 攻撃カウント取得
+	void SetAlpha(const float fAlpha)				{ m_fAlpha = fAlpha; }			// 透明度設定
+	float GetAlpha(void) const						{ return m_fAlpha; }			// 透明度取得
+	void SetEnableDodge(const bool bAttack)			{ m_bDodge = bAttack; }			// 回避受付フラグ設定
+	bool IsDodge(void) const						{ return m_bDodge; }			// 回避受付フラグ取得
 
 	// メンバ関数
 	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理
@@ -95,25 +96,6 @@ public:
 	void HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// 静的メンバ関数
-	static CEnemyAttack* Create	// 生成
-	( // 引数
-		const D3DXVECTOR3& rPos,	// 位置
-		const D3DXVECTOR3& rRot,	// 向き
-		const EType type,			// 種類
-		const float fMoveWidth,		// 移動幅
-		const float fMoveDepth,		// 移動奥行
-		const float fChaseWidth,	// 追跡幅
-		const float fChaseDepth		// 追跡奥行
-	);
-	static CEnemyAttack* Create	// 生成
-	( // 引数
-		const D3DXVECTOR3& rPos,				// 位置
-		const D3DXVECTOR3& rRot,				// 向き
-		const EType type,						// 種類
-		const std::vector<D3DXVECTOR3> route,	// ルートの配列
-		const float fChaseWidth,				// 追跡幅
-		const float fChaseDepth					// 追跡奥行
-	);
 	static D3DXVECTOR3 GetAttackUp();	// 当たり判定の取得
 	static D3DXVECTOR3 GetAttackDown();	// 当たり判定の取得
 
@@ -128,7 +110,6 @@ private:
 
 	// メンバ変数
 	CListManager<CEnemyAttack>::AIterator m_iterator;	// イテレーター
-	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
 	CPlayerClone* m_pClone;		// 分身の情報
 	D3DXVECTOR3 m_posTarget;	// 目標の位置

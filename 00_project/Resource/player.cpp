@@ -31,7 +31,6 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "transpoint.h"
-#include "gauge2D.h"
 #include "effect3D.h"
 #include "actor.h"
 #include "effekseerControl.h"
@@ -73,18 +72,17 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE		= 600.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
+	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
-	const int MAX_TENSION = 10000; // 士気力の最大値
-	const int INIT_TENSION = 5000; // 士気力の初期値
-	const int SPEED_TENSION = 30; // 士気力ゲージの増減速度
-	const int MAX_CLONE = 20; // 分身の最大数
+	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
+	const char* TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
+
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
-	const float GIMMICK_SET_DISTANCE = 10000.0f; // 直接ギミック分身の生成可能範囲
 
 	// ブラーの情報
 	namespace blurInfo
@@ -113,7 +111,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
-	m_pTensionGauge	(nullptr),		// 士気力ゲージのポインタ
 	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
@@ -125,9 +122,10 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_fStickRot		(0.0f),			// スティックの角度
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
-	m_pOldField		(nullptr)		// 前回乗ってた地面
+	m_pOldField		(nullptr),		// 前回乗ってた地面
+	m_pEffectdata	(nullptr)		// エフェクト情報
 {
-	
+	memset(&m_pTension[0], 0, sizeof(m_pTension));
 }
 
 //============================================================
@@ -151,7 +149,6 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
-	m_pTensionGauge	= nullptr;		// 士気力ゲージのポインタ
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -171,8 +168,6 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-
-
 	// 軌跡の生成
 	m_pOrbit = COrbit::Create
 	( // 引数
@@ -187,17 +182,6 @@ HRESULT CPlayer::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 士気力ゲージを生成
-	m_pTensionGauge = CGauge2D::Create
-	(
-		MAX_TENSION, SPEED_TENSION, D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXVECTOR3(300.0f, 30.0f, 0.0f),
-		D3DXCOLOR(1.0f, 0.56f, 0.87f, 1.0f),
-		D3DXCOLOR(0.31f, 0.89f, 0.97f, 1.0f)
-	);
-	m_pTensionGauge->SetNum(INIT_TENSION);
-	m_pTensionGauge->SetLabel(LABEL_UI);
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -219,6 +203,9 @@ HRESULT CPlayer::Init(void)
 	// プレイヤーを出現させる
 	SetSpawn();
 
+	// 士気力ゲージを生成
+	CreateTension();
+
 	// 開始エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
 
@@ -231,13 +218,11 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	// 士気力ゲージの終了
-	SAFE_UNINIT(m_pTensionGauge);
-	
-	
-
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
+
+	// エフェクトの終了
+	SAFE_DELETE(m_pEffectdata);
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -294,7 +279,8 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-
+	// 士気力ゲージの更新
+	UpdateTension();
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -302,23 +288,11 @@ void CPlayer::Update(const float fDeltaTime)
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 
-	// デバッグ表示
-	DebugProc::Print(DebugProc::POINT_LEFT, "士気力 : %d\n", m_pTensionGauge->GetNum());
-
 #ifdef _DEBUG
 
 	// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
-	// 士気力の変更
-	if (pKeyboard->IsTrigger(DIK_UP))
-	{
-		m_pTensionGauge->AddNum(100);
-	}
-	if (pKeyboard->IsTrigger(DIK_DOWN))
-	{
-		m_pTensionGauge->AddNum(-100);
-	}
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
 		RecoverCheckPoint();
@@ -423,9 +397,6 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
 	if (IsDeath())				 { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
 
-	// 士気力を減少
-	m_pTensionGauge->AddNum(-nDamage);
-
 	return true;
 }
 
@@ -439,9 +410,6 @@ bool CPlayer::Hit(const int nDamage)
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
-
-	// 士気力を減少
-	m_pTensionGauge->AddNum(-nDamage);
 
 	return true;
 }
@@ -541,9 +509,6 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
-	// 追従している分身を消す
-	CPlayerClone::Delete();
-
 	return true;
 }
 
@@ -580,33 +545,11 @@ bool CPlayer::GimmickLand(void)
 }
 
 //==========================================
-//  士気力の値を取得
-//==========================================
-int CPlayer::GetTension() const
-{
-	// 士気力ゲージが存在しない場合
-	if (m_pTensionGauge == nullptr) { return -1; }
-
-	// 士気力の値を返す
-	return m_pTensionGauge->GetNum();
-}
-
-//==========================================
 //  チェックポイントでの回復処理
 //==========================================
 void CPlayer::RecoverCheckPoint()
 {
-	// 現在の士気力を取得する
-	unsigned int nTension = GetTension();
 
-	// 士気力ゲージが存在しなかった場合関数を抜ける
-	if (nTension == -1) { return; }
-
-	// 最大値と現在値の差を求める
-	float fDiff = (float)(MAX_TENSION - nTension);
-
-	// 差分の半分の値で士気力を回復する
-	m_pTensionGauge->AddNum((int)(fDiff *= 0.5f));
 }
 
 //==========================================
@@ -614,12 +557,6 @@ void CPlayer::RecoverCheckPoint()
 //==========================================
 void CPlayer::RecoverJust()
 {
-	// 士気力ゲージが存在しない場合
-	if (m_pTensionGauge == nullptr) { return; }
-
-	// 固定値で士気力を回復する
-	m_pTensionGauge->AddNum(JUST_RECOVER);
-
 	// 回復エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
 }
@@ -711,7 +648,8 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	SetVec3Rotation(rotPlayer);
 
 	// 分身の処理
-	ControlClone(posPlayer, rotPlayer, fDeltaTime);
+	if(ControlClone(posPlayer, rotPlayer, fDeltaTime))
+	{ currentMotion = MOTION_DODGE; }
 
 	// 保存位置の更新
 	UpdateSaveTeleport();
@@ -725,19 +663,49 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 {
-	// モーション情報の取得
-	CMotion* pMotion = GetMotion();
-
-	// 回避モーション中の場合モーションの終了判定を確認
-	if (pMotion->GetType() == MOTION_DODGE)
+	// 回避モーション以外の場合通常状態になる
+	if (GetMotion()->GetType() != MOTION_DODGE)
 	{
-		// モーションが終了していた場合
-		if (pMotion->IsFinish())
-		{
-			m_state = STATE_NORMAL; // 通常状態に戻る
-			return MOTION_IDOL; // 待機モーションにする
-		}
+		// エフェクトを削除する
+		SAFE_DELETE(m_pEffectdata);
+
+		// 通常状態に戻る
+		m_state = STATE_NORMAL;
+
+		// 待機モーションにする
+		return MOTION_IDOL;
 	}
+
+	// 向きの取得
+	float rot = GetVec3Rotation().y;
+
+	// 移動方向の算出
+	m_move.x = sinf(rot) * DODGE_MOVE;
+	m_move.z = cosf(rot) * DODGE_MOVE;
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// エフェクトの位置を設定する
+	m_pEffectdata->m_pos = pos;
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// アクターの当たり判定
+	CollisionActor(pos);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	return MOTION_DODGE;
 }
@@ -1163,6 +1131,17 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 
 		break;
+
+	case MOTION_DODGE:	// 回避モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+		}
+
+		break;
 	}
 }
 
@@ -1253,37 +1232,13 @@ void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 //==========================================
 //  分身の処理
 //==========================================
-void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
+bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime)
 {
 	// 操作可能フラグを確認
-	if (!m_bClone) { return; }
+	if (!m_bClone) { return false; }
 
 	// 入力情報の受け取り
 	CInputPad* pPad = GET_INPUTPAD;
-
-	// 追従分身の削除
-	if (pPad->IsTrigger(CInputPad::KEY_RB))
-	{
-		// リストが存在しない場合に削除しない
-		if (CPlayerClone::GetList() != nullptr)
-		{
-			CPlayerClone::Delete();
-		}
-	}
-
-	// 分身を呼び戻す
-	CallClone();
-
-	// 回避処理を呼び出す
-	if (Dodge(rPos, pPad))
-	{
-		// 回避状態に変更
-		m_state = STATE_DODGE;
-		return;
-	}
-
-	// ギミックの直接生成ができる場合関数を抜ける
-	if (CreateGimmick(fDeltaTime)) { return; }
 
 #ifdef _DEBUG
 
@@ -1299,25 +1254,32 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 
 #endif
 
-	// 分身の数が上限だった場合関数を抜ける
-	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return; }
-
-	// 士気力が0なら関数を抜ける
-	if (m_pTensionGauge->GetNum() <= 0) { return; }
+	// 分身を削除
+	DelelteClone();
 
 	// 右スティックの入力がない場合関数を抜ける
-	if (!pPad->GetTriggerRStick()) { return; }
+	if (!pPad->GetTriggerRStick()) { return false; }
 
-	// TODO：士気力の減る量考えて！
-#if 0
-#ifndef _DEBUG
-	// 士気力が減少する
-	m_pTensionGauge->AddNum(-500);
-#endif
-#endif
+	// 回避処理を呼び出す
+	if (Dodge(rPos, pPad))
+	{
+		// 移動方向の算出
+		m_move.x = sinf(rRot.y) * DODGE_MOVE;
+		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
-	// プレイヤーの方向を取得
-	float fRotPlayer = GetVec3Rotation().y;
+		// エフェクトを出す
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
+
+		// 回避状態に変更
+		m_state = STATE_DODGE;
+		return true;
+	}
+
+	// 分身の数が上限だった場合関数を抜ける
+	if (CPlayerClone::GetList() != nullptr && CPlayerClone::GetList()->GetNumAll() >= MAX_CLONE) { return false; }
+
+	// ギミックの直接生成ができる場合関数を抜ける
+	if (CreateGimmick(fDeltaTime)) { return false; }
 
 	// スティック入力の方向を取得する
 	float fRotStick = pPad->GetPressRStickRot();
@@ -1326,40 +1288,23 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = fRotStick + fCameraRot;
+	float fTemp = -(fRotStick + fCameraRot);
 	useful::NormalizeRot(fTemp);
-
-	// プレイヤー方向からスティックの方向を減算
-	float fRot = fRotPlayer - (fTemp - D3DX_PI * 0.5f);
-	useful::NormalizeRot(fRot);
 
 	// 分身の位置を算出
 	D3DXVECTOR3 pos = rPos + D3DXVECTOR3
 	(
-		DISTANCE_CLONE * cosf(-fTemp),
+		DISTANCE_CLONE * cosf(fTemp),
 		0.0f,
-		DISTANCE_CLONE * sinf(-fTemp)
+		DISTANCE_CLONE * sinf(fTemp)
 	);
-
-	// 求めた値とπの誤差が小さい場合ついてくる分身を出して関数を抜ける
-	if (fabsf(fRot) >= STICK_ERROR)
-	{
-		// 生成に失敗していた場合ギミック生成待機になる
-		if (CPlayerClone::Create() == nullptr)
-		{
-			m_bGimmickClone = true;
-			m_fGimmickTimer = 0.0f;
-			m_fTempStick = fTemp;
-		}
-		return;
-	}
 
 	// 分身の移動量を算出する
 	D3DXVECTOR3 move = D3DXVECTOR3
 	(
-		CLONE_MOVE * cosf(-fTemp),
+		CLONE_MOVE * cosf(fTemp),
 		0.0f,
-		CLONE_MOVE * sinf(-fTemp)
+		CLONE_MOVE * sinf(fTemp)
 	);
 
 	// 歩く分身を出す
@@ -1367,8 +1312,10 @@ void CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	{
 		m_bGimmickClone = true;
 		m_fGimmickTimer = 0.0f;
-		m_fTempStick = fTemp;
+		m_fTempStick = -fTemp;
 	}
+
+	return false;
 }
 
 //==========================================
@@ -1381,15 +1328,12 @@ void CPlayer::SaveReset()
 
 	// チェックポイントの座標に飛ぶ
 	SetVec3Position(m_pCheckPoint->GetVec3Position());
-
-	// セーブした時点での士気力にする
-	m_pTensionGauge->SetNum(m_pCheckPoint->GetSaveTension());
 }
 
 //==========================================
 //  分身を呼び戻す
 //==========================================
-void CPlayer::CallClone()
+void CPlayer::DelelteClone()
 {
 	// パッドの入力情報を取得する
 	CInputPad* pPad = GET_INPUTPAD;
@@ -1397,8 +1341,8 @@ void CPlayer::CallClone()
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
-	// 分身を追従する
-	CPlayerClone::CallBack();
+	// 分身を削除する
+	CPlayerClone::Delete();
 }
 
 //===========================================
@@ -1490,9 +1434,6 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
-	// 右スティック入力がない場合falseを返す
-	if (!pPad->GetTriggerRStick()) { return false; }
-
 	// 攻撃する敵のリストを取得
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
@@ -1529,6 +1470,75 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	}
 
 	return false;
+}
+
+//===========================================
+//  士気力ゲージの生成
+//===========================================
+void CPlayer::CreateTension()
+{
+	// たくさん生成
+	for (int i = 0; i < MAX_CLONE; ++i)
+	{
+		// 生成
+		m_pTension[i] = CObject2D::Create(VEC3_ZERO);
+
+		// 大きさを設定
+		m_pTension[i]->SetVec3Sizing(TENSION_SIZE);
+
+		// 位置を設定
+		m_pTension[i]->SetVec3Position
+		(D3DXVECTOR3(
+			(TENSION_SIZE.x * 0.5f) + (TENSION_SIZE.x * i),
+			TENSION_SIZE.y * 0.5f,
+			0.0f
+		));
+
+		// テクスチャを設定
+		m_pTension[i]->BindTexture(TENSION_TEXTURE);
+
+		// ラベルを設定
+		m_pTension[i]->SetLabel(CObject::LABEL_UI);
+	}
+}
+
+//===========================================
+//  士気力ゲージの更新
+//===========================================
+void CPlayer::UpdateTension()
+{
+	// 分身のリストが存在しない場合全てを不透明にして関数を抜ける
+	if (CPlayerClone::GetList() == nullptr)
+	{
+		for (int i = MAX_CLONE - 1; i >= 0; --i)
+		{
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		return;
+	}
+
+	// 分身の数を取得
+	int nClone = CPlayerClone::GetList()->GetNumAll();
+
+	// たくさん更新
+	for (int i = MAX_CLONE - 1; i >= 0; --i)
+	{
+		// 分身の数が0以下の場合
+		if (nClone <= 0)
+		{
+			// 不透明度を1.0にする
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			// 不透明度を0.5にする
+			m_pTension[i]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+		}
+
+		// 士気力ゲージを適用してない分身の数を減らす
+		--nClone;
+	}
 }
 
 //==========================================

@@ -16,6 +16,11 @@
 #include "enemyAttack.h"
 
 //************************************************************
+// 前方宣言
+//************************************************************
+class CEnemyNav;		// 敵のナビゲーション
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // しつこい敵クラス
@@ -67,6 +72,27 @@ public:
 	float GetRadius(void) const override;			// 半径の取得処理
 	float GetHeight(void) const override;			// 高さの取得処理
 
+	// 静的メンバ関数
+	static CEnemyStalk* Create	// 生成
+	( // 引数
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rRot,	// 向き
+		const EType type,			// 種類
+		const float fMoveWidth,		// 移動幅
+		const float fMoveDepth,		// 移動奥行
+		const float fChaseWidth,	// 追跡幅
+		const float fChaseDepth		// 追跡奥行
+	);
+	static CEnemyStalk* Create	// 生成
+	( // 引数
+		const D3DXVECTOR3& rPos,				// 位置
+		const D3DXVECTOR3& rRot,				// 向き
+		const EType type,						// 種類
+		const std::vector<D3DXVECTOR3> route,	// ルートの配列
+		const float fChaseWidth,				// 追跡幅
+		const float fChaseDepth					// 追跡奥行
+	);
+
 private:
 
 	// オーバーライド関数
@@ -80,15 +106,15 @@ private:
 	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
-	EMotion Upset(void);						// 動揺処理
+	EMotion Upset(D3DXVECTOR3* pRot, const float fDeltaTime);			// 動揺処理
 	EMotion Caution(void);						// 警戒処理
 	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理
 
 	// メンバ変数
+	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	EState m_state;						// 状態
 	int m_nStateCount;					// 状態カウント
-	int m_nNumUpsetLoop;				// 動揺モーションのループ回数
 };
 
 #endif	// _ENEMY_CHASE_H_

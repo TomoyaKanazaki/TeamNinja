@@ -14,6 +14,8 @@
 
 #include "multiModel.h"
 #include "enemyNavigation.h"
+#include "enemyNavStreet.h"
+#include "enemyNavRandom.h"
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
 
@@ -31,7 +33,8 @@ namespace
 	const float HEIGHT = 80.0f;				// 身長
 	const float SPEED = -290.0f;			// 速度
 	const float ROT_REV = 4.0f;				// 向きの補正係数
-	const int UPSET_STATE_COUNT = 3;		// 動揺状態のカウント数
+	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
+	const int UPSET_MOTION_COUNT = 340;		// 動揺状態のカウント数
 	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
@@ -47,9 +50,9 @@ namespace
 //	コンストラクタ
 //============================================================
 CEnemyStalk::CEnemyStalk() : CEnemyAttack(),
+m_pNav(nullptr),
 m_state(STATE_CRAWL),
-m_nStateCount(0),
-m_nNumUpsetLoop(0)
+m_nStateCount(0)
 {
 
 }
@@ -88,6 +91,9 @@ HRESULT CEnemyStalk::Init(void)
 //============================================================
 void CEnemyStalk::Uninit(void)
 {
+	// ナビゲーションの終了処理
+	SAFE_UNINIT(m_pNav);
+
 	// 敵の終了
 	CEnemyAttack::Uninit();
 }
@@ -146,6 +152,125 @@ float CEnemyStalk::GetHeight(void) const
 }
 
 //============================================================
+//	生成処理(一定範囲移動敵)
+//============================================================
+CEnemyStalk* CEnemyStalk::Create
+(
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot,	// 向き
+	const EType type,			// 種類
+	const float fMoveWidth,		// 移動幅
+	const float fMoveDepth,		// 移動奥行
+	const float fChaseWidth,	// 追跡幅
+	const float fChaseDepth		// 追跡奥行
+)
+{
+	// 敵を生成
+	CEnemyStalk* pEnemy = new CEnemyStalk;
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->SetType(type);
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
+
+		// 追跡範囲を生成
+		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
+}
+
+//============================================================
+//	生成処理(ルート巡回移動敵)
+//============================================================
+CEnemyStalk* CEnemyStalk::Create
+(
+	const D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rRot,				// 向き
+	const EType type,						// 種類
+	const std::vector<D3DXVECTOR3> route,	// ルートの配列
+	const float fChaseWidth,				// 追跡幅
+	const float fChaseDepth					// 追跡奥行
+)
+{
+	// 敵を生成
+	CEnemyStalk* pEnemy = new CEnemyStalk;
+
+	if (pEnemy == nullptr)
+	{ // 生成に失敗した場合
+
+		return nullptr;
+	}
+	else
+	{ // 生成に成功した場合
+
+		// 敵の初期化
+		if (FAILED(pEnemy->Init()))
+		{ // 初期化に失敗した場合
+
+			// 敵の破棄
+			SAFE_DELETE(pEnemy);
+			return nullptr;
+		}
+
+		// 位置を設定
+		pEnemy->SetVec3Position(rPos);
+
+		// 向きを設定
+		pEnemy->SetVec3Rotation(rRot);
+
+		// 種類を設定
+		pEnemy->SetType(type);
+
+		// 初期位置を設定
+		pEnemy->SetPosInit(rPos);
+
+		// 情報の設定処理
+		pEnemy->SetData();
+
+		// ナビゲーションを生成
+		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
+
+		// 追跡範囲を生成
+		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 確保したアドレスを返す
+		return pEnemy;
+	}
+}
+
+//============================================================
 // 状態の更新処理
 //============================================================
 int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
@@ -184,7 +309,7 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	case CEnemyStalk::STATE_UPSET:
 
 		// 動揺処理
-		nCurMotion = Upset();
+		nCurMotion = Upset(pRot, fDeltaTime);
 
 		break;
 
@@ -217,11 +342,12 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 		break;
 	}
 
-	if (Collision(*pPos))
-	{ // 当たり判定が true だった場合
+	if (Collision(*pPos) &&
+		m_pNav->GetState() != CEnemyNav::STATE_STOP)
+	{ // 当たり判定が true かつ、停止状態以外の場合
 
 		// ナビゲーションのリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 	}
 
 	// 現在のモーションを返す
@@ -291,21 +417,11 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// 動揺モーションのループ数を加算する
-			m_nNumUpsetLoop++;
+			// 待機モーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
-			if (m_nNumUpsetLoop < UPSET_STATE_COUNT)
-			{ // 動揺モーションのループ回数が一定数未満の場合
-
-				// 待機モーションの設定
-				SetMotion(MOTION_UPSET, BLEND_FRAME_UPSET);
-			}
-			else
-			{ // 上記以外
-
-				// 待機モーションの設定
-				SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
-			}
+			// 警戒状態にする
+			m_state = STATE_CAUTION;
 		}
 
 		break;
@@ -378,7 +494,7 @@ void CEnemyStalk::UpdateLanding(D3DXVECTOR3* pPos)
 //============================================================
 void CEnemyStalk::NavMotionSet(EMotion* pMotion)
 {
-	switch (GetNavigation()->GetState())
+	switch (m_pNav->GetState())
 	{
 	case CEnemyNav::STATE_MOVE:
 
@@ -409,11 +525,11 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	if (GetNavigation() != nullptr)
+	if (m_pNav != nullptr)
 	{ // ナビゲーションが NULL じゃない場合
 
 		// ナビの更新処理
-		GetNavigation()->Update
+		m_pNav->Update
 		(
 			pPos,		// 位置
 			pRot,		// 向き
@@ -434,7 +550,7 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 	{ // 分身かプレイヤーが目に入った場合
 
 		// ナビゲーションリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_WARNING;
@@ -543,7 +659,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		m_state = STATE_FADEOUT;
 
 		// ナビゲーションリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 
 		// 移動量をリセットする
 		SetMovePosition(VEC3_ZERO);
@@ -588,6 +704,9 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 		// 動揺状態にする
 		m_state = STATE_UPSET;
 
+		// 状態カウントを0にする
+		m_nStateCount = 0;
+
 		// 動揺モーションにする
 		return MOTION_UPSET;
 
@@ -605,19 +724,32 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 //============================================================
 // 動揺処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Upset(void)
+CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	if (m_nNumUpsetLoop >= UPSET_STATE_COUNT)
-	{ // 一定時間経過した場合
+	// 状態カウントを加算する
+	m_nStateCount++;
 
-		// 警戒状態にする
-		m_state = STATE_CAUTION;
+	// 向きの移動処理
+	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-		// 動揺モーションのループ数を0にする
-		m_nNumUpsetLoop = 0;
+	if (m_nStateCount <= UPSET_MOTION_COUNT)
+	{ // 一定カウント以下の場合
 
-		// 待機モーションにする
-		return MOTION_IDOL;
+		if (m_nStateCount % UPSET_CYCLE_COUNT == 0)
+		{ // 一定カウントごとに
+
+			// 目的の向きを取得
+			D3DXVECTOR3 rotDest = GetDestRotation();
+
+			// 目的の向きを設定する
+			rotDest.y = useful::RandomRot();
+
+			// 目的の向きを適用
+			SetDestRotation(rotDest);
+		}
+
+		// 攻撃モーションにする
+		return MOTION_ATTACK;
 	}
 
 	// 動揺モーションにする
@@ -650,7 +782,7 @@ CEnemyStalk::EMotion CEnemyStalk::Caution(void)
 		m_nStateCount = 0;
 
 		// ナビゲーションリセット処理
-		GetNavigation()->NavReset();
+		m_pNav->NavReset();
 
 		// 警告状態にする
 		m_state = STATE_WARNING;
@@ -694,6 +826,9 @@ CEnemyStalk::EMotion CEnemyStalk::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 
 		// 向きを設定する
 		*pRot = VEC3_ZERO;
+
+		// 目的の向きを設定する(復活後に無意味に向いてしまうため)
+		SetDestRotation(*pRot);
 
 		// 透明度を補正する
 		fAlpha = 0.0f;

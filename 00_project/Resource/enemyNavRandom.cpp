@@ -132,6 +132,7 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWi
 		// 移動範囲を設定
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
 
+#if 0
 #ifdef _DEBUG
 
 		// キューブを生成
@@ -144,6 +145,8 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWi
 		);
 
 #endif // _DEBUG
+#endif // 0
+
 
 		// 確保したアドレスを返す
 		return pNav;

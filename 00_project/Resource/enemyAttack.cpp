@@ -16,9 +16,6 @@
 #include "player_clone.h"
 #include "multiModel.h"
 #include "collision.h"
-#include "enemyNavigation.h"
-#include "enemyNavStreet.h"
-#include "enemyNavRandom.h"
 #include "enemyChaseRange.h"
 
 #include "enemyStalk.h"
@@ -33,8 +30,9 @@ namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 17;				// 回避カウント数
-	const float SHAKEOFF_RANGE = 1000.0f;	// 振り切れる距離
+	const int DODGE_COUNT = 17;					// 回避カウント数
+	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
+	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
 }
 
 //************************************************************
@@ -49,7 +47,6 @@ CListManager<CEnemyAttack>* CEnemyAttack::m_pList = nullptr;			// オブジェクトリ
 //	コンストラクタ
 //============================================================
 CEnemyAttack::CEnemyAttack() : CEnemy(),
-m_pNav(nullptr),			// ナビゲーションの情報
 m_pChaseRange(nullptr),		// 追跡範囲の情報
 m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
@@ -110,9 +107,6 @@ HRESULT CEnemyAttack::Init(void)
 //============================================================
 void CEnemyAttack::Uninit(void)
 {
-	// ナビゲーションの終了処理
-	SAFE_UNINIT(m_pNav);
-
 	// 追跡範囲の終了処理
 	SAFE_UNINIT(m_pChaseRange);
 
@@ -137,15 +131,6 @@ void CEnemyAttack::Update(const float fDeltaTime)
 {
 	// 敵の更新
 	CEnemy::Update(fDeltaTime);
-
-	if (m_bDodge)
-	{
-		SetAllMaterial(material::Blue());
-	}
-	else
-	{
-		ResetMaterial();
-	}
 }
 
 //============================================================
@@ -455,171 +440,10 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	pClone->Hit(20);
 
 	// 分身との戦闘エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 20.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
 
 	// 回避受付フラグを false にする
 	m_bDodge = false;
-}
-
-//============================================================
-//	生成処理(一定範囲移動敵)
-//============================================================
-CEnemyAttack* CEnemyAttack::Create
-(
-	const D3DXVECTOR3& rPos,	// 位置
-	const D3DXVECTOR3& rRot,	// 向き
-	const EType type,			// 種類
-	const float fMoveWidth,		// 移動幅
-	const float fMoveDepth,		// 移動奥行
-	const float fChaseWidth,	// 追跡幅
-	const float fChaseDepth		// 追跡奥行
-)
-{
-	// ポインタを宣言
-	CEnemyAttack* pEnemy = nullptr;	// 敵情報
-
-	switch (type)
-	{
-	case TYPE_STALK:
-
-		// 追跡敵を生成
-		pEnemy = new CEnemyStalk;
-
-		break;
-
-	case TYPE_WOLF:
-
-		// 犬敵を生成
-		pEnemy = new CEnemyWolf;
-
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
-
-	if (pEnemy == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 敵の初期化
-		if (FAILED(pEnemy->Init()))
-		{ // 初期化に失敗した場合
-
-			// 敵の破棄
-			SAFE_DELETE(pEnemy);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pEnemy->SetVec3Position(rPos);
-
-		// 向きを設定
-		pEnemy->SetVec3Rotation(rRot);
-
-		// 種類を設定
-		pEnemy->m_type = type;
-
-		// 初期位置を設定
-		pEnemy->SetPosInit(rPos);
-
-		// 情報の設定処理
-		pEnemy->SetData();
-
-		// ナビゲーションを生成
-		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
-
-		// 追跡範囲を生成
-		pEnemy->m_pChaseRange = CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth);
-
-		// 確保したアドレスを返す
-		return pEnemy;
-	}
-}
-
-//============================================================
-//	生成処理(ルート巡回移動敵)
-//============================================================
-CEnemyAttack* CEnemyAttack::Create
-(
-	const D3DXVECTOR3& rPos,				// 位置
-	const D3DXVECTOR3& rRot,				// 向き
-	const EType type,						// 種類
-	const std::vector<D3DXVECTOR3> route,	// ルートの配列
-	const float fChaseWidth,				// 追跡幅
-	const float fChaseDepth					// 追跡奥行
-)
-{
-	// ポインタを宣言
-	CEnemyAttack* pEnemy = nullptr;	// 敵情報
-
-	switch (type)
-	{
-	case TYPE_STALK:
-
-		// 追跡敵を生成
-		pEnemy = new CEnemyStalk;
-
-		break;
-
-	case TYPE_WOLF:
-
-		// 犬敵を生成
-		pEnemy = new CEnemyWolf;
-
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
-
-	if (pEnemy == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
-	}
-	else
-	{ // 生成に成功した場合
-
-		// 敵の初期化
-		if (FAILED(pEnemy->Init()))
-		{ // 初期化に失敗した場合
-
-			// 敵の破棄
-			SAFE_DELETE(pEnemy);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pEnemy->SetVec3Position(rPos);
-
-		// 向きを設定
-		pEnemy->SetVec3Rotation(rRot);
-
-		// 種類を設定
-		pEnemy->m_type = type;
-
-		// 初期位置を設定
-		pEnemy->SetPosInit(rPos);
-
-		// 情報の設定処理
-		pEnemy->SetData();
-
-		// ナビゲーションを生成
-		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
-
-		// 追跡範囲を生成
-		pEnemy->m_pChaseRange = CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth);
-
-		// 確保したアドレスを返す
-		return pEnemy;
-	}
 }
 
 //===========================================

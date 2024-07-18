@@ -131,10 +131,10 @@ void CEffekseer::Update()
 		}
 		else
 		{// Ä¶’†
+			m_vEffect[i]->m_pos += m_vEffect[i]->m_move;
 			m_EfkManager->SetLocation(m_vEffect[i]->handle, m_vEffect[i]->m_pos.X, m_vEffect[i]->m_pos.Y, m_vEffect[i]->m_pos.Z);
 			m_EfkManager->SetRotation(m_vEffect[i]->handle, m_vEffect[i]->m_rot.X, m_vEffect[i]->m_rot.Y, m_vEffect[i]->m_rot.Z);
 			m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale);
-			m_EfkManager->AddLocation(m_vEffect[i]->handle, m_vEffect[i]->m_move);
 		}
 
 	}

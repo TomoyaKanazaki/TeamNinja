@@ -7,7 +7,7 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS		= data\TXT\MAP\FOREST00\stage.txt	# ステージ情報パス
-ACTOR_PASS		= data\TXT\MAP\FOREST00\actor.txt	# アクター情報パス
-GIMMICK_PASS	= data\TXT\MAP\FOREST00\gimmick.txt	# ギミック情報パス
-POINT_PASS		= data\TXT\MAP\FOREST00\point.txt	# ポイント情報パス
+STAGE_PASS = data\TXT\MAP\TOWN01\stage.txt	# ステージ情報パス
+ACTOR_PASS = data\TXT\MAP\TOWN01\actor.txt	# アクター情報パス
+POINT_PASS = data\TXT\MAP\TOWN01\point.txt	# ポイント情報パス
+GIMMICK_PASS = data\\TXT\\MAP\\TOWN01\\gimmick.txt

@@ -74,6 +74,7 @@ public:
 		TYPE_B_LATTICE,			// ’|‚ÌŠiŽq
 		TYPE_ROOFFLOOR1,		// œ‘g‚Ý‚Ý‚½‚¢‚È‰®ª— ‚Ì–Ø
 		TYPE_ROOFFLOOR2,		// ƒŒƒ“ƒK•¿•—‚Ì‰®ª— ‚Ì–Ø
+		TYPE_SHRUB,				// ’á–Ø
 		TYPE_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
