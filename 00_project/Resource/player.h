@@ -131,9 +131,6 @@ public:
 
 private:
 
-	// 定数定義
-#define MAX_CLONE (10) // 分身の最大数
-
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
@@ -157,8 +154,6 @@ private:
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
-	void CreateTension(); // 士気力ゲージの生成
-	void UpdateTension(); // 士気力ゲージの更新
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
@@ -190,7 +185,6 @@ private:
 	float		m_fTempStick;		// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
-	CObject2D* m_pTension[MAX_CLONE];		// 士気力ゲージ
 	CCheckPoint* m_pCheckPoint;				// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;				// 中心座標
 	bool m_bClone;							// 分身操作可能フラグ
