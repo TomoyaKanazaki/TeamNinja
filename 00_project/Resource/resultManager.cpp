@@ -66,7 +66,7 @@ HRESULT CResultManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_pFade		= nullptr;		// フェード情報
-	m_state		= STATE_NONE;	// 状態	// TODO
+	m_state		= STATE_FADEIN;	// 状態
 	m_fMoveY	= 0.0f;			// 縦移動量
 	m_nCurTime	= 0.0f;			// 現在の待機時間
 
