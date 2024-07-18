@@ -29,6 +29,7 @@ public:
 	static CTension* Create(); // 生成処理
 	static CListManager<CTension>* GetList(); // リスト取得
 	static int GetUseNum(); // 使用可能な士気力の取得
+	static void Vanish(); // 消滅
 
 private:
 
