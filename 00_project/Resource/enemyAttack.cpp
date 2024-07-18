@@ -53,7 +53,6 @@ m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
 m_type(TYPE_STALK),			// 種類
-m_fAlpha(1.0f),				// 透明度
 m_bDodge(false)				// 回避受付フラグ
 {
 
