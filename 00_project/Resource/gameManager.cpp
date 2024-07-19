@@ -48,7 +48,6 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(18.0f, 2.2f, 0.35f);	// リザルト遷移時のカメラ揺れ
 	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
@@ -282,9 +281,6 @@ void CGameManager::Update(const float fDeltaTime)
 
 			// リザルトマネージャーの更新
 			m_pResult->Update(fDeltaTime);
-
-			// TODO
-			UpdateResult();
 		}
 		break;
 
@@ -305,21 +301,25 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
 
-	// ヒットストップの設定
-	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME);
-
-	// カメラ揺れの設定
-	GET_MANAGER->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CLEAR_SWING);
-
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
-
-	// プレイヤーをリザルト状態にする
-	GET_PLAYER->SetResult();
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身
 	CEnemy::VanishAll();		// 敵
+
+	// ヒットストップ終了時に呼ばれる関数を作成
+	auto funcEndHitStop = []
+	{
+		// プレイヤーをリザルト状態にする
+		GET_PLAYER->SetResult();
+
+		// カメラをリザルト状態にする
+		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_RESULT);
+	};
+
+	// ヒットストップの設定
+	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME, funcEndHitStop);
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;
@@ -365,14 +365,4 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
-}
-
-//============================================================
-//	リザルトの更新処理
-//============================================================
-void CGameManager::UpdateResult(void)
-{
-	// TODO
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_RESULT);
-	GET_MANAGER->GetCamera()->SetDestResult();
 }

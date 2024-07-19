@@ -459,14 +459,21 @@ void CPlayer::SetSpawn(void)
 //============================================================
 void CPlayer::SetResult(void)
 {
+	// プレイヤー向きを設定
+	D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
+	rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
+
 	// 操作を停止させる
 	SetState(CPlayer::STATE_NONE);
 
-	// 目標向きをカメラ目線に
-	SetDestRotation(GET_MANAGER->GetCamera()->GetDestRotation());
+	// 向きをカメラ目線に
+	SetDestRotation(rotDest);
 
 	// 移動量を初期化
 	SetMove(VEC3_ZERO);
+
+	// 待機モーションを設定
+	SetMotion(MOTION_IDOL);
 }
 
 //============================================================
