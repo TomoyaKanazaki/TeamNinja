@@ -1324,8 +1324,8 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.x = sinf(rRot.y) * DODGE_MOVE;
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
-		// エフェクトを出す
-		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", rPos, rRot, m_move * fDeltaTime, 40.0f, true);
+		// TOOD エフェクトを出す ようわからんので丹野に相談
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO);
 
 		// 士気力を増やす
 		CTension::Create();

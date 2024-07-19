@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource\enemyAmbush.h" />
+    <ClInclude Include="Resource\gimmick_mulch.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\tension.h" />
     <ClInclude Include="Resource\ToonShadow.h" />
@@ -243,7 +244,6 @@
     <ClInclude Include="Resource\gimmick_bridge.h" />
     <ClInclude Include="Resource\field_decayed.h" />
     <ClInclude Include="Resource\gimmick_heavydoor.h" />
-    <ClInclude Include="Resource\gimmick_malti.h" />
     <ClInclude Include="Resource\field_cleen.h" />
     <ClInclude Include="Resource\field_fall.h" />
     <ClInclude Include="Resource\field_gravel.h" />
@@ -335,6 +335,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\enemyAmbush.cpp" />
+    <ClCompile Include="Resource\gimmick_mulch.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\tension.cpp" />
     <ClCompile Include="Resource\ToonShadow.cpp" />
@@ -418,7 +419,6 @@
     <ClCompile Include="Resource\gimmick_bridge.cpp" />
     <ClCompile Include="Resource\field_decayed.cpp" />
     <ClCompile Include="Resource\gimmick_heavydoor.cpp" />
-    <ClCompile Include="Resource\gimmick_malti.cpp" />
     <ClCompile Include="Resource\field_cleen.cpp" />
     <ClCompile Include="Resource\field_fall.cpp" />
     <ClCompile Include="Resource\field_gravel.cpp" />
