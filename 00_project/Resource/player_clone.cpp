@@ -30,6 +30,7 @@
 #include "effekseerManager.h"
 
 #include "camera.h"
+#include "tension.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -378,6 +379,9 @@ bool CPlayerClone::HitKnockBack(const int /*nDamage*/, const D3DXVECTOR3& /*rVec
 bool CPlayerClone::Hit(const int nDamage)
 {
 	if (IsDeath()) { return false; }	// €–SÏ‚İ
+
+	// m‹C—Í‚ªŒ¸­‚·‚é
+	CTension::Vanish();
 
 	// I—¹ˆ—
 	Uninit();
