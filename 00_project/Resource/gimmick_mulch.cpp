@@ -1,11 +1,11 @@
 //=========================================
 //
-//  複数管理ギミック (gimmick_malti.cpp)
+//  複数管理ギミック (gimmick_mulch.cpp)
 //  Author : Tomoya kanazaki
 //  Adder  : Yuichi Fujita
 //
 //=========================================
-#include "gimmick_malti.h"
+#include "gimmick_mulch.h"
 #include "manager.h"
 #include "player.h"
 #include "player_clone.h"
@@ -21,7 +21,7 @@ namespace
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickMalti::CGimmickMalti() : CGimmick(),
+CGimmickMulch::CGimmickMulch() : CGimmick(),
 m_bActive (true) // アクティブフラグ
 {
 	// ボタン動的配列をクリア
@@ -31,7 +31,7 @@ m_bActive (true) // アクティブフラグ
 //=========================================
 //  デストラクタ
 //=========================================
-CGimmickMalti::~CGimmickMalti()
+CGimmickMulch::~CGimmickMulch()
 {
 
 }
@@ -39,7 +39,7 @@ CGimmickMalti::~CGimmickMalti()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickMalti::Init(void)
+HRESULT CGimmickMulch::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CGimmick::Init()))
@@ -57,7 +57,7 @@ HRESULT CGimmickMalti::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickMalti::Uninit(void)
+void CGimmickMulch::Uninit(void)
 {
 	// ボタン動的配列をクリア
 	m_vecButton.clear();
@@ -69,7 +69,7 @@ void CGimmickMalti::Uninit(void)
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickMalti::Update(const float fDeltaTime)
+void CGimmickMulch::Update(const float fDeltaTime)
 {
 	// フラグをリセット
 	m_bActive = true;
@@ -93,7 +93,7 @@ void CGimmickMalti::Update(const float fDeltaTime)
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickMalti::Draw(CShader* pShader)
+void CGimmickMulch::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmick::Draw(pShader);
@@ -102,11 +102,11 @@ void CGimmickMalti::Draw(CShader* pShader)
 //===========================================
 //  設置ギミックの生成
 //===========================================
-CGimmickMalti* CGimmickMalti::Create(std::vector<SButton> vecButton)
+CGimmickMulch* CGimmickMulch::Create(std::vector<SButton> vecButton)
 {
 	// 複数管理ギミックの生成
-	CGimmickMalti *pGimmickMalti = new CGimmickMalti;
-	if (pGimmickMalti == nullptr)
+	CGimmickMulch *pGimmick = new CGimmickMulch;
+	if (pGimmick == nullptr)
 	{ // 生成に失敗した場合
 
 		return nullptr;
@@ -115,32 +115,32 @@ CGimmickMalti* CGimmickMalti::Create(std::vector<SButton> vecButton)
 	{ // 生成に成功した場合
 
 		// 複数管理ギミックの初期化
-		if (FAILED(pGimmickMalti->Init()))
+		if (FAILED(pGimmick->Init()))
 		{ // 初期化に失敗した場合
 
 			// 複数管理ギミックの破棄
-			SAFE_DELETE(pGimmickMalti);
+			SAFE_DELETE(pGimmick);
 			return nullptr;
 		}
 
 		// ボタン情報の生成
-		if (FAILED(pGimmickMalti->CreateButton(vecButton)))
+		if (FAILED(pGimmick->CreateButton(vecButton)))
 		{ // 生成に失敗した場合
 
 			// 複数管理ギミックの破棄
-			SAFE_DELETE(pGimmickMalti);
+			SAFE_DELETE(pGimmick);
 			return nullptr;
 		}
 
 		// 確保したアドレスを返す
-		return pGimmickMalti;
+		return pGimmick;
 	}
 }
 
 //===========================================
 //  ボタン情報の生成
 //===========================================
-HRESULT CGimmickMalti::CreateButton(std::vector<SButton> vecButton)
+HRESULT CGimmickMulch::CreateButton(std::vector<SButton> vecButton)
 {
 	for (const auto& rButton : vecButton)
 	{ // ボタン配列分繰り返す

@@ -270,9 +270,6 @@
     <ClInclude Include="Resource\gimmick_jumptable.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_malti.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\gimmick_post.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
@@ -579,6 +576,9 @@
     <ClInclude Include="Resource\tension.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\gimmick_mulch.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -786,9 +786,6 @@
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_jumptable.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\gimmick_malti.cpp">
       <Filter>InGame\Gimmick</Filter>
     </ClCompile>
     <ClCompile Include="Resource\gimmick_post.cpp">
@@ -1096,6 +1093,9 @@
     </ClCompile>
     <ClCompile Include="Resource\tension.cpp">
       <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_mulch.cpp">
+      <Filter>InGame\Gimmick</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

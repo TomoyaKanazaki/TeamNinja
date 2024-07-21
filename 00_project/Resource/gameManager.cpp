@@ -29,7 +29,7 @@
 #include "goal.h"
 
 #include "gimmick.h"
-#include "gimmick_malti.h"
+#include "gimmick_mulch.h"
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
@@ -117,14 +117,14 @@ HRESULT CGameManager::Init(void)
 	//=================================================
 	// ボタン
 	//{ // 複数ボタン：３つ
-	//	std::vector<CGimmickMalti::SButton> vec;
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17900.0f, 1200.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//  vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	std::vector<CGimmickMulch::SButton> vec;
+	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17900.0f, 1200.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17275.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(18475.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//  vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17275.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
+	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(18475.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
 	// 
-	//	CGimmickMalti::Create(vec);
+	//	CGimmickMulch::Create(vec);
 	//}
 #endif
 

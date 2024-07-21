@@ -1,7 +1,7 @@
 #pragma once
 //=========================================
 //
-//  複数管理ギミック (gimmick_malti.h)
+//  複数管理ギミック (gimmick_mulch.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
@@ -10,7 +10,7 @@
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickMalti : public CGimmick
+class CGimmickMulch : public CGimmick
 {
 public:
 	// 生成ボタン構造体
@@ -28,8 +28,8 @@ public:
 	};
 
 	// メンバ関数
-	CGimmickMalti();
-	~CGimmickMalti() override;
+	CGimmickMulch();
+	~CGimmickMulch() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -39,7 +39,7 @@ public:
 	bool IsActive() { return m_bActive; }
 
 	// 静的メンバ関数
-	static CGimmickMalti* Create(std::vector<SButton> vecButton); // 生成
+	static CGimmickMulch* Create(std::vector<SButton> vecButton); // 生成
 
 #ifdef _DEBUG
 	// メンバ関数
