@@ -45,6 +45,10 @@ namespace
 //============================================================
 CResultManager::CResultManager() :
 	m_pFade		(nullptr),		// フェード情報
+	m_pTitle	(nullptr),		// タイトル情報
+	m_pCoin		(nullptr),		// コイン情報
+	m_pBigCoin	(nullptr),		// デカコイン情報
+	m_pTime		(nullptr),		// タイム情報
 	m_state		(STATE_NONE),	// 状態
 	m_fMoveY	(0.0f),			// 縦移動量
 	m_nCurTime	(0.0f)			// 現在の待機時間
@@ -67,6 +71,10 @@ HRESULT CResultManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_pFade		= nullptr;			// フェード情報
+	m_pTitle	= nullptr;			// タイトル情報
+	m_pCoin		= nullptr;			// コイン情報
+	m_pBigCoin	= nullptr;			// デカコイン情報
+	m_pTime		= nullptr;			// タイム情報
 	m_state		= STATE_FADEWAIT;	// 状態
 	m_fMoveY	= 0.0f;				// 縦移動量
 	m_nCurTime	= 0.0f;				// 現在の待機時間

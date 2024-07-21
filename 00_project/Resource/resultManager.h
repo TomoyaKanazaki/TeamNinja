@@ -14,6 +14,7 @@
 //	前方宣言
 //************************************************************
 class CObject2D;	// オブジェクト2Dクラス
+class CString2D;	// 文字列2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -67,10 +68,14 @@ private:
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 
 	// メンバ変数
-	CObject2D *m_pFade;	// フェード情報
-	EState m_state;		// 状態
-	float m_fMoveY;		// 縦移動量
-	float m_nCurTime;	// 現在の待機時間
+	CObject2D* m_pFade;		// フェード情報
+	CString2D* m_pTitle;	// タイトル情報
+	CString2D* m_pCoin;		// コイン情報
+	CString2D* m_pBigCoin;	// デカコイン情報
+	CString2D* m_pTime;		// タイム情報
+	EState m_state;			// 状態
+	float m_fMoveY;			// 縦移動量
+	float m_nCurTime;		// 現在の待機時間
 };
 
 #endif	// _RESULTMANAGER_H_
