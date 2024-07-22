@@ -11,6 +11,7 @@
 #include "enemyAttack.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "sound.h"
 
 #include "player.h"
 #include "player_clone.h"
@@ -168,11 +169,11 @@ HRESULT CEnemyAttack::LoadSetup(const char* pPass)
 	int nNavType = 0;				// ナビの種類の代入用
 	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
 	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
-	float fMoveWidth;				// 移動幅
-	float fMoveDepth;				// 移動奥行
+	float fMoveWidth = 0.0f;		// 移動幅
+	float fMoveDepth = 0.0f;		// 移動奥行
 	std::vector<D3DXVECTOR3> route;	// 順路
-	float fChaseWidth;				// 追跡幅
-	float fChaseDepth;				// 追跡奥行
+	float fChaseWidth = 0.0f;		// 追跡幅
+	float fChaseDepth = 0.0f;		// 追跡奥行
 
 	// ファイルを開く
 	std::ifstream file(pPass);	// ファイルストリーム
@@ -636,14 +637,14 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 //============================================================
 // 分身のヒット処理
 //============================================================
-void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
+bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 {
 	// 分身の情報が存在しない場合抜ける
 	if (CPlayerClone::GetList() == nullptr ||
 		*CPlayerClone::GetList()->GetBegin() == nullptr ||
 		m_pClone == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	CPlayerClone* pClone = nullptr;	// 分身の情報
@@ -661,7 +662,7 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	}
 
 	// 分身が NULL の場合抜ける
-	if (pClone == nullptr) { return; }
+	if (pClone == nullptr) { return false; }
 
 	// ヒット処理
 	D3DXVECTOR3 sizeUpClone =
@@ -689,7 +690,7 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	))
 	{ // 当たってなかったら抜ける
 
-		return;
+		return false;
 	}
 
 	// ヒット処理
@@ -698,8 +699,14 @@ void CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	// 分身との戦闘エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
 
+	// 分身攻撃音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_CLONEATTACK_000);
+
 	// 回避受付フラグを false にする
 	m_bDodge = false;
+
+	// true を返す
+	return true;
 }
 
 //===========================================

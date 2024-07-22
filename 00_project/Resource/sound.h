@@ -26,17 +26,18 @@ public:
 	// サウンド列挙
 	enum ELabel
 	{
-		LABEL_NONE = NONE_IDX,	// ラベル無し
-		LABEL_BGM_GENERAL,		// BGM (汎用)
-		LABEL_SE_SELECT_000,	// 選択操作音00
-		LABEL_SE_SELECT_001,	// 選択操作音01
-		LABEL_SE_DECISION_000,	// 決定音00
-		LABEL_SE_DECISION_001,	// 決定音01
-		LABEL_SE_DECISION_002,	// 決定音02
-		LABEL_SE_LAND_S,		// 着地音 (小)
-		LABEL_SE_LAND_B,		// 着地音 (大)
-		LABEL_SE_STALKWALK_000,	// 追跡敵の歩く音
-		LABEL_MAX				// この列挙型の総数
+		LABEL_NONE = NONE_IDX,		// ラベル無し
+		LABEL_BGM_GENERAL,			// BGM (汎用)
+		LABEL_SE_SELECT_000,		// 選択操作音00
+		LABEL_SE_SELECT_001,		// 選択操作音01
+		LABEL_SE_DECISION_000,		// 決定音00
+		LABEL_SE_DECISION_001,		// 決定音01
+		LABEL_SE_DECISION_002,		// 決定音02
+		LABEL_SE_LAND_S,			// 着地音 (小)
+		LABEL_SE_LAND_B,			// 着地音 (大)
+		LABEL_SE_STALKWALK_000,		// 追跡敵の歩く音
+		LABEL_SE_CLONEATTACK_000,	// 分身を攻撃したときの音
+		LABEL_MAX					// この列挙型の総数
 	};
 
 	// サウンド情報構造体

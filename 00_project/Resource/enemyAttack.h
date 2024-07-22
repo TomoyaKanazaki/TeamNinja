@@ -93,7 +93,7 @@ public:
 
 	// TODO：う〇ちカス判定だから後で修正
 	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
-	void HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
+	bool HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// 静的メンバ関数
 	static D3DXVECTOR3 GetAttackUp();	// 当たり判定の取得
