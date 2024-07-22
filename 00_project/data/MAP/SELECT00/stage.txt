@@ -501,6 +501,11 @@ END_STAGE_WALLSET
 #------------------------------------------------------------------------------
 STAGE_CHANGERSET
 
-
+	CHANGERSET
+		DIR		= 3
+		ROT		= 0
+		POS		= 0.00 0.00 0.00
+		SIZE	= 1150.00 450.00 800.00
+	END_CHANGERSET
 
 END_STAGE_CHANGERSET
