@@ -709,11 +709,21 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 
 	case CEnemyWolf::TARGET_CLONE:
 
-		// 分身の当たり判定処理
-		HitClone(rPos);
+		if (HitClone(rPos))
+		{ // 分身に当たった場合
 
-		// 空白攻撃状態にする
-		SetState(STATE_BLANKATTACK);
+			// 空白攻撃状態にする
+			SetState(STATE_BLANKATTACK);
+
+			// 噛みつきモーションにする
+			return MOTION_BITE;
+		}
+		else
+		{ // 上記以外
+
+			// 巡回状態にする
+			SetState(STATE_CRAWL);
+		}
 
 		// 動揺モーションにする
 		return MOTION_TURN;

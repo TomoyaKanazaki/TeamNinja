@@ -737,11 +737,21 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 
 	case CEnemyAttack::TARGET_CLONE:
 
-		// 分身の当たり判定処理
-		HitClone(rPos);
+		if (HitClone(rPos))
+		{ // 分身に当たった場合
 
-		// 空白攻撃状態にする
-		SetState(STATE_BLANKATTACK);
+			// 空白攻撃状態にする
+			SetState(STATE_BLANKATTACK);
+
+			// 攻撃モーションにする
+			return MOTION_ATTACK;
+		}
+		else
+		{ // 上記以外
+
+			// 巡回状態にする
+			SetState(STATE_CRAWL);
+		}
 
 		// 動揺モーションにする
 		return MOTION_UPSET;

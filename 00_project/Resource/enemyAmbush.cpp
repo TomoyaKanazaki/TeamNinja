@@ -37,11 +37,11 @@ namespace
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
 
 	// 状態管理関係
-	const int FOUND_STATE_COUNT = 59;		// 発見状態のカウント数
-	const int ATTACK_STATE_COUNT = 44;		// 攻撃状態のカウント数
-	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
-	const int UPSET_STATE_COUNT = 340;		// 動揺状態のカウント数
-	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
+	const int FOUND_STATE_COUNT = 59;			// 発見状態のカウント数
+	const int ATTACK_STATE_COUNT = 44;			// 攻撃状態のカウント数
+	const int BLANKATTACK_STATE_COUNT = 340;	// 空白攻撃状態のカウント数
+	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
+	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
 }
 
 //************************************************************
@@ -238,10 +238,17 @@ int CEnemyAmbush::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float 
 
 		break;
 
+	case CEnemyAmbush::STATE_BLANKATTACK:
+
+		// 空白攻撃処理
+		nCurMotion = BlankAttack(pRot, fDeltaTime);
+
+		break;
+
 	case CEnemyAmbush::STATE_UPSET:
 
 		// 動揺処理
-		nCurMotion = Upset(pRot, fDeltaTime);
+		nCurMotion = Upset();
 
 		break;
 
@@ -592,6 +599,22 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 		// 分身の当たり判定処理
 		HitClone(rPos);
 
+		if (HitClone(rPos))
+		{ // 分身に当たった場合
+
+			// 空白攻撃状態にする
+			SetState(STATE_BLANKATTACK);
+
+			// 攻撃モーションにする
+			return MOTION_ATTACK;
+		}
+		else
+		{ // 上記以外
+
+			// 待ち伏せ状態にする
+			SetState(STATE_AMBUSH);
+		}
+
 		// 動揺状態にする
 		SetState(STATE_UPSET);
 
@@ -610,9 +633,9 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-// 動揺処理
+// 空白攻撃処理
 //============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::Upset(D3DXVECTOR3* pRot, const float fDeltaTime)
+CEnemyAmbush::EMotion CEnemyAmbush::BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	// 状態カウントを加算する
 	m_nStateCount++;
@@ -620,10 +643,10 @@ CEnemyAmbush::EMotion CEnemyAmbush::Upset(D3DXVECTOR3* pRot, const float fDeltaT
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	if (m_nStateCount <= UPSET_STATE_COUNT)
+	if (m_nStateCount <= BLANKATTACK_STATE_COUNT)
 	{ // 一定カウント以下の場合
 
-		if (m_nStateCount % UPSET_CYCLE_COUNT == 0)
+		if (m_nStateCount % BLANKATTACK_CYCLE_COUNT == 0)
 		{ // 一定カウントごとに
 
 			// 目的の向きを取得
@@ -635,17 +658,23 @@ CEnemyAmbush::EMotion CEnemyAmbush::Upset(D3DXVECTOR3* pRot, const float fDeltaT
 			// 目的の向きを適用
 			SetDestRotation(rotDest);
 		}
-
-		// 攻撃モーションにする
-		return MOTION_ATTACK;
 	}
 	else
 	{ // 上記以外
 
-		// 警戒状態にする
-		SetState(STATE_CAUTION);
+		// 動揺状態にする
+		SetState(STATE_UPSET);
 	}
 
+	// 動揺モーションにする
+	return MOTION_ATTACK;
+}
+
+//============================================================
+// 動揺処理
+//============================================================
+CEnemyAmbush::EMotion CEnemyAmbush::Upset(void)
+{
 	// 動揺モーションにする
 	return MOTION_UPSET;
 }
