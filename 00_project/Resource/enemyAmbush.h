@@ -74,7 +74,6 @@ public:
 	( // ˆø”
 		const D3DXVECTOR3& rPos,				// ˆÊ’u
 		const D3DXVECTOR3& rRot,				// Œü‚«
-		const EType type,						// í—Ş
 		const float fChaseWidth,				// ’ÇÕ•
 		const float fChaseDepth					// ’ÇÕ‰œs
 	);

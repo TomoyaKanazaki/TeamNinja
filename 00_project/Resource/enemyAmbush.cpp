@@ -155,7 +155,6 @@ CEnemyAmbush* CEnemyAmbush::Create
 (
 	const D3DXVECTOR3& rPos,				// ˆÊ’u
 	const D3DXVECTOR3& rRot,				// Œü‚«
-	const EType type,						// Ží—Þ
 	const float fChaseWidth,				// ’ÇÕ•
 	const float fChaseDepth					// ’ÇÕ‰œs
 )
@@ -187,7 +186,7 @@ CEnemyAmbush* CEnemyAmbush::Create
 		pEnemy->SetVec3Rotation(rRot);
 
 		// Ží—Þ‚ðÝ’è
-		pEnemy->SetType(type);
+		pEnemy->SetType(TYPE_AMBUSH);
 
 		// ‰ŠúˆÊ’u‚ðÝ’è
 		pEnemy->SetPosInit(rPos);

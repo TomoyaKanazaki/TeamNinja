@@ -162,7 +162,6 @@ CEnemyStalk* CEnemyStalk::Create
 (
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
-	const EType type,			// 種類
 	const float fMoveWidth,		// 移動幅
 	const float fMoveDepth,		// 移動奥行
 	const float fChaseWidth,	// 追跡幅
@@ -196,7 +195,7 @@ CEnemyStalk* CEnemyStalk::Create
 		pEnemy->SetVec3Rotation(rRot);
 
 		// 種類を設定
-		pEnemy->SetType(type);
+		pEnemy->SetType(TYPE_STALK);
 
 		// 初期位置を設定
 		pEnemy->SetPosInit(rPos);
@@ -222,7 +221,6 @@ CEnemyStalk* CEnemyStalk::Create
 (
 	const D3DXVECTOR3& rPos,				// 位置
 	const D3DXVECTOR3& rRot,				// 向き
-	const EType type,						// 種類
 	const std::vector<D3DXVECTOR3> route,	// ルートの配列
 	const float fChaseWidth,				// 追跡幅
 	const float fChaseDepth					// 追跡奥行
@@ -255,7 +253,7 @@ CEnemyStalk* CEnemyStalk::Create
 		pEnemy->SetVec3Rotation(rRot);
 
 		// 種類を設定
-		pEnemy->SetType(type);
+		pEnemy->SetType(TYPE_STALK);
 
 		// 初期位置を設定
 		pEnemy->SetPosInit(rPos);
