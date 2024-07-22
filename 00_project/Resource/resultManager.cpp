@@ -14,6 +14,7 @@
 #include "object2D.h"
 #include "string2D.h"
 #include "scrollText2D.h"
+#include "timeUI.h"
 
 //************************************************************
 //	定数宣言
@@ -30,6 +31,7 @@ namespace
 		const float	ADD_MOVE		= 0.65f;	// フェード移動量
 		const float	ADD_ACCEL_MOVE	= 2.1f;		// フェード加速移動量
 
+		const char* TEXTURE		= "data\\TEXTURE\\resultFade000.png";	// フェードテクスチャ
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(800.0f, 1770.0f, 0.0f);	// フェード大きさ
 		const D3DXCOLOR	  COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);	// フェード色
 		const D3DXVECTOR3 UP_POS	= D3DXVECTOR3(FADE_CENT, -900.0f, 0.0f);		// フェード上位置
@@ -44,13 +46,60 @@ namespace
 		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
 		//const char *PASS = "data\\TEXT\\intro.txt";	// テキストパス
 		const bool	ITALIC			= false;	// イタリック
-		const float	CHAR_HEIGHT		= 45.0f;	// 文字縦幅
-		const float	LINE_HEIGHT		= 62.0f;	// 行間縦幅
-		const float	WAIT_TIME_NOR	= 0.105f;	// 文字表示の待機時間
+		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
+		const float	LINE_HEIGHT		= 100.0f;	// 行間縦幅
+		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
 
-		const D3DXVECTOR3 POS = D3DXVECTOR3(fade::FADE_CENT, 460.0f, 0.0f);	// テキスト位置
+		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 35.0f, 0.0f);	// テキスト位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const CText2D::EAlignY	 ALIGN_Y = CText2D::YALIGN_TOP;		// 縦配置
+	}
+
+	namespace stamp
+	{
+		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";	// ハンコテクスチャ
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);	// ハンコ位置
+		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);		// ハンコ向き
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.05f);	// ハンコ大きさ
+	}
+
+	namespace time
+	{
+		const char	  *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t *STRING = L"任務遂行時間";	// 文字列
+		const bool	  ITALIC	= false;	// イタリック
+		const float	  HEIGHT	= 100.0f;	// 文字縦幅
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
+		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
+	}
+
+	namespace val_time
+	{
+		const D3DXVECTOR3 POS			= D3DXVECTOR3(770.0f, 405.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(46.8f * 1.4f, 62.4f * 1.4f, 0.0f);		// 数字大きさ
+		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(27.3f * 1.4f, 62.4f * 1.4f, 0.0f);		// 区切り大きさ
+		const D3DXVECTOR3 VAL_SPACE		= D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);	// 数字空白
+		const D3DXVECTOR3 PART_SPACE	= D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// 区切り空白
+		const CValue::EType		TYPE	= CValue::TYPE_NORMAL;		// 数字種類
+		const CTimeUI::EAlignX	ALIGN_X	= CTimeUI::XALIGN_LEFT;		// 横配置
+		const CTimeUI::EAlignY	ALIGN_Y	= CTimeUI::YALIGN_CENTER;	// 縦配置
+	}
+
+	namespace god
+	{
+		const char	  *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t *STRING = L"獲得した神器";	// 文字列
+		const bool	  ITALIC	= false;	// イタリック
+		const float	  HEIGHT	= 100.0f;	// 文字縦幅
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
+		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
+	}
+
+	namespace icon_god
+	{
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(100.0f, 100.0f, 0.0f);	// 大きさ
+		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);		// 空白
 	}
 }
 
@@ -63,13 +112,16 @@ namespace
 CResultManager::CResultManager() :
 	m_pFade		(nullptr),		// フェード情報
 	m_pTitle	(nullptr),		// タイトル情報
+	m_pStamp	(nullptr),		// ハンコ情報
+	m_pTime		(nullptr),		// 遂行時間タイトル情報
+	m_pTimeVal	(nullptr),		// 遂行時間情報
 	m_pGodItem	(nullptr),		// 神器タイトル情報
-	m_pTime		(nullptr),		// タイムタイトル情報
 	m_state		(STATE_NONE),	// 状態
 	m_fMoveY	(0.0f),			// 縦移動量
 	m_nCurTime	(0.0f)			// 現在の待機時間
 {
-
+	// メンバ変数をクリア
+	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
 }
 
 //============================================================
@@ -86,14 +138,20 @@ CResultManager::~CResultManager()
 HRESULT CResultManager::Init(void)
 {
 	// メンバ変数を初期化
+	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
 	m_pFade		= nullptr;			// フェード情報
 	m_pTitle	= nullptr;			// タイトル情報
+	m_pStamp	= nullptr;			// ハンコ情報
+	m_pTime		= nullptr;			// 遂行時間タイトル情報
+	m_pTimeVal	= nullptr;			// 遂行時間情報
 	m_pGodItem	= nullptr;			// 神器タイトル情報
-	m_pTime		= nullptr;			// タイムタイトル情報
 	m_state		= STATE_FADEWAIT;	// 状態
 	m_fMoveY	= 0.0f;				// 縦移動量
 	m_nCurTime	= 0.0f;				// 現在の待機時間
 
+	//--------------------------------------------------------
+	//	フェードの生成 / 初期設定
+	//--------------------------------------------------------
 	// フェードの生成
 	m_pFade = CObject2D::Create
 	( // 引数
@@ -110,12 +168,18 @@ HRESULT CResultManager::Init(void)
 		return E_FAIL;
 	}
 
-	// テクスチャを登録・割当
-	m_pFade->BindTexture("data\\TEXTURE\\resultFade000.png");	// TODO
+	// テクスチャを割当
+	m_pFade->BindTexture(fade::TEXTURE);
 
 	// 優先順位を設定
 	m_pFade->SetPriority(PRIORITY);
 
+	// ラベルを設定
+	m_pFade->SetLabel(CObject::LABEL_UI);	// 自動破棄/更新をするラベル
+
+	//--------------------------------------------------------
+	//	タイトルの生成 / 初期設定
+	//--------------------------------------------------------
 	// タイトルの生成
 	m_pTitle = CScrollText2D::Create
 	( // 引数
@@ -136,12 +200,155 @@ HRESULT CResultManager::Init(void)
 		return E_FAIL;
 	}
 
-	// 優先順位をフェードより上にする
+	// 優先順位を設定
 	m_pTitle->SetPriority(PRIORITY);
 
 	// TODO：ここにタイトル
 	m_pTitle->AddString(L"ここに");
 	m_pTitle->AddString(L"　ステージ名");
+
+	//--------------------------------------------------------
+	//	ハンコの生成 / 初期設定
+	//--------------------------------------------------------
+	// ハンコの生成
+	m_pStamp = CObject2D::Create
+	( // 引数
+		stamp::POS,		// 位置
+		stamp::SIZE,	// 大きさ
+		stamp::ROT		// 向き
+	);
+	if (m_pStamp == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// テクスチャを割当
+	m_pStamp->BindTexture(stamp::TEXTURE);
+
+	// 優先順位を設定
+	m_pStamp->SetPriority(PRIORITY);
+
+	// ラベルを設定
+	m_pStamp->SetLabel(CObject::LABEL_UI);	// 自動破棄/更新をするラベル
+
+	// 自動描画をOFFにする
+	m_pStamp->SetEnableDraw(false);
+
+	//--------------------------------------------------------
+	//	遂行時間タイトルの生成 / 初期設定
+	//--------------------------------------------------------
+	// 遂行時間タイトルの生成
+	m_pTime = CString2D::Create
+	( // 引数
+		time::FONT,		// フォントパス
+		time::ITALIC,	// イタリック
+		time::STRING,	// 指定文字列
+		time::POS,		// 原点位置
+		time::HEIGHT,	// 文字縦幅
+		time::ALIGN_X	// 横配置
+	);
+	if (m_pTime == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 優先順位を設定
+	m_pTime->SetPriority(PRIORITY);
+
+	// 自動描画をOFFにする
+	m_pTime->SetEnableDraw(false);
+
+	//--------------------------------------------------------
+	//	遂行時間の生成 / 初期設定
+	//--------------------------------------------------------
+	// 遂行時間の生成
+	m_pTimeVal = CTimeUI::Create
+	( // 引数
+		0.0f,					// 表示時間	// TODO：経過時間を設定
+		val_time::POS,			// 位置
+		val_time::VAL_SIZE,		// 数字の大きさ
+		val_time::PART_SIZE,	// 区切りの大きさ
+		val_time::VAL_SPACE,	// 数字の空白
+		val_time::PART_SPACE,	// 区切りの空白
+		val_time::TYPE,			// 数字種類
+		val_time::ALIGN_X,		// 横配置
+		val_time::ALIGN_Y		// 縦配置
+	);
+	if (m_pTimeVal == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 優先順位を設定
+	m_pTimeVal->SetPriority(PRIORITY);
+
+	// 自動描画をOFFにする
+	m_pTimeVal->SetEnableDraw(false);
+
+	//--------------------------------------------------------
+	//	神器タイトルの生成 / 初期設定
+	//--------------------------------------------------------
+	// 神器タイトルの生成
+	m_pGodItem = CString2D::Create
+	( // 引数
+		god::FONT,		// フォントパス
+		god::ITALIC,	// イタリック
+		god::STRING,	// 指定文字列
+		god::POS,		// 原点位置
+		god::HEIGHT,	// 文字縦幅
+		god::ALIGN_X	// 横配置
+	);
+	if (m_pGodItem == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 優先順位を設定
+	m_pGodItem->SetPriority(PRIORITY);
+
+	// 自動描画をOFFにする
+	m_pGodItem->SetEnableDraw(false);
+
+	//--------------------------------------------------------
+	//	神器アイコンの生成 / 初期設定
+	//--------------------------------------------------------
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// アイコン生成位置を計算
+		D3DXVECTOR3 pos = icon_god::POS + (icon_god::SPACE * (float)i);	// 生成位置
+
+		// 神器アイコンの生成
+		m_apGodItemIcon[i] = CObject2D::Create(pos, icon_god::SIZE);
+		if (m_apGodItemIcon[i] == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 優先順位を設定
+		m_apGodItemIcon[i]->SetPriority(PRIORITY);
+
+		// ラベルを設定
+		m_apGodItemIcon[i]->SetLabel(CObject::LABEL_UI);	// 自動破棄/更新をするラベル
+
+		// 自動描画をOFFにする
+		m_apGodItemIcon[i]->SetEnableDraw(false);
+	}
 
 	// 成功を返す
 	return S_OK;
@@ -152,8 +359,7 @@ HRESULT CResultManager::Init(void)
 //============================================================
 void CResultManager::Uninit(void)
 {
-	// フェードの終了
-	SAFE_UNINIT(m_pFade);
+
 }
 
 //============================================================
@@ -236,9 +442,6 @@ void CResultManager::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// フェードの更新
-	m_pFade->Update(fDeltaTime);
 }
 
 //============================================================

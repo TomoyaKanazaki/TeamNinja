@@ -11,11 +11,17 @@
 #define _RESULTMANAGER_H_
 
 //************************************************************
+//	インクルードファイル
+//************************************************************
+#include "stage.h"
+
+//************************************************************
 //	前方宣言
 //************************************************************
 class CObject2D;		// オブジェクト2Dクラス
 class CString2D;		// 文字列2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
+class CTimeUI;			// タイムUIクラス
 
 //************************************************************
 //	クラス定義
@@ -33,6 +39,7 @@ public:
 		STATE_FADEIN_WAIT,		// フェードイン待機状態
 		STATE_FADEIN_ACCEL,		// フェードイン加速状態
 		STATE_STAGE_TITLE,		// ステージタイトル状態
+		STATE_STAMP,			// クリアハンコ押し状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -71,10 +78,13 @@ private:
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 
 	// メンバ変数
+	CObject2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
 	CObject2D* m_pFade;			// フェード情報
 	CScrollText2D* m_pTitle;	// タイトル情報
+	CObject2D* m_pStamp;		// ハンコ情報
+	CString2D* m_pTime;			// 遂行時間タイトル情報
+	CTimeUI* m_pTimeVal;		// 遂行時間情報
 	CString2D* m_pGodItem;		// 神器タイトル情報
-	CString2D* m_pTime;			// タイムタイトル情報
 	EState m_state;				// 状態
 	float m_fMoveY;				// 縦移動量
 	float m_nCurTime;			// 現在の待機時間
