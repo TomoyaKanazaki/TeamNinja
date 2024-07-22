@@ -55,6 +55,7 @@ public:
 private:
 	// メンバ関数
 	HRESULT CreateButton(std::vector<SButton> vecButton);	// ボタン情報生成
+	void MoveModel(const float fDeltaTime); // モデルの移動
 
 	// メンバ変数
 	CActor* m_pModel; // モデル情報
