@@ -39,7 +39,7 @@ public:
 		STATE_FADEIN_WAIT,		// フェードイン待機状態
 		STATE_FADEIN_ACCEL,		// フェードイン加速状態
 		STATE_STAGE_TITLE,		// ステージタイトル状態
-		STATE_STAMP,			// クリアハンコ押し状態
+		STATE_CLEAR_STAMP,		// クリアハンコ押し状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -72,6 +72,7 @@ private:
 	void UpdateFadeInWait(const float fDeltaTime);		// フェードイン待機更新
 	void UpdateFadeInAccel(const float fDeltaTime);		// フェードイン加速更新
 	void UpdateStageTitle(const float fDeltaTime);		// ステージタイトル更新
+	void UpdateStamp(const float fDeltaTime);			// クリアハンコ押し更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新

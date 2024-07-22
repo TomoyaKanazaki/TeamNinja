@@ -41,11 +41,11 @@ namespace
 		const D3DXVECTOR3 DOWN_MIDDLE_POS	= D3DXVECTOR3(FADE_CENT, DOWN_POS.y - 300.0f, 0.0f);	// フェード下中央位置
 	}
 
-	namespace text
+	namespace title
 	{
-		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
-		//const char *PASS = "data\\TEXT\\intro.txt";	// テキストパス
-		const bool	ITALIC			= false;	// イタリック
+		const char *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const bool	ITALIC	= false;			// イタリック
+		const float	WAIT_TIME		= 0.5f;		// ハンコ待機時間
 		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 100.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
@@ -57,16 +57,19 @@ namespace
 
 	namespace stamp
 	{
-		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";	// ハンコテクスチャ
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);	// ハンコ位置
-		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);		// ハンコ向き
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.05f);	// ハンコ大きさ
+		const float	MOVE_TIME	= 0.3f;	// 移動時間
+		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";		// ハンコテクスチャ
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);		// ハンコ位置
+		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.05f);	// ハンコ目標大きさ
+		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ハンコ初期大きさ
+		const D3DXVECTOR3 DIFF_SIZE = stamp::DEST_SIZE - stamp::INIT_SIZE;	// ハンコ差分大きさ
 	}
 
 	namespace time
 	{
-		const char	  *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
-		const wchar_t *STRING = L"任務遂行時間";	// 文字列
+		const char	  *FONT		= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t *STRING	= L"任務遂行時間";	// 文字列
 		const bool	  ITALIC	= false;	// イタリック
 		const float	  HEIGHT	= 100.0f;	// 文字縦幅
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
@@ -87,8 +90,8 @@ namespace
 
 	namespace god
 	{
-		const char	  *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
-		const wchar_t *STRING = L"獲得した神器";	// 文字列
+		const char	  *FONT		= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t *STRING	= L"獲得した神器";	// 文字列
 		const bool	  ITALIC	= false;	// イタリック
 		const float	  HEIGHT	= 100.0f;	// 文字縦幅
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
@@ -183,14 +186,14 @@ HRESULT CResultManager::Init(void)
 	// タイトルの生成
 	m_pTitle = CScrollText2D::Create
 	( // 引数
-		text::FONT,				// フォントパス
-		text::ITALIC,			// イタリック
-		text::POS,				// 原点位置
-		text::WAIT_TIME_NOR,	// 文字表示の待機時間
-		text::CHAR_HEIGHT,		// 文字縦幅
-		text::LINE_HEIGHT,		// 行間縦幅
-		text::ALIGN_X,			// 横配置
-		text::ALIGN_Y			// 縦配置
+		title::FONT,			// フォントパス
+		title::ITALIC,			// イタリック
+		title::POS,				// 原点位置
+		title::WAIT_TIME_NOR,	// 文字表示の待機時間
+		title::CHAR_HEIGHT,		// 文字縦幅
+		title::LINE_HEIGHT,		// 行間縦幅
+		title::ALIGN_X,			// 横配置
+		title::ALIGN_Y			// 縦配置
 	);
 	if (m_pTitle == nullptr)
 	{ // 生成に失敗した場合
@@ -213,9 +216,9 @@ HRESULT CResultManager::Init(void)
 	// ハンコの生成
 	m_pStamp = CObject2D::Create
 	( // 引数
-		stamp::POS,		// 位置
-		stamp::SIZE,	// 大きさ
-		stamp::ROT		// 向き
+		stamp::POS,			// 位置
+		stamp::INIT_SIZE,	// 大きさ
+		stamp::ROT			// 向き
 	);
 	if (m_pStamp == nullptr)
 	{ // 生成に失敗した場合
@@ -400,6 +403,12 @@ void CResultManager::Update(const float fDeltaTime)
 
 		// ステージタイトルの更新
 		UpdateStageTitle(fDeltaTime);
+		break;
+
+	case STATE_CLEAR_STAMP:
+
+		// クリアハンコ押しの更新
+		UpdateStamp(fDeltaTime);
 		break;
 
 	case STATE_WAIT:
@@ -591,8 +600,48 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 	// 文字送りが終了していない場合抜ける
 	if (m_pTitle->IsScroll()) { return; }
 
-	// 待機状態にする
-	m_state = STATE_WAIT;
+	// タイマーを加算
+	m_nCurTime += fDeltaTime;
+	if (m_nCurTime >= title::WAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_nCurTime = 0;
+
+		// ハンコの自動描画をONにする
+		m_pStamp->SetEnableDraw(true);
+
+		// クリアハンコ押し状態にする
+		m_state = STATE_CLEAR_STAMP;
+	}
+}
+
+//============================================================
+//	クリアハンコ押しの更新処理
+//============================================================
+void CResultManager::UpdateStamp(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_nCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InQuad(m_nCurTime, 0.0f, stamp::MOVE_TIME);
+
+	// ハンコの大きさを反映
+	m_pStamp->SetVec3Sizing(stamp::INIT_SIZE + (stamp::DIFF_SIZE * fRate));
+
+	if (m_nCurTime >= stamp::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_nCurTime = 0;
+
+		// ハンコの大きさを補正
+		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
+
+		// 待機状態にする
+		m_state = STATE_WAIT;
+	}
 }
 
 //============================================================
