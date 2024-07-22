@@ -909,6 +909,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	CStage *pStage = GET_STAGE;	// ステージ情報
 	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
 
+	// ジャンプ状態を保存
+	bool bJumpTemp = m_bJump;
+
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
 
@@ -995,6 +998,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// 落下モーションを指定
 			SetMotion(MOTION_FALL);
 		}
+	}
+
+	// 床際のジャンプを呼び出す
+	if (!bLand && !bJumpTemp)
+	{
+		FloorEdgeJump();
 	}
 
 	// 着地フラグを返す
@@ -1537,6 +1546,21 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	}
 
 	return false;
+}
+
+//===========================================
+//  床際のジャンプ処理
+//===========================================
+void CPlayer::FloorEdgeJump()
+{
+	// 上移動量を与える
+	m_move.y = JUMP_MOVE;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_MINI, BLEND_FRAME_OTHER);
 }
 
 //==========================================
