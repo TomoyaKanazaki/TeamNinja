@@ -99,36 +99,6 @@ HRESULT CGameManager::Init(void)
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
 
-// 森00マップ用ギミック置き場
-#if 0
-
-	
-
-	// ジャンプ台
-	//CGimmick::Create(D3DXVECTOR3(8050.0f, 0.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 3);
-
-
-
-	// 橋
-	//CGimmick::Create(D3DXVECTOR3(14400.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 5);
-
-
-	//=================================================
-	// [ボタンのみ]
-	//=================================================
-	// ボタン
-	//{ // 複数ボタン：３つ
-	//	std::vector<CGimmickMulch::SButton> vec;
-	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17900.0f, 1200.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17275.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(18475.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//  vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(17275.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMulch::SButton(D3DXVECTOR3(18475.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	// 
-	//	CGimmickMulch::Create(vec);
-	//}
-#endif
-
 // 森02マップ用ギミック置き場
 #if 0
 
