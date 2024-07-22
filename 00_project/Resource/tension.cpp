@@ -182,9 +182,6 @@ void CTension::Vanish()
 
 	// æ“ª‚ðíœ
 	SAFE_UNINIT(begin);
-
-	// Žm‹C—Í‚ª‚È‚­‚È‚Á‚½‚çƒQ[ƒ€‚ðI—¹‚·‚é
-	//GET_MANAGER->GetScene()->
 }
 
 //===========================================

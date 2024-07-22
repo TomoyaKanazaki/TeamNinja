@@ -43,6 +43,7 @@
 
 // マネージャー関係
 #define GET_MANAGER		(CManager::GetInstance())					// マネージャーインスタンス取得
+#define GET_GAMEMANAGER	(CSceneGame::GetGameManager())				// マネージャーインスタンス取得
 #define GET_INPUTKEY	(CManager::GetInstance()->GetKeyboard())	// キーボード情報取得
 #define GET_INPUTMOUSE	(CManager::GetInstance()->GetMouse())		// マウス情報取得
 #define GET_INPUTPAD	(CManager::GetInstance()->GetPad())			// パッド情報取得

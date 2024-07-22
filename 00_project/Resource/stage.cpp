@@ -382,7 +382,7 @@ void CStage::LimitPosition(D3DXVECTOR3& rPos, const float fRadius)
 	case LIMIT_NONE:	// §ŒÀ‚È‚µ
 
 		// §ŒÀ‚ª‚È‚¢ê‡ŠÖ”‚ğŒÄ‚Ño‚·•K—v‚ª‚È‚¢
-		assert(false);
+		//assert(false);
 
 		break;
 
