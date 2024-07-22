@@ -48,6 +48,7 @@ public:
 		STATE_WARNING,		// 警告状態
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
+		STATE_BLANKATTACK,	// 空白攻撃状態
 		STATE_UPSET,		// 動揺状態
 		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
@@ -79,7 +80,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
-		const EType type,			// 種類
 		const float fMoveWidth,		// 移動幅
 		const float fMoveDepth,		// 移動奥行
 		const float fChaseWidth,	// 追跡幅
@@ -89,7 +89,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot,				// 向き
-		const EType type,						// 種類
 		const std::vector<D3DXVECTOR3> route,	// ルートの配列
 		const float fChaseWidth,				// 追跡幅
 		const float fChaseDepth					// 追跡奥行
@@ -107,14 +106,16 @@ private:
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
 	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
-	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
-	EMotion Upset(D3DXVECTOR3* pRot, const float fDeltaTime);			// 動揺処理
+	EMotion Attack(const D3DXVECTOR3& rPos);		// 攻撃処理
+	EMotion BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);		// 空白攻撃処理
+	EMotion Upset(void);						// 動揺処理
 	EMotion Caution(void);						// 警戒処理
 	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理
 	EMotion Stance(void);						// 構え処理
 	EMotion Threat(void);						// 威嚇処理
 	void SetState(const EState state);			// 状態の設定処理
+	void WalkSound(void);						// 歩行音処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報

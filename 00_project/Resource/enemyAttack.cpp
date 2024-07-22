@@ -22,6 +22,7 @@
 #include "enemyWolf.h"
 #include "enemyAmbush.h"
 #include "effekseerControl.h"
+#include "enemyNavigation.h"
 
 //************************************************************
 //	定数宣言
@@ -156,6 +157,262 @@ CListManager<CEnemyAttack>* CEnemyAttack::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CEnemyAttack::LoadSetup(const char* pPass)
+{
+	int nType = 0;					// 種類の代入用
+	int nNavType = 0;				// ナビの種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
+	float fMoveWidth;				// 移動幅
+	float fMoveDepth;				// 移動奥行
+	std::vector<D3DXVECTOR3> route;	// 順路
+	float fChaseWidth;				// 追跡幅
+	float fChaseDepth;				// 追跡奥行
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "敵セットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_ENEMYSET")
+		{
+			do
+			{ // END_STAGE_ENEMYSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "ENEMYSET")
+				{
+					do
+					{ // END_ENEMYSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "TYPE")
+						{
+							file >> str;	// ＝を読込
+
+							// 種類を読込
+							file >> nType;
+						}
+						else if (str == "NAVTYPE")
+						{
+							file >> str;	// ＝を読込
+
+							// ナビの種類を読込
+							file >> nNavType;
+						}
+						else if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+						else if (str == "ROT")
+						{
+							file >> str;	// ＝を読込
+
+							// 向きを読込
+							file >> rot.x;
+							file >> rot.y;
+							file >> rot.z;
+						}
+						else if (str == "MOVESIZE")
+						{
+							// ランダムじゃなかった場合、停止
+							assert(nNavType == CEnemyNav::TYPE_RANDOM);
+
+							file >> str;	// ＝を読込
+
+							// 移動範囲を読込
+							file >> fMoveWidth;
+							file >> fMoveDepth;
+						}
+						else if (str == "ROUTE")
+						{
+							// ルート巡回じゃなかった場合、停止
+							assert(nNavType == CEnemyNav::TYPE_STREET);
+
+							int nNumRoute = 0;
+							D3DXVECTOR3 posRoute = VEC3_ZERO;
+
+							// 順路の総数を読込
+							file >> nNumRoute;
+
+							for (int nCnt = 0; nCnt < nNumRoute; nCnt++)
+							{
+								// 順路を読込
+								file >> posRoute.x;
+								file >> posRoute.y;
+								file >> posRoute.z;
+
+								// 順路を追加する
+								route.push_back(posRoute);
+							}
+						}
+						else if (str == "CHASESIZE")
+						{
+							file >> str;	// ＝を読込
+
+							// 追跡範囲を読込
+							file >> fChaseWidth;
+							file >> fChaseDepth;
+						}
+					} while (str != "END_ENEMYSET");	// END_ENEMYSETを読み込むまでループ
+
+					switch (nType)
+					{
+					case CEnemyAttack::TYPE_STALK:
+
+						switch (nNavType)
+						{
+						case CEnemyNav::TYPE_RANDOM:
+
+							// 追跡敵の生成
+							CEnemyStalk::Create
+							(
+								pos,			// 位置
+								rot,			// 向き
+								fMoveWidth,		// 移動幅
+								fMoveDepth,		// 移動奥行
+								fChaseWidth,	// 追跡幅
+								fChaseDepth		// 追跡奥行
+							);
+
+							break;
+
+						case CEnemyNav::TYPE_STREET:
+
+							// 追跡敵の生成
+							CEnemyStalk::Create
+							(
+								pos,			// 位置
+								rot,			// 向き
+								route,			// ルート
+								fChaseWidth,	// 追跡幅
+								fChaseDepth		// 追跡奥行
+							);
+
+							break;
+
+						default:
+
+							// 停止
+							assert(false);
+
+							break;
+						}
+
+						break;
+
+					case CEnemyAttack::TYPE_WOLF:
+
+						switch (nNavType)
+						{
+						case CEnemyNav::TYPE_RANDOM:
+
+							// 狼敵の生成
+							CEnemyWolf::Create
+							(
+								pos,			// 位置
+								rot,			// 向き
+								fMoveWidth,		// 移動幅
+								fMoveDepth,		// 移動奥行
+								fChaseWidth,	// 追跡幅
+								fChaseDepth		// 追跡奥行
+							);
+
+							break;
+
+						case CEnemyNav::TYPE_STREET:
+
+							// 狼敵の生成
+							CEnemyWolf::Create
+							(
+								pos,			// 位置
+								rot,			// 向き
+								route,			// ルート
+								fChaseWidth,	// 追跡幅
+								fChaseDepth		// 追跡奥行
+							);
+
+							break;
+
+						default:
+
+							// 停止
+							assert(false);
+
+							break;
+						}
+
+						break;
+
+					case CEnemyAttack::TYPE_AMBUSH:
+
+						// 待ち伏せ敵の生成
+						CEnemyAmbush::Create
+						(
+							pos,			// 位置
+							rot,			// 向き
+							fChaseWidth,	// 追跡幅
+							fChaseDepth		// 追跡奥行
+						);
+
+						break;
+
+					default:
+
+						// 停止
+						assert(false);
+
+						break;
+					}
+				}
+			} while (str != "END_STAGE_ENEMYSET");	// END_STAGE_ENEMYSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

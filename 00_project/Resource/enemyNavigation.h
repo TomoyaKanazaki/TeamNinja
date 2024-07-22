@@ -23,6 +23,14 @@ class CEnemyNav
 {
 public:
 
+	// 種類
+	enum EType
+	{
+		TYPE_RANDOM = 0,	// ランダム巡回
+		TYPE_STREET,		// ルート巡回
+		TYPE_MAX			// この列挙型の総数
+	};
+
 	// 状態
 	enum EState
 	{
@@ -53,6 +61,7 @@ public:
 	virtual void NavReset(void);	// ナビゲーションのリセット処理
 
 	// セット・ゲット関係
+	EType GetType(void) const { return m_type; }						// 種類の取得処理
 	void SetState(const EState state) { m_state = state; }				// 状態の設定処理
 	EState GetState(void) const { return m_state; }						// 状態の取得処理
 	void SetStateCount(const int nCount) { m_nStateCount = nCount; }	// 状態カウントの設定処理
@@ -60,6 +69,7 @@ public:
 protected:
 
 	// セット・ゲット関係
+	void SetType(const EType type) { m_type = type; }						// 種類の設定処理
 	int GetStateCount(void) const { return m_nStateCount; }					// 状態カウントの取得処理
 	void SetPosDest(const D3DXVECTOR3& rPosDest) { m_posDest = rPosDest; }	// 目標位置の設定処理
 	D3DXVECTOR3 GetPosDest(void) const { return m_posDest; }				// 目標位置の取得処理
@@ -89,6 +99,7 @@ private:
 
 	// メンバ変数
 	D3DXVECTOR3 m_posDest;			// 目標位置
+	EType m_type;					// 種類
 	EState m_state;					// 状態
 	int m_nStateCount;				// 状態カウント
 };

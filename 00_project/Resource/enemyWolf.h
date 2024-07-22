@@ -35,6 +35,7 @@ public:
 		STATE_CAVEAT,		// 警告状態
 		STATE_FOUND,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
+		STATE_BLANKATTACK,	// 空白攻撃状態
 		STATE_UPSET,		// 動揺状態
 		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
@@ -79,7 +80,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
-		const EType type,			// 種類
 		const float fMoveWidth,		// 移動幅
 		const float fMoveDepth,		// 移動奥行
 		const float fChaseWidth,	// 追跡幅
@@ -89,7 +89,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot,				// 向き
-		const EType type,						// 種類
 		const std::vector<D3DXVECTOR3> route,	// ルートの配列
 		const float fChaseWidth,				// 追跡幅
 		const float fChaseDepth					// 追跡奥行
@@ -108,7 +107,8 @@ private:
 	int UpdateCaveat(D3DXVECTOR3* pPos, const float fDeltaTime);						// 警告状態時の更新
 	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 追跡状態時の更新
 	int UpdateAttack(const D3DXVECTOR3& rPos);											// 攻撃状態時の更新
-	int UpdateUpset(D3DXVECTOR3* pRot, const float fDeltaTime);							// 動揺状態時の更新
+	int UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);					// 空白攻撃処理
+	int UpdateUpset(void);		// 動揺状態時の更新
 	int UpdateCaution(void);	// 警戒処理
 	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);							// フェードアウト状態時の更新
 	int UpdateFadeIn(void);		// フェードイン状態時の更新

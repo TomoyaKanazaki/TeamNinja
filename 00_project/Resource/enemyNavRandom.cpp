@@ -132,6 +132,9 @@ CEnemyNavRandom* CEnemyNavRandom::Create(const D3DXVECTOR3& pos, const float fWi
 		// ˆÚ“®”ÍˆÍ‚ðÝ’è
 		pNav->m_MoveRange = D3DXVECTOR3(fWidth, 0.0f, fDepth);
 
+		// Ží—Þ‚ðÝ’è
+		pNav->SetType(TYPE_RANDOM);
+
 #if 0
 #ifdef _DEBUG
 
