@@ -74,11 +74,14 @@ HRESULT CGimmickHeavyDoor::Init(void)
 		return E_FAIL;
 	}
 
+	// 自身の座標
+	D3DXVECTOR3 pos = GetVec3Position();
+
 	//-----------------------------------------------------------
 	//	モデルの生成
 	//-----------------------------------------------------------
 	// 枠の生成
-	m_pGateModel = CActor::Create(CActor::TYPE_GATE, GetVec3Position(), VEC3_ZERO);
+	m_pGateModel = CActor::Create(CActor::TYPE_GATE, pos);
 	if (m_pGateModel == nullptr)
 	{ // 生成に失敗した場合
 
@@ -91,7 +94,7 @@ HRESULT CGimmickHeavyDoor::Init(void)
 	m_pGateModel->SetLabel(CObject::LABEL_GIMMICK);
 
 	// 扉の生成
-	m_pDoorModel = CActor::Create(CActor::TYPE_DOOR, GetVec3Position(), VEC3_ZERO);
+	m_pDoorModel = CActor::Create(CActor::TYPE_DOOR, pos);
 	if (m_pDoorModel == nullptr)
 	{ // 生成に失敗した場合
 
@@ -332,10 +335,35 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const CPlayerClon
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
+	// 角度を取得
+	EAngle angle = GetAngle();
+	float rot = 0.0f;
+	switch (angle)
+	{
+	case EAngle::ANGLE_0: // 0
+		rot = D3DX_PI * 1.0f;
+		break;
+
+	case EAngle::ANGLE_90: // 1.57
+		rot = D3DX_PI * 1.5f;
+		break;
+
+	case EAngle::ANGLE_180: // 3.14
+		rot = D3DX_PI * 0.0f;
+		break;
+
+	case EAngle::ANGLE_270: // 4.71
+		rot = D3DX_PI * 0.5f;
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
 	// 向きを更新
 	D3DXVECTOR3 rotWait = GetVec3Rotation();
-	rotWait.y += D3DX_PI;			// 待機向きをギミック向きの反対にする (向かい合う形にする)
-	useful::NormalizeRot(rotWait);	// 向きを正規化
+	rotWait.y += rot;
 
 	return rotWait;
 }

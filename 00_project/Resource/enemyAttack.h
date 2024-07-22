@@ -63,6 +63,7 @@ public:
 
 	// 静的メンバ関数
 	static CListManager<CEnemyAttack>* GetList(void);			// リスト取得
+	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 
 	// セット・ゲット関係
 	void SetChaseRange(CEnemyChaseRange* pChace)	{ assert(m_pChaseRange == nullptr); m_pChaseRange = pChace; }		// 追跡範囲の情報

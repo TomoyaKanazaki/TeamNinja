@@ -24,6 +24,7 @@ namespace
 		{ "data\\SE\\decision002.wav", 0 },		// Œˆ’è‰¹02
 		{ "data\\SE\\land000.wav", 0 },			// ’…’n‰¹ (¬)
 		{ "data\\SE\\land001.wav", 0 },			// ’…’n‰¹ (‘å)
+		{ "data\\SE\\stalkwalk000.wav", 0 },	// ’ÇÕ“G‚Ì•à‚­‰¹
 	};
 }
 

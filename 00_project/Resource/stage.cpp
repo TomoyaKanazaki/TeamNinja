@@ -19,6 +19,7 @@
 #include "sky.h"
 #include "liquid.h"
 #include "camera_change.h"
+#include "enemyAttack.h"
 #include "actor.h"
 #include "gimmick.h"
 #include "checkpoint.h"
@@ -134,6 +135,15 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	// ステージのセットアップの読込
 	if (FAILED(LoadSetup(rPass.sStage.c_str())))
 	{ // 読み込みに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 敵のセットアップの読込
+	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
+	{ // セットアップに失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -583,6 +593,14 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 
 			// ステージ読込パスを保存
 			pPassInfo->sStage = str;
+		}
+		else if (str == "ENEMYATTACK_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// ステージ読込パスを読込
+
+			// 敵情報パスを保存
+			pPassInfo->sEnemyAtc = str;
 		}
 		else if (str == "ACTOR_PASS")
 		{

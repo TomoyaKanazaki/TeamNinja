@@ -35,6 +35,7 @@ public:
 		LABEL_SE_DECISION_002,	// Œˆ’è‰¹02
 		LABEL_SE_LAND_S,		// ’…’n‰¹ (¬)
 		LABEL_SE_LAND_B,		// ’…’n‰¹ (‘å)
+		LABEL_SE_STALKWALK_000,	// ’ÇÕ“G‚Ì•à‚­‰¹
 		LABEL_MAX				// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

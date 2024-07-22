@@ -80,7 +80,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot,	// 向き
-		const EType type,			// 種類
 		const float fMoveWidth,		// 移動幅
 		const float fMoveDepth,		// 移動奥行
 		const float fChaseWidth,	// 追跡幅
@@ -90,7 +89,6 @@ public:
 	( // 引数
 		const D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rRot,				// 向き
-		const EType type,						// 種類
 		const std::vector<D3DXVECTOR3> route,	// ルートの配列
 		const float fChaseWidth,				// 追跡幅
 		const float fChaseDepth					// 追跡奥行
@@ -117,6 +115,7 @@ private:
 	EMotion Stance(void);						// 構え処理
 	EMotion Threat(void);						// 威嚇処理
 	void SetState(const EState state);			// 状態の設定処理
+	void WalkSound(void);						// 歩行音処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報

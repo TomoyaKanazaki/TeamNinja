@@ -11,6 +11,7 @@
 #include "enemyStalk.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "sound.h"
 
 #include "multiModel.h"
 #include "enemyNavigation.h"
@@ -45,6 +46,9 @@ namespace
 	const int BLANKATTACK_STATE_COUNT = 340;	// 空白攻撃状態のカウント数
 	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
+
+	// 音管理関係
+	const int WALK_SOUND_COUNT = 32;			// 歩行音を鳴らすカウント数
 }
 
 //************************************************************
@@ -162,7 +166,6 @@ CEnemyStalk* CEnemyStalk::Create
 (
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rRot,	// 向き
-	const EType type,			// 種類
 	const float fMoveWidth,		// 移動幅
 	const float fMoveDepth,		// 移動奥行
 	const float fChaseWidth,	// 追跡幅
@@ -196,7 +199,7 @@ CEnemyStalk* CEnemyStalk::Create
 		pEnemy->SetVec3Rotation(rRot);
 
 		// 種類を設定
-		pEnemy->SetType(type);
+		pEnemy->SetType(TYPE_STALK);
 
 		// 初期位置を設定
 		pEnemy->SetPosInit(rPos);
@@ -222,7 +225,6 @@ CEnemyStalk* CEnemyStalk::Create
 (
 	const D3DXVECTOR3& rPos,				// 位置
 	const D3DXVECTOR3& rRot,				// 向き
-	const EType type,						// 種類
 	const std::vector<D3DXVECTOR3> route,	// ルートの配列
 	const float fChaseWidth,				// 追跡幅
 	const float fChaseDepth					// 追跡奥行
@@ -255,7 +257,7 @@ CEnemyStalk* CEnemyStalk::Create
 		pEnemy->SetVec3Rotation(rRot);
 
 		// 種類を設定
-		pEnemy->SetType(type);
+		pEnemy->SetType(TYPE_STALK);
 
 		// 初期位置を設定
 		pEnemy->SetPosInit(rPos);
@@ -534,6 +536,9 @@ void CEnemyStalk::NavMotionSet(EMotion* pMotion)
 		// 移動モーションを設定
 		*pMotion = MOTION_WALK;
 
+		// 歩行音処理
+		WalkSound();
+
 		break;
 
 	default:
@@ -567,6 +572,9 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 
 		// ナビによるモーション設定処理
 		NavMotionSet(&motion);
+
+		// 状態カウントを加算する
+		m_nStateCount++;
 	}
 
 	if (JudgeClone() ||
@@ -624,6 +632,12 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaT
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	// 歩行カウントを加算する
+	m_nStateCount++;
+
+	// 歩行音処理
+	WalkSound();
+
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
 	{ // 分身かプレイヤーが視界内にいない場合
@@ -951,4 +965,17 @@ void CEnemyStalk::SetState(const EState state)
 
 	// 状態カウントを0にする
 	m_nStateCount = 0;
+}
+
+//============================================================
+// 歩行音処理
+//============================================================
+void CEnemyStalk::WalkSound(void)
+{
+	if (m_nStateCount % WALK_SOUND_COUNT == 0)
+	{ // 一定カウントごとに
+
+		// 歩行音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+	}
 }
