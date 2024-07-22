@@ -79,6 +79,7 @@ public:
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
 		STATE_DODGE,	// 回避状態
+		STATE_DEATH,		// 死亡状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -137,6 +138,7 @@ private:
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
+	EMotion UpdateDeath(const float fDeltaTime);		// 死亡状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
@@ -156,6 +158,7 @@ private:
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
+	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
