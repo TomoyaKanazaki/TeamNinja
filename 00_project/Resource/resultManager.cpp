@@ -12,6 +12,8 @@
 #include "manager.h"
 #include "fade.h"
 #include "object2D.h"
+#include "string2D.h"
+#include "scrollText2D.h"
 
 //************************************************************
 //	定数宣言
@@ -22,18 +24,33 @@ namespace
 
 	namespace fade
 	{
-		const D3DXVECTOR3	SIZE	= D3DXVECTOR3(SCREEN_SIZE.x, 1770.0f, 0.0f);		// フェード大きさ
-		const D3DXCOLOR		COL		= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);				// フェード色
-		const D3DXVECTOR3 UP_POS	= D3DXVECTOR3(SCREEN_CENT.x, -900.0f, 0.0f);		// フェード上位置
-		const D3DXVECTOR3 CENT_POS	= D3DXVECTOR3(SCREEN_CENT.x, SCREEN_CENT.y, 0.0f);	// フェード中央位置
-		const D3DXVECTOR3 DOWN_POS	= D3DXVECTOR3(SCREEN_CENT.x, SCREEN_HEIGHT + 900.0f, 0.0f);		// フェード下位置
-		const D3DXVECTOR3 UP_MIDDLE_POS		= D3DXVECTOR3(CENT_POS.x, UP_POS.y + 300.0f, 0.0f);		// フェード上中央位置
-		const D3DXVECTOR3 DOWN_MIDDLE_POS	= D3DXVECTOR3(CENT_POS.x, DOWN_POS.y - 300.0f, 0.0f);	// フェード下中央位置
-
+		const float FADE_CENT		= 880.0f;	// フェード中心X座標
 		const float	FADEWAIT_TIME	= 1.2f;		// フェード開始待機時間
 		const float	WAIT_TIME		= 0.15f;	// フェード待機時間
 		const float	ADD_MOVE		= 0.65f;	// フェード移動量
 		const float	ADD_ACCEL_MOVE	= 2.1f;		// フェード加速移動量
+
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(800.0f, 1770.0f, 0.0f);	// フェード大きさ
+		const D3DXCOLOR	  COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);	// フェード色
+		const D3DXVECTOR3 UP_POS	= D3DXVECTOR3(FADE_CENT, -900.0f, 0.0f);		// フェード上位置
+		const D3DXVECTOR3 CENT_POS	= D3DXVECTOR3(FADE_CENT, SCREEN_CENT.y, 0.0f);	// フェード中央位置
+		const D3DXVECTOR3 DOWN_POS	= D3DXVECTOR3(FADE_CENT, SCREEN_HEIGHT + 900.0f, 0.0f);			// フェード下位置
+		const D3DXVECTOR3 UP_MIDDLE_POS		= D3DXVECTOR3(FADE_CENT, UP_POS.y + 300.0f, 0.0f);		// フェード上中央位置
+		const D3DXVECTOR3 DOWN_MIDDLE_POS	= D3DXVECTOR3(FADE_CENT, DOWN_POS.y - 300.0f, 0.0f);	// フェード下中央位置
+	}
+
+	namespace text
+	{
+		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
+		//const char *PASS = "data\\TEXT\\intro.txt";	// テキストパス
+		const bool	ITALIC			= false;	// イタリック
+		const float	CHAR_HEIGHT		= 45.0f;	// 文字縦幅
+		const float	LINE_HEIGHT		= 62.0f;	// 行間縦幅
+		const float	WAIT_TIME_NOR	= 0.105f;	// 文字表示の待機時間
+
+		const D3DXVECTOR3 POS = D3DXVECTOR3(fade::FADE_CENT, 460.0f, 0.0f);	// テキスト位置
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
+		const CText2D::EAlignY	 ALIGN_Y = CText2D::YALIGN_TOP;		// 縦配置
 	}
 }
 
@@ -46,9 +63,8 @@ namespace
 CResultManager::CResultManager() :
 	m_pFade		(nullptr),		// フェード情報
 	m_pTitle	(nullptr),		// タイトル情報
-	m_pCoin		(nullptr),		// コイン情報
-	m_pBigCoin	(nullptr),		// デカコイン情報
-	m_pTime		(nullptr),		// タイム情報
+	m_pGodItem	(nullptr),		// 神器タイトル情報
+	m_pTime		(nullptr),		// タイムタイトル情報
 	m_state		(STATE_NONE),	// 状態
 	m_fMoveY	(0.0f),			// 縦移動量
 	m_nCurTime	(0.0f)			// 現在の待機時間
@@ -72,9 +88,8 @@ HRESULT CResultManager::Init(void)
 	// メンバ変数を初期化
 	m_pFade		= nullptr;			// フェード情報
 	m_pTitle	= nullptr;			// タイトル情報
-	m_pCoin		= nullptr;			// コイン情報
-	m_pBigCoin	= nullptr;			// デカコイン情報
-	m_pTime		= nullptr;			// タイム情報
+	m_pGodItem	= nullptr;			// 神器タイトル情報
+	m_pTime		= nullptr;			// タイムタイトル情報
 	m_state		= STATE_FADEWAIT;	// 状態
 	m_fMoveY	= 0.0f;				// 縦移動量
 	m_nCurTime	= 0.0f;				// 現在の待機時間
@@ -100,6 +115,33 @@ HRESULT CResultManager::Init(void)
 
 	// 優先順位を設定
 	m_pFade->SetPriority(PRIORITY);
+
+	// タイトルの生成
+	m_pTitle = CScrollText2D::Create
+	( // 引数
+		text::FONT,				// フォントパス
+		text::ITALIC,			// イタリック
+		text::POS,				// 原点位置
+		text::WAIT_TIME_NOR,	// 文字表示の待機時間
+		text::CHAR_HEIGHT,		// 文字縦幅
+		text::LINE_HEIGHT,		// 行間縦幅
+		text::ALIGN_X,			// 横配置
+		text::ALIGN_Y			// 縦配置
+	);
+	if (m_pTitle == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 優先順位をフェードより上にする
+	m_pTitle->SetPriority(PRIORITY);
+
+	// TODO：ここにタイトル
+	m_pTitle->AddString(L"ここに");
+	m_pTitle->AddString(L"　ステージ名");
 
 	// 成功を返す
 	return S_OK;
@@ -146,6 +188,12 @@ void CResultManager::Update(const float fDeltaTime)
 
 		// フェードイン加速の更新
 		UpdateFadeInAccel(fDeltaTime);
+		break;
+
+	case STATE_STAGE_TITLE:
+
+		// ステージタイトルの更新
+		UpdateStageTitle(fDeltaTime);
 		break;
 
 	case STATE_WAIT:
@@ -322,11 +370,26 @@ void CResultManager::UpdateFadeInAccel(const float fDeltaTime)
 		// 移動量を初期化
 		m_fMoveY = 0.0f;
 
-		// 待機状態にする
-		m_state = STATE_WAIT;
+		// ステージタイトルの文字送りを開始する
+		m_pTitle->SetEnableScroll(true);
+
+		// ステージタイトル状態にする
+		m_state = STATE_STAGE_TITLE;
 	}
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
+}
+
+//============================================================
+//	ステージタイトルの更新処理
+//============================================================
+void CResultManager::UpdateStageTitle(const float fDeltaTime)
+{
+	// 文字送りが終了していない場合抜ける
+	if (m_pTitle->IsScroll()) { return; }
+
+	// 待機状態にする
+	m_state = STATE_WAIT;
 }
 
 //============================================================

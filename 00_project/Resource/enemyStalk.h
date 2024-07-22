@@ -48,6 +48,7 @@ public:
 		STATE_WARNING,		// 警告状態
 		STATE_STALK,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
+		STATE_BLANKATTACK,	// 空白攻撃状態
 		STATE_UPSET,		// 動揺状態
 		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
@@ -107,8 +108,9 @@ private:
 	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
 	EMotion Warning(D3DXVECTOR3* pPos, const float fDeltaTime);			// 警告処理
 	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
-	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
-	EMotion Upset(D3DXVECTOR3* pRot, const float fDeltaTime);			// 動揺処理
+	EMotion Attack(const D3DXVECTOR3& rPos);		// 攻撃処理
+	EMotion BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);		// 空白攻撃処理
+	EMotion Upset(void);						// 動揺処理
 	EMotion Caution(void);						// 警戒処理
 	EMotion FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// フェードアウト処理
 	EMotion FadeIn(void);						// フェードイン処理

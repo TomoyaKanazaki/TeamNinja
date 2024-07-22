@@ -18,7 +18,7 @@ class CFontChar
 {
 public:
 	// コンストラクタ
-	CFontChar(const HFONT hFont);
+	CFontChar(const HFONT hFont, const std::string &rFilePass, const bool bItalic);
 
 	// デストラクタ
 	~CFontChar();
@@ -36,21 +36,26 @@ public:
 		// コンストラクタ
 		SChar() { memset(this, 0, sizeof(*this)); }
 
+		// メンバ変数
 		GLYPHMETRICS glyph;			// フォントグリフの情報
 		OUTLINETEXTMETRIC outline;	// フォントアウトラインの情報
 		TEXTMETRIC text;			// フォントテキストの情報
 		SRectangle offsetBlackBox;	// ブラックボックスの中心からのオフセット
 		int nTexID;					// テクスチャインデックス
+		bool bEmpty;				// テクスチャ透明フラグ
 	};
 
 	// メンバ関数
 	HRESULT Init(void);	// フォント文字初期化
 	void Uninit(void);	// フォント文字終了
 	SChar Regist(const wchar_t wcChar);	// フォント文字登録
+	const HFONT GetFont(void)			{ return m_hFont; }		// フォントへのポインタ
+	const std::string GetFilePass(void)	{ return m_sFilePass; }	// フォントパス
+	const bool GetItalic(void)			{ return m_bItalic; }	// イタリック
 
 	// 静的メンバ関数
-	static CFontChar *Create(const HFONT hFont);	// 生成
-	static void Release(CFontChar *&pFontChar);		// 破棄
+	static CFontChar *Create(const HFONT hFont, const std::string &rFilePass, const bool bItalic);	// 生成
+	static void Release(CFontChar *&pFontChar);	// 破棄
 
 private:
 	// メンバ関数
@@ -59,7 +64,9 @@ private:
 
 	// メンバ変数
 	std::map<wchar_t, SChar> m_mapChar;	// フォント文字連想配列
-	const HFONT m_hFont;	// フォントへのポインタ
+	const HFONT m_hFont;				// フォントへのポインタ
+	const std::string m_sFilePass;		// フォントパス
+	const bool m_bItalic;				// イタリック
 };
 
 #endif	// _FONT_CHAR_H_

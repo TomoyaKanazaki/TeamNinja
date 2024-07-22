@@ -35,6 +35,7 @@ public:
 		STATE_CAVEAT,		// 警告状態
 		STATE_FOUND,		// 追跡状態
 		STATE_ATTACK,		// 攻撃状態
+		STATE_BLANKATTACK,	// 空白攻撃状態
 		STATE_UPSET,		// 動揺状態
 		STATE_CAUTION,		// 警戒状態
 		STATE_FADEOUT,		// フェードアウト状態
@@ -108,7 +109,8 @@ private:
 	int UpdateCaveat(D3DXVECTOR3* pPos, const float fDeltaTime);						// 警告状態時の更新
 	int UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);		// 追跡状態時の更新
 	int UpdateAttack(const D3DXVECTOR3& rPos);											// 攻撃状態時の更新
-	int UpdateUpset(D3DXVECTOR3* pRot, const float fDeltaTime);							// 動揺状態時の更新
+	int UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);					// 空白攻撃処理
+	int UpdateUpset(void);		// 動揺状態時の更新
 	int UpdateCaution(void);	// 警戒処理
 	int UpdateFadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);							// フェードアウト状態時の更新
 	int UpdateFadeIn(void);		// フェードイン状態時の更新

@@ -40,11 +40,11 @@ namespace
 	const D3DXVECTOR3 ITEM_ROT = D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, 0.0f);	// アイテムの向き
 
 	// 状態管理関係
-	const int FOUND_STATE_COUNT = 59;		// 発見状態のカウント数
-	const int ATTACK_STATE_COUNT = 44;		// 攻撃状態のカウント数
-	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
-	const int UPSET_STATE_COUNT = 340;		// 動揺状態のカウント数
-	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
+	const int FOUND_STATE_COUNT = 59;			// 発見状態のカウント数
+	const int ATTACK_STATE_COUNT = 44;			// 攻撃状態のカウント数
+	const int BLANKATTACK_STATE_COUNT = 340;	// 空白攻撃状態のカウント数
+	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
+	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
 }
 
 //************************************************************
@@ -310,10 +310,17 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 
 		break;
 
+	case CEnemyStalk::STATE_BLANKATTACK:
+
+		// 空白攻撃処理
+		nCurMotion = BlankAttack(pRot, fDeltaTime);
+
+		break;
+
 	case CEnemyStalk::STATE_UPSET:
 
 		// 動揺処理
-		nCurMotion = Upset(pRot, fDeltaTime);
+		nCurMotion = Upset();
 
 		break;
 
@@ -443,8 +450,11 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// 待機モーションの設定
-			SetMotion(nMotion, BLEND_FRAME_OTHER);
+			// TODO：警戒モーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 警戒状態にする
+			SetState(STATE_CAUTION);
 		}
 
 		break;
@@ -716,8 +726,8 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 		// 分身の当たり判定処理
 		HitClone(rPos);
 
-		// 動揺状態にする
-		SetState(STATE_UPSET);
+		// 空白攻撃状態にする
+		SetState(STATE_BLANKATTACK);
 
 		// 動揺モーションにする
 		return MOTION_UPSET;
@@ -734,9 +744,9 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-// 動揺処理
+// 空白攻撃処理
 //============================================================
-CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTime)
+CEnemyStalk::EMotion CEnemyStalk::BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	// 状態カウントを加算する
 	m_nStateCount++;
@@ -744,10 +754,10 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTim
 	// 向きの移動処理
 	RotMove(*pRot, ROT_REV, fDeltaTime);
 
-	if (m_nStateCount <= UPSET_STATE_COUNT)
+	if (m_nStateCount <= BLANKATTACK_STATE_COUNT)
 	{ // 一定カウント以下の場合
 
-		if (m_nStateCount % UPSET_CYCLE_COUNT == 0)
+		if (m_nStateCount % BLANKATTACK_CYCLE_COUNT == 0)
 		{ // 一定カウントごとに
 
 			// 目的の向きを取得
@@ -759,17 +769,23 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(D3DXVECTOR3* pRot, const float fDeltaTim
 			// 目的の向きを適用
 			SetDestRotation(rotDest);
 		}
-
-		// 攻撃モーションにする
-		return MOTION_ATTACK;
 	}
 	else
 	{ // 上記以外
 
-		// 警戒状態にする
-		SetState(STATE_CAUTION);
+		// 動揺状態にする
+		SetState(STATE_UPSET);
 	}
 
+	// 動揺モーションにする
+	return MOTION_ATTACK;
+}
+
+//============================================================
+// 動揺処理
+//============================================================
+CEnemyStalk::EMotion CEnemyStalk::Upset(void)
+{
 	// 動揺モーションにする
 	return MOTION_UPSET;
 }

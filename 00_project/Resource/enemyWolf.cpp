@@ -41,8 +41,8 @@ namespace
 	// 状態管理関係
 	const int CAVEAT_STATE_COUNT = 36;		// 発見状態のカウント数
 	const int ATTACK_STATE_COUNT = 34;		// 攻撃状態のカウント数
-	const int UPSET_CYCLE_COUNT = 18;		// 動揺状態の回転カウント
-	const int UPSET_STATE_COUNT = 340;		// 動揺状態のカウント数
+	const int BLANKBITE_STATE_COUNT = 340;	// 動揺状態のカウント数
+	const int BLANKBITE_CYCLE_COUNT = 18;	// 動揺状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
 }
 
@@ -296,10 +296,16 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		nCurMotion = UpdateAttack(*pPos);
 		break;
 
+	case STATE_BLANKATTACK:
+
+		// 空白攻撃状態の更新
+		nCurMotion = UpdateBlankAttack(pRot, fDeltaTime);
+		break;
+
 	case STATE_UPSET:	// 動揺状態
 
 		// 動揺状態時の更新
-		nCurMotion = UpdateUpset(pRot, fDeltaTime);
+		nCurMotion = UpdateUpset();
 		break;
 
 	case STATE_CAUTION:	// 警戒状態
@@ -443,8 +449,11 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_TURN);
+			// TODO：警戒モーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_TURN);
+
+			// 警戒状態にする
+			SetState(STATE_CAUTION);
 		}
 
 		break;
@@ -705,8 +714,8 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 		// 分身の当たり判定処理
 		HitClone(rPos);
 
-		// 動揺状態にする
-		SetState(STATE_UPSET);
+		// 空白攻撃状態にする
+		SetState(STATE_BLANKATTACK);
 
 		// 動揺モーションにする
 		return MOTION_TURN;
@@ -721,20 +730,20 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
-//	動揺状態時の更新処理
+// 空白攻撃処理
 //============================================================
-int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	// 状態カウントを加算する
 	m_nStateCount++;
 
 	// 向きの移動処理
-	RotMove(*pRot, REV_ROTA, fDeltaTime);
+	RotMove(*pRot, REV_ROTA_LOOK, fDeltaTime);
 
-	if (m_nStateCount <= UPSET_STATE_COUNT)
+	if (m_nStateCount <= BLANKBITE_STATE_COUNT)
 	{ // 一定カウント以下の場合
 
-		if (m_nStateCount % UPSET_CYCLE_COUNT == 0)
+		if (m_nStateCount % BLANKBITE_CYCLE_COUNT == 0)
 		{ // 一定カウントごとに
 
 			// 目的の向きを取得
@@ -746,17 +755,23 @@ int CEnemyWolf::UpdateUpset(D3DXVECTOR3* pRot, const float fDeltaTime)
 			// 目的の向きを適用
 			SetDestRotation(rotDest);
 		}
-
-		// 攻撃モーションにする
-		return MOTION_BITE;
 	}
 	else
 	{ // 上記以外
 
-		// 警戒状態にする
-		SetState(STATE_CAUTION);
+		// 動揺状態にする
+		SetState(STATE_UPSET);
 	}
 
+	// 攻撃モーションにする
+	return MOTION_BITE;
+}
+
+//============================================================
+//	動揺状態時の更新処理
+//============================================================
+int CEnemyWolf::UpdateUpset(void)
+{
 	// 動揺モーションにする
 	return MOTION_TURN;
 }

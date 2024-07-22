@@ -89,7 +89,7 @@ HRESULT CSceneSelect::Init(void)
 #endif	// _DEBUG
 
 	// BGMÇÃçƒê∂
-	PLAY_SOUND(CSound::LABEL_BGM_GAME);
+	PLAY_SOUND(CSound::LABEL_BGM_GENERAL);
 
 	// ê¨å˜Çï‘Ç∑
 	return S_OK;
