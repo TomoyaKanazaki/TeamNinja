@@ -319,6 +319,17 @@ void useful::NormalizeRot(D3DXVECTOR3& rRot)
 }
 
 //============================================================
+//	パスのベースネーム変換
+//============================================================
+void useful::PathToBaseName(std::string *pPath)
+{
+	std::filesystem::path fsPath(*pPath);	// パス
+
+	// パスからベースネームを取得
+	*pPath = fsPath.stem().string();
+}
+
+//============================================================
 //	パス区切りの標準化
 //============================================================
 void useful::StandardizePathPart(std::string *pPath)

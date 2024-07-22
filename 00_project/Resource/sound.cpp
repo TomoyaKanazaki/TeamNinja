@@ -16,39 +16,14 @@ namespace
 {
 	const CSound::SSoundInfo SOUND_FILE[] =	// サウンドファイル
 	{
-		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM (汎用)
-		{ "data\\BGM\\bgm_tutorial.wav", -1 },	// BGM (チュートリアル)
-		{ "data\\BGM\\bgm_game.wav", -1 },		// BGM (ゲーム)
-
+		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM
 		{ "data\\SE\\select000.wav", 0 },		// 選択操作音00
 		{ "data\\SE\\select001.wav", 0 },		// 選択操作音01
 		{ "data\\SE\\decision000.wav", 0 },		// 決定音00
 		{ "data\\SE\\decision001.wav", 0 },		// 決定音01
 		{ "data\\SE\\decision002.wav", 0 },		// 決定音02
-		{ "data\\SE\\sword_swing000.wav", 0 },	// 剣の風切り音00
-		{ "data\\SE\\sword_swing001.wav", 0 },	// 剣の風切り音01
-		{ "data\\SE\\sword_swing002.wav", 0 },	// 剣の風切り音02
-		{ "data\\SE\\hit000.wav", 0 },			// プレイヤーのヒット音
-		{ "data\\SE\\hit001.wav", 0 },			// 剣のヒット音
-		{ "data\\SE\\death000.wav", 0 },		// プレイヤーの死亡音
-		{ "data\\SE\\swordAppeal000.wav", 0 },	// 剣のアピール音
-		{ "data\\SE\\lastAttack000.wav", 0 },	// 最終攻撃音
-		{ "data\\SE\\walk000.wav", 0 },			// 足音
 		{ "data\\SE\\land000.wav", 0 },			// 着地音 (小)
 		{ "data\\SE\\land001.wav", 0 },			// 着地音 (大)
-		{ "data\\SE\\action000.wav", 0 },		// プレイヤーのアクション音
-		{ "data\\SE\\dragon_roar000.wav", 0 },	// ドラゴン咆哮 (長)
-		{ "data\\SE\\dragon_roar001.wav", 0 },	// ドラゴン咆哮 (短)
-		{ "data\\SE\\wing000.wav", 0 },			// 羽ばたき音
-		{ "data\\SE\\teleport000.wav", 0 },		// テレポート音
-		{ "data\\SE\\punch000.wav", 0 },		// パンチ音
-		{ "data\\SE\\claw000.wav", 0 },			// ひっかき音
-		{ "data\\SE\\tail000.wav", 0 },			// しっぽ音
-		{ "data\\SE\\noise000.wav", 0 },		// ノイズ音
-		{ "data\\SE\\explosion000.wav", 0 },	// 爆発音
-		{ "data\\SE\\fire000.wav", 0 },			// 炎音
-		{ "data\\SE\\thunder000.wav", 0 },		// 雷音
-		{ "data\\SE\\warning000.wav", 0 },		// 雷警告音
 	};
 }
 
