@@ -8,6 +8,11 @@
 #include "gimmick.h"
 
 //=========================================
+//  前方宣言
+//=========================================
+class CActor;	// アクタークラス
+
+//=========================================
 //  クラス定義
 //=========================================
 class CGimmickMulch : public CGimmick
@@ -36,10 +41,11 @@ public:
 	void Update(const float fDeltaTime) override;
 	void Draw(CShader* pShader = nullptr) override;
 
+	void SetVec3Position(const D3DXVECTOR3& rPos);
 	bool IsActive() { return m_bActive; }
 
 	// 静的メンバ関数
-	static CGimmickMulch* Create(std::vector<SButton> vecButton); // 生成
+	static CGimmickMulch* Create(const D3DXVECTOR3& rPos, const EAngle angle, std::vector<SButton> vecButton); // 生成
 
 #ifdef _DEBUG
 	// メンバ関数
@@ -51,6 +57,7 @@ private:
 	HRESULT CreateButton(std::vector<SButton> vecButton);	// ボタン情報生成
 
 	// メンバ変数
+	CActor* m_pModel; // モデル情報
 	std::vector<CGimmick*> m_vecButton; // ボタン動的配列
 	bool m_bActive; // アクティブフラグ
 };

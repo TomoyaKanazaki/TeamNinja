@@ -55,6 +55,7 @@ public:
 
 	// セット・ゲット関係
 	EAngle GetAngle() const { return m_eAngle; }				// 方向の取得
+	void SetAngle(const EAngle angle) { m_eAngle = angle; }		// 方向の取得
 	void SetType(const EType type) { m_type = type; }			// 種類の設定処理
 	EType GetType(void) const { return m_type; }				// 種類の取得処理
 	void SetNumActive(const int nNum) { m_nNumActive = nNum; }	// 発動可能人数の設定処理
