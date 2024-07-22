@@ -34,12 +34,15 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,			// 何もしない状態
-		STATE_FADEWAIT,			// フェード待機状態
+		STATE_FADE_WAIT,		// フェード待機状態
 		STATE_FADEIN,			// フェードイン状態
 		STATE_FADEIN_WAIT,		// フェードイン待機状態
 		STATE_FADEIN_ACCEL,		// フェードイン加速状態
+		STATE_STAGE_WAIT,		// ステージ表示待機状態
 		STATE_STAGE_TITLE,		// ステージタイトル状態
 		STATE_CLEAR_STAMP,		// クリアハンコ押し状態
+		STATE_TIME_WAIT,		// 遂行時間表示待機状態
+		STATE_TIME_TITLE,		// 遂行時間タイトル表示状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -71,8 +74,11 @@ private:
 	void UpdateFadeIn(const float fDeltaTime);			// フェードイン更新
 	void UpdateFadeInWait(const float fDeltaTime);		// フェードイン待機更新
 	void UpdateFadeInAccel(const float fDeltaTime);		// フェードイン加速更新
+	void UpdateStageWait(const float fDeltaTime);		// ステージ表示待機更新
 	void UpdateStageTitle(const float fDeltaTime);		// ステージタイトル更新
 	void UpdateStamp(const float fDeltaTime);			// クリアハンコ押し更新
+	void UpdateTimeWait(const float fDeltaTime);		// 遂行時間表示待機更新
+	void UpdateTitleTime(const float fDeltaTime);		// 遂行時間タイトル表示更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
@@ -88,7 +94,7 @@ private:
 	CString2D* m_pGodItem;		// 神器タイトル情報
 	EState m_state;				// 状態
 	float m_fMoveY;				// 縦移動量
-	float m_nCurTime;			// 現在の待機時間
+	float m_fCurTime;			// 現在の待機時間
 };
 
 #endif	// _RESULTMANAGER_H_

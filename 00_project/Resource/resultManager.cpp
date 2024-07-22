@@ -45,7 +45,7 @@ namespace
 	{
 		const char *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
 		const bool	ITALIC	= false;			// イタリック
-		const float	WAIT_TIME		= 0.5f;		// ハンコ待機時間
+		const float	WAIT_TIME		= 0.5f;		// タイトル待機時間
 		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 100.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
@@ -58,6 +58,7 @@ namespace
 	namespace stamp
 	{
 		const float	MOVE_TIME	= 0.3f;	// 移動時間
+		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
 		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";		// ハンコテクスチャ
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);		// ハンコ位置
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
@@ -71,7 +72,12 @@ namespace
 		const char	  *FONT		= "data\\FONT\\零ゴシック.otf";	// フォントパス
 		const wchar_t *STRING	= L"任務遂行時間";	// 文字列
 		const bool	  ITALIC	= false;	// イタリック
-		const float	  HEIGHT	= 100.0f;	// 文字縦幅
+		const float	  MOVE_TIME	= 0.15f;	// 移動時間
+		const float	  WAIT_TIME	= 0.5f;		// タイトル待機時間
+		const float DEST_HEIGHT = 100.0f;	// 文字目標縦幅
+		const float INIT_HEIGHT = DEST_HEIGHT * 10.0f;	// 文字初期縦幅
+		const float DIFF_HEIGHT = time::DEST_HEIGHT - time::INIT_HEIGHT;	// 文字差分縦幅
+
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
 	}
@@ -121,7 +127,7 @@ CResultManager::CResultManager() :
 	m_pGodItem	(nullptr),		// 神器タイトル情報
 	m_state		(STATE_NONE),	// 状態
 	m_fMoveY	(0.0f),			// 縦移動量
-	m_nCurTime	(0.0f)			// 現在の待機時間
+	m_fCurTime	(0.0f)			// 現在の待機時間
 {
 	// メンバ変数をクリア
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
@@ -148,9 +154,9 @@ HRESULT CResultManager::Init(void)
 	m_pTime		= nullptr;			// 遂行時間タイトル情報
 	m_pTimeVal	= nullptr;			// 遂行時間情報
 	m_pGodItem	= nullptr;			// 神器タイトル情報
-	m_state		= STATE_FADEWAIT;	// 状態
+	m_state		= STATE_FADE_WAIT;	// 状態
 	m_fMoveY	= 0.0f;				// 縦移動量
-	m_nCurTime	= 0.0f;				// 現在の待機時間
+	m_fCurTime	= 0.0f;				// 現在の待機時間
 
 	//--------------------------------------------------------
 	//	フェードの生成 / 初期設定
@@ -246,12 +252,12 @@ HRESULT CResultManager::Init(void)
 	// 遂行時間タイトルの生成
 	m_pTime = CString2D::Create
 	( // 引数
-		time::FONT,		// フォントパス
-		time::ITALIC,	// イタリック
-		time::STRING,	// 指定文字列
-		time::POS,		// 原点位置
-		time::HEIGHT,	// 文字縦幅
-		time::ALIGN_X	// 横配置
+		time::FONT,			// フォントパス
+		time::ITALIC,		// イタリック
+		time::STRING,		// 指定文字列
+		time::POS,			// 原点位置
+		time::INIT_HEIGHT,	// 文字縦幅
+		time::ALIGN_X		// 横配置
 	);
 	if (m_pTime == nullptr)
 	{ // 生成に失敗した場合
@@ -375,7 +381,7 @@ void CResultManager::Update(const float fDeltaTime)
 	case STATE_NONE:
 		break;
 
-	case STATE_FADEWAIT:
+	case STATE_FADE_WAIT:
 
 		// フェード待機の更新
 		UpdateFadeWait(fDeltaTime);
@@ -399,6 +405,12 @@ void CResultManager::Update(const float fDeltaTime)
 		UpdateFadeInAccel(fDeltaTime);
 		break;
 
+	case STATE_STAGE_WAIT:
+
+		// ステージ表示待機の更新
+		UpdateStageWait(fDeltaTime);
+		break;
+
 	case STATE_STAGE_TITLE:
 
 		// ステージタイトルの更新
@@ -409,6 +421,18 @@ void CResultManager::Update(const float fDeltaTime)
 
 		// クリアハンコ押しの更新
 		UpdateStamp(fDeltaTime);
+		break;
+
+	case STATE_TIME_WAIT:
+
+		// 遂行時間表示待機の更新
+		UpdateTimeWait(fDeltaTime);
+		break;
+
+	case STATE_TIME_TITLE:
+
+		// 遂行時間タイトル表示の更新
+		UpdateTitleTime(fDeltaTime);
 		break;
 
 	case STATE_WAIT:
@@ -501,12 +525,12 @@ void CResultManager::Release(CResultManager *&prResultManager)
 void CResultManager::UpdateFadeWait(const float fDeltaTime)
 {
 	// タイマーを加算
-	m_nCurTime += fDeltaTime;
-	if (m_nCurTime >= fade::FADEWAIT_TIME)
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= fade::FADEWAIT_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
-		m_nCurTime = 0;
+		m_fCurTime = 0.0f;
 
 		// フェードイン状態にする
 		m_state = STATE_FADEIN;
@@ -548,12 +572,12 @@ void CResultManager::UpdateFadeIn(const float fDeltaTime)
 void CResultManager::UpdateFadeInWait(const float fDeltaTime)
 {
 	// タイマーを加算
-	m_nCurTime += fDeltaTime;
-	if (m_nCurTime >= fade::WAIT_TIME)
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= fade::WAIT_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
-		m_nCurTime = 0;
+		m_fCurTime = 0.0f;
 
 		// フェードイン加速状態にする
 		m_state = STATE_FADEIN_ACCEL;
@@ -582,14 +606,32 @@ void CResultManager::UpdateFadeInAccel(const float fDeltaTime)
 		// 移動量を初期化
 		m_fMoveY = 0.0f;
 
+		// ステージ表示待機状態にする
+		m_state = STATE_STAGE_WAIT;
+	}
+
+	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
+}
+
+//============================================================
+//	ステージ表示待機の更新処理
+//============================================================
+void CResultManager::UpdateStageWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= title::WAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
 		// ステージタイトルの文字送りを開始する
 		m_pTitle->SetEnableScroll(true);
 
 		// ステージタイトル状態にする
 		m_state = STATE_STAGE_TITLE;
 	}
-
-	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
 }
 
 //============================================================
@@ -601,12 +643,12 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 	if (m_pTitle->IsScroll()) { return; }
 
 	// タイマーを加算
-	m_nCurTime += fDeltaTime;
-	if (m_nCurTime >= title::WAIT_TIME)
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= stamp::WAIT_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
-		m_nCurTime = 0;
+		m_fCurTime = 0.0f;
 
 		// ハンコの自動描画をONにする
 		m_pStamp->SetEnableDraw(true);
@@ -622,22 +664,71 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 void CResultManager::UpdateStamp(const float fDeltaTime)
 {
 	// タイマーを加算
-	m_nCurTime += fDeltaTime;
+	m_fCurTime += fDeltaTime;
 
 	// 経過時刻の割合を計算
-	float fRate = easeing::InQuad(m_nCurTime, 0.0f, stamp::MOVE_TIME);
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, stamp::MOVE_TIME);
 
 	// ハンコの大きさを反映
 	m_pStamp->SetVec3Sizing(stamp::INIT_SIZE + (stamp::DIFF_SIZE * fRate));
 
-	if (m_nCurTime >= stamp::MOVE_TIME)
+	if (m_fCurTime >= stamp::MOVE_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
-		m_nCurTime = 0;
+		m_fCurTime = 0.0f;
 
 		// ハンコの大きさを補正
 		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
+
+		// 遂行時間表示待機状態にする
+		m_state = STATE_TIME_WAIT;
+	}
+}
+
+//============================================================
+//	遂行時間表示待機の更新処理
+//============================================================
+void CResultManager::UpdateTimeWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= time::WAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 遂行時間タイトルの自動描画をONにする
+		m_pTime->SetEnableDraw(true);
+
+		// 遂行時間タイトル表示状態にする
+		m_state = STATE_TIME_TITLE;
+	}
+}
+
+//============================================================
+//	遂行時間タイトル表示の更新処理
+//============================================================
+void CResultManager::UpdateTitleTime(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, time::MOVE_TIME);
+
+	// 遂行時間タイトルの大きさを反映
+	m_pTime->SetCharHeight(time::INIT_HEIGHT + (time::DIFF_HEIGHT * fRate));
+
+	if (m_fCurTime >= time::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 遂行時間タイトルの大きさを補正
+		m_pTime->SetCharHeight(time::DEST_HEIGHT);
 
 		// 待機状態にする
 		m_state = STATE_WAIT;
@@ -722,12 +813,12 @@ void CResultManager::UpdateFadeOut(const float fDeltaTime)
 void CResultManager::UpdateFadeOutWait(const float fDeltaTime)
 {
 	// タイマーを加算
-	m_nCurTime += fDeltaTime;
-	if (m_nCurTime >= fade::WAIT_TIME)
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= fade::WAIT_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
-		m_nCurTime = 0;
+		m_fCurTime = 0.0f;
 
 		// フェードアウト加速状態にする
 		m_state = STATE_FADEOUT_ACCEL;
