@@ -160,7 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource\enemyAmbush.h" />
-    <ClInclude Include="Resource\gimmick_mulch.h" />
+    <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
@@ -337,7 +337,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\enemyAmbush.cpp" />
-    <ClCompile Include="Resource\gimmick_mulch.cpp" />
+    <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />

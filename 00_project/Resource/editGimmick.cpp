@@ -15,7 +15,7 @@
 
 #include "collision.h"
 #include "object3D.h"
-#include "gimmick_mulch.h"
+#include "gimmick_multi.h"
 #include "gimmick_post.h"
 
 //************************************************************
@@ -648,7 +648,7 @@ HRESULT CEditGimmick::Save(void)
 		// ボタンの情報は書き出さないので抜ける
 		if (typeid(*rList) == typeid(CGimmickPost)) { continue; }
 
-		else if (typeid(*rList) == typeid(CGimmickMulch))
+		else if (typeid(*rList) == typeid(CGimmickMulti))
 		{ // ボタン統括ギミックの場合
 
 			// ボタン読み込み開始文字列を書き出し

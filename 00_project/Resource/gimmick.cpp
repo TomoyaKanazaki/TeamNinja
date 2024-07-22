@@ -13,7 +13,7 @@
 #include "gimmick_jumptable.h"
 #include "gimmick_step.h"
 #include "gimmick_post.h"
-#include "gimmick_mulch.h"
+#include "gimmick_multi.h"
 #include "gimmick_jumpoff.h"
 #include "gimmick_heavydoor.h"
 #include "gimmick_bridge.h"
@@ -388,7 +388,7 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 						} while (str != "END_MULCHSET");	// END_MULCHSETを読み込むまでループ
 					}
 
-					std::vector<CGimmickMulch::SButton> vecButton;	// ボタン情報配列
+					std::vector<CGimmickMulti::SButton> vecButton;	// ボタン情報配列
 					do { // END_BUTTON_GIMMICKSETを読み込むまでループ
 
 						// 文字列を読み込む
@@ -428,12 +428,12 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 							} while (str != "END_BUTTONSET");	// END_BUTTONSETを読み込むまでループ
 
 							// ボタン情報を最後尾に追加
-							vecButton.push_back(CGimmickMulch::SButton(pos, size));
+							vecButton.push_back(CGimmickMulti::SButton(pos, size));
 						}
 					} while (str != "END_BUTTON_GIMMICKSET");	// END_BUTTON_GIMMICKSETを読み込むまでループ
 
 					// ギミックボタン統括クラスの生成
-					if (CGimmickMulch::Create(posMulch, (EAngle)angle, vecButton) == nullptr)
+					if (CGimmickMulti::Create(posMulch, (EAngle)angle, vecButton) == nullptr)
 					{ // 確保に失敗した場合
 
 						// 失敗を返す

@@ -1,7 +1,7 @@
 #pragma once
 //=========================================
 //
-//  複数管理ギミック (gimmick_mulch.h)
+//  複数管理ギミック (gimmick_multi.h)
 //  Author : Tomoya Kanzaki
 //
 //=========================================
@@ -15,7 +15,7 @@ class CActor;	// アクタークラス
 //=========================================
 //  クラス定義
 //=========================================
-class CGimmickMulch : public CGimmick
+class CGimmickMulti : public CGimmick
 {
 public:
 	// 生成ボタン構造体
@@ -33,8 +33,8 @@ public:
 	};
 
 	// メンバ関数
-	CGimmickMulch();
-	~CGimmickMulch() override;
+	CGimmickMulti();
+	~CGimmickMulti() override;
 
 	HRESULT Init(void) override;
 	void Uninit(void) override;
@@ -45,7 +45,7 @@ public:
 	bool IsActive() { return m_bActive; }
 
 	// 静的メンバ関数
-	static CGimmickMulch* Create(const D3DXVECTOR3& rPos, const EAngle angle, std::vector<SButton> vecButton); // 生成
+	static CGimmickMulti* Create(const D3DXVECTOR3& rPos, const EAngle angle, std::vector<SButton> vecButton); // 生成
 
 #ifdef _DEBUG
 	// メンバ関数

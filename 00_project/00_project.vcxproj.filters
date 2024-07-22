@@ -576,14 +576,14 @@
     <ClInclude Include="Resource\tension.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\gimmick_mulch.h">
-      <Filter>InGame\Gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\scrollString2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Resource\scrollText2D.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\gimmick_multi.h">
+      <Filter>InGame\Gimmick</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1100,14 +1100,14 @@
     <ClCompile Include="Resource\tension.cpp">
       <Filter>InGame\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\gimmick_mulch.cpp">
-      <Filter>InGame\Gimmick</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\scrollString2D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\scrollText2D.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\gimmick_multi.cpp">
+      <Filter>InGame\Gimmick</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

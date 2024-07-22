@@ -30,7 +30,7 @@
 #include "goal.h"
 
 #include "gimmick.h"
-#include "gimmick_mulch.h"
+#include "gimmick_multi.h"
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"

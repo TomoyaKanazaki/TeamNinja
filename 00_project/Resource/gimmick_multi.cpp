@@ -1,11 +1,11 @@
 //=========================================
 //
-//  複数管理ギミック (gimmick_mulch.cpp)
+//  複数管理ギミック (gimmick_multi.cpp)
 //  Author : Tomoya kanazaki
 //  Adder  : Yuichi Fujita
 //
 //=========================================
-#include "gimmick_mulch.h"
+#include "gimmick_multi.h"
 #include "manager.h"
 #include "player.h"
 #include "player_clone.h"
@@ -17,14 +17,14 @@
 namespace
 {
 	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
-	const float MOVE_SPEED = 100.0f; // 移動速度
-	const D3DXVECTOR3 MOVE_POS = D3DXVECTOR3(0.0f, -250.0f, 0.0f); // 移動後の位置
+	const float MOVE_SPEED = 150.0f; // 移動速度
+	const D3DXVECTOR3 MOVE_POS = D3DXVECTOR3(0.0f, -250.0f, 0.0f); // 移動後の位置(オフセット)
 }
 
 //=========================================
 //  コンストラクタ
 //=========================================
-CGimmickMulch::CGimmickMulch() : CGimmick(),
+CGimmickMulti::CGimmickMulti() : CGimmick(),
 m_bActive (true), // アクティブフラグ
 m_pModel (nullptr) // モデル情報
 {
@@ -35,7 +35,7 @@ m_pModel (nullptr) // モデル情報
 //=========================================
 //  デストラクタ
 //=========================================
-CGimmickMulch::~CGimmickMulch()
+CGimmickMulti::~CGimmickMulti()
 {
 
 }
@@ -43,7 +43,7 @@ CGimmickMulch::~CGimmickMulch()
 //=========================================
 //  初期化処理
 //=========================================
-HRESULT CGimmickMulch::Init(void)
+HRESULT CGimmickMulti::Init(void)
 {
 	// 親クラスの初期化
 	if (FAILED(CGimmick::Init()))
@@ -74,7 +74,7 @@ HRESULT CGimmickMulch::Init(void)
 //=========================================
 //  終了処理
 //=========================================
-void CGimmickMulch::Uninit(void)
+void CGimmickMulti::Uninit(void)
 {
 	// 枠モデルの終了
 	SAFE_UNINIT(m_pModel);
@@ -89,7 +89,7 @@ void CGimmickMulch::Uninit(void)
 //=========================================
 //  更新処理
 //=========================================
-void CGimmickMulch::Update(const float fDeltaTime)
+void CGimmickMulti::Update(const float fDeltaTime)
 {
 	// フラグをリセット
 	m_bActive = true;
@@ -116,7 +116,7 @@ void CGimmickMulch::Update(const float fDeltaTime)
 //=========================================
 //  描画処理
 //=========================================
-void CGimmickMulch::Draw(CShader* pShader)
+void CGimmickMulti::Draw(CShader* pShader)
 {
 	// 親クラスの描画
 	CGimmick::Draw(pShader);
@@ -125,7 +125,7 @@ void CGimmickMulch::Draw(CShader* pShader)
 //===========================================
 //  位置の設定
 //===========================================
-void CGimmickMulch::SetVec3Position(const D3DXVECTOR3& rPos)
+void CGimmickMulti::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 親クラスの設定処理を呼ぶ
 	CGimmick::SetVec3Position(rPos);
@@ -166,10 +166,10 @@ void CGimmickMulch::SetVec3Position(const D3DXVECTOR3& rPos)
 //===========================================
 //  設置ギミックの生成
 //===========================================
-CGimmickMulch* CGimmickMulch::Create(const D3DXVECTOR3& rPos, const EAngle angle, std::vector<SButton> vecButton)
+CGimmickMulti* CGimmickMulti::Create(const D3DXVECTOR3& rPos, const EAngle angle, std::vector<SButton> vecButton)
 {
 	// 複数管理ギミックの生成
-	CGimmickMulch *pGimmick = new CGimmickMulch;
+	CGimmickMulti *pGimmick = new CGimmickMulti;
 	if (pGimmick == nullptr) { return nullptr; }
 
 	// 複数管理ギミックの初期化
@@ -203,7 +203,7 @@ CGimmickMulch* CGimmickMulch::Create(const D3DXVECTOR3& rPos, const EAngle angle
 //===========================================
 //  ボタン情報の生成
 //===========================================
-HRESULT CGimmickMulch::CreateButton(std::vector<SButton> vecButton)
+HRESULT CGimmickMulti::CreateButton(std::vector<SButton> vecButton)
 {
 	for (const auto& rButton : vecButton)
 	{ // ボタン配列分繰り返す
@@ -234,10 +234,13 @@ HRESULT CGimmickMulch::CreateButton(std::vector<SButton> vecButton)
 //===========================================
 //  モデルの移動
 //===========================================
-void CGimmickMulch::MoveModel(const float fDeltaTime)
+void CGimmickMulti::MoveModel(const float fDeltaTime)
 {
 	// モデルの位置を取得
 	D3DXVECTOR3 posModel = m_pModel->GetVec3Position();
+
+	// 移動量
+	float fMove = 0.0f;
 
 	// アクティブフラグがオンの場合移動先に向かって動く
 	if (m_bActive)
@@ -249,23 +252,24 @@ void CGimmickMulch::MoveModel(const float fDeltaTime)
 			return;
 		}
 
-		// 移動
-		posModel.y -= MOVE_SPEED * fDeltaTime;
-
-		// モデルの位置を設定
-		m_pModel->SetVec3Position(posModel);
-		return;
+		// 移動の設定
+		fMove -= MOVE_SPEED;
 	}
-
-	// モデルの位置が基準点を上回った場合関数を抜ける
-	if (posModel.y >= GetVec3Position().y)
+	else // オフの場合基準位置に戻る
 	{
-		posModel.y = GetVec3Position().y;
-		return;
+		// モデルの位置が基準点を上回った場合関数を抜ける
+		if (posModel.y >= GetVec3Position().y)
+		{
+			posModel.y = GetVec3Position().y;
+			return;
+		}
+
+		// 移動の設定
+		fMove += MOVE_SPEED;
 	}
 
-	// 移動
-	posModel.y += MOVE_SPEED * fDeltaTime;
+	// 移動量の適用
+	posModel.y += fMove * fDeltaTime;
 
 	// モデルの位置を設定
 	m_pModel->SetVec3Position(posModel);
