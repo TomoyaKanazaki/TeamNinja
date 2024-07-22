@@ -121,6 +121,9 @@ CEnemyNavStreet* CEnemyNavStreet::Create(const std::vector<D3DXVECTOR3>& rRoute)
 		// 経路を設定
 		pNav->m_Route = rRoute;
 
+		// 種類を設定
+		pNav->SetType(TYPE_STREET);
+
 		// 確保したアドレスを返す
 		return pNav;
 	}
