@@ -9,8 +9,7 @@
 //************************************************************
 #include "string2D.h"
 #include "manager.h"
-#include "texture.h"
-#include "fontChar.h"
+#include "font.h"
 #include "char2D.h"
 
 //************************************************************
@@ -73,11 +72,11 @@ void CString2D::Uninit(void)
 	for (int i = 0; i < (int)m_wsStr.size(); i++)
 	{ // 文字数分繰り返す
 
-		// 文字を破棄
+		// 文字の破棄
 		SAFE_UNINIT(m_ppChar[i]);
 	}
 
-	// 文字列を破棄
+	// 文字列の破棄
 	SAFE_DEL_ARRAY(m_ppChar);
 
 	// オブジェクトを破棄
@@ -99,6 +98,48 @@ void CString2D::Update(const float fDeltaTime)
 void CString2D::Draw(CShader * /*pShader*/)
 {
 
+}
+
+//============================================================
+//	優先順位の設定処理
+//============================================================
+void CString2D::SetPriority(const int nPriority)
+{
+	// 自身の優先順位を設定
+	CObject::SetPriority(nPriority);
+
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字の優先順位を設定
+		m_ppChar[i]->SetPriority(nPriority);
+	}
+}
+
+//============================================================
+//	更新状況の設定処理
+//============================================================
+void CString2D::SetEnableUpdate(const bool bUpdate)
+{
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字の更新状況を設定
+		m_ppChar[i]->SetEnableUpdate(bUpdate);
+	}
+}
+
+//============================================================
+//	描画状況の設定処理
+//============================================================
+void CString2D::SetEnableDraw(const bool bDraw)
+{
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字の描画状況を設定
+		m_ppChar[i]->SetEnableDraw(bDraw);
+	}
 }
 
 //============================================================
@@ -138,13 +179,14 @@ void CString2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 //============================================================
 CString2D *CString2D::Create
 (
-	CFontChar *pFontChar,		// フォント文字情報
-	const std::wstring &rStr,	// 指定文字列
-	const D3DXVECTOR3 &rPos,	// 原点位置
-	const float fHeight,		// 文字縦幅
-	const EAlignX alignX,		// 横配置
-	const D3DXVECTOR3& rRot,	// 原点向き
-	const D3DXCOLOR& rCol		// 色
+	const std::string &rFilePass,	// フォントパス
+	const bool bItalic,				// イタリック
+	const std::wstring &rStr,		// 指定文字列
+	const D3DXVECTOR3 &rPos,		// 原点位置
+	const float fHeight,			// 文字縦幅
+	const EAlignX alignX,			// 横配置
+	const D3DXVECTOR3& rRot,		// 原点向き
+	const D3DXCOLOR& rCol			// 色
 )
 {
 	// 文字列2Dの生成
@@ -167,7 +209,7 @@ CString2D *CString2D::Create
 		}
 
 		// フォントを設定
-		pString2D->SetFont(pFontChar);
+		pString2D->SetFont(rFilePass, bItalic);
 
 		// 文字列を設定
 		if (FAILED(pString2D->SetString(rStr)))
@@ -199,6 +241,89 @@ CString2D *CString2D::Create
 }
 
 //============================================================
+//	文字列の設定処理
+//============================================================
+HRESULT CString2D::SetString(const std::wstring& rStr)
+{
+	// 文字数を保存する
+	int nOldStrLen = (int)m_wsStr.size();	// 破棄する文字数
+	int nCurStrLen = (int)rStr.size();		// 生成する文字数
+
+	// 指定文字列を変更
+	m_wsStr = rStr;
+
+	//--------------------------------------------------------
+	//	既に使用している文字を破棄
+	//--------------------------------------------------------
+	for (int i = 0; i < nOldStrLen; i++)
+	{ // 破棄する文字数分繰り返す
+
+		// 文字を破棄
+		SAFE_UNINIT(m_ppChar[i]);
+	}
+
+	// 文字列を破棄
+	SAFE_DEL_ARRAY(m_ppChar);
+
+	//--------------------------------------------------------
+	//	新しい文字を生成
+	//--------------------------------------------------------
+	// 文字を格納する配列を生成
+	m_ppChar = new CChar2D*[nCurStrLen];
+	for (int i = 0; i < nCurStrLen; i++)
+	{ // 生成する文字数分繰り返す
+
+		// 文字を生成
+		m_ppChar[i] = CChar2D::Create
+		( // 引数
+			m_pFontChar->GetFilePass(),	// フォントパス
+			m_pFontChar->GetItalic(),	// イタリック
+			m_wsStr[i],		// 指定文字
+			m_pos,			// 原点位置
+			m_fCharHeight,	// 文字縦幅
+			m_rot,			// 原点向き
+			m_col			// 色
+		);
+		if (m_ppChar[i] == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 文字のラベルを指定なしにする
+		m_ppChar[i]->SetLabel(LABEL_NONE);
+
+		// 文字の優先順位を自身のものにする
+		m_ppChar[i]->SetPriority(GetPriority());
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	フォントの設定処理
+//============================================================
+void CString2D::SetFont
+(
+	const std::string &rFilePass,	// フォントパス
+	const bool bItalic				// イタリック
+)
+{
+	// フォント文字情報を設定
+	CFont *pFont = GET_MANAGER->GetFont();	// フォント情報
+	m_pFontChar = pFont->Regist(rFilePass, bItalic).pFontChar;
+
+	// 文字列の再設定
+	SetString(m_wsStr);
+}
+
+//============================================================
 //	色の設定処理
 //============================================================
 void CString2D::SetColor(const D3DXCOLOR& rCol)
@@ -213,19 +338,6 @@ void CString2D::SetColor(const D3DXCOLOR& rCol)
 		assert(m_ppChar[i] != nullptr);
 		m_ppChar[i]->SetColor(rCol);
 	}
-}
-
-//============================================================
-//	フォントの設定処理
-//============================================================
-void CString2D::SetFont(CFontChar *pFontChar)
-{
-	// 引数のフォントを保存
-	assert(pFontChar != nullptr);
-	m_pFontChar = pFontChar;
-
-	// 文字列の再設定
-	SetString(m_wsStr);
 }
 
 //============================================================
@@ -261,65 +373,6 @@ void CString2D::SetAlignX(const CString2D::EAlignX alignX)
 }
 
 //============================================================
-//	文字列の設定処理
-//============================================================
-HRESULT CString2D::SetString(const std::wstring& rStr)
-{
-	// 文字数を保存する
-	int nOldStrLen = (int)m_wsStr.size();	// 破棄する文字数
-	int nCurStrLen = (int)rStr.size();		// 生成する文字数
-
-	// 指定文字列を変更
-	m_wsStr = rStr;
-
-	//--------------------------------------------------------
-	//	既に使用している文字を破棄
-	//--------------------------------------------------------
-	for (int i = 0; i < nOldStrLen; i++)
-	{ // 破棄する文字数分繰り返す
-
-		// 文字を破棄
-		SAFE_UNINIT(m_ppChar[i]);
-	}
-
-	// 文字列を破棄
-	SAFE_DEL_ARRAY(m_ppChar);
-
-	//--------------------------------------------------------
-	//	新しい文字を生成
-	//--------------------------------------------------------
-	// 文字を格納する配列を生成
-	m_ppChar = new CChar2D * [nCurStrLen];
-	for (int i = 0; i < nCurStrLen; i++)
-	{ // 生成する文字数分繰り返す
-
-		// 文字を生成
-		m_ppChar[i] = CChar2D::Create
-		( // 引数
-			m_pFontChar,	// フォント文字情報
-			m_wsStr[i],		// 指定文字
-			m_pos,			// 原点位置
-			m_fCharHeight,	// 文字縦幅
-			m_rot,			// 原点向き
-			m_col			// 色
-		);
-		if (m_ppChar[i] == nullptr)
-		{ // 生成に失敗した場合
-
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
-
-	// 成功を返す
-	return S_OK;
-}
-
-//============================================================
 //	文字列の横幅取得処理
 //============================================================
 float CString2D::GetStrWidth(void) const
@@ -347,7 +400,7 @@ float CString2D::GetStrWidth(void) const
 	// 終端文字のサイズをブラックボックス右までの大きさに補正
 	assert(m_ppChar[nEndCharID] != nullptr);
 	float fTailWidth = m_ppChar[nEndCharID]->GetVec3Sizing().x * 0.5f;			// 終端文字の横幅
-	fStrWidth -= m_ppChar[nEndCharID]->GetOffsetOrigin();						// 原点より前の空間を減算
+	fStrWidth -= fTailWidth - m_ppChar[nEndCharID]->GetOffsetOrigin();			// 原点より前の空間を減算
 	fStrWidth += fTailWidth + m_ppChar[nEndCharID]->GetOffsetBlackBoxRD().x;	// ブラックボックス終了より前の空間を加算
 
 	// 文字列の横幅を返す

@@ -16,9 +16,26 @@
 //************************************************************
 namespace
 {
+	// 登録情報
+	struct SRegistInfo
+	{
+		const wchar_t wcChar;	// 読み込む先頭文字
+		const int nIncr;		// 読み込む連続数
+	};
+
+	const SRegistInfo INIT_REGIST_CHAR[] =	// 初期に登録するフォント文字
+	{
+		{ L'\0', 1 },	// 終端文字
+		{ L'0', 10 },	// 0～9
+		{ L'A', 26 },	// A～Z
+		{ L'a', 26 },	// a～z
+		{ L'あ', 85 },  // あ～ん (ゖ)
+		{ L'ア', 90 },  // ア～ン (ヺ)
+	};
+
 	const char *LOAD_FOLDER = "data\\FONT";	// フォントフォルダ相対パス
-	const CFont::SFont ZERO_FONT;	// フォント初期値
-	const int FONT_HEIGHT = 240;	// フォント縦幅
+	const int	FONT_HEIGHT = 240;			// フォント縦幅
+	const CFont::SFont ZERO_FONT;			// フォント初期値
 }
 
 //************************************************************
@@ -146,6 +163,13 @@ HRESULT CFont::Load(const std::string &rFilePass)
 	// 読み込んだフォントパスを保存
 	m_vecFilePass.push_back(rFilePass);
 
+#if NDEBUG	// Release版以外では事前登録を行わない
+
+	// フォントとフォント文字の事前登録
+	RegistPrepare(rFilePass);
+
+#endif	// NDEBUG
+
 	// 成功を返す
 	return S_OK;
 }
@@ -153,10 +177,10 @@ HRESULT CFont::Load(const std::string &rFilePass)
 //============================================================
 //	フォント登録処理
 //============================================================
-CFont::SFont CFont::Regist(const std::string &rFontName, bool bItalic)
+CFont::SFont CFont::Regist(const std::string &rFilePass, const bool bItalic)
 {
 	// 既に生成済みかを検索
-	auto itr = m_mapFont.find(SKey(rFontName, bItalic));	// 引数のフォントを検索
+	auto itr = m_mapFont.find(SKey(rFilePass, bItalic));	// 引数のフォントを検索
 	if (itr != m_mapFont.end())
 	{ // 生成済みの場合
 
@@ -164,28 +188,29 @@ CFont::SFont CFont::Regist(const std::string &rFontName, bool bItalic)
 		return itr->second;
 	}
 
+	// 設定用フォント情報を宣言
+	SFont tempFont;
+
+	// フォント名を設定
+	tempFont.sFontName = rFilePass;					// ファイルパスを設定
+	useful::PathToBaseName(&tempFont.sFontName);	// ベースネームのみに変換
+
 	// フォント属性の設定
 	LOGFONT lf;
-	lf.lfHeight			= FONT_HEIGHT;					// フォントの縦幅
-	lf.lfWidth			= 0;							// 平均文字幅
-	lf.lfEscapement		= 0;							// 描画角度
-	lf.lfOrientation	= 0;							// テキスト方向
-	lf.lfWeight			= FW_NORMAL;					// フォントの太さ
-	lf.lfItalic			= bItalic;						// イタリック
-	lf.lfUnderline		= false;						// アンダーライン
-	lf.lfStrikeOut		= false;						// 打ち消し線
-	lf.lfCharSet		= SHIFTJIS_CHARSET;				// 文字セット
-	lf.lfOutPrecision	= OUT_TT_ONLY_PRECIS;			// 出力精度
-	lf.lfClipPrecision	= CLIP_DEFAULT_PRECIS;			// クリッピング精度
-	lf.lfQuality		= PROOF_QUALITY;				// 出力品質
-	lf.lfPitchAndFamily	= (DEFAULT_PITCH | FF_MODERN);	// ピッチとファミリー
-	strcpy(&lf.lfFaceName[0], rFontName.c_str());		// フォント名
-
-	// キー情報を設定
-	SKey tempKey = SKey(rFontName, bItalic);
-
-	// フォント情報を初期化
-	SFont tempFont = ZERO_FONT;
+	lf.lfHeight			= FONT_HEIGHT;						// フォントの縦幅
+	lf.lfWidth			= 0;								// 平均文字幅
+	lf.lfEscapement		= 0;								// 描画角度
+	lf.lfOrientation	= 0;								// テキスト方向
+	lf.lfWeight			= FW_NORMAL;						// フォントの太さ
+	lf.lfItalic			= bItalic;							// イタリック
+	lf.lfUnderline		= false;							// アンダーライン
+	lf.lfStrikeOut		= false;							// 打ち消し線
+	lf.lfCharSet		= DEFAULT_CHARSET;					// 文字セット
+	lf.lfOutPrecision	= OUT_TT_ONLY_PRECIS;				// 出力精度
+	lf.lfClipPrecision	= CLIP_DEFAULT_PRECIS;				// クリッピング精度
+	lf.lfQuality		= PROOF_QUALITY;					// 出力品質
+	lf.lfPitchAndFamily	= (DEFAULT_PITCH | FF_MODERN);		// ピッチとファミリー
+	strcpy(&lf.lfFaceName[0], tempFont.sFontName.c_str());	// フォント名
 
 	// フォントハンドルの生成
 	tempFont.pFont = CreateFontIndirectA(&lf);
@@ -198,7 +223,7 @@ CFont::SFont CFont::Regist(const std::string &rFontName, bool bItalic)
 	}
 
 	// フォント文字の生成
-	tempFont.pFontChar = CFontChar::Create(tempFont.pFont);
+	tempFont.pFontChar = CFontChar::Create(tempFont.pFont, rFilePass, bItalic);
 	if (tempFont.pFontChar == nullptr)
 	{ // 生成に失敗した場合
 
@@ -208,24 +233,24 @@ CFont::SFont CFont::Regist(const std::string &rFontName, bool bItalic)
 	}
 
 	// フォント情報を保存
-	m_mapFont.insert(std::make_pair(tempKey, tempFont));
+	m_mapFont.insert(std::make_pair(SKey(rFilePass, bItalic), tempFont));
 
 	// 生成したフォント情報を返す
 	return tempFont;
 }
 
 //============================================================
-//	フォント文字登録 (名前)
+//	フォント文字登録
 //============================================================
 CFontChar::SChar CFont::RegistChar
 (
 	const wchar_t wcChar,			// 指定文字
-	const std::string &rFontName,	// フォント名
+	const std::string &rFilePass,	// ファイルパス
 	bool bItalic					// イタリック
 )
 {
 	// 生成したフォントの文字テクスチャインデックスを返す
-	return Regist(rFontName, bItalic).pFontChar->Regist(wcChar);
+	return Regist(rFilePass, bItalic).pFontChar->Regist(wcChar);
 }
 
 //============================================================
@@ -268,6 +293,30 @@ void CFont::Release(CFont *&prFont)
 
 	// メモリ開放
 	SAFE_DELETE(prFont);
+}
+
+//============================================================
+//	フォント・フォント文字の事前登録
+//============================================================
+void CFont::RegistPrepare(const std::string &rFilePass)
+{
+	// 引数パスのフォントを登録
+	Regist(rFilePass);
+
+	// 使用頻度の高いフォント文字を登録する
+	for (int i = 0; i < NUM_ARRAY(INIT_REGIST_CHAR); i++)
+	{ // 読み込む文字の先頭数分繰り返す
+
+		for (int j = 0; j < INIT_REGIST_CHAR[i].nIncr; j++)
+		{ // 読み込む文字の連続数分繰り返す
+
+			// オフセット分ずらした文字を計算
+			wchar_t wcOffset = INIT_REGIST_CHAR[i].wcChar + (wchar_t)j;
+
+			// フォント文字を登録
+			RegistChar(wcOffset, rFilePass);
+		}
+	}
 }
 
 //============================================================

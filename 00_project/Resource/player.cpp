@@ -280,6 +280,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDodge(fDeltaTime);
 		break;
 
+	case STATE_DEATH:
+
+		// 死亡状態の更新
+		currentMotion = UpdateDeath(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -413,6 +419,12 @@ bool CPlayer::Hit(const int nDamage)
 
 	// ヒットエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// 死んじゃうｶﾓ~
+	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
+	{
+		m_state = STATE_DEATH;
+	}
 
 	// 士気力が減少する
 	CTension::Vanish();
@@ -642,6 +654,9 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(posPlayer, RADIUS);
+
 	// 位置を反映
 	SetVec3Position(posPlayer);
 
@@ -701,6 +716,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(posPlayer, RADIUS);
 
 	// ステージ遷移の更新
 	UpdateTrans(posPlayer);
@@ -768,10 +786,49 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
 	// 位置を反映
 	SetVec3Position(pos);
 
 	return MOTION_DODGE;
+}
+
+//===========================================
+//  死亡状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
+{
+	// リザルトを呼び出す
+	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAILED);
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// アクターの当たり判定
+	CollisionActor(pos);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	// TODO : 死亡モーション
+	return MOTION_IDOL;
 }
 
 //============================================================
@@ -909,6 +966,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	CStage *pStage = GET_STAGE;	// ステージ情報
 	D3DXVECTOR3 move = m_move * fDeltaTime;		//現在の移動速度を一時保存
 
+	// ジャンプ状態を保存
+	bool bJumpTemp = m_bJump;
+
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
 
@@ -995,6 +1055,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// 落下モーションを指定
 			SetMotion(MOTION_FALL);
 		}
+	}
+
+	// 床際のジャンプを呼び出す
+	if (!bLand && !bJumpTemp)
+	{
+		FloorEdgeJump();
 	}
 
 	// 着地フラグを返す
@@ -1537,6 +1603,21 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	}
 
 	return false;
+}
+
+//===========================================
+//  床際のジャンプ処理
+//===========================================
+void CPlayer::FloorEdgeJump()
+{
+	// 上移動量を与える
+	m_move.y = JUMP_MOVE;
+
+	// ジャンプ中にする
+	m_bJump = true;
+
+	// モーションの設定
+	SetMotion(MOTION_JUMP_MINI, BLEND_FRAME_OTHER);
 }
 
 //==========================================

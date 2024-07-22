@@ -9,9 +9,7 @@
 //************************************************************
 #include "text2D.h"
 #include "manager.h"
-#include "texture.h"
-#include "fontChar.h"
-#include "char2D.h"
+#include "font.h"
 
 //************************************************************
 //	定数宣言
@@ -108,6 +106,48 @@ void CText2D::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
+//	優先順位の設定処理
+//============================================================
+void CText2D::SetPriority(const int nPriority)
+{
+	// 自身の優先順位を設定
+	CObject::SetPriority(nPriority);
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列の優先順位を設定
+		rList->SetPriority(nPriority);
+	}
+}
+
+//============================================================
+//	更新状況の設定処理
+//============================================================
+void CText2D::SetEnableUpdate(const bool bUpdate)
+{
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列の更新状況を設定
+		rList->SetEnableUpdate(bUpdate);
+	}
+}
+
+//============================================================
+//	描画状況の設定処理
+//============================================================
+void CText2D::SetEnableDraw(const bool bDraw)
+{
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列の描画状況を設定
+		rList->SetEnableDraw(bDraw);
+	}
+}
+
+//============================================================
 //	位置の設定処理
 //============================================================
 void CText2D::SetVec3Position(const D3DXVECTOR3& rPos)
@@ -144,7 +184,8 @@ void CText2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 //============================================================
 CText2D *CText2D::Create
 (
-	CFontChar *pFontChar,				// フォント文字情報
+	const std::string &rFilePass,		// フォントパス
+	const bool bItalic,					// イタリック
 	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fCharHeight,			// 文字縦幅
 	const float fLineHeight,			// 行間縦幅
@@ -174,7 +215,7 @@ CText2D *CText2D::Create
 		}
 
 		// フォントを設定
-		pText2D->SetFont(pFontChar);
+		pText2D->SetFont(rFilePass, bItalic);
 
 		// 原点位置を設定
 		pText2D->SetVec3Position(rPos);
@@ -203,6 +244,112 @@ CText2D *CText2D::Create
 }
 
 //============================================================
+//	文字列の追加処理
+//============================================================
+HRESULT CText2D::AddString(const std::wstring& rStr)
+{
+	// 文字列オブジェクトを生成
+	CString2D *pStr = CString2D::Create
+	( // 引数
+		m_pFontChar->GetFilePass(),	// フォントパス
+		m_pFontChar->GetItalic(),	// イタリック
+		rStr,			// 指定文字列
+		m_pos,			// 原点位置
+		m_fCharHeight,	// 文字縦幅
+		m_alignX,		// 横配置
+		m_rot,			// 原点向き
+		m_col			// 色
+	);
+	if (pStr == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 文字列のラベルを指定なしにする
+	pStr->SetLabel(LABEL_NONE);
+
+	// 文字列の優先順位を自身のものにする
+	pStr->SetPriority(GetPriority());
+
+	// 最後尾に生成した文字列を追加
+	m_listString.push_back(pStr);
+
+	// 相対位置の設定
+	SetPositionRelative();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	文字列の削除処理
+//============================================================
+void CText2D::DeleteString(const int nStrID)
+{
+	// 文字列がない場合抜ける
+	int nStrSize = (int)m_listString.size();
+	if (nStrSize <= 0) { assert(false); return; }
+
+	// インデックスが範囲外の場合抜ける
+	if (nStrID <= NONE_IDX || nStrID >= nStrSize) { assert(false); return; }
+
+	// イテレーターをインデックス分ずらす
+	auto itr = m_listString.begin();
+	std::advance(itr, nStrID);
+
+	// イテレーター内の文字列2Dを終了
+	SAFE_UNINIT(*itr);
+
+	// イテレーターをリストから削除
+	m_listString.erase(itr);
+}
+
+//============================================================
+//	文字列の全削除処理
+//============================================================
+void CText2D::DeleteStringAll(void)
+{
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列の終了
+		assert(rList != nullptr);
+		SAFE_UNINIT(rList);
+	}
+
+	// 文字列リストをクリア
+	m_listString.clear();
+}
+
+//============================================================
+//	フォントの設定処理
+//============================================================
+void CText2D::SetFont
+(
+	const std::string &rFilePass,	// フォントパス
+	const bool bItalic				// イタリック
+)
+{
+	// フォント文字情報を設定
+	CFont *pFont = GET_MANAGER->GetFont();	// フォント情報
+	m_pFontChar = pFont->Regist(rFilePass, bItalic).pFontChar;
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列フォントの設定
+		assert(rList != nullptr);
+		rList->SetFont(rFilePass, bItalic);
+	}
+
+	// 相対位置の設定
+	SetPositionRelative();
+}
+
+//============================================================
 //	色の設定処理
 //============================================================
 void CText2D::SetColor(const D3DXCOLOR& rCol)
@@ -217,27 +364,6 @@ void CText2D::SetColor(const D3DXCOLOR& rCol)
 		assert(rList != nullptr);
 		rList->SetColor(rCol);
 	}
-}
-
-//============================================================
-//	フォントの設定処理
-//============================================================
-void CText2D::SetFont(CFontChar *pFontChar)
-{
-	// 引数のフォントを保存
-	assert(pFontChar != nullptr);
-	m_pFontChar = pFontChar;
-
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
-
-		// 文字列フォントの設定
-		assert(rList != nullptr);
-		rList->SetFont(pFontChar);
-	}
-
-	// 相対位置の設定
-	SetPositionRelative();
 }
 
 //============================================================
@@ -302,40 +428,6 @@ void CText2D::SetAlignY(const EAlignY align)
 
 	// 相対位置の設定
 	SetPositionRelative();
-}
-
-//============================================================
-//	文字列の追加処理
-//============================================================
-HRESULT CText2D::AddString(const std::wstring& rStr)
-{
-	// 文字列オブジェクトを生成
-	CString2D *pStr = CString2D::Create
-	( // 引数
-		m_pFontChar,	// フォント文字情報
-		rStr,			// 指定文字列
-		m_pos,			// 原点位置
-		m_fCharHeight,	// 文字縦幅
-		m_alignX,		// 横配置
-		m_rot,			// 原点向き
-		m_col			// 色
-	);
-	if (pStr == nullptr)
-	{ // 生成に失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// 最後尾に生成した文字列を追加
-	m_listString.push_back(pStr);
-
-	// 相対位置の設定
-	SetPositionRelative();
-
-	// 成功を返す
-	return S_OK;
 }
 
 //============================================================

@@ -106,35 +106,28 @@ CGimmickMulch* CGimmickMulch::Create(std::vector<SButton> vecButton)
 {
 	// 複数管理ギミックの生成
 	CGimmickMulch *pGimmick = new CGimmickMulch;
-	if (pGimmick == nullptr)
-	{ // 生成に失敗した場合
+	if (pGimmick == nullptr) { return nullptr; }
 
+	// 複数管理ギミックの初期化
+	if (FAILED(pGimmick->Init()))
+	{ // 初期化に失敗した場合
+
+		// 複数管理ギミックの破棄
+		SAFE_DELETE(pGimmick);
 		return nullptr;
 	}
-	else
-	{ // 生成に成功した場合
 
-		// 複数管理ギミックの初期化
-		if (FAILED(pGimmick->Init()))
-		{ // 初期化に失敗した場合
+	// ボタン情報の生成
+	if (FAILED(pGimmick->CreateButton(vecButton)))
+	{ // 生成に失敗した場合
 
-			// 複数管理ギミックの破棄
-			SAFE_DELETE(pGimmick);
-			return nullptr;
-		}
-
-		// ボタン情報の生成
-		if (FAILED(pGimmick->CreateButton(vecButton)))
-		{ // 生成に失敗した場合
-
-			// 複数管理ギミックの破棄
-			SAFE_DELETE(pGimmick);
-			return nullptr;
-		}
-
-		// 確保したアドレスを返す
-		return pGimmick;
+		// 複数管理ギミックの破棄
+		SAFE_DELETE(pGimmick);
+		return nullptr;
 	}
+
+	// 確保したアドレスを返す
+	return pGimmick;
 }
 
 //===========================================
