@@ -13,8 +13,9 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObject2D;	// オブジェクト2Dクラス
-class CString2D;	// 文字列2Dクラス
+class CObject2D;		// オブジェクト2Dクラス
+class CString2D;		// 文字列2Dクラス
+class CScrollText2D;	// 文字送りテキスト2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -31,6 +32,7 @@ public:
 		STATE_FADEIN,			// フェードイン状態
 		STATE_FADEIN_WAIT,		// フェードイン待機状態
 		STATE_FADEIN_ACCEL,		// フェードイン加速状態
+		STATE_STAGE_TITLE,		// ステージタイトル状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -62,20 +64,20 @@ private:
 	void UpdateFadeIn(const float fDeltaTime);			// フェードイン更新
 	void UpdateFadeInWait(const float fDeltaTime);		// フェードイン待機更新
 	void UpdateFadeInAccel(const float fDeltaTime);		// フェードイン加速更新
+	void UpdateStageTitle(const float fDeltaTime);		// ステージタイトル更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 
 	// メンバ変数
-	CObject2D* m_pFade;		// フェード情報
-	CString2D* m_pTitle;	// タイトル情報
-	CString2D* m_pCoin;		// コイン情報
-	CString2D* m_pBigCoin;	// デカコイン情報
-	CString2D* m_pTime;		// タイム情報
-	EState m_state;			// 状態
-	float m_fMoveY;			// 縦移動量
-	float m_nCurTime;		// 現在の待機時間
+	CObject2D* m_pFade;			// フェード情報
+	CScrollText2D* m_pTitle;	// タイトル情報
+	CString2D* m_pGodItem;		// 神器タイトル情報
+	CString2D* m_pTime;			// タイムタイトル情報
+	EState m_state;				// 状態
+	float m_fMoveY;				// 縦移動量
+	float m_nCurTime;			// 現在の待機時間
 };
 
 #endif	// _RESULTMANAGER_H_

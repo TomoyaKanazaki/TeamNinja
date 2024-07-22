@@ -48,6 +48,9 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
+	void SetPriority(const int nPriority) override;			// 優先順位設定
+	void SetEnableUpdate(const bool bUpdate) override;		// 更新状況設定
+	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
@@ -56,26 +59,35 @@ public:
 	// 静的メンバ関数
 	static CString2D *Create	// 生成
 	( // 引数
-		CFontChar *pFontChar,		// フォント文字情報
-		const std::wstring &rStr,	// 指定文字列
-		const D3DXVECTOR3 &rPos,	// 原点位置
+		const std::string &rFilePass,	// フォントパス
+		const bool bItalic,				// イタリック
+		const std::wstring &rStr,		// 指定文字列
+		const D3DXVECTOR3 &rPos,		// 原点位置
 		const float fHeight = 100.0f,			// 文字縦幅
 		const EAlignX alignX = XALIGN_CENTER,	// 横配置
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 原点向き
 		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
 
+	// 仮想関数
+	virtual HRESULT SetString(const std::wstring& rStr);	// 文字列の設定
+
 	// メンバ関数
+	void SetFont	// フォントの設定
+	( // 引数
+		const std::string &rFilePass,	// フォントパス
+		const bool bItalic = false		// イタリック
+	);
 	void SetColor(const D3DXCOLOR& rCol);			// 色設定
-	void SetFont(CFontChar *pFontChar);				// フォントの設定
 	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
-	HRESULT SetString(const std::wstring& rStr);	// 文字列の設定
 	float GetStrWidth(void) const;					// 文字列の横幅取得
 	CChar2D *GetChar2D(const int nCharID) const;	// 文字の取得
-	D3DXCOLOR GetColor(void) const	{ return m_col; }			// 色取得
-	float GetCharHeight(void) const	{ return m_fCharHeight; }	// 文字の縦幅取得
-	EAlignX GetAlignX(void) const	{ return m_alignX; }		// 横配置取得
+	D3DXCOLOR GetColor(void) const	{ return m_col; }				// 色取得
+	float GetCharHeight(void) const	{ return m_fCharHeight; }		// 文字の縦幅取得
+	EAlignX GetAlignX(void) const	{ return m_alignX; }			// 横配置取得
+	int GetNumChar(void) const		{ return (int)m_wsStr.size(); }	// 文字数取得
+	std::wstring GetStr(void) const { return m_wsStr; }				// 文字列取得
 
 private:
 	// オーバーライド関数

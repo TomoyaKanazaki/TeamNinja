@@ -10,6 +10,7 @@
 #include "char2D.h"
 #include "manager.h"
 #include "texture.h"
+#include "font.h"
 
 //************************************************************
 //	定数宣言
@@ -26,12 +27,14 @@ namespace
 //	コンストラクタ
 //============================================================
 CChar2D::CChar2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
-	m_wcChar		(0),	// 指定文字
-	m_fSizeRate		(0.0f),	// 縦幅の割合
-	m_fAbsOriginX	(0.0f)	// X原点オフセットの絶対値
+	m_pFontChar		(nullptr),	// フォント文字
+	m_wcChar		(0),		// 指定文字
+	m_fCharHeight	(0.0f),		// 文字の縦幅
+	m_fSizeRate		(0.0f),		// 縦幅の割合
+	m_fAbsOriginX	(0.0f),		// X原点オフセットの絶対値
+	m_bTexEmpty		(false)		// テクスチャ透明フラグ
 {
-	// メンバ変数をクリア
-	memset(&m_infoChar, 0, sizeof(m_infoChar));	// 文字情報
+
 }
 
 //============================================================
@@ -48,10 +51,12 @@ CChar2D::~CChar2D()
 HRESULT CChar2D::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_infoChar, 0, sizeof(m_infoChar));	// 文字情報
-	m_wcChar		= 0;	// 指定文字
-	m_fSizeRate		= 1.0f;	// 縦幅の割合
-	m_fAbsOriginX	= 0.0f;	// X原点オフセットの絶対値
+	m_pFontChar		= nullptr;	// フォント文字
+	m_wcChar		= 0;		// 指定文字
+	m_fCharHeight	= 0.0f;		// 文字の縦幅
+	m_fSizeRate		= 1.0f;		// 縦幅の割合
+	m_fAbsOriginX	= 0.0f;		// X原点オフセットの絶対値
+	m_bTexEmpty		= false;	// テクスチャ透明フラグ
 
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -102,7 +107,7 @@ void CChar2D::SetVec3Sizing(const D3DXVECTOR3& /*rSize*/)
 		こっちで大きさを自由に変えられると
 		文字の比率がおかしくなるのと、
 		縦幅の割合なども変更できないため
-		大きさ変更は SetHeight を利用してね。
+		大きさ変更は SetCharHeight を利用してね。
 	*/
 
 	assert(false);
@@ -113,12 +118,13 @@ void CChar2D::SetVec3Sizing(const D3DXVECTOR3& /*rSize*/)
 //============================================================
 CChar2D *CChar2D::Create
 (
-	CFontChar *pFontChar,		// フォント文字情報
-	const wchar_t wcChar,		// 指定文字
-	const D3DXVECTOR3& rPos,	// 位置
-	const float fHeight,		// 縦幅
-	const D3DXVECTOR3& rRot,	// 向き
-	const D3DXCOLOR& rCol		// 色
+	const std::string &rFilePass,	// フォントパス
+	const bool bItalic,				// イタリック
+	const wchar_t wcChar,			// 指定文字
+	const D3DXVECTOR3& rPos,		// 位置
+	const float fHeight,			// 縦幅
+	const D3DXVECTOR3& rRot,		// 向き
+	const D3DXCOLOR& rCol			// 色
 )
 {
 	// 文字2Dの生成
@@ -140,8 +146,11 @@ CChar2D *CChar2D::Create
 			return nullptr;
 		}
 
-		// フォント・文字を設定
-		pChar2D->SetFontChar(pFontChar, wcChar);
+		// フォントを設定
+		pChar2D->SetFont(rFilePass, bItalic);
+
+		// 文字を設定
+		pChar2D->SetChar(wcChar);
 
 		// 位置を設定
 		pChar2D->SetVec3Position(rPos);
@@ -161,25 +170,43 @@ CChar2D *CChar2D::Create
 }
 
 //============================================================
-//	フォント・文字の設定処理
+//	フォントの設定処理
 //============================================================
-void CChar2D::SetFontChar
+void CChar2D::SetFont
 (
-	CFontChar *pFontChar,	// フォント文字情報
-	const wchar_t wcChar	// 指定文字
+	const std::string &rFilePass,	// フォントパス
+	const bool bItalic				// イタリック
 )
 {
-	// フォント文字の取得
-	m_infoChar = pFontChar->Regist(wcChar);
+	// フォント文字情報を設定
+	CFont *pFont = GET_MANAGER->GetFont();	// フォント情報
+	m_pFontChar = pFont->Regist(rFilePass, bItalic).pFontChar;
+
+	// 指定文字を再設定
+	SetChar(m_wcChar);
+}
+
+//============================================================
+//	文字の設定処理
+//============================================================
+void CChar2D::SetChar(const wchar_t wcChar)
+{
+	CFontChar::SChar infoChar = m_pFontChar->Regist(wcChar);	// 文字情報
 
 	// 指定文字を保存
 	m_wcChar = wcChar;
 
 	// X原点オフセットの絶対値を保存
-	m_fAbsOriginX = fabsf((float)m_infoChar.glyph.gmptGlyphOrigin.x);
+	m_fAbsOriginX = fabsf((float)infoChar.glyph.gmptGlyphOrigin.x);
 
-	// テクスチャを作成・割当
-	BindTexture(m_infoChar.nTexID);
+	// テクスチャ透明フラグを保存
+	m_bTexEmpty = infoChar.bEmpty;
+
+	// テクスチャを登録・割当
+	BindTexture(infoChar.nTexID);
+
+	// 文字縦幅の再設定
+	SetCharHeight(m_fCharHeight);
 }
 
 //============================================================
@@ -190,6 +217,9 @@ void CChar2D::SetCharHeight(const float fHeight)
 	int nTexID = GetTextureIndex();	// フォントのテクスチャインデックス
 	float fTexWidth = useful::GetTexWidthFromAspect(fHeight, nTexID);			// テクスチャ横幅
 	D3DXIMAGE_INFO status = GET_MANAGER->GetTexture()->GetInfo(nTexID).status;	// テクスチャステータス
+
+	// 文字の縦幅を保存
+	m_fCharHeight = fHeight;
 
 	// 縦幅の増減割合を保存
 	m_fSizeRate = fHeight / (float)status.Height;
@@ -203,9 +233,11 @@ void CChar2D::SetCharHeight(const float fHeight)
 //============================================================
 D3DXVECTOR2 CChar2D::GetOffsetBlackBoxLU(void)
 {
+	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
+
 	D3DXVECTOR2 tempOffset;	// float変換オフセット格納用
-	tempOffset.x = (float)m_infoChar.offsetBlackBox.lu.x;
-	tempOffset.y = (float)m_infoChar.offsetBlackBox.lu.y;
+	tempOffset.x = (float)infoChar.offsetBlackBox.lu.x;
+	tempOffset.y = (float)infoChar.offsetBlackBox.lu.y;
 
 	// ブラックボックスの左上オフセットを返す
 	return tempOffset * m_fSizeRate;
@@ -216,9 +248,11 @@ D3DXVECTOR2 CChar2D::GetOffsetBlackBoxLU(void)
 //============================================================
 D3DXVECTOR2 CChar2D::GetOffsetBlackBoxRD(void)
 {
+	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
+
 	D3DXVECTOR2 tempOffset;	// float変換オフセット格納用
-	tempOffset.x = (float)m_infoChar.offsetBlackBox.rd.x;
-	tempOffset.y = (float)m_infoChar.offsetBlackBox.rd.y;
+	tempOffset.x = (float)infoChar.offsetBlackBox.rd.x;
+	tempOffset.y = (float)infoChar.offsetBlackBox.rd.y;
 
 	// ブラックボックスの右下オフセットを返す
 	return tempOffset * m_fSizeRate;
@@ -229,8 +263,10 @@ D3DXVECTOR2 CChar2D::GetOffsetBlackBoxRD(void)
 //============================================================
 float CChar2D::GetOffsetOrigin(void)
 {
+	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
+
 	// 文字ブラックボックスの横幅
-	float fBlackBoxX = (float)m_infoChar.glyph.gmBlackBoxX;
+	float fBlackBoxX = (float)infoChar.glyph.gmBlackBoxX;
 
 	// 文字原点のオフセットを返す
 	return (m_fAbsOriginX + fBlackBoxX * 0.5f) * m_fSizeRate;
@@ -241,6 +277,8 @@ float CChar2D::GetOffsetOrigin(void)
 //============================================================
 float CChar2D::GetNext(void)
 {
+	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
+
 	// 次の文字の距離を返す
-	return (float)m_infoChar.glyph.gmCellIncX * m_fSizeRate;
+	return (float)infoChar.glyph.gmCellIncX * m_fSizeRate;
 }

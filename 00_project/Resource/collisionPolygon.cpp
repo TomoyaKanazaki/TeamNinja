@@ -64,7 +64,11 @@ bool CCollisionPolygon::Hit
 {
 	// 高さを取得する
 	float fPosY = m_pPolygon->GetPositionHeight(rPos);
+	D3DXVECTOR3 posOld = rPosOld;
+	D3DXVECTOR3 pos = rPos;
 
+
+	// TODO：この糞判定どうにかした方がいい
 	if (fPosY > rPos.y &&
 		fPosY < rPos.y + fHeight)
 	{ // 現在地がポリゴンより高かった場合
@@ -72,8 +76,8 @@ bool CCollisionPolygon::Hit
 		// Y軸の位置を適用する
 		rPos.y = fPosY;
 
-		// 重力を0にする
-		rMove.y = 0.0f;
+		// 重力を下にかけ続ける
+		rMove.y = -250.0f;
 
 		// ジャンプ状況を false にする
 		rJump = false;
