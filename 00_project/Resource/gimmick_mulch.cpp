@@ -17,6 +17,8 @@
 namespace
 {
 	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
+	const float MOVE_SPEED = 100.0f; // 移動速度
+	const D3DXVECTOR3 MOVE_POS = D3DXVECTOR3(0.0f, -250.0f, 0.0f); // 移動後の位置
 }
 
 //=========================================
@@ -103,6 +105,9 @@ void CGimmickMulch::Update(const float fDeltaTime)
 		m_bActive = false;
 		break;
 	}
+
+	// モデルの移動
+	MoveModel(fDeltaTime);
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -224,4 +229,44 @@ HRESULT CGimmickMulch::CreateButton(std::vector<SButton> vecButton)
 	}
 
 	return S_OK;
+}
+
+//===========================================
+//  モデルの移動
+//===========================================
+void CGimmickMulch::MoveModel(const float fDeltaTime)
+{
+	// モデルの位置を取得
+	D3DXVECTOR3 posModel = m_pModel->GetVec3Position();
+
+	// アクティブフラグがオンの場合移動先に向かって動く
+	if (m_bActive)
+	{
+		// モデルの位置が移動先を下回った場合関数を抜ける
+		if (posModel.y <= GetVec3Position().y + MOVE_POS.y)
+		{
+			posModel.y = GetVec3Position().y + MOVE_POS.y;
+			return;
+		}
+
+		// 移動
+		posModel.y -= MOVE_SPEED * fDeltaTime;
+
+		// モデルの位置を設定
+		m_pModel->SetVec3Position(posModel);
+		return;
+	}
+
+	// モデルの位置が基準点を上回った場合関数を抜ける
+	if (posModel.y >= GetVec3Position().y)
+	{
+		posModel.y = GetVec3Position().y;
+		return;
+	}
+
+	// 移動
+	posModel.y += MOVE_SPEED * fDeltaTime;
+
+	// モデルの位置を設定
+	m_pModel->SetVec3Position(posModel);
 }
