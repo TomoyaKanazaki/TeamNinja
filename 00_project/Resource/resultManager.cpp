@@ -73,11 +73,11 @@ namespace
 		const bool	ITALIC		= false;	// イタリック
 		const float	MOVE_TIME	= 0.2f;		// 移動時間
 		const float	WAIT_TIME	= 0.5f;		// タイトル待機時間
-		const float DEST_HEIGHT = 100.0f;	// 文字目標縦幅
-		const float INIT_HEIGHT = DEST_HEIGHT * 14.0f;	// 文字初期縦幅
-		const float DIFF_HEIGHT = DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
-		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
-		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
+		const float DEST_HEIGHT	= 100.0f;	// 文字目標縦幅
+		const float INIT_HEIGHT	= DEST_HEIGHT * 14.0f;	// 文字初期縦幅
+		const float DIFF_HEIGHT	= DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
 	namespace val_time
@@ -99,23 +99,55 @@ namespace
 		const CTimeUI::EAlignY	ALIGN_Y	= CTimeUI::YALIGN_CENTER;	// 縦配置
 	}
 
-	namespace god
+	namespace item
 	{
-		const char	  *FONT		= "data\\FONT\\零ゴシック.otf";	// フォントパス
-		const wchar_t *STRING	= L"獲得した神器";	// 文字列
-		const bool	  ITALIC	= false;	// イタリック
-		const float	  HEIGHT	= 100.0f;	// 文字縦幅
-		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
-		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
+		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t	*STRING	= L"獲得した神器";		// 文字列
+		const bool		ITALIC	= false;				// イタリック
+		const float	MOVE_TIME	= time::MOVE_TIME;		// 移動時間
+		const float	WAIT_TIME	= time::WAIT_TIME;		// タイトル待機時間
+		const float DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
+		const float INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
+		const float DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
-	namespace icon_god
+	namespace icon_item
 	{
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);	// 位置
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(100.0f, 100.0f, 0.0f);	// 大きさ
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);		// 空白
 	}
 }
+
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CResultManager::AFuncUpdateState CResultManager::m_aFuncUpdateState[] =	// 状態更新関数
+{
+	nullptr,								// 何もしない更新
+	&CResultManager::UpdateFadeWait,		// フェード待機更新
+	&CResultManager::UpdateFadeIn,			// フェードイン更新
+	&CResultManager::UpdateFadeInWait,		// フェードイン待機更新
+	&CResultManager::UpdateFadeInAccel,		// フェードイン加速更新
+	&CResultManager::UpdateStageWait,		// ステージ表示待機更新
+	&CResultManager::UpdateStageTitle,		// ステージタイトル更新
+	&CResultManager::UpdateStamp,			// クリアハンコ押し更新
+	&CResultManager::UpdateTimeTitleWait,	// 遂行時間タイトル待機更新
+	&CResultManager::UpdateTimeTitle,		// 遂行時間タイトル表示更新
+	&CResultManager::UpdateTimeValueWait,	// 遂行時間待機更新
+	&CResultManager::UpdateTimeValue,		// 遂行時間表示更新
+	&CResultManager::UpdateItemTitleWait,	// 神器タイトル待機更新
+	&CResultManager::UpdateItemTitle,		// 神器タイトル表示更新
+	&CResultManager::UpdateItemValueWait,	// 神器アイコン待機更新
+	&CResultManager::UpdateItemValue,		// 神器アイコン表示更新
+	&CResultManager::UpdateWait,			// 待機更新
+	&CResultManager::UpdateFadeOut,			// フェードアウト更新
+	&CResultManager::UpdateFadeOutWait,		// フェードアウト待機更新
+	&CResultManager::UpdateFadeOutAccel,	// フェードアウト加速更新
+	&CResultManager::UpdateEnd,				// 終了更新
+};
 
 //************************************************************
 //	親クラス [CResultManager] のメンバ関数
@@ -136,6 +168,9 @@ CResultManager::CResultManager() :
 {
 	// メンバ変数をクリア
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
+
+	// スタティックアサート
+	static_assert(NUM_ARRAY(m_aFuncUpdateState) == CResultManager::STATE_MAX, "ERROR : State Count Mismatch");
 }
 
 //============================================================
@@ -316,12 +351,12 @@ HRESULT CResultManager::Init(void)
 	// 神器タイトルの生成
 	m_pGodItem = CString2D::Create
 	( // 引数
-		god::FONT,		// フォントパス
-		god::ITALIC,	// イタリック
-		god::STRING,	// 指定文字列
-		god::POS,		// 原点位置
-		god::HEIGHT,	// 文字縦幅
-		god::ALIGN_X	// 横配置
+		item::FONT,			// フォントパス
+		item::ITALIC,		// イタリック
+		item::STRING,		// 指定文字列
+		item::POS,			// 原点位置
+		item::INIT_HEIGHT,	// 文字縦幅
+		item::ALIGN_X		// 横配置
 	);
 	if (m_pGodItem == nullptr)
 	{ // 生成に失敗した場合
@@ -344,10 +379,10 @@ HRESULT CResultManager::Init(void)
 	{ // 神器の総数分繰り返す
 
 		// アイコン生成位置を計算
-		D3DXVECTOR3 pos = icon_god::POS + (icon_god::SPACE * (float)i);	// 生成位置
+		D3DXVECTOR3 pos = icon_item::POS + (icon_item::SPACE * (float)i);	// 生成位置
 
 		// 神器アイコンの生成
-		m_apGodItemIcon[i] = CObject2D::Create(pos, icon_god::SIZE);
+		m_apGodItemIcon[i] = CObject2D::Create(pos, icon_item::SIZE);
 		if (m_apGodItemIcon[i] == nullptr)
 		{ // 生成に失敗した場合
 
@@ -383,116 +418,12 @@ void CResultManager::Uninit(void)
 //============================================================
 void CResultManager::Update(const float fDeltaTime)
 {
-	switch (m_state)
-	{ // 状態ごとの処理
-	case STATE_NONE:
-		break;
+	assert(m_state > NONE_IDX && m_state < STATE_MAX);
+	if (m_aFuncUpdateState[m_state] != nullptr)
+	{ // 更新関数が指定されている場合
 
-	case STATE_FADE_WAIT:
-
-		// フェード待機の更新
-		UpdateFadeWait(fDeltaTime);
-		break;
-
-	case STATE_FADEIN:
-
-		// フェードインの更新
-		UpdateFadeIn(fDeltaTime);
-		break;
-
-	case STATE_FADEIN_WAIT:
-
-		// フェードイン待機の更新
-		UpdateFadeInWait(fDeltaTime);
-		break;
-
-	case STATE_FADEIN_ACCEL:
-
-		// フェードイン加速の更新
-		UpdateFadeInAccel(fDeltaTime);
-		break;
-
-	case STATE_STAGE_WAIT:
-
-		// ステージ表示待機の更新
-		UpdateStageWait(fDeltaTime);
-		break;
-
-	case STATE_STAGE_TITLE:
-
-		// ステージタイトルの更新
-		UpdateStageTitle(fDeltaTime);
-		break;
-
-	case STATE_CLEAR_STAMP:
-
-		// クリアハンコ押しの更新
-		UpdateStamp(fDeltaTime);
-		break;
-
-	case STATE_TIME_TITLE_WAIT:
-
-		// 遂行時間タイトル待機の更新
-		UpdateTimeTitleWait(fDeltaTime);
-		break;
-
-	case STATE_TIME_TITLE:
-
-		// 遂行時間タイトル表示の更新
-		UpdateTimeTitle(fDeltaTime);
-		break;
-
-	case STATE_TIME_VALUE_WAIT:
-
-		// 遂行時間待機の更新
-		UpdateTimeValueWait(fDeltaTime);
-		break;
-
-	case STATE_TIME_VALUE:
-
-		// 遂行時間表示の更新
-		UpdateTimeValue(fDeltaTime);
-		break;
-
-	case STATE_WAIT:
-
-		// 待機の更新
-		UpdateWait(fDeltaTime);
-
-		// TODO
-		m_state = STATE_FADEOUT;
-		break;
-
-	case STATE_FADEOUT:
-
-		// フェードアウトの更新
-		UpdateFadeOut(fDeltaTime);
-		break;
-
-	case STATE_FADEOUT_WAIT:
-
-		// フェードアウト待機の更新
-		UpdateFadeOutWait(fDeltaTime);
-		break;
-
-	case STATE_FADEOUT_ACCEL:
-
-		// フェードアウト加速の更新
-		UpdateFadeOutAccel(fDeltaTime);
-		break;
-
-	case STATE_END:
-
-		// フェード中の場合抜ける
-		if (GET_MANAGER->GetFade()->IsFade()) { break; }
-
-		// 選択画面に遷移する
-		GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
-		return;
-
-	default:	// 例外処理
-		assert(false);
-		break;
+		// 各状態ごとの更新
+		(this->*(m_aFuncUpdateState[m_state]))(fDeltaTime);
 	}
 }
 
@@ -804,9 +735,74 @@ void CResultManager::UpdateTimeValue(const float fDeltaTime)
 		// 遂行時間の位置を補正
 		m_pTimeVal->SetVec3Position(val_time::DEST_POS);
 
-		// 待機状態にする
-		m_state = STATE_WAIT;
+		// 神器タイトル待機状態にする
+		m_state = STATE_ITEM_TITLE_WAIT;
 	}
+}
+
+//============================================================
+//	神器タイトル待機の更新処理
+//============================================================
+void CResultManager::UpdateItemTitleWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= item::WAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 神器タイトルの自動描画をONにする
+		m_pGodItem->SetEnableDraw(true);
+
+		// 神器タイトル表示状態にする
+		m_state = STATE_ITEM_TITLE;
+	}
+}
+
+//============================================================
+//	神器タイトル表示の更新処理
+//============================================================
+void CResultManager::UpdateItemTitle(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, item::MOVE_TIME);
+
+	// 遂行時間タイトルの大きさを反映
+	m_pGodItem->SetCharHeight(item::INIT_HEIGHT + (item::DIFF_HEIGHT * fRate));
+
+	if (m_fCurTime >= item::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 遂行時間タイトルの大きさを補正
+		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
+
+		// 神器タイトル待機状態にする
+		m_state = STATE_ITEM_ICON_WAIT;
+	}
+}
+
+//============================================================
+//	神器アイコン待機の更新処理
+//============================================================
+void CResultManager::UpdateItemValueWait(const float fDeltaTime)
+{
+
+}
+
+//============================================================
+//	神器アイコン表示の更新処理
+//============================================================
+void CResultManager::UpdateItemValue(const float fDeltaTime)
+{
+
 }
 
 //============================================================
@@ -814,6 +810,7 @@ void CResultManager::UpdateTimeValue(const float fDeltaTime)
 //============================================================
 void CResultManager::UpdateWait(const float fDeltaTime)
 {
+	// TODO
 #if 0
 	D3DXCOLOR colControl = m_pControl->GetColor();	// 操作表示色
 
@@ -849,6 +846,8 @@ void CResultManager::UpdateWait(const float fDeltaTime)
 		// 操作表示色を設定
 		m_pControl->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, control::BASIC_ALPHA + fAddAlpha));
 	}
+#else
+	m_state = STATE_FADEOUT;
 #endif
 }
 
@@ -926,4 +925,16 @@ void CResultManager::UpdateFadeOutAccel(const float fDeltaTime)
 	}
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
+}
+
+//============================================================
+//	終了の更新処理
+//============================================================
+void CResultManager::UpdateEnd(const float fDeltaTime)
+{
+	// フェード中の場合抜ける
+	if (GET_MANAGER->GetFade()->IsFade()) { return; }
+
+	// 選択画面に遷移する
+	GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
 }

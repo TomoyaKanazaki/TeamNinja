@@ -45,6 +45,10 @@ public:
 		STATE_TIME_TITLE,		// 遂行時間タイトル表示状態
 		STATE_TIME_VALUE_WAIT,	// 遂行時間待機状態
 		STATE_TIME_VALUE,		// 遂行時間表示状態
+		STATE_ITEM_TITLE_WAIT,	// 神器タイトル待機状態
+		STATE_ITEM_TITLE,		// 神器タイトル表示状態
+		STATE_ITEM_ICON_WAIT,	// 神器アイコン待機状態
+		STATE_ITEM_ICON,		// 神器アイコン表示状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -71,6 +75,12 @@ public:
 	static void Release(CResultManager *&prResultManager);	// 破棄
 
 private:
+	// 状態更新の関数ポインタ型エイリアス定義
+	typedef void (CResultManager::*AFuncUpdateState)(const float fDeltaTime);
+
+	// 静的メンバ変数
+	static AFuncUpdateState m_aFuncUpdateState[];	// 状態更新関数
+
 	// メンバ関数
 	void UpdateFadeWait(const float fDeltaTime);		// フェード待機更新
 	void UpdateFadeIn(const float fDeltaTime);			// フェードイン更新
@@ -83,10 +93,15 @@ private:
 	void UpdateTimeTitle(const float fDeltaTime);		// 遂行時間タイトル表示更新
 	void UpdateTimeValueWait(const float fDeltaTime);	// 遂行時間待機更新
 	void UpdateTimeValue(const float fDeltaTime);		// 遂行時間表示更新
+	void UpdateItemTitleWait(const float fDeltaTime);	// 神器タイトル待機更新
+	void UpdateItemTitle(const float fDeltaTime);		// 神器タイトル表示更新
+	void UpdateItemValueWait(const float fDeltaTime);	// 神器アイコン待機更新
+	void UpdateItemValue(const float fDeltaTime);		// 神器アイコン表示更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
+	void UpdateEnd(const float fDeltaTime);				// 終了更新
 
 	// メンバ変数
 	CObject2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
