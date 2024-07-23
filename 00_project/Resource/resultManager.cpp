@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "fade.h"
 #include "object2D.h"
+#include "anim2D.h"
 #include "string2D.h"
 #include "scrollText2D.h"
 #include "timeUI.h"
@@ -115,21 +116,25 @@ namespace
 
 	namespace icon_item
 	{
+		const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";			// 神器テクスチャ
+		const POSGRID2 TEX_PART = POSGRID2(3, 1);						// テクスチャ分割
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);	// 位置
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(100.0f, 100.0f, 0.0f);	// 大きさ
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 大きさ
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);		// 空白
 	}
 
 	namespace icon_bg
 	{
-		const float	MOVE_TIME = 0.68f;	// 移動時間
-		const float	WAIT_TIME = 0.15f;	// 数値待機時間
-		const D3DXCOLOR DEST_COL = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);	// 目標色
-		const D3DXCOLOR INIT_COL = D3DXCOLOR(0.5f, 0.5f, 0.5f, 0.0f);	// 初期色
-		const D3DXCOLOR DIFF_COL = DEST_COL - INIT_COL;					// 差分色
-		const D3DXVECTOR3 DEST_POS = icon_item::POS;							// 目標位置
-		const D3DXVECTOR3 INIT_POS = DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
-		const D3DXVECTOR3 DIFF_POS = DEST_POS - INIT_POS;						// 差分位置
+		const float	MOVE_TIME	= 0.68f;	// 移動時間
+		const float	WAIT_TIME	= 0.15f;	// 数値待機時間
+		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
+		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
+		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
+		const D3DXCOLOR DEST_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, DEST_ALPHA);		// 目標色
+		const D3DXCOLOR INIT_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, INIT_ALPHA);		// 初期色
+		const D3DXVECTOR3 DEST_POS	= icon_item::POS;								// 目標位置
+		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
+		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// 差分位置
 	}
 }
 
@@ -396,7 +401,7 @@ HRESULT CResultManager::Init(void)
 		D3DXVECTOR3 posBG = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// アイコン背景生成位置
 
 		// 神器アイコン背景の生成
-		m_apGodItemBG[i] = CObject2D::Create(posBG, icon_item::SIZE, VEC3_ZERO, icon_bg::INIT_COL);
+		m_apGodItemBG[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posBG, icon_item::SIZE, VEC3_ZERO, icon_bg::INIT_COL);
 		if (m_apGodItemBG[i] == nullptr)
 		{ // 生成に失敗した場合
 
@@ -404,6 +409,12 @@ HRESULT CResultManager::Init(void)
 			assert(false);
 			return E_FAIL;
 		}
+
+		// テクスチャを割当
+		m_apGodItemBG[i]->BindTexture(icon_item::TEXTURE);
+
+		// テクスチャパターンを設定
+		m_apGodItemBG[i]->SetPattern(i);
 
 		// 優先順位を設定
 		m_apGodItemBG[i]->SetPriority(PRIORITY);
@@ -421,7 +432,7 @@ HRESULT CResultManager::Init(void)
 		D3DXVECTOR3 posIcon = icon_item::POS + (icon_item::SPACE * (float)i);	// アイコン生成位置
 
 		// 神器アイコンの生成
-		m_apGodItemIcon[i] = CObject2D::Create(posIcon, icon_item::SIZE);
+		m_apGodItemIcon[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posIcon, icon_item::SIZE);
 		if (m_apGodItemIcon[i] == nullptr)
 		{ // 生成に失敗した場合
 
@@ -429,6 +440,12 @@ HRESULT CResultManager::Init(void)
 			assert(false);
 			return E_FAIL;
 		}
+
+		// テクスチャを割当
+		m_apGodItemIcon[i]->BindTexture(icon_item::TEXTURE);
+
+		// テクスチャパターンを設定
+		m_apGodItemIcon[i]->SetPattern(i);
 
 		// 優先順位を設定
 		m_apGodItemIcon[i]->SetPriority(PRIORITY);
@@ -867,14 +884,18 @@ void CResultManager::UpdateItemIconBg(const float fDeltaTime)
 	for (int i = 0; i < CStage::GOD_MAX; i++)
 	{ // 神器の総数分繰り返す
 
-		// アイコン背景の初期生成位置を計算
-		D3DXVECTOR3 posInit = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// アイコン背景生成位置
+		// アイコン背景の位置を計算
+		D3DXVECTOR3 posInit = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// アイコン背景位置
+
+		// アイコン背景の色を計算
+		D3DXCOLOR colCur = icon_bg::INIT_COL;	// アイコン背景色
+		colCur.a = icon_bg::INIT_ALPHA + (icon_bg::DIFF_ALPHA * fRate);	// 現在の透明度を設定
 
 		// 神器アイコン背景の位置を反映
 		m_apGodItemBG[i]->SetVec3Position(posInit + (icon_bg::DIFF_POS * fRate));
 
 		// 神器アイコン背景の色を反映
-		m_apGodItemBG[i]->SetColor(icon_bg::INIT_COL + (icon_bg::DIFF_COL * fRate));
+		m_apGodItemBG[i]->SetColor(colCur);
 	}
 
 	if (m_fCurTime >= icon_bg::MOVE_TIME)

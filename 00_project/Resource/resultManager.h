@@ -19,6 +19,7 @@
 //	前方宣言
 //************************************************************
 class CObject2D;		// オブジェクト2Dクラス
+class CAnim2D;			// アニメーション2Dクラス
 class CString2D;		// 文字列2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
 class CTimeUI;			// タイムUIクラス
@@ -104,8 +105,8 @@ private:
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
 
 	// メンバ変数
-	CObject2D* m_apGodItemBG[CStage::GOD_MAX];		// 神器アイコン背景情報
-	CObject2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
+	CAnim2D* m_apGodItemBG[CStage::GOD_MAX];	// 神器アイコン背景情報
+	CAnim2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
 	CObject2D* m_pFade;			// フェード情報
 	CScrollText2D* m_pTitle;	// タイトル情報
 	CObject2D* m_pStamp;		// ハンコ情報
