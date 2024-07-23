@@ -56,6 +56,15 @@ public:
 
 private:
 
+	// ƒƒ“ƒoŠÖ”
+	void Convert(const float fWidth, const float fDepth, const float fRot);		// Œü‚«‚É‚æ‚é•ÏŠ·ˆ—
+
+#ifdef _DEBUG
+
+	void RotWarning(const float fRot);		// Œü‚«‚ÌŒxˆ—
+
+#endif
+
 	// ƒƒ“ƒo•Ï”
 	CObject3D* m_pPolygon;	// ƒ|ƒŠƒSƒ“
 	D3DXVECTOR3 m_rot;	// Œü‚«

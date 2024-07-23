@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "fade.h"
 #include "object2D.h"
+#include "anim2D.h"
 #include "string2D.h"
 #include "scrollText2D.h"
 #include "timeUI.h"
@@ -61,7 +62,7 @@ namespace
 		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";		// ƒnƒ“ƒRƒeƒNƒXƒ`ƒƒ
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);		// ƒnƒ“ƒRˆÊ’u
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ƒnƒ“ƒRŒü‚«
-		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.05f);	// ƒnƒ“ƒR–Ú•W‘å‚«‚³
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.0f);	// ƒnƒ“ƒR–Ú•W‘å‚«‚³
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ƒnƒ“ƒR‰Šú‘å‚«‚³
 		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// ƒnƒ“ƒR·•ª‘å‚«‚³
 	}
@@ -115,9 +116,29 @@ namespace
 
 	namespace icon_item
 	{
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);	// ˆÊ’u
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(100.0f, 100.0f, 0.0f);	// ‘å‚«‚³
-		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);		// ‹ó”’
+		const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";				// _ŠíƒeƒNƒXƒ`ƒƒ
+		const POSGRID2 TEX_PART	= POSGRID2(3, 1);							// ƒeƒNƒXƒ`ƒƒ•ªŠ„
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);		// ˆÊ’u
+		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);			// ‹ó”’
+		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// –Ú•W‘å‚«‚³
+		const D3DXVECTOR3 INIT_SIZE = DEST_SIZE * 8.0f;						// ‰Šú‘å‚«‚³
+		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// ·•ª‘å‚«‚³
+		const float	MOVE_TIME = 0.2f;	// ˆÚ“®ŠÔ
+		const float	WAIT_TIME = 0.5f;	// ƒAƒCƒRƒ“‘Ò‹@ŠÔ
+	}
+
+	namespace icon_bg
+	{
+		const float	MOVE_TIME	= 0.68f;	// ˆÚ“®ŠÔ
+		const float	WAIT_TIME	= 0.15f;	// ƒAƒCƒRƒ“”wŒi‘Ò‹@ŠÔ
+		const float	DEST_ALPHA	= 1.0f;		// –Ú•W“§–¾“x
+		const float	INIT_ALPHA	= 0.0f;		// ‰Šú“§–¾“x
+		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// ·•ª“§–¾“x
+		const D3DXCOLOR DEST_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, DEST_ALPHA);		// –Ú•WF
+		const D3DXCOLOR INIT_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, INIT_ALPHA);		// ‰ŠúF
+		const D3DXVECTOR3 DEST_POS	= icon_item::POS;								// –Ú•WˆÊ’u
+		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// ‰ŠúˆÊ’u
+		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// ·•ªˆÊ’u
 	}
 }
 
@@ -140,8 +161,10 @@ CResultManager::AFuncUpdateState CResultManager::m_aFuncUpdateState[] =	// ó‘Ô
 	&CResultManager::UpdateTimeValue,		// ‹sŠÔ•\¦XV
 	&CResultManager::UpdateItemTitleWait,	// _Šíƒ^ƒCƒgƒ‹‘Ò‹@XV
 	&CResultManager::UpdateItemTitle,		// _Šíƒ^ƒCƒgƒ‹•\¦XV
-	&CResultManager::UpdateItemValueWait,	// _ŠíƒAƒCƒRƒ“‘Ò‹@XV
-	&CResultManager::UpdateItemValue,		// _ŠíƒAƒCƒRƒ“•\¦XV
+	&CResultManager::UpdateItemIconBgWait,	// _ŠíƒAƒCƒRƒ“”wŒi‘Ò‹@XV
+	&CResultManager::UpdateItemIconBg,		// _ŠíƒAƒCƒRƒ“”wŒi•\¦XV
+	&CResultManager::UpdateItemIconWait,	// _ŠíƒAƒCƒRƒ“‘Ò‹@XV
+	&CResultManager::UpdateItemIcon,		// _ŠíƒAƒCƒRƒ“•\¦XV
 	&CResultManager::UpdateWait,			// ‘Ò‹@XV
 	&CResultManager::UpdateFadeOut,			// ƒtƒF[ƒhƒAƒEƒgXV
 	&CResultManager::UpdateFadeOutWait,		// ƒtƒF[ƒhƒAƒEƒg‘Ò‹@XV
@@ -167,6 +190,7 @@ CResultManager::CResultManager() :
 	m_fCurTime	(0.0f)			// Œ»İ‚Ì‘Ò‹@ŠÔ
 {
 	// ƒƒ“ƒo•Ï”‚ğƒNƒŠƒA
+	memset(&m_apGodItemBG[0],   0, sizeof(m_apGodItemBG));		// _ŠíƒAƒCƒRƒ“”wŒiî•ñ
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// _ŠíƒAƒCƒRƒ“î•ñ
 
 	// ƒXƒ^ƒeƒBƒbƒNƒAƒT[ƒg
@@ -187,6 +211,7 @@ CResultManager::~CResultManager()
 HRESULT CResultManager::Init(void)
 {
 	// ƒƒ“ƒo•Ï”‚ğ‰Šú‰»
+	memset(&m_apGodItemBG[0], 0, sizeof(m_apGodItemBG));		// _ŠíƒAƒCƒRƒ“”wŒiî•ñ
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// _ŠíƒAƒCƒRƒ“î•ñ
 	m_pFade		= nullptr;			// ƒtƒF[ƒhî•ñ
 	m_pTitle	= nullptr;			// ƒ^ƒCƒgƒ‹î•ñ
@@ -372,17 +397,48 @@ HRESULT CResultManager::Init(void)
 	// ©“®•`‰æ‚ğOFF‚É‚·‚é
 	m_pGodItem->SetEnableDraw(false);
 
-	//--------------------------------------------------------
-	//	_ŠíƒAƒCƒRƒ“‚Ì¶¬ / ‰Šúİ’è
-	//--------------------------------------------------------
 	for (int i = 0; i < CStage::GOD_MAX; i++)
 	{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
 
+		//----------------------------------------------------
+		//	_ŠíƒAƒCƒRƒ“”wŒi‚Ì¶¬ / ‰Šúİ’è
+		//----------------------------------------------------
+		// ƒAƒCƒRƒ“”wŒi¶¬ˆÊ’u‚ğŒvZ
+		D3DXVECTOR3 posBG = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// ƒAƒCƒRƒ“”wŒi¶¬ˆÊ’u
+
+		// _ŠíƒAƒCƒRƒ“”wŒi‚Ì¶¬
+		m_apGodItemBG[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posBG, icon_item::DEST_SIZE, VEC3_ZERO, icon_bg::INIT_COL);
+		if (m_apGodItemBG[i] == nullptr)
+		{ // ¶¬‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			assert(false);
+			return E_FAIL;
+		}
+
+		// ƒeƒNƒXƒ`ƒƒ‚ğŠ„“–
+		m_apGodItemBG[i]->BindTexture(icon_item::TEXTURE);
+
+		// ƒeƒNƒXƒ`ƒƒƒpƒ^[ƒ“‚ğİ’è
+		m_apGodItemBG[i]->SetPattern(i);
+
+		// —Dæ‡ˆÊ‚ğİ’è
+		m_apGodItemBG[i]->SetPriority(PRIORITY);
+
+		// ƒ‰ƒxƒ‹‚ğİ’è
+		m_apGodItemBG[i]->SetLabel(CObject::LABEL_UI);	// ©“®”jŠü/XV‚ğ‚·‚éƒ‰ƒxƒ‹
+
+		// ©“®•`‰æ‚ğOFF‚É‚·‚é
+		m_apGodItemBG[i]->SetEnableDraw(false);
+
+		//----------------------------------------------------
+		//	_ŠíƒAƒCƒRƒ“‚Ì¶¬ / ‰Šúİ’è
+		//----------------------------------------------------
 		// ƒAƒCƒRƒ“¶¬ˆÊ’u‚ğŒvZ
-		D3DXVECTOR3 pos = icon_item::POS + (icon_item::SPACE * (float)i);	// ¶¬ˆÊ’u
+		D3DXVECTOR3 posIcon = icon_item::POS + (icon_item::SPACE * (float)i);	// ƒAƒCƒRƒ“¶¬ˆÊ’u
 
 		// _ŠíƒAƒCƒRƒ“‚Ì¶¬
-		m_apGodItemIcon[i] = CObject2D::Create(pos, icon_item::SIZE);
+		m_apGodItemIcon[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posIcon, icon_item::INIT_SIZE);
 		if (m_apGodItemIcon[i] == nullptr)
 		{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -390,6 +446,12 @@ HRESULT CResultManager::Init(void)
 			assert(false);
 			return E_FAIL;
 		}
+
+		// ƒeƒNƒXƒ`ƒƒ‚ğŠ„“–
+		m_apGodItemIcon[i]->BindTexture(icon_item::TEXTURE);
+
+		// ƒeƒNƒXƒ`ƒƒƒpƒ^[ƒ“‚ğİ’è
+		m_apGodItemIcon[i]->SetPattern(i);
 
 		// —Dæ‡ˆÊ‚ğİ’è
 		m_apGodItemIcon[i]->SetPriority(PRIORITY);
@@ -784,7 +846,84 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 		// ‹sŠÔƒ^ƒCƒgƒ‹‚Ì‘å‚«‚³‚ğ•â³
 		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
 
-		// _Šíƒ^ƒCƒgƒ‹‘Ò‹@ó‘Ô‚É‚·‚é
+		// _ŠíƒAƒCƒRƒ“”wŒi‘Ò‹@ó‘Ô‚É‚·‚é
+		m_state = STATE_ITEM_BG_WAIT;
+	}
+}
+
+//============================================================
+//	_ŠíƒAƒCƒRƒ“”wŒi‘Ò‹@‚ÌXVˆ—
+//============================================================
+void CResultManager::UpdateItemIconBgWait(const float fDeltaTime)
+{
+	// ƒ^ƒCƒ}[‚ğ‰ÁZ
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= icon_bg::WAIT_TIME)
+	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
+
+		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
+		m_fCurTime = 0.0f;
+
+		for (int i = 0; i < CStage::GOD_MAX; i++)
+		{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+			// _ŠíƒAƒCƒRƒ“”wŒi‚Ì©“®•`‰æ‚ğON‚É‚·‚é
+			m_apGodItemBG[i]->SetEnableDraw(true);
+		}
+
+		// _ŠíƒAƒCƒRƒ“”wŒi•\¦ó‘Ô‚É‚·‚é
+		m_state = STATE_ITEM_BG;
+	}
+}
+
+//============================================================
+//	_ŠíƒAƒCƒRƒ“”wŒi•\¦‚ÌXVˆ—
+//============================================================
+void CResultManager::UpdateItemIconBg(const float fDeltaTime)
+{
+	// ƒ^ƒCƒ}[‚ğ‰ÁZ
+	m_fCurTime += fDeltaTime;
+
+	// Œo‰ß‚ÌŠ„‡‚ğŒvZ
+	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, icon_bg::MOVE_TIME);
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+		// ƒAƒCƒRƒ“”wŒi‚ÌˆÊ’u‚ğŒvZ
+		D3DXVECTOR3 posInit = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// ƒAƒCƒRƒ“”wŒiˆÊ’u
+
+		// ƒAƒCƒRƒ“”wŒi‚ÌF‚ğŒvZ
+		D3DXCOLOR colCur = icon_bg::INIT_COL;	// ƒAƒCƒRƒ“”wŒiF
+		colCur.a = icon_bg::INIT_ALPHA + (icon_bg::DIFF_ALPHA * fRate);	// Œ»İ‚Ì“§–¾“x‚ğİ’è
+
+		// _ŠíƒAƒCƒRƒ“”wŒi‚ÌˆÊ’u‚ğ”½‰f
+		m_apGodItemBG[i]->SetVec3Position(posInit + (icon_bg::DIFF_POS * fRate));
+
+		// _ŠíƒAƒCƒRƒ“”wŒi‚ÌF‚ğ”½‰f
+		m_apGodItemBG[i]->SetColor(colCur);
+	}
+
+	if (m_fCurTime >= icon_bg::MOVE_TIME)
+	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
+
+		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
+		m_fCurTime = 0.0f;
+
+		for (int i = 0; i < CStage::GOD_MAX; i++)
+		{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+			// ƒAƒCƒRƒ“”wŒi‚Ì–Ú•W¶¬ˆÊ’u‚ğŒvZ
+			D3DXVECTOR3 posDest = icon_bg::DEST_POS + (icon_item::SPACE * (float)i);	// ƒAƒCƒRƒ“”wŒi¶¬ˆÊ’u
+
+			// _ŠíƒAƒCƒRƒ“”wŒi‚ÌˆÊ’u‚ğ•â³
+			m_apGodItemBG[i]->SetVec3Position(posDest);
+
+			// _ŠíƒAƒCƒRƒ“”wŒi‚ÌF‚ğ•â³
+			m_apGodItemBG[i]->SetColor(icon_bg::DEST_COL);
+		}
+
+		// _ŠíƒAƒCƒRƒ“‘Ò‹@ó‘Ô‚É‚·‚é
 		m_state = STATE_ITEM_ICON_WAIT;
 	}
 }
@@ -792,17 +931,62 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 //============================================================
 //	_ŠíƒAƒCƒRƒ“‘Ò‹@‚ÌXVˆ—
 //============================================================
-void CResultManager::UpdateItemValueWait(const float fDeltaTime)
+void CResultManager::UpdateItemIconWait(const float fDeltaTime)
 {
+	// ƒ^ƒCƒ}[‚ğ‰ÁZ
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= icon_item::WAIT_TIME)
+	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
 
+		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
+		m_fCurTime = 0.0f;
+
+		for (int i = 0; i < CStage::GOD_MAX; i++)
+		{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+			// _ŠíƒAƒCƒRƒ“‚Ì©“®•`‰æ‚ğON‚É‚·‚é
+			m_apGodItemIcon[i]->SetEnableDraw(true);
+		}
+
+		// _ŠíƒAƒCƒRƒ“•\¦ó‘Ô‚É‚·‚é
+		m_state = STATE_ITEM_ICON;
+	}
 }
 
 //============================================================
 //	_ŠíƒAƒCƒRƒ“•\¦‚ÌXVˆ—
 //============================================================
-void CResultManager::UpdateItemValue(const float fDeltaTime)
+void CResultManager::UpdateItemIcon(const float fDeltaTime)
 {
+	// ƒ^ƒCƒ}[‚ğ‰ÁZ
+	m_fCurTime += fDeltaTime;
 
+	// Œo‰ß‚ÌŠ„‡‚ğŒvZ
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, icon_item::MOVE_TIME);
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+		// _ŠíƒAƒCƒRƒ“‚Ì‘å‚«‚³‚ğ”½‰f
+		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::INIT_SIZE + (icon_item::DIFF_SIZE * fRate));
+	}
+
+	if (m_fCurTime >= icon_item::MOVE_TIME)
+	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
+
+		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
+		m_fCurTime = 0.0f;
+
+		for (int i = 0; i < CStage::GOD_MAX; i++)
+		{ // _Ší‚Ì‘”•ªŒJ‚è•Ô‚·
+
+			// _ŠíƒAƒCƒRƒ“‚Ì‘å‚«‚³‚ğ•â³
+			m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);
+		}
+
+		// ‘Ò‹@ó‘Ô‚É‚·‚é
+		m_state = STATE_WAIT;
+	}
 }
 
 //============================================================

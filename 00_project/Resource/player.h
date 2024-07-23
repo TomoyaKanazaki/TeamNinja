@@ -161,7 +161,7 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionActor(D3DXVECTOR3& pos);	// アクターの当たり判定
+	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);	// アクターの当たり判定
 
 #ifdef _DEBUG
 

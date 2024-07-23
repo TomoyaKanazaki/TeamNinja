@@ -19,6 +19,7 @@
 //	前方宣言
 //************************************************************
 class CObject2D;		// オブジェクト2Dクラス
+class CAnim2D;			// アニメーション2Dクラス
 class CString2D;		// 文字列2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
 class CTimeUI;			// タイムUIクラス
@@ -47,6 +48,8 @@ public:
 		STATE_TIME_VALUE,		// 遂行時間表示状態
 		STATE_ITEM_TITLE_WAIT,	// 神器タイトル待機状態
 		STATE_ITEM_TITLE,		// 神器タイトル表示状態
+		STATE_ITEM_BG_WAIT,		// 神器アイコン背景待機状態
+		STATE_ITEM_BG,			// 神器アイコン背景表示状態
 		STATE_ITEM_ICON_WAIT,	// 神器アイコン待機状態
 		STATE_ITEM_ICON,		// 神器アイコン表示状態
 		STATE_WAIT,				// 待機状態
@@ -95,8 +98,10 @@ private:
 	void UpdateTimeValue(const float fDeltaTime);		// 遂行時間表示更新
 	void UpdateItemTitleWait(const float fDeltaTime);	// 神器タイトル待機更新
 	void UpdateItemTitle(const float fDeltaTime);		// 神器タイトル表示更新
-	void UpdateItemValueWait(const float fDeltaTime);	// 神器アイコン待機更新
-	void UpdateItemValue(const float fDeltaTime);		// 神器アイコン表示更新
+	void UpdateItemIconBgWait(const float fDeltaTime);	// 神器アイコン背景待機更新
+	void UpdateItemIconBg(const float fDeltaTime);		// 神器アイコン背景表示更新
+	void UpdateItemIconWait(const float fDeltaTime);	// 神器アイコン待機更新
+	void UpdateItemIcon(const float fDeltaTime);		// 神器アイコン表示更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
@@ -104,7 +109,8 @@ private:
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
 
 	// メンバ変数
-	CObject2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
+	CAnim2D* m_apGodItemBG[CStage::GOD_MAX];	// 神器アイコン背景情報
+	CAnim2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
 	CObject2D* m_pFade;			// フェード情報
 	CScrollText2D* m_pTitle;	// タイトル情報
 	CObject2D* m_pStamp;		// ハンコ情報
