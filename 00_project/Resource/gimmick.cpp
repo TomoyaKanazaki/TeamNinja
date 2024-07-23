@@ -13,7 +13,7 @@
 #include "gimmick_jumptable.h"
 #include "gimmick_step.h"
 #include "gimmick_post.h"
-#include "gimmick_malti.h"
+#include "gimmick_multi.h"
 #include "gimmick_jumpoff.h"
 #include "gimmick_heavydoor.h"
 #include "gimmick_bridge.h"
@@ -348,7 +348,47 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 				// ボタンギミックの読込
 				else if (str == "BUTTON_GIMMICKSET")
 				{
-					std::vector<CGimmickMalti::SButton> vecButton;	// ボタン情報配列
+					// 座標と向きの変数
+					D3DXVECTOR3 posMulch = VEC3_ZERO;
+					int angle = ANGLE_0;
+
+					// 文字列を読み込む
+					file >> str;
+
+					if (str.front() == '#')
+					{ // コメントアウトされている場合
+
+						// 一行全て読み込む
+						std::getline(file, str);
+					}
+					else if (str == "MULCHSET")
+					{
+						do
+						{ // END_MULCHSETを読み込むまでループ
+
+							// 文字列を読み込む
+							file >> str;
+
+							if (str == "POS")
+							{
+								file >> str;	// ＝を読込
+
+								// 位置を読込
+								file >> posMulch.x;
+								file >> posMulch.y;
+								file >> posMulch.z;
+							}
+							else if (str == "ANGLE")
+							{
+								file >> str;	// ＝を読込
+
+								// 向きを読込
+								file >> angle;
+							}
+						} while (str != "END_MULCHSET");	// END_MULCHSETを読み込むまでループ
+					}
+
+					std::vector<CGimmickMulti::SButton> vecButton;	// ボタン情報配列
 					do { // END_BUTTON_GIMMICKSETを読み込むまでループ
 
 						// 文字列を読み込む
@@ -388,12 +428,12 @@ HRESULT CGimmick::LoadSetup(const char* pPass)
 							} while (str != "END_BUTTONSET");	// END_BUTTONSETを読み込むまでループ
 
 							// ボタン情報を最後尾に追加
-							vecButton.push_back(CGimmickMalti::SButton(pos, size));
+							vecButton.push_back(CGimmickMulti::SButton(pos, size));
 						}
 					} while (str != "END_BUTTON_GIMMICKSET");	// END_BUTTON_GIMMICKSETを読み込むまでループ
 
 					// ギミックボタン統括クラスの生成
-					if (CGimmickMalti::Create(vecButton) == nullptr)
+					if (CGimmickMulti::Create(posMulch, (EAngle)angle, vecButton) == nullptr)
 					{ // 確保に失敗した場合
 
 						// 失敗を返す

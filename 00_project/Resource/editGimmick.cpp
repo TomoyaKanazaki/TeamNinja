@@ -15,7 +15,7 @@
 
 #include "collision.h"
 #include "object3D.h"
-#include "gimmick_malti.h"
+#include "gimmick_multi.h"
 #include "gimmick_post.h"
 
 //************************************************************
@@ -648,18 +648,28 @@ HRESULT CEditGimmick::Save(void)
 		// ボタンの情報は書き出さないので抜ける
 		if (typeid(*rList) == typeid(CGimmickPost)) { continue; }
 
-		else if (typeid(*rList) == typeid(CGimmickMalti))
+		else if (typeid(*rList) == typeid(CGimmickMulti))
 		{ // ボタン統括ギミックの場合
 
 			// ボタン読み込み開始文字列を書き出し
 			file << "	BUTTON_GIMMICKSET\n" << std::endl;
+
+			// 書き出す情報を取得
+			D3DXVECTOR3 pos = rList->GetVec3Position();	// 位置
+			int angle = rList->GetAngle();	// 向き
+
+			// 情報を書き出し
+			file << "		MULCHSET" << std::endl;
+			file << "			POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+			file << "			ANGLE	= " << angle << std::endl;
+			file << "		END_MULCHSET\n" << std::endl;
 
 			const std::vector<CGimmick*> vecButton = rList->GetVectorButton();	// ボタン情報配列
 			for (const auto& rVec : vecButton)
 			{ // 要素数分繰り返す
 
 				// 書き出す情報を取得
-				D3DXVECTOR3 pos = rVec->GetVec3Position();	// 位置
+				pos = rVec->GetVec3Position();	// 位置
 				D3DXVECTOR3 size = rVec->GetVec3Sizing();	// サイズ
 
 				// 情報を書き出し

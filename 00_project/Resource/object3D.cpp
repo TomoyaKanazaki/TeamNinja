@@ -505,7 +505,7 @@ float CObject3D::GetPositionHeight(const D3DXVECTOR3&rPos)
 		aVtxPos[nCnt] = D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
 	}
 
-	if (collision::TriangleOuterPillar(aVtxPos[0], aVtxPos[1], aVtxPos[2], rPos))
+	if (collision::TriangleOuterPillar(aVtxPos[0], aVtxPos[2], aVtxPos[1], rPos))
 	{ // ƒ|ƒŠƒSƒ“‚Ì”ÍˆÍ“à‚É‚¢‚éê‡
 
 		// –@ü‚ğ‹‚ß‚é

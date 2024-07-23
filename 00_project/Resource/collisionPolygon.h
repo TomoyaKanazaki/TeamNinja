@@ -14,12 +14,7 @@
 // インクルードファイル
 //***********************************
 #include "collisionModel.h"
-
-#ifdef _DEBUG
-
 #include "object3D.h"
-
-#endif // _DEBUG
 
 // クラス定義(当たり判定クラス)
 class CCollisionPolygon : public CCollision
@@ -48,12 +43,7 @@ public:
 	D3DXVECTOR3 GetRot(void) const { return m_rot; }			// 向きの取得処理
 	void SetSize(const D3DXVECTOR3& rSize) { m_size = rSize; }	// サイズの設定処理
 	D3DXVECTOR3 GetSize(void) const { return m_size; }			// サイズの取得処理
-
-#ifdef _DEBUG
-
-	CObject3D* GetPolygon(void) const { return m_pPolygon; }	// メッシュポリゴンの取得処理
-
-#endif // _DEBUG
+	CObject3D* GetPolygon(void) const { return m_pPolygon; }	// 当たり判定ポリゴンの取得処理
 
 	// 静的メンバ関数
 	static CCollisionPolygon* Create			// 生成処理
@@ -67,14 +57,9 @@ public:
 private:
 
 	// メンバ変数
+	CObject3D* m_pPolygon;	// ポリゴン
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXVECTOR3 m_size;	// サイズ
-
-#ifdef _DEBUG
-
-	CObject3D* m_pPolygon;	// ポリゴン
-
-#endif // _DEBUG
 };
 
 #endif	// _COLLISION_POLYGON_H_

@@ -34,6 +34,7 @@ public:
 	{
 		TYPE_STALK = 0,		// しつこい敵
 		TYPE_WOLF,			// 狼敵
+		TYPE_AMBUSH,		// 待ち伏せ敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -62,6 +63,7 @@ public:
 
 	// 静的メンバ関数
 	static CListManager<CEnemyAttack>* GetList(void);			// リスト取得
+	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 
 	// セット・ゲット関係
 	void SetChaseRange(CEnemyChaseRange* pChace)	{ assert(m_pChaseRange == nullptr); m_pChaseRange = pChace; }		// 追跡範囲の情報
@@ -91,7 +93,7 @@ public:
 
 	// TODO：う〇ちカス判定だから後で修正
 	void HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
-	void HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
+	bool HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// 静的メンバ関数
 	static D3DXVECTOR3 GetAttackUp();	// 当たり判定の取得

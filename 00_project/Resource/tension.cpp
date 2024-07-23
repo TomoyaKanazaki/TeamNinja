@@ -6,6 +6,7 @@
 //===========================================
 #include "tension.h"
 #include "player_clone.h"
+#include "manager.h"
 
 //===========================================
 //  定数定義
@@ -166,6 +167,21 @@ int CTension::GetUseNum()
 	}
 
 	return nNum;
+}
+
+//===========================================
+//  消滅
+//===========================================
+void CTension::Vanish()
+{
+	// リストが無ければ関数を抜ける
+	if (m_pList == nullptr) { return; }
+
+	// リストの先頭を取得
+	CTension* begin = *m_pList->GetIndex(0);
+
+	// 先頭を削除
+	SAFE_UNINIT(begin);
 }
 
 //===========================================

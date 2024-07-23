@@ -43,6 +43,7 @@
 
 // マネージャー関係
 #define GET_MANAGER		(CManager::GetInstance())					// マネージャーインスタンス取得
+#define GET_GAMEMANAGER	(CSceneGame::GetGameManager())				// マネージャーインスタンス取得
 #define GET_INPUTKEY	(CManager::GetInstance()->GetKeyboard())	// キーボード情報取得
 #define GET_INPUTMOUSE	(CManager::GetInstance()->GetMouse())		// マウス情報取得
 #define GET_INPUTPAD	(CManager::GetInstance()->GetPad())			// パッド情報取得
@@ -228,6 +229,7 @@ namespace useful
 	EAngle RotToFourDire(float fRot);	// 向きの四方向変換
 	void NormalizeRot(float& rRot);		// 向きの正規化
 	void NormalizeRot(D3DXVECTOR3& rRot);			// 三軸向きの正規化
+	void PathToBaseName(std::string *pPath);		// パスのベースネーム変換
 	void StandardizePathPart(std::string *pPath);	// パス区切りの標準化
 	void VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta);		// ベクトルの向き変換
 	D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);

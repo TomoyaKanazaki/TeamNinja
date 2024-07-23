@@ -23,11 +23,8 @@ namespace
 //============================================================
 CCollisionPolygon::CCollisionPolygon() : CCollision(),
 m_rot(VEC3_ZERO),		// 幅
-m_size(VEC3_ZERO)		// 高さ
-#ifdef _DEBUG
-, m_pPolygon(nullptr)	// メッシュポリゴン
-#endif // _DEBUG
-
+m_size(VEC3_ZERO),		// 高さ
+m_pPolygon(nullptr)		// 当たり判定ポリゴン
 {
 
 }
@@ -45,12 +42,8 @@ CCollisionPolygon::~CCollisionPolygon()
 //============================================================
 void CCollisionPolygon::Uninit(void)
 {
-#ifdef _DEBUG
-
 	// メッシュポリゴンの終了
 	SAFE_UNINIT(m_pPolygon);
-
-#endif // _DEBUG
 
 	// 終了処理
 	CCollision::Uninit();
@@ -69,6 +62,25 @@ bool CCollisionPolygon::Hit
 	bool& rJump						// ジャンプ状況
 )
 {
+	// 高さを取得する
+	float fPosY = m_pPolygon->GetPositionHeight(rPos);
+	D3DXVECTOR3 posOld = rPosOld;
+	D3DXVECTOR3 pos = rPos;
+
+	// TODO：この糞判定どうにかした方がいい
+	if (fPosY > rPos.y &&
+		fPosY < rPos.y + fHeight)
+	{ // 現在地がポリゴンより高かった場合
+
+		// Y軸の位置を適用する
+		rPos.y = fPosY;
+
+		// 重力を下にかけ続ける
+		rMove.y = -250.0f;
+
+		// ジャンプ状況を false にする
+		rJump = false;
+	}
 
 	// false を返す
 	return false;
@@ -82,12 +94,8 @@ void CCollisionPolygon::OffSet(const D3DXMATRIX& mtx)
 	// オフセット処理
 	CCollision::OffSet(mtx);
 
-#ifdef _DEBUG
-
 	// ポリゴンの位置を設定
 	m_pPolygon->SetVec3Position(GetPos());
-
-#endif // _DEBUG
 }
 
 //============================================================
@@ -119,8 +127,6 @@ CCollisionPolygon* CCollisionPolygon::Create
 	// サイズを設定
 	pColl->m_size = rSize;
 
-#ifdef _DEBUG
-
 	// ポリゴンを生成
 	pColl->m_pPolygon = CObject3D::Create
 	(
@@ -132,7 +138,12 @@ CCollisionPolygon* CCollisionPolygon::Create
 	pColl->m_pPolygon->SetPriority(POLYGON_PRIORITY);
 	pColl->m_pPolygon->SetLabel(CObject::LABEL_COLLISION);
 
-#endif // _DEBUG
+#ifndef _DEBUG
+
+	// 描画を切る
+	pColl->m_pPolygon->SetEnableDraw(false);
+
+#endif // !_DEBUG
 
 	// 当たり判定を返す
 	return pColl;

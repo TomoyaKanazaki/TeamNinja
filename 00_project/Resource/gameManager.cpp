@@ -24,12 +24,13 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
+#include "enemyAmbush.h"
 #include "checkpoint.h"
 #include "popupUI.h"
 #include "goal.h"
 
 #include "gimmick.h"
-#include "gimmick_malti.h"
+#include "gimmick_multi.h"
 #include "actor.h"
 #include "MapModel.h"
 #include "camera_change.h"
@@ -48,7 +49,6 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const CCamera::SSwing CLEAR_SWING = CCamera::SSwing(18.0f, 2.2f, 0.35f);	// リザルト遷移時のカメラ揺れ
 	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
 
 #ifdef _DEBUG
@@ -98,36 +98,6 @@ HRESULT CGameManager::Init(void)
 
 	// スタートUIを生成
 	CPopUpUI::Create(START_TEXTURE);
-
-// 森00マップ用ギミック置き場
-#if 0
-
-	
-
-	// ジャンプ台
-	//CGimmick::Create(D3DXVECTOR3(8050.0f, 0.0f, 400.0f), EAngle::ANGLE_90, D3DXVECTOR3(50.0f, 0.0f, 800.0f), CGimmick::TYPE_JUMPTABLE, 3);
-
-
-
-	// 橋
-	//CGimmick::Create(D3DXVECTOR3(14400.0f, 500.0f, -250.0f), EAngle::ANGLE_90, D3DXVECTOR3(650.0f, 0.0f, 1100.0f), CGimmick::TYPE_BRIDGE, 5);
-
-
-	//=================================================
-	// [ボタンのみ]
-	//=================================================
-	// ボタン
-	//{ // 複数ボタン：３つ
-	//	std::vector<CGimmickMalti::SButton> vec;
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17900.0f, 1200.0f, 0.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, 500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//  vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(17275.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	//	vec.push_back(CGimmickMalti::SButton(D3DXVECTOR3(18475.0f, 1200.0f, -500.0f), D3DXVECTOR3(100.0f, 0.0f, 100.0f)));
-	// 
-	//	CGimmickMalti::Create(vec);
-	//}
-#endif
 
 // 森02マップ用ギミック置き場
 #if 0
@@ -205,17 +175,17 @@ HRESULT CGameManager::Init(void)
 
 // わんわんおー
 #if 0
-	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, CEnemyAttack::TYPE_WOLF, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 #endif
 
 // さむらい
-#if 1
-	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+#if 0
+	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
+	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 
-	// 勝手に追加してごめぇんね(チュートリアルマップの敵)
-	CEnemyStalk::Create(D3DXVECTOR3(12950.0f, 650.0f, 100.0f), VEC3_ZERO, CEnemyAttack::TYPE_STALK, 400.0f, 400.0f, 600.0, 500.0f);
+	// 消さないでね(;;)(チュートリアルマップの敵)
+	//CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
 
 #endif
 
@@ -282,9 +252,6 @@ void CGameManager::Update(const float fDeltaTime)
 
 			// リザルトマネージャーの更新
 			m_pResult->Update(fDeltaTime);
-
-			// TODO
-			UpdateResult();
 		}
 		break;
 
@@ -305,21 +272,25 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// タイマーの計測終了
 	CSceneGame::GetTimerUI()->End();
 
-	// ヒットストップの設定
-	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME);
-
-	// カメラ揺れの設定
-	GET_MANAGER->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CLEAR_SWING);
-
 	// リザルト情報の保存
 	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
-
-	// プレイヤーをリザルト状態にする
-	GET_PLAYER->SetResult();
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身
 	CEnemy::VanishAll();		// 敵
+
+	// ヒットストップ終了時に呼ばれる関数を作成
+	auto funcEndHitStop = []
+	{
+		// プレイヤーをリザルト状態にする
+		GET_PLAYER->SetResult();
+
+		// カメラをリザルト状態にする
+		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_RESULT);
+	};
+
+	// ヒットストップの設定
+	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME, funcEndHitStop);
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;
@@ -365,13 +336,4 @@ void CGameManager::Release(CGameManager *&prGameManager)
 
 	// メモリ開放
 	SAFE_DELETE(prGameManager);
-}
-
-//============================================================
-//	リザルトの更新処理
-//============================================================
-void CGameManager::UpdateResult(void)
-{
-	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
-	pPlayer->SetDestRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 }

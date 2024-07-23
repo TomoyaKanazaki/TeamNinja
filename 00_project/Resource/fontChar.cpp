@@ -36,7 +36,10 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CFontChar::CFontChar(const HFONT hFont) : m_hFont(hFont)
+CFontChar::CFontChar(const HFONT hFont, const std::string &rFilePass, const bool bItalic) :
+	m_hFont		(hFont),		// フォントへのポインタ
+	m_sFilePass	(rFilePass),	// フォントパス
+	m_bItalic	(bItalic)		// イタリック
 {
 	// フォント文字連想配列をクリア
 	m_mapChar.clear();
@@ -85,8 +88,8 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 		return itr->second;
 	}
 
-	// フォント文字情報を初期化
-	SChar tempChar = ZERO_CHAR;
+	// 設定用フォント文字情報を宣言
+	SChar tempChar;
 
 	// デバイスコンテキストを取得
 	HDC hDC = GetDC(nullptr);
@@ -139,10 +142,10 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 //============================================================
 //	生成処理
 //============================================================
-CFontChar *CFontChar::Create(const HFONT hFont)
+CFontChar *CFontChar::Create(const HFONT hFont, const std::string &rFilePass, const bool bItalic)
 {
 	// フォント文字の生成
-	CFontChar *pFontChar = new CFontChar(hFont);
+	CFontChar *pFontChar = new CFontChar(hFont, rFilePass, bItalic);
 	if (pFontChar == nullptr)
 	{ // 生成に失敗した場合
 
@@ -244,17 +247,17 @@ HRESULT CFontChar::CreateTexture(SChar *pChar, BYTE *pBitMap)
 	int nAbsOffset = std::abs(pChar->glyph.gmptGlyphOrigin.x);	// 原点オフセットの絶対値
 	int nPlusSize = nAbsOffset * 4;	// テクスチャ横幅の大きさ加算量
 
-	POSGRID2 sizeBlackBox;	// ブラックボックスの大きさ
-	sizeBlackBox.x = (pChar->glyph.gmBlackBoxX + 3) / 4 * 4;	// ブラックボックス横幅
-	sizeBlackBox.y = pChar->glyph.gmBlackBoxY;					// ブラックボックス縦幅
+	POSGRID2 sizeAlignBlackBox;	// アライメントを考慮したブラックボックスの大きさ
+	sizeAlignBlackBox.x = (pChar->glyph.gmBlackBoxX + 3) / 4 * 4;	// ブラックボックス横幅
+	sizeAlignBlackBox.y = pChar->glyph.gmBlackBoxY;					// ブラックボックス縦幅
 
 	POSGRID2 offsetOrigin;	// 原点のオフセット
 	offsetOrigin.x = pChar->glyph.gmptGlyphOrigin.x + nAbsOffset + 1;			// 原点オフセットX
 	offsetOrigin.y = pChar->text.tmAscent - pChar->glyph.gmptGlyphOrigin.y + 1;	// 原点オフセットY
 
 	POSGRID2 sizeTexture;	// テクスチャの大きさ
-	sizeTexture.x = sizeBlackBox.x + nPlusSize + 2;	// テクスチャ横幅
-	sizeTexture.y = (int)pChar->text.tmHeight + 2;	// テクスチャ縦幅
+	sizeTexture.x = sizeAlignBlackBox.x + nPlusSize + 2;	// テクスチャ横幅
+	sizeTexture.y = (int)pChar->text.tmHeight + 2;			// テクスチャ縦幅
 
 	// 空のテクスチャを生成・テクスチャインデックスを保存
 	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャ情報
@@ -268,13 +271,19 @@ HRESULT CFontChar::CreateTexture(SChar *pChar, BYTE *pBitMap)
 		D3DPOOL_MANAGED		// 格納メモリ
 	));
 
+	// アライメントを考慮していないブラックボックスの大きさを設定
+	POSGRID2 sizeBlackBox = POSGRID2(pChar->glyph.gmBlackBoxX, pChar->glyph.gmBlackBoxY);
+
 	// ブラックボックスの中心からのオフセットを保存
 	POSGRID2 centerTexture = sizeTexture / 2;	// テクスチャの中心座標
 	pChar->offsetBlackBox.lu = offsetOrigin - centerTexture;				// 左上オフセット
 	pChar->offsetBlackBox.rd = offsetOrigin + sizeBlackBox - centerTexture;	// 右下オフセット
 
 	// ブラックボックスが小さすぎる場合書き込みを行わない
-	if (sizeBlackBox.x <= MIN_BLACKBOX) { return S_OK; }
+	if (sizeAlignBlackBox.x <= MIN_BLACKBOX) { pChar->bEmpty = true; return S_OK; }
+
+	// テクスチャが透明でないことを保存
+	pChar->bEmpty = false;
 
 	// 生成したテクスチャのポインタを取得
 	LPDIRECT3DTEXTURE9 pTexChar = pTexture->GetPtr(pChar->nTexID);
@@ -284,14 +293,14 @@ HRESULT CFontChar::CreateTexture(SChar *pChar, BYTE *pBitMap)
 	pTexChar->LockRect(0, &lockRect, nullptr, 0);
 
 	// テクスチャにフォントの見た目を書き込み
-	for (int nCntHeight = offsetOrigin.y; nCntHeight < offsetOrigin.y + sizeBlackBox.y; nCntHeight++)
+	for (int nCntHeight = offsetOrigin.y; nCntHeight < offsetOrigin.y + sizeAlignBlackBox.y; nCntHeight++)
 	{ // フォント原点からブラックボックス縦幅分繰り返す
 
-		for (int nCntWidth = offsetOrigin.x; nCntWidth < offsetOrigin.x + sizeBlackBox.x; nCntWidth++)
+		for (int nCntWidth = offsetOrigin.x; nCntWidth < offsetOrigin.x + sizeAlignBlackBox.x; nCntWidth++)
 		{ // フォント原点からブラックボックス横幅分繰り返す
 
 			// 現在のビットマップインデックスを計算
-			int nBitID = nCntWidth - offsetOrigin.x + sizeBlackBox.x * (nCntHeight - offsetOrigin.y);
+			int nBitID = nCntWidth - offsetOrigin.x + sizeAlignBlackBox.x * (nCntHeight - offsetOrigin.y);
 
 			// ビットマップからα値を計算
 			DWORD dwAlpha = pBitMap[nBitID] * 255 / MAX_GRAD;

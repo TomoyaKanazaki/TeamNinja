@@ -48,6 +48,9 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
+	void SetPriority(const int nPriority) override;			// 優先順位設定
+	void SetEnableUpdate(const bool bUpdate) override;		// 更新状況設定
+	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 	void SetVec3Rotation(const D3DXVECTOR3& rRot) override;	// 向き設定
 	D3DXVECTOR3 GetVec3Position(void) const override { return m_pos; }	// 位置取得
@@ -56,24 +59,33 @@ public:
 	// 静的メンバ関数
 	static CText2D *Create	// 生成
 	( // 引数
-		CFontChar *pFontChar,		// フォント文字情報
-		const D3DXVECTOR3& rPos,	// 原点位置
-		const float fCharHeight,	// 文字縦幅
-		const float fLineHeight,	// 行間縦幅
+		const std::string &rFilePass,		// フォントパス
+		const bool bItalic,					// イタリック
+		const D3DXVECTOR3& rPos,			// 原点位置
+		const float fCharHeight = 100.0f,	// 文字縦幅
+		const float fLineHeight = 100.0f,	// 行間縦幅
 		const CString2D::EAlignX alignX = CString2D::XALIGN_CENTER,	// 横配置
-		const EAlignY alignY = YALIGN_CENTER,	// 縦配置
-		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 原点向き
-		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
+		const EAlignY alignY = YALIGN_CENTER,						// 縦配置
+		const D3DXVECTOR3& rRot = VEC3_ZERO,						// 原点向き
+		const D3DXCOLOR& rCol = XCOL_WHITE							// 色
 	);
 
+	// 仮想関数
+	virtual HRESULT AddString(const std::wstring& rStr);	// 文字列の追加
+	virtual void DeleteString(const int nStrID);			// 文字列削除
+	virtual void DeleteStringAll(void);						// 文字列全削除
+
 	// メンバ関数
+	void SetFont	// フォントの設定
+	( // 引数
+		const std::string &rFilePass,	// フォントパス
+		const bool bItalic = false		// イタリック
+	);
 	void SetColor(const D3DXCOLOR& rCol);			// 色設定
-	void SetFont(CFontChar *pFontChar);				// フォントの設定
 	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
 	void SetLineHeight(const float fHeight);		// 行間の縦幅設定
 	void SetAlignX(const CString2D::EAlignX align);	// 横配置設定
 	void SetAlignY(const EAlignY align);			// 縦配置設定
-	HRESULT AddString(const std::wstring& rStr);	// 文字列の追加
 	float GetTextHeight(void) const;				// テキストの縦幅取得
 	CString2D *GetString2D(const int nStrID) const;	// 文字列の取得
 	D3DXCOLOR GetColor(void) const				{ return m_col; }			// 色取得
@@ -81,6 +93,7 @@ public:
 	float GetLineHeight(void) const				{ return m_fLineHeight; }	// 行間の縦幅取得
 	CString2D::EAlignX GetAlignX(void) const	{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const				{ return m_alignY; }		// 縦配置取得
+	int GetNumString(void) const	{ return (int)m_listString.size(); }	// 文字列数取得
 
 private:
 	// オーバーライド関数
