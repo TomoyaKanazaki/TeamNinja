@@ -41,8 +41,10 @@ public:
 		STATE_STAGE_WAIT,		// ステージ表示待機状態
 		STATE_STAGE_TITLE,		// ステージタイトル状態
 		STATE_CLEAR_STAMP,		// クリアハンコ押し状態
-		STATE_TIME_WAIT,		// 遂行時間表示待機状態
+		STATE_TIME_TITLE_WAIT,	// 遂行時間タイトル待機状態
 		STATE_TIME_TITLE,		// 遂行時間タイトル表示状態
+		STATE_TIME_VALUE_WAIT,	// 遂行時間待機状態
+		STATE_TIME_VALUE,		// 遂行時間表示状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -77,8 +79,10 @@ private:
 	void UpdateStageWait(const float fDeltaTime);		// ステージ表示待機更新
 	void UpdateStageTitle(const float fDeltaTime);		// ステージタイトル更新
 	void UpdateStamp(const float fDeltaTime);			// クリアハンコ押し更新
-	void UpdateTimeWait(const float fDeltaTime);		// 遂行時間表示待機更新
-	void UpdateTitleTime(const float fDeltaTime);		// 遂行時間タイトル表示更新
+	void UpdateTimeTitleWait(const float fDeltaTime);	// 遂行時間タイトル待機更新
+	void UpdateTimeTitle(const float fDeltaTime);		// 遂行時間タイトル表示更新
+	void UpdateTimeValueWait(const float fDeltaTime);	// 遂行時間待機更新
+	void UpdateTimeValue(const float fDeltaTime);		// 遂行時間表示更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新

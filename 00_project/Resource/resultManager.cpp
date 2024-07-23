@@ -49,7 +49,6 @@ namespace
 		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 100.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
-
 		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 35.0f, 0.0f);	// テキスト位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const CText2D::EAlignY	 ALIGN_Y = CText2D::YALIGN_TOP;		// 縦配置
@@ -64,29 +63,35 @@ namespace
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.05f);	// ハンコ目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ハンコ初期大きさ
-		const D3DXVECTOR3 DIFF_SIZE = stamp::DEST_SIZE - stamp::INIT_SIZE;	// ハンコ差分大きさ
+		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// ハンコ差分大きさ
 	}
 
 	namespace time
 	{
-		const char	  *FONT		= "data\\FONT\\零ゴシック.otf";	// フォントパス
-		const wchar_t *STRING	= L"任務遂行時間";	// 文字列
-		const bool	  ITALIC	= false;	// イタリック
-		const float	  MOVE_TIME	= 0.15f;	// 移動時間
-		const float	  WAIT_TIME	= 0.5f;		// タイトル待機時間
+		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const wchar_t	*STRING	= L"任務遂行時間";	// 文字列
+		const bool	ITALIC		= false;	// イタリック
+		const float	MOVE_TIME	= 0.2f;		// 移動時間
+		const float	WAIT_TIME	= 0.5f;		// タイトル待機時間
 		const float DEST_HEIGHT = 100.0f;	// 文字目標縦幅
-		const float INIT_HEIGHT = DEST_HEIGHT * 10.0f;	// 文字初期縦幅
-		const float DIFF_HEIGHT = time::DEST_HEIGHT - time::INIT_HEIGHT;	// 文字差分縦幅
-
+		const float INIT_HEIGHT = DEST_HEIGHT * 14.0f;	// 文字初期縦幅
+		const float DIFF_HEIGHT = DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
 	}
 
 	namespace val_time
 	{
-		const D3DXVECTOR3 POS			= D3DXVECTOR3(770.0f, 405.0f, 0.0f);	// 位置
-		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(46.8f * 1.4f, 62.4f * 1.4f, 0.0f);		// 数字大きさ
-		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(27.3f * 1.4f, 62.4f * 1.4f, 0.0f);		// 区切り大きさ
+		const float	MOVE_TIME = 0.68f;	// 移動時間
+		const float	WAIT_TIME = 0.15f;	// 数値待機時間
+		const D3DXCOLOR DEST_COL		= XCOL_WHITE;			// 目標色
+		const D3DXCOLOR INIT_COL		= XCOL_AWHITE;			// 初期色
+		const D3DXCOLOR DIFF_COL		= DEST_COL - INIT_COL;	// 差分色
+		const D3DXVECTOR3 DEST_POS		= D3DXVECTOR3(770.0f, 405.0f, 0.0f);			// 目標位置
+		const D3DXVECTOR3 INIT_POS		= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
+		const D3DXVECTOR3 DIFF_POS		= DEST_POS - INIT_POS;							// 差分位置
+		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(65.5f, 87.0f, 0.0f);				// 数字大きさ
+		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(38.0f, 87.0f, 0.0f);				// 区切り大きさ
 		const D3DXVECTOR3 VAL_SPACE		= D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);	// 数字空白
 		const D3DXVECTOR3 PART_SPACE	= D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// 区切り空白
 		const CValue::EType		TYPE	= CValue::TYPE_NORMAL;		// 数字種類
@@ -280,14 +285,16 @@ HRESULT CResultManager::Init(void)
 	m_pTimeVal = CTimeUI::Create
 	( // 引数
 		0.0f,					// 表示時間	// TODO：経過時間を設定
-		val_time::POS,			// 位置
+		val_time::INIT_POS,		// 位置
 		val_time::VAL_SIZE,		// 数字の大きさ
 		val_time::PART_SIZE,	// 区切りの大きさ
 		val_time::VAL_SPACE,	// 数字の空白
 		val_time::PART_SPACE,	// 区切りの空白
 		val_time::TYPE,			// 数字種類
 		val_time::ALIGN_X,		// 横配置
-		val_time::ALIGN_Y		// 縦配置
+		val_time::ALIGN_Y,		// 縦配置
+		VEC3_ZERO,				// 向き
+		val_time::INIT_COL		// 色
 	);
 	if (m_pTimeVal == nullptr)
 	{ // 生成に失敗した場合
@@ -423,16 +430,28 @@ void CResultManager::Update(const float fDeltaTime)
 		UpdateStamp(fDeltaTime);
 		break;
 
-	case STATE_TIME_WAIT:
+	case STATE_TIME_TITLE_WAIT:
 
-		// 遂行時間表示待機の更新
-		UpdateTimeWait(fDeltaTime);
+		// 遂行時間タイトル待機の更新
+		UpdateTimeTitleWait(fDeltaTime);
 		break;
 
 	case STATE_TIME_TITLE:
 
 		// 遂行時間タイトル表示の更新
-		UpdateTitleTime(fDeltaTime);
+		UpdateTimeTitle(fDeltaTime);
+		break;
+
+	case STATE_TIME_VALUE_WAIT:
+
+		// 遂行時間待機の更新
+		UpdateTimeValueWait(fDeltaTime);
+		break;
+
+	case STATE_TIME_VALUE:
+
+		// 遂行時間表示の更新
+		UpdateTimeValue(fDeltaTime);
 		break;
 
 	case STATE_WAIT:
@@ -681,15 +700,15 @@ void CResultManager::UpdateStamp(const float fDeltaTime)
 		// ハンコの大きさを補正
 		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
 
-		// 遂行時間表示待機状態にする
-		m_state = STATE_TIME_WAIT;
+		// 遂行時間タイトル待機状態にする
+		m_state = STATE_TIME_TITLE_WAIT;
 	}
 }
 
 //============================================================
-//	遂行時間表示待機の更新処理
+//	遂行時間タイトル待機の更新処理
 //============================================================
-void CResultManager::UpdateTimeWait(const float fDeltaTime)
+void CResultManager::UpdateTimeTitleWait(const float fDeltaTime)
 {
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
@@ -710,7 +729,7 @@ void CResultManager::UpdateTimeWait(const float fDeltaTime)
 //============================================================
 //	遂行時間タイトル表示の更新処理
 //============================================================
-void CResultManager::UpdateTitleTime(const float fDeltaTime)
+void CResultManager::UpdateTimeTitle(const float fDeltaTime)
 {
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
@@ -729,6 +748,61 @@ void CResultManager::UpdateTitleTime(const float fDeltaTime)
 
 		// 遂行時間タイトルの大きさを補正
 		m_pTime->SetCharHeight(time::DEST_HEIGHT);
+
+		// 遂行時間待機状態にする
+		m_state = STATE_TIME_VALUE_WAIT;
+	}
+}
+
+//============================================================
+//	遂行時間タイトル待機の更新処理
+//============================================================
+void CResultManager::UpdateTimeValueWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= val_time::WAIT_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 遂行時間の自動描画をONにする
+		m_pTimeVal->SetEnableDraw(true);
+
+		// 遂行時間表示状態にする
+		m_state = STATE_TIME_VALUE;
+	}
+}
+
+//============================================================
+//	遂行時間表示の更新処理
+//============================================================
+void CResultManager::UpdateTimeValue(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, val_time::MOVE_TIME);
+
+	// 遂行時間の色を反映
+	m_pTimeVal->SetColor(val_time::INIT_COL + (val_time::DIFF_COL * fRate));
+
+	// 遂行時間の位置を反映
+	m_pTimeVal->SetVec3Position(val_time::INIT_POS + (val_time::DIFF_POS * fRate));
+
+	if (m_fCurTime >= val_time::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 遂行時間の色を補正
+		m_pTimeVal->SetColor(val_time::DEST_COL);
+
+		// 遂行時間の位置を補正
+		m_pTimeVal->SetVec3Position(val_time::DEST_POS);
 
 		// 待機状態にする
 		m_state = STATE_WAIT;
