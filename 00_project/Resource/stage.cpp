@@ -142,6 +142,7 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	}
 
 	// 敵のセットアップの読込
+	if (!rPass.sEnemyAtc.empty())	// パスが指定されている場合
 	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
 	{ // セットアップに失敗した場合
 

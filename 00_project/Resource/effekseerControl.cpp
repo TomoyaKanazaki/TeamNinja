@@ -260,3 +260,35 @@ CEffekseer::CEffectData::~CEffectData()
 	CEffekseer::GetInstance()->GetManager()->StopEffect(handle);
 	GetInstance()->m_vEffect.erase(std::find(GetInstance()->m_vEffect.begin(), GetInstance()->m_vEffect.end(), this));
 }
+//======================================================
+//外部使用エフェクト側コンストラクタ
+//======================================================
+CEFFECTDATA::CEFFECTDATA()
+{
+	m_ppEffect = new CEffekseer::CEffectData*;
+	*m_ppEffect = NULL;
+}
+//======================================================
+//外部使用エフェクト側デストラクタ
+//======================================================
+CEFFECTDATA::~CEFFECTDATA()
+{
+	delete m_ppEffect;
+}
+
+void CEFFECTDATA::SetPos(D3DXVECTOR3 pos)
+{
+	(*m_ppEffect)->m_pos = pos;
+}
+void CEFFECTDATA::SetRot(D3DXVECTOR3 rot)
+{
+	(*m_ppEffect)->m_rot = rot;
+}
+void CEFFECTDATA::SetMove(D3DXVECTOR3 move)
+{
+	(*m_ppEffect)->m_move = move;
+}
+void CEFFECTDATA::SetScale(float fscale)
+{
+	(*m_ppEffect)->m_fScale = fscale;
+}
