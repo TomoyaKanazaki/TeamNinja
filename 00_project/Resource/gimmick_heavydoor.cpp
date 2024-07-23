@@ -252,14 +252,17 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	// êAï®ÇÃê∂ê¨íÜêSÇê›íËÇ∑ÇÈ
 	D3DXVECTOR3 posPlant[4] =
 	{
-		D3DXVECTOR3(pos.x + sizeQuartile.x * 0.25f, 0.0f, pos.z + sizeQuartile.z * 0.25f),
-		D3DXVECTOR3(pos.x - sizeQuartile.x * 0.25f, 0.0f, pos.z + sizeQuartile.z * 0.25f),
-		D3DXVECTOR3(pos.x + sizeQuartile.x * 0.25f, 0.0f, pos.z - sizeQuartile.z * 0.25f),
-		D3DXVECTOR3(pos.x - sizeQuartile.x * 0.25f, 0.0f, pos.z - sizeQuartile.z * 0.25f)
+		D3DXVECTOR3(pos.x + sizeQuartile.x, 0.0f, pos.z + sizeQuartile.z),
+		D3DXVECTOR3(pos.x - sizeQuartile.x, 0.0f, pos.z + sizeQuartile.z),
+		D3DXVECTOR3(pos.x + sizeQuartile.x, 0.0f, pos.z - sizeQuartile.z),
+		D3DXVECTOR3(pos.x - sizeQuartile.x, 0.0f, pos.z - sizeQuartile.z)
 	};
 
 	// êAï®ÇÃê∂ê¨
-	CMultiPlant::Create(GetVec3Position(), sizeQuartile, GetType(), GetNumActive());
+	for (int i = 0; i < 4; ++i)
+	{
+		CMultiPlant::Create(posPlant[i], sizeQuartile, GetType(), GetNumActive() / 2);
+	}
 }
 
 //===========================================
