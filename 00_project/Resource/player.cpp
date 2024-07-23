@@ -225,7 +225,10 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT(m_pOrbit);
 
 	// エフェクトの終了
-	SAFE_DELETE(m_pEffectdata);
+	if (m_pEffectdata != nullptr)
+	{
+		delete m_pEffectdata;
+	}
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -763,7 +766,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	D3DXVECTOR3 pos = GetVec3Position();
 
 	// エフェクトの位置を設定する
-	m_pEffectdata->m_pos = pos;
+	m_pEffectdata->m_pos = GetCenterPos();
 
 	// 重力の更新
 	UpdateGravity();
@@ -1389,7 +1392,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
 		// TOOD エフェクトを出す ようわからんので丹野に相談
-		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO);
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f);
 
 		// 士気力を増やす
 		CTension::Create();
