@@ -67,7 +67,6 @@ bool CCollisionPolygon::Hit
 	D3DXVECTOR3 posOld = rPosOld;
 	D3DXVECTOR3 pos = rPos;
 
-
 	// TODOF‚±‚Ì•³”»’è‚Ç‚¤‚É‚©‚µ‚½•û‚ª‚¢‚¢
 	if (fPosY > rPos.y &&
 		fPosY < rPos.y + fHeight)

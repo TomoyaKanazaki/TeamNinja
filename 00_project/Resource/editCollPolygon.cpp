@@ -29,14 +29,10 @@
 #define NAME_UP_ROT_X		("U")	// XŽ²Šg‘å•\Ž¦
 #define KEY_DOWN_ROT_X		(DIK_J)	// XŽ²k¬ƒL[
 #define NAME_DOWN_ROT_X		("J")	// XŽ²k¬•\Ž¦
-#define KEY_UP_ROT_Y		(DIK_I)	// YŽ²Šg‘åƒL[
-#define NAME_UP_ROT_Y		("I")	// YŽ²Šg‘å•\Ž¦
-#define KEY_DOWN_ROT_Y		(DIK_K)	// YŽ²k¬ƒL[
-#define NAME_DOWN_ROT_Y		("K")	// YŽ²k¬•\Ž¦
-#define KEY_UP_ROT_Z		(DIK_O)	// ZŽ²Šg‘åƒL[
-#define NAME_UP_ROT_Z		("O")	// ZŽ²Šg‘å•\Ž¦
-#define KEY_DOWN_ROT_Z		(DIK_L)	// ZŽ²k¬ƒL[
-#define NAME_DOWN_ROT_Z		("L")	// ZŽ²k¬•\Ž¦
+#define KEY_UP_ROT_Z		(DIK_I)	// ZŽ²Šg‘åƒL[
+#define NAME_UP_ROT_Z		("I")	// ZŽ²Šg‘å•\Ž¦
+#define KEY_DOWN_ROT_Z		(DIK_K)	// ZŽ²k¬ƒL[
+#define NAME_DOWN_ROT_Z		("K")	// ZŽ²k¬•\Ž¦
 
 //************************************************************
 //	’è”éŒ¾
@@ -218,7 +214,6 @@ void CEditCollPolygon::DrawDebugControl(void)
 	CEditorCollShape::DrawDebugControl();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "XŽ²‰ñ“]F[%s/%s+%s]\n", NAME_UP_ROT_X, NAME_DOWN_ROT_X, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "YŽ²‰ñ“]F[%s/%s+%s]\n", NAME_UP_ROT_Y, NAME_DOWN_ROT_Y, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "ZŽ²‰ñ“]F[%s/%s+%s]\n", NAME_UP_ROT_Z, NAME_DOWN_ROT_Z, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "•F[%s/%s+%s]\n", NAME_UP_WIDTH, NAME_DOWN_WIDTH, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "‰œsF[%s/%s+%s]\n", NAME_UP_DEPTH, NAME_DOWN_DEPTH, NAME_TRIGGER);
@@ -280,15 +275,6 @@ void CEditCollPolygon::UpdateRot(void)
 			m_infoCreate.rot.x -= ROT;
 		}
 
-		if (pKeyboard->IsPress(KEY_UP_ROT_Y))
-		{
-			m_infoCreate.rot.y += ROT;
-		}
-		if (pKeyboard->IsPress(KEY_DOWN_ROT_Y))
-		{
-			m_infoCreate.rot.y -= ROT;
-		}
-
 		if (pKeyboard->IsPress(KEY_UP_ROT_Z))
 		{
 			m_infoCreate.rot.z += ROT;
@@ -307,15 +293,6 @@ void CEditCollPolygon::UpdateRot(void)
 		if (pKeyboard->IsPress(KEY_DOWN_ROT_X))
 		{
 			m_infoCreate.rot.x -= ROT;
-		}
-
-		if (pKeyboard->IsPress(KEY_UP_ROT_Y))
-		{
-			m_infoCreate.rot.y += ROT;
-		}
-		if (pKeyboard->IsPress(KEY_DOWN_ROT_Y))
-		{
-			m_infoCreate.rot.y -= ROT;
 		}
 
 		if (pKeyboard->IsPress(KEY_UP_ROT_Z))
