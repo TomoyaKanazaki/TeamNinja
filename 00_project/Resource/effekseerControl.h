@@ -19,7 +19,7 @@ public:
 
 		CEffectData();
 		~CEffectData();
-
+	
 		::Effekseer::Vector3D m_pos;	//座標
 		::Effekseer::Vector3D m_rot;	//向き
 		::Effekseer::Vector3D m_move;	//移動量
@@ -57,6 +57,50 @@ private:
 	EffekseerRendererDX9::RendererRef m_efkRenderer;	//レンダラー
 	Effekseer::ManagerRef m_EfkManager;					//マネージャ
 	int32_t time = 0;									//時間
+};
+
+//エフェクトデータを外部で使用するためのクラス
+class CEFFECTDATA
+{
+public:
+	CEFFECTDATA();
+	~CEFFECTDATA();
+	CEFFECTDATA& operator=(const CEffekseer::CEffectData* o)
+	{
+		*(this->m_ppEffect) = (CEffekseer::CEffectData*)o;
+	}
+	
+	bool IsExists() { return(!*m_ppEffect == NULL); }
+
+	void SetPos(D3DXVECTOR3 pos);
+	void SetRot(D3DXVECTOR3 rot);
+	void SetMove(D3DXVECTOR3 move);
+	void SetScale(float fscale);
+
+	D3DXVECTOR3 GetPos(){	
+							D3DXVECTOR3 Vec;
+							Vec.x = (*m_ppEffect)->m_pos.X;
+							Vec.y = (*m_ppEffect)->m_pos.Y;
+							Vec.z = (*m_ppEffect)->m_pos.Z;
+							return Vec;
+						}
+	D3DXVECTOR3 GetRot(){
+							D3DXVECTOR3 Vec;
+							Vec.x = (*m_ppEffect)->m_rot.X;
+							Vec.y = (*m_ppEffect)->m_rot.Y;
+							Vec.z = (*m_ppEffect)->m_rot.Z;
+							return Vec;
+						}
+	D3DXVECTOR3 GetMove(){
+							D3DXVECTOR3 Vec;
+							Vec.x = (*m_ppEffect)->m_move.X;
+							Vec.y = (*m_ppEffect)->m_move.Y;
+							Vec.z = (*m_ppEffect)->m_move.Z;
+							return Vec;
+						}
+	float GetScale() { return (*m_ppEffect)->m_fScale; }
+private:
+	CEffekseer::CEffectData** m_ppEffect;
 };
 
 
