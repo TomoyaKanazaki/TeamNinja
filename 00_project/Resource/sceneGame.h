@@ -33,6 +33,9 @@ class CEditManager;	// エディットマネージャークラス
 class CSceneGame : public CScene
 {
 public:
+	// 定数
+	static constexpr float TIME_LIMIT = 180.0f;	// 制限時間
+
 	// コンストラクタ
 	explicit CSceneGame(const EMode mode);
 
