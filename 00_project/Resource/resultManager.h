@@ -107,6 +107,7 @@ private:
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
+	void SetAllMove(const D3DXVECTOR3& rMove);			// 全UIオブジェクト移動
 
 	// メンバ変数
 	CAnim2D* m_apGodItemBG[CStage::GOD_MAX];	// 神器アイコン背景情報
