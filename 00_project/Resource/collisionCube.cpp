@@ -86,7 +86,13 @@ bool CCollisionCube::Hit
 
 		// 移動量とジャンプ状況を設定する
 		rMove = move;
-		rJump = !bUp;
+
+		if (bUp == true)
+		{ // 上に乗っている場合
+
+			// ジャンプ状況を false にする
+			rJump = false;
+		}
 
 		// true を返す
 		return true;
