@@ -1031,7 +1031,16 @@ void CResultManager::UpdateWait(const float fDeltaTime)
 		m_pControl->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, control::BASIC_ALPHA + fAddAlpha));
 	}
 #else
-	m_state = STATE_FADEOUT;
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= 3.0f)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		m_state = STATE_FADEOUT;
+	}
 #endif
 }
 
@@ -1051,6 +1060,9 @@ void CResultManager::UpdateFadeOut(const float fDeltaTime)
 	if (posFade.y > fade::DOWN_MIDDLE_POS.y)
 	{ // 現在位置が停止位置を超えた場合
 
+		// 全UIオブジェクトの移動
+		SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY - (posFade.y - fade::DOWN_MIDDLE_POS.y), 0.0f));
+
 		// フェードを停止位置に補正
 		posFade.y = fade::DOWN_MIDDLE_POS.y;
 
@@ -1060,6 +1072,9 @@ void CResultManager::UpdateFadeOut(const float fDeltaTime)
 		// フェードアウト待機状態にする
 		m_state = STATE_FADEOUT_WAIT;
 	}
+
+	// 全UIオブジェクトの移動
+	SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY, 0.0f));
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
 }
@@ -1098,6 +1113,9 @@ void CResultManager::UpdateFadeOutAccel(const float fDeltaTime)
 	if (posFade.y > fade::DOWN_POS.y)
 	{ // 現在位置が停止位置を超えた場合
 
+		// 全UIオブジェクトの移動
+		SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY - (posFade.y - fade::DOWN_POS.y), 0.0f));
+
 		// フェードを停止位置に補正
 		posFade.y = fade::DOWN_POS.y;
 
@@ -1107,6 +1125,9 @@ void CResultManager::UpdateFadeOutAccel(const float fDeltaTime)
 		// 終了状態にする
 		m_state = STATE_END;
 	}
+
+	// 全UIオブジェクトの移動
+	SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY, 0.0f));
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
 }
@@ -1121,4 +1142,35 @@ void CResultManager::UpdateEnd(const float fDeltaTime)
 
 	// 選択画面に遷移する
 	GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+}
+
+//============================================================
+//	全UIオブジェクトの移動処理
+//============================================================
+void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
+{
+	// タイトルの位置を移動
+	m_pTitle->SetVec3Position(m_pTitle->GetVec3Position() + rMove);
+
+	// ハンコの位置を移動
+	m_pStamp->SetVec3Position(m_pStamp->GetVec3Position() + rMove);
+
+	// 遂行時間タイトルの位置を移動
+	m_pTime->SetVec3Position(m_pTime->GetVec3Position() + rMove);
+
+	// 遂行時間の位置を移動
+	m_pTimeVal->SetVec3Position(m_pTimeVal->GetVec3Position() + rMove);
+
+	// 神器タイトルの位置を移動
+	m_pGodItem->SetVec3Position(m_pGodItem->GetVec3Position() + rMove);
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// 神器アイコン背景の位置を移動
+		m_apGodItemBG[i]->SetVec3Position(m_apGodItemBG[i]->GetVec3Position() + rMove);
+
+		// 神器アイコンの位置を移動
+		m_apGodItemIcon[i]->SetVec3Position(m_apGodItemIcon[i]->GetVec3Position() + rMove);
+	}
 }
