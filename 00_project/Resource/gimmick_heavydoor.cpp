@@ -20,6 +20,7 @@
 #include "debug.h"
 #include "debugproc.h"
 #include "actor.h"
+#include "multi_plant.h"
 
 //************************************************************
 //	定数宣言
@@ -240,7 +241,25 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 {
 	// 親クラスの大きさ設定
-	CGimmickAction::SetVec3Sizing(rSize);
+	CObject3D::SetVec3Sizing(rSize);
+
+	// 座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// サイズの1/4を算出
+	D3DXVECTOR3 sizeQuartile = rSize * 0.25f;
+
+	// 植物の生成中心を設定する
+	D3DXVECTOR3 posPlant[4] =
+	{
+		D3DXVECTOR3(pos.x + sizeQuartile.x * 0.25f, 0.0f, pos.z + sizeQuartile.z * 0.25f),
+		D3DXVECTOR3(pos.x - sizeQuartile.x * 0.25f, 0.0f, pos.z + sizeQuartile.z * 0.25f),
+		D3DXVECTOR3(pos.x + sizeQuartile.x * 0.25f, 0.0f, pos.z - sizeQuartile.z * 0.25f),
+		D3DXVECTOR3(pos.x - sizeQuartile.x * 0.25f, 0.0f, pos.z - sizeQuartile.z * 0.25f)
+	};
+
+	// 植物の生成
+	CMultiPlant::Create(GetVec3Position(), sizeQuartile, GetType(), GetNumActive());
 }
 
 //===========================================
