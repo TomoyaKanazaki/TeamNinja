@@ -11,6 +11,7 @@
 #include "retentionManager.h"
 #include "manager.h"
 #include "fade.h"
+#include "sceneGame.h"
 #include "object2D.h"
 #include "anim2D.h"
 #include "string2D.h"
@@ -107,9 +108,9 @@ namespace
 		const bool		ITALIC	= false;				// イタリック
 		const float	MOVE_TIME	= time::MOVE_TIME;		// 移動時間
 		const float	WAIT_TIME	= time::WAIT_TIME;		// タイトル待機時間
-		const float DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
-		const float INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
-		const float DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
+		const float	DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
+		const float	INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
+		const float	DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
@@ -120,16 +121,16 @@ namespace
 		const POSGRID2 TEX_PART	= POSGRID2(3, 1);							// テクスチャ分割
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);		// 位置
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);			// 空白
-		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
-		const D3DXVECTOR3 INIT_SIZE = DEST_SIZE * 10.0f;					// 初期大きさ
-		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// 差分大きさ
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
+		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
+		const D3DXVECTOR3 DIFF_SIZE	= DEST_SIZE - INIT_SIZE;				// 差分大きさ
 
-		const float	MOVE_TIME = 0.4f;	// 移動時間
-		const float	PLUS_TIME = 0.45f;	// 経過の延長時間
-		const float	WAIT_TIME = 0.5f;	// アイコン待機時間
-		const float	DEST_ALPHA = 1.0f;	// 目標透明度
-		const float	INIT_ALPHA = 0.0f;	// 初期透明度
-		const float	DIFF_ALPHA = DEST_ALPHA - INIT_ALPHA;	// 差分透明度
+		const float	MOVE_TIME	= 0.4f;	// 移動時間
+		const float	PLUS_TIME	= 0.45f;	// 経過の延長時間
+		const float	WAIT_TIME	= 0.5f;	// アイコン待機時間
+		const float	DEST_ALPHA	= 1.0f;	// 目標透明度
+		const float	INIT_ALPHA	= 0.0f;	// 初期透明度
+		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
 		const D3DXCOLOR DEST_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// 目標色
 		const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 初期色
 	}
@@ -352,7 +353,7 @@ HRESULT CResultManager::Init(void)
 	// 遂行時間の生成
 	m_pTimeVal = CTimeUI::Create
 	( // 引数
-		0.0f,					// 表示時間	// TODO：経過時間を設定
+		0.0f,					// 表示時間
 		val_time::INIT_POS,		// 位置
 		val_time::VAL_SIZE,		// 数字の大きさ
 		val_time::PART_SIZE,	// 区切りの大きさ
@@ -750,6 +751,9 @@ void CResultManager::UpdateTimeTitle(const float fDeltaTime)
 
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
+
+		// 遂行時間を設定
+		m_pTimeVal->SetTime(CSceneGame::TIME_LIMIT - GET_RETENTION->GetTime());
 
 		// 遂行時間タイトルの大きさを補正
 		m_pTime->SetCharHeight(time::DEST_HEIGHT);
