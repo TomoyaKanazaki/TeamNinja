@@ -13,6 +13,8 @@
 #include "player_clone.h"
 #include "player.h"
 #include "collision.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 // 定数定義
 namespace
@@ -249,6 +251,25 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//===========================================
+//  範囲表示処理
+//===========================================
+void CGimmickAction::DispEffect()
+{
+	// 自身の座標を取得
+	D3DXVECTOR3 posThis = GetVec3Position();
+	D3DXVECTOR3 posVtx[4] = {};
+
+	// エフェクトの表示フラグ
+	bool bDisp = false;
+
+	// 全頂点を走査する
+	for (int i = 0; i < 4; ++i)
+	{
+
+	}
 }
 
 //===========================================

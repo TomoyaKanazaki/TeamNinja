@@ -286,20 +286,20 @@ void CEditCollPolygon::UpdateRot(void)
 	}
 	else
 	{
-		if (pKeyboard->IsPress(KEY_UP_ROT_X))
+		if (pKeyboard->IsTrigger(KEY_UP_ROT_X))
 		{
 			m_infoCreate.rot.x += ROT;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_ROT_X))
+		if (pKeyboard->IsTrigger(KEY_DOWN_ROT_X))
 		{
 			m_infoCreate.rot.x -= ROT;
 		}
 
-		if (pKeyboard->IsPress(KEY_UP_ROT_Z))
+		if (pKeyboard->IsTrigger(KEY_UP_ROT_Z))
 		{
 			m_infoCreate.rot.z += ROT;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_ROT_Z))
+		if (pKeyboard->IsTrigger(KEY_DOWN_ROT_Z))
 		{
 			m_infoCreate.rot.z -= ROT;
 		}
@@ -343,20 +343,20 @@ void CEditCollPolygon::UpdateSize(void)
 	}
 	else
 	{
-		if (pKeyboard->IsPress(KEY_UP_WIDTH))
+		if (pKeyboard->IsTrigger(KEY_UP_WIDTH))
 		{
 			m_infoCreate.size.x += SCALING;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_WIDTH))
+		if (pKeyboard->IsTrigger(KEY_DOWN_WIDTH))
 		{
 			m_infoCreate.size.x -= SCALING;
 		}
 
-		if (pKeyboard->IsPress(KEY_UP_DEPTH))
+		if (pKeyboard->IsTrigger(KEY_UP_DEPTH))
 		{
 			m_infoCreate.size.z += SCALING;
 		}
-		if (pKeyboard->IsPress(KEY_DOWN_DEPTH))
+		if (pKeyboard->IsTrigger(KEY_DOWN_DEPTH))
 		{
 			m_infoCreate.size.z -= SCALING;
 		}

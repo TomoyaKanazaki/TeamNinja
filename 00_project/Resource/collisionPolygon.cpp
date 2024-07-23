@@ -8,6 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "collisionPolygon.h"
+#include "collision.h"
 
 //************************************************************
 // 定数定義
@@ -16,6 +17,7 @@ namespace
 {
 	const int POLYGON_PRIORITY = 5;			// ポリゴンの優先順位
 	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);		// 色
+	const float GRAVITY = -250.0f;			// 立った時の重力
 }
 
 //============================================================
@@ -76,10 +78,13 @@ bool CCollisionPolygon::Hit
 		rPos.y = fPosY;
 
 		// 重力を下にかけ続ける
-		rMove.y = -250.0f;
+		rMove.y = GRAVITY;
 
 		// ジャンプ状況を false にする
 		rJump = false;
+
+		// true を返す
+		return true;
 	}
 
 	// false を返す

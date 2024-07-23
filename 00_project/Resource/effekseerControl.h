@@ -19,6 +19,8 @@ public:
 
 		CEffectData();
 		~CEffectData();
+	
+
 
 		::Effekseer::Vector3D m_pos;	//À•W
 		::Effekseer::Vector3D m_rot;	//Œü‚«

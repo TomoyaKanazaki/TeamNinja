@@ -225,7 +225,10 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT(m_pOrbit);
 
 	// エフェクトの終了
-	SAFE_DELETE(m_pEffectdata);
+	if (m_pEffectdata != nullptr)
+	{
+		delete m_pEffectdata;
+	}
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
@@ -642,9 +645,6 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
-	// アクターの当たり判定
-	CollisionActor(posPlayer);
-
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -704,9 +704,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
-
-	// アクターの当たり判定
-	CollisionActor(posPlayer);
 
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
@@ -769,16 +766,13 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	D3DXVECTOR3 pos = GetVec3Position();
 
 	// エフェクトの位置を設定する
-	m_pEffectdata->m_pos = pos;
+	m_pEffectdata->m_pos = GetCenterPos();
 
 	// 重力の更新
 	UpdateGravity();
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
-
-	// アクターの当たり判定
-	CollisionActor(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -811,9 +805,6 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
-
-	// アクターの当たり判定
-	CollisionActor(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -969,12 +960,15 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// ジャンプ状態を保存
 	bool bJumpTemp = m_bJump;
 
+	// アクターとの当たり判定
+	CollisionActor(rPos, bLand);
+
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
 
-	// 地面・制限位置の着地判定
+	// 地面・制限位置・アクターの着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
-	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
+	|| pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
@@ -1398,7 +1392,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
 		// TOOD エフェクトを出す ようわからんので丹野に相談
-		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO);
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f);
 
 		// 士気力を増やす
 		CTension::Create();
@@ -1623,8 +1617,10 @@ void CPlayer::FloorEdgeJump()
 //==========================================
 // アクターの当たり判定
 //==========================================
-void CPlayer::CollisionActor(D3DXVECTOR3& pos)
+void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 {
+	bool bJump = true;
+
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return; }
 
@@ -1640,12 +1636,23 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos)
 			RADIUS,		// 半径
 			HEIGHT,		// 高さ
 			m_move,		// 移動量
-			m_bJump		// ジャンプ状況
+			bJump		// ジャンプ状況
 		);
 	}
 
 	// 位置を適用
 	SetVec3Position(pos);
+
+	if (!rLand &&
+		bJump == false)
+	{ // 着地状況が false かつ、ジャンプ状況が false の場合
+
+		// 着地判定を true にする
+		rLand = true;
+
+		// ジャンプ状況を false にする
+		m_bJump = false;
+	}
 }
 
 #ifdef _DEBUG

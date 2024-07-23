@@ -47,10 +47,11 @@ public:
 	bool IsActive(void) const { return m_bActive; }				// 発動条件の取得処理
 	bool GetMoment() const { return m_bMoment; }				// 発動中フラグの取得
 	void SetMoment(bool moment) { m_bMoment = moment; }			// 発動中フラグの設定
-	virtual bool IsFall() { return bool(); }					// 落としギミック用のフラグ取得
-	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
 	void SetActionPoint(const D3DXVECTOR3& pos);				// 発動判定位置の設定
 	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 発動判定位置の取得
+
+	// 静的メンバ関数
+	static CListManager<CGimmickAction>* GetList(void);			// リスト取得
 
 	// 仮想関数
 	virtual D3DXVECTOR3 CalcWaitPoint(const int Idx, const CPlayerClone* pClone)	// 各分身毎の待機位置を算出
@@ -60,8 +61,8 @@ public:
 
 private:
 
-	// 静的メンバ変数
-	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト
+	// メンバ関数
+	void DispEffect(); // 範囲表示処理
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
@@ -69,6 +70,9 @@ private:
 	bool m_bActive;				// 発動状況
 	bool m_bMoment;				// 発動中フラグ
 	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
+
+	// 静的メンバ変数
+	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト
 
 };
 
