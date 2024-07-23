@@ -50,6 +50,8 @@ public:
 		STATE_ITEM_TITLE,		// 神器タイトル表示状態
 		STATE_ITEM_BG_WAIT,		// 神器アイコン背景待機状態
 		STATE_ITEM_BG,			// 神器アイコン背景表示状態
+		STATE_ITEM_ICON_WAIT,	// 神器アイコン待機状態
+		STATE_ITEM_ICON,		// 神器アイコン表示状態
 		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
@@ -98,6 +100,8 @@ private:
 	void UpdateItemTitle(const float fDeltaTime);		// 神器タイトル表示更新
 	void UpdateItemIconBgWait(const float fDeltaTime);	// 神器アイコン背景待機更新
 	void UpdateItemIconBg(const float fDeltaTime);		// 神器アイコン背景表示更新
+	void UpdateItemIconWait(const float fDeltaTime);	// 神器アイコン待機更新
+	void UpdateItemIcon(const float fDeltaTime);		// 神器アイコン表示更新
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
