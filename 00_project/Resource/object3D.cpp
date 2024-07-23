@@ -538,6 +538,52 @@ float CObject3D::GetPositionHeight(const D3DXVECTOR3&rPos)
 }
 
 //============================================================
+// ポリゴンの内側判定取得
+//============================================================
+bool CObject3D::GetInside(const D3DXVECTOR3& rPos)
+{
+	// 変数配列を宣言
+	D3DXVECTOR3 aVtxPos[MAX_VERTEX];	// ポリゴンの頂点座標 [※] 0：左上 1：右上 2：左下 3：右下
+
+	for (int nCnt = 0; nCnt < MAX_VERTEX; nCnt++)
+	{ // 頂点数分繰り返す
+
+		// 変数を宣言
+		D3DXMATRIX mtxWorld, mtxRot, mtxTrans;		// 計算用マトリックス
+		D3DXVECTOR3 pos = GetVertexPosition(nCnt);	// 頂点座標
+
+		// ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&mtxWorld);
+
+		// 頂点位置を反映
+		D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+		// ポリゴン向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+		// ポリゴン位置を反映
+		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+		// 計算したマトリックスから座標を設定
+		aVtxPos[nCnt] = D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+	}
+
+	if (collision::TriangleOuterPillar(aVtxPos[0], aVtxPos[2], aVtxPos[1], rPos) ||
+		collision::TriangleOuterPillar(aVtxPos[3], aVtxPos[1], aVtxPos[2], rPos))
+	{ // ポリゴンの範囲内にいる場合
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
+}
+
+//============================================================
 //	頂点情報の設定処理
 //============================================================
 void CObject3D::SetVtx(void)

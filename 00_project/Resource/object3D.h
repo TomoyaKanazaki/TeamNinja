@@ -74,7 +74,8 @@ public:
 	D3DXVECTOR3 GetVertexPosition(const int nID);					// 頂点位置取得
 	void SetGapPosition(const int nID, const D3DXVECTOR3& rPos);	// 座標のずれ設定
 	D3DXVECTOR3 GetGapPosition(const int nID);						// 座標のずれ取得
-	float GetPositionHeight(const D3DXVECTOR3&rPos);				// ポリゴンの着地取得
+	float GetPositionHeight(const D3DXVECTOR3& rPos);				// ポリゴンの着地取得
+	bool GetInside(const D3DXVECTOR3& rPos);						// ポリゴンの内側判定取得
 
 protected:
 	// メンバ関数

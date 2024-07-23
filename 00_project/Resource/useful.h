@@ -66,8 +66,9 @@
 #define VEC3_ONE	(D3DXVECTOR3(1.0f, 1.0f, 1.0f))	// 1クリア
 #define VEC3_ALL(f)	(D3DXVECTOR3((f), (f), (f)))	// 同値クリア
 
-#define SCREEN_CENT	(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f))	// ウインドウの中央座標
-#define SCREEN_SIZE	(D3DXVECTOR3((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f))	// ウインドウの画面サイズ
+#define SCREEN_CENT		(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f))	// ウインドウの中央座標
+#define SCREEN_SIZE		(D3DXVECTOR3((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f))	// ウインドウの画面サイズ
+#define SCREEN_IN(pos)	(CManager::GetInstance()->GetCamera()->OnScreen(pos))			// スクリーン内判定
 
 // POSGRID2関係
 #define GRID2_ZERO	(POSGRID2(0, 0))	// 0クリア
