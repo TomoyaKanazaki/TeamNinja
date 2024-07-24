@@ -502,10 +502,11 @@ void CResultManager::Update(const float fDeltaTime)
 		(this->*(m_aFuncUpdateState[m_state]))(fDeltaTime);
 	}
 
+	// TODO
 	if (GET_INPUTKEY->IsTrigger(DIK_0))
 	{
-		//	演出のスキップ処理
-		SkipDirect();
+		// クリア成功演出のスキップ処理
+		SkipSuccess();
 	}
 }
 

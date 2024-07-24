@@ -585,6 +585,9 @@
     <ClInclude Include="Resource\multi_plant.h">
       <Filter>InGame\Gimmick</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\blink2D.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1108,6 +1111,9 @@
     </ClCompile>
     <ClCompile Include="Resource\multi_plant.cpp">
       <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\blink2D.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

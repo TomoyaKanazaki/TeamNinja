@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Resource\blink2D.h" />
     <ClInclude Include="Resource\enemyAmbush.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\resultManager.h" />
@@ -336,6 +337,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Resource\blink2D.cpp" />
     <ClCompile Include="Resource\enemyAmbush.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
