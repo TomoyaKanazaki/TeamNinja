@@ -819,7 +819,7 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	SetVec3Position(pos);
 
 	// TODO : 死亡モーション
-	return MOTION_IDOL;
+	return MOTION_DEATH;
 }
 
 //============================================================
@@ -1265,6 +1265,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 		}
 
+		break;
+
+	case MOTION_DEATH:	// 死亡モーション
 		break;
 	}
 }

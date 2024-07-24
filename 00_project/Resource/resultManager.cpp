@@ -10,7 +10,9 @@
 #include "resultManager.h"
 #include "retentionManager.h"
 #include "manager.h"
+#include "camera.h"
 #include "fade.h"
+#include "sceneGame.h"
 #include "object2D.h"
 #include "anim2D.h"
 #include "string2D.h"
@@ -107,9 +109,9 @@ namespace
 		const bool		ITALIC	= false;				// イタリック
 		const float	MOVE_TIME	= time::MOVE_TIME;		// 移動時間
 		const float	WAIT_TIME	= time::WAIT_TIME;		// タイトル待機時間
-		const float DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
-		const float INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
-		const float DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
+		const float	DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
+		const float	INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
+		const float	DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
@@ -120,16 +122,24 @@ namespace
 		const POSGRID2 TEX_PART	= POSGRID2(3, 1);							// テクスチャ分割
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);		// 位置
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);			// 空白
-		const D3DXVECTOR3 DEST_SIZE = D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
-		const D3DXVECTOR3 INIT_SIZE = DEST_SIZE * 8.0f;						// 初期大きさ
-		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// 差分大きさ
-		const float	MOVE_TIME = 0.2f;	// 移動時間
-		const float	WAIT_TIME = 0.5f;	// アイコン待機時間
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
+		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
+		const D3DXVECTOR3 DIFF_SIZE	= DEST_SIZE - INIT_SIZE;				// 差分大きさ
+
+		const float	MOVE_TIME	= 0.4f;	// 移動時間
+		const float	PLUS_TIME	= 0.45f;	// 経過の延長時間
+		const float	WAIT_TIME	= 0.5f;	// アイコン待機時間
+		const float	DEST_ALPHA	= 1.0f;	// 目標透明度
+		const float	INIT_ALPHA	= 0.0f;	// 初期透明度
+		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
+		const D3DXCOLOR DEST_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// 目標色
+		const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 初期色
 	}
 
 	namespace icon_bg
 	{
 		const float	MOVE_TIME	= 0.68f;	// 移動時間
+		const float	PLUS_TIME	= 0.1f;		// 経過の延長時間
 		const float	WAIT_TIME	= 0.15f;	// アイコン背景待機時間
 		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
 		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
@@ -344,7 +354,7 @@ HRESULT CResultManager::Init(void)
 	// 遂行時間の生成
 	m_pTimeVal = CTimeUI::Create
 	( // 引数
-		0.0f,					// 表示時間	// TODO：経過時間を設定
+		0.0f,					// 表示時間
 		val_time::INIT_POS,		// 位置
 		val_time::VAL_SIZE,		// 数字の大きさ
 		val_time::PART_SIZE,	// 区切りの大きさ
@@ -397,12 +407,12 @@ HRESULT CResultManager::Init(void)
 	// 自動描画をOFFにする
 	m_pGodItem->SetEnableDraw(false);
 
+	//--------------------------------------------------------
+	//	神器アイコン背景の生成 / 初期設定
+	//--------------------------------------------------------
 	for (int i = 0; i < CStage::GOD_MAX; i++)
 	{ // 神器の総数分繰り返す
 
-		//----------------------------------------------------
-		//	神器アイコン背景の生成 / 初期設定
-		//----------------------------------------------------
 		// アイコン背景生成位置を計算
 		D3DXVECTOR3 posBG = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// アイコン背景生成位置
 
@@ -430,15 +440,19 @@ HRESULT CResultManager::Init(void)
 
 		// 自動描画をOFFにする
 		m_apGodItemBG[i]->SetEnableDraw(false);
+	}
 
-		//----------------------------------------------------
-		//	神器アイコンの生成 / 初期設定
-		//----------------------------------------------------
+	//--------------------------------------------------------
+	//	神器アイコンの生成 / 初期設定
+	//--------------------------------------------------------
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
 		// アイコン生成位置を計算
 		D3DXVECTOR3 posIcon = icon_item::POS + (icon_item::SPACE * (float)i);	// アイコン生成位置
 
 		// 神器アイコンの生成
-		m_apGodItemIcon[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posIcon, icon_item::INIT_SIZE);
+		m_apGodItemIcon[i] = CAnim2D::Create(icon_item::TEX_PART.x, icon_item::TEX_PART.y, posIcon, icon_item::INIT_SIZE, VEC3_ZERO, icon_item::INIT_COL);
 		if (m_apGodItemIcon[i] == nullptr)
 		{ // 生成に失敗した場合
 
@@ -486,6 +500,13 @@ void CResultManager::Update(const float fDeltaTime)
 
 		// 各状態ごとの更新
 		(this->*(m_aFuncUpdateState[m_state]))(fDeltaTime);
+	}
+
+	// TODO
+	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	{
+		// クリア成功演出のスキップ処理
+		SkipSuccess();
 	}
 }
 
@@ -739,6 +760,9 @@ void CResultManager::UpdateTimeTitle(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
+		// 遂行時間を設定
+		m_pTimeVal->SetTime(CSceneGame::TIME_LIMIT - GET_RETENTION->GetTime());
+
 		// 遂行時間タイトルの大きさを補正
 		m_pTime->SetCharHeight(time::DEST_HEIGHT);
 
@@ -834,7 +858,7 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 	// 経過時刻の割合を計算
 	float fRate = easeing::InQuad(m_fCurTime, 0.0f, item::MOVE_TIME);
 
-	// 遂行時間タイトルの大きさを反映
+	// 神器タイトルの大きさを反映
 	m_pGodItem->SetCharHeight(item::INIT_HEIGHT + (item::DIFF_HEIGHT * fRate));
 
 	if (m_fCurTime >= item::MOVE_TIME)
@@ -843,7 +867,7 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		// 遂行時間タイトルの大きさを補正
+		// 神器タイトルの大きさを補正
 		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
 
 		// 神器アイコン背景待機状態にする
@@ -884,17 +908,22 @@ void CResultManager::UpdateItemIconBg(const float fDeltaTime)
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
 
-	// 経過時刻の割合を計算
-	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, icon_bg::MOVE_TIME);
-
+	// アイコン背景の移動
 	for (int i = 0; i < CStage::GOD_MAX; i++)
 	{ // 神器の総数分繰り返す
 
+		// アイコン背景それぞれの経過時間を計算
+		float fRateTime = m_fCurTime - (icon_bg::PLUS_TIME * (float)i);
+		useful::LimitNum(fRateTime, 0.0f, icon_bg::MOVE_TIME);	// 経過時間を補正
+
+		// それぞれの経過時刻から割合を計算
+		float fRate = easeing::InOutQuad(fRateTime, 0.0f, icon_bg::MOVE_TIME);
+
 		// アイコン背景の位置を計算
-		D3DXVECTOR3 posInit = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);	// アイコン背景位置
+		D3DXVECTOR3 posInit = icon_bg::INIT_POS + (icon_item::SPACE * (float)i);
 
 		// アイコン背景の色を計算
-		D3DXCOLOR colCur = icon_bg::INIT_COL;	// アイコン背景色
+		D3DXCOLOR colCur = icon_bg::INIT_COL;
 		colCur.a = icon_bg::INIT_ALPHA + (icon_bg::DIFF_ALPHA * fRate);	// 現在の透明度を設定
 
 		// 神器アイコン背景の位置を反映
@@ -904,8 +933,9 @@ void CResultManager::UpdateItemIconBg(const float fDeltaTime)
 		m_apGodItemBG[i]->SetColor(colCur);
 	}
 
-	if (m_fCurTime >= icon_bg::MOVE_TIME)
-	{ // 待機が終了した場合
+	// アイコン背景の移動補正
+	if (m_fCurTime >= icon_bg::MOVE_TIME + icon_bg::PLUS_TIME * (CStage::GOD_MAX - 1))
+	{ // 全アイコン背景の待機が終了した場合
 
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
@@ -914,7 +944,7 @@ void CResultManager::UpdateItemIconBg(const float fDeltaTime)
 		{ // 神器の総数分繰り返す
 
 			// アイコン背景の目標生成位置を計算
-			D3DXVECTOR3 posDest = icon_bg::DEST_POS + (icon_item::SPACE * (float)i);	// アイコン背景生成位置
+			D3DXVECTOR3 posDest = icon_bg::DEST_POS + (icon_item::SPACE * (float)i);
 
 			// 神器アイコン背景の位置を補正
 			m_apGodItemBG[i]->SetVec3Position(posDest);
@@ -945,7 +975,7 @@ void CResultManager::UpdateItemIconWait(const float fDeltaTime)
 		{ // 神器の総数分繰り返す
 
 			// 神器アイコンの自動描画をONにする
-			m_apGodItemIcon[i]->SetEnableDraw(true);
+			m_apGodItemIcon[i]->SetEnableDraw(true);	// TODO：獲得した神器だけ描画
 		}
 
 		// 神器アイコン表示状態にする
@@ -961,18 +991,31 @@ void CResultManager::UpdateItemIcon(const float fDeltaTime)
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
 
-	// 経過時刻の割合を計算
-	float fRate = easeing::InQuad(m_fCurTime, 0.0f, icon_item::MOVE_TIME);
-
+	// アイコンのサイズ変更
 	for (int i = 0; i < CStage::GOD_MAX; i++)
 	{ // 神器の総数分繰り返す
 
+		// アイコン背景それぞれの経過時間を計算
+		float fRateTime = m_fCurTime - (icon_item::PLUS_TIME * (float)i);
+		useful::LimitNum(fRateTime, 0.0f, icon_item::MOVE_TIME);	// 経過時間を補正
+
+		// それぞれの経過時刻から割合を計算
+		float fRate = easeing::InQuad(fRateTime, 0.0f, icon_item::MOVE_TIME);
+
+		// アイコン背景の色を計算
+		D3DXCOLOR colCur = icon_item::INIT_COL;
+		colCur.a = icon_item::INIT_ALPHA + (icon_item::DIFF_ALPHA * fRate);	// 現在の透明度を設定
+
 		// 神器アイコンの大きさを反映
 		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::INIT_SIZE + (icon_item::DIFF_SIZE * fRate));
+
+		// 神器アイコンの色を反映
+		m_apGodItemIcon[i]->SetColor(colCur);
 	}
 
-	if (m_fCurTime >= icon_item::MOVE_TIME)
-	{ // 待機が終了した場合
+	// アイコンのサイズ変更補正
+	if (m_fCurTime >= icon_item::MOVE_TIME + icon_item::PLUS_TIME * (CStage::GOD_MAX - 1))
+	{ // 全アイコンの待機が終了した場合
 
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
@@ -982,6 +1025,9 @@ void CResultManager::UpdateItemIcon(const float fDeltaTime)
 
 			// 神器アイコンの大きさを補正
 			m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);
+
+			// 神器アイコンの色を補正
+			m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);
 		}
 
 		// 待機状態にする
@@ -1031,7 +1077,16 @@ void CResultManager::UpdateWait(const float fDeltaTime)
 		m_pControl->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, control::BASIC_ALPHA + fAddAlpha));
 	}
 #else
-	m_state = STATE_FADEOUT;
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= 3.0f)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		m_state = STATE_FADEOUT;
+	}
 #endif
 }
 
@@ -1051,6 +1106,9 @@ void CResultManager::UpdateFadeOut(const float fDeltaTime)
 	if (posFade.y > fade::DOWN_MIDDLE_POS.y)
 	{ // 現在位置が停止位置を超えた場合
 
+		// 全UIオブジェクトの移動
+		SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY - (posFade.y - fade::DOWN_MIDDLE_POS.y), 0.0f));
+
 		// フェードを停止位置に補正
 		posFade.y = fade::DOWN_MIDDLE_POS.y;
 
@@ -1060,6 +1118,9 @@ void CResultManager::UpdateFadeOut(const float fDeltaTime)
 		// フェードアウト待機状態にする
 		m_state = STATE_FADEOUT_WAIT;
 	}
+
+	// 全UIオブジェクトの移動
+	SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY, 0.0f));
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
 }
@@ -1098,6 +1159,9 @@ void CResultManager::UpdateFadeOutAccel(const float fDeltaTime)
 	if (posFade.y > fade::DOWN_POS.y)
 	{ // 現在位置が停止位置を超えた場合
 
+		// 全UIオブジェクトの移動
+		SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY - (posFade.y - fade::DOWN_POS.y), 0.0f));
+
 		// フェードを停止位置に補正
 		posFade.y = fade::DOWN_POS.y;
 
@@ -1107,6 +1171,9 @@ void CResultManager::UpdateFadeOutAccel(const float fDeltaTime)
 		// 終了状態にする
 		m_state = STATE_END;
 	}
+
+	// 全UIオブジェクトの移動
+	SetAllMove(D3DXVECTOR3(0.0f, m_fMoveY, 0.0f));
 
 	m_pFade->SetVec3Position(posFade);	// フェード位置を反映
 }
@@ -1121,4 +1188,90 @@ void CResultManager::UpdateEnd(const float fDeltaTime)
 
 	// 選択画面に遷移する
 	GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+}
+
+//============================================================
+//	クリア成功演出のスキップ処理
+//============================================================
+void CResultManager::SkipSuccess(void)
+{
+	// 待機状態にする
+	m_state = STATE_WAIT;
+
+	// リザルトカメラを目標位置に設定
+	GET_MANAGER->GetCamera()->SetDestResult();
+
+	// 遂行時間を設定
+	m_pTimeVal->SetTime(CSceneGame::TIME_LIMIT - GET_RETENTION->GetTime());
+
+	// フェードを目標位置に設定
+	m_pFade->SetVec3Position(fade::CENT_POS);
+
+	// 全文字を表示させる
+	m_pTitle->SetEnableDraw(true);
+
+	// ハンコを演出後の見た目にする
+	m_pStamp->SetEnableDraw(true);				// 自動描画をONにする
+	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// 目標サイズに設定
+
+	// 遂行時間タイトルを演出後の見た目にする
+	m_pTime->SetEnableDraw(true);				// 自動描画をONにする
+	m_pTime->SetCharHeight(time::DEST_HEIGHT);	// 目標サイズに設定
+
+	// 遂行時間を演出後の見た目にする
+	m_pTimeVal->SetEnableDraw(true);					// 自動描画をONにする
+	m_pTimeVal->SetVec3Position(val_time::DEST_POS);	// 目標位置に設定
+	m_pTimeVal->SetColor(val_time::DEST_COL);			// 目標色に設定
+
+	// 神器タイトルを演出後の見た目にする
+	m_pGodItem->SetEnableDraw(true);				// 自動描画をONにする
+	m_pGodItem->SetCharHeight(item::DEST_HEIGHT);	// 目標サイズに設定
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// 神器アイコン背景の目標生成位置を計算
+		D3DXVECTOR3 posDest = icon_bg::DEST_POS + (icon_item::SPACE * (float)i);
+
+		// 神器アイコン背景を演出後の見た目にする
+		m_apGodItemBG[i]->SetEnableDraw(true);			// 自動描画をONにする
+		m_apGodItemBG[i]->SetVec3Position(posDest);		// 目標位置に設定
+		m_apGodItemBG[i]->SetColor(icon_bg::DEST_COL);	// 目標色に設定
+
+		// 神器アイコンを演出後の見た目にする
+		m_apGodItemIcon[i]->SetEnableDraw(true);					// 自動描画をONにする	// TODO：獲得した神器だけ描画
+		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);	// 目標サイズに設定
+		m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);			// 目標色に設定
+	}
+}
+
+//============================================================
+//	全UIオブジェクトの移動処理
+//============================================================
+void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
+{
+	// タイトルの位置を移動
+	m_pTitle->SetVec3Position(m_pTitle->GetVec3Position() + rMove);
+
+	// ハンコの位置を移動
+	m_pStamp->SetVec3Position(m_pStamp->GetVec3Position() + rMove);
+
+	// 遂行時間タイトルの位置を移動
+	m_pTime->SetVec3Position(m_pTime->GetVec3Position() + rMove);
+
+	// 遂行時間の位置を移動
+	m_pTimeVal->SetVec3Position(m_pTimeVal->GetVec3Position() + rMove);
+
+	// 神器タイトルの位置を移動
+	m_pGodItem->SetVec3Position(m_pGodItem->GetVec3Position() + rMove);
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// 神器アイコン背景の位置を移動
+		m_apGodItemBG[i]->SetVec3Position(m_apGodItemBG[i]->GetVec3Position() + rMove);
+
+		// 神器アイコンの位置を移動
+		m_apGodItemIcon[i]->SetVec3Position(m_apGodItemIcon[i]->GetVec3Position() + rMove);
+	}
 }

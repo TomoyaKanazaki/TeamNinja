@@ -50,6 +50,7 @@ public:
 	D3DXVECTOR3 CalcWaitPoint(const int Idx, const CPlayerClone* pClone) override;		// 各分身毎の待機位置を算出
 	D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone) override;	// 各分身毎の待機向きを算出
 
+
 private:
 
 	void OpenTheDoor(D3DXVECTOR3& rPos);	// 扉を上げる

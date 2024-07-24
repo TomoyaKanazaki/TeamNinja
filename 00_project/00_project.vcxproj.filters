@@ -519,12 +519,6 @@
     <ClInclude Include="Resource\enemyNavStreet.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\plant.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\multi_plant.h">
-      <Filter>Map</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemyChaseRange.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
@@ -584,6 +578,15 @@
     </ClInclude>
     <ClInclude Include="Resource\gimmick_multi.h">
       <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\plant.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\multi_plant.h">
+      <Filter>InGame\Gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\blink2D.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1043,12 +1046,6 @@
     <ClCompile Include="Resource\enemyNavStreet.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\plant.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\multi_plant.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemyChaseRange.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
@@ -1108,6 +1105,15 @@
     </ClCompile>
     <ClCompile Include="Resource\gimmick_multi.cpp">
       <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\plant.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\multi_plant.cpp">
+      <Filter>InGame\Gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\blink2D.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
