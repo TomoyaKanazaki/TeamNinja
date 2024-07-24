@@ -612,6 +612,9 @@
     <ClInclude Include="Resource\clearSuccessManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\clearFailManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1158,6 +1161,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\clearSuccessManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\clearFailManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

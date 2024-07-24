@@ -10,8 +10,6 @@
 #include "clearSuccessManager.h"
 #include "retentionManager.h"
 #include "manager.h"
-#include "camera.h"
-#include "fade.h"
 #include "sceneGame.h"
 #include "anim2D.h"
 #include "string2D.h"
