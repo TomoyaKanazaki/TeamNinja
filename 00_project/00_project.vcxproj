@@ -161,6 +161,8 @@
   <ItemGroup>
     <ClInclude Include="Resource\blink2D.h" />
     <ClInclude Include="Resource\coin.h" />
+    <ClInclude Include="Resource\editCoin.h" />
+    <ClInclude Include="Resource\editGodItem.h" />
     <ClInclude Include="Resource\enemyAmbush.h" />
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
@@ -342,6 +344,8 @@
   <ItemGroup>
     <ClCompile Include="Resource\blink2D.cpp" />
     <ClCompile Include="Resource\coin.cpp" />
+    <ClCompile Include="Resource\editCoin.cpp" />
+    <ClCompile Include="Resource\editGodItem.cpp" />
     <ClCompile Include="Resource\enemyAmbush.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />

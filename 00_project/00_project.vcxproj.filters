@@ -600,6 +600,12 @@
     <ClInclude Include="Resource\godItem.h">
       <Filter>InGame\Item</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\editCoin.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\editGodItem.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1135,6 +1141,12 @@
     </ClCompile>
     <ClCompile Include="Resource\godItem.cpp">
       <Filter>InGame\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editCoin.cpp">
+      <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editGodItem.cpp">
+      <Filter>Map\Editter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
