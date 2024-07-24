@@ -36,7 +36,7 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// •`‰æ
 
 	// ƒƒ“ƒoŠÖ”
-	void Collision						// “–‚½‚è”»’èˆ—
+	bool Collision						// “–‚½‚è”»’èˆ—
 	(
 		D3DXVECTOR3& rPos,				// ˆÊ’u
 		const float fRadius,			// ”¼Œa

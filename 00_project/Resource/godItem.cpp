@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "godItem.h"
 #include "renderer.h"
+#include "collision.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -184,14 +185,15 @@ CListManager<CGodItem>* CGodItem::GetList(void)
 //============================================================
 // “–‚½‚è”»’èˆ—
 //============================================================
-void CGodItem::Collision
+bool CGodItem::Collision
 (
 	D3DXVECTOR3& rPos,				// ˆÊ’u
 	const float fRadius,			// ”¼Œa
 	const float fHeight				// ‚‚³
 )
 {
-
+	// ‹…‚Ì“–‚½‚è”»’è‚ğ•Ô‚·
+	return collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius);
 }
 
 //============================================================

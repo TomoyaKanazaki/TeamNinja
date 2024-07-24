@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "coin.h"
 #include "renderer.h"
+#include "collision.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -172,14 +173,25 @@ CListManager<CCoin>* CCoin::GetList(void)
 //============================================================
 // “–‚½‚è”»’èˆ—
 //============================================================
-void CCoin::Collision
+bool CCoin::Collision
 (
 	D3DXVECTOR3& rPos,				// ˆÊ’u
 	const float fRadius,			// ”¼Œa
 	const float fHeight				// ‚‚³
 )
 {
+	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius))
+	{ // “–‚½‚Á‚½ê‡
 
+		// I—¹ˆ—
+		Uninit();
+
+		// true ‚ğ•Ô‚·
+		return true;
+	}
+
+	// false ‚ğ•Ô‚·
+	return false;
 }
 
 //============================================================
