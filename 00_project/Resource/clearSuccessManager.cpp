@@ -1,3 +1,4 @@
+#if 0
 //============================================================
 //
 //	リザルトマネージャー処理 [resultManager.cpp]
@@ -53,7 +54,7 @@ namespace
 		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 80.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
-		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 40.0f, 0.0f);	// テキスト位置
+		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 5.0f, 0.0f);	// テキスト位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const CText2D::EAlignY	 ALIGN_Y = CText2D::YALIGN_TOP;		// 縦配置
 	}
@@ -69,7 +70,7 @@ namespace
 
 		const float	MOVE_TIME	= 0.3f;	// 移動時間
 		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 140.0f, 0.0f);		// ハンコ位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 105.0f, 0.0f);		// ハンコ位置
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.0f);	// ハンコ目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ハンコ初期大きさ
@@ -86,7 +87,7 @@ namespace
 		const float DEST_HEIGHT	= 100.0f;	// 文字目標縦幅
 		const float INIT_HEIGHT	= DEST_HEIGHT * 14.0f;	// 文字初期縦幅
 		const float DIFF_HEIGHT	= DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 292.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 242.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
@@ -97,7 +98,7 @@ namespace
 		const D3DXCOLOR DEST_COL		= XCOL_WHITE;			// 目標色
 		const D3DXCOLOR INIT_COL		= XCOL_AWHITE;			// 初期色
 		const D3DXCOLOR DIFF_COL		= DEST_COL - INIT_COL;	// 差分色
-		const D3DXVECTOR3 DEST_POS		= D3DXVECTOR3(770.0f, 375.0f, 0.0f);			// 目標位置
+		const D3DXVECTOR3 DEST_POS		= D3DXVECTOR3(770.0f, 325.0f, 0.0f);			// 目標位置
 		const D3DXVECTOR3 INIT_POS		= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
 		const D3DXVECTOR3 DIFF_POS		= DEST_POS - INIT_POS;							// 差分位置
 		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(65.5f, 87.0f, 0.0f);				// 数字大きさ
@@ -119,7 +120,7 @@ namespace
 		const float	DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
 		const float	INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
 		const float	DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 490.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 420.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
@@ -127,7 +128,7 @@ namespace
 	{
 		const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";				// 神器テクスチャ
 		const POSGRID2 TEX_PART	= POSGRID2(3, 1);							// テクスチャ分割
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 585.0f, 0.0f);		// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 515.0f, 0.0f);		// 位置
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);			// 空白
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
@@ -160,14 +161,13 @@ namespace
 
 	namespace control
 	{
-		const char* TEXTURE		= "data\\TEXTURE\\resultControl000.png";	// 操作テクスチャ
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(620.0f, 640.0f, 0.0f);		// 位置
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(284.0f, 136.0f, 0.0f);		// 大きさ
-		const float MIN_ALPHA	= 0.4f;	// 最低透明度
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(fade::FADE_CENT, 640.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(390.0f, 100.0f, 0.0f);			// 大きさ
+		const float MIN_ALPHA	= 0.5f;	// 最低透明度
 		const float MAX_ALPHA	= 1.0f;	// 最大透明度
-		const float LEVEL_ALPHA	= 3.4f;	// 透明度の加減量
-		const float SUB_ALPHA	= 1.2f;	// インのα値減少量
-		const float ADD_ALPHA	= 1.2f;	// アウトのα値増加量
+		const float LEVEL_ALPHA	= 2.0f;	// 透明度の加減量
+		const float SUB_ALPHA	= 1.6f;	// インのα値減少量
+		const float ADD_ALPHA	= 0.9f;	// アウトのα値増加量
 	}
 }
 
@@ -518,7 +518,7 @@ HRESULT CResultManager::Init(void)
 	}
 
 	// テクスチャを割当
-	m_pControl->BindTexture(control::TEXTURE);
+	//m_pControl->BindTexture(control::TEXTURE);	// TODO：PRESS ANY BUTTONって日本語で何...？
 
 	// 優先順位を設定
 	m_pControl->SetPriority(PRIORITY);
@@ -1299,3 +1299,4 @@ void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
 	// 操作の位置を移動
 	m_pControl->SetVec3Position(m_pControl->GetVec3Position() + rMove);
 }
+#endif

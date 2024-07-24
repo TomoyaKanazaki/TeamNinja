@@ -606,6 +606,12 @@
     <ClInclude Include="Resource\editGodItem.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\clearManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\clearSuccessManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1147,6 +1153,12 @@
     </ClCompile>
     <ClCompile Include="Resource\editGodItem.cpp">
       <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\clearManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\clearSuccessManager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
