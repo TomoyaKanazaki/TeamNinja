@@ -36,7 +36,6 @@ public:
 		STATE_STAGE_TITLE,		// ステージタイトル状態
 		STATE_STAMP,			// ハンコ押し状態
 		STATE_CLEAR,			// クリアマネージャー更新状態
-		STATE_WAIT,				// 待機状態
 		STATE_FADEOUT,			// フェードアウト状態
 		STATE_FADEOUT_WAIT,		// フェードアウト待機状態
 		STATE_FADEOUT_ACCEL,	// フェードアウト加速状態
@@ -77,7 +76,6 @@ private:
 	void UpdateStageTitle(const float fDeltaTime);		// ステージタイトル更新
 	void UpdateStamp(const float fDeltaTime);			// ハンコ押し更新
 	void UpdateClear(const float fDeltaTime);			// クリアマネージャー更新
-	void UpdateWait(const float fDeltaTime);			// 待機更新
 	void UpdateFadeOut(const float fDeltaTime);			// フェードアウト更新
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新

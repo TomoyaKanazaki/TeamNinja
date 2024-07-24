@@ -137,6 +137,7 @@ CClearSuccessManager::AFuncUpdateState CClearSuccessManager::m_aFuncUpdateState[
 	&CClearSuccessManager::UpdateItemIconBg,		// 神器アイコン背景表示更新
 	&CClearSuccessManager::UpdateItemIconWait,		// 神器アイコン待機更新
 	&CClearSuccessManager::UpdateItemIcon,			// 神器アイコン表示更新
+	&CClearSuccessManager::UpdateWait,				// 待機更新
 	nullptr,										// 終了更新
 };
 
@@ -403,8 +404,8 @@ void CClearSuccessManager::Update(const float fDeltaTime)
 //============================================================
 void CClearSuccessManager::SkipStaging(void)
 {
-	// 終了状態にする
-	m_state = STATE_END;
+	// 待機状態にする
+	m_state = STATE_WAIT;
 
 	// 遂行時間タイトルを演出後の見た目にする
 	m_pTime->SetEnableDraw(true);				// 自動描画をONにする
@@ -435,6 +436,10 @@ void CClearSuccessManager::SkipStaging(void)
 		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);	// 目標サイズに設定
 		m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);			// 目標色に設定
 	}
+
+	// 操作を演出後の見た目にする
+	m_pControl->SetEnableDraw(true);	// 自動描画をONにする
+	m_pControl->SetBlink(true);			// 点滅を開始する
 }
 
 //============================================================
@@ -779,6 +784,19 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 		// 操作の点滅を開始する
 		m_pControl->SetBlink(true);
 
+		// 待機状態にする
+		m_state = STATE_WAIT;
+	}
+}
+
+//============================================================
+//	待機の更新処理
+//============================================================
+void CClearSuccessManager::UpdateWait(const float fDeltaTime)
+{
+	if (GET_INPUTPAD->IsAnyTrigger()
+	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
 		// 終了状態にする
 		m_state = STATE_END;
 	}

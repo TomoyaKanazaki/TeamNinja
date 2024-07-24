@@ -46,6 +46,7 @@ public:
 		STATE_ITEM_BG,			// 神器アイコン背景表示状態
 		STATE_ITEM_ICON_WAIT,	// 神器アイコン待機状態
 		STATE_ITEM_ICON,		// 神器アイコン表示状態
+		STATE_WAIT,				// 待機状態
 		STATE_END,				// 終了状態
 		STATE_MAX				// この列挙型の総数
 	};
@@ -82,6 +83,7 @@ private:
 	void UpdateItemIconBg(const float fDeltaTime);		// 神器アイコン背景表示更新
 	void UpdateItemIconWait(const float fDeltaTime);	// 神器アイコン待機更新
 	void UpdateItemIcon(const float fDeltaTime);		// 神器アイコン表示更新
+	void UpdateWait(const float fDeltaTime);			// 待機更新
 
 	// メンバ変数
 	CAnim2D* m_apGodItemBG[CStage::GOD_MAX];	// 神器アイコン背景情報

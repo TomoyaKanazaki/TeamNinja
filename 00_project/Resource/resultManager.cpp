@@ -87,7 +87,6 @@ CResultManager::AFuncUpdateState CResultManager::m_aFuncUpdateState[] =	// ó‘Ô
 	&CResultManager::UpdateStageTitle,		// ƒXƒe[ƒWƒ^ƒCƒgƒ‹XV
 	&CResultManager::UpdateStamp,			// ƒnƒ“ƒR‰Ÿ‚µXV
 	&CResultManager::UpdateClear,			// ƒNƒŠƒAXV
-	&CResultManager::UpdateWait,			// ‘Ò‹@XV
 	&CResultManager::UpdateFadeOut,			// ƒtƒF[ƒhƒAƒEƒgXV
 	&CResultManager::UpdateFadeOutWait,		// ƒtƒF[ƒhƒAƒEƒg‘Ò‹@XV
 	&CResultManager::UpdateFadeOutAccel,	// ƒtƒF[ƒhƒAƒEƒg‰Á‘¬XV
@@ -109,7 +108,8 @@ CResultManager::CResultManager() :
 	m_fMoveY	(0.0f),			// cˆÚ“®—Ê
 	m_fCurTime	(0.0f)			// Œ»İ‚Ì‘Ò‹@ŠÔ
 {
-
+	// ƒXƒ^ƒeƒBƒbƒNƒAƒT[ƒg
+	static_assert(NUM_ARRAY(m_aFuncUpdateState) == CResultManager::STATE_MAX, "ERROR : State Count Mismatch");
 }
 
 //============================================================
@@ -480,19 +480,6 @@ void CResultManager::UpdateClear(const float fDeltaTime)
 	if (m_pClear->IsEndState())
 	{ // ƒNƒŠƒA‚²‚Æ‚Ìó‘ÔXV‚ªI—¹‚µ‚½ê‡
 
-		// ‘Ò‹@ó‘Ô‚É‚·‚é
-		m_state = STATE_WAIT;
-	}
-}
-
-//============================================================
-//	‘Ò‹@‚ÌXVˆ—
-//============================================================
-void CResultManager::UpdateWait(const float fDeltaTime)
-{
-	if (GET_INPUTPAD->IsAnyTrigger()
-	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
-	{
 		// ƒtƒF[ƒhƒAƒEƒgó‘Ô‚É‚·‚é
 		m_state = STATE_FADEOUT;
 	}
@@ -619,8 +606,10 @@ void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
 //============================================================
 void CResultManager::SkipStaging(void)
 {
-	// ‘Ò‹@ó‘Ô‚É‚·‚é
-	m_state = STATE_WAIT;
+	CRetentionManager::EWin win = GET_RETENTION->GetWin();	// ƒNƒŠƒAó‹µ
+
+	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[XVó‘Ô‚É‚·‚é
+	m_state = STATE_CLEAR;
 
 	// ƒŠƒUƒ‹ƒgƒJƒƒ‰‚ğ–Ú•WˆÊ’u‚Éİ’è
 	GET_MANAGER->GetCamera()->SetDestResult();
@@ -631,9 +620,16 @@ void CResultManager::SkipStaging(void)
 	// ‘S•¶š‚ğ•\¦‚³‚¹‚é
 	m_pTitle->SetEnableDraw(true);
 
+	// ƒNƒŠƒA‚²‚Æ‚Ìƒnƒ“ƒRƒeƒNƒXƒ`ƒƒ‚ğŠ„“–
+	m_pStamp->BindTexture(stamp::TEXTURE[win]);
+
 	// ƒnƒ“ƒR‚ğ‰‰oŒã‚ÌŒ©‚½–Ú‚É‚·‚é
 	m_pStamp->SetEnableDraw(true);				// ©“®•`‰æ‚ğON‚É‚·‚é
 	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// –Ú•WƒTƒCƒY‚Éİ’è
+
+	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚Ì¶¬
+	m_pClear = CClearManager::Create(win);
+	assert(m_pClear != nullptr);
 
 	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚Ì‰‰oƒXƒLƒbƒv
 	assert(m_pClear != nullptr);
