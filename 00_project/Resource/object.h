@@ -84,24 +84,20 @@ public:
 		LABEL_UI,			// UI
 		LABEL_TIMER,		// タイマー
 		LABEL_WAVE,			// 波動
-		LABEL_FIRE,			// 炎
-		LABEL_THUNDER,		// 雷
 		LABEL_BLUR,			// ブラー
 		LABEL_EFFECT,		// エフェクト
 		LABEL_PARTICLE,		// パーティクル
 		LABEL_PLAYER,		// プレイヤー
 		LABEL_ENEMY,		// 敵
-		LABEL_MAGIC_CIRCLE,	// 魔法陣
-		LABEL_MAP,			// マップ
 		LABEL_FIELD,		// 地面
 		LABEL_WALL,			// 壁
 		LABEL_SCENERY,		// 景色
 		LABEL_SKY,			// 空
 		LABEL_LIQUID,		// 液体
-		LABEL_DEBUG,		// デバッグ
 		LABEL_CLONE,		// 分身
 		LABEL_CHECKPOINT,	// チェックポイント
-		LABEL_GOAL,			// ゴール
+		LABEL_GOALPOINT,	// ゴールポイント
+		LABEL_TRANSPOINT,	// 遷移ポイント
 		LABEL_STARTUI,		// スタートUI
 		LABEL_GIMMICK,		// ギミック
 		LABEL_MAPMODEL,		// マップモデル
@@ -109,6 +105,7 @@ public:
 		LABEL_COLLISION,	// コリジョン
 		LABEL_COIN,			// コイン
 		LABEL_GODITEM,		// 神器
+		LABEL_DEBUG,		// デバッグ
 		LABEL_MAX			// この列挙型の総数
 	};
 
@@ -131,8 +128,8 @@ public:
 	virtual void SetPriority(const int nPriority);			// 優先順位設定
 	virtual void SetEnableUpdate(const bool bUpdate);		// 更新状況設定
 	virtual void SetEnableDraw(const bool bDraw);			// 描画状況設定
-	virtual void SetEnableZDraw(const bool bDraw);			// 描画状況設定
-	virtual void SetEnableShadowDraw(const bool bDraw);			// 描画状況設定
+	virtual void SetEnableZDraw(const bool bDraw);			// Z描画状況設定
+	virtual void SetEnableShadowDraw(const bool bDraw);		// シャドウ描画状況設定
 	virtual void SetVec2Position(const D3DXVECTOR2& rPos);	// 二軸の位置設定
 	virtual void SetVec3Position(const D3DXVECTOR3& rPos);	// 三軸の位置設定
 	virtual void SetVec3Rotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -203,6 +200,7 @@ private:
 	DWORD	m_dwID;			// 自身のユニークID
 	bool	m_bUpdate;		// 自身の更新状況
 	bool	m_bDraw;		// 自身の描画状況
+	bool	m_bScreen;		// 自身の画面内状況
 	bool	m_bZDraw;		// Zシェーダー有効時の自身の描画状況
 	bool	m_bShadow;		// シャドウシェーダー有効時の自身の描画状況
 
