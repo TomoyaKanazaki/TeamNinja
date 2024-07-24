@@ -10,7 +10,6 @@
 #include "manager.h"
 #include "coin.h"
 #include "renderer.h"
-#include "model.h"
 
 //************************************************************
 //	’è”éŒ¾

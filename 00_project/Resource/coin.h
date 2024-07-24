@@ -40,7 +40,7 @@ public:
 	(
 		D3DXVECTOR3& rPos,				// ˆÊ’u
 		const float fRadius,			// ”¼Œa
-		const float fHeight			// ‚‚³
+		const float fHeight				// ‚‚³
 	);
 
 	// Ã“Iƒƒ“ƒoŠÖ”
