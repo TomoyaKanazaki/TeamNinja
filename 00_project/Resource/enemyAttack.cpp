@@ -32,7 +32,7 @@ namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 17;					// 回避カウント数
+	const int DODGE_COUNT = 20;					// 回避カウント数
 	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
 }
@@ -584,10 +584,10 @@ bool CEnemyAttack::ShakeOffClone(void)
 //============================================================
 // プレイヤーのヒット処理
 //============================================================
-void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
+bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 {
 	// 回避受付フラグが false の場合、抜ける
-	if (m_bDodge == false) { return; }
+	if (m_bDodge == false) { return false; }
 
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
@@ -610,6 +610,8 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 	if (m_nAttackCount >= DODGE_COUNT)
 	{ // 回避カウントを過ぎた場合
 
+		bool bHit = false;	// ヒット状況
+
 		// ボックスの当たり判定
 		if (collision::Box3D
 		(
@@ -627,11 +629,20 @@ void CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 
 			// ヒット処理
 			CScene::GetPlayer()->Hit(500);
+
+			// ヒット状況を true にする
+			bHit = true;
 		}
 
 		// 回避受付フラグを false にする
 		m_bDodge = false;
+
+		// ヒット状況 を返す
+		return bHit;
 	}
+
+	// false を返す
+	return false;
 }
 
 //============================================================
