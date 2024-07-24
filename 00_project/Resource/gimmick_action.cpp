@@ -273,7 +273,14 @@ void CGimmickAction::DispEffect()
 {
 	// 自身の座標を取得
 	D3DXVECTOR3 posThis = GetVec3Position();
+
 	D3DXVECTOR3 posVtx[4] = {};
+	for (int i = 0; i < 4; ++i)
+	{
+		posVtx[i] = GetVertexPosition(i) + posThis;
+	}
+
+	SetEnableDraw(GET_CAMERA->OnScreenPolygon(&posVtx[0]));
 
 	// エフェクトの表示フラグ
 	bool bDisp = false;

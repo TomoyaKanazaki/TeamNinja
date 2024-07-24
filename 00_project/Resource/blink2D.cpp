@@ -24,9 +24,13 @@ namespace
 //	コンストラクタ
 //============================================================
 CBlink2D::CBlink2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
-	m_state		(STATE_NONE),	// 状態
-	m_fWaitTime	(0.0f),			// 現在の余韻時間
-	m_fMaxWait	(0.0f)			// 余韻時間
+	m_state		 (STATE_NONE),	// 状態
+	m_fSinAlpha	 (0.0f),		// 透明向き
+	m_fAddSinRot (0.0f),		// 透明向きの加算量
+	m_fMinAlpha	 (0.0f),		// 最低透明度
+	m_fMaxAlpha	 (0.0f),		// 最大透明度
+	m_fSubIn	 (0.0f),		// インのα値減少量
+	m_fAddOut	 (0.0f)			// アウトのα値増加量
 {
 
 }
@@ -45,9 +49,13 @@ CBlink2D::~CBlink2D()
 HRESULT CBlink2D::Init(void)
 {
 	// メンバ変数を初期化
-	m_state		= STATE_NONE;	// 状態
-	m_fWaitTime	= 0.0f;			// 現在の余韻時間
-	m_fMaxWait	= 0.0f;			// 余韻時間
+	m_state		 = STATE_NONE;	// 状態
+	m_fSinAlpha	 = HALF_PI;		// 透明向き
+	m_fAddSinRot = 0.0f;		// 透明向きの加算量
+	m_fMinAlpha	 = 0.0f;		// 最低透明度
+	m_fMaxAlpha	 = 0.0f;		// 最大透明度
+	m_fSubIn	 = 0.0f;		// インのα値減少量
+	m_fAddOut	 = 0.0f;		// アウトのα値増加量
 
 	// オブジェクト2Dの初期化
 	if (FAILED(CObject2D::Init()))
@@ -79,63 +87,63 @@ void CBlink2D::Update(const float fDeltaTime)
 	// 何もしない状態の場合抜ける
 	if (m_state == STATE_NONE) { return; }
 
-	// 色を取得
-	D3DXCOLOR colFade = GetColor();
-
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_FADEOUT:
+	{
+		D3DXCOLOR colBlink = GetColor();	// 色を取得
 
-		// 不透明にしていく
-		colFade.a += m_fAddOut * fDeltaTime;
-		if (colFade.a >= 1.0f)
-		{ // 不透明になった場合
+		// 最低限の透明度にしていく
+		colBlink.a += m_fAddOut * fDeltaTime;
+		if (colBlink.a >= m_fMinAlpha)
+		{ // 最低限の透明度になった場合
 
 			// α値を補正
-			colFade.a = 1.0f;
+			colBlink.a = m_fMinAlpha;
 
-			// 表示状態にする
-			m_state = STATE_DISP;
+			// 点滅状態にする
+			m_state = STATE_BLINK;
 		}
+
+		SetColor(colBlink);	// 色を反映
 		break;
+	}
+	case STATE_BLINK:
+	{
+		// サインカーブ向きを回転
+		m_fSinAlpha += m_fAddSinRot * fDeltaTime;
+		useful::NormalizeRot(m_fSinAlpha);	// 向き正規化
 
-	case STATE_DISP:
+		// 透明度加算量を計算
+		float fAddAlpha = ((m_fMaxAlpha - m_fMinAlpha) * 0.5f) * (sinf(m_fSinAlpha) - 1.0f) * -1.0f;
 
-		// 余韻時間を加算
-		m_fWaitTime += fDeltaTime;
-		if (m_fWaitTime >= m_fMaxWait)
-		{ // 余韻終了した場合
-
-			// 余韻時間を初期化
-			m_fWaitTime = 0.0f;
-
-			// フェードイン状態にする
-			m_state = STATE_FADEIN;
-		}
+		// 透明度を設定
+		SetAlpha(m_fMinAlpha + fAddAlpha);
 		break;
-
+	}
 	case STATE_FADEIN:
+	{
+		D3DXCOLOR colBlink = GetColor();	// 色を取得
 
 		// 透明にしていく
-		colFade.a -= m_fSubIn * fDeltaTime;
-		if (colFade.a <= 0.0f)
+		colBlink.a -= m_fSubIn * fDeltaTime;
+		if (colBlink.a <= 0.0f)
 		{ // 透明になった場合
 
 			// α値を補正
-			colFade.a = 0.0f;
+			colBlink.a = 0.0f;
 
 			// 何もしない状態にする
 			m_state = STATE_NONE;
 		}
-		break;
 
+		SetColor(colBlink);	// 色を反映
+		break;
+	}
 	default:
 		assert(false);
 		break;
 	}
-
-	// 色を反映
-	SetColor(colFade);
 
 	// オブジェクト2Dの更新
 	CObject2D::Update(fDeltaTime);
@@ -157,9 +165,11 @@ CBlink2D *CBlink2D::Create
 (
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rSize,	// 大きさ
+	const float fMinAlpha,		// 最低透明度
+	const float fMaxAlpha,		// 最大透明度
+	const float fCalcAlpha,		// 透明度の加減量
 	const float fSubIn,			// インのα値減少量
 	const float fAddOut,		// アウトのα値増加量
-	const float fMaxWait,		// 余韻時間
 	const D3DXVECTOR3& rRot,	// 向き
 	const D3DXCOLOR& rCol		// 色
 )
@@ -198,14 +208,20 @@ CBlink2D *CBlink2D::Create
 		// 透明度を設定
 		pBlink2D->SetAlpha(0.0f);	// 最初は透明から
 
+		// 最低透明度を設定
+		pBlink2D->SetMinAlpha(fMinAlpha);
+
+		// 最大透明度を設定
+		pBlink2D->SetMaxAlpha(fMaxAlpha);
+
+		// 透明向きの加算量を設定
+		pBlink2D->SetCalcAlpha(fCalcAlpha);
+
 		// α値減少量を設定
 		pBlink2D->SetSubIn(fSubIn);
 
 		// α値増加量を設定
 		pBlink2D->SetAddOut(fAddOut);
-
-		// 余韻時間を設定
-		pBlink2D->SetMaxWait(fMaxWait);
 
 		// 確保したアドレスを返す
 		return pBlink2D;
@@ -213,16 +229,23 @@ CBlink2D *CBlink2D::Create
 }
 
 //============================================================
-//	表示設定処理
+//	点滅設定処理
 //============================================================
-void CBlink2D::SetDisp(void)
+void CBlink2D::SetBlink(const bool bBlink)
 {
-	// 既に表示中の場合抜ける
-	if (m_state == STATE_DISP) { return; }
+	// 透明向きを初期化
+	m_fSinAlpha = HALF_PI;
 
-	// カウンターを初期化
-	m_fWaitTime = 0;
+	if (bBlink)
+	{ // 点滅を開始する場合
 
-	// フェードアウト状態にする
-	m_state = STATE_FADEOUT;
+		// フェードアウト状態にする
+		m_state = STATE_FADEOUT;
+	}
+	else
+	{ // 点滅を終了する場合
+
+		// フェードイン状態にする
+		m_state = STATE_FADEIN;
+	}
 }

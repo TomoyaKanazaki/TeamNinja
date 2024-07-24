@@ -31,6 +31,7 @@ public:
 		STATE_NONE = 0,	// 何もしない
 		STATE_FADEOUT,	// フェードアウト
 		STATE_DISP,		// 表示
+		STATE_WAIT,		// 余韻
 		STATE_FADEIN,	// フェードイン
 		STATE_MAX		// この列挙型の総数
 	};
@@ -61,7 +62,7 @@ public:
 
 	// メンバ関数
 	void SetDisp(void);	// 表示設定
-	bool IsDisp(void)	{ return (m_state == STATE_DISP); }	// 表示取得
+	bool IsDisp(void) { return (m_state == STATE_DISP || m_state == STATE_WAIT); } 	// 表示取得
 	void SetSubIn(const float fLevel)		{ m_fSubIn = fLevel; }		// α値減少量設定
 	float GetSubIn(void) const				{ return m_fSubIn; }		// α値減少量取得
 	void SetAddOut(const float fLevel)		{ m_fAddOut = fLevel; }		// α値増加量設定

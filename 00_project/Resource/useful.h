@@ -53,6 +53,7 @@
 #define GET_STAGE		(CManager::GetInstance()->GetStage())		// ステージ情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
 #define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー情報取得
+#define GET_CAMERA		(CManager::GetInstance()->GetCamera())		// プレイヤー情報取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生
@@ -69,7 +70,7 @@
 
 #define SCREEN_CENT		(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f))	// ウインドウの中央座標
 #define SCREEN_SIZE		(D3DXVECTOR3((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f))	// ウインドウの画面サイズ
-#define SCREEN_IN(pos)	(CManager::GetInstance()->GetCamera()->OnScreen(pos))			// スクリーン内判定
+#define SCREEN_IN(pos)	(GET_CAMERA->OnScreen(pos))			// スクリーン内判定
 
 // POSGRID2関係
 #define GRID2_ZERO	(POSGRID2(0, 0))	// 0クリア
