@@ -107,6 +107,8 @@ private:
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
+
+	void SkipSuccess(void);	// クリア成功演出スキップ
 	void SetAllMove(const D3DXVECTOR3& rMove);			// 全UIオブジェクト移動
 
 	// メンバ変数

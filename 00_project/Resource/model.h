@@ -17,6 +17,10 @@
 class CModel
 {
 public:
+	// 定数
+	static const D3DXVECTOR3 INIT_VTXMIN;	// モデルの最小の頂点座標の初期値
+	static const D3DXVECTOR3 INIT_VTXMAX;	// モデルの最大の頂点座標の初期値
+
 	// コンストラクタ
 	CModel();
 
@@ -26,6 +30,19 @@ public:
 	// モデル構造体
 	struct SModel
 	{
+		// コンストラクタ
+		SModel() :
+			pMesh		(nullptr),		// メッシュ (頂点情報) へのポインタ
+			pBuffMat	(nullptr),		// マテリアルへのポインタ
+			dwNumMat	(0),			// マテリアルの数
+			vtxMin		(INIT_VTXMIN),	// 最小の頂点座標
+			vtxMax		(INIT_VTXMAX),	// 最大の頂点座標
+			size		(VEC3_ZERO),	// 大きさ
+			fRadius		(0.0f),			// 半径
+			pTextureID	(nullptr)		// テクスチャインデックス
+		{}
+
+		// メンバ変数
 		LPD3DXMESH		pMesh;			// メッシュ (頂点情報) へのポインタ
 		LPD3DXBUFFER	pBuffMat;		// マテリアルへのポインタ
 		DWORD			dwNumMat;		// マテリアルの数

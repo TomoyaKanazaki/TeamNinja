@@ -10,6 +10,7 @@
 #include "resultManager.h"
 #include "retentionManager.h"
 #include "manager.h"
+#include "camera.h"
 #include "fade.h"
 #include "sceneGame.h"
 #include "object2D.h"
@@ -500,6 +501,13 @@ void CResultManager::Update(const float fDeltaTime)
 		// 各状態ごとの更新
 		(this->*(m_aFuncUpdateState[m_state]))(fDeltaTime);
 	}
+
+	// TODO
+	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	{
+		// クリア成功演出のスキップ処理
+		SkipSuccess();
+	}
 }
 
 //============================================================
@@ -850,7 +858,7 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 	// 経過時刻の割合を計算
 	float fRate = easeing::InQuad(m_fCurTime, 0.0f, item::MOVE_TIME);
 
-	// 遂行時間タイトルの大きさを反映
+	// 神器タイトルの大きさを反映
 	m_pGodItem->SetCharHeight(item::INIT_HEIGHT + (item::DIFF_HEIGHT * fRate));
 
 	if (m_fCurTime >= item::MOVE_TIME)
@@ -859,7 +867,7 @@ void CResultManager::UpdateItemTitle(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		// 遂行時間タイトルの大きさを補正
+		// 神器タイトルの大きさを補正
 		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
 
 		// 神器アイコン背景待機状態にする
@@ -967,7 +975,7 @@ void CResultManager::UpdateItemIconWait(const float fDeltaTime)
 		{ // 神器の総数分繰り返す
 
 			// 神器アイコンの自動描画をONにする
-			m_apGodItemIcon[i]->SetEnableDraw(true);
+			m_apGodItemIcon[i]->SetEnableDraw(true);	// TODO：獲得した神器だけ描画
 		}
 
 		// 神器アイコン表示状態にする
@@ -1180,6 +1188,61 @@ void CResultManager::UpdateEnd(const float fDeltaTime)
 
 	// 選択画面に遷移する
 	GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+}
+
+//============================================================
+//	クリア成功演出のスキップ処理
+//============================================================
+void CResultManager::SkipSuccess(void)
+{
+	// 待機状態にする
+	m_state = STATE_WAIT;
+
+	// リザルトカメラを目標位置に設定
+	GET_MANAGER->GetCamera()->SetDestResult();
+
+	// 遂行時間を設定
+	m_pTimeVal->SetTime(CSceneGame::TIME_LIMIT - GET_RETENTION->GetTime());
+
+	// フェードを目標位置に設定
+	m_pFade->SetVec3Position(fade::CENT_POS);
+
+	// 全文字を表示させる
+	m_pTitle->SetEnableDraw(true);
+
+	// ハンコを演出後の見た目にする
+	m_pStamp->SetEnableDraw(true);				// 自動描画をONにする
+	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// 目標サイズに設定
+
+	// 遂行時間タイトルを演出後の見た目にする
+	m_pTime->SetEnableDraw(true);				// 自動描画をONにする
+	m_pTime->SetCharHeight(time::DEST_HEIGHT);	// 目標サイズに設定
+
+	// 遂行時間を演出後の見た目にする
+	m_pTimeVal->SetEnableDraw(true);					// 自動描画をONにする
+	m_pTimeVal->SetVec3Position(val_time::DEST_POS);	// 目標位置に設定
+	m_pTimeVal->SetColor(val_time::DEST_COL);			// 目標色に設定
+
+	// 神器タイトルを演出後の見た目にする
+	m_pGodItem->SetEnableDraw(true);				// 自動描画をONにする
+	m_pGodItem->SetCharHeight(item::DEST_HEIGHT);	// 目標サイズに設定
+
+	for (int i = 0; i < CStage::GOD_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// 神器アイコン背景の目標生成位置を計算
+		D3DXVECTOR3 posDest = icon_bg::DEST_POS + (icon_item::SPACE * (float)i);
+
+		// 神器アイコン背景を演出後の見た目にする
+		m_apGodItemBG[i]->SetEnableDraw(true);			// 自動描画をONにする
+		m_apGodItemBG[i]->SetVec3Position(posDest);		// 目標位置に設定
+		m_apGodItemBG[i]->SetColor(icon_bg::DEST_COL);	// 目標色に設定
+
+		// 神器アイコンを演出後の見た目にする
+		m_apGodItemIcon[i]->SetEnableDraw(true);					// 自動描画をONにする	// TODO：獲得した神器だけ描画
+		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);	// 目標サイズに設定
+		m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);			// 目標色に設定
+	}
 }
 
 //============================================================

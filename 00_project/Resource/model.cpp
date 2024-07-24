@@ -18,14 +18,13 @@
 namespace
 {
 	const char *LOAD_FOLDER = "data\\MODEL";	// モデルフォルダ相対パス
-
-	const D3DXVECTOR3 INIT_VTXMIN = D3DXVECTOR3( 9999.0f,  9999.0f,  9999.0f);	// モデルの最小の頂点座標の初期値
-	const D3DXVECTOR3 INIT_VTXMAX = D3DXVECTOR3(-9999.0f, -9999.0f, -9999.0f);	// モデルの最大の頂点座標の初期値
 }
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
+const D3DXVECTOR3 CModel::INIT_VTXMIN = D3DXVECTOR3( 9999.0f,  9999.0f,  9999.0f);	// モデルの最小の頂点座標の初期値
+const D3DXVECTOR3 CModel::INIT_VTXMAX = D3DXVECTOR3(-9999.0f, -9999.0f, -9999.0f);	// モデルの最大の頂点座標の初期値
 int CModel::m_nNumAll = 0;	// モデルの総数
 
 //************************************************************
