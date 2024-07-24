@@ -224,7 +224,7 @@ void CGimmickBridge::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// •ûŒü‚Ìæ“¾
 	EAngle angle = GetAngle();
-	float fAngle = D3DX_PI * (float)angle;
+	float fAngle = ANGLE_PI(angle);
 
 	// •ûŒü‚É‡‚í‚¹‚Ä¶¬ˆÊ’u‚ğ‚¸‚ç‚·
 	posPlant[0] += D3DXVECTOR3((rSize.x + PLANT_RANGE) * 0.5f * cosf(fAngle), 0.0f, (rSize.z + PLANT_RANGE) * 0.5f * sinf(fAngle));
