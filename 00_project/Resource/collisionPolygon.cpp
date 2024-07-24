@@ -67,8 +67,6 @@ bool CCollisionPolygon::Hit
 {
 	// ‚‚³‚ğæ“¾‚·‚é
 	float fPosY = m_pPolygon->GetPositionHeight(rPos);
-	D3DXVECTOR3 posOld = rPosOld;
-	D3DXVECTOR3 pos = rPos;
 
 	if (m_pPolygon->GetInside(rPos))
 	{ // “à‘¤‚É‚¢‚éê‡
