@@ -12,7 +12,7 @@
 #include "manager.h"
 #include "camera.h"
 #include "fade.h"
-#include "sceneGame.h"
+#include "clearManager.h"
 #include "object2D.h"
 #include "scrollText2D.h"
 
@@ -101,6 +101,7 @@ CResultManager::AFuncUpdateState CResultManager::m_aFuncUpdateState[] =	// ó‘Ô
 //	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //============================================================
 CResultManager::CResultManager() :
+	m_pClear	(nullptr),		// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[î•ñ
 	m_pFade		(nullptr),		// ƒtƒF[ƒhî•ñ
 	m_pTitle	(nullptr),		// ƒ^ƒCƒgƒ‹î•ñ
 	m_pStamp	(nullptr),		// ƒnƒ“ƒRî•ñ
@@ -125,12 +126,13 @@ CResultManager::~CResultManager()
 HRESULT CResultManager::Init(void)
 {
 	// ƒƒ“ƒo•Ï”‚ð‰Šú‰»
-	m_pFade		= nullptr;			// ƒtƒF[ƒhî•ñ
-	m_pTitle	= nullptr;			// ƒ^ƒCƒgƒ‹î•ñ
-	m_pStamp	= nullptr;			// ƒnƒ“ƒRî•ñ
 	m_state		= STATE_FADE_WAIT;	// ó‘Ô
-	m_fMoveY	= 0.0f;				// cˆÚ“®—Ê
-	m_fCurTime	= 0.0f;				// Œ»Ý‚Ì‘Ò‹@ŽžŠÔ
+	m_pClear	= nullptr;	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[î•ñ
+	m_pFade		= nullptr;	// ƒtƒF[ƒhî•ñ
+	m_pTitle	= nullptr;	// ƒ^ƒCƒgƒ‹î•ñ
+	m_pStamp	= nullptr;	// ƒnƒ“ƒRî•ñ
+	m_fMoveY	= 0.0f;		// cˆÚ“®—Ê
+	m_fCurTime	= 0.0f;		// Œ»Ý‚Ì‘Ò‹@ŽžŠÔ
 
 	//--------------------------------------------------------
 	//	ƒtƒF[ƒh‚Ì¶¬ / ‰ŠúÝ’è
@@ -245,8 +247,8 @@ void CResultManager::Update(const float fDeltaTime)
 	// TODO
 	if (GET_INPUTKEY->IsTrigger(DIK_0))
 	{
-		// ƒNƒŠƒA¬Œ÷‰‰o‚ÌƒXƒLƒbƒvˆ—
-		SkipSuccess();
+		// ‰‰o‚ÌƒXƒLƒbƒv
+		SkipStaging();
 	}
 }
 
@@ -457,7 +459,9 @@ void CResultManager::UpdateStamp(const float fDeltaTime)
 		// ƒnƒ“ƒR‚Ì‘å‚«‚³‚ð•â³
 		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
 
-		// TODOF‚±‚±‚Åó‘Ô‘JˆÚæ‚Ì•ÏX
+		// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚Ì¶¬
+		m_pClear = CClearManager::Create(GET_RETENTION->GetWin());
+		assert(m_pClear != nullptr);
 
 		// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[XVó‘Ô‚É‚·‚é
 		m_state = STATE_CLEAR;
@@ -469,7 +473,16 @@ void CResultManager::UpdateStamp(const float fDeltaTime)
 //============================================================
 void CResultManager::UpdateClear(const float fDeltaTime)
 {
+	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚ÌXV
+	assert(m_pClear != nullptr);
+	m_pClear->Update(fDeltaTime);
 
+	if (m_pClear->IsEndState())
+	{ // ƒNƒŠƒA‚²‚Æ‚Ìó‘ÔXV‚ªI—¹‚µ‚½ê‡
+
+		// ‘Ò‹@ó‘Ô‚É‚·‚é
+		m_state = STATE_WAIT;
+	}
 }
 
 //============================================================
@@ -586,9 +599,25 @@ void CResultManager::UpdateEnd(const float fDeltaTime)
 }
 
 //============================================================
-//	ƒNƒŠƒA¬Œ÷‰‰o‚ÌƒXƒLƒbƒvˆ—
+//	‘SUIƒIƒuƒWƒFƒNƒg‚ÌˆÚ“®ˆ—
 //============================================================
-void CResultManager::SkipSuccess(void)
+void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
+{
+	// ƒ^ƒCƒgƒ‹‚ÌˆÊ’u‚ðˆÚ“®
+	m_pTitle->SetVec3Position(m_pTitle->GetVec3Position() + rMove);
+
+	// ƒnƒ“ƒR‚ÌˆÊ’u‚ðˆÚ“®
+	m_pStamp->SetVec3Position(m_pStamp->GetVec3Position() + rMove);
+
+	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚Ì‘SUIƒIƒuƒWƒFƒNƒgˆÚ“®
+	assert(m_pClear != nullptr);
+	m_pClear->SetAllMove(rMove);
+}
+
+//============================================================
+//	‰‰o‚ÌƒXƒLƒbƒvˆ—
+//============================================================
+void CResultManager::SkipStaging(void)
 {
 	// ‘Ò‹@ó‘Ô‚É‚·‚é
 	m_state = STATE_WAIT;
@@ -605,16 +634,8 @@ void CResultManager::SkipSuccess(void)
 	// ƒnƒ“ƒR‚ð‰‰oŒã‚ÌŒ©‚½–Ú‚É‚·‚é
 	m_pStamp->SetEnableDraw(true);				// Ž©“®•`‰æ‚ðON‚É‚·‚é
 	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// –Ú•WƒTƒCƒY‚ÉÝ’è
-}
 
-//============================================================
-//	‘SUIƒIƒuƒWƒFƒNƒg‚ÌˆÚ“®ˆ—
-//============================================================
-void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
-{
-	// ƒ^ƒCƒgƒ‹‚ÌˆÊ’u‚ðˆÚ“®
-	m_pTitle->SetVec3Position(m_pTitle->GetVec3Position() + rMove);
-
-	// ƒnƒ“ƒR‚ÌˆÊ’u‚ðˆÚ“®
-	m_pStamp->SetVec3Position(m_pStamp->GetVec3Position() + rMove);
+	// ƒNƒŠƒAƒ}ƒl[ƒWƒƒ[‚Ì‰‰oƒXƒLƒbƒv
+	assert(m_pClear != nullptr);
+	m_pClear->SkipStaging();
 }

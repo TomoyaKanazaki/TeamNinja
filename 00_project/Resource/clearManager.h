@@ -1,4 +1,3 @@
-#if 1
 //============================================================
 //
 //	クリアマネージャーヘッダー [clearManager.h]
@@ -32,12 +31,14 @@ public:
 	// 純粋仮想関数
 	virtual HRESULT Init(void)	= 0;	// 初期化
 	virtual void Uninit(void)	= 0;	// 終了
-	virtual void Update(const float fDeltaTime)	= 0;	// 更新
+	virtual void Update(const float fDeltaTime)			= 0;	// 更新
+	virtual void SetAllMove(const D3DXVECTOR3& rMove)	= 0;	// 全UIオブジェクト移動
+	virtual void SkipStaging(void)						= 0;	// 演出スキップ
+	virtual bool IsEndState(void) const					= 0;	// 終了状況取得
 
 	// 静的メンバ関数
 	static CClearManager *Create(const CRetentionManager::EWin win);	// 生成
-	static void Release(CClearManager *&prClearManager);	// 破棄
+	static void Release(CClearManager *&prClearManager);				// 破棄
 };
 
 #endif	// _CLEARMANAGER_H_
-#endif

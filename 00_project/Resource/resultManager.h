@@ -13,6 +13,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
+class CClearManager;	// クリアマネージャークラス
 class CObject2D;		// オブジェクト2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
 
@@ -81,11 +82,11 @@ private:
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
-
-	void SkipSuccess(void);								// クリア成功演出スキップ
-	void SetAllMove(const D3DXVECTOR3& rMove);			// 全UIオブジェクト移動
+	void SetAllMove(const D3DXVECTOR3& rMove);	// 全UIオブジェクト移動
+	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
+	CClearManager* m_pClear;	// クリアマネージャー情報
 	CObject2D* m_pFade;			// フェード情報
 	CScrollText2D* m_pTitle;	// タイトル情報
 	CObject2D* m_pStamp;		// ハンコ情報

@@ -1,4 +1,3 @@
-#if 1
 //============================================================
 //
 //	クリアマネージャー処理 [clearManager.cpp]
@@ -9,6 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "clearManager.h"
+#include "clearSuccessManager.h"
 
 //************************************************************
 //	親クラス [CClearManager] のメンバ関数
@@ -39,11 +39,11 @@ CClearManager *CClearManager::Create(const CRetentionManager::EWin win)
 	switch (win)
 	{ // モードごとの処理
 	case CRetentionManager::WIN_FAIL:
-		//pClearManager = new C;
+		//pClearManager = new CClearFailManager;	// TODO
 		break;
 
 	case CRetentionManager::WIN_SUCCESS:
-		//pClearManager = new C;
+		pClearManager = new CClearSuccessManager;
 		break;
 
 	default:	// 例外処理
@@ -85,4 +85,3 @@ void CClearManager::Release(CClearManager *&prClearManager)
 	// メモリ開放
 	SAFE_DELETE(prClearManager);
 }
-#endif
