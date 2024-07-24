@@ -1,29 +1,29 @@
 //============================================================
 //
-//	点滅オブジェクト2D処理 [blink2D.cpp]
+//	フェードオブジェクト2D処理 [fade2D.cpp]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "blink2D.h"
+#include "fade2D.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const int PRIORITY = 6;	// 点滅オブジェクト2D表示の優先順位
+	const int PRIORITY = 6;	// フェードオブジェクト2D表示の優先順位
 }
 
 //************************************************************
-//	親クラス [CBlink2D] のメンバ関数
+//	親クラス [CFade2D] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CBlink2D::CBlink2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CFade2D::CFade2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
 	m_state		(STATE_NONE),	// 状態
 	m_fWaitTime	(0.0f),			// 現在の余韻時間
 	m_fMaxWait	(0.0f)			// 余韻時間
@@ -34,7 +34,7 @@ CBlink2D::CBlink2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
 //============================================================
 //	デストラクタ
 //============================================================
-CBlink2D::~CBlink2D()
+CFade2D::~CFade2D()
 {
 
 }
@@ -42,7 +42,7 @@ CBlink2D::~CBlink2D()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CBlink2D::Init(void)
+HRESULT CFade2D::Init(void)
 {
 	// メンバ変数を初期化
 	m_state		= STATE_NONE;	// 状態
@@ -65,7 +65,7 @@ HRESULT CBlink2D::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CBlink2D::Uninit(void)
+void CFade2D::Uninit(void)
 {
 	// オブジェクト2Dの終了
 	CObject2D::Uninit();
@@ -74,7 +74,7 @@ void CBlink2D::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CBlink2D::Update(const float fDeltaTime)
+void CFade2D::Update(const float fDeltaTime)
 {
 	// 何もしない状態の場合抜ける
 	if (m_state == STATE_NONE) { return; }
@@ -144,7 +144,7 @@ void CBlink2D::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CBlink2D::Draw(CShader *pShader)
+void CFade2D::Draw(CShader *pShader)
 {
 	// オブジェクト2Dの描画
 	CObject2D::Draw(pShader);
@@ -153,7 +153,7 @@ void CBlink2D::Draw(CShader *pShader)
 //============================================================
 //	生成処理
 //============================================================
-CBlink2D *CBlink2D::Create
+CFade2D *CFade2D::Create
 (
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rSize,	// 大きさ
@@ -164,9 +164,9 @@ CBlink2D *CBlink2D::Create
 	const D3DXCOLOR& rCol		// 色
 )
 {
-	// 点滅オブジェクト2Dの生成
-	CBlink2D *pBlink2D = new CBlink2D;
-	if (pBlink2D == nullptr)
+	// フェードオブジェクト2Dの生成
+	CFade2D *pFade2D = new CFade2D;
+	if (pFade2D == nullptr)
 	{ // 生成に失敗した場合
 
 		return nullptr;
@@ -174,48 +174,48 @@ CBlink2D *CBlink2D::Create
 	else
 	{ // 生成に成功した場合
 
-		// 点滅オブジェクト2Dの初期化
-		if (FAILED(pBlink2D->Init()))
+		// フェードオブジェクト2Dの初期化
+		if (FAILED(pFade2D->Init()))
 		{ // 初期化に失敗した場合
 
-			// 点滅オブジェクト2Dの破棄
-			SAFE_DELETE(pBlink2D);
+			// フェードオブジェクト2Dの破棄
+			SAFE_DELETE(pFade2D);
 			return nullptr;
 		}
 
 		// 位置を設定
-		pBlink2D->SetVec3Position(rPos);
+		pFade2D->SetVec3Position(rPos);
 
 		// 向きを設定
-		pBlink2D->SetVec3Rotation(rRot);
+		pFade2D->SetVec3Rotation(rRot);
 
 		// 大きさを設定
-		pBlink2D->SetVec3Sizing(rSize);
+		pFade2D->SetVec3Sizing(rSize);
 
 		// 色を設定
-		pBlink2D->SetColor(rCol);
+		pFade2D->SetColor(rCol);
 
 		// 透明度を設定
-		pBlink2D->SetAlpha(0.0f);	// 最初は透明から
+		pFade2D->SetAlpha(0.0f);	// 最初は透明から
 
 		// α値減少量を設定
-		pBlink2D->SetSubIn(fSubIn);
+		pFade2D->SetSubIn(fSubIn);
 
 		// α値増加量を設定
-		pBlink2D->SetAddOut(fAddOut);
+		pFade2D->SetAddOut(fAddOut);
 
 		// 余韻時間を設定
-		pBlink2D->SetMaxWait(fMaxWait);
+		pFade2D->SetMaxWait(fMaxWait);
 
 		// 確保したアドレスを返す
-		return pBlink2D;
+		return pFade2D;
 	}
 }
 
 //============================================================
 //	表示設定処理
 //============================================================
-void CBlink2D::SetDisp(void)
+void CFade2D::SetDisp(void)
 {
 	// 既に表示中の場合抜ける
 	if (m_state == STATE_DISP) { return; }

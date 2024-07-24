@@ -46,8 +46,10 @@ public:
 	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
 	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	void SetAlpha(const float fAlpha);			// 透明度設定
 	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得
 	D3DXCOLOR GetColor(void) const	{ return m_col; }			// 色取得
+	float GetAlpha(void) const		{ return m_col.a; }			// 透明度取得
 
 	// 静的メンバ関数
 	static CObject2D *Create	// 生成

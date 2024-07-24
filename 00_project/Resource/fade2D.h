@@ -1,14 +1,14 @@
 //============================================================
 //
-//	点滅オブジェクト2Dヘッダー [blink2D.h]
+//	フェードオブジェクト2Dヘッダー [fade2D.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _BLINK2D_H_
-#define _BLINK2D_H_
+#ifndef _FADE2D_H_
+#define _FADE2D_H_
 
 //************************************************************
 //	インクルードファイル
@@ -18,8 +18,8 @@
 //************************************************************
 //	クラス定義
 //************************************************************
-// 点滅オブジェクト2Dクラス
-class CBlink2D : public CObject2D
+// フェードオブジェクト2Dクラス
+class CFade2D : public CObject2D
 {
 public:
 	// 定数
@@ -36,10 +36,10 @@ public:
 	};
 
 	// コンストラクタ
-	CBlink2D();
+	CFade2D();
 
 	// デストラクタ
-	~CBlink2D() override;
+	~CFade2D() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -48,7 +48,7 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CBlink2D *Create	// 生成
+	static CFade2D *Create	// 生成
 	( // 引数
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rSize,		// 大きさ
@@ -78,4 +78,4 @@ private:
 	float m_fMaxWait;	// 余韻時間
 };
 
-#endif	// _BLINK2D_H_
+#endif	// _FADE2D_H_
