@@ -26,6 +26,7 @@ namespace
 		{ "data\\SE\\land001.wav", 0 },			// ’…’n‰¹ (‘å)
 		{ "data\\SE\\stalkwalk000.wav", 0 },	// ’ÇÕ“G‚Ì•à‚­‰¹
 		{ "data\\SE\\cloneattack000.wav", 0 },	// •ªg‚ğUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\stalkattack000.wav", 0 },	// ’ÇÕ“G‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 	};
 }
 

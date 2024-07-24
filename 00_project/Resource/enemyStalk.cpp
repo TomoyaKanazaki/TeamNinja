@@ -717,8 +717,12 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 	{
 	case CEnemyAttack::TARGET_PLAYER:
 
-		// プレイヤーの当たり判定処理
-		HitPlayer(rPos);
+		if (HitPlayer(rPos))
+		{ // プレイヤーに当たった場合
+
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
+		}
 
 		// 状態カウントを加算する
 		m_nStateCount++;

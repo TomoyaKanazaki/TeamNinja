@@ -275,7 +275,8 @@ void CEditActor::UpdatePosition(void)
 //============================================================
 void CEditActor::UpdateRotation(void)
 {
-	if (m_pActor->GetCube().empty())
+	if (m_pActor->GetCube().empty() &&
+		m_pActor->GetPolygon().empty())
 	{ // 空白の場合
 
 		// 向きを変更
@@ -497,7 +498,8 @@ void CEditActor::ChangeType(void)
 			));
 		}
 
-		if (!m_pActor->GetCube().empty())
+		if (!m_pActor->GetCube().empty() &&
+			!m_pActor->GetPolygon().empty())
 		{ // キューブの当たり判定が存在していた場合
 			
 			// 方向の設定処理
@@ -555,7 +557,8 @@ void CEditActor::ChangeType(void)
 			));
 		}
 
-		if (!m_pActor->GetCube().empty())
+		if (!m_pActor->GetCube().empty() &&
+			!m_pActor->GetPolygon().empty())
 		{ // キューブの当たり判定が存在していた場合
 
 			// 方向の設定処理

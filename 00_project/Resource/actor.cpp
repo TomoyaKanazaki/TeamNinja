@@ -398,15 +398,6 @@ void CActor::ClearCollision(void)
 }
 
 //============================================================
-// モデルの割り当て処理
-//============================================================
-void CActor::SetModel(const EType type)
-{
-	// モデルの割り当て処理
-	BindModel(MODEL[type]);
-}
-
-//============================================================
 // 当たり判定の割り当て処理
 //============================================================
 void CActor::BindCollision(void)
@@ -424,8 +415,8 @@ void CActor::BindCollision(void)
 			coll.m_cube[nCnt].fWidth * GetVec3Scaling().x,		// 幅
 			coll.m_cube[nCnt].fHeight * GetVec3Scaling().y,		// 高さ
 			coll.m_cube[nCnt].fDepth * GetVec3Scaling().z,		// 奥行
-			GetVec3Rotation().y)			// 向き
-		);
+			GetVec3Rotation().y				// 向き
+		));
 	}
 
 	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_cylinder.size()); nCnt++)
@@ -458,7 +449,7 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_polygon[nCnt].offset,	// オフセット座標
-			coll.m_polygon[nCnt].rot,		// 向き
+			D3DXVECTOR3(coll.m_polygon[nCnt].rot.x,GetVec3Rotation().y, coll.m_polygon[nCnt].rot.z),		// 向き
 			D3DXVECTOR3(coll.m_polygon[nCnt].size.x * GetVec3Scaling().x, 0.0f, coll.m_polygon[nCnt].size.z * GetVec3Scaling().z)		// サイズ
 		));
 	}

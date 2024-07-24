@@ -69,6 +69,7 @@ public:
 		MOTION_FALL,		// 落下モーション
 		MOTION_LANDING,		// 着地モーション
 		MOTION_DODGE,		// 回避モーション
+		MOTION_DEATH,		// 死亡モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -162,7 +163,8 @@ private:
 
 	// メンバ関数 (小原追加)
 	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);	// アクターの当たり判定
-
+	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
+	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
 #ifdef _DEBUG
 
 	void DebugJumpControl(void);	// ジャンプ操作

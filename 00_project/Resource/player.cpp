@@ -33,6 +33,8 @@
 #include "transpoint.h"
 #include "effect3D.h"
 #include "actor.h"
+#include "coin.h"
+#include "godItem.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
@@ -714,6 +716,12 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
+	// コインとの当たり判定処理
+	CollisionCoin(posPlayer);
+
+	// 神器との当たり判定処理
+	CollisionGodItem(posPlayer);
+
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(posPlayer, RADIUS);
 
@@ -819,7 +827,7 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	SetVec3Position(pos);
 
 	// TODO : 死亡モーション
-	return MOTION_IDOL;
+	return MOTION_DEATH;
 }
 
 //============================================================
@@ -1266,6 +1274,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 
 		break;
+
+	case MOTION_DEATH:	// 死亡モーション
+		break;
 	}
 }
 
@@ -1652,6 +1663,50 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 
 		// ジャンプ状況を false にする
 		m_bJump = false;
+	}
+}
+
+//==========================================
+// コインとの当たり判定
+//==========================================
+void CPlayer::CollisionCoin(const D3DXVECTOR3& pos)
+{
+	// コインのリスト構造が無ければ抜ける
+	if (CCoin::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CCoin*> list = CCoin::GetList()->GetList();
+
+	for (auto coin : list)
+	{
+		// 当たり判定処理
+		coin->Collision
+		(
+			pos,		// 位置
+			RADIUS		// 半径
+		);
+	}
+}
+
+//==========================================
+// 神器との当たり判定
+//==========================================
+void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
+{
+	// 神器のリスト構造が無ければ抜ける
+	if (CGodItem::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CGodItem*> list = CGodItem::GetList()->GetList();
+
+	for (auto godItem : list)
+	{
+		// 当たり判定処理
+		godItem->Collision
+		(
+			pos,		// 位置
+			RADIUS		// 半径
+		);
 	}
 }
 

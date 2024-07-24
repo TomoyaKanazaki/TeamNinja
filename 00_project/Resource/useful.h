@@ -26,8 +26,9 @@
 #define NONE_IDX		(-1)	// インデックス非使用
 #define NONE_STRING		("\0")	// 文字列非使用
 
-#define HALF_PI	(D3DX_PI * 0.5f)	// 二分の一の円周率 (π/２)
-#define QRTR_PI	(D3DX_PI * 0.25f)	// 四分の一の円周率 (π/４)
+#define HALF_PI		(D3DX_PI * 0.5f)	// 二分の一の円周率 (π/２)
+#define QRTR_PI		(D3DX_PI * 0.25f)	// 四分の一の円周率 (π/４)
+#define ANGLE_PI(angle)	(D3DX_PI * 0.5f * (float)angle)		// アングルを角度にして返す
 
 #define MY_ASSERT(s, b)	(assert((s, !b)))	// TRUEで止まるアサート
 #define NUM_ARRAY(a)	(sizeof((a)) / sizeof((a)[0]))	// 配列の要素数計算
@@ -52,6 +53,7 @@
 #define GET_STAGE		(CManager::GetInstance()->GetStage())		// ステージ情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
 #define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー情報取得
+#define GET_CAMERA		(CManager::GetInstance()->GetCamera())		// プレイヤー情報取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生
@@ -66,8 +68,9 @@
 #define VEC3_ONE	(D3DXVECTOR3(1.0f, 1.0f, 1.0f))	// 1クリア
 #define VEC3_ALL(f)	(D3DXVECTOR3((f), (f), (f)))	// 同値クリア
 
-#define SCREEN_CENT	(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f))	// ウインドウの中央座標
-#define SCREEN_SIZE	(D3DXVECTOR3((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f))	// ウインドウの画面サイズ
+#define SCREEN_CENT		(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f))	// ウインドウの中央座標
+#define SCREEN_SIZE		(D3DXVECTOR3((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f))	// ウインドウの画面サイズ
+#define SCREEN_IN(pos)	(GET_CAMERA->OnScreen(pos))			// スクリーン内判定
 
 // POSGRID2関係
 #define GRID2_ZERO	(POSGRID2(0, 0))	// 0クリア

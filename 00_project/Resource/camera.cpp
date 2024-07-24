@@ -19,6 +19,7 @@
 #include "camera_change.h"
 #include "goal.h"
 #include "ZTexture.h"
+#include "collision.h"
 
 //************************************************************
 //	定数宣言
@@ -877,6 +878,68 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 
 	// yの判定でfalseを返す
 	if (screenPos.y < 0.0f || screenPos.y > SCREEN_HEIGHT) { return false; }
+
+	// ここまで来れたらtrueを返す
+	return true;
+}
+
+//===========================================
+//  矩形のスクリーン内判定
+//===========================================
+bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
+{
+	// 各頂点のスクリーン座標を算出
+	D3DXVECTOR3 posScreen[4] = {};
+	for (int i = 0; i < 4; ++i, ++pPos)
+	{
+		// 頂点が1つでもスクリーン内であればtrueを返す
+		if (OnScreen(*pPos, posScreen[i])) { return true; }
+	}
+
+	// 各頂点を結ぶベクトル(4辺)を算出
+	D3DXVECTOR3 vecScreen[4] =
+	{
+		posScreen[1] - posScreen[0],
+		posScreen[2] - posScreen[1],
+		posScreen[3] - posScreen[2],
+		posScreen[0] - posScreen[3]
+	};
+
+	// スクリーン範囲の4頂点を算出
+	D3DXVECTOR3 posVtx[4] =
+	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),						// 左上
+		D3DXVECTOR3(0.0f, SCREEN_HEIGHT, 0.0f),				// 左下
+		D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),		// 右下
+		D3DXVECTOR3(SCREEN_WIDTH, 0.0f, 0.0f)				// 右上
+	};
+
+	// 4辺と対角線の交差判定
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 2; ++i)
+		{
+			// ベクトルの内積を保存する変数
+			float fDot[2] = {};
+
+			// ベクトルの内積を求める
+			fDot[0] = vecScreen[i].y * (posVtx[j].x - posScreen[i].x) - vecScreen[i].x * (posVtx[j].y - posScreen[i].y);
+			fDot[1] = vecScreen[i].y * (posVtx[j + 2].x - posScreen[i].x) - vecScreen[i].x * (posVtx[j + 2].y - posScreen[i].y);
+
+			// 内積の符号が不一致の場合trueを返す
+			if (fDot[0] * fDot[1] < 0.0f) { return true; }
+		}
+	}
+
+	// スクリーン範囲がスクリーン座標に包含されている場合trueを返す
+	for (int i = 0; i < 4; ++i)
+	{
+		// ベクトルの内積を求める
+		float fDot = vecScreen[i].y * (SCREEN_CENT.x - posScreen[i].x) - vecScreen[i].x * (SCREEN_CENT.y - posScreen[i].y);
+
+		// 内積の値が1つでも負の場合falseを返す
+		if (fDot < 0.0f) { return false; }
+	}
 
 	// ここまで来れたらtrueを返す
 	return true;

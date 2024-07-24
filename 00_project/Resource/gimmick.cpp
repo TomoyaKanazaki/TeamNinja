@@ -18,8 +18,6 @@
 #include "gimmick_heavydoor.h"
 #include "gimmick_bridge.h"
 
-#include "multi_plant.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -209,6 +207,12 @@ CGimmick* CGimmick::Create
 			return nullptr;
 		}
 
+		// 種類を設定
+		pGimmick->m_type = type;
+
+		// 発動可能な分身の数を設定
+		pGimmick->m_nNumActive = nNumActive;
+
 		// 向きを設定
 		pGimmick->m_eAngle = eAngle;
 
@@ -218,17 +222,8 @@ CGimmick* CGimmick::Create
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);
 
-		// 種類を設定
-		pGimmick->m_type = type;
-
-		// 発動可能な分身の数を設定
-		pGimmick->m_nNumActive = nNumActive;
-
 		// 色の設定
 		pGimmick->SetColor(XCOL_YELLOW);
-
-		// 植物の生成
-		CMultiPlant::Create(rPos, rSize, pGimmick->m_type, nNumActive);
 
 		// 確保したアドレスを返す
 		return pGimmick;

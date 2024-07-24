@@ -30,6 +30,8 @@ public:
 	D3DXVECTOR3 CalcWaitPoint(const int Idx, const CPlayerClone* pClone) override; // 各分身毎の待機位置を算出
 	D3DXVECTOR3 CalcWaitRotation(const int Idx, const CPlayerClone* pClone) override; // 各分身毎の待機向きを算出
 
+	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;
+
 private:
 
 	// メンバ関数

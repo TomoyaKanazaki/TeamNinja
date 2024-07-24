@@ -18,6 +18,7 @@ namespace
 	const int POLYGON_PRIORITY = 5;			// ポリゴンの優先順位
 	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.5f);		// 色
 	const float GRAVITY = -250.0f;			// 立った時の重力
+	const float ROT_TOLERANCE = 0.02f;		// 向きの許容範囲
 }
 
 //============================================================
@@ -66,25 +67,31 @@ bool CCollisionPolygon::Hit
 {
 	// 高さを取得する
 	float fPosY = m_pPolygon->GetPositionHeight(rPos);
-	D3DXVECTOR3 posOld = rPosOld;
-	D3DXVECTOR3 pos = rPos;
 
-	// TODO：この糞判定どうにかした方がいい
-	if (fPosY > rPos.y &&
-		fPosY < rPos.y + fHeight)
-	{ // 現在地がポリゴンより高かった場合
+	if (m_pPolygon->GetInside(rPos))
+	{ // 内側にいる場合
 
-		// Y軸の位置を適用する
-		rPos.y = fPosY;
+		// TODO：この糞判定どうにかした方がいい
+		if (fPosY > rPos.y &&
+			fPosY < rPos.y + fHeight)
+		{ // 現在地がポリゴンより高かった場合
 
-		// 重力を下にかけ続ける
-		rMove.y = GRAVITY;
+			// Y軸の位置を適用する
+			rPos.y = fPosY;
 
-		// ジャンプ状況を false にする
-		rJump = false;
+			// 重力を下にかけ続ける
+			rMove.y = GRAVITY;
 
-		// true を返す
-		return true;
+			// ジャンプ状況を false にする
+			rJump = false;
+
+			// true を返す
+			return true;
+		}
+	}
+	else
+	{ // 上記以外
+
 	}
 
 	// false を返す
@@ -143,6 +150,9 @@ CCollisionPolygon* CCollisionPolygon::Create
 	pColl->m_pPolygon->SetPriority(POLYGON_PRIORITY);
 	pColl->m_pPolygon->SetLabel(CObject::LABEL_COLLISION);
 
+	// 向きによる変換処理
+	pColl->Convert(rSize.x, rSize.z, rRot.y);
+
 #ifndef _DEBUG
 
 	// 描画を切る
@@ -153,3 +163,98 @@ CCollisionPolygon* CCollisionPolygon::Create
 	// 当たり判定を返す
 	return pColl;
 }
+
+//============================================================
+// 向きによる変換処理
+//============================================================
+void CCollisionPolygon::Convert(const float fWidth, const float fDepth, const float fRot)
+{
+#ifdef _DEBUG
+
+	// 向きの警告処理
+	RotWarning(fRot);
+
+#endif // _DEBUG
+
+	if ((fRot >= D3DX_PI * -0.75f && fRot <= D3DX_PI * -0.25f) ||
+		(fRot >= D3DX_PI * 0.25f && fRot <= D3DX_PI * 0.75f))
+	{ // 90度、270度の場合
+
+		// 半径を設定
+		m_size.x = fDepth;
+
+		// 奥行を設定
+		m_size.z = fWidth;
+	}
+	else
+	{ // 上記以外
+
+		// 半径を設定
+		m_size.x = fWidth;
+
+		// 奥行を設定
+		m_size.z = fDepth;
+	}
+}
+
+
+#ifdef _DEBUG
+//============================================================
+// 向きの警告処理
+//============================================================
+void CCollisionPolygon::RotWarning(const float fRot)
+{
+	bool bOver = false;		// 範囲外の向き
+
+	if (fRot >= -D3DX_PI * 0.25f &&
+		fRot <= D3DX_PI * 0.25f)
+	{ // 0度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else if (fRot >= D3DX_PI * 0.25f &&
+		fRot <= D3DX_PI * 0.75f)
+	{ // 90度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot - (D3DX_PI * 0.5f)) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else if ((fRot >= D3DX_PI * -0.75f &&
+		fRot <= D3DX_PI * -0.25f))
+	{ // 270度補正前提で誤差が大きすぎる場合
+
+		if (fabsf(fRot + (D3DX_PI * 0.5f)) >= ROT_TOLERANCE)
+		{ // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+	else
+	{
+		if (fabsf(fRot - D3DX_PI) >= ROT_TOLERANCE &&
+			fabsf(fRot + D3DX_PI) >= ROT_TOLERANCE)
+		{  // 向きの許容範囲を超えた場合
+
+			// 範囲外判定を出す
+			bOver = true;
+		}
+	}
+
+	if (bOver)
+	{
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ポリゴンの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
+	}
+}
+
+#endif

@@ -9,6 +9,7 @@
 #include "player.h"
 #include "player_clone.h"
 #include "field.h"
+#include "multi_plant.h"
 
 //===========================================
 //  定数定義
@@ -17,7 +18,8 @@ namespace
 {
 	const float DISTANCE = 30.0f; // 待機位置との距離
 	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
-	const float FIELD_SIZE = 60.0f; // 橋の幅
+	const float FIELD_SIZE = 55.0f; // 橋の幅
+	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
 }
 
 //===========================================
@@ -207,6 +209,51 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 	// 算出した向きを返す
 	return rot;
+}
+
+//===========================================
+//   サイズの設定
+//===========================================
+void CGimmickBridge::SetVec3Sizing(const D3DXVECTOR3& rSize)
+{
+	// サイズの設定
+	CObject3D::SetVec3Sizing(rSize);
+	
+	// 花の生成位置を設定する
+	D3DXVECTOR3 posPlant[2] = { GetVec3Position(), GetVec3Position() };
+
+	// 方向の取得
+	EAngle angle = GetAngle();
+	float fAngle = ANGLE_PI(angle);
+
+	// 方向に合わせて生成位置をずらす
+	posPlant[0] += D3DXVECTOR3((rSize.x + PLANT_RANGE) * 0.5f * cosf(fAngle), 0.0f, (rSize.z + PLANT_RANGE) * 0.5f * sinf(fAngle));
+	posPlant[1] += D3DXVECTOR3((rSize.x + PLANT_RANGE) * 0.5f * cosf(fAngle + D3DX_PI), 0.0f, (rSize.z + PLANT_RANGE) * 0.5f * sinf(fAngle + D3DX_PI));
+
+	// サイズの設定
+	D3DXVECTOR3 size = GetVec3Sizing();
+	switch (angle)
+	{
+	case ANGLE_0:
+	case ANGLE_180:
+		size.z = PLANT_RANGE;
+		break;
+
+	case ANGLE_90:
+	case ANGLE_270:
+		size.x = PLANT_RANGE;
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 花を生成
+	for (int i = 0; i < 2; ++i)
+	{
+		CMultiPlant::Create(posPlant[i], size, GetType(), GetNumActive());
+	}
 }
 
 //===========================================
