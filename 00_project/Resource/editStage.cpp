@@ -52,6 +52,7 @@ namespace
 		"ゴールポイント",
 		"ギミック",
 		"カメラ変更地点",
+		"コイン",
 	};
 
 	const float MOVE = editstage::SIZE * 0.5f;	// 移動量
