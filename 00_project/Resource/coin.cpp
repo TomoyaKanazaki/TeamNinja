@@ -175,9 +175,8 @@ CListManager<CCoin>* CCoin::GetList(void)
 //============================================================
 bool CCoin::Collision
 (
-	D3DXVECTOR3& rPos,				// à íu
-	const float fRadius,			// îºåa
-	const float fHeight				// çÇÇ≥
+	const D3DXVECTOR3& rPos,	// à íu
+	const float fRadius			// îºåa
 )
 {
 	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius))

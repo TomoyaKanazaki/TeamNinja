@@ -45,11 +45,10 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// メンバ関数
-	bool Collision						// 当たり判定処理
+	bool Collision		// 当たり判定処理
 	(
-		D3DXVECTOR3& rPos,				// 位置
-		const float fRadius,			// 半径
-		const float fHeight				// 高さ
+		const D3DXVECTOR3& rPos,	// 位置
+		const float fRadius			// 半径
 	);
 
 	// セット・ゲット関係

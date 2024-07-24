@@ -187,9 +187,8 @@ CListManager<CGodItem>* CGodItem::GetList(void)
 //============================================================
 bool CGodItem::Collision
 (
-	D3DXVECTOR3& rPos,				// 位置
-	const float fRadius,			// 半径
-	const float fHeight				// 高さ
+	const D3DXVECTOR3& rPos,	// 位置
+	const float fRadius			// 半径
 )
 {
 	// 球の当たり判定を返す
@@ -310,23 +309,33 @@ HRESULT CGodItem::LoadSetup(const char* pPass)
 //============================================================
 bool CGodItem::DuplicationCheck(const EType type)
 {
-	if (m_pList->GetNumAll() >= TYPE_MAX)
-	{ // 総数が全種類以上の場合
+	if (m_pList == nullptr)
+	{ // 神器が一つも存在していない場合
 
-		// false を返す
-		return false;
+		// true を返す
+		return true;
 	}
+	else
+	{ // 上記以外
 
-	for (auto& item : m_pList->GetList())
-	{
-		if (item->m_type == type)
-		{ // 種類が重複していた場合
+		if (m_pList->GetNumAll() >= TYPE_MAX)
+		{ // 総数が全種類以上の場合
 
 			// false を返す
 			return false;
 		}
-	}
 
-	// true を返す
-	return true;
+		for (auto& item : m_pList->GetList())
+		{
+			if (item->m_type == type)
+			{ // 種類が重複していた場合
+
+				// false を返す
+				return false;
+			}
+		}
+
+		// true を返す
+		return true;
+	}
 }
