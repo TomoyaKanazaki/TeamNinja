@@ -240,7 +240,7 @@ void CGameManager::Update(const float fDeltaTime)
 		{
 			if (CGoal::GetGoal()->GetClear())
 			{
-				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
+				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
 			}
 		}
 		break;
