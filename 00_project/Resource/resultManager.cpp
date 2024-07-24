@@ -60,9 +60,15 @@ namespace
 
 	namespace stamp
 	{
+		const char* TEXTURE[] =	// ハンコテクスチャ
+		{
+			nullptr,								// クリア判定無し
+			"data\\TEXTURE\\resultStamp001.png",	// クリア失敗テクスチャ
+			"data\\TEXTURE\\resultStamp000.png",	// クリア成功テクスチャ
+		};
+
 		const float	MOVE_TIME	= 0.3f;	// 移動時間
 		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
-		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";		// ハンコテクスチャ
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 105.0f, 0.0f);		// ハンコ位置
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.0f);	// ハンコ目標大きさ
@@ -127,11 +133,11 @@ namespace
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
 		const D3DXVECTOR3 DIFF_SIZE	= DEST_SIZE - INIT_SIZE;				// 差分大きさ
 
-		const float	MOVE_TIME	= 0.4f;	// 移動時間
+		const float	MOVE_TIME	= 0.4f;		// 移動時間
 		const float	PLUS_TIME	= 0.45f;	// 経過の延長時間
-		const float	WAIT_TIME	= 0.5f;	// アイコン待機時間
-		const float	DEST_ALPHA	= 1.0f;	// 目標透明度
-		const float	INIT_ALPHA	= 0.0f;	// 初期透明度
+		const float	WAIT_TIME	= 0.5f;		// アイコン待機時間
+		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
+		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
 		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
 		const D3DXCOLOR DEST_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// 目標色
 		const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 初期色
@@ -322,9 +328,6 @@ HRESULT CResultManager::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// テクスチャを割当
-	m_pStamp->BindTexture(stamp::TEXTURE);
 
 	// 優先順位を設定
 	m_pStamp->SetPriority(PRIORITY);
@@ -731,7 +734,8 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 		// ハンコの自動描画をONにする
 		m_pStamp->SetEnableDraw(true);
 
-		// TODO：ここでハンコの種類を選択
+		// クリアごとのハンコテクスチャを割当
+		m_pStamp->BindTexture(stamp::TEXTURE[GET_RETENTION->GetWin()]);
 
 		// クリアハンコ押し状態にする
 		m_state = STATE_CLEAR_STAMP;
