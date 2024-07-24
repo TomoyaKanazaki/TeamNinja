@@ -18,6 +18,7 @@
 #include "editGoalPoint.h"
 #include "editGimmick.h"
 #include "editChanger.h"
+#include "editCoin.h"
 
 //************************************************************
 //	定数宣言
@@ -152,6 +153,10 @@ CEditorObject *CEditorObject::Create(CEditStage* pEditor, CEditStage::EType type
 
 	case CEditStage::TYPE_CHANGER:
 		pEditorObject = new CEditChanger(pEditor);		// エディットカメラ変更地点
+		break;
+
+	case CEditStage::TYPE_COIN:
+		pEditorObject = new CEditCoin(pEditor);			// エディットコイン
 		break;
 
 	default:	// 例外処理
