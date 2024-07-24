@@ -42,8 +42,6 @@ public:
 	void DrawDebugInfo(void) override;		// 情報表示描画
 
 private:
-	// オーバーライド関数
-	void UpdatePosition(void) override;		// 位置更新
 
 	// メンバ関数
 	void CreateCoin(void);		// コイン生成

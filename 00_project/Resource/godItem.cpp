@@ -17,7 +17,7 @@
 //************************************************************
 namespace
 {
-	const char* MODEL[CGodItem::TYPE_MAX] =		// モデル
+	const char* MODEL[] =		// モデル
 	{
 		"data\\MODEL\\PLAYER\\02_head.x",	// 八咫鏡
 		"data\\MODEL\\PLAYER\\02_head.x",	// 草薙剣
@@ -26,6 +26,11 @@ namespace
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// 神器の優先順位
 }
+
+//************************************************************
+//	スタティックアサート
+//************************************************************
+static_assert(NUM_ARRAY(MODEL) == CGodItem::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 // 静的メンバ変数宣言
