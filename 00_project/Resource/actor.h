@@ -110,7 +110,6 @@ public:
 		bool& bHit						// 衝突判定
 	);
 	void ClearCollision(void);			// 当たり判定の消去処理
-	void SetModel(const EType type);	// モデルの割り当て処理
 
 	// セット・ゲット関数
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理

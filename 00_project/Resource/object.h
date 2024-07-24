@@ -107,6 +107,7 @@ public:
 		LABEL_MAPMODEL,		// マップモデル
 		LABEL_ACTOR,		// アクター
 		LABEL_COLLISION,	// コリジョン
+		LABEL_COIN,			// コイン
 		LABEL_MAX			// この列挙型の総数
 	};
 

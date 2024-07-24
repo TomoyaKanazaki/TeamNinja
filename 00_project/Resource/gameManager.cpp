@@ -32,6 +32,7 @@
 #include "gimmick.h"
 #include "gimmick_multi.h"
 #include "actor.h"
+#include "coin.h"
 #include "MapModel.h"
 #include "camera_change.h"
 
@@ -188,6 +189,8 @@ HRESULT CGameManager::Init(void)
 	//CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
 
 #endif
+
+	CCoin::Create(D3DXVECTOR3(-200.0f, 0.0f, -300.0f));
 
 	// ‰ñ‚èž‚ÝƒJƒƒ‰‚ÌÝ’è
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
