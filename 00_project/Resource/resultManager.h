@@ -23,6 +23,7 @@ class CAnim2D;			// アニメーション2Dクラス
 class CString2D;		// 文字列2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
 class CTimeUI;			// タイムUIクラス
+class CBlink2D;			// 点滅オブジェクト2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -120,6 +121,7 @@ private:
 	CString2D* m_pTime;			// 遂行時間タイトル情報
 	CTimeUI* m_pTimeVal;		// 遂行時間情報
 	CString2D* m_pGodItem;		// 神器タイトル情報
+	CBlink2D* m_pControl;		// 操作情報
 	EState m_state;				// 状態
 	float m_fMoveY;				// 縦移動量
 	float m_fCurTime;			// 現在の待機時間

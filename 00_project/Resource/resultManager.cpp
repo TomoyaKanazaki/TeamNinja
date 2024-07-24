@@ -18,6 +18,7 @@
 #include "string2D.h"
 #include "scrollText2D.h"
 #include "timeUI.h"
+#include "blink2D.h"
 
 //************************************************************
 //	定数宣言
@@ -50,9 +51,9 @@ namespace
 		const bool	ITALIC	= false;			// イタリック
 		const float	WAIT_TIME		= 0.5f;		// タイトル待機時間
 		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
-		const float	LINE_HEIGHT		= 100.0f;	// 行間縦幅
+		const float	LINE_HEIGHT		= 80.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
-		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 35.0f, 0.0f);	// テキスト位置
+		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 5.0f, 0.0f);	// テキスト位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// 横配置
 		const CText2D::EAlignY	 ALIGN_Y = CText2D::YALIGN_TOP;		// 縦配置
 	}
@@ -62,7 +63,7 @@ namespace
 		const float	MOVE_TIME	= 0.3f;	// 移動時間
 		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
 		const char* TEXTURE		= "data\\TEXTURE\\resultStamp000.png";		// ハンコテクスチャ
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 145.0f, 0.0f);		// ハンコ位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 105.0f, 0.0f);		// ハンコ位置
 		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.0f);	// ハンコ目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ハンコ初期大きさ
@@ -79,7 +80,7 @@ namespace
 		const float DEST_HEIGHT	= 100.0f;	// 文字目標縦幅
 		const float INIT_HEIGHT	= DEST_HEIGHT * 14.0f;	// 文字初期縦幅
 		const float DIFF_HEIGHT	= DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 322.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 242.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
@@ -90,7 +91,7 @@ namespace
 		const D3DXCOLOR DEST_COL		= XCOL_WHITE;			// 目標色
 		const D3DXCOLOR INIT_COL		= XCOL_AWHITE;			// 初期色
 		const D3DXCOLOR DIFF_COL		= DEST_COL - INIT_COL;	// 差分色
-		const D3DXVECTOR3 DEST_POS		= D3DXVECTOR3(770.0f, 405.0f, 0.0f);			// 目標位置
+		const D3DXVECTOR3 DEST_POS		= D3DXVECTOR3(770.0f, 325.0f, 0.0f);			// 目標位置
 		const D3DXVECTOR3 INIT_POS		= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
 		const D3DXVECTOR3 DIFF_POS		= DEST_POS - INIT_POS;							// 差分位置
 		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(65.5f, 87.0f, 0.0f);				// 数字大きさ
@@ -112,7 +113,7 @@ namespace
 		const float	DEST_HEIGHT	= time::DEST_HEIGHT;	// 文字目標縦幅
 		const float	INIT_HEIGHT	= time::INIT_HEIGHT;	// 文字初期縦幅
 		const float	DIFF_HEIGHT	= time::DIFF_HEIGHT;	// 文字差分縦幅
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 525.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 420.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;		// 横配置
 	}
 
@@ -120,7 +121,7 @@ namespace
 	{
 		const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";				// 神器テクスチャ
 		const POSGRID2 TEX_PART	= POSGRID2(3, 1);							// テクスチャ分割
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 620.0f, 0.0f);		// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(865.0f, 515.0f, 0.0f);		// 位置
 		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(140.0f, 0.0f, 0.0f);			// 空白
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(140.0f, 140.0f, 0.0f);	// 目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
@@ -149,6 +150,17 @@ namespace
 		const D3DXVECTOR3 DEST_POS	= icon_item::POS;								// 目標位置
 		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
 		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// 差分位置
+	}
+
+	namespace control
+	{
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(fade::FADE_CENT, 640.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(390.0f, 100.0f, 0.0f);			// 大きさ
+		const float MIN_ALPHA	= 0.5f;	// 最低透明度
+		const float MAX_ALPHA	= 1.0f;	// 最大透明度
+		const float LEVEL_ALPHA	= 2.0f;	// 透明度の加減量
+		const float SUB_ALPHA	= 1.6f;	// インのα値減少量
+		const float ADD_ALPHA	= 0.9f;	// アウトのα値増加量
 	}
 }
 
@@ -195,6 +207,7 @@ CResultManager::CResultManager() :
 	m_pTime		(nullptr),		// 遂行時間タイトル情報
 	m_pTimeVal	(nullptr),		// 遂行時間情報
 	m_pGodItem	(nullptr),		// 神器タイトル情報
+	m_pControl	(nullptr),		// 操作情報
 	m_state		(STATE_NONE),	// 状態
 	m_fMoveY	(0.0f),			// 縦移動量
 	m_fCurTime	(0.0f)			// 現在の待機時間
@@ -229,6 +242,7 @@ HRESULT CResultManager::Init(void)
 	m_pTime		= nullptr;			// 遂行時間タイトル情報
 	m_pTimeVal	= nullptr;			// 遂行時間情報
 	m_pGodItem	= nullptr;			// 神器タイトル情報
+	m_pControl	= nullptr;			// 操作情報
 	m_state		= STATE_FADE_WAIT;	// 状態
 	m_fMoveY	= 0.0f;				// 縦移動量
 	m_fCurTime	= 0.0f;				// 現在の待機時間
@@ -477,6 +491,37 @@ HRESULT CResultManager::Init(void)
 		m_apGodItemIcon[i]->SetEnableDraw(false);
 	}
 
+	//--------------------------------------------------------
+	//	操作の生成 / 初期設定
+	//--------------------------------------------------------
+	// 操作の生成
+	m_pControl = CBlink2D::Create
+	( // 引数
+		control::POS,			// 位置
+		control::SIZE,			// 大きさ
+		control::MIN_ALPHA,		// 最低透明度
+		control::MAX_ALPHA,		// 最大透明度
+		control::LEVEL_ALPHA,	// 透明度の加減量
+		control::SUB_ALPHA,		// インのα値減少量
+		control::ADD_ALPHA		// アウトのα値増加量
+	);
+	if (m_pControl == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// テクスチャを割当
+	//m_pControl->BindTexture(control::TEXTURE);	// TODO：PRESS ANY BUTTONって日本語で何...？
+
+	// 優先順位を設定
+	m_pControl->SetPriority(PRIORITY);
+
+	// 自動描画をOFFにする
+	m_pControl->SetEnableDraw(false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -686,6 +731,8 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 		// ハンコの自動描画をONにする
 		m_pStamp->SetEnableDraw(true);
 
+		// TODO：ここでハンコの種類を選択
+
 		// クリアハンコ押し状態にする
 		m_state = STATE_CLEAR_STAMP;
 	}
@@ -713,6 +760,8 @@ void CResultManager::UpdateStamp(const float fDeltaTime)
 
 		// ハンコの大きさを補正
 		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
+
+		// TODO：ここで状態遷移先の変更
 
 		// 遂行時間タイトル待機状態にする
 		m_state = STATE_TIME_TITLE_WAIT;
@@ -1030,6 +1079,12 @@ void CResultManager::UpdateItemIcon(const float fDeltaTime)
 			m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);
 		}
 
+		// 操作の自動描画をONにする
+		m_pControl->SetEnableDraw(true);
+
+		// 操作の点滅を開始する
+		m_pControl->SetBlink(true);
+
 		// 待機状態にする
 		m_state = STATE_WAIT;
 	}
@@ -1040,54 +1095,15 @@ void CResultManager::UpdateItemIcon(const float fDeltaTime)
 //============================================================
 void CResultManager::UpdateWait(const float fDeltaTime)
 {
-	// TODO
-#if 0
-	D3DXCOLOR colControl = m_pControl->GetColor();	// 操作表示色
+	if (GET_INPUTPAD->IsAnyTrigger()
+	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	{
+		// 操作の点滅を終了する
+		m_pControl->SetBlink(false);
 
-	if (colControl.a < control::MIN_COL.a)
-	{ // 透明度が最低限より低い場合
-
-		// 透明度を加算
-		colControl.a += control::ADD_ALPHA;
-
-		if (colControl.a > control::MIN_COL.a)
-		{ // 透明度が超過した場合
-
-			// 透明度を補正
-			colControl.a = control::MIN_COL.a;
-		}
-
-		// 操作表示色を設定
-		m_pControl->SetColor(colControl);
-	}
-	else
-	{ // 透明度が最低限以上の場合
-
-		// 変数を宣言
-		float fAddAlpha = 0.0f;	// 透明度の加算量
-
-		// 透明度を上げる
-		m_fSinAlpha += control::ADD_SINROT;
-		useful::NormalizeRot(m_fSinAlpha);	// 向き正規化
-
-		// 透明度加算量を求める
-		fAddAlpha = (control::MAX_ADD_ALPHA / 2.0f) * (sinf(m_fSinAlpha) - 1.0f);
-
-		// 操作表示色を設定
-		m_pControl->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, control::BASIC_ALPHA + fAddAlpha));
-	}
-#else
-	// タイマーを加算
-	m_fCurTime += fDeltaTime;
-	if (m_fCurTime >= 3.0f)
-	{ // 待機が終了した場合
-
-		// タイマーを初期化
-		m_fCurTime = 0.0f;
-
+		// フェードアウト状態にする
 		m_state = STATE_FADEOUT;
 	}
-#endif
 }
 
 //============================================================
@@ -1274,4 +1290,7 @@ void CResultManager::SetAllMove(const D3DXVECTOR3& rMove)
 		// 神器アイコンの位置を移動
 		m_apGodItemIcon[i]->SetVec3Position(m_apGodItemIcon[i]->GetVec3Position() + rMove);
 	}
+
+	// 操作の位置を移動
+	m_pControl->SetVec3Position(m_pControl->GetVec3Position() + rMove);
 }
