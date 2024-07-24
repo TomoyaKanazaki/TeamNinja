@@ -50,12 +50,13 @@ public:
 	// 静的メンバ関数
 	static CBlink2D *Create	// 生成
 	( // 引数
-		const D3DXVECTOR3& rPos,			// 位置
-		const D3DXVECTOR3& rSize,			// 大きさ
-		const float fSubIn = LEVEL,			// インのα値減少量
-		const float fAddOut = LEVEL,		// アウトのα値増加量
-		const float fMaxWait = 0.0f,		// 余韻時間
-		const D3DXVECTOR3& rRot = VEC3_ZERO	// 向き
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rSize,		// 大きさ
+		const float fSubIn = LEVEL,		// インのα値減少量
+		const float fAddOut = LEVEL,	// アウトのα値増加量
+		const float fMaxWait = 0.0f,	// 余韻時間
+		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
+		const D3DXCOLOR& rCol = XCOL_AWHITE		// 色
 	);
 
 	// メンバ関数

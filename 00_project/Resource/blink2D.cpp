@@ -58,9 +58,6 @@ HRESULT CBlink2D::Init(void)
 		return E_FAIL;
 	}
 
-	// 透明色を設定
-	SetColor(XCOL_AWHITE);
-
 	// 成功を返す
 	return S_OK;
 }
@@ -163,7 +160,8 @@ CBlink2D *CBlink2D::Create
 	const float fSubIn,			// インのα値減少量
 	const float fAddOut,		// アウトのα値増加量
 	const float fMaxWait,		// 余韻時間
-	const D3DXVECTOR3& rRot		// 向き
+	const D3DXVECTOR3& rRot,	// 向き
+	const D3DXCOLOR& rCol		// 色
 )
 {
 	// 点滅オブジェクト2Dの生成
@@ -193,6 +191,21 @@ CBlink2D *CBlink2D::Create
 
 		// 大きさを設定
 		pBlink2D->SetVec3Sizing(rSize);
+
+		// 色を設定
+		pBlink2D->SetColor(rCol);
+
+		// 透明度を設定
+		pBlink2D->SetAlpha(0.0f);	// 最初は透明から
+
+		// α値減少量を設定
+		pBlink2D->SetSubIn(fSubIn);
+
+		// α値増加量を設定
+		pBlink2D->SetAddOut(fAddOut);
+
+		// 余韻時間を設定
+		pBlink2D->SetMaxWait(fMaxWait);
 
 		// 確保したアドレスを返す
 		return pBlink2D;

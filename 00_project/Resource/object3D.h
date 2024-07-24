@@ -66,9 +66,11 @@ public:
 	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
 	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	void SetAlpha(const float fAlpha);			// 透明度設定
 	void SetOrigin(const EOrigin origin);		// 原点設定
 	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
 	D3DXCOLOR GetColor(void) const		{ return m_col; }			// 色取得
+	float GetAlpha(void) const			{ return m_col.a; }			// 透明度取得
 	EOrigin GetOrigin(void) const		{ return m_origin; }		// 原点取得
 	void SetVertexPosition(const int nID, const D3DXVECTOR3& rPos);	// 頂点位置設定
 	D3DXVECTOR3 GetVertexPosition(const int nID);					// 頂点位置取得
