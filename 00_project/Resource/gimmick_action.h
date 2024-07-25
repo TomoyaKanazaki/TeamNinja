@@ -72,8 +72,6 @@ private:
 
 	// メンバ関数
 	void DispEffect(); // 範囲表示処理
-	void FrameAlpha(); // 縁取りの透明化
-	void FrameCreate(); // 縁取りの表示
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
@@ -82,7 +80,6 @@ private:
 	bool m_bMoment;				// 発動中フラグ
 	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
 	CEffekseer::CEffectData* m_pEffect[4];	// エフェクトのポインタ配列
-	CObject3D* m_pFlame[4];		// 縁取りのポインタ
 
 	// 静的メンバ変数
 	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト

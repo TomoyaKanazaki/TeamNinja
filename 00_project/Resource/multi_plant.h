@@ -31,9 +31,14 @@ public:
 
 private:
 
+	// メンバ関数
+	void FrameAlpha(); // 縁取りの透明化
+	void FrameCreate(); // 縁取りの表示
+
 	// メンバ変数
 	CGimmick::EType m_Type; // 生成する植物の種類
 	int m_nNum; // 生成数
 	bool m_bGrow; // 植物生成フラグ
+	CObject3D* m_pFlame[4];		// 縁取りのポインタ
 
 };
