@@ -148,7 +148,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// エフェクトの生成
-	//DispEffect();
+	DispEffect();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -244,16 +244,7 @@ void CGimmickAction::AddNumClone()
 	if (m_nNumClone >= GetNumActive()) { return; }
 	
 	// 加算
-	++m_nNumClone;
-
-	if (m_nNumClone >= GetNumActive())
-	{ // 分身の数が必要数に達した場合
-
-		// 抜け出す
-		return;
-	}
-
-
+	++m_nNumClone;	
 }
 
 //===========================================
