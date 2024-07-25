@@ -245,6 +245,15 @@ void CGimmickAction::AddNumClone()
 	
 	// 加算
 	++m_nNumClone;
+
+	if (m_nNumClone >= GetNumActive())
+	{ // 分身の数が必要数に達した場合
+
+		// 抜け出す
+		return;
+	}
+
+
 }
 
 //===========================================
