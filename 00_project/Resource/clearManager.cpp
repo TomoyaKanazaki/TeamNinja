@@ -8,6 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "clearManager.h"
+#include "clearFailManager.h"
 #include "clearSuccessManager.h"
 
 //************************************************************
@@ -39,7 +40,7 @@ CClearManager *CClearManager::Create(const CRetentionManager::EWin win)
 	switch (win)
 	{ // モードごとの処理
 	case CRetentionManager::WIN_FAIL:
-		//pClearManager = new CClearFailManager;	// TODO
+		pClearManager = new CClearFailManager;
 		break;
 
 	case CRetentionManager::WIN_SUCCESS:

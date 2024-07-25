@@ -25,9 +25,11 @@ namespace
 //************************************************************
 CClearFailManager::AFuncUpdateState CClearFailManager::m_aFuncUpdateState[] =	// 状態更新関数
 {
-	nullptr,						// 何もしない更新
-	&CClearFailManager::UpdateWait,	// 待機更新
-	nullptr,						// 終了更新
+	nullptr,										// 何もしない更新
+	&CClearFailManager::UpdateContinueTitleWait,	// コンテニュータイトル待機更新
+	&CClearFailManager::UpdateContinueTitle,		// コンテニュータイトル表示更新
+	&CClearFailManager::UpdateWait,					// 待機更新
+	nullptr,										// 終了更新
 };
 
 //************************************************************
@@ -100,6 +102,22 @@ void CClearFailManager::SkipStaging(void)
 //	全UIオブジェクトの移動処理
 //============================================================
 void CClearFailManager::SetAllMove(const D3DXVECTOR3& rMove)
+{
+
+}
+
+//============================================================
+//	コンテニュータイトル待機の更新処理
+//============================================================
+void CClearFailManager::UpdateContinueTitleWait(const float fDeltaTime)
+{
+
+}
+
+//============================================================
+//	コンテニュータイトル表示の更新処理
+//============================================================
+void CClearFailManager::UpdateContinueTitle(const float fDeltaTime)
 {
 
 }

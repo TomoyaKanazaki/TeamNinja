@@ -31,10 +31,12 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,	// 何もしない状態
-		STATE_WAIT,		// 待機状態
-		STATE_END,		// 終了状態
-		STATE_MAX		// この列挙型の総数
+		STATE_NONE = 0,				// 何もしない状態
+		STATE_CONTINUE_TITLE_WAIT,	// コンテニュータイトル待機状態
+		STATE_CONTINUE_TITLE,		// コンテニュータイトル表示状態
+		STATE_WAIT,					// 待機状態
+		STATE_END,					// 終了状態
+		STATE_MAX					// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -59,7 +61,9 @@ private:
 	static AFuncUpdateState m_aFuncUpdateState[];	// 状態更新関数
 
 	// メンバ関数
-	void UpdateWait(const float fDeltaTime);	// 待機更新
+	void UpdateContinueTitleWait(const float fDeltaTime);	// コンテニュータイトル待機更新
+	void UpdateContinueTitle(const float fDeltaTime);		// コンテニュータイトル表示更新
+	void UpdateWait(const float fDeltaTime);				// 待機更新
 
 	// メンバ変数
 	EState m_state;		// 状態
