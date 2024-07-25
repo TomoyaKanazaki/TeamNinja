@@ -1416,6 +1416,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		// TOOD エフェクトを出す ようわからんので丹野に相談
 		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f);
 
+		// 回避音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_PLAYERSTEP_000);
+
 		// 士気力を増やす
 		CTension::Create();
 

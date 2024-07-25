@@ -306,7 +306,7 @@ void CEditGimmick::DrawDebugInfo(void)
 	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[種類]\n", TYPE_NAME[m_infoCreate.type]);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.y);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f：[大きさ]\n", m_infoCreate.size.x, m_infoCreate.size.z);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[発動可能人数]\n", m_infoCreate.nNumActive);
 
 #endif	// _DEBUG
