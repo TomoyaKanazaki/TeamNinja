@@ -36,6 +36,7 @@ static_assert(NUM_ARRAY(MODEL) == CGodItem::TYPE_MAX, "ERROR : Type Count Mismat
 // 静的メンバ変数宣言
 //************************************************************
 CListManager<CGodItem>* CGodItem::m_pList = nullptr;		// リスト構造
+bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 
 //************************************************************
 //	子クラス [CGodItem] のメンバ関数
@@ -173,6 +174,9 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 		// 種類を設定する
 		pCoin->m_type = type;
 
+		// 取得状況を false にする
+		m_aGet[pCoin->m_type] = false;
+
 		// 確保したアドレスを返す
 		return pCoin;
 	}
@@ -196,8 +200,21 @@ bool CGodItem::Collision
 	const float fRadius			// 半径
 )
 {
-	// 球の当たり判定を返す
-	return collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius);
+	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius))
+	{ // 当たった場合
+
+		// 取得状況を true にする
+		m_aGet[m_type] = true;
+
+		// 終了処理
+		Uninit();
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
 }
 
 //============================================================
@@ -343,4 +360,13 @@ bool CGodItem::DuplicationCheck(const EType type)
 		// true を返す
 		return true;
 	}
+}
+
+//============================================================
+// 取得状況取得
+//============================================================
+bool CGodItem::IsGet(const EType type)
+{
+	// 取得状況を返す
+	return m_aGet[type];
 }
