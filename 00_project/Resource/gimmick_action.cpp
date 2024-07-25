@@ -148,7 +148,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// エフェクトの生成
-	//DispEffect();
+	DispEffect();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
