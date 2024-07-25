@@ -572,7 +572,7 @@ void CTitleManager::UpdateTrans(void)
 			m_state = STATE_NONE;	// 何もしない状態
 
 			// シーンの設定
-			GET_MANAGER->SetLoadScene(CScene::MODE_GAME);	// ゲーム画面
+			GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);	// セレクト画面
 
 			// サウンドの再生
 			GET_MANAGER->GetSound()->Play(CSound::LABEL_SE_DECISION_000);	// 決定音00
