@@ -57,14 +57,14 @@ public:
 
 	// 静的メンバ関数
 	static CGodItem* Create(const D3DXVECTOR3& rPos, const EType type);		// 生成処理
-	static CListManager<CGodItem>* GetList(void);			// リスト構造の取得処理
-	static HRESULT LoadSetup(const char* pPass);			// セットアップ
+	static CListManager<CGodItem>* GetList(void);	// リスト構造の取得処理
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
+	static bool IsGet(const EType type);			// 取得状況取得
 
 private:
 
 	// 静的メンバ関数
 	static bool DuplicationCheck(const EType type);		// 重複チェック処理
-	static bool IsGet(const EType type);				// 取得状況取得
 
 	// 静的メンバ変数
 	static CListManager<CGodItem>* m_pList;			// リスト構造

@@ -56,6 +56,8 @@ public:
 	{
 		std::string sStage;		// ステージ情報パス
 		std::string sEnemyAtc;	// 攻撃敵情報パス
+		std::string sCoin;		// コイン情報パス
+		std::string sGodItem;	// 神器情報パス
 		std::string sActor;		// アクター情報パス
 		std::string sGimmick;	// ギミック情報パス
 		std::string sPoint;		// ポイント情報パス

@@ -18,7 +18,6 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CAnim2D;		// アニメーション2Dクラス
 class CString2D;	// 文字列2Dクラス
 
 //************************************************************
@@ -34,6 +33,8 @@ public:
 		STATE_NONE = 0,				// 何もしない状態
 		STATE_CONTINUE_TITLE_WAIT,	// コンテニュータイトル待機状態
 		STATE_CONTINUE_TITLE,		// コンテニュータイトル表示状態
+		STATE_SELECT_WAIT,			// 選択肢待機状態
+		STATE_SELECT,				// 選択肢表示状態
 		STATE_WAIT,					// 待機状態
 		STATE_END,					// 終了状態
 		STATE_MAX					// この列挙型の総数
@@ -54,6 +55,14 @@ public:
 	bool IsEndState(void) const override { return (m_state == STATE_END); }	// 終了状況取得
 
 private:
+	// 選択列挙
+	enum ESelect
+	{
+		SELECT_YES = 0,	// はい
+		SELECT_NO,		// いいえ
+		SELECT_MAX		// この列挙型の総数
+	};
+
 	// 状態更新の関数ポインタ型エイリアス定義
 	typedef void (CClearFailManager::*AFuncUpdateState)(const float fDeltaTime);
 
@@ -63,9 +72,13 @@ private:
 	// メンバ関数
 	void UpdateContinueTitleWait(const float fDeltaTime);	// コンテニュータイトル待機更新
 	void UpdateContinueTitle(const float fDeltaTime);		// コンテニュータイトル表示更新
+	void UpdateSelectWait(const float fDeltaTime);			// 選択肢待機更新
+	void UpdateSelect(const float fDeltaTime);				// 選択肢表示更新
 	void UpdateWait(const float fDeltaTime);				// 待機更新
 
 	// メンバ変数
+	CString2D* m_apSelect[SELECT_MAX];	// 選択肢情報
+	CString2D* m_pContinue;				// コンテニュー情報
 	EState m_state;		// 状態
 	float m_fCurTime;	// 現在の待機時間
 };

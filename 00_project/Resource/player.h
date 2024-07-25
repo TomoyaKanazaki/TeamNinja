@@ -162,9 +162,11 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);	// アクターの当たり判定
+	void WalkSound(void);									// 歩行音処理
+	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);		// アクターの当たり判定
 	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
 	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
+
 #ifdef _DEBUG
 
 	void DebugJumpControl(void);	// ジャンプ操作
@@ -185,6 +187,7 @@ private:
 	D3DXVECTOR3	m_destRot;			// 目標向き
 	EState		m_state;			// 状態
 	int			m_nCounterState;	// 状態管理カウンター
+	int			m_nWalkCount;		// 歩行音カウント
 	bool		m_bJump;			// ジャンプ状況
 	float		m_fScalar;			// 移動量
 	bool		m_bGimmickClone;	// ギミッククローンの生成フラグ
