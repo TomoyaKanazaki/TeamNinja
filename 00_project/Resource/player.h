@@ -70,6 +70,7 @@ public:
 		MOTION_LANDING,		// 着地モーション
 		MOTION_DODGE,		// 回避モーション
 		MOTION_DEATH,		// 死亡モーション
+		MOTION_DAMAGE,		// ダメージモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -80,7 +81,8 @@ public:
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
 		STATE_DODGE,	// 回避状態
-		STATE_DEATH,		// 死亡状態
+		STATE_DEATH,	// 死亡状態
+		STATE_DAMAGE,	// ダメージ状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -112,7 +114,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetSpawn(void);						// 出現設定
-	void SetResult(void);						// リザルト設定
+	void SetResult();							// リザルト設定
 	void SetState(const EState state);			// 状態設定
 	EState GetState(void) const;				// 状態取得
 	float GetRadius(void) const;				// 半径取得
@@ -139,7 +141,8 @@ private:
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
-	EMotion UpdateDeath(const float fDeltaTime);		// 死亡状態時の更新
+	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
+	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
