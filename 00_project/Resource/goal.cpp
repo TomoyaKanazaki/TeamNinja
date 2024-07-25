@@ -64,7 +64,7 @@ HRESULT CGoal::Init(void)
 	BindModel("data\\MODEL\\Kunai\\Kunai000.x");
 
 	// 自身のラベルを設定
-	SetLabel(LABEL_GOAL);
+	SetLabel(LABEL_GOALPOINT);
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合

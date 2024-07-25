@@ -67,9 +67,11 @@ CObject::CObject(const ELabel label, const EDim dimension, const int nPriority)
 	m_dwID		= m_dwNextID;	// ユニークID
 	m_bUpdate	= true;			// 更新状況
 	m_bDraw		= true;			// 描画状況
+	m_bScreen	= true;			// 自身の画面内状況
 	m_bDeath	= false;		// 死亡フラグ
 	m_bZDraw	= false;		// 描画状況(Zテクスチャ)
 	m_bShadow	= false;		// 描画状況(シャドウ)
+
 #ifdef _DEBUG
 
 	// 自身の表示をONにする
@@ -300,6 +302,7 @@ void CObject::SetEnableDraw(const bool bDraw)
 	// 引数の描画状況を設定
 	m_bDraw = bDraw;
 }
+
 //============================================================
 //	Z描画状況の設定処理
 //============================================================
@@ -308,6 +311,7 @@ void CObject::SetEnableZDraw(const bool bDraw)
 	// 引数の描画状況を設定
 	m_bZDraw = bDraw;
 }
+
 //============================================================
 //	シャドウ描画状況の設定処理
 //============================================================
@@ -316,6 +320,7 @@ void CObject::SetEnableShadowDraw(const bool bDraw)
 	// 引数の描画状況を設定
 	m_bShadow = bDraw;
 }
+
 //============================================================
 //	二軸の位置の設定処理
 //============================================================
@@ -651,9 +656,8 @@ void CObject::DrawAll_Default(void)
 
 #endif	// _DEBUG
 
-				if (!pObject->m_bDraw
-					|| pObject->m_bDeath)
-				{ // 自動描画がOFF、または死亡している場合
+				if (!pObject->m_bDraw || !pObject->m_bScreen || pObject->m_bDeath)
+				{ // 自動描画がOFF、画面の範囲外、死亡している場合
 
 					// 次のオブジェクトへのポインタを代入
 					pObject = pObjectNext;
@@ -707,20 +711,19 @@ void CObject::DrawAll_Compensate(void)
 
 #endif	// _DEBUG
 
-				if (!pObject->m_bDraw
-					|| pObject->m_bDeath)
-				{ // 自動描画がOFF、または死亡している場合
+				if (!pObject->m_bDraw || !pObject->m_bScreen || pObject->m_bDeath)
+				{ // 自動描画がOFF、画面の範囲外、死亡している場合
 
 					// 次のオブジェクトへのポインタを代入
 					pObject = pObjectNext;
 					continue;
 				}
+
 				if (!pObject->IsShadowDraw() && !pObject->IsZDraw())
 				{
 					// オブジェクトの描画
 					pObject->Draw();
 				}
-				
 
 				// 次のオブジェクトへのポインタを代入
 				pObject = pObjectNext;
@@ -769,9 +772,8 @@ void CObject::DrawAll_ZShader(void)
 
 #endif	// _DEBUG
 
-			if (!pObject->m_bDraw
-				|| pObject->m_bDeath)
-			{ // 自動描画がOFF、または死亡している場合
+			if (!pObject->m_bDraw || !pObject->m_bScreen || pObject->m_bDeath)
+			{ // 自動描画がOFF、画面の範囲外、死亡している場合
 
 				// 次のオブジェクトへのポインタを代入
 				pObject = pObjectNext;
@@ -787,12 +789,10 @@ void CObject::DrawAll_ZShader(void)
 
 			// 次のオブジェクトへのポインタを代入
 			pObject = pObjectNext;
-
 		}
 	}
 
 	//終了
-
 	pZShader->End();
 }
 //============================================================
@@ -836,9 +836,8 @@ void CObject::DrawAll_ToonShadow(void)
 
 #endif	// _DEBUG
 
-			if (!pObject->m_bDraw
-				|| pObject->m_bDeath)
-			{ // 自動描画がOFF、または死亡している場合
+			if (!pObject->m_bDraw || !pObject->m_bScreen || pObject->m_bDeath)
+			{ // 自動描画がOFF、画面の範囲外、死亡している場合
 
 				// 次のオブジェクトへのポインタを代入
 				pObject = pObjectNext;
@@ -854,12 +853,10 @@ void CObject::DrawAll_ToonShadow(void)
 
 			// 次のオブジェクトへのポインタを代入
 			pObject = pObjectNext;
-
 		}
 	}
 
 	//終了
-
 	pShader->End();
 }
 //============================================================

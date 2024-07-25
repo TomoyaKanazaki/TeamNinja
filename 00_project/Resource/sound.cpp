@@ -27,6 +27,11 @@ namespace
 		{ "data\\SE\\stalkwalk000.wav", 0 },	// 追跡敵の歩く音
 		{ "data\\SE\\cloneattack000.wav", 0 },	// 分身を攻撃したときの音
 		{ "data\\SE\\stalkattack000.wav", 0 },	// 追跡敵が攻撃したときの音
+		{ "data\\SE\\stalkfound000.wav", 0 },	// 追跡敵が発見したときの音
+		{ "data\\SE\\stalkupset000.wav", 0 },	// 追跡敵が動揺したときの音
+		{ "data\\SE\\stalkstance000.wav", 0 },	// 追跡敵が構えたときの音
+		{ "data\\SE\\playerwalk000.wav", 0 },	// プレイヤーの歩行音
+		{ "data\\SE\\playerjump000.wav", 0 },	// プレイヤーのジャンプ音
 	};
 }
 

@@ -30,7 +30,6 @@ namespace
 {
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_coin.txt";	// セーブテキストパス
 
-	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.1f, 0.1f, 0.1f);		// 拡縮率
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
 }
@@ -220,18 +219,6 @@ void CEditCoin::DrawDebugInfo(void)
 }
 
 //============================================================
-// 位置更新
-//============================================================
-void CEditCoin::UpdatePosition(void)
-{
-	// 位置の更新
-	CEditorObject::UpdatePosition();
-
-	// 位置を反映
-	m_pCoin->SetVec3Position(GetVec3Position());
-}
-
-//============================================================
 //	コインの生成処理
 //============================================================
 void CEditCoin::CreateCoin(void)
@@ -377,7 +364,7 @@ HRESULT CEditCoin::Save(void)
 {
 #if _DEBUG
 
-	// 地面のリストを取得
+	// 神器のリストを取得
 	CListManager<CCoin>* pListManager = CCoin::GetList();	// リストマネージャー
 	std::list<CCoin*> listCoin;	// 地面リスト
 	if (pListManager != nullptr)

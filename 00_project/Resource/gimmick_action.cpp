@@ -20,6 +20,8 @@
 #include "camera.h"
 #include "multi_plant.h"
 
+#include "object3D.h"
+
 // 定数定義
 namespace
 {
@@ -33,6 +35,8 @@ namespace
 		false, // 重い扉
 		false, // 橋
 	};
+
+	const float FRAME_SIZE = 2.0f; // 縁取り
 }
 
 //************************************************************
@@ -58,6 +62,7 @@ m_bMoment(false),				// 発動中
 m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
 {
 	memset(&m_pEffect[0], 0, sizeof(m_pEffect));
+	memset(&m_pFlame[0], 0, sizeof(m_pFlame));
 }
 
 //============================================================
@@ -101,6 +106,9 @@ HRESULT CGimmickAction::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// 自身を描画しない
+	SetEnableDraw(false);
 
 	// 成功を返す
 	return S_OK;
@@ -146,7 +154,10 @@ void CGimmickAction::Update(const float fDeltaTime)
 	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// エフェクトの生成
-	DispEffect();
+	//DispEffect();
+
+	// 縁取りの色を更新
+	FrameAlpha();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -280,8 +291,6 @@ void CGimmickAction::DispEffect()
 		posVtx[i] = GetVertexPosition(i) + posThis;
 	}
 
-	SetEnableDraw(GET_CAMERA->OnScreenPolygon(&posVtx[0]));
-
 	// エフェクトの表示フラグ
 	bool bDisp = false;
 
@@ -313,19 +322,98 @@ void CGimmickAction::DispEffect()
 	// エフェクトの生成
 	for (int i = 0; i < 4; ++i)
 	{
-		if (m_pEffect[i] == nullptr)
-		{
-			m_pEffect[i] = 
-				GET_EFFECT->Create
-				(
-					"data\\EFFEKSEER\\concentration.efkefc",
-					posVtx[i],
-					VEC3_ZERO,
-					VEC3_ZERO,
-					25.0f,
-					true
-				);
-		}
+		// 既に生成されていた場合次に進む
+		if (m_pEffect[i] != nullptr) { continue; }
+
+		m_pEffect[i] = GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\smoke.efkefc",
+			posVtx[i],
+			VEC3_ZERO,
+			VEC3_ZERO,
+			5.0f,
+			true
+		);
+	}
+}
+
+//===========================================
+//  縁取りの透明化
+//===========================================
+void CGimmickAction::FrameAlpha()
+{
+	// プレイヤー座標を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// 自身の座標を取得
+	D3DXVECTOR3 posThis = GetVec3Position();
+
+	// 自身とプレイヤーを結ぶベクトルを算出
+	D3DXVECTOR3 vec = posPlayer - posThis;
+
+	// ベクトルの大きさ^2を算出
+	float scalarVec = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+
+	// 自身のサイズを取得
+	D3DXVECTOR3 size = GetVec3Sizing();
+
+	// サイズの大きさ^2を算出
+	float scalarSize = size.x * size.x + size.y * size.y + size.z * size.z;
+
+	// 表示範囲に対するベクトルの大きさの割合を算出
+	float fScale = scalarVec / scalarSize;
+	if (fScale > 1.0f) { fScale = 1.0f; }
+
+	// 縁取りの透明度を更新
+	for (int i = 0; i < 4; ++i)
+	{
+		// 生成されていない場合次に進む
+		if (m_pFlame[i] == nullptr) { continue; }
+
+		// Scaleが0以下の場合描画しない
+		if (fScale <= 0.0) { m_pFlame[i]->SetEnableDraw(false); continue; }
+		else{ m_pFlame[i]->SetEnableDraw(true); }
+
+		// 透明度を更新する
+		m_pFlame[i]->SetAlpha(1.0f - fScale);
+	}
+}
+
+//===========================================
+//  縁取りの表示
+//===========================================
+void CGimmickAction::FrameCreate()
+{
+	// 各頂点の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+	D3DXVECTOR3 posVtx[4] =
+	{
+		GetVertexPosition(0) + pos,
+		GetVertexPosition(1) + pos,
+		GetVertexPosition(2) + pos,
+		GetVertexPosition(3) + pos
+	};
+
+	// 各頂点を結ぶベクトルを算出
+	D3DXVECTOR3 vecVtx[4] =
+	{
+		(posVtx[1] - posVtx[0]),
+		(posVtx[3] - posVtx[1]),
+		(posVtx[0] - posVtx[2]),
+		(posVtx[2] - posVtx[3])
+	};	
+
+	// 縁を生成
+	for (int i = 0; i < 4; ++i)
+	{
+		// 辺の情報を設定
+		D3DXVECTOR3 size = vecVtx[i];
+		if (size.x == 0.0f) { size.x = FRAME_SIZE; size.z = fabsf(size.z); }
+		if (size.z == 0.0f) { size.z = FRAME_SIZE; size.x = fabsf(size.x); }
+
+		// 辺を生成
+		m_pFlame[i] = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
+		m_pFlame[i]->SetLabel(CObject::LABEL_GIMMICK);
 	}
 }
 
@@ -352,4 +440,7 @@ void CGimmickAction::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// 植物の生成
 	CMultiPlant::Create(GetVec3Position(), rSize, GetType(), GetNumActive());
+
+	// 縁取りの生成
+	FrameCreate();
 }

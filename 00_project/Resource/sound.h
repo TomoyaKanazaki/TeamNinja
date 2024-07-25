@@ -38,6 +38,11 @@ public:
 		LABEL_SE_STALKWALK_000,		// 追跡敵の歩く音
 		LABEL_SE_CLONEATTACK_000,	// 分身を攻撃したときの音
 		LABEL_SE_STALKATTACK_000,	// 追跡敵が攻撃したときの音
+		LABEL_SE_STALKFOUND_000,	// 追跡敵が発見したときの音
+		LABEL_SE_STALKUPSET_000,	// 追跡敵が動揺したときの音
+		LABEL_SE_STALKSTANCE_000,	// 追跡敵が構えたときの音
+		LABEL_SE_PLAYERWALK_000,	// プレイヤーの歩行音
+		LABEL_SE_PLAYERJUMP_S,		// プレイヤーの小ジャンプ音
 		LABEL_MAX					// この列挙型の総数
 	};
 
