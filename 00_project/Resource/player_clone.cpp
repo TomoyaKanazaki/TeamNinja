@@ -328,6 +328,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// •Ç‚Ì“–‚½‚è”»’è
 	(void)CollisionWall();
 
+	D3DXVECTOR3 pos = GetVec3Position();
+	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", pos.x, pos.y, pos.x);
+
 	// ‹OÕ‚ÌXV
 	m_pOrbit->Update(fDeltaTime);
 
@@ -416,9 +419,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		(
 			"data\\EFFEKSEER\\guide_wind_ball.efkefc",
 			GetVec3Position(),
-			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()),0.0f),
 			VEC3_ZERO,
-			5.0f,
+			VEC3_ZERO,
+			7.5f,
 			false
 		);
 	}
@@ -430,9 +433,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		(
 			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
 			GetVec3Position(),
-			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()), 0.0f),
 			VEC3_ZERO,
-			5.0f,
+			VEC3_ZERO,
+			7.5f,
 			false
 		);
 	}

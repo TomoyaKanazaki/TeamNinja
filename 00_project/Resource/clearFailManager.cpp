@@ -42,7 +42,7 @@ namespace
 
 		const bool	ITALIC		= false;	// イタリック
 		const float	MOVE_TIME	= 0.68f;	// 移動時間
-		const float	PLUS_TIME	= 0.1f;		// 経過の延長時間
+		const float	PLUS_TIME	= 0.25f;	// 経過の延長時間
 		const float	WAIT_TIME	= 0.15f;	// 待機時間
 		const float	CHAR_HEIGHT	= 100.0f;	// 文字縦幅
 		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
@@ -83,9 +83,11 @@ CClearFailManager::AFuncUpdateState CClearFailManager::m_aFuncUpdateState[] =	//
 //	コンストラクタ
 //============================================================
 CClearFailManager::CClearFailManager() :
-	m_pContinue	(nullptr),		// コンテニュー情報
-	m_state		(STATE_NONE),	// 状態
-	m_fCurTime	(0.0f)			// 現在の待機時間
+	m_pContinue	 (nullptr),		// コンテニュー情報
+	m_state		 (STATE_NONE),	// 状態
+	m_fCurTime	 (0.0f),		// 現在の待機時間
+	m_nCurSelect (0),			// 現在の選択肢
+	m_nOldSelect (0)			// 前回の選択肢
 {
 	// メンバ変数をクリア
 	memset(&m_apSelect[0], 0, sizeof(m_apSelect));	// 選択肢情報
@@ -109,9 +111,11 @@ HRESULT CClearFailManager::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_apSelect[0], 0, sizeof(m_apSelect));	// 選択肢情報
-	m_state		= STATE_CONTINUE_TITLE_WAIT;		// 状態
-	m_pContinue	= nullptr;	// コンテニュー情報
-	m_fCurTime	= 0.0f;		// 現在の待機時間
+	m_state		 = STATE_CONTINUE_TITLE_WAIT;		// 状態
+	m_pContinue	 = nullptr;	// コンテニュー情報
+	m_fCurTime	 = 0.0f;	// 現在の待機時間
+	m_nCurSelect = 0;		// 現在の選択肢
+	m_nOldSelect = 0;		// 前回の選択肢
 
 	//--------------------------------------------------------
 	//	コンテニューの生成 / 初期設定
@@ -209,6 +213,22 @@ void CClearFailManager::SkipStaging(void)
 {
 	// 待機状態にする
 	m_state = STATE_WAIT;
+
+	// コンテニューを演出後の見た目にする
+	m_pContinue->SetEnableDraw(true);				// 自動描画をONにする
+	m_pContinue->SetCharHeight(cont::DEST_HEIGHT);	// 目標サイズに設定
+
+	for (int i = 0; i < SELECT_MAX; i++)
+	{ // 選択肢の総数分繰り返す
+
+		// 選択肢の目標生成位置を計算
+		D3DXVECTOR3 posDest = select::DEST_POS + (select::SPACE * (float)i);
+
+		// 選択肢を演出後の見た目にする
+		m_apSelect[i]->SetEnableDraw(true);			// 自動描画をONにする
+		m_apSelect[i]->SetVec3Position(posDest);	// 目標位置に設定
+		m_apSelect[i]->SetColor(select::DEST_COL);	// 目標色に設定
+	}
 }
 
 //============================================================
@@ -216,7 +236,15 @@ void CClearFailManager::SkipStaging(void)
 //============================================================
 void CClearFailManager::SetAllMove(const D3DXVECTOR3& rMove)
 {
+	// コンテニューの位置を移動
+	m_pContinue->SetVec3Position(m_pContinue->GetVec3Position() + rMove);
 
+	for (int i = 0; i < SELECT_MAX; i++)
+	{ // 選択肢の総数分繰り返す
+
+		// 選択肢の位置を移動
+		m_apSelect[i]->SetVec3Position(m_apSelect[i]->GetVec3Position() + rMove);
+	}
 }
 
 //============================================================
@@ -356,9 +384,68 @@ void CClearFailManager::UpdateSelect(const float fDeltaTime)
 //============================================================
 void CClearFailManager::UpdateWait(const float fDeltaTime)
 {
-	if (GET_INPUTPAD->IsAnyTrigger()
-	||  GET_INPUTKEY->IsTrigger(DIK_SPACE))
+	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
+	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
+
+	//--------------------------------------------------------
+	//	選択肢操作
+	//--------------------------------------------------------
+	// 前回の選択肢を保存
+	m_nOldSelect = m_nCurSelect;
+
+	// 選択肢操作
+	if (pKey->IsTrigger(DIK_LEFT)
+	||  pPad->IsTrigger(CInputPad::KEY_LEFT)
+	||  pPad->GetTriggerLStick(CInputPad::STICK_LEFT)
+	||  pPad->GetTriggerRStick(CInputPad::STICK_LEFT))
 	{
+		// 左に選択をずらす
+		m_nCurSelect = (m_nCurSelect + 1) % SELECT_MAX;
+	}
+	if (pKey->IsTrigger(DIK_RIGHT)
+	||  pPad->IsTrigger(CInputPad::KEY_RIGHT)
+	||  pPad->GetTriggerLStick(CInputPad::STICK_RIGHT)
+	||  pPad->GetTriggerRStick(CInputPad::STICK_RIGHT))
+	{
+		// 右に選択をずらす
+		m_nCurSelect = (m_nCurSelect + (SELECT_MAX - 1)) % SELECT_MAX;
+	}
+
+	// 前回の選択要素の色を白色に設定
+	m_apSelect[m_nOldSelect]->SetColor(select::DEFAULT_COL);
+
+	// 現在の選択要素の色を黄色に設定
+	m_apSelect[m_nCurSelect]->SetColor(select::CHOICE_COL);
+
+	//--------------------------------------------------------
+	//	選択肢決定
+	//--------------------------------------------------------
+	if (pKey->IsTrigger(DIK_SPACE)
+	||  pKey->IsTrigger(DIK_RETURN)
+	||  pPad->IsTrigger(CInputPad::KEY_A)
+	||  pPad->IsTrigger(CInputPad::KEY_B)
+	||  pPad->IsTrigger(CInputPad::KEY_X)
+	||  pPad->IsTrigger(CInputPad::KEY_Y))
+	{
+		switch (m_nCurSelect)
+		{ // 選択肢ごとの処理
+		case SELECT_YES:
+
+			// 同じマップを次のマップに指定
+			SetNext(CScene::MODE_GAME);
+			break;
+
+		case SELECT_NO:
+
+			// セレクトマップを次のマップに指定
+			SetNext(CScene::MODE_SELECT);
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+
 		// 終了状態にする
 		m_state = STATE_END;
 	}

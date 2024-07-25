@@ -228,7 +228,8 @@ HRESULT CResultManager::Init(void)
 //============================================================
 void CResultManager::Uninit(void)
 {
-
+	// クリアマネージャーの破棄
+	SAFE_REF_RELEASE(m_pClear);
 }
 
 //============================================================
@@ -581,8 +582,8 @@ void CResultManager::UpdateEnd(const float fDeltaTime)
 	// フェード中の場合抜ける
 	if (GET_MANAGER->GetFade()->IsFade()) { return; }
 
-	// 選択画面に遷移する
-	GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+	// クリアマネージャーで選択されたシーンに遷移する
+	GET_MANAGER->SetLoadScene(m_pClear->GetNext());
 }
 
 //============================================================
