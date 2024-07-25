@@ -16,6 +16,7 @@
 #include "scrollText2D.h"
 #include "timeUI.h"
 #include "blink2D.h"
+#include "godItem.h"
 
 //************************************************************
 //	定数宣言
@@ -430,7 +431,7 @@ void CClearSuccessManager::SkipStaging(void)
 		m_apGodItemBG[i]->SetColor(icon_bg::DEST_COL);	// 目標色に設定
 
 		// 神器アイコンを演出後の見た目にする
-		m_apGodItemIcon[i]->SetEnableDraw(true);					// 自動描画をONにする	// TODO：獲得した神器だけ描画
+		m_apGodItemIcon[i]->SetEnableDraw(CGodItem::IsGet((CGodItem::EType)i));	// 自動描画を獲得している場合ONにする
 		m_apGodItemIcon[i]->SetVec3Sizing(icon_item::DEST_SIZE);	// 目標サイズに設定
 		m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);			// 目標色に設定
 	}
@@ -720,8 +721,8 @@ void CClearSuccessManager::UpdateItemIconWait(const float fDeltaTime)
 		for (int i = 0; i < CStage::GOD_MAX; i++)
 		{ // 神器の総数分繰り返す
 
-			// 神器アイコンの自動描画をONにする
-			m_apGodItemIcon[i]->SetEnableDraw(true);	// TODO：獲得した神器だけ描画
+			// 獲得した神器アイコンの自動描画をONにする
+			m_apGodItemIcon[i]->SetEnableDraw(CGodItem::IsGet((CGodItem::EType)i));
 		}
 
 		// 神器アイコン表示状態にする
