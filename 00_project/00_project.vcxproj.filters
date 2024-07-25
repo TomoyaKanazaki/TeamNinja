@@ -615,6 +615,9 @@
     <ClInclude Include="Resource\clearFailManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\renderTexture.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1165,6 +1168,9 @@
     </ClCompile>
     <ClCompile Include="Resource\clearFailManager.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\renderTexture.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

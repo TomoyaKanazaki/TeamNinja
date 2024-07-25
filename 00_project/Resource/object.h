@@ -73,7 +73,7 @@ public:
 	enum EScene
 	{
 		SCENE_MAIN = 0,	// メインシーン
-		SCENE_STAGE,	// ステージシーン
+		SCENE_TRANS,	// 遷移ポイントシーン
 		SCENE_MAX		// この列挙型の総数
 	};
 
