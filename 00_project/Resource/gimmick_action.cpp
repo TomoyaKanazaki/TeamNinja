@@ -35,8 +35,6 @@ namespace
 		false, // 重い扉
 		false, // 橋
 	};
-
-	const float FRAME_SIZE = 2.0f; // 縁取り
 }
 
 //************************************************************
@@ -106,9 +104,6 @@ HRESULT CGimmickAction::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
-	// 自身を描画しない
-	SetEnableDraw(false);
-
 	// 成功を返す
 	return S_OK;
 }
@@ -153,7 +148,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
 
 	// エフェクトの生成
-	//DispEffect();
+	DispEffect();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -249,7 +244,7 @@ void CGimmickAction::AddNumClone()
 	if (m_nNumClone >= GetNumActive()) { return; }
 	
 	// 加算
-	++m_nNumClone;
+	++m_nNumClone;	
 }
 
 //===========================================
@@ -334,44 +329,6 @@ void CGimmickAction::DispEffect()
 }
 
 //===========================================
-//  縁取りの表示
-//===========================================
-void CGimmickAction::FrameCreate()
-{
-	// 各頂点の座標を取得
-	D3DXVECTOR3 pos = GetVec3Position();
-	D3DXVECTOR3 posVtx[4] =
-	{
-		GetVertexPosition(0) + pos,
-		GetVertexPosition(1) + pos,
-		GetVertexPosition(2) + pos,
-		GetVertexPosition(3) + pos
-	};
-
-	// 各頂点を結ぶベクトルを算出
-	D3DXVECTOR3 vecVtx[4] =
-	{
-		(posVtx[1] - posVtx[0]),
-		(posVtx[3] - posVtx[1]),
-		(posVtx[0] - posVtx[2]),
-		(posVtx[2] - posVtx[3])
-	};	
-
-	// 縁を生成
-	for (int i = 0; i < 4; ++i)
-	{
-		// 辺の情報を設定
-		D3DXVECTOR3 size = vecVtx[i];
-		if (size.x == 0.0f) { size.x = FRAME_SIZE; size.z = fabsf(size.z); }
-		if (size.z == 0.0f) { size.z = FRAME_SIZE; size.x = fabsf(size.x); }
-
-		// 辺を生成
-		CObject3D* pObj = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
-		pObj->SetLabel(CObject::LABEL_GIMMICK);
-	}
-}
-
-//===========================================
 //  発動判定位置の設定
 //===========================================
 void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
@@ -394,7 +351,4 @@ void CGimmickAction::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// 植物の生成
 	CMultiPlant::Create(GetVec3Position(), rSize, GetType(), GetNumActive());
-
-	// 縁取りの生成
-	FrameCreate();
 }

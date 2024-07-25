@@ -20,6 +20,8 @@
 #include "liquid.h"
 #include "camera_change.h"
 #include "enemyAttack.h"
+#include "coin.h"
+#include "godItem.h"
 #include "actor.h"
 #include "gimmick.h"
 #include "checkpoint.h"
@@ -31,7 +33,7 @@
 //************************************************************
 namespace
 {
-	const char* INIT_MAPPASS = "data\\MAP\\FOREST00\\map.txt";	// 初期マップパス
+	const char* INIT_MAPPASS = "data\\MAP\\FOREST02\\map.txt";	// 初期マップパス
 }
 
 //************************************************************
@@ -144,6 +146,26 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	// 敵のセットアップの読込
 	if (!rPass.sEnemyAtc.empty())	// パスが指定されている場合
 	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// コインのセットアップの読込
+	if(!rPass.sCoin.empty())	// パスが指定されている場合
+	if (FAILED(CCoin::LoadSetup(rPass.sCoin.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 神器のセットアップの読込
+	if (!rPass.sGodItem.empty())	// パスが指定されている場合
+	if (FAILED(CGodItem::LoadSetup(rPass.sGodItem.c_str())))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
