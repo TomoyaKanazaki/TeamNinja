@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource\blink2D.h" />
+    <ClInclude Include="Resource\clearFailManager.h" />
     <ClInclude Include="Resource\clearManager.h" />
     <ClInclude Include="Resource\clearSuccessManager.h" />
     <ClInclude Include="Resource\coin.h" />
@@ -345,6 +346,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\blink2D.cpp" />
+    <ClCompile Include="Resource\clearFailManager.cpp" />
     <ClCompile Include="Resource\clearManager.cpp" />
     <ClCompile Include="Resource\clearSuccessManager.cpp" />
     <ClCompile Include="Resource\coin.cpp" />

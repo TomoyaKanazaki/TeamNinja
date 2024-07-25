@@ -803,7 +803,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 {
 	// リザルトを呼び出す
-	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAILED);
+	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAIL);
 
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
