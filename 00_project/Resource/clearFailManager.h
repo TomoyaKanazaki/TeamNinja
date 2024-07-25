@@ -81,6 +81,8 @@ private:
 	CString2D* m_pContinue;				// コンテニュー情報
 	EState m_state;		// 状態
 	float m_fCurTime;	// 現在の待機時間
+	int m_nCurSelect;	// 現在の選択肢
+	int m_nOldSelect;	// 前回の選択肢
 };
 
 #endif	// _CLEAR_FAIL_MANAGER_H_
