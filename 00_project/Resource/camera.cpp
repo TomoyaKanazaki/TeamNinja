@@ -20,6 +20,7 @@
 #include "goal.h"
 #include "ZTexture.h"
 #include "collision.h"
+#include "retentionManager.h"
 
 //************************************************************
 //	定数宣言
@@ -142,10 +143,21 @@ namespace
 	// リザルトカメラ情報
 	namespace result
 	{
+		const float	PLUS_SIDE[] =	// プレイヤー横位置に加算する
+		{
+			85.0f,	// クリア不明
+			115.0f,	// クリア失敗
+			85.0f,	// クリア成功
+		};
+		const float	PLUS_UP[] =	// プレイヤー縦位置に加算する
+		{
+			60.0f,	// クリア不明
+			40.0f,	// クリア失敗
+			60.0f,	// クリア成功
+		};
+
 		const float	INIT_DIS	= 200.0f;	// 追従カメラの距離
 		const float	INIT_ROTX	= HALF_PI;	// 追従カメラの向きX初期値
-		const float	PLUS_SIDE	= 85.0f;	// プレイヤー横位置に加算する
-		const float	PLUS_UP		= 60.0f;	// プレイヤー縦位置に加算する
 		const float	PLUS_ROTY	= 0.28f;	// プレイヤーヨー向きに加算する量
 		const float REV_DIFF	= 0.035f;	// 差分の補正係数
 	}
@@ -606,11 +618,14 @@ void CCamera::SetDestResult(void)
 	//----------------------------------------------------
 	//	位置の更新
 	//----------------------------------------------------
+	// クリア状況を取得
+	CRetentionManager::EWin win = GET_RETENTION->GetWin();
+
 	// 注視点の目標位置を計算
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
-	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP;	// プレイヤーの縦方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;	// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP[win];	// プレイヤーの縦方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
 
 	// 目標位置をそのまま現在位置にも設定
 	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR;
@@ -1062,11 +1077,14 @@ void CCamera::Result(void)
 	//----------------------------------------------------
 	//	位置の更新
 	//----------------------------------------------------
+	// クリア状況を取得
+	CRetentionManager::EWin win = GET_RETENTION->GetWin();
+	
 	// 注視点の目標位置を計算
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
-	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP;	// プレイヤーの縦方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;	// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP[win];	// プレイヤーの縦方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
 
 	// 注視点の差分位置を計算
 	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
