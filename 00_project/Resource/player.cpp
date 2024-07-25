@@ -748,7 +748,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// •Ç‚Ì“–‚½‚è”»’è
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move);
 
 	// ƒRƒCƒ“‚Æ‚Ì“–‚½‚è”»’èˆ—
 	CollisionCoin(posPlayer);
