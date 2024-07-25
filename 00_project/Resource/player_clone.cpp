@@ -416,9 +416,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		(
 			"data\\EFFEKSEER\\guide_wind_ball.efkefc",
 			GetVec3Position(),
-			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()),0.0f),
 			VEC3_ZERO,
-			5.0f,
+			VEC3_ZERO,
+			7.5f,
 			false
 		);
 	}
@@ -430,9 +430,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 		(
 			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
 			GetVec3Position(),
-			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()), 0.0f),
 			VEC3_ZERO,
-			5.0f,
+			VEC3_ZERO,
+			7.5f,
 			false
 		);
 	}
