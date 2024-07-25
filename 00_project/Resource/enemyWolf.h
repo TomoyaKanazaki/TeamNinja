@@ -116,6 +116,7 @@ private:
 	int UpdateThreat(void);		// 威嚇処理
 	void SetState(const EState state);			// 状態の設定処理
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
+	void WalkSound(void);							// 歩行音処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
