@@ -625,6 +625,22 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 			// 敵情報パスを保存
 			pPassInfo->sEnemyAtc = str;
 		}
+		else if (str == "COIN_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// コイン読込パスを読込
+
+			// コイン情報パスを保存
+			pPassInfo->sCoin = str;
+		}
+		else if (str == "GODITEM_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// 神器読込パスを読込
+
+			// 神器情報パスを保存
+			pPassInfo->sGodItem = str;
+		}
 		else if (str == "ACTOR_PASS")
 		{
 			file >> str;	// ＝を読込
