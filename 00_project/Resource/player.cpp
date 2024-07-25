@@ -494,7 +494,7 @@ void CPlayer::SetSpawn(void)
 //============================================================
 //	リザルトの設定処理
 //============================================================
-void CPlayer::SetResult(void)
+void CPlayer::SetResult()
 {
 	// プレイヤー向きを設定
 	D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
@@ -510,7 +510,15 @@ void CPlayer::SetResult(void)
 	SetMove(VEC3_ZERO);
 
 	// 待機モーションを設定
-	SetMotion(MOTION_IDOL);
+	switch (GET_RETENTION->GetWin())
+	{
+	case CRetentionManager::WIN_FAIL:
+		SetMotion(MOTION_DEATH);
+		break;
+	case CRetentionManager::WIN_SUCCESS:
+		SetMotion(MOTION_IDOL);
+		break;
+	}
 }
 
 //============================================================
@@ -811,6 +819,8 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 {
 	// リザルトを呼び出す
 	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAIL);
+
+	DebugProc::Print(DebugProc::POINT_CENTER, "死亡状態\n");
 
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
@@ -1326,13 +1336,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_DEATH:	// 死亡モーション
-
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
-		}
 
 		break;
 
