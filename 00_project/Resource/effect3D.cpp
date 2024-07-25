@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -51,7 +52,8 @@ CEffect3D::CEffect3D(const EType type, const CObject::ELabel label) : CObjectBil
 	m_nLife		(0),			// 寿命
 	m_fSubSize	(0.0f),			// 大きさの減算量
 	m_fSubAlpha	(0.0f),			// 透明度の減算量
-	m_blend		(CRenderState::BLEND_ADD)	// αブレンド状況
+	m_blend		(CRenderState::BLEND_ADD),	// αブレンド状況
+	m_bVanish	(true)			// 自動消滅フラグ
 {
 
 }
@@ -119,8 +121,9 @@ void CEffect3D::Update(const float fDeltaTime)
 	D3DXCOLOR   col  = GetColor();			// 色
 	float fRadius    = size.x;				// 半径
 
-	if (m_nLife <= 0		// 寿命を迎えた
-	||  fRadius <= 0.0f)	// 半径が0.0f以下
+	if ((m_nLife <= 0		// 寿命を迎えた
+		|| fRadius <= 0.0f)		// 半径が0.0f以下
+		&& m_bVanish)			// 自動消滅フラグがtrue
 	{ // 上記のどれかになった場合
 
 		// オブジェクトを破棄
@@ -133,21 +136,28 @@ void CEffect3D::Update(const float fDeltaTime)
 	// 移動量を加算
 	pos += m_move;
 
-	// 寿命を減算
-	m_nLife--;
+	if (m_bVanish)
+	{
+		// 寿命を減算
+		m_nLife--;
 
-	// 半径を減算
-	fRadius -= m_fSubSize;
-	if (fRadius < 0.0f)
-	{ // 半径が0.0fより小さい場合
+		// 半径を減算
+		fRadius -= m_fSubSize;
+		if (fRadius < 0.0f)
+		{ // 半径が0.0fより小さい場合
 
-		// 半径を補正
-		fRadius = 0.0f;
+			// 半径を補正
+			fRadius = 0.0f;
+		}
+
+		// α値を減算
+		col.a -= m_fSubAlpha;
+		useful::LimitNum(col.a, 0.0f, 1.0f);	// α値制限
 	}
 
-	// α値を減算
-	col.a -= m_fSubAlpha;
-	useful::LimitNum(col.a, 0.0f, 1.0f);	// α値制限
+	// 画面外の場合描画をオフ
+	if (!GET_CAMERA->OnScreen(pos)) { SetEnableDraw(false); }
+	else{ SetEnableDraw(true); }
 
 	// 位置を設定
 	CObjectBillboard::SetVec3Position(pos);
@@ -245,6 +255,9 @@ CEffect3D *CEffect3D::Create
 		pEffect3D->m_nLife		= nLife;		// 寿命
 		pEffect3D->m_fSubSize	= fSubSize;		// 大きさの減算量
 		pEffect3D->m_fSubAlpha	= 1.0f / nLife;	// 透明度の減算量
+
+		// 自動消滅フラグの設定
+		if (nLife == -1) { pEffect3D->m_bVanish = false; }
 
 		// 確保したアドレスを返す
 		return pEffect3D;

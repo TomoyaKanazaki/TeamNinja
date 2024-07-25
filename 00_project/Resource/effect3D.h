@@ -76,6 +76,7 @@ private:
 	float	m_fSubSize;		// 大きさの減算量
 	float	m_fSubAlpha;	// 透明度の減算量
 	CRenderState::EBlend	m_blend;	// αブレンド状況
+	bool	m_bVanish;		// 自動消滅フラグ
 };
 
 #endif	// _EFFECT3D_H_

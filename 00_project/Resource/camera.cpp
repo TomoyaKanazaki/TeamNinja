@@ -919,6 +919,19 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 	{
 		for (int j = 0; j < 2; ++i)
 		{
+			// 頂点同士を結ぶベクトルを算出する
+			D3DXVECTOR3 vecPos = posScreen[i] - posVtx[j];
+
+			// 各ベクトルの大きさを求める
+			float fLengthScreen = sqrtf((vecScreen[i].x * vecScreen[i].x) + (vecScreen[i].y * vecScreen[i].y));
+			float fLengthToPos = sqrtf((vecPos.x * vecPos.x) + (vecPos.y * vecPos.y));
+
+			// 媒介変数tを求める
+			float t = (fLengthScreen * fLengthToPos) / (fLengthScreen * fLengthScreen);
+
+			// tが0.0 ~ 1.0の範囲がだった場合交差しないため次に進む
+			if (t < 0.0f || 1.0f < t) { continue; }
+
 			// ベクトルの内積を保存する変数
 			float fDot[2] = {};
 

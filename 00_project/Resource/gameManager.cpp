@@ -186,10 +186,6 @@ HRESULT CGameManager::Init(void)
 
 #endif
 
-	// 消さないでね(;;)(チュートリアルマップの敵)
-	CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
-	CEnemyAmbush::Create(D3DXVECTOR3(13825.0f, 650.0f, -650.0f), D3DXVECTOR3(VEC3_ZERO.x, D3DX_PI, VEC3_ZERO.z), 800.0f, 500.0f);
-
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
