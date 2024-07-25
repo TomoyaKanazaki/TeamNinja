@@ -239,22 +239,12 @@ HRESULT CCoin::LoadSetup(const char* pPass)
 				}
 				else if (str == "COINSET")
 				{
-					do
-					{ // END_COINSETを読み込むまでループ
+					file >> str;	// ＝を読込
 
-						// 文字列を読み込む
-						file >> str;
-
-						if (str == "POS")
-						{
-							file >> str;	// ＝を読込
-
-							// 位置を読込
-							file >> pos.x;
-							file >> pos.y;
-							file >> pos.z;
-						}
-					} while (str != "END_COINSET");	// END_COINSETを読み込むまでループ
+					// 位置を読込
+					file >> pos.x;
+					file >> pos.y;
+					file >> pos.z;
 
 					// コインオブジェクトの生成
 					if (CCoin::Create(pos) == nullptr)

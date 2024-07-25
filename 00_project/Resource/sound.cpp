@@ -27,6 +27,9 @@ namespace
 		{ "data\\SE\\stalkwalk000.wav", 0 },	// ’ÇÕ“G‚Ì•à‚­‰¹
 		{ "data\\SE\\cloneattack000.wav", 0 },	// •ªg‚ğUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\stalkattack000.wav", 0 },	// ’ÇÕ“G‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\stalkfound000.wav", 0 },	// ’ÇÕ“G‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\stalkupset000.wav", 0 },	// ’ÇÕ“G‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\stalkstance000.wav", 0 },	// ’ÇÕ“G‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
 	};
 }
 

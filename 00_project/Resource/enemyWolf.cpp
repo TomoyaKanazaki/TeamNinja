@@ -11,6 +11,7 @@
 #include "enemyWolf.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "sound.h"
 
 #include "enemyNavigation.h"
 #include "enemyNavStreet.h"
@@ -44,6 +45,11 @@ namespace
 	const int BLANKBITE_STATE_COUNT = 340;	// 動揺状態のカウント数
 	const int BLANKBITE_CYCLE_COUNT = 18;	// 動揺状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
+
+	// 音管理関係
+	const int WALK_SOUND_COUNT = 32;			// 歩行音を鳴らすカウント数
+	const int FOUND_SOUND_COUNT = 37;			// 発見音を鳴らすカウント数
+	const int UPSET_SOUND_COUNT = 200;			// 動揺音を鳴らすカウント数
 }
 
 //************************************************************
@@ -519,6 +525,9 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 		// 移動モーションを設定
 		*pMotion = MOTION_RUN;
 
+		// 歩行音処理
+		WalkSound();
+
 		break;
 
 	default:
@@ -532,6 +541,9 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 //============================================================
 int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	// 状態カウントを加算する
+	m_nStateCount++;
+
 	int motion = MOTION_IDOL;	// モーション
 
 	// 向き更新
@@ -574,6 +586,9 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		// 構え状態にする
 		SetState(STATE_STANCE);
 
+		// 構えた音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKSTANCE_000);
+
 		// TODO：構えモーションを返す
 		return MOTION_LANDING;
 	}
@@ -609,6 +624,12 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, const float fDeltaTime)
 //============================================================
 int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	// 歩行カウントを加算する
+	m_nStateCount++;
+
+	// 歩行音処理
+	WalkSound();
+
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
 	{ // 分身が目に入っていない場合
@@ -692,7 +713,11 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 	case CEnemyAttack::TARGET_PLAYER:
 
 		// プレイヤーの当たり判定処理
-		HitPlayer(rPos);
+		if (HitPlayer(rPos))
+		{
+			// 攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
+		}
 
 		// 状態カウントを加算する
 		m_nStateCount++;
@@ -780,6 +805,16 @@ int CEnemyWolf::UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime)
 //============================================================
 int CEnemyWolf::UpdateUpset(void)
 {
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount == UPSET_SOUND_COUNT)
+	{ // 状態カウントが一定数になったとき
+
+		// 動揺音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKUPSET_000);
+	}
+
 	// 動揺モーションにする
 	return MOTION_TURN;
 }
@@ -972,4 +1007,17 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	}
 
 	SetMovePosition(move);	// 移動量を反映
+}
+
+//============================================================
+// 歩行音処理
+//============================================================
+void CEnemyWolf::WalkSound(void)
+{
+	if (m_nStateCount % WALK_SOUND_COUNT == 0)
+	{ // 一定カウントごとに
+
+		// 歩行音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+	}
 }

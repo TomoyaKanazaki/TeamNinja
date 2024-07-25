@@ -100,7 +100,7 @@ HRESULT CGameManager::Init(void)
 	CPopUpUI::Create(START_TEXTURE);
 
 // 森02マップ用ギミック置き場
-#if 1
+#if 0
 
 	//=================================================
 	// [左側のやつ]
@@ -184,10 +184,11 @@ HRESULT CGameManager::Init(void)
 	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 
-	// 消さないでね(;;)(チュートリアルマップの敵)
-	//CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
-
 #endif
+
+	// 消さないでね(;;)(チュートリアルマップの敵)
+	CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
+	CEnemyAmbush::Create(D3DXVECTOR3(13825.0f, 650.0f, -650.0f), D3DXVECTOR3(VEC3_ZERO.x, D3DX_PI, VEC3_ZERO.z), 800.0f, 500.0f);
 
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
@@ -240,7 +241,7 @@ void CGameManager::Update(const float fDeltaTime)
 		{
 			if (CGoal::GetGoal()->GetClear())
 			{
-				TransitionResult(CRetentionManager::EWin::WIN_CLEAR);
+				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
 			}
 		}
 		break;

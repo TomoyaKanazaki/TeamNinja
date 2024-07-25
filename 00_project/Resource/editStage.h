@@ -46,6 +46,8 @@ public:
 		TYPE_GOALPOINT,		// ゴールポイント
 		TYPE_GIMMICK,		// ギミック
 		TYPE_CHANGER,		// カメラ変更地点
+		TYPE_COIN,			// コイン
+		TYPE_GODITEM,		// 神器
 		TYPE_MAX			// この列挙型の総数
 	};
 

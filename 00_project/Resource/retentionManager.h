@@ -20,10 +20,10 @@ public:
 	// 勝利列挙
 	enum EWin
 	{
-		WIN_NONE,	// 無し
-		WIN_FAILED,	// 勝利失敗
-		WIN_CLEAR,	// 勝利成功
-		WIN_MAX		// この列挙型の総数
+		WIN_NONE,		// 無し
+		WIN_FAIL,		// 勝利失敗
+		WIN_SUCCESS,	// 勝利成功
+		WIN_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ

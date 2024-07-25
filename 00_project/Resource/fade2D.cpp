@@ -25,6 +25,8 @@ namespace
 //============================================================
 CFade2D::CFade2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
 	m_state		(STATE_NONE),	// 状態
+	m_fSubIn	(0.0f),			// インのα値減少量
+	m_fAddOut	(0.0f),			// アウトのα値増加量
 	m_fWaitTime	(0.0f),			// 現在の余韻時間
 	m_fMaxWait	(0.0f)			// 余韻時間
 {
@@ -46,6 +48,8 @@ HRESULT CFade2D::Init(void)
 {
 	// メンバ変数を初期化
 	m_state		= STATE_NONE;	// 状態
+	m_fSubIn	= 0.0f;			// インのα値減少量
+	m_fAddOut	= 0.0f;			// アウトのα値増加量
 	m_fWaitTime	= 0.0f;			// 現在の余韻時間
 	m_fMaxWait	= 0.0f;			// 余韻時間
 
@@ -79,12 +83,11 @@ void CFade2D::Update(const float fDeltaTime)
 	// 何もしない状態の場合抜ける
 	if (m_state == STATE_NONE) { return; }
 
-	// 色を取得
-	D3DXCOLOR colFade = GetColor();
-
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_FADEOUT:
+	{
+		D3DXCOLOR colFade = GetColor();	// 色を取得
 
 		// 不透明にしていく
 		colFade.a += m_fAddOut * fDeltaTime;
@@ -94,13 +97,25 @@ void CFade2D::Update(const float fDeltaTime)
 			// α値を補正
 			colFade.a = 1.0f;
 
-			// 表示状態にする
-			m_state = STATE_DISP;
+			if (m_fMaxWait <= 0.0f)
+			{ // 余韻がない場合
+
+				// 表示状態にする
+				m_state = STATE_DISP;
+			}
+			else
+			{ // 余韻がある場合
+
+				// 余韻状態にする
+				m_state = STATE_WAIT;
+			}
 		}
+
+		SetColor(colFade);	// 色を反映
 		break;
-
+	}
 	case STATE_DISP:
-
+	{
 		// 余韻時間を加算
 		m_fWaitTime += fDeltaTime;
 		if (m_fWaitTime >= m_fMaxWait)
@@ -113,8 +128,14 @@ void CFade2D::Update(const float fDeltaTime)
 			m_state = STATE_FADEIN;
 		}
 		break;
-
+	}
+	case STATE_WAIT:
+	{
+		break;
+	}
 	case STATE_FADEIN:
+	{
+		D3DXCOLOR colFade = GetColor();	// 色を取得
 
 		// 透明にしていく
 		colFade.a -= m_fSubIn * fDeltaTime;
@@ -127,15 +148,14 @@ void CFade2D::Update(const float fDeltaTime)
 			// 何もしない状態にする
 			m_state = STATE_NONE;
 		}
-		break;
 
+		SetColor(colFade);	// 色を反映
+		break;
+	}
 	default:
 		assert(false);
 		break;
 	}
-
-	// 色を反映
-	SetColor(colFade);
 
 	// オブジェクト2Dの更新
 	CObject2D::Update(fDeltaTime);
