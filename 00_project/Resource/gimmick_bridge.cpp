@@ -26,7 +26,6 @@ namespace
 //  コンストラクタ
 //===========================================
 CGimmickBridge::CGimmickBridge() : CGimmickAction(),
-m_bSet(false),
 m_ConectPoint(),
 m_vecToWait(VEC3_ZERO),
 m_nIdxWait(0),
@@ -73,9 +72,6 @@ void CGimmickBridge::Uninit(void)
 //===========================================
 void CGimmickBridge::Update(const float fDeltaTime)
 {
-	// 橋の端の設定
-	if (!m_bSet) { CalcConectPoint(); }
-
 	// 橋を架ける
 	if (IsActive()) { Active(); }
 	else { SAFE_UNINIT(m_pField); }
@@ -246,6 +242,9 @@ void CGimmickBridge::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	{
 		CMultiPlant::Create(posPlant[i], size, GetType(), GetNumActive());
 	}
+
+	// 橋の端を設定
+	CalcConectPoint();
 }
 
 //===========================================
@@ -253,9 +252,6 @@ void CGimmickBridge::SetVec3Sizing(const D3DXVECTOR3& rSize)
 //===========================================
 void CGimmickBridge::CalcConectPoint()
 {
-	// 設定済みフラグを立てる
-	m_bSet = true;
-
 	// 自身の位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 

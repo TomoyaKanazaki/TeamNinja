@@ -40,7 +40,6 @@ private:
 	void Active(); // アクティブ状態の処理
 
 	// メンバ変数
-	bool m_bSet; // 設定済みフラグ
 	D3DXVECTOR3 m_ConectPoint[2]; // 橋の端
 	D3DXVECTOR3 m_vecToWait; // 中心座標から待機中心へのベクトル(単位ベクトル)
 	int m_nIdxWait; // 待機中心のインデックス
