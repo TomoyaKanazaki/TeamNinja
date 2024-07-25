@@ -328,6 +328,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// •Ç‚Ì“–‚½‚è”»’è
 	(void)CollisionWall();
 
+	D3DXVECTOR3 pos = GetVec3Position();
+	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", pos.x, pos.y, pos.x);
+
 	// ‹OÕ‚ÌXV
 	m_pOrbit->Update(fDeltaTime);
 

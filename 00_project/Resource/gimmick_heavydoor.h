@@ -53,6 +53,8 @@ public:
 
 private:
 
+	// メンバ関数
+	void CalcConectPoint(); // 待機位置の計算処理
 	void OpenTheDoor(D3DXVECTOR3& rPos);	// 扉を上げる
 	void CloseTheDoor(D3DXVECTOR3& rPos);	// 扉を下げる
 
@@ -62,6 +64,9 @@ private:
 	D3DXVECTOR3	m_oldPosDoor;	// 過去位置
 	D3DXVECTOR3 m_move;	// 移動量
 	EState m_state;		// 扉の状態
+	D3DXVECTOR3 m_ConectPoint[2]; // 待機位置
+	int m_nIdxWait; // 待機中心のインデックス
+	D3DXVECTOR3 m_vecToWait; // 中心座標から待機中心へのベクトル(単位ベクトル)
 
 };
 

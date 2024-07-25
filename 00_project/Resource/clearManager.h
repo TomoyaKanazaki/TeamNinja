@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "retentionManager.h"
+#include "scene.h"
 
 //************************************************************
 //	クラス定義
@@ -39,6 +40,14 @@ public:
 	// 静的メンバ関数
 	static CClearManager *Create(const CRetentionManager::EWin win);	// 生成
 	static void Release(CClearManager *&prClearManager);				// 破棄
+
+	// メンバ関数
+	void SetNext(const CScene::EMode next)	{ m_modeNext = next; }	// 遷移先シーン設定
+	CScene::EMode GetNext(void) const		{ return m_modeNext; }	// 遷移先シーン取得
+
+private:
+	// メンバ変数
+	CScene::EMode m_modeNext;	// 遷移先シーン	// TODO：将来的にステージパスにする
 };
 
 #endif	// _CLEARMANAGER_H_

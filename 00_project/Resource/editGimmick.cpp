@@ -376,7 +376,7 @@ void CEditGimmick::UpdateSize(void)
 	useful::LimitMinNum(m_infoCreate.size.z, INIT_SIZE.z);
 
 	// ‘å‚«‚³‚ð”½‰f
-	m_pGimmick->SetVec3Sizing(m_infoCreate.size);
+	m_pGimmick->CObject3D::SetVec3Sizing(m_infoCreate.size);
 }
 
 //============================================================
