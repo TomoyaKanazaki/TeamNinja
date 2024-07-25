@@ -38,6 +38,8 @@ public:
 		LABEL_SE_STALKWALK_000,		// ’ÇÕ“G‚Ì•à‚­‰¹
 		LABEL_SE_CLONEATTACK_000,	// •ªg‚ðUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 		LABEL_SE_STALKATTACK_000,	// ’ÇÕ“G‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		LABEL_SE_STALKFOUND_000,	// ’ÇÕ“G‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
+		LABEL_SE_STALKUPSET_000,	// ’ÇÕ“G‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
 		LABEL_MAX					// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

@@ -49,6 +49,8 @@ namespace
 
 	// 音管理関係
 	const int WALK_SOUND_COUNT = 32;			// 歩行音を鳴らすカウント数
+	const int FOUND_SOUND_COUNT = 37;			// 発見音を鳴らすカウント数
+	const int UPSET_SOUND_COUNT = 200;			// 動揺音を鳴らすカウント数
 }
 
 //************************************************************
@@ -616,6 +618,13 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaT
 	// 状態カウントを加算する
 	m_nStateCount++;
 
+	if (m_nStateCount == FOUND_SOUND_COUNT)
+	{ // 一定時間経過した場合
+
+		// 発見音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKFOUND_000);
+	}
+
 	if (m_nStateCount % FOUND_STATE_COUNT == 0)
 	{ // 一定時間経過した場合
 
@@ -814,6 +823,16 @@ CEnemyStalk::EMotion CEnemyStalk::BlankAttack(D3DXVECTOR3* pRot, const float fDe
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 {
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount == UPSET_SOUND_COUNT)
+	{ // 状態カウントが一定数になったとき
+
+		// 動揺音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKUPSET_000);
+	}
+
 	// 動揺モーションにする
 	return MOTION_UPSET;
 }
