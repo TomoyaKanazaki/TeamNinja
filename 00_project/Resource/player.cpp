@@ -77,6 +77,7 @@ namespace
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
+	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
@@ -299,6 +300,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDeath(fDeltaTime);
 		break;
 
+	case STATE_DAMAGE:
+
+		// ダメージ状態の更新
+		currentMotion = UpdateDamage(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -356,7 +363,6 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-
 }
 
 //============================================================
@@ -435,6 +441,9 @@ bool CPlayer::Hit(const int nDamage)
 
 	// ヒットエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// ダメージ状態に変更
+	m_state = STATE_DAMAGE;
 
 	// 死んじゃうｶﾓ~
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
@@ -761,19 +770,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 {
-	// 回避モーション以外の場合通常状態になる
-	if (GetMotion()->GetType() != MOTION_DODGE)
-	{
-		// エフェクトを削除する
-		SAFE_DELETE(m_pEffectdata);
-
-		// 通常状態に戻る
-		m_state = STATE_NORMAL;
-
-		// 待機モーションにする
-		return MOTION_IDOL;
-	}
-
 	// 向きの取得
 	float rot = GetVec3Rotation().y;
 
@@ -837,8 +833,45 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(pos);
 
-	// TODO : 死亡モーション
+	// 死亡モーション
 	return MOTION_DEATH;
+}
+
+//===========================================
+//  ダメージ状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
+{
+	// 向きの取得
+	float rot = GetVec3Rotation().y;
+
+	// 移動方向の算出
+	m_move.x = sinf(rot) * DAMAGE_MOVE;
+	m_move.z = cosf(rot) * DAMAGE_MOVE;
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	// ダメージモーション
+	return MOTION_DAMAGE;
 }
 
 //============================================================
@@ -1280,13 +1313,41 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
+			// エフェクトを削除する
+			SAFE_DELETE(m_pEffectdata);
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
+		}
+
+		break;
+
+	case MOTION_DEATH:	// 死亡モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 		}
 
 		break;
 
-	case MOTION_DEATH:	// 死亡モーション
+	case MOTION_DAMAGE:	// ダメージモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
+		}
+
 		break;
 	}
 }
