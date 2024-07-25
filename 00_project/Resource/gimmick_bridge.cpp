@@ -77,16 +77,8 @@ void CGimmickBridge::Update(const float fDeltaTime)
 	if (!m_bSet) { CalcConectPoint(); }
 
 	// 橋を架ける
-	if (IsActive())
-	{
-		Active();
-		SetEnableDraw(false);
-	}
-	else
-	{
-		SAFE_UNINIT(m_pField);
-		SetEnableDraw(true);
-	}
+	if (IsActive()) { Active(); }
+	else { SAFE_UNINIT(m_pField); }
 
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
@@ -224,7 +216,7 @@ void CGimmickBridge::SetVec3Sizing(const D3DXVECTOR3& rSize)
 
 	// 方向の取得
 	EAngle angle = GetAngle();
-	float fAngle = ANGLE_PI(angle);
+	float fAngle = ANGLE_PI(angle) + D3DX_PI * 0.5f;
 
 	// 方向に合わせて生成位置をずらす
 	posPlant[0] += D3DXVECTOR3((rSize.x + PLANT_RANGE) * 0.5f * cosf(fAngle), 0.0f, (rSize.z + PLANT_RANGE) * 0.5f * sinf(fAngle));
