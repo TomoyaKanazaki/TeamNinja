@@ -409,6 +409,35 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミックの人数を加算
 	m_pGimmick->AddNumClone();
 
+	if (gimmick->GetNumActive() <= gimmick->GetNumClone())
+	{ // 分身の数が必要数に達した場合
+
+		// エフェクトの生成TODO：向きも入れる
+		GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ball.efkefc",
+			GetVec3Position(),
+			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()),0.0f),
+			VEC3_ZERO,
+			5.0f,
+			false
+		);
+	}
+	else
+	{ // 上記以外
+
+		// エフェクトの生成TODO：向きも入れる
+		GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
+			GetVec3Position(),
+			D3DXVECTOR3(0.0f, ANGLE_PI(gimmick->GetAngle()), 0.0f),
+			VEC3_ZERO,
+			5.0f,
+			false
+		);
+	}
+
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
 
