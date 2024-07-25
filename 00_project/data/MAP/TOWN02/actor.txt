@@ -1,0 +1,79 @@
+#==============================================================================
+#
+#	城下町で使うアクター情報[toenactor.txr]
+#	Author : you
+#
+#==============================================================================
+STAGE_ACTORSET
+
+	ACTORSET
+		TYPE	= 18
+		POS		= -1325.00 0.00 600.00
+		ROT		= 0.00 0.00 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 22
+		POS		= -1300.00 0.00 -600.00
+		ROT		= 0.00 178.85 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 11
+		POS		= -400.00 100.00 -750.00
+		ROT		= 0.00 128.43 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 9
+		POS		= -325.00 100.00 750.00
+		ROT		= 0.00 55.10 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 7
+		POS		= 100.00 100.00 750.00
+		ROT		= 0.00 -161.67 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 23
+		POS		= 1300.00 200.00 -550.00
+		ROT		= 0.00 -180.00 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 24
+		POS		= 1850.00 200.00 -625.00
+		ROT		= 0.00 -180.00 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 26
+		POS		= 2575.00 200.00 -600.00
+		ROT		= 0.00 -180.00 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 25
+		POS		= 3325.00 200.00 -600.00
+		ROT		= 0.00 -179.47 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+
+	ACTORSET
+		TYPE	= 27
+		POS		= 3925.00 200.00 -200.00
+		ROT		= 0.00 -0.53 0.00
+		SCALE	= 1.00 1.00 1.00
+	END_ACTORSET
+	
+END_STAGE_ACTORSET
