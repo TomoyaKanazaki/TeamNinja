@@ -195,7 +195,6 @@ HRESULT CPlayerClone::Init(void)
 //============================================================
 void CPlayerClone::Uninit(void)
 {
-
 	// ãOê’ÇÃèIóπ
 	SAFE_UNINIT(m_pOrbit);
 

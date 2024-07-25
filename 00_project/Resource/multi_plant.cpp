@@ -214,6 +214,7 @@ void CMultiPlant::FrameCreate()
 
 		// •Ó‚ð¶¬
 		m_pFlame[i] = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
+		m_pFlame[i]->SetColor(XCOL_RED);
 		m_pFlame[i]->SetLabel(CObject::LABEL_GIMMICK);
 	}
 }
