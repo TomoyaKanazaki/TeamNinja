@@ -15,7 +15,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CScrollMeshRing::CScrollMeshRing(const CObject::ELabel label, const EDim dimension, const int nPriority) : CObjectMeshRing(label, dimension, nPriority),
+CScrollMeshRing::CScrollMeshRing(const CObject::ELabel label, const EScene scene, const EDim dimension, const int nPriority) : CObjectMeshRing(label, scene, dimension, nPriority),
 	m_fTexU		(0.0f),	// テクスチャ横座標の開始位置
 	m_fTexV		(0.0f),	// テクスチャ縦座標の開始位置
 	m_fMoveU	(0.0f),	// テクスチャ横座標の移動量

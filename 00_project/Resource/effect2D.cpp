@@ -37,7 +37,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CEffect2D::TYPE_MAX, "ERROR : Texture C
 //============================================================
 //	コンストラクタ
 //============================================================
-CEffect2D::CEffect2D(const EType type, const CObject::ELabel label) : CObject2D(CObject::LABEL_EFFECT, CObject::DIM_2D, (label == LABEL_EFFECT) ? EFF_PRIO : PART_PRIO),
+CEffect2D::CEffect2D(const EType type, const CObject::ELabel label) : CObject2D(CObject::LABEL_EFFECT, CObject::SCENE_MAIN, CObject::DIM_2D, (label == LABEL_EFFECT) ? EFF_PRIO : PART_PRIO),
 	m_type		(type),			// 種類
 	m_move		(VEC3_ZERO),	// 移動量
 	m_nLife		(0),			// 寿命

@@ -25,7 +25,13 @@ class CObjectCircle2D : public CObject
 {
 public:
 	// コンストラクタ
-	explicit CObjectCircle2D(const CObject::ELabel label = LABEL_NONE, const CObject::EDim dimension = DIM_2D, const int nPriority = object::DEFAULT_PRIO);
+	explicit CObjectCircle2D
+	( // 引数
+		const ELabel label = LABEL_NONE,		// ラベル
+		const EScene scene = SCENE_MAIN,		// シーン
+		const EDim dim = DIM_2D,				// 次元
+		const int nPrio = object::DEFAULT_PRIO	// 優先順位
+	);
 
 	// デストラクタ
 	~CObjectCircle2D() override;

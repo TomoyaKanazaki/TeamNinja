@@ -38,7 +38,7 @@ static_assert(NUM_ARRAY(MODEL) == CEnemyItem::TYPE_MAX, "ERROR : Type Count Mism
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemyItem::CEnemyItem() : CMultiModel(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
+CEnemyItem::CEnemyItem() : CMultiModel(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_type(TYPE_KATANA)		// 種類
 {
 

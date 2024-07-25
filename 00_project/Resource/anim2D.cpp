@@ -15,7 +15,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CAnim2D::CAnim2D(const CObject::ELabel label, const EDim dimension, const int nPriority) : CObject2D(label, dimension, nPriority),
+CAnim2D::CAnim2D(const CObject::ELabel label, const EScene scene, const EDim dimension, const int nPriority) : CObject2D(label, scene, dimension, nPriority),
 	m_nCounter		(0),	// アニメーションカウンター
 	m_nCntChange	(0),	// パターン変更カウント
 	m_nPattern		(0),	// アニメーションパターン

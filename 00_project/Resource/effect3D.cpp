@@ -46,7 +46,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CEffect3D::TYPE_MAX, "ERROR : Texture C
 //============================================================
 //	コンストラクタ
 //============================================================
-CEffect3D::CEffect3D(const EType type, const CObject::ELabel label) : CObjectBillboard(CObject::LABEL_EFFECT, CObject::DIM_3D, (label == LABEL_EFFECT) ? EFF_PRIO : PART_PRIO),
+CEffect3D::CEffect3D(const EType type, const CObject::ELabel label) : CObjectBillboard(CObject::LABEL_EFFECT, CObject::SCENE_MAIN, CObject::DIM_3D, (label == LABEL_EFFECT) ? EFF_PRIO : PART_PRIO),
 	m_type		(type),			// 種類
 	m_move		(VEC3_ZERO),	// 移動量
 	m_nLife		(0),			// 寿命

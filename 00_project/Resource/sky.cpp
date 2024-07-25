@@ -42,9 +42,8 @@ CListManager<CSky> *CSky::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CSky::CSky() : CObjectMeshDome(CObject::LABEL_SKY, CObject::DIM_3D, PRIORITY),
+CSky::CSky() : CObjectMeshDome(CObject::LABEL_SKY, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_type	(TYPE_NORMAL)	// 種類
-
 {
 
 }

@@ -54,7 +54,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CPopUpUI::CPopUpUI() : CObject2D(CObject::LABEL_STARTUI, CObject::DIM_2D, PRIORITY),
+CPopUpUI::CPopUpUI() : CObject2D(CObject::LABEL_STARTUI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 m_sizeMove(VEC3_ZERO),				// サイズの移動量
 m_state(STATE_ZOOM),				// 状態
 m_nDispCount(0),					// 表示カウント

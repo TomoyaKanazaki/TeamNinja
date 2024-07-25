@@ -19,7 +19,8 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectDivChara::CObjectDivChara(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority), m_nUpperParentID(0)
+CObjectDivChara::CObjectDivChara(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
+	m_nUpperParentID	(0)	// 上半身親インデックス
 {
 	// メンバ変数をクリア
 	memset(&m_apBody[0], 0, sizeof(m_apBody));	// 身体の情報

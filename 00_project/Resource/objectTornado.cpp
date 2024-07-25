@@ -26,7 +26,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectTornado::CObjectTornado() : CObject(LABEL_NONE, DIM_3D, object::DEFAULT_PRIO),
+CObjectTornado::CObjectTornado(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pVtxBuff		(nullptr),	// 頂点バッファ
 	m_pRenderState	(nullptr),	// レンダーステートの情報
 	m_nNumVtx		(0),		// 必要頂点数

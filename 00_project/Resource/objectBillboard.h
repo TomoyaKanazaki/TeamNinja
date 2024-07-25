@@ -40,7 +40,13 @@ public:
 	};
 
 	// コンストラクタ
-	explicit CObjectBillboard(const CObject::ELabel label = LABEL_NONE, const CObject::EDim dimension = DIM_3D, const int nPriority = object::DEFAULT_PRIO);
+	explicit CObjectBillboard
+	( // 引数
+		const ELabel label = LABEL_NONE,		// ラベル
+		const EScene scene = SCENE_MAIN,		// シーン
+		const EDim dim = DIM_3D,				// 次元
+		const int nPrio = object::DEFAULT_PRIO	// 優先順位
+	);
 
 	// デストラクタ
 	~CObjectBillboard() override;

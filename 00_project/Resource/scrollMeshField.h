@@ -24,7 +24,13 @@ class CScrollMeshField : public CObjectMeshField
 {
 public:
 	// コンストラクタ
-	explicit CScrollMeshField(const CObject::ELabel label = LABEL_NONE, const EDim dimension = DIM_3D, const int nPriority = object::DEFAULT_PRIO);
+	explicit CScrollMeshField
+	( // 引数
+		const ELabel label = LABEL_NONE,		// ラベル
+		const EScene scene = SCENE_MAIN,		// シーン
+		const EDim dim = DIM_3D,				// 次元
+		const int nPrio = object::DEFAULT_PRIO	// 優先順位
+	);
 
 	// デストラクタ
 	~CScrollMeshField() override;

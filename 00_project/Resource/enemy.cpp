@@ -41,7 +41,7 @@ CListManager<CEnemy>* CEnemy::m_pList = nullptr;			// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::DIM_3D, PRIORITY),
+CEnemy::CEnemy() : CObjectChara(CObject::LABEL_ENEMY, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_pItem(nullptr),			// 持ち物の情報
 m_oldPos(VEC3_ZERO),		// 過去位置
 m_posInit(VEC3_ZERO),		// 初期位置

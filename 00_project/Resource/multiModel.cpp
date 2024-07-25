@@ -20,10 +20,11 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CMultiModel::CMultiModel(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObjectModel(label, dimension, nPriority), m_pParent(nullptr)
+CMultiModel::CMultiModel(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObjectModel(label, scene, dimension, nPriority),
+	m_pParent	(nullptr)	// 親オブジェクト
 {
-	SetEnableZDraw(true);			// 深度書き込み有効化
-	SetEnableShadowDraw(true);			// 影書き込み有効化
+	SetEnableZDraw(true);		// 深度書き込み有効化
+	SetEnableShadowDraw(true);	// 影書き込み有効化
 }
 
 //============================================================

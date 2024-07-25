@@ -113,7 +113,7 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
+CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
@@ -121,7 +121,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
-	m_nWalkCount(0),				// 歩行音カウント
+	m_nWalkCount	(0),			// 歩行音カウント
 	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
@@ -415,8 +415,8 @@ CPlayer *CPlayer::Create
 		GET_EFFECT->Create
 		( // 引数
 			"data\\EFFEKSEER\\gamestart.efkefc",	// エフェクトパス
-			pPlayer->GetVec3Position(),	// 位置
-			pPlayer->GetVec3Rotation(),	// 向き
+			pPlayer->GetVec3Position(),				// 位置
+			VEC3_ZERO,	// 向き
 			VEC3_ZERO,	// 移動量
 			60.0f		// 拡大率
 		);

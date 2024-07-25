@@ -33,7 +33,7 @@ CListManager<CTransPoint>* CTransPoint::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::DIM_3D, PRIORITY),
+CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_sTransMapPass	(pPass)	// 遷移先マップパス
 {
 
