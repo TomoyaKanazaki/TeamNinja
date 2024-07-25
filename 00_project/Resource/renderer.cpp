@@ -37,13 +37,13 @@ namespace
 //	コンストラクタ
 //============================================================
 CRenderer::CRenderer() :
-	m_pD3D			(nullptr),	// Direct3Dオブジェクト
-	m_pD3DDevice	(nullptr),	// Direct3Dデバイス
-	m_pRenderScene	(nullptr),	// シーンレンダーテクスチャ
 	m_pDrawScreen	(nullptr),	// スクリーン描画ポリゴン
-	m_pDefSurScreen	(nullptr)	// 元のスクリーン描画サーフェイス保存用
+	m_pDefSurScreen	(nullptr),	// 元の描画サーフェイス保存用
+	m_pD3D			(nullptr),	// Direct3Dオブジェクト
+	m_pD3DDevice	(nullptr)	// Direct3Dデバイス
 {
-
+	// メンバ変数をクリア
+	memset(&m_apRenderScene[0], 0, sizeof(m_apRenderScene));	// シーンレンダーテクスチャ
 }
 
 //============================================================
@@ -59,15 +59,15 @@ CRenderer::~CRenderer()
 //============================================================
 HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 {
-	D3DDISPLAYMODE			d3ddm;	// ディスプレイモード
-	D3DPRESENT_PARAMETERS	d3dpp;	// プレゼンテーションパラメータ
+	D3DDISPLAYMODE		  d3ddm;	// ディスプレイモード
+	D3DPRESENT_PARAMETERS d3dpp;	// プレゼンテーションパラメータ
 
 	// メンバ変数を初期化
+	memset(&m_apRenderScene[0], 0, sizeof(m_apRenderScene));	// シーンレンダーテクスチャ
+	m_pDrawScreen	= nullptr;	// スクリーン描画ポリゴン
+	m_pDefSurScreen	= nullptr;	// 元の描画サーフェイス保存用
 	m_pD3D			= nullptr;	// Direct3Dオブジェクト
 	m_pD3DDevice	= nullptr;	// Direct3Dデバイス
-	m_pRenderScene	= nullptr;	// シーンレンダーテクスチャ
-	m_pDrawScreen	= nullptr;	// スクリーン描画ポリゴン
-	m_pDefSurScreen	= nullptr;	// 元のスクリーン描画サーフェイス保存用
 
 	// Direct3Dオブジェクトの生成
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -179,8 +179,13 @@ void CRenderer::Draw(void)
 	D3DVIEWPORT9 viewportDef;	// カメラのビューポート保存用
 	HRESULT hr;	// 異常終了の確認用
 
-	// テクスチャの作成
-	m_pRenderScene->Draw();
+	// 各シーンの描画
+	for (int i = CObject::SCENE_MAX - 1; i >= 0; i--)
+	{ // シーンの総数分を逆順で繰り返す
+
+		// レンダーテクスチャの作成
+		m_apRenderScene[i]->Draw();
+	}
 
 	// 塗りつぶしモードを設定
 	GET_DEVICE->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// ポリゴンを塗りつぶす
@@ -247,18 +252,23 @@ HRESULT CRenderer::CreateRenderTexture(void)
 		return E_FAIL;
 	}
 
-	// シーンレンダーテクスチャの生成
-	m_pRenderScene = CRenderTexture::Create(CObject::SCENE_MAIN);
-	if (m_pRenderScene == nullptr)
-	{ // 生成に失敗した場合
+	// 各シーンのレンダーテクスチャ生成
+	for (int i = 0; i < CObject::SCENE_MAX; i++)
+	{ // シーンの総数分繰り返す
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
+		// シーンレンダーテクスチャの生成
+		m_apRenderScene[i] = CRenderTexture::Create((CObject::EScene)i);
+		if (m_apRenderScene[i] == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
 	}
 
 	// スクリーン描画ポリゴンの生成
-	m_pDrawScreen = CScreen::Create(m_pRenderScene->GetTextureIndex());
+	m_pDrawScreen = CScreen::Create(m_apRenderScene[CObject::SCENE_MAIN]->GetTextureIndex());
 	if (m_pDrawScreen == nullptr)
 	{ // 生成に失敗した場合
 

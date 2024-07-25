@@ -58,11 +58,11 @@ private:
 	HRESULT CreateDevice(HWND hWnd, D3DPRESENT_PARAMETERS d3dpp);	// デバイス生成
 
 	// メンバ変数
+	CRenderTexture*		m_apRenderScene[CObject::SCENE_MAX];	// シーンレンダーテクスチャ
+	CScreen*			m_pDrawScreen;		// スクリーン描画ポリゴン
+	LPDIRECT3DSURFACE9	m_pDefSurScreen;	// 元の描画サーフェイス保存用
 	LPDIRECT3D9			m_pD3D;				// Direct3Dオブジェクト
 	LPDIRECT3DDEVICE9	m_pD3DDevice;		// Direct3Dデバイス
-	CRenderTexture*		m_pRenderScene;		// シーンレンダーテクスチャ
-	CScreen*			m_pDrawScreen;		// スクリーン描画ポリゴン
-	LPDIRECT3DSURFACE9	m_pDefSurScreen;	// 元のスクリーン描画サーフェイス保存用
 };
 
 #endif	// _RENDERER_H_
