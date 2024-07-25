@@ -180,19 +180,19 @@ HRESULT CPlayer::Init(void)
 	BindCharaData(SETUP_TXT);
 
 	// 軌跡の生成
-	m_pOrbit = COrbit::Create
-	( // 引数
-		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-		ORBIT_OFFSET,	// オフセット情報
-		ORBIT_PART		// 分割数
-	);
-	if (m_pOrbit == nullptr)
-	{ // 非使用中の場合
+	//m_pOrbit = COrbit::Create
+	//( // 引数
+	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+	//	ORBIT_OFFSET,	// オフセット情報
+	//	ORBIT_PART		// 分割数
+	//);
+	//if (m_pOrbit == nullptr)
+	//{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	//	// 失敗を返す
+	//	assert(false);
+	//	return E_FAIL;
+	//}
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -312,7 +312,7 @@ void CPlayer::Update(const float fDeltaTime)
 	WalkSound();
 
 	// 軌跡の更新
-	m_pOrbit->Update(fDeltaTime);
+	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
