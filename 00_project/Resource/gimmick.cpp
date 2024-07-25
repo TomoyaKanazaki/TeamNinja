@@ -222,8 +222,8 @@ CGimmick* CGimmick::Create
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);
 
-		// 色の設定
-		pGimmick->SetColor(XCOL_YELLOW);
+		// 自身を描画しない
+		pGimmick->SetEnableDraw(false);
 
 		// 確保したアドレスを返す
 		return pGimmick;

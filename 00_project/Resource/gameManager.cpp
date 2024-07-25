@@ -100,7 +100,7 @@ HRESULT CGameManager::Init(void)
 	CPopUpUI::Create(START_TEXTURE);
 
 // 森02マップ用ギミック置き場
-#if 0
+#if 1
 
 	//=================================================
 	// [左側のやつ]
