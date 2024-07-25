@@ -220,9 +220,6 @@ HRESULT CPlayer::Init(void)
 		CTension::Create();
 	}
 
-	// 開始エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
-
 	// 成功を返す
 	return S_OK;
 }
@@ -413,6 +410,16 @@ CPlayer *CPlayer::Create
 		// 向きを設定
 		pPlayer->SetVec3Rotation(rRot);
 		pPlayer->m_destRot = rRot;	// 目標向きも同一の向きにする
+
+		// 開始エフェクトを生成
+		GET_EFFECT->Create
+		( // 引数
+			"data\\EFFEKSEER\\gamestart.efkefc",	// エフェクトパス
+			pPlayer->GetVec3Position(),	// 位置
+			pPlayer->GetVec3Rotation(),	// 向き
+			VEC3_ZERO,	// 移動量
+			60.0f		// 拡大率
+		);
 
 		// 確保したアドレスを返す
 		return pPlayer;
