@@ -36,6 +36,14 @@ class CObject2D;		// オブジェクト2D
 class CPlayer : public CObjectChara
 {
 public:
+	// 種類列挙
+	enum EType
+	{
+		TYPE_SELECT = 0,	// セレクト画面
+		TYPE_GAME,			// ゲーム画面
+		TYPE_MAX			// この列挙型の総数
+	};
+
 	// モデル列挙
 	enum EModel
 	{
@@ -101,8 +109,14 @@ public:
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 
 	// 静的メンバ関数
-	static CPlayer *Create(CScene::EMode mode);		// 生成
+	static CPlayer *Create	// 生成
+	( // 引数
+		const EType type,			// 種類
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rRot		// 向き
+	);
 	static CListManager<CPlayer> *GetList(void);	// リスト取得
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 	// メンバ関数
 	void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }	// 目標向き設定

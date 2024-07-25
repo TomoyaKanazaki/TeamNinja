@@ -259,8 +259,14 @@ bool CEnemy::SearchPlayer(D3DXVECTOR3* pPos)
 	// 向きを正規化
 	useful::NormalizeRot(fRot);
 
+	// プレイヤー情報の取得
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// プレイヤーがいない場合抜ける
+	if (pPlayer == nullptr) { return false; }
+
 	// 位置を取得する
-	pos = CScene::GetPlayer()->GetVec3Position();
+	pos = pPlayer->GetVec3Position();
 
 	// 視界内に居なかった場合 false を返す
 	if (!collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI)) { return false; }
