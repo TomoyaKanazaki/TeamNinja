@@ -1537,6 +1537,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_fTempStick = -fTemp;
 	}
 
+	// 分身生み出し音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_CLONEPOP_000);
+
 	return false;
 }
 
@@ -1562,6 +1565,13 @@ void CPlayer::DelelteClone()
 
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+
+	if (m_pList != nullptr)
+	{ // リストが NULL じゃない場合
+
+		// 分身消失音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
+	}
 
 	// 分身を削除する
 	CPlayerClone::Delete();

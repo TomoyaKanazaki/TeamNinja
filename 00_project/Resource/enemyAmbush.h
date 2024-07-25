@@ -99,6 +99,7 @@ private:
 	EMotion Stance(void);						// \‚¦ˆ—
 	EMotion Threat(void);						// ˆĞŠdˆ—
 	void SetState(const EState state);			// ó‘Ô‚Ìİ’èˆ—
+	void WalkSound(void);						// •às‰¹ˆ—
 
 	// ƒƒ“ƒo•Ï”
 	EState m_state;						// ó‘Ô

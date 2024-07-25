@@ -11,6 +11,8 @@
 #include "enemyAmbush.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "stage.h"
+#include "sound.h"
 
 #include "multiModel.h"
 #include "enemyChaseRange.h"
@@ -42,6 +44,14 @@ namespace
 	const int BLANKATTACK_STATE_COUNT = 340;	// 空白攻撃状態のカウント数
 	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
+
+	// 音管理関係
+	namespace sound
+	{
+		const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
+		const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
+		const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
+	}
 }
 
 //************************************************************
@@ -307,6 +317,9 @@ int CEnemyAmbush::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float 
 	// 着地判定処理
 	UpdateLanding(pPos);
 
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(*pPos, RADIUS);
+
 	// 現在のモーションを返す
 	return nCurMotion;
 }
@@ -487,6 +500,13 @@ CEnemyAmbush::EMotion CEnemyAmbush::Warning(D3DXVECTOR3* pPos, const float fDelt
 	// 状態カウントを加算する
 	m_nStateCount++;
 
+	if (m_nStateCount == sound::FOUND_COUNT)
+	{ // 一定時間経過した場合
+
+		// 発見音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKFOUND_000);
+	}
+
 	if (m_nStateCount % FOUND_STATE_COUNT == 0)
 	{ // 一定時間経過した場合
 
@@ -503,6 +523,12 @@ CEnemyAmbush::EMotion CEnemyAmbush::Warning(D3DXVECTOR3* pPos, const float fDelt
 //============================================================
 CEnemyAmbush::EMotion CEnemyAmbush::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
+	// 歩行カウントを加算する
+	m_nStateCount++;
+
+	// 歩行音処理
+	WalkSound();
+
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
 	{ // 分身かプレイヤーが視界内にいない場合
@@ -672,6 +698,16 @@ CEnemyAmbush::EMotion CEnemyAmbush::BlankAttack(D3DXVECTOR3* pRot, const float f
 //============================================================
 CEnemyAmbush::EMotion CEnemyAmbush::Upset(void)
 {
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount == sound::UPSET_COUNT)
+	{ // 状態カウントが一定数になったとき
+
+		// 動揺音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKUPSET_000);
+	}
+
 	// 動揺モーションにする
 	return MOTION_UPSET;
 }
@@ -834,4 +870,17 @@ void CEnemyAmbush::SetState(const EState state)
 
 	// 状態カウントを0にする
 	m_nStateCount = 0;
+}
+
+//============================================================
+// 歩行音処理
+//============================================================
+void CEnemyAmbush::WalkSound(void)
+{
+	if (m_nStateCount % sound::WALK_COUNT == 0)
+	{ // 一定カウントごとに
+
+		// 歩行音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+	}
 }
