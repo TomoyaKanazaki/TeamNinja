@@ -40,6 +40,7 @@ public:
 		LABEL_SE_STALKATTACK_000,	// ’ÇÕ“G‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 		LABEL_SE_STALKFOUND_000,	// ’ÇÕ“G‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
 		LABEL_SE_STALKUPSET_000,	// ’ÇÕ“G‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
+		LABEL_SE_STALKSTANCE_000,	// ’ÇÕ“G‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
 		LABEL_MAX					// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

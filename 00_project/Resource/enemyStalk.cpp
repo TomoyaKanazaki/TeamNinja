@@ -599,6 +599,9 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 構え状態にする
 		SetState(STATE_STANCE);
 
+		// 構えた音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_STALKSTANCE_000);
+
 		// TODO：構えモーションを返す
 		return MOTION_WALK;
 	}
@@ -729,7 +732,7 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 		if (HitPlayer(rPos))
 		{ // プレイヤーに当たった場合
 
-			// 分身攻撃音を鳴らす
+			// 攻撃音を鳴らす
 			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
 		}
 
