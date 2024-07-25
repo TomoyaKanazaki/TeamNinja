@@ -28,6 +28,8 @@ namespace
 		0.5f, // 上
 		1.5f // 下
 	};
+
+	const int PRIORITY = 7;	// 優先順位
 }
 
 //===========================================
@@ -44,7 +46,7 @@ CListManager<CCameraChanger>* CCameraChanger::m_pList = nullptr; // オブジェクト
 //===========================================
 //  コンストラクタ
 //===========================================
-CCameraChanger::CCameraChanger() : CObjectMeshCube(CObject::LABEL_COLLISION),
+CCameraChanger::CCameraChanger() : CObjectMeshCube(CObject::LABEL_COLLISION, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_eDir(DIRECTION_FRONT),
 m_eRot(ROTATION_DEFAULT)
 {

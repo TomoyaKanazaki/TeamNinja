@@ -11,10 +11,10 @@
 #include "object.h"
 #include "manager.h"
 #include "fade.h"
+#include "camera.h"
 #include "loading.h"
 #include "renderState.h"
-#include "camera.h"
-#include "texture.h"
+#include "renderTexture.h"
 #include "screen.h"
 #include "debug.h"
 #include "debugproc.h"
@@ -39,10 +39,9 @@ namespace
 CRenderer::CRenderer() :
 	m_pD3D			(nullptr),	// Direct3Dオブジェクト
 	m_pD3DDevice	(nullptr),	// Direct3Dデバイス
-	m_nScreenTexID	(0),		// スクリーンテクスチャのインデックス
+	m_pRenderScene	(nullptr),	// シーンレンダーテクスチャ
 	m_pDrawScreen	(nullptr),	// スクリーン描画ポリゴン
-	m_pDefSurScreen	(nullptr),	// 元のスクリーン描画サーフェイス保存用
-	m_pSurScreen	(nullptr)	// スクリーン描画サーフェイスへのポインタ
+	m_pDefSurScreen	(nullptr)	// 元のスクリーン描画サーフェイス保存用
 {
 
 }
@@ -60,17 +59,15 @@ CRenderer::~CRenderer()
 //============================================================
 HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 {
-	// 変数を宣言
 	D3DDISPLAYMODE			d3ddm;	// ディスプレイモード
 	D3DPRESENT_PARAMETERS	d3dpp;	// プレゼンテーションパラメータ
 
 	// メンバ変数を初期化
 	m_pD3D			= nullptr;	// Direct3Dオブジェクト
 	m_pD3DDevice	= nullptr;	// Direct3Dデバイス
-	m_nScreenTexID	= NONE_IDX;	// スクリーンテクスチャのインデックス
+	m_pRenderScene	= nullptr;	// シーンレンダーテクスチャ
 	m_pDrawScreen	= nullptr;	// スクリーン描画ポリゴン
 	m_pDefSurScreen	= nullptr;	// 元のスクリーン描画サーフェイス保存用
-	m_pSurScreen	= nullptr;	// スクリーン描画サーフェイスへのポインタ
 
 	// Direct3Dオブジェクトの生成
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -97,12 +94,10 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	d3dpp.BackBufferHeight	= SCREEN_HEIGHT;	// ゲーム画面サイズ (高さ)
 	d3dpp.BackBufferFormat	= d3ddm.Format;		// バックバッファの形式
 	d3dpp.BackBufferCount	= 1;				// バックバッファの数
-
 	d3dpp.SwapEffect		= D3DSWAPEFFECT_DISCARD;		// ダブルバッファの切り替え (映像信号に同期)
 	d3dpp.EnableAutoDepthStencil	= TRUE;					// デプスバッファとステンシルバッファを作成
 	d3dpp.AutoDepthStencilFormat	= FORMAT_DEPTH_STENCIL;	// 深度バッファ：24bit, ステンシルバッファ：8bitを使用
 	d3dpp.Windowed					= bWindow;				// ウインドウモード
-
 	d3dpp.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;		// リフレッシュレート
 	d3dpp.PresentationInterval			= D3DPRESENT_INTERVAL_DEFAULT;	// インターバル
 
@@ -155,9 +150,6 @@ void CRenderer::Uninit(void)
 	// 元のスクリーン描画サーフェイスの破棄
 	SAFE_RELEASE(m_pDefSurScreen);
 
-	// スクリーン描画サーフェイスの破棄
-	SAFE_RELEASE(m_pSurScreen);
-
 	// Direct3Dデバイスの破棄
 	SAFE_RELEASE(m_pD3DDevice);
 
@@ -179,55 +171,17 @@ void CRenderer::Update(const float fDeltaTime)
 //============================================================
 void CRenderer::Draw(void)
 {
-	// ポインタを宣言
-	CManager	*pManager	= GET_MANAGER;				// マネージャー
-	CCamera		*pCamera	= pManager->GetCamera();	// カメラ
-	CFade		*pFade		= pManager->GetFade();		// フェード
-	CLoading	*pLoading	= pManager->GetLoading();	// ローディング
+	CManager *pManager	= GET_MANAGER;				// マネージャー
+	CCamera	 *pCamera	= pManager->GetCamera();	// カメラ
+	CFade	 *pFade		= pManager->GetFade();		// フェード
+	CLoading *pLoading	= pManager->GetLoading();	// ローディング
 
-	// 変数を宣言
 	D3DVIEWPORT9 viewportDef;	// カメラのビューポート保存用
 	HRESULT hr;	// 異常終了の確認用
 
-	//--------------------------------------------------------
-	//	テクスチャ作成用の描画
-	//--------------------------------------------------------
-	// 塗りつぶしモードの設定
-	GET_MANAGER->GetDebug()->SetFillMode();
+	// テクスチャの作成
+	m_pRenderScene->Draw();
 
-	// 描画サーフェイスをスクリーン描画サーフェイスに変更
-	hr = m_pD3DDevice->SetRenderTarget(0, m_pSurScreen);
-	assert(SUCCEEDED(hr));
-
-	// バックバッファとZバッファのクリア
-	hr = m_pD3DDevice->Clear(0, nullptr, FLAG_CLEAR, COL_CLEAR, 1.0f, 0);
-	assert(SUCCEEDED(hr));
-
-	// テクスチャ作成用の描画
-	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
-	{ // 描画開始が成功した場合
-
-		// 現在のビューポートを取得
-		m_pD3DDevice->GetViewport(&viewportDef);
-
-		// カメラの設定
-		assert(pCamera != nullptr);
-		pCamera->SetCamera(CCamera::TYPE_MAIN);
-
-		// オブジェクトの全描画
-		CObject::DrawAll(CObject::SCENE_MAIN);
-
-		// ビューポートを元に戻す
-		m_pD3DDevice->SetViewport(&viewportDef);
-
-		// 描画終了
-		hr = m_pD3DDevice->EndScene();
-		assert(SUCCEEDED(hr));
-	}
-
-	//--------------------------------------------------------
-	//	画面用の描画
-	//--------------------------------------------------------
 	// 塗りつぶしモードを設定
 	GET_DEVICE->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);	// ポリゴンを塗りつぶす
 
@@ -283,26 +237,8 @@ void CRenderer::Draw(void)
 //============================================================
 HRESULT CRenderer::CreateRenderTexture(void)
 {
-	// 変数を宣言
-	HRESULT hr;	// 異常終了の確認用
-
-	// ポインタを宣言
-	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
-	assert(pTexture != nullptr);
-
-	// 空のスクリーンテクスチャを生成
-	m_nScreenTexID = pTexture->Regist(CTexture::SInfo
-	( // 引数
-		SCREEN_WIDTH,			// テクスチャ横幅
-		SCREEN_HEIGHT,			// テクスチャ縦幅
-		0,						// ミップマップレベル
-		D3DUSAGE_RENDERTARGET,	// 性質・確保オプション
-		D3DFMT_X8R8G8B8,		// ピクセルフォーマット
-		D3DPOOL_DEFAULT			// 格納メモリ
-	));
-
 	// 元のスクリーン描画サーフェイスを保存
-	hr = m_pD3DDevice->GetRenderTarget(0, &m_pDefSurScreen);
+	HRESULT hr = m_pD3DDevice->GetRenderTarget(0, &m_pDefSurScreen);
 	if (FAILED(hr))
 	{ // サーフェイス取得に失敗した場合
 
@@ -311,14 +247,10 @@ HRESULT CRenderer::CreateRenderTexture(void)
 		return E_FAIL;
 	}
 
-	// スクリーン描画サーフェイスの取得
-	hr = pTexture->GetPtr(m_nScreenTexID)->GetSurfaceLevel
-	( // 引数
-		0,				// ミップマップレベル
-		&m_pSurScreen	// スクリーン描画サーフェイスへのポインタ
-	);
-	if (FAILED(hr))
-	{ // サーフェイス取得に失敗した場合
+	// シーンレンダーテクスチャの生成
+	m_pRenderScene = CRenderTexture::Create(CObject::SCENE_MAIN);
+	if (m_pRenderScene == nullptr)
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -326,7 +258,7 @@ HRESULT CRenderer::CreateRenderTexture(void)
 	}
 
 	// スクリーン描画ポリゴンの生成
-	m_pDrawScreen = CScreen::Create(m_nScreenTexID);
+	m_pDrawScreen = CScreen::Create(m_pRenderScene->GetTextureIndex());
 	if (m_pDrawScreen == nullptr)
 	{ // 生成に失敗した場合
 
@@ -355,6 +287,51 @@ D3DXCOLOR CRenderer::GetClearColor(void) const
 {
 	// 画面クリア色を返す
 	return COL_CLEAR;
+}
+
+//============================================================
+//	レンダーテクスチャ描画処理
+//============================================================
+void CRenderer::DrawRenderTexture(const CObject::EScene scene, LPDIRECT3DSURFACE9* pSurface)
+{
+	CManager *pManager	= GET_MANAGER;				// マネージャー
+	CCamera	 *pCamera	= pManager->GetCamera();	// カメラ
+
+	D3DVIEWPORT9 viewportDef;	// カメラのビューポート保存用
+	HRESULT hr;	// 異常終了の確認用
+
+	// 塗りつぶしモードの設定
+	GET_MANAGER->GetDebug()->SetFillMode();
+
+	// 描画サーフェイスをスクリーン描画サーフェイスに変更
+	hr = m_pD3DDevice->SetRenderTarget(0, *pSurface);
+	assert(SUCCEEDED(hr));
+
+	// バックバッファとZバッファのクリア
+	hr = m_pD3DDevice->Clear(0, nullptr, FLAG_CLEAR, COL_CLEAR, 1.0f, 0);
+	assert(SUCCEEDED(hr));
+
+	// テクスチャ作成用の描画
+	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
+	{ // 描画開始が成功した場合
+
+		// 現在のビューポートを取得
+		m_pD3DDevice->GetViewport(&viewportDef);
+
+		// カメラの設定
+		assert(pCamera != nullptr);
+		pCamera->SetCamera(CCamera::TYPE_MAIN);
+
+		// オブジェクトの全描画
+		CObject::DrawAll(scene);
+
+		// ビューポートを元に戻す
+		m_pD3DDevice->SetViewport(&viewportDef);
+
+		// 描画終了
+		hr = m_pD3DDevice->EndScene();
+		assert(SUCCEEDED(hr));
+	}
 }
 
 //============================================================

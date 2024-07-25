@@ -19,27 +19,29 @@
 //	クラス定義
 //************************************************************
 // レンダーテクスチャクラス
-class CRenderTexture : public CObject
+class CRenderTexture
 {
 public:
 	// コンストラクタ
-	CRenderTexture();
+	explicit CRenderTexture(const CObject::EScene scene);
 
 	// デストラクタ
 	~CRenderTexture();
 
-	// オーバーライド関数
-	HRESULT Init(void) override;	// 初期化
-	void Uninit(void) override;		// 終了
-	void Update(const float fDeltaTime) override;	// 更新
-	void Draw(CShader *pShader = nullptr) override;	// 描画
+	// メンバ関数
+	HRESULT Init(void);	// 初期化
+	void Uninit(void);	// 終了
+	void Draw(void);	// 描画
+	int GetTextureIndex(void) const { return m_nTextureID; }	// テクスチャインデックス取得
 
 	// 静的メンバ関数
-	static CRenderTexture *Create(void);	// 生成
+	static CRenderTexture *Create(const CObject::EScene scene);	// 生成
 
 private:
-	// オーバーライド関数
-	void Release(void) override { CObject::Release(); }	// 破棄
+	// メンバ変数
+	LPDIRECT3DSURFACE9 m_pSurTexture;	// テクスチャサーフェイスへのポインタ
+	int m_nTextureID;					// レンダーテクスチャインデックス
+	const CObject::EScene m_scene;		// 描画シーン
 };
 
 #endif	// _RENDER_TEXTURE_H_

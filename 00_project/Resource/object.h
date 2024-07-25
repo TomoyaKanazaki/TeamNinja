@@ -72,9 +72,9 @@ public:
 	// シーン列挙
 	enum EScene
 	{
-		SCENE_MAIN = 0,	// メインシーン
-		SCENE_TRANS,	// 遷移ポイントシーン
-		SCENE_MAX		// この列挙型の総数
+		SCENE_MAIN = 0,		// メインシーン
+		SCENE_BILLBOARD,	// ビルボードシーン
+		SCENE_MAX			// この列挙型の総数
 	};
 
 	// 次元列挙
