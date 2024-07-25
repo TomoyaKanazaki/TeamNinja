@@ -228,7 +228,8 @@ HRESULT CResultManager::Init(void)
 //============================================================
 void CResultManager::Uninit(void)
 {
-
+	// クリアマネージャーの破棄
+	SAFE_REF_RELEASE(m_pClear);
 }
 
 //============================================================
