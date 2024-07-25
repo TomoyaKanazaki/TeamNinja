@@ -64,9 +64,11 @@ private:
 
 	// 静的メンバ関数
 	static bool DuplicationCheck(const EType type);		// 重複チェック処理
+	static bool IsGet(const EType type);				// 取得状況取得
 
 	// 静的メンバ変数
 	static CListManager<CGodItem>* m_pList;			// リスト構造
+	static bool m_aGet[TYPE_MAX];					// 取得状況
 
 	// メンバ変数
 	CListManager<CGodItem>::AIterator m_iterator;	// イテレーター
