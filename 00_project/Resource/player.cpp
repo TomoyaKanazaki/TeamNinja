@@ -93,6 +93,12 @@ namespace
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
 	}
+
+	// サウンド関連の情報
+	namespace sound
+	{
+		const int WALK_COUNT = 19;		// 歩行音を鳴らすカウント
+	}
 }
 
 //************************************************************
@@ -114,6 +120,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
+	m_nWalkCount(0),				// 歩行音カウント
 	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
@@ -151,6 +158,7 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
+	m_nWalkCount = 0;				// 歩行音カウント
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -295,6 +303,9 @@ void CPlayer::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+
+	// 歩行音処理
+	WalkSound();
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -1623,6 +1634,36 @@ void CPlayer::FloorEdgeJump()
 
 	// モーションの設定
 	SetMotion(MOTION_JUMP_MINI, BLEND_FRAME_OTHER);
+
+	// 小ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_PLAYERJUMP_S);
+}
+
+//==========================================
+// 歩行音処理
+//==========================================
+void CPlayer::WalkSound(void)
+{
+	if (GetMotionType() == MOTION_DASH)
+	{ // 歩いている場合
+
+		// 歩行音カウントを加算する
+		m_nWalkCount++;
+	}
+	else
+	{ // 上記以外
+
+		// 歩行音カウントをリセットする
+		m_nWalkCount = 0;
+	}
+
+	if (m_nWalkCount > 0 &&
+		m_nWalkCount % sound::WALK_COUNT == 0)
+	{ // 一定時間ごとに
+
+		// 歩行音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+	}
 }
 
 //==========================================

@@ -217,7 +217,7 @@ CGimmick* CGimmick::Create
 		pGimmick->m_eAngle = eAngle;
 
 		// 位置を設定
-		pGimmick->SetVec3Position(rPos);
+		pGimmick->SetVec3Position(rPos + D3DXVECTOR3(0.0f, 0.01f, 0.0f));
 
 		// サイズを設定
 		pGimmick->SetVec3Sizing(rSize);

@@ -184,9 +184,6 @@ HRESULT CGameManager::Init(void)
 	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 
-	// 消さないでね(;;)(チュートリアルマップの敵)
-	//CEnemyAmbush::Create(D3DXVECTOR3(12950.0f, 650.0f, 75.0f), VEC3_ZERO, 800.0f, 500.0f);
-
 #endif
 
 	// 回り込みカメラの設定
