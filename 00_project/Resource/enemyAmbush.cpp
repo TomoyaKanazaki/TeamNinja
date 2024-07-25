@@ -374,8 +374,11 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// 待機モーションの設定
-			SetMotion(nMotion, BLEND_FRAME_OTHER);
+			// TODO：警戒モーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 警戒状態にする
+			SetState(STATE_CAUTION);
 		}
 
 		break;
@@ -596,9 +599,6 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 
 	case CEnemyAttack::TARGET_CLONE:
 
-		// 分身の当たり判定処理
-		HitClone(rPos);
-
 		if (HitClone(rPos))
 		{ // 分身に当たった場合
 
@@ -614,9 +614,6 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 			// 待ち伏せ状態にする
 			SetState(STATE_AMBUSH);
 		}
-
-		// 動揺状態にする
-		SetState(STATE_UPSET);
 
 		// 動揺モーションにする
 		return MOTION_UPSET;
