@@ -368,19 +368,19 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 //============================================================
 //	生成処理
 //============================================================
-CPlayer *CPlayer::Create(CScene::EMode mode)
+CPlayer *CPlayer::Create
+(
+	const EType type,			// 種類
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot		// 向き
+)
 {
-	// ポインタを宣言
-	CPlayer *pPlayer = nullptr;	// プレイヤー情報
-
 	// プレイヤーの生成
-	switch (mode)
-	{ // モードごとの処理
-	case CScene::MODE_TITLE:
-		break;
-
-	case CScene::MODE_SELECT:
-	case CScene::MODE_GAME:
+	CPlayer *pPlayer = nullptr;	// プレイヤー情報
+	switch (type)
+	{ // 種類ごとの処理
+	case TYPE_SELECT:
+	case TYPE_GAME:
 		pPlayer = new CPlayer;
 		break;
 
@@ -405,6 +405,14 @@ CPlayer *CPlayer::Create(CScene::EMode mode)
 			SAFE_DELETE(pPlayer);
 			return nullptr;
 		}
+
+		// 位置を設定
+		pPlayer->SetVec3Position(rPos);
+		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
+
+		// 向きを設定
+		pPlayer->SetVec3Rotation(rRot);
+		pPlayer->m_destRot = rRot;	// 目標向きも同一の向きにする
 
 		// 確保したアドレスを返す
 		return pPlayer;
@@ -468,15 +476,6 @@ void CPlayer::SetSpawn(void)
 
 	// カウンターを初期化
 	m_nCounterState = 0;	// 状態管理カウンター
-
-	// 位置を設定
-	D3DXVECTOR3 pos = D3DXVECTOR3(-1600.0f, 0.0f, 0.0f);	// 位置
-	SetVec3Position(pos);
-
-	// 向きを設定
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向き
-	SetVec3Rotation(rot);
-	m_destRot = rot;
 
 	// 移動量を初期化
 	m_move = VEC3_ZERO;
@@ -1813,6 +1812,93 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 			RADIUS		// 半径
 		);
 	}
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CPlayer::LoadSetup(const char* pPass)
+{
+	EType type = TYPE_SELECT;		// 種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "プレイヤーセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_PLAYERSET")
+		{
+			do
+			{ // END_STAGE_PLAYERSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str == "TYPE")
+				{
+					file >> str;	// ＝を読込
+					file >> str;	// 種類を読込
+
+					// 文字列を列挙に変換
+					if		(str == "SELECT")	{ type = TYPE_SELECT; }
+					else if	(str == "GAME")		{ type = TYPE_GAME; }
+				}
+				else if (str == "POS")
+				{
+					file >> str;	// ＝を読込
+
+					// 位置を読込
+					file >> pos.x;
+					file >> pos.y;
+					file >> pos.z;
+				}
+				else if (str == "ROT")
+				{
+					file >> str;	// ＝を読込
+
+					// 向きを読込
+					file >> rot.x;
+					file >> rot.y;
+					file >> rot.z;
+				}
+			} while (str != "END_STAGE_PLAYERSET");	// END_STAGE_CHECKSETを読み込むまでループ
+
+			// プレイヤーの生成
+			if (CPlayer::Create(type, pos, D3DXToRadian(rot)) == nullptr)
+			{ // 確保に失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
 
 #ifdef _DEBUG

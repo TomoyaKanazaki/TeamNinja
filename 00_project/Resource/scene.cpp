@@ -59,9 +59,6 @@ HRESULT CScene::Init(void)
 		return E_FAIL;
 	}
 
-	// プレイヤーの生成
-	CPlayer::Create(m_mode);
-
 	// ステージの割当
 	CStage* pStage = GET_STAGE;	// ステージ情報
 	pStage->BindStage(pStage->GetInitMapPass().c_str());
