@@ -62,6 +62,7 @@ m_bMoment(false),				// 発動中
 m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
 {
 	memset(&m_pEffect[0], 0, sizeof(m_pEffect));
+	memset(&m_pFlame[0], 0, sizeof(m_pFlame));
 }
 
 //============================================================
@@ -154,6 +155,9 @@ void CGimmickAction::Update(const float fDeltaTime)
 
 	// エフェクトの生成
 	//DispEffect();
+
+	// 縁取りの色を更新
+	FrameAlpha();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -334,6 +338,48 @@ void CGimmickAction::DispEffect()
 }
 
 //===========================================
+//  縁取りの透明化
+//===========================================
+void CGimmickAction::FrameAlpha()
+{
+	// プレイヤー座標を取得
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
+	// 自身の座標を取得
+	D3DXVECTOR3 posThis = GetVec3Position();
+
+	// 自身とプレイヤーを結ぶベクトルを算出
+	D3DXVECTOR3 vec = posPlayer - posThis;
+
+	// ベクトルの大きさ^2を算出
+	float scalarVec = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+
+	// 自身のサイズを取得
+	D3DXVECTOR3 size = GetVec3Sizing();
+
+	// サイズの大きさ^2を算出
+	float scalarSize = size.x * size.x + size.y * size.y + size.z * size.z;
+
+	// 表示範囲に対するベクトルの大きさの割合を算出
+	float fScale = scalarVec / scalarSize;
+	if (fScale > 1.0f) { fScale = 1.0f; }
+
+	// 縁取りの透明度を更新
+	for (int i = 0; i < 4; ++i)
+	{
+		// 生成されていない場合次に進む
+		if (m_pFlame[i] == nullptr) { continue; }
+
+		// Scaleが0以下の場合描画しない
+		if (fScale <= 0.0) { m_pFlame[i]->SetEnableDraw(false); continue; }
+		else{ m_pFlame[i]->SetEnableDraw(true); }
+
+		// 透明度を更新する
+		m_pFlame[i]->SetAlpha(1.0f - fScale);
+	}
+}
+
+//===========================================
 //  縁取りの表示
 //===========================================
 void CGimmickAction::FrameCreate()
@@ -366,8 +412,8 @@ void CGimmickAction::FrameCreate()
 		if (size.z == 0.0f) { size.z = FRAME_SIZE; size.x = fabsf(size.x); }
 
 		// 辺を生成
-		CObject3D* pObj = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
-		pObj->SetLabel(CObject::LABEL_GIMMICK);
+		m_pFlame[i] = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
+		m_pFlame[i]->SetLabel(CObject::LABEL_GIMMICK);
 	}
 }
 
