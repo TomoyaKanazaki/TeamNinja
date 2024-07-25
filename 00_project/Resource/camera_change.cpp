@@ -45,7 +45,6 @@ CListManager<CCameraChanger>* CCameraChanger::m_pList = nullptr; // オブジェクト
 //  コンストラクタ
 //===========================================
 CCameraChanger::CCameraChanger() : CObjectMeshCube(CObject::LABEL_COLLISION),
-m_bChange(false),
 m_eDir(DIRECTION_FRONT),
 m_eRot(ROTATION_DEFAULT)
 {
@@ -118,20 +117,6 @@ void CCameraChanger::Uninit()
 //===========================================
 void CCameraChanger::Update(const float fDeltaTime)
 {
-	// ゲームシーンの場合更新を行う
-	if (CScene::MODE_GAME == GET_MANAGER->GetScene()->GetMode())
-	{
-		// 各種判定用情報の取得
-		CPlayer* player = GET_PLAYER; // プレイヤーポインタ
-		D3DXVECTOR3 posPlayer = player->GetVec3Position(); // プレイヤー座標
-		D3DXVECTOR3 sizePlayer = player->GetVec3Sizing(); // プレイヤーサイズ
-		D3DXVECTOR3 posThis = GetVec3Position(); // 自身の座標
-		D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
-
-		// フラグの更新
-		m_bChange = collision::Box3D(posThis, posPlayer, D3DXVECTOR3(sizeThis.x, sizeThis.y * 2.0f, sizeThis.z), D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), sizePlayer, sizePlayer);
-	}
-
 	// 親クラスの更新処理
 	CObjectMeshCube::Update(fDeltaTime);
 }
@@ -148,6 +133,27 @@ void CCameraChanger::Draw(CShader* pShader)
 
 	//親クラスの描画処理
 	CObjectMeshCube::Draw(pShader);
+}
+
+//===========================================
+//	ヒット判定の取得
+//===========================================
+bool CCameraChanger::CollChange() const
+{
+	// プレイヤー情報の取得
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// プレイヤーがいない場合抜ける
+	if (pPlayer == nullptr) { return false; }
+
+	// 各種判定用情報の取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position(); // プレイヤー座標
+	D3DXVECTOR3 sizePlayer = pPlayer->GetVec3Sizing(); // プレイヤーサイズ
+	D3DXVECTOR3 posThis = GetVec3Position(); // 自身の座標
+	D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
+
+	// 矩形判定の判定結果を返す
+	return collision::Box3D(posThis, posPlayer, D3DXVECTOR3(sizeThis.x, sizeThis.y * 2.0f, sizeThis.z), D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), sizePlayer, sizePlayer);
 }
 
 //===========================================

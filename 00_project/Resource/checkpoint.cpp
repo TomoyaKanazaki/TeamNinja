@@ -10,6 +10,7 @@
 #include "player.h"
 #include "collision.h"
 #include "popupUI.h"
+#include "sound.h"
 #include "goal.h"
 
 //==========================================
@@ -211,6 +212,9 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// プレイヤーに自身の情報を与える
 	Player->SetCheckPoint(this);
+
+	// セーブ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 
 	//現在のエフェクトを削除
 	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();

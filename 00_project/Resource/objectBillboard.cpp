@@ -27,7 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectBillboard::CObjectBillboard(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectBillboard::CObjectBillboard(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pVtxBuff		(nullptr),			// 頂点バッファへのポインタ
 	m_pRenderState	(nullptr),			// レンダーステートの情報
 	m_pos			(VEC3_ZERO),		// 位置

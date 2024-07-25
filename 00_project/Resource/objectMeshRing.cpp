@@ -33,7 +33,7 @@ static_assert(NUM_ARRAY(CALC_TEXDIR) == CObjectMeshRing::TEXDIR_MAX, "ERROR : Ar
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectMeshRing::CObjectMeshRing(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectMeshRing::CObjectMeshRing(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pVtxBuff		(nullptr),		// 頂点バッファ
 	m_pIdxBuff		(nullptr),		// インデックスバッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報

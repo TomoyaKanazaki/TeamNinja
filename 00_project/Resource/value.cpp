@@ -38,7 +38,8 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 //	コンストラクタ
 //============================================================
-CValue::CValue() : CAnim2D(CObject::LABEL_NONE, CObject::DIM_2D, PRIORITY), m_nNum(0)
+CValue::CValue() : CAnim2D(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
+	m_nNum	(0)	// 表示数値
 {
 
 }

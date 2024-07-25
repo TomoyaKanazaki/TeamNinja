@@ -16,8 +16,8 @@
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
-CObject *CObject::m_apTop[DIM_MAX][object::MAX_PRIO] = {};	// 先頭のオブジェクトへのポインタ
-CObject *CObject::m_apCur[DIM_MAX][object::MAX_PRIO] = {};	// 最後尾のオブジェクトへのポインタ
+CObject *CObject::m_apTop[SCENE_MAX][DIM_MAX][object::MAX_PRIO] = {};	// 先頭のオブジェクトへのポインタ
+CObject *CObject::m_apCur[SCENE_MAX][DIM_MAX][object::MAX_PRIO] = {};	// 最後尾のオブジェクトへのポインタ
 DWORD CObject::m_dwNextID = 0;	// 次のユニークID
 int CObject::m_nNumAll = 0;		// オブジェクトの総数
 
@@ -27,31 +27,37 @@ int CObject::m_nNumAll = 0;		// オブジェクトの総数
 //============================================================
 //	コンストラクタ
 //============================================================
-CObject::CObject(const ELabel label, const EDim dimension, const int nPriority)
+CObject::CObject
+(
+	const ELabel label,	// ラベル
+	const EScene scene,	// シーン
+	const EDim dim,		// 次元
+	const int nPrio		// 優先順位
+)
 {
-	if (m_apCur[dimension][nPriority] != nullptr)
+	if (m_apCur[scene][dim][nPrio] != nullptr)
 	{ // 最後尾が存在する場合
 
 		// 現在の最後尾オブジェクトの次オブジェクトを自身に設定
-		m_apCur[dimension][nPriority]->m_pNext = this;
+		m_apCur[scene][dim][nPrio]->m_pNext = this;
 
 		// 前オブジェクトを設定
-		m_pPrev = m_apCur[dimension][nPriority];	// 現在の最後尾オブジェクト
+		m_pPrev = m_apCur[scene][dim][nPrio];	// 現在の最後尾オブジェクト
 
 		// 次オブジェクトをクリア
 		m_pNext = nullptr;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[dimension][nPriority] = this;
+		m_apCur[scene][dim][nPrio] = this;
 	}
 	else
 	{ // 最後尾が存在しない場合
 
 		// 自身の情報アドレスを先頭に設定
-		m_apTop[dimension][nPriority] = this;
+		m_apTop[scene][dim][nPrio] = this;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[dimension][nPriority] = this;
+		m_apCur[scene][dim][nPrio] = this;
 
 		// 前オブジェクトのクリア
 		m_pPrev = nullptr;
@@ -62,8 +68,9 @@ CObject::CObject(const ELabel label, const EDim dimension, const int nPriority)
 
 	// 自身の情報を設定
 	m_label		= label;		// オブジェクトラベル
-	m_dimension	= dimension;	// 次元
-	m_nPriority	= nPriority;	// 優先順位
+	m_scene		= scene;		// 自身のシーン
+	m_dimension	= dim;			// 次元
+	m_nPriority	= nPrio;		// 優先順位
 	m_dwID		= m_dwNextID;	// ユニークID
 	m_bUpdate	= true;			// 更新状況
 	m_bDraw		= true;			// 描画状況
@@ -73,10 +80,8 @@ CObject::CObject(const ELabel label, const EDim dimension, const int nPriority)
 	m_bShadow	= false;		// 描画状況(シャドウ)
 
 #ifdef _DEBUG
-
 	// 自身の表示をONにする
 	m_bDebugDisp = true;
-
 #endif	// _DEBUG
 
 	// 次のユニークIDを設定
@@ -128,6 +133,85 @@ void CObject::SetLabel(const ELabel label)
 }
 
 //============================================================
+//	シーンの設定処理
+//============================================================
+void CObject::SetScene(const EScene scene)
+{
+	//--------------------------------------------------------
+	//	リストの再接続
+	//--------------------------------------------------------
+	// 前のオブジェクトをつなぎなおす
+	if (m_pNext != nullptr)
+	{ // 次のオブジェクトが存在する場合
+
+		// 前のオブジェクトを変更
+		m_pNext->m_pPrev = m_pPrev;
+	}
+
+	// 次のオブジェクトをつなぎなおす
+	if (m_pPrev != nullptr)
+	{ // 前のオブジェクトが存在する場合
+
+		// 次のオブジェクトを変更
+		m_pPrev->m_pNext = m_pNext;
+	}
+
+	// 先頭オブジェクトの変更
+	if (m_apTop[m_scene][m_dimension][m_nPriority] == this)
+	{ // 先頭オブジェクトが破棄するオブジェクトだった場合
+
+		// 次のオブジェクトを先頭に指定
+		m_apTop[m_scene][m_dimension][m_nPriority] = m_pNext;
+	}
+
+	// 最後尾オブジェクトの変更
+	if (m_apCur[m_scene][m_dimension][m_nPriority] == this)
+	{ // 最後尾オブジェクトが破棄するオブジェクトだった場合
+
+		// 前のオブジェクトを最後尾に指定
+		m_apCur[m_scene][m_dimension][m_nPriority] = m_pPrev;
+	}
+
+	//--------------------------------------------------------
+	//	次元の設定・リストへの追加
+	//--------------------------------------------------------
+	// 引数のシーンを設定
+	m_scene = scene;
+
+	// 自身のオブジェクトを引数の優先順位リストに変更
+	if (m_apCur[scene][m_dimension][m_nPriority] != nullptr)
+	{ // 最後尾が存在する場合
+
+		// 現在の最後尾オブジェクトの次オブジェクトを自身に設定
+		m_apCur[scene][m_dimension][m_nPriority]->m_pNext = this;
+
+		// 前オブジェクトを設定
+		m_pPrev = m_apCur[scene][m_dimension][m_nPriority];	// 現在の最後尾オブジェクト
+
+		// 次オブジェクトをクリア
+		m_pNext = nullptr;
+
+		// 自身の情報アドレスを最後尾に設定
+		m_apCur[scene][m_dimension][m_nPriority] = this;
+	}
+	else
+	{ // 最後尾が存在しない場合
+
+		// 自身の情報アドレスを先頭に設定
+		m_apTop[scene][m_dimension][m_nPriority] = this;
+
+		// 自身の情報アドレスを最後尾に設定
+		m_apCur[scene][m_dimension][m_nPriority] = this;
+
+		// 前オブジェクトのクリア
+		m_pPrev = nullptr;
+
+		// 次オブジェクトのクリア
+		m_pNext = nullptr;
+	}
+}
+
+//============================================================
 //	次元の設定処理
 //============================================================
 void CObject::SetDimension(const EDim dimension)
@@ -152,19 +236,19 @@ void CObject::SetDimension(const EDim dimension)
 	}
 
 	// 先頭オブジェクトの変更
-	if (m_apTop[m_dimension][m_nPriority] == this)
+	if (m_apTop[m_scene][m_dimension][m_nPriority] == this)
 	{ // 先頭オブジェクトが破棄するオブジェクトだった場合
 
 		// 次のオブジェクトを先頭に指定
-		m_apTop[m_dimension][m_nPriority] = m_pNext;
+		m_apTop[m_scene][m_dimension][m_nPriority] = m_pNext;
 	}
 
 	// 最後尾オブジェクトの変更
-	if (m_apCur[m_dimension][m_nPriority] == this)
+	if (m_apCur[m_scene][m_dimension][m_nPriority] == this)
 	{ // 最後尾オブジェクトが破棄するオブジェクトだった場合
 
 		// 前のオブジェクトを最後尾に指定
-		m_apCur[m_dimension][m_nPriority] = m_pPrev;
+		m_apCur[m_scene][m_dimension][m_nPriority] = m_pPrev;
 	}
 
 	//--------------------------------------------------------
@@ -174,29 +258,29 @@ void CObject::SetDimension(const EDim dimension)
 	m_dimension = dimension;
 
 	// 自身のオブジェクトを引数の優先順位リストに変更
-	if (m_apCur[dimension][m_nPriority] != nullptr)
+	if (m_apCur[m_scene][dimension][m_nPriority] != nullptr)
 	{ // 最後尾が存在する場合
 
 		// 現在の最後尾オブジェクトの次オブジェクトを自身に設定
-		m_apCur[dimension][m_nPriority]->m_pNext = this;
+		m_apCur[m_scene][dimension][m_nPriority]->m_pNext = this;
 
 		// 前オブジェクトを設定
-		m_pPrev = m_apCur[dimension][m_nPriority];	// 現在の最後尾オブジェクト
+		m_pPrev = m_apCur[m_scene][dimension][m_nPriority];	// 現在の最後尾オブジェクト
 
 		// 次オブジェクトをクリア
 		m_pNext = nullptr;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[dimension][m_nPriority] = this;
+		m_apCur[m_scene][dimension][m_nPriority] = this;
 	}
 	else
 	{ // 最後尾が存在しない場合
 
 		// 自身の情報アドレスを先頭に設定
-		m_apTop[dimension][m_nPriority] = this;
+		m_apTop[m_scene][dimension][m_nPriority] = this;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[dimension][m_nPriority] = this;
+		m_apCur[m_scene][dimension][m_nPriority] = this;
 
 		// 前オブジェクトのクリア
 		m_pPrev = nullptr;
@@ -231,19 +315,19 @@ void CObject::SetPriority(const int nPriority)
 	}
 
 	// 先頭オブジェクトの変更
-	if (m_apTop[m_dimension][m_nPriority] == this)
+	if (m_apTop[m_scene][m_dimension][m_nPriority] == this)
 	{ // 先頭オブジェクトが破棄するオブジェクトだった場合
 
 		// 次のオブジェクトを先頭に指定
-		m_apTop[m_dimension][m_nPriority] = m_pNext;
+		m_apTop[m_scene][m_dimension][m_nPriority] = m_pNext;
 	}
 
 	// 最後尾オブジェクトの変更
-	if (m_apCur[m_dimension][m_nPriority] == this)
+	if (m_apCur[m_scene][m_dimension][m_nPriority] == this)
 	{ // 最後尾オブジェクトが破棄するオブジェクトだった場合
 
 		// 前のオブジェクトを最後尾に指定
-		m_apCur[m_dimension][m_nPriority] = m_pPrev;
+		m_apCur[m_scene][m_dimension][m_nPriority] = m_pPrev;
 	}
 
 	//--------------------------------------------------------
@@ -253,29 +337,29 @@ void CObject::SetPriority(const int nPriority)
 	m_nPriority = nPriority;
 
 	// 自身のオブジェクトを引数の優先順位リストに変更
-	if (m_apCur[m_dimension][nPriority] != nullptr)
+	if (m_apCur[m_scene][m_dimension][nPriority] != nullptr)
 	{ // 最後尾が存在する場合
 
 		// 現在の最後尾オブジェクトの次オブジェクトを自身に設定
-		m_apCur[m_dimension][nPriority]->m_pNext = this;
+		m_apCur[m_scene][m_dimension][nPriority]->m_pNext = this;
 
 		// 前オブジェクトを設定
-		m_pPrev = m_apCur[m_dimension][nPriority];	// 現在の最後尾オブジェクト
+		m_pPrev = m_apCur[m_scene][m_dimension][nPriority];	// 現在の最後尾オブジェクト
 
 		// 次オブジェクトをクリア
 		m_pNext = nullptr;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[m_dimension][nPriority] = this;
+		m_apCur[m_scene][m_dimension][nPriority] = this;
 	}
 	else
 	{ // 最後尾が存在しない場合
 
 		// 自身の情報アドレスを先頭に設定
-		m_apTop[m_dimension][nPriority] = this;
+		m_apTop[m_scene][m_dimension][nPriority] = this;
 
 		// 自身の情報アドレスを最後尾に設定
-		m_apCur[m_dimension][nPriority] = this;
+		m_apCur[m_scene][m_dimension][nPriority] = this;
 
 		// 前オブジェクトのクリア
 		m_pPrev = nullptr;
@@ -451,49 +535,53 @@ void CObject::ReleaseAll(const std::vector<ELabel> label)
 	// ラベル指定がない場合抜ける
 	if (label.size() <= 0) { return; }
 
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
+	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
+	{ // シーンの総数分繰り返す
 
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
 
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
 
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
+				// オブジェクトの先頭を代入
+				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
 
-				if (pObject->m_label == LABEL_NONE)
-				{ // 自動破棄しないラベルの場合
+					// 次のオブジェクトを代入
+					CObject *pObjectNext = pObject->m_pNext;
 
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
+					if (pObject->m_label == LABEL_NONE)
+					{ // 自動破棄しないラベルの場合
 
-				if (pObject->m_bDeath)
-				{ // 死亡している場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
-
-				for (ELabel release : label)
-				{ // 要素数分繰り返す
-
-					if (pObject->m_label == release)
-					{ // 破棄するラベルと一致した場合
-
-						// オブジェクトの終了
-						pObject->Uninit();
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
 					}
-				}
 
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
+					if (pObject->m_bDeath)
+					{ // 死亡している場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					for (ELabel release : label)
+					{ // 要素数分繰り返す
+
+						if (pObject->m_label == release)
+						{ // 破棄するラベルと一致した場合
+
+							// オブジェクトの終了
+							pObject->Uninit();
+						}
+					}
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+				}
 			}
 		}
 	}
@@ -504,45 +592,51 @@ void CObject::ReleaseAll(const std::vector<ELabel> label)
 //============================================================
 void CObject::ReleaseAll(void)
 {
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
+	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
+	{ // シーンの総数分繰り返す
 
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
 
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
 
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
+				// オブジェクトの先頭を代入
+				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
 
-				if (pObject->m_label == LABEL_NONE)
-				{ // 自動破棄しないラベルの場合
+					// 次のオブジェクトを代入
+					CObject *pObjectNext = pObject->m_pNext;
+
+					if (pObject->m_label == LABEL_NONE)
+					{ // 自動破棄しないラベルの場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					if (pObject->m_bDeath)
+					{ // 死亡している場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					// オブジェクトの終了
+					pObject->Uninit();
 
 					// 次のオブジェクトへのポインタを代入
 					pObject = pObjectNext;
-					continue;
 				}
-
-				if (pObject->m_bDeath)
-				{ // 死亡している場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
-
-				// オブジェクトの終了
-				pObject->Uninit();
-
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
 			}
 		}
 	}
+
 	CZTexture::GetInstance()->Release();
+
 	// 全死亡処理
 	DeathAll();
 }
@@ -555,41 +649,45 @@ void CObject::UpdateAll(const float fDeltaTime)
 	// オブジェクト数表示
 	DebugProc::Print(DebugProc::POINT_LEFT, "[オブジェクト数]：%d\n", m_nNumAll);
 
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
+	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
+	{ // シーンの総数分繰り返す
 
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
 
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
 
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
-				if (pObject->m_label == LABEL_NONE)
-				{ // 自動更新しないラベルの場合
+				// オブジェクトの先頭を代入
+				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
+
+					// 次のオブジェクトを代入
+					CObject *pObjectNext = pObject->m_pNext;
+					if (pObject->m_label == LABEL_NONE)
+					{ // 自動更新しないラベルの場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					if (!pObject->m_bUpdate
+					||  pObject->m_bDeath)
+					{ // 自動更新がOFF、または死亡している場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					// オブジェクトの更新
+					pObject->Update(fDeltaTime);
 
 					// 次のオブジェクトへのポインタを代入
 					pObject = pObjectNext;
-					continue;
 				}
-
-				if (!pObject->m_bUpdate
-				||   pObject->m_bDeath)
-				{ // 自動更新がOFF、または死亡している場合
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-					continue;
-				}
-
-				// オブジェクトの更新
-				pObject->Update(fDeltaTime);
-
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
 			}
 		}
 	}
@@ -601,27 +699,27 @@ void CObject::UpdateAll(const float fDeltaTime)
 //============================================================
 //	全描画処理
 //============================================================
-void CObject::DrawAll(void)
+void CObject::DrawAll(const EScene scene)
 {
-	CDebug * pDeb = GET_MANAGER->GetDebug();
-	//デバッグ時のシェーダー切り替え	
+	CDebug* pDeb = GET_MANAGER->GetDebug();
+
+	// デバッグ時のシェーダー切り替え	
 	if (pDeb->GetEnableShader())
 	{
-		DrawAll_ZShader();
-		DrawAll_ToonShadow();
-		DrawAll_Compensate();
+		DrawAll_ZShader(scene);
+		DrawAll_ToonShadow(scene);
+		DrawAll_Compensate(scene);
 	}
 	else
 	{
-		DrawAll_Default();
+		DrawAll_Default(scene);
 	}
-
-	//CZTexture::GetInstance()->DrawSprite();
 }
+
 //============================================================
 //	固定パイプラインを使用した全描画処理
 //============================================================
-void CObject::DrawAll_Default(void)
+void CObject::DrawAll_Default(const EScene scene)
 {
 	// ポインタを宣言
 	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
@@ -637,7 +735,7 @@ void CObject::DrawAll_Default(void)
 		{ // 優先順位の総数分繰り返す
 
 			// オブジェクトの先頭を代入
-			CObject* pObject = m_apTop[nCntDim][nCntPri];
+			CObject* pObject = m_apTop[scene][nCntDim][nCntPri];
 			while (pObject != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 
@@ -673,10 +771,11 @@ void CObject::DrawAll_Default(void)
 		}
 	}
 }
+
 //============================================================
 //	固定パイプラインを使用した補完処理
 //============================================================
-void CObject::DrawAll_Compensate(void)
+void CObject::DrawAll_Compensate(const EScene scene)
 {
 	// ポインタを宣言
 	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
@@ -692,7 +791,7 @@ void CObject::DrawAll_Compensate(void)
 		{ // 優先順位の総数分繰り返す
 
 			// オブジェクトの先頭を代入
-			CObject* pObject = m_apTop[nCntDim][nCntPri];
+			CObject* pObject = m_apTop[scene][nCntDim][nCntPri];
 			while (pObject != nullptr)
 			{ // オブジェクトが使用されている場合繰り返す
 
@@ -731,10 +830,11 @@ void CObject::DrawAll_Compensate(void)
 		}
 	}
 }
+
 //============================================================
 //	Zテクスチャ用全描画処理
 //============================================================
-void CObject::DrawAll_ZShader(void)
+void CObject::DrawAll_ZShader(const EScene scene)
 {
 	// ポインタを宣言
 	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
@@ -753,7 +853,7 @@ void CObject::DrawAll_ZShader(void)
 	{ // 優先順位の総数分繰り返す
 
 		// オブジェクトの先頭を代入
-		CObject* pObject = m_apTop[DIM_3D][nCntPri];
+		CObject* pObject = m_apTop[scene][DIM_3D][nCntPri];
 		while (pObject != nullptr)
 		{ // オブジェクトが使用されている場合繰り返す
 
@@ -795,10 +895,11 @@ void CObject::DrawAll_ZShader(void)
 	//終了
 	pZShader->End();
 }
+
 //============================================================
 // 影用全描画処理
 //============================================================
-void CObject::DrawAll_ToonShadow(void)
+void CObject::DrawAll_ToonShadow(const EScene scene)
 {
 	// ポインタを宣言
 	CLoading* pLoading = GET_MANAGER->GetLoading();	// ローディング
@@ -817,7 +918,7 @@ void CObject::DrawAll_ToonShadow(void)
 	{ // 優先順位の総数分繰り返す
 
 		// オブジェクトの先頭を代入
-		CObject* pObject = m_apTop[DIM_3D][nCntPri];
+		CObject* pObject = m_apTop[scene][DIM_3D][nCntPri];
 		while (pObject != nullptr)
 		{ // オブジェクトが使用されている場合繰り返す
 
@@ -859,75 +960,80 @@ void CObject::DrawAll_ToonShadow(void)
 	//終了
 	pShader->End();
 }
+
 //============================================================
 //	全死亡処理
 //============================================================
 void CObject::DeathAll(void)
 {
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
+	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
+	{ // シーンの総数分繰り返す
 
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
 
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
 
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
+				// オブジェクトの先頭を代入
+				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
 
-				if (!pObject->m_bDeath)
-				{ // 死亡フラグが立っていない場合
+					// 次のオブジェクトを代入
+					CObject *pObjectNext = pObject->m_pNext;
+
+					if (!pObject->m_bDeath)
+					{ // 死亡フラグが立っていない場合
+
+						// 次のオブジェクトへのポインタを代入
+						pObject = pObjectNext;
+						continue;
+					}
+
+					if (pObject != nullptr)
+					{ // 使用されている場合
+
+						// 前のオブジェクトをつなぎなおす
+						if (pObject->m_pNext != nullptr)
+						{ // 次のオブジェクトが存在する場合
+
+							// 前のオブジェクトを変更
+							pObject->m_pNext->m_pPrev = pObject->m_pPrev;
+						}
+
+						// 次のオブジェクトをつなぎなおす
+						if (pObject->m_pPrev != nullptr)
+						{ // 前のオブジェクトが存在する場合
+
+							// 次のオブジェクトを変更
+							pObject->m_pPrev->m_pNext = pObject->m_pNext;
+						}
+
+						// 先頭オブジェクトの変更
+						if (m_apTop[nCntScene][nCntDim][pObject->m_nPriority] == pObject)
+						{ // 先頭オブジェクトが破棄するオブジェクトだった場合
+
+							// 次のオブジェクトを先頭に指定
+							m_apTop[nCntScene][nCntDim][pObject->m_nPriority] = pObject->m_pNext;
+						}
+
+						// 最後尾オブジェクトの変更
+						if (m_apCur[nCntScene][nCntDim][pObject->m_nPriority] == pObject)
+						{ // 最後尾オブジェクトが破棄するオブジェクトだった場合
+
+							// 前のオブジェクトを最後尾に指定
+							m_apCur[nCntScene][nCntDim][pObject->m_nPriority] = pObject->m_pPrev;
+						}
+
+						// メモリ開放
+						delete pObject;
+						pObject = nullptr;
+					}
 
 					// 次のオブジェクトへのポインタを代入
 					pObject = pObjectNext;
-					continue;
 				}
-
-				if (pObject != nullptr)
-				{ // 使用されている場合
-
-					// 前のオブジェクトをつなぎなおす
-					if (pObject->m_pNext != nullptr)
-					{ // 次のオブジェクトが存在する場合
-
-						// 前のオブジェクトを変更
-						pObject->m_pNext->m_pPrev = pObject->m_pPrev;
-					}
-
-					// 次のオブジェクトをつなぎなおす
-					if (pObject->m_pPrev != nullptr)
-					{ // 前のオブジェクトが存在する場合
-
-						// 次のオブジェクトを変更
-						pObject->m_pPrev->m_pNext = pObject->m_pNext;
-					}
-
-					// 先頭オブジェクトの変更
-					if (m_apTop[nCntDim][pObject->m_nPriority] == pObject)
-					{ // 先頭オブジェクトが破棄するオブジェクトだった場合
-
-						// 次のオブジェクトを先頭に指定
-						m_apTop[nCntDim][pObject->m_nPriority] = pObject->m_pNext;
-					}
-
-					// 最後尾オブジェクトの変更
-					if (m_apCur[nCntDim][pObject->m_nPriority] == pObject)
-					{ // 最後尾オブジェクトが破棄するオブジェクトだった場合
-
-						// 前のオブジェクトを最後尾に指定
-						m_apCur[nCntDim][pObject->m_nPriority] = pObject->m_pPrev;
-					}
-
-					// メモリ開放
-					delete pObject;
-					pObject = nullptr;
-				}
-
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
 			}
 		}
 	}
@@ -943,25 +1049,29 @@ void CObject::SetEnableDebugDispAll(const bool bDisp2D, const bool bDisp3D)
 	// 変数を宣言
 	bool aDisp[DIM_MAX] = { bDisp3D, bDisp2D };	// 各次元の表示状況
 
-	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-	{ // 次元の総数分繰り返す
+	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
+	{ // シーンの総数分繰り返す
 
-		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-		{ // 優先順位の総数分繰り返す
+		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+		{ // 次元の総数分繰り返す
 
-			// オブジェクトの先頭を代入
-			CObject *pObject = m_apTop[nCntDim][nCntPri];
-			while (pObject != nullptr)
-			{ // オブジェクトが使用されている場合繰り返す
+			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+			{ // 優先順位の総数分繰り返す
 
-				// 次のオブジェクトを代入
-				CObject *pObjectNext = pObject->m_pNext;
+				// オブジェクトの先頭を代入
+				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
+				while (pObject != nullptr)
+				{ // オブジェクトが使用されている場合繰り返す
 
-				// 引数の表示フラグを設定
-				pObject->m_bDebugDisp = aDisp[nCntDim];
+					// 次のオブジェクトを代入
+					CObject *pObjectNext = pObject->m_pNext;
 
-				// 次のオブジェクトへのポインタを代入
-				pObject = pObjectNext;
+					// 引数の表示フラグを設定
+					pObject->m_bDebugDisp = aDisp[nCntDim];
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+				}
 			}
 		}
 	}

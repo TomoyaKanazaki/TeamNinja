@@ -215,7 +215,7 @@ void CRenderer::Draw(void)
 		pCamera->SetCamera(CCamera::TYPE_MAIN);
 
 		// オブジェクトの全描画
-		CObject::DrawAll();
+		CObject::DrawAll(CObject::SCENE_MAIN);
 
 		// ビューポートを元に戻す
 		m_pD3DDevice->SetViewport(&viewportDef);

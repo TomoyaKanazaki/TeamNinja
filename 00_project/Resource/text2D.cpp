@@ -25,7 +25,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CText2D::CText2D() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CText2D::CText2D() : CObject(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_pFontChar		(nullptr),					// フォント文字
 	m_pos			(VEC3_ZERO),				// 位置
 	m_rot			(VEC3_ZERO),				// 向き

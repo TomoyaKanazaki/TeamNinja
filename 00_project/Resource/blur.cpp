@@ -26,7 +26,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CBlur::CBlur() : CObject(LABEL_BLUR, DIM_3D, PRIORITY),
+CBlur::CBlur() : CObject(CObject::LABEL_BLUR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pParent		(nullptr),		// 親オブジェクト
 	m_fStartAlpha	(0.0f),			// ブラーの開始透明度
 	m_nMaxLength	(0),			// 保持する親オブジェクトの最大数

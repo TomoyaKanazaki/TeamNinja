@@ -43,7 +43,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CShadow::TEXTURE_MAX, "ERROR : Texture 
 //============================================================
 //	コンストラクタ
 //============================================================
-CShadow::CShadow(const float fMinAlpha, const float fMaxAlpha) : CObject3D(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY),
+CShadow::CShadow(const float fMinAlpha, const float fMaxAlpha) : CObject3D(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pParentObject	(nullptr),		// 親オブジェクト
 	m_sizeOrigin	(VEC3_ZERO),	// 元の大きさ
 	m_fMinAlpha		(fMinAlpha),	// 透明度の最小値定数

@@ -149,3 +149,4 @@ MOTIONPASS = data\MOTION\PLAYER\fall.txt		# 落下モーション
 MOTIONPASS = data\MOTION\PLAYER\landing.txt		# 着地モーション
 MOTIONPASS = data\MOTION\PLAYER\dodge.txt		# 回避モーション
 MOTIONPASS = data\MOTION\PLAYER\death.txt		# 死亡モーション
+MOTIONPASS = data\MOTION\PLAYER\damage.txt		# ダメージモーション

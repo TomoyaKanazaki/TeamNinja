@@ -41,7 +41,9 @@ m_pGateModel(nullptr),		// オブジェクトモデル(枠)の情報
 m_pDoorModel(nullptr),		// オブジェクトモデル(扉)の情報
 m_oldPosDoor(VEC3_ZERO),	// 過去位置
 m_move(VEC3_ZERO),			// 移動量
-m_state(STATE_NONE)			// 扉の状態
+m_state(STATE_NONE),		// 扉の状態
+m_nIdxWait(0),				// 待機中心のインデックス
+m_vecToWait(VEC3_ZERO)		// 中心座標から待機中心へのベクトル(単位ベクトル)
 {
 
 }
@@ -261,8 +263,11 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	// 植物の生成
 	for (int i = 0; i < 4; ++i)
 	{
-		CMultiPlant::Create(posPlant[i], sizeQuartile, GetType(), GetNumActive() / 2);
+		CMultiPlant::Create(posPlant[i], sizeQuartile * 2.0f, GetType(), GetNumActive() / 2);
 	}
+
+	// 待機中心の設定
+	CalcConectPoint();
 }
 
 //===========================================
@@ -278,33 +283,35 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* 
 
 	// 角度を取得
 	EAngle angle = GetAngle();
-	float rot = 0.0f;
-	switch (angle)
+
+	// インデックス番号が0の場合2点のうちプレイヤーに近い方を待機中心とする
+	if (Idx == 0 && !IsActive())
 	{
-	case EAngle::ANGLE_0: // 0
-		rot = D3DX_PI * 0.0f;
-		break;
+		// プレイヤー座標を取得
+		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
 
-	case EAngle::ANGLE_90: // 1.57
-		rot = D3DX_PI * 0.5f;
-		break;
+		// プレイヤーと2点を結ぶベクトルを算出
+		D3DXVECTOR3 vecToPlayer[2] = { posPlayer - m_ConectPoint[0], posPlayer - m_ConectPoint[1] };
 
-	case EAngle::ANGLE_180: // 3.14
-		rot = D3DX_PI * 1.0f;
-		break;
+		// 2点を結ぶベクトル
+		D3DXVECTOR3 vecToWait = VEC3_ZERO;
 
-	case EAngle::ANGLE_270: // 4.71
-		rot = D3DX_PI * 1.5f;
-		break;
+		// 距離の2乗が小さい方の配列番号を保存
+		if (vecToPlayer[0].x * vecToPlayer[0].x + vecToPlayer[0].z * vecToPlayer[0].z <=
+			vecToPlayer[1].x * vecToPlayer[1].x + vecToPlayer[1].z * vecToPlayer[1].z)
+		{
+			m_nIdxWait = 0;
+			vecToWait = m_ConectPoint[0] - m_ConectPoint[1];
+		}
+		else
+		{
+			m_nIdxWait = 1;
+			vecToWait = m_ConectPoint[1] - m_ConectPoint[0];
+		}
 
-	default:
-		assert(false);
-		break;
+		// 待機中心同士を結ぶベクトルを算出し正規化する
+		D3DXVec3Normalize(&m_vecToWait, &vecToWait);
 	}
-
-	// 待機位置の中心を算出
-	pos.x += sinf(rot) * WAIT_OFFSET.x;
-	pos.z += cosf(rot) * WAIT_OFFSET.z;
 
 	// 最大数を取得
 	int nNumActive = GetNumActive();
@@ -316,7 +323,7 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitPoint(const int Idx, const CPlayerClone* 
 	D3DXVECTOR3 size = GetVec3Sizing();
 
 	// 待機位置の算出
-	D3DXVECTOR3 posWait = pos;
+	D3DXVECTOR3 posWait = m_ConectPoint[m_nIdxWait];
 	float fValue = 0.0f;
 	switch (angle)
 	{
@@ -357,37 +364,51 @@ D3DXVECTOR3 CGimmickHeavyDoor::CalcWaitRotation(const int Idx, const CPlayerClon
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// 角度を取得
+	// 向きを求める
+	D3DXVECTOR3 rot = VEC3_ZERO;
+	rot.y = atan2f(m_vecToWait.x, m_vecToWait.z);
+
+	// 算出した向きを返す
+	return rot;
+}
+
+//===========================================
+//  待機位置の計算処理
+//===========================================
+void CGimmickHeavyDoor::CalcConectPoint()
+{
+	// 自身の位置を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 自身のサイズを取得
+	D3DXVECTOR3 size = GetVec3Sizing();
+
+	// 自身の方向を取得
 	EAngle angle = GetAngle();
-	float rot = 0.0f;
+
+	// 計算を行う
 	switch (angle)
 	{
-	case EAngle::ANGLE_0: // 0
-		rot = D3DX_PI * 1.0f;
+		// x軸方向に架ける
+	case ANGLE_90:
+	case ANGLE_270:
+
+		m_ConectPoint[0] = pos + D3DXVECTOR3(size.x * 0.5f, 0.0f, 0.0f);
+		m_ConectPoint[1] = pos - D3DXVECTOR3(size.x * 0.5f, 0.0f, 0.0f);
 		break;
 
-	case EAngle::ANGLE_90: // 1.57
-		rot = D3DX_PI * 1.5f;
-		break;
+		// z軸方向に架ける
+	case ANGLE_0:
+	case ANGLE_180:
 
-	case EAngle::ANGLE_180: // 3.14
-		rot = D3DX_PI * 0.0f;
-		break;
-
-	case EAngle::ANGLE_270: // 4.71
-		rot = D3DX_PI * 0.5f;
+		m_ConectPoint[0] = pos + D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
+		m_ConectPoint[1] = pos - D3DXVECTOR3(0.0f, 0.0f, size.z * 0.5f);
 		break;
 
 	default:
 		assert(false);
 		break;
 	}
-
-	// 向きを更新
-	D3DXVECTOR3 rotWait = GetVec3Rotation();
-	rotWait.y += rot;
-
-	return rotWait;
 }
 
 //============================================================

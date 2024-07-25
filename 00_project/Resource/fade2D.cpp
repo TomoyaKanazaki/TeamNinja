@@ -23,7 +23,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CFade2D::CFade2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CFade2D::CFade2D() : CObject2D(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_state		(STATE_NONE),	// 状態
 	m_fSubIn	(0.0f),			// インのα値減少量
 	m_fAddOut	(0.0f),			// アウトのα値増加量

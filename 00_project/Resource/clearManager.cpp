@@ -17,7 +17,8 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CClearManager::CClearManager()
+CClearManager::CClearManager() :
+	m_modeNext	(CScene::MODE_SELECT)	// 遷移先シーン
 {
 
 }

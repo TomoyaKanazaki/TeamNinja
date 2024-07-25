@@ -46,7 +46,7 @@ CListManager<CWall> *CWall::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::DIM_3D, PRIORITY),
+CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_type	(TYPE_SOIL)	// 種類
 {
 

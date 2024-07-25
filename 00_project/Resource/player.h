@@ -36,6 +36,14 @@ class CObject2D;		// オブジェクト2D
 class CPlayer : public CObjectChara
 {
 public:
+	// 種類列挙
+	enum EType
+	{
+		TYPE_SELECT = 0,	// セレクト画面
+		TYPE_GAME,			// ゲーム画面
+		TYPE_MAX			// この列挙型の総数
+	};
+
 	// モデル列挙
 	enum EModel
 	{
@@ -70,6 +78,7 @@ public:
 		MOTION_LANDING,		// 着地モーション
 		MOTION_DODGE,		// 回避モーション
 		MOTION_DEATH,		// 死亡モーション
+		MOTION_DAMAGE,		// ダメージモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -80,7 +89,8 @@ public:
 		STATE_SPAWN,	// スポーン状態
 		STATE_NORMAL,	// 通常状態
 		STATE_DODGE,	// 回避状態
-		STATE_DEATH,		// 死亡状態
+		STATE_DEATH,	// 死亡状態
+		STATE_DAMAGE,	// ダメージ状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -99,8 +109,14 @@ public:
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
 
 	// 静的メンバ関数
-	static CPlayer *Create(CScene::EMode mode);		// 生成
+	static CPlayer *Create	// 生成
+	( // 引数
+		const EType type,			// 種類
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rRot		// 向き
+	);
 	static CListManager<CPlayer> *GetList(void);	// リスト取得
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 
 	// メンバ関数
 	void SetDestRotation(const D3DXVECTOR3& rRot)	{ m_destRot = rRot; }	// 目標向き設定
@@ -112,7 +128,7 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void SetSpawn(void);						// 出現設定
-	void SetResult(void);						// リザルト設定
+	void SetResult();							// リザルト設定
 	void SetState(const EState state);			// 状態設定
 	EState GetState(void) const;				// 状態取得
 	float GetRadius(void) const;				// 半径取得
@@ -139,7 +155,8 @@ private:
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
-	EMotion UpdateDeath(const float fDeltaTime);		// 死亡状態時の更新
+	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
+	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
@@ -162,9 +179,11 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);	// アクターの当たり判定
+	void WalkSound(void);									// 歩行音処理
+	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);		// アクターの当たり判定
 	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
 	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
+
 #ifdef _DEBUG
 
 	void DebugJumpControl(void);	// ジャンプ操作
@@ -185,6 +204,7 @@ private:
 	D3DXVECTOR3	m_destRot;			// 目標向き
 	EState		m_state;			// 状態
 	int			m_nCounterState;	// 状態管理カウンター
+	int			m_nWalkCount;		// 歩行音カウント
 	bool		m_bJump;			// ジャンプ状況
 	float		m_fScalar;			// 移動量
 	bool		m_bGimmickClone;	// ギミッククローンの生成フラグ

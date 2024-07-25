@@ -28,7 +28,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CValueUI::CValueUI() : CObject(CObject::LABEL_NONE, CObject::DIM_2D, PRIORITY),
+CValueUI::CValueUI() : CObject(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_pTitle	(nullptr),		// タイトル情報
 	m_pValue	(nullptr),		// 数字情報
 	m_pos		(VEC3_ZERO),	// 位置

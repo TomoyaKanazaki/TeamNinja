@@ -529,38 +529,47 @@ void CDebug::ChangeActorDisp(void)
 		// アクターの当たり判定の表示状況を切り替える
 		m_bDispActor = !m_bDispActor;
 
-		for (int nCntDim = 0; nCntDim < CObject::DIM_MAX; nCntDim++)
-		{ // 次元の総数分繰り返す
+		for (int nCntScene = 0; nCntScene < CObject::SCENE_MAX; nCntScene++)
+		{ // シーンの総数分繰り返す
 
-			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-			{ // 優先順位の総数分繰り返す
+			for (int nCntDim = 0; nCntDim < CObject::DIM_MAX; nCntDim++)
+			{ // 次元の総数分繰り返す
 
-				// オブジェクトの先頭を代入
-				CObject* pObject = CObject::GetTop(static_cast<CObject::EDim>(nCntDim), nCntPri);
+				for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+				{ // 優先順位の総数分繰り返す
 
-				while (pObject != nullptr)
-				{ // オブジェクトが使用されている場合繰り返す
+					// オブジェクトの先頭を代入
+					CObject* pObject = CObject::GetTop
+					( // 引数
+						static_cast<CObject::EScene>(nCntScene),	// シーン
+						static_cast<CObject::EDim>(nCntDim),		// 次元
+						nCntPri										// 優先順位
+					);
 
-					// 次のオブジェクトを代入
-					CObject* pObjectNext = pObject->GetNext();
+					while (pObject != nullptr)
+					{ // オブジェクトが使用されている場合繰り返す
 
-					if (pObject->IsDeath())
-					{ // 死亡している場合
+						// 次のオブジェクトを代入
+						CObject* pObjectNext = pObject->GetNext();
+
+						if (pObject->IsDeath())
+						{ // 死亡している場合
+
+							// 次のオブジェクトへのポインタを代入
+							pObject = pObjectNext;
+							continue;
+						}
+
+						if (pObject->GetLabel() == CObject::LABEL_COLLISION)
+						{ // 当たり判定ラベル
+
+							// オブジェクトを見えなくする
+							pObject->SetEnableDebugDisp(!m_bDispActor);
+						}
 
 						// 次のオブジェクトへのポインタを代入
 						pObject = pObjectNext;
-						continue;
 					}
-
-					if (pObject->GetLabel() == CObject::LABEL_COLLISION)
-					{ // 当たり判定ラベル
-
-						// オブジェクトを見えなくする
-						pObject->SetEnableDebugDisp(!m_bDispActor);
-					}
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
 				}
 			}
 		}

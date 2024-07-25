@@ -6,7 +6,8 @@
 //===========================================
 #include "multi_plant.h"
 #include "plant.h"
-
+#include "manager.h"
+#include "camera.h"
 //===========================================
 //  定数定義
 //===========================================
@@ -25,6 +26,8 @@ namespace
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
 	const float SIZE_SCALE = 0.3f; // 生成範囲の倍率
+
+	const float FRAME_SIZE = 2.0f; // 縁取り
 }
 
 //===========================================
@@ -40,6 +43,7 @@ m_Type(CGimmick::TYPE_MAX),
 m_nNum(0),
 m_bGrow(false)
 {
+	memset(&m_pFlame[0], 0, sizeof(m_pFlame));
 }
 
 //===========================================
@@ -81,6 +85,9 @@ void CMultiPlant::Uninit(void)
 //===========================================
 void CMultiPlant::Update(const float fDeltaTime)
 {
+	// 縁取りの色を更新
+	FrameAlpha();
+
 	// 親クラスの更新
 	CObject3D::Update(fDeltaTime);
 }
@@ -120,11 +127,84 @@ CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSi
 	// 生成数の設定
 	pPlant->m_nNum = nNum;
 
+	// 縁取りの生成
+	pPlant->FrameCreate();
+
 	// 花の生成
 	pPlant->Grow();
 
 	// 確保したアドレスを返す
 	return pPlant;
+}
+
+//===========================================
+//  縁取りの透明化
+//===========================================
+void CMultiPlant::FrameAlpha()
+{
+	// 自身のスクリーン座標を取得
+	D3DXVECTOR3 posScreen = VEC3_ZERO;
+	GET_CAMERA->OnScreen(GetVec3Position(), posScreen);
+
+	// スクリーンの中心と結ぶベクトルの大きさ ^ 2を算出
+	D3DXVECTOR3 vecCenter = SCREEN_CENT - posScreen;
+	float fScalar = vecCenter.x * vecCenter.x + vecCenter.y * vecCenter.y;
+
+	// スクリーンの高さ * 0.5に対する割合の算出
+	float fScale = fScalar / (SCREEN_CENT.y * SCREEN_CENT.y);
+
+	// 縁取りの透明度を更新
+	for (int i = 0; i < 4; ++i)
+	{
+		// 生成されていない場合次に進む
+		if (m_pFlame[i] == nullptr) { continue; }
+
+		// Scaleが0以下の場合描画しない
+		if (fScale <= 0.0) { m_pFlame[i]->SetEnableDraw(false); continue; }
+		else { m_pFlame[i]->SetEnableDraw(true); }
+
+		// 透明度を更新する
+		m_pFlame[i]->SetAlpha(1.0f - fScale);
+	}
+}
+
+//===========================================
+//  縁取りの表示
+//===========================================
+void CMultiPlant::FrameCreate()
+{
+	// 各頂点の座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+	D3DXVECTOR3 posVtx[4] =
+	{
+		GetVertexPosition(0) + pos,
+		GetVertexPosition(1) + pos,
+		GetVertexPosition(2) + pos,
+		GetVertexPosition(3) + pos
+	};
+
+	// 各頂点を結ぶベクトルを算出
+	D3DXVECTOR3 vecVtx[4] =
+	{
+		(posVtx[1] - posVtx[0]),
+		(posVtx[3] - posVtx[1]),
+		(posVtx[0] - posVtx[2]),
+		(posVtx[2] - posVtx[3])
+	};
+
+	// 縁を生成
+	for (int i = 0; i < 4; ++i)
+	{
+		// 辺の情報を設定
+		D3DXVECTOR3 size = vecVtx[i];
+		if (size.x == 0.0f) { size.x = FRAME_SIZE; size.z = fabsf(size.z); }
+		if (size.z == 0.0f) { size.z = FRAME_SIZE; size.x = fabsf(size.x); }
+
+		// 辺を生成
+		m_pFlame[i] = CObject3D::Create(posVtx[i] + (vecVtx[i] * 0.5f), size);
+		m_pFlame[i]->SetColor(XCOL_RED);
+		m_pFlame[i]->SetLabel(CObject::LABEL_GIMMICK);
+	}
 }
 
 //===========================================

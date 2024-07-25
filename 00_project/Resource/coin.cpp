@@ -33,7 +33,7 @@ CListManager<CCoin>* CCoin::m_pList = nullptr;		// リスト構造
 //============================================================
 //	コンストラクタ
 //============================================================
-CCoin::CCoin() : CObjectModel(CObject::LABEL_COIN, CObject::DIM_3D, PRIORITY)
+CCoin::CCoin() : CObjectModel(CObject::LABEL_COIN, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY)
 {
 
 }

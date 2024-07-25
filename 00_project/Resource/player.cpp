@@ -77,6 +77,7 @@ namespace
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
+	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
@@ -93,6 +94,12 @@ namespace
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
 	}
+
+	// サウンド関連の情報
+	namespace sound
+	{
+		const int WALK_COUNT = 19;		// 歩行音を鳴らすカウント
+	}
 }
 
 //************************************************************
@@ -106,7 +113,7 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORITY),
+CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
@@ -114,6 +121,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::DIM_3D, PRIORI
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
+	m_nWalkCount	(0),			// 歩行音カウント
 	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
@@ -151,6 +159,7 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
+	m_nWalkCount = 0;				// 歩行音カウント
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -210,9 +219,6 @@ HRESULT CPlayer::Init(void)
 	{
 		CTension::Create();
 	}
-
-	// 開始エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\gamestart.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 60.0f);
 
 	// 成功を返す
 	return S_OK;
@@ -291,10 +297,19 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDeath(fDeltaTime);
 		break;
 
+	case STATE_DAMAGE:
+
+		// ダメージ状態の更新
+		currentMotion = UpdateDamage(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
 	}
+
+	// 歩行音処理
+	WalkSound();
 
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
@@ -345,25 +360,24 @@ void CPlayer::SetEnableDraw(const bool bDraw)
 {
 	// 引数の描画状況を設定
 	CObject::SetEnableDraw(bDraw);		// 自身
-
 }
 
 //============================================================
 //	生成処理
 //============================================================
-CPlayer *CPlayer::Create(CScene::EMode mode)
+CPlayer *CPlayer::Create
+(
+	const EType type,			// 種類
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot		// 向き
+)
 {
-	// ポインタを宣言
-	CPlayer *pPlayer = nullptr;	// プレイヤー情報
-
 	// プレイヤーの生成
-	switch (mode)
-	{ // モードごとの処理
-	case CScene::MODE_TITLE:
-		break;
-
-	case CScene::MODE_SELECT:
-	case CScene::MODE_GAME:
+	CPlayer *pPlayer = nullptr;	// プレイヤー情報
+	switch (type)
+	{ // 種類ごとの処理
+	case TYPE_SELECT:
+	case TYPE_GAME:
 		pPlayer = new CPlayer;
 		break;
 
@@ -388,6 +402,24 @@ CPlayer *CPlayer::Create(CScene::EMode mode)
 			SAFE_DELETE(pPlayer);
 			return nullptr;
 		}
+
+		// 位置を設定
+		pPlayer->SetVec3Position(rPos);
+		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
+
+		// 向きを設定
+		pPlayer->SetVec3Rotation(rRot);
+		pPlayer->m_destRot = rRot;	// 目標向きも同一の向きにする
+
+		// 開始エフェクトを生成
+		GET_EFFECT->Create
+		( // 引数
+			"data\\EFFEKSEER\\gamestart.efkefc",	// エフェクトパス
+			pPlayer->GetVec3Position(),				// 位置
+			VEC3_ZERO,	// 向き
+			VEC3_ZERO,	// 移動量
+			60.0f		// 拡大率
+		);
 
 		// 確保したアドレスを返す
 		return pPlayer;
@@ -425,6 +457,9 @@ bool CPlayer::Hit(const int nDamage)
 	// ヒットエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
 
+	// ダメージ状態に変更
+	m_state = STATE_DAMAGE;
+
 	// 死んじゃうｶﾓ~
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
@@ -449,15 +484,6 @@ void CPlayer::SetSpawn(void)
 	// カウンターを初期化
 	m_nCounterState = 0;	// 状態管理カウンター
 
-	// 位置を設定
-	D3DXVECTOR3 pos = D3DXVECTOR3(-1600.0f, 0.0f, 0.0f);	// 位置
-	SetVec3Position(pos);
-
-	// 向きを設定
-	D3DXVECTOR3 rot = VEC3_ZERO;	// 向き
-	SetVec3Rotation(rot);
-	m_destRot = rot;
-
 	// 移動量を初期化
 	m_move = VEC3_ZERO;
 
@@ -474,7 +500,7 @@ void CPlayer::SetSpawn(void)
 //============================================================
 //	リザルトの設定処理
 //============================================================
-void CPlayer::SetResult(void)
+void CPlayer::SetResult()
 {
 	// プレイヤー向きを設定
 	D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
@@ -490,7 +516,15 @@ void CPlayer::SetResult(void)
 	SetMove(VEC3_ZERO);
 
 	// 待機モーションを設定
-	SetMotion(MOTION_IDOL);
+	switch (GET_RETENTION->GetWin())
+	{
+	case CRetentionManager::WIN_FAIL:
+		SetMotion(MOTION_DEATH);
+		break;
+	case CRetentionManager::WIN_SUCCESS:
+		SetMotion(MOTION_IDOL);
+		break;
+	}
 }
 
 //============================================================
@@ -750,19 +784,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 {
-	// 回避モーション以外の場合通常状態になる
-	if (GetMotion()->GetType() != MOTION_DODGE)
-	{
-		// エフェクトを削除する
-		SAFE_DELETE(m_pEffectdata);
-
-		// 通常状態に戻る
-		m_state = STATE_NORMAL;
-
-		// 待機モーションにする
-		return MOTION_IDOL;
-	}
-
 	// 向きの取得
 	float rot = GetVec3Rotation().y;
 
@@ -805,6 +826,8 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	// リザルトを呼び出す
 	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAIL);
 
+	DebugProc::Print(DebugProc::POINT_CENTER, "死亡状態\n");
+
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -826,8 +849,45 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(pos);
 
-	// TODO : 死亡モーション
+	// 死亡モーション
 	return MOTION_DEATH;
+}
+
+//===========================================
+//  ダメージ状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
+{
+	// 向きの取得
+	float rot = GetVec3Rotation().y;
+
+	// 移動方向の算出
+	m_move.x = sinf(rot) * DAMAGE_MOVE;
+	m_move.z = cosf(rot) * DAMAGE_MOVE;
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力の更新
+	UpdateGravity();
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	// ダメージモーション
+	return MOTION_DAMAGE;
 }
 
 //============================================================
@@ -1269,13 +1329,34 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
+			// エフェクトを削除する
+			SAFE_DELETE(m_pEffectdata);
+
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
 		}
 
 		break;
 
 	case MOTION_DEATH:	// 死亡モーション
+
+		break;
+
+	case MOTION_DAMAGE:	// ダメージモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
+		}
+
 		break;
 	}
 }
@@ -1404,6 +1485,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 
 		// TOOD エフェクトを出す ようわからんので丹野に相談
 		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f);
+
+		// 回避音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_PLAYERSTEP_000);
 
 		// 士気力を増やす
 		CTension::Create();
@@ -1623,6 +1707,36 @@ void CPlayer::FloorEdgeJump()
 
 	// モーションの設定
 	SetMotion(MOTION_JUMP_MINI, BLEND_FRAME_OTHER);
+
+	// 小ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_PLAYERJUMP_S);
+}
+
+//==========================================
+// 歩行音処理
+//==========================================
+void CPlayer::WalkSound(void)
+{
+	if (GetMotionType() == MOTION_DASH)
+	{ // 歩いている場合
+
+		// 歩行音カウントを加算する
+		m_nWalkCount++;
+	}
+	else
+	{ // 上記以外
+
+		// 歩行音カウントをリセットする
+		m_nWalkCount = 0;
+	}
+
+	if (m_nWalkCount > 0 &&
+		m_nWalkCount % sound::WALK_COUNT == 0)
+	{ // 一定時間ごとに
+
+		// 歩行音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+	}
 }
 
 //==========================================
@@ -1708,6 +1822,93 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 			RADIUS		// 半径
 		);
 	}
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CPlayer::LoadSetup(const char* pPass)
+{
+	EType type = TYPE_SELECT;		// 種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+	D3DXVECTOR3 rot = VEC3_ZERO;	// 向きの代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "プレイヤーセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_PLAYERSET")
+		{
+			do
+			{ // END_STAGE_PLAYERSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str == "TYPE")
+				{
+					file >> str;	// ＝を読込
+					file >> str;	// 種類を読込
+
+					// 文字列を列挙に変換
+					if		(str == "SELECT")	{ type = TYPE_SELECT; }
+					else if	(str == "GAME")		{ type = TYPE_GAME; }
+				}
+				else if (str == "POS")
+				{
+					file >> str;	// ＝を読込
+
+					// 位置を読込
+					file >> pos.x;
+					file >> pos.y;
+					file >> pos.z;
+				}
+				else if (str == "ROT")
+				{
+					file >> str;	// ＝を読込
+
+					// 向きを読込
+					file >> rot.x;
+					file >> rot.y;
+					file >> rot.z;
+				}
+			} while (str != "END_STAGE_PLAYERSET");	// END_STAGE_CHECKSETを読み込むまでループ
+
+			// プレイヤーの生成
+			if (CPlayer::Create(type, pos, D3DXToRadian(rot)) == nullptr)
+			{ // 確保に失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }
 
 #ifdef _DEBUG

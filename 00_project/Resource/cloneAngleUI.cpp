@@ -27,7 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CCloneAngleUI::CCloneAngleUI() : CObject3D(CObject::LABEL_NONE, CObject::DIM_3D, PRIORITY)
+CCloneAngleUI::CCloneAngleUI() : CObject3D(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY)
 {
 
 }

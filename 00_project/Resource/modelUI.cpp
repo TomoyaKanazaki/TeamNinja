@@ -27,7 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CModelUI::CModelUI() : CObjectModel(CObject::LABEL_NONE, CObject::DIM_2D, PRIORITY)
+CModelUI::CModelUI() : CObjectModel(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY)
 {
 
 }

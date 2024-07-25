@@ -15,7 +15,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CScroll2D::CScroll2D(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject2D(label, dimension, nPriority),
+CScroll2D::CScroll2D(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject2D(label, scene, dimension, nPriority),
 	m_fTexU		(0.0f),	// テクスチャ横座標の開始位置
 	m_fTexV		(0.0f),	// テクスチャ縦座標の開始位置
 	m_fMoveU	(0.0f),	// テクスチャ横座標の移動量

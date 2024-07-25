@@ -20,6 +20,7 @@
 #include "goal.h"
 #include "ZTexture.h"
 #include "collision.h"
+#include "retentionManager.h"
 
 //************************************************************
 //	定数宣言
@@ -142,10 +143,21 @@ namespace
 	// リザルトカメラ情報
 	namespace result
 	{
+		const float	PLUS_SIDE[] =	// プレイヤー横位置に加算する
+		{
+			85.0f,	// クリア不明
+			115.0f,	// クリア失敗
+			85.0f,	// クリア成功
+		};
+		const float	PLUS_UP[] =	// プレイヤー縦位置に加算する
+		{
+			60.0f,	// クリア不明
+			40.0f,	// クリア失敗
+			60.0f,	// クリア成功
+		};
+
 		const float	INIT_DIS	= 200.0f;	// 追従カメラの距離
 		const float	INIT_ROTX	= HALF_PI;	// 追従カメラの向きX初期値
-		const float	PLUS_SIDE	= 85.0f;	// プレイヤー横位置に加算する
-		const float	PLUS_UP		= 60.0f;	// プレイヤー縦位置に加算する
 		const float	PLUS_ROTY	= 0.28f;	// プレイヤーヨー向きに加算する量
 		const float REV_DIFF	= 0.035f;	// 差分の補正係数
 	}
@@ -480,19 +492,24 @@ void CCamera::SetDestFollow(void)
 //===========================================
 void CCamera::SetDestAround(void)
 {
-	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
-	if (pList == nullptr) { return; }	// リスト未使用
-	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
-	if (m_state != STATE_AROUND) { return; }	// 回り込み状態以外
+	// プレイヤー情報の取得
+	CPlayer* pPlayer = GET_PLAYER;
 
-	auto player = pList->GetList().front();	// プレイヤー情報
+	// プレイヤーがいない場合抜ける
+	if (pPlayer == nullptr) { return; }
+
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+
+	// 目標の角度を算出
+	CalcAround(posPlayer);
 
 	//----------------------------------------------------
 	//	向きの更新
 	//----------------------------------------------------
 	// 向きを設定
-	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = around::INIT_ROTX;
-	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y = player->GetVec3Rotation().y;
+	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x;
+	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y;
 
 	// 向きを正規化
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
@@ -501,24 +518,18 @@ void CCamera::SetDestAround(void)
 	//----------------------------------------------------
 	//	距離の更新
 	//----------------------------------------------------
-	// 目標距離を設定
+	// 距離を設定
 	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
-	if (m_aCamera[TYPE_MAIN].rot.x < HALF_PI)
-	{ // 下から向き始めた場合
-
-		// 地面を貫通しないよう補正
-		m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis -= (around::MAX_SUB_DIS / HALF_PI) * (HALF_PI - m_aCamera[TYPE_MAIN].rot.x);
-	}
 
 	//----------------------------------------------------
 	//	位置の更新
 	//----------------------------------------------------
 	// 注視点をプレイヤーの頭の位置にする
-	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = player->GetVec3Position() + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
+	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);
 
 	// 視点の更新
 	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
-	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
 	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
 
 	// 視野角を設定
@@ -606,11 +617,14 @@ void CCamera::SetDestResult(void)
 	//----------------------------------------------------
 	//	位置の更新
 	//----------------------------------------------------
+	// クリア状況を取得
+	CRetentionManager::EWin win = GET_RETENTION->GetWin();
+
 	// 注視点の目標位置を計算
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
-	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP;	// プレイヤーの縦方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;	// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP[win];	// プレイヤーの縦方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
 
 	// 目標位置をそのまま現在位置にも設定
 	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR;
@@ -1062,11 +1076,14 @@ void CCamera::Result(void)
 	//----------------------------------------------------
 	//	位置の更新
 	//----------------------------------------------------
+	// クリア状況を取得
+	CRetentionManager::EWin win = GET_RETENTION->GetWin();
+	
 	// 注視点の目標位置を計算
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
-	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP;	// プレイヤーの縦方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
-	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE;	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;	// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += result::PLUS_UP[win];	// プレイヤーの縦方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.x += sinf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
+	m_aCamera[TYPE_MAIN].destPosR.z += cosf(rotPlayer.y + HALF_PI) * result::PLUS_SIDE[win];	// プレイヤー向き基準の横方向にずらす
 
 	// 注視点の差分位置を計算
 	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
@@ -1378,21 +1395,20 @@ void CCamera::Around(void)
 	if (m_state != STATE_AROUND) { return; }
 
 	// プレイヤー情報の取得
-	CPlayer* player = GET_PLAYER;
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// プレイヤーがいない場合抜ける
+	if (pPlayer == nullptr) { return; }
 
 	// プレイヤーの座標を取得
-	D3DXVECTOR3 posPlayer = player->GetVec3Position();
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
 
 	// 目標の角度を算出
 	CalcAround(posPlayer);
 
-	// 変数宣言
-	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分位置
-	D3DXVECTOR3 diffPosR = VEC3_ZERO;		// 注視点の差分位置
-	D3DXVECTOR3 diffRot = VEC3_ZERO;		// 差分向き
-	 
 	// 差分向きを計算
-	diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
 	// 差分向きを補正
 	if (diffRot.y < -around::LIMIT_DIFF)
@@ -1404,9 +1420,6 @@ void CCamera::Around(void)
 		diffRot.y = around::LIMIT_DIFF;
 	}
 
-	// 差分向きを正規化
-	useful::NormalizeRot(diffRot);
-
 	// 現在向きの更新
 	m_aCamera[TYPE_MAIN].rot += diffRot * around::REV_ROT;
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
@@ -1415,7 +1428,7 @@ void CCamera::Around(void)
 	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
 
 	// 注視点をプレイヤーの頭の位置にする
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);
 
 	// 視点の更新
 	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
@@ -1423,12 +1436,10 @@ void CCamera::Around(void)
 	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
 
 	// 注視点の差分位置を計算
-	diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
 
 	// 視点の差分位置を計算
-	diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
-
-	DebugProc::Print(DebugProc::POINT_CENTER, "差分 : %f, %f, %f\n", diffPosV.x, diffPosV.y, diffPosV.z);
+	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
 
 	// 注視点の現在位置を更新
 	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * around::REV_POSR.x;
@@ -1452,16 +1463,15 @@ void CCamera::CalcAround(const D3DXVECTOR3& posPlayer)
 		// 情報を変更
 		m_aCamera[TYPE_MAIN].destRot.y = D3DX_PI * 0.5f;
 		m_aCamera[TYPE_MAIN].destRot.x = around::CENTER_ROTX;
-
 		return;
 	}
-	std::list<CCameraChanger*> list = CCameraChanger::GetList()->GetList();	// リストを取得
 
 	// リストの中身を確認する
+	std::list<CCameraChanger*> list = CCameraChanger::GetList()->GetList();	// リストを取得
 	for (CCameraChanger* changer : list)
 	{
 		// プレイヤーが内部にいない場合次に進む
-		if (!changer->GetChange()) { continue; }
+		if (!changer->CollChange()) { continue; }
 
 		// 情報を変更
 		m_aCamera[TYPE_MAIN].destRot.y = changer->GetDirection();

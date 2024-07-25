@@ -83,7 +83,7 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
+CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量
@@ -195,7 +195,6 @@ HRESULT CPlayerClone::Init(void)
 //============================================================
 void CPlayerClone::Uninit(void)
 {
-
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
@@ -329,6 +328,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 壁の当たり判定
 	(void)CollisionWall();
 
+	D3DXVECTOR3 pos = GetVec3Position();
+	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", pos.x, pos.y, pos.x);
+
 	// 軌跡の更新
 	m_pOrbit->Update(fDeltaTime);
 
@@ -408,6 +410,35 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 
 	// ギミックの人数を加算
 	m_pGimmick->AddNumClone();
+
+	if (gimmick->GetNumActive() <= gimmick->GetNumClone())
+	{ // 分身の数が必要数に達した場合
+
+		// エフェクトの生成TODO：向きも入れる
+		GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ball.efkefc",
+			GetVec3Position(),
+			VEC3_ZERO,
+			VEC3_ZERO,
+			7.5f,
+			false
+		);
+	}
+	else
+	{ // 上記以外
+
+		// エフェクトの生成TODO：向きも入れる
+		GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
+			GetVec3Position(),
+			VEC3_ZERO,
+			VEC3_ZERO,
+			7.5f,
+			false
+		);
+	}
 
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;

@@ -87,7 +87,7 @@ CListManager<CActor>* CActor::m_pList = nullptr;		// リスト構造
 //============================================================
 //	コンストラクタ
 //============================================================
-CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::DIM_3D, PRIORITY),
+CActor::CActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_type(TYPE_ROCK_S)		// 種類
 {
 

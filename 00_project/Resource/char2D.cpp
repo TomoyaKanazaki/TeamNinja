@@ -26,7 +26,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CChar2D::CChar2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CChar2D::CChar2D() : CObject2D(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_pFontChar		(nullptr),	// フォント文字
 	m_wcChar		(0),		// 指定文字
 	m_fCharHeight	(0.0f),		// 文字の縦幅
