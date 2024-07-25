@@ -67,6 +67,7 @@ private:
 
 	// メンバ関数
 	void DispEffect(); // 範囲表示処理
+	void FrameCreate(); // 縁取りの表示
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
