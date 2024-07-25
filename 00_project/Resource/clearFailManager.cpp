@@ -427,6 +427,25 @@ void CClearFailManager::UpdateWait(const float fDeltaTime)
 	||  pPad->IsTrigger(CInputPad::KEY_X)
 	||  pPad->IsTrigger(CInputPad::KEY_Y))
 	{
+		switch (m_nCurSelect)
+		{ // 選択肢ごとの処理
+		case SELECT_YES:
+
+			// 同じマップを次のマップに指定
+			SetNext(CScene::MODE_GAME);
+			break;
+
+		case SELECT_NO:
+
+			// セレクトマップを次のマップに指定
+			SetNext(CScene::MODE_SELECT);
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+
 		// 終了状態にする
 		m_state = STATE_END;
 	}
