@@ -7,8 +7,7 @@
 #include "multi_plant.h"
 #include "plant.h"
 #include "manager.h"
-#include "player.h"
-
+#include "camera.h"
 //===========================================
 //  定数定義
 //===========================================
@@ -143,27 +142,16 @@ CMultiPlant* CMultiPlant::Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rSi
 //===========================================
 void CMultiPlant::FrameAlpha()
 {
-	// プレイヤー座標を取得
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+	// 自身のスクリーン座標を取得
+	D3DXVECTOR3 posScreen = VEC3_ZERO;
+	GET_CAMERA->OnScreen(GetVec3Position(), posScreen);
 
-	// 自身の座標を取得
-	D3DXVECTOR3 posThis = GetVec3Position();
+	// スクリーンの中心と結ぶベクトルの大きさ ^ 2を算出
+	D3DXVECTOR3 vecCenter = SCREEN_CENT - posScreen;
+	float fScalar = vecCenter.x * vecCenter.x + vecCenter.y * vecCenter.y;
 
-	// 自身とプレイヤーを結ぶベクトルを算出
-	D3DXVECTOR3 vec = posPlayer - posThis;
-
-	// ベクトルの大きさ^2を算出
-	float scalarVec = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
-
-	// 自身のサイズを取得
-	D3DXVECTOR3 size = GetVec3Sizing();
-
-	// サイズの大きさ^2を算出
-	float scalarSize = size.x * size.x + size.y * size.y + size.z * size.z;
-
-	// 表示範囲に対するベクトルの大きさの割合を算出
-	float fScale = scalarVec / scalarSize;
-	if (fScale > 1.0f) { fScale = 1.0f; }
+	// スクリーンの高さ * 0.5に対する割合の算出
+	float fScale = fScalar / (SCREEN_CENT.y * SCREEN_CENT.y);
 
 	// 縁取りの透明度を更新
 	for (int i = 0; i < 4; ++i)
