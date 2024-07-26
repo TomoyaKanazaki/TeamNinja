@@ -1566,7 +1566,7 @@ void CPlayer::DelelteClone()
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
 
-	if (m_pList != nullptr)
+	if (CPlayerClone::GetList() != nullptr)
 	{ // リストが NULL じゃない場合
 
 		// 分身消失音を鳴らす

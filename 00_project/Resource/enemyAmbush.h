@@ -33,6 +33,8 @@ public:
 		MOTION_UPSET,		// 動揺モーション
 		MOTION_FALL,		// 落下モーション
 		MOTION_LANDING,		// 着地モーション
+		MOTION_STANDBY,		// 構えモーション
+		MOTION_BATTLE,		// 分身に対する攻撃モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
