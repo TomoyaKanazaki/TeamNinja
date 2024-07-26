@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Resource\balloon.h" />
     <ClInclude Include="Resource\blink2D.h" />
     <ClInclude Include="Resource\clearFailManager.h" />
     <ClInclude Include="Resource\clearManager.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
+    <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
@@ -345,6 +347,7 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Resource\balloon.cpp" />
     <ClCompile Include="Resource\blink2D.cpp" />
     <ClCompile Include="Resource\clearFailManager.cpp" />
     <ClCompile Include="Resource\clearManager.cpp" />
@@ -356,6 +359,7 @@
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
+    <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />

@@ -27,7 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectCircle2D::CObjectCircle2D(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectCircle2D::CObjectCircle2D(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pVtxBuff		(nullptr),		// 頂点バッファ
 	m_pIdxBuff		(nullptr),		// インデックスバッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報

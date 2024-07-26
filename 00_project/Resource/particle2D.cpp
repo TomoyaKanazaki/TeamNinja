@@ -73,7 +73,7 @@ static_assert(NUM_ARRAY(SET_LIFE) == CParticle2D::TYPE_MAX, "ERROR : Type Count 
 //============================================================
 //	コンストラクタ
 //============================================================
-CParticle2D::CParticle2D() : CObject(CObject::LABEL_PARTICLE, CObject::DIM_2D),
+CParticle2D::CParticle2D() : CObject(CObject::LABEL_PARTICLE, CObject::SCENE_MAIN, CObject::DIM_2D),
 	m_pos	(VEC3_ZERO),	// 位置
 	m_col	(XCOL_WHITE),	// 色
 	m_type	(TYPE_NONE),	// 種類

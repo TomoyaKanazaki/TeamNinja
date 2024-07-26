@@ -44,7 +44,7 @@ CListManager<CScenery> *CScenery::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CScenery::CScenery() : CObjectMeshCylinder(CObject::LABEL_SCENERY, CObject::DIM_3D, PRIORITY),
+CScenery::CScenery() : CObjectMeshCylinder(CObject::LABEL_SCENERY, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_type	(TYPE_MOUNTAIN_SMALL_00)	// 種類
 
 {

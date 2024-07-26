@@ -24,6 +24,7 @@
 #include "godItem.h"
 #include "actor.h"
 #include "gimmick.h"
+#include "player.h"
 #include "checkpoint.h"
 #include "goal.h"
 #include "transpoint.h"
@@ -195,6 +196,15 @@ HRESULT CStage::BindStage(const SPass& rPass)
 
 	if (!rPass.sPoint.empty())
 	{ // パスが指定されている場合
+
+		// プレイヤーのセットアップの読込
+		if (FAILED(CPlayer::LoadSetup(rPass.sPoint.c_str())))
+		{ // セットアップに失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
 
 		// チェックポイントのセットアップの読込
 		if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
@@ -624,6 +634,22 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 
 			// 敵情報パスを保存
 			pPassInfo->sEnemyAtc = str;
+		}
+		else if (str == "COIN_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// コイン読込パスを読込
+
+			// コイン情報パスを保存
+			pPassInfo->sCoin = str;
+		}
+		else if (str == "GODITEM_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// 神器読込パスを読込
+
+			// 神器情報パスを保存
+			pPassInfo->sGodItem = str;
 		}
 		else if (str == "ACTOR_PASS")
 		{

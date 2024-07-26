@@ -249,7 +249,7 @@ HRESULT CGoal::LoadSetup(const char* pPass)
 				}
 			} while (str != "END_STAGE_GOALSET");	// END_STAGE_CHECKSETを読み込むまでループ
 
-			// チェックポイントの生成
+			// ゴールポイントの生成
 			if (CGoal::Create(pos) == nullptr)
 			{ // 確保に失敗した場合
 

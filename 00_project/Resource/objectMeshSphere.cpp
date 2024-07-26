@@ -28,7 +28,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectMeshSphere::CObjectMeshSphere(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectMeshSphere::CObjectMeshSphere(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_part		(GRID2_ZERO),	// 分割数
 	m_texPart	(GRID2_ZERO)	// テクスチャ分割数
 {

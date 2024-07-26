@@ -19,7 +19,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectModel::CObjectModel(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectModel::CObjectModel(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pRenderState	(nullptr),		// レンダーステートの情報
 	m_pMat			(nullptr),		// マテリアルへのポインタ
 	m_pos			(VEC3_ZERO),	// 位置

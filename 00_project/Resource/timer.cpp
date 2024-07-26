@@ -28,7 +28,7 @@ CListManager<CTimer> *CTimer::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimer::CTimer() : CObject(CObject::LABEL_TIMER, CObject::DIM_3D, PRIORITY),
+CTimer::CTimer() : CObject(CObject::LABEL_TIMER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_funcCount	(nullptr),		// 計測関数ポインタ
 	m_state		(STATE_NONE),	// 計測状態
 	m_fTime		(0.0f),			// 計測時間

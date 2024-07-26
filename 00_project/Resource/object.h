@@ -69,6 +69,14 @@ struct VERTEX_MULTEX3D
 class CObject
 {
 public:
+	// シーン列挙
+	enum EScene
+	{
+		SCENE_MAIN = 0,		// メインシーン
+		SCENE_BILLBOARD,	// ビルボードシーン
+		SCENE_MAX			// この列挙型の総数
+	};
+
 	// 次元列挙
 	enum EDim
 	{
@@ -110,7 +118,13 @@ public:
 	};
 
 	// コンストラクタ
-	explicit CObject(const ELabel label = LABEL_NONE, const EDim dimension = DIM_3D, const int nPriority = object::DEFAULT_PRIO);
+	explicit CObject
+	( // 引数
+		const ELabel label = LABEL_NONE,		// ラベル
+		const EScene scene = SCENE_MAIN,		// シーン
+		const EDim dim = DIM_3D,				// 次元
+		const int nPrio = object::DEFAULT_PRIO	// 優先順位
+	);
 
 	// デストラクタ
 	virtual ~CObject();
@@ -124,6 +138,7 @@ public:
 
 	// 仮想関数
 	virtual void SetLabel(const ELabel label);				// ラベル設定
+	virtual void SetScene(const EScene scene);				// シーン設定
 	virtual void SetDimension(const EDim dimension);		// 次元設定
 	virtual void SetPriority(const int nPriority);			// 優先順位設定
 	virtual void SetEnableUpdate(const bool bUpdate);		// 更新状況設定
@@ -147,19 +162,20 @@ public:
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)
-	static void	ReleaseAll(void);						// 全破棄
+	static void	ReleaseAll(void);								// 全破棄
 	static void	UpdateAll(const float fDeltaTime);		// 全更新
-	static void	DrawAll(void);							// 全描画
-	static void	DrawAll_Default(void);					// 固定パイプラインを使用した全描画
-	static void	DrawAll_ZShader(void);					// Zテクスチャ用全描画
-	static void	DrawAll_ToonShadow(void);				// Zテクスチャ用全描画
-	static void	DrawAll_Compensate(void);				// Zテクスチャ用全描画
+	static void	DrawAll(const EScene scene);			// 全描画
+	static void	DrawAll_Default(const EScene scene);	// 固定パイプラインを使用した全描画
+	static void	DrawAll_ZShader(const EScene scene);	// Zテクスチャ用全描画
+	static void	DrawAll_ToonShadow(const EScene scene);	// Zテクスチャ用全描画
+	static void	DrawAll_Compensate(const EScene scene);	// Zテクスチャ用全描画
 	static int	GetNumAll(void) { return m_nNumAll; }	// 総数取得
-	static CObject *GetTop(const EDim dimension, const int nPriority) { return m_apTop[dimension][nPriority]; }	// 先頭オブジェクト取得
-	static CObject *GetCur(const EDim dimension, const int nPriority) { return m_apCur[dimension][nPriority]; }	// 最後尾オブジェクト取得
+	static CObject *GetTop(const EScene scene, const EDim dim, const int nPrio) { return m_apTop[scene][dim][nPrio]; }	// 先頭オブジェクト取得
+	static CObject *GetCur(const EScene scene, const EDim dim, const int nPrio) { return m_apCur[scene][dim][nPrio]; }	// 最後尾オブジェクト取得
 
 	// メンバ関数
 	ELabel	GetLabel(void) const		{ return m_label; }		// ラベル取得
+	EScene	GetScene(void) const		{ return m_scene; }		// シーン取得
 	EDim	GetDimension(void) const	{ return m_dimension; }	// 次元取得
 	int		GetPriority(void) const		{ return m_nPriority; }	// 優先順位取得
 	DWORD	GetUniqueID(void) const		{ return m_dwID; }		// ユニークID取得
@@ -188,13 +204,14 @@ private:
 	static void DeathAll(void);	// 全死亡
 
 	// 静的メンバ変数
-	static CObject	*m_apTop[DIM_MAX][object::MAX_PRIO];	// 先頭のオブジェクトへのポインタ
-	static CObject	*m_apCur[DIM_MAX][object::MAX_PRIO];	// 最後尾のオブジェクトへのポインタ
+	static CObject	*m_apTop[SCENE_MAX][DIM_MAX][object::MAX_PRIO];	// 先頭のオブジェクトへのポインタ
+	static CObject	*m_apCur[SCENE_MAX][DIM_MAX][object::MAX_PRIO];	// 最後尾のオブジェクトへのポインタ
 	static DWORD	m_dwNextID;	// 次のユニークID
 	static int		m_nNumAll;	// オブジェクトの総数
 
 	// メンバ変数
 	ELabel	m_label;		// 自身のオブジェクトラベル
+	EScene	m_scene;		// 自身のシーン
 	EDim	m_dimension;	// 自身の次元
 	int		m_nPriority;	// 自身の優先順位
 	DWORD	m_dwID;			// 自身のユニークID
@@ -203,7 +220,6 @@ private:
 	bool	m_bScreen;		// 自身の画面内状況
 	bool	m_bZDraw;		// Zシェーダー有効時の自身の描画状況
 	bool	m_bShadow;		// シャドウシェーダー有効時の自身の描画状況
-
 	bool	m_bDeath;		// 自身の死亡フラグ
 	CObject	*m_pPrev;		// 前のオブジェクトへのポインタ
 	CObject	*m_pNext;		// 次のオブジェクトへのポインタ

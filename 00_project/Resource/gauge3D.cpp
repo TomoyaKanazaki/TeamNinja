@@ -27,7 +27,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CGauge3D::CGauge3D(const int nFrame) : CObject(LABEL_UI, DIM_3D, PRIORITY),
+CGauge3D::CGauge3D(const int nFrame) : CObject(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_nFrame	(nFrame),		// 表示値の変動フレーム定数
 	m_pVtxBuff	(nullptr),		// 頂点バッファへのポインタ
 	m_pos		(VEC3_ZERO),	// 位置

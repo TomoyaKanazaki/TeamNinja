@@ -42,7 +42,7 @@ public:
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
-	bool GetChange() const { return m_bChange; } // フラグの取得
+	bool CollChange() const; // ヒット判定の取得
 	float GetDirection() const; // 方向の取得
 	float GetRotation() const; // 角度の取得
 	EDirection GetDir() const { return m_eDir; }
@@ -63,7 +63,6 @@ public:
 private:
 
 	// メンバ変数
-	bool m_bChange; // カメラ方向変更フラグ
 	EDirection m_eDir; // カメラ方向
 	ERotation m_eRot; // カメラ角度
 	CListManager<CCameraChanger>::AIterator m_iterator; // イテレーター

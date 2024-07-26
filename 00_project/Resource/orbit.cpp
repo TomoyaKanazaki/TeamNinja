@@ -30,7 +30,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-COrbit::COrbit() : CObject(LABEL_NONE, DIM_3D, PRIORITY),
+COrbit::COrbit() : CObject(CObject::LABEL_NONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pVtxBuff		(nullptr),		// 頂点バッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報
 	m_state			(STATE_NORMAL),	// 状態

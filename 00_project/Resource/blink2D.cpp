@@ -23,7 +23,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CBlink2D::CBlink2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CBlink2D::CBlink2D() : CObject2D(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_state		 (STATE_NONE),	// 状態
 	m_fSinAlpha	 (0.0f),		// 透明向き
 	m_fAddSinRot (0.0f),		// 透明向きの加算量

@@ -26,7 +26,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CString2D::CString2D() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CString2D::CString2D() : CObject(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_ppChar		(nullptr),			// 文字ポリゴンの情報
 	m_pFontChar		(nullptr),			// フォント文字
 	m_pos			(VEC3_ZERO),		// 位置

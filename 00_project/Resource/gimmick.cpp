@@ -38,7 +38,7 @@ CListManager<CGimmick>* CGimmick::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::DIM_3D, PRIORITY),
+CGimmick::CGimmick() : CObject3D(CObject::LABEL_GIMMICK, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_type(TYPE_JUMPTABLE),			// 種類
 m_nNumActive(INIT_NUM_ACTIVE)	// 発動可能な分身の数
 {

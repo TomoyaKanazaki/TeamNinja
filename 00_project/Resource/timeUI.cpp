@@ -39,7 +39,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CValue::TYPE_MAX, "ERROR : Type Count M
 //============================================================
 //	コンストラクタ
 //============================================================
-CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CTimeUI::CTimeUI() : CObject(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
 	m_type			(CValue::TYPE_NORMAL),	// 数字種類
 	m_pos			(VEC3_ZERO),			// 原点位置
 	m_rot			(VEC3_ZERO),			// 原点向き

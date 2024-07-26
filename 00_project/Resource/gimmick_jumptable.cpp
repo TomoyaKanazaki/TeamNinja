@@ -153,8 +153,14 @@ D3DXVECTOR3 CGimmickJumpTable::CalcWaitRotation(const int Idx, const CPlayerClon
 //===========================================
 bool CGimmickJumpTable::HitPlayer()
 {
+	// プレイヤー情報の取得
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// プレイヤーがいない場合抜ける
+	if (pPlayer == nullptr) { return false; }
+
 	// プレイヤーのy座標を取得
-	float fPosYPlayer = GET_PLAYER->GetVec3Position().y;
+	float fPosYPlayer = pPlayer->GetVec3Position().y;
 
 	// 分身の身長を取得
 	float fHeightClone = CPlayerClone::GetHeight();

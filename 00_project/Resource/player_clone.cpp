@@ -83,7 +83,7 @@ CListManager<CPlayerClone>* CPlayerClone::m_pList = nullptr;	// オブジェクトリス
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::DIM_3D, PRIORITY),
+CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	
 	m_pOrbit		(nullptr),			// 軌跡の情報
 	m_move			(VEC3_ZERO),		// 移動量

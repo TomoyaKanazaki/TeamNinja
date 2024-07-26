@@ -44,7 +44,7 @@ bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 //============================================================
 //	コンストラクタ
 //============================================================
-CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::DIM_3D, PRIORITY),
+CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_type(TYPE_MIRROR)
 {
 

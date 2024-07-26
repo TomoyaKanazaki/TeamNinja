@@ -20,7 +20,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectChara::CObjectChara(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectChara::CObjectChara(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pMotion	(nullptr),		// モーションの情報
 	m_pos		(VEC3_ZERO),	// 位置
 	m_rot		(VEC3_ZERO)		// 向き

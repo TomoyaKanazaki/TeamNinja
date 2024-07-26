@@ -28,7 +28,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CObjectMeshWall::CObjectMeshWall(const CObject::ELabel label, const CObject::EDim dimension, const int nPriority) : CObject(label, dimension, nPriority),
+CObjectMeshWall::CObjectMeshWall(const CObject::ELabel label, const EScene scene, const CObject::EDim dimension, const int nPriority) : CObject(label, scene, dimension, nPriority),
 	m_pVtxBuff		(nullptr),		// 頂点バッファ
 	m_pIdxBuff		(nullptr),		// インデックスバッファ
 	m_pRenderState	(nullptr),		// レンダーステートの情報
@@ -39,7 +39,8 @@ CObjectMeshWall::CObjectMeshWall(const CObject::ELabel label, const CObject::EDi
 	m_nTextureID	(0)				// テクスチャインデックス
 {
 	SetEnableZDraw(true);			// 深度書き込み有効化
-	SetEnableShadowDraw(true);			// 影書き込み有効化
+	SetEnableShadowDraw(true);		// 影書き込み有効化
+
 	// メンバ変数をクリア
 	memset(&m_meshWall, 0, sizeof(m_meshWall));	// メッシュウォールの情報
 }

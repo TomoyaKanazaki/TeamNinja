@@ -25,7 +25,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CMultiValue::CMultiValue() : CObject(CObject::LABEL_UI, CObject::DIM_2D, object::DEFAULT_PRIO),
+CMultiValue::CMultiValue() : CObject(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, object::DEFAULT_PRIO),
 	m_pos		(VEC3_ZERO),		// 原点位置
 	m_rot		(VEC3_ZERO),		// 原点向き
 	m_size		(VEC3_ZERO),		// 大きさ

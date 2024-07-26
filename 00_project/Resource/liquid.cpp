@@ -48,7 +48,7 @@ CListManager<CLiquid> *CLiquid::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 //	コンストラクタ
 //============================================================
-CLiquid::CLiquid() : CObject(CObject::LABEL_LIQUID, CObject::DIM_3D, PRIORITY),
+CLiquid::CLiquid() : CObject(CObject::LABEL_LIQUID, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_type			(TYPE_WATER),	// 種類
 	m_fMaxUp		(0.0f),			// 波の最高上昇量
 	m_fSinRot		(0.0f),			// 波打ち向き

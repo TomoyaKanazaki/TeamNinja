@@ -32,6 +32,10 @@ namespace
 		{ "data\\SE\\stalkstance000.wav", 0 },	// 追跡敵が構えたときの音
 		{ "data\\SE\\playerwalk000.wav", 0 },	// プレイヤーの歩行音
 		{ "data\\SE\\playerjump000.wav", 0 },	// プレイヤーのジャンプ音
+		{ "data\\SE\\playerstep000.wav", 0 },	// プレイヤーの回避音
+		{ "data\\SE\\save000.wav", 0 },			// セーブ音
+		{ "data\\SE\\clonepop000.wav", 0 },		// 分身生み出し音
+		{ "data\\SE\\clonelost000.wav", 0 },	// 分身消失音
 	};
 }
 

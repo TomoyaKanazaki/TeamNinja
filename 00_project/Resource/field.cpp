@@ -90,7 +90,7 @@ static_assert(NUM_ARRAY(ZLINE) == CField::Z_MAX, "ERROR : Type Count Mismatch");
 //============================================================
 //	コンストラクタ
 //============================================================
-CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::DIM_3D, PRIORITY),
+CField::CField() : CObjectMeshField(CObject::LABEL_FIELD, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_terrain	(TERRAIN_120x120),	// 地形
 	m_type		(TYPE_SOIL)			// 種類
 {

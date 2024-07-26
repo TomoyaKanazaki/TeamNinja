@@ -39,7 +39,7 @@ static_assert(NUM_ARRAY(TEXTURE_FILE) == CWave::TEXTURE_MAX, "ERROR : Texture Co
 //============================================================
 //	コンストラクタ
 //============================================================
-CWave::CWave() : CScrollMeshRing(LABEL_WAVE, DIM_3D, PRIORITY)
+CWave::CWave() : CScrollMeshRing(CObject::LABEL_WAVE, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY)
 {
 	// メンバ変数をクリア
 	memset(&m_grow, 0, sizeof(m_grow));	// 成長の情報
