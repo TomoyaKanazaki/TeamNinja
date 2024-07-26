@@ -324,10 +324,6 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		RecoverCheckPoint();
 	}
-	if (pKeyboard->IsTrigger(DIK_LEFT))
-	{
-		RecoverJust();
-	}
 
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
@@ -645,15 +641,6 @@ void CPlayer::RecoverCheckPoint()
 	{
 		CTension::Create();
 	}
-}
-
-//==========================================
-//  ジャストアクションでの回復処理
-//==========================================
-void CPlayer::RecoverJust()
-{
-	// 回復エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
 }
 
 //===========================================
