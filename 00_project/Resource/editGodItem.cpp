@@ -30,22 +30,12 @@
 //************************************************************
 namespace
 {
-	const char* MODEL[] =		// モデル
-	{
-		"data\\MODEL\\PLAYER\\01_body.x",	// 八咫鏡
-		"data\\MODEL\\PLAYER\\02_head.x",	// 草薙剣
-		"data\\MODEL\\PLAYER\\14_Rfoot.x",	// 八尺瓊勾玉
-	};
+	const char* MODEL = "data\\MODEL\\GODITEM\\Magatama.x";			// モデル
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_goditem.txt";	// セーブテキストパス
 
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
 }
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(MODEL) == CGodItem::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	親クラス [CEditGodItem] のメンバ関数
@@ -110,7 +100,7 @@ HRESULT CEditGodItem::Init(void)
 	}
 
 	// モデルを割り当てる
-	m_pGodItem->BindModel(MODEL[m_infoCreate.type]);
+	m_pGodItem->BindModel(MODEL);
 
 	// 成功を返す
 	return S_OK;
@@ -256,7 +246,7 @@ void CEditGodItem::ChangeType(void)
 		m_infoCreate.type = (CGodItem::EType)((m_infoCreate.type + 1) % CGodItem::TYPE_MAX);
 
 		// モデルを生成し直す
-		m_pGodItem->BindModel(MODEL[m_infoCreate.type]);
+		m_pGodItem->BindModel(MODEL);
 	}
 }
 
@@ -389,10 +379,11 @@ HRESULT CEditGodItem::Save(void)
 		// 書き出す情報を取得
 		CGodItem::EType type = rList->GetType();		// 種類
 		D3DXVECTOR3 pos = rList->GetVec3Position();		// 位置
+		float fPosInitY = rList->GetInitPosY();			// 初期位置(Y軸)
 
 		// 情報を書き出し
 		file << "	GODITEMSET" << std::endl;
-		file << "		POS		= " << pos.x << " " << pos.y << " " << pos.z << std::endl;
+		file << "		POS		= " << pos.x << " " << fPosInitY << " " << pos.z << std::endl;
 		file << "		TYPE	= " << type << std::endl;
 		file << "	END_GODITEMSET\n" << std::endl;
 	}

@@ -52,6 +52,7 @@ public:
 	);
 
 	// セット・ゲット関係
+	float GetInitPosY(void) const;		// 初期位置(Y軸)の取得処理
 	void SetType(const EType type);		// 種類の設定処理
 	EType GetType(void) const;			// 種類の取得処理
 
