@@ -61,6 +61,9 @@
     <Filter Include="InGame\Item">
       <UniqueIdentifier>{35f7051d-fddf-47ce-9208-a40a19483d47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InGame\Select">
+      <UniqueIdentifier>{78aded3a-2db9-4b20-afab-9f24a976a785}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
@@ -618,6 +621,9 @@
     <ClInclude Include="Resource\renderTexture.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\balloon.h">
+      <Filter>InGame\Select</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1171,6 +1177,9 @@
     </ClCompile>
     <ClCompile Include="Resource\renderTexture.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\balloon.cpp">
+      <Filter>InGame\Select</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
