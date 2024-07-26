@@ -30,6 +30,7 @@ public:
 		LABEL_BGM_GENERAL,			// BGM (汎用)
 		LABEL_BGM_FOREST,			// BGM (森)
 		LABEL_BGM_RESULT,			// BGM (リザルト)
+		LABEL_BGM_GAMEOVER,			// BGM (ゲームオーバー)
 
 		LABEL_SE_SELECT_000,		// 選択操作音00
 		LABEL_SE_SELECT_001,		// 選択操作音01

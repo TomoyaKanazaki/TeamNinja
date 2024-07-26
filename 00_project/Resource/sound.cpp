@@ -19,6 +19,7 @@ namespace
 		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM
 		{ "data\\BGM\\bgm_game_forest.wav", -1 },	// BGM(森)
 		{ "data\\BGM\\bgm_result.wav", -1 },	// BGM(リザルト)
+		{ "data\\BGM\\bgm_gameover.wav", -0 },	// BGM(ゲームオーバー)
 
 		{ "data\\SE\\select000.wav", 0 },		// 選択操作音00
 		{ "data\\SE\\select001.wav", 0 },		// 選択操作音01
