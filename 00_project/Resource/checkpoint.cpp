@@ -12,6 +12,9 @@
 #include "popupUI.h"
 #include "sound.h"
 #include "goal.h"
+#include "scene.h"
+#include "sceneGame.h"
+#include "gameManager.h"
 
 //==========================================
 //  定数定義
@@ -209,6 +212,9 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// プレイヤーを回復する
 	Player->RecoverCheckPoint();
+
+	// セーブポイントの番号を渡す
+	GET_GAMEMANAGER->SetSave(m_pList->GetIndex(this));
 
 	// セーブ音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_SAVE_000);

@@ -48,6 +48,7 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 	void SetState(const EState state)	{ m_state = state; }	// 状態設定
 	EState GetState(void) const			{ return m_state; }		// 状態取得
+	void SetSave(const int nSave)		{ m_nSave = nSave; }	// セーブ設定
 	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
 	// 静的メンバ関数
@@ -58,6 +59,7 @@ private:
 	// メンバ変数
 	CResultManager *m_pResult;	// リザルトマネージャー
 	EState m_state;	// 状態
+	int m_nSave; // 最後のセーブポイント
 };
 
 #endif	// _GAMEMANAGER_H_

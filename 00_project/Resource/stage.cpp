@@ -197,15 +197,6 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	if (!rPass.sPoint.empty())
 	{ // パスが指定されている場合
 
-		// プレイヤーのセットアップの読込
-		if (FAILED(CPlayer::LoadSetup(rPass.sPoint.c_str())))
-		{ // セットアップに失敗した場合
-
-			// 失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
-
 		// チェックポイントのセットアップの読込
 		if (FAILED(CCheckPoint::LoadSetup(rPass.sPoint.c_str())))
 		{ // セットアップに失敗した場合
@@ -226,6 +217,15 @@ HRESULT CStage::BindStage(const SPass& rPass)
 
 		// 遷移ポイントのセットアップの読込
 		if (FAILED(CTransPoint::LoadSetup(rPass.sPoint.c_str())))
+		{ // セットアップに失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// プレイヤーのセットアップの読込
+		if (FAILED(CPlayer::LoadSetup(rPass.sPoint.c_str())))
 		{ // セットアップに失敗した場合
 
 			// 失敗を返す
