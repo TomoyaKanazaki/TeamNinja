@@ -237,6 +237,9 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 過去行動の更新
 	m_OldAction = m_Action;
 
+	// 壁の当たり判定
+	CollisionWall();
+
 	// 過去位置の更新
 	UpdateOldPosition();
 
@@ -324,10 +327,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
-
-	// 壁の当たり判定
-	D3DXVECTOR3 pos = GetVec3Position();
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move);
 
 	// アクティブ状態の更新
 	if (UpdateActive(fDeltaTime))
@@ -1520,30 +1519,14 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 //===========================================
 bool CPlayerClone::CollisionWall()
 {
-	// 壁のリスト構造が無ければ抜ける
-	if (CWall::GetList() == nullptr) { return false; }
+	// 座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
 
-	std::list<CWall*> list = CWall::GetList()->GetList(); // リストを取得
-	D3DXVECTOR3 pos = GetVec3Position(); // 位置
-	bool bHit = false; // 衝突判定
+	// 壁の判定
+	bool bHit = GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, nullptr);
 
-	// 全ての壁と判定を取る
-	for (auto wall : list)
-	{
-		// 当たり判定処理
-		bool bTemp = wall->Collision
-		(
-			pos, m_oldPos,		// 座標
-			RADIUS, RADIUS,		// 判定範囲
-			m_move				// 移動情報
-		);
-
-		// 一時保存フラグがfalseなら次に進む
-		if (!bTemp || bHit) { continue; }
-
-		// 衝突フラグを立てる
-		bHit = true;
-	}
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
 
 	// 位置を適用
 	SetVec3Position(pos);
