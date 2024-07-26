@@ -176,7 +176,7 @@ void CPause::Update(const float fDeltaTime)
 			SetEnableDraw(m_bPause);
 
 			// サウンドの再生
-			PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
+			PLAY_SOUND(CSound::LABEL_SE_PAUSE000);	// ポーズ開く
 		}
 	}
 

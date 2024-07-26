@@ -26,6 +26,7 @@ namespace
 		{ "data\\SE\\decision000.wav", 0 },		// 決定音00
 		{ "data\\SE\\decision001.wav", 0 },		// 決定音01
 		{ "data\\SE\\decision002.wav", 0 },		// 決定音02
+		{ "data\\SE\\pause000.wav", 0 },		// ポーズ開く音
 		{ "data\\SE\\goal.wav", 0 },			// ゴール音
 		{ "data\\SE\\land000.wav", 0 },			// 着地音 (小)
 		{ "data\\SE\\land001.wav", 0 },			// 着地音 (大)
@@ -44,6 +45,7 @@ namespace
 		{ "data\\SE\\getgoditem000.wav", 0 },	// 神器取得音
 		{ "data\\SE\\gimmickset000.wav", 0 },	// ギミックに分身セット
 		{ "data\\SE\\gimmickset001.wav", 0 },	// ギミック完成
+		{ "data\\SE\\button000.wav", 0 },		// ボタン音
 	};
 }
 
