@@ -11,6 +11,8 @@
 #include "player.h"
 #include "player_clone.h"
 
+#include "directxmath.h"
+
 //=========================================
 //  コンストラクタ
 //=========================================
@@ -63,7 +65,7 @@ HRESULT CGimmickPost::Init(void)
 		VEC3_ZERO,	// 位置
 		VEC3_ZERO,	// 向き
 		VEC3_ZERO,	// 大きさ
-		XCOL_BLUE,	// キューブ色
+		D3DXCOLOR(0.5f, 1.0f, 0.5f, 1.0f),	// キューブ色
 		XCOL_BLACK,	// 縁取り色
 		CObjectMeshCube::BORDER_OFF,			// 縁取り状態
 		0.0f,									// 縁取り太さ
@@ -131,6 +133,9 @@ void CGimmickPost::Update(const float fDeltaTime)
 
 		// ボタンを押しこむ
 		m_fButtonHeight -= BUTTON_MOVE * fDeltaTime;
+
+		// 色を変更
+		//ChangeColor();
 	}
 	else
 	{ // ボタンが押されていない場合
@@ -175,8 +180,8 @@ void CGimmickPost::SetVec3Position(const D3DXVECTOR3& rPos)
 //=========================================
 void CGimmickPost::SetVec3Sizing(const D3DXVECTOR3& rSize)
 {
-	// 親クラスの大きさ設定
-	CGimmickAction::SetVec3Sizing(rSize);
+	// サイズの設定
+	CObject3D::SetVec3Sizing(rSize);
 
 	// ボタンの大きさ設定
 	SetButtonSizing();
@@ -239,4 +244,126 @@ void CGimmickPost::SetButtonSizing(void)
 
 	// ボタンの大きさ設定
 	m_pButton->SetVec3Sizing(size);
+}
+
+//===========================================
+//  色の変更
+//===========================================
+void CGimmickPost::ChangeColor()
+{
+	// 色を取得
+	D3DXCOLOR col = m_pButton->GetCubeColor();
+	col *= 255.0f;
+
+	// 変数宣言
+	float H = 0.0f, S = 0.0f, V = 0.0f;
+	float fCol[3] = { col.r, col.g, col.b };
+
+	// RGB -> HSV 変換
+	{
+		float fMax = 0.0f, fMin = 1.0f;
+
+		// 最大と最小の値を取得する
+		for (int i = 0; i < 3; ++i)
+		{
+			if (fMax <= fCol[i]) { fMax = fCol[i]; }
+			if (fMin >= fCol[i]) { fMin = fCol[i]; }
+		}
+
+		// 最大値と一致する色を判別する
+		if (col.r == col.g && col.g == col.b && col.b == col.r)
+		{
+			H = 0.0f;
+		}
+		else if (col.r == fMax)
+		{
+			H = 60.0f * ((col.g - col.b) / (fMax - fMin));
+		}
+		else if (col.g == fMax)
+		{
+			H = 60.0f * ((col.b - col.r) / (fMax - fMin)) + 120.0f;
+		}
+		else if (col.b == fMax)
+		{
+			H = 60.0f * ((col.r - col.g) / (fMax - fMin)) + 240.0f;
+		}
+
+		// 値が負の場合360加算して正の値にする
+		if (H < 0.0f)
+		{
+			H += 360.0f;
+		}
+
+		// 値を更新する
+		++H;
+
+		// 360を超えたら0に戻す
+		if (H > 360.0f)
+		{
+			H = 0.0f;
+		}
+
+		// Sを求める
+		if (fMax == 0.0f)
+		{
+			S = 0.0f;
+		}
+		else
+		{
+			S = ((fMax - fMin) / fMax) * 255.0f;
+		}
+
+		// Vを求める
+		V = fMax;
+	}
+
+	// HSV -> RGB 変換
+	{
+		float nMax = 0.0f, nMin = 0.0f;
+		// 最大値を求める
+		nMax = V;
+
+		// 最小値を求める
+		nMin = nMax - ((S / 255.0f) * nMax);
+
+		// 場合分けをしてRGB値を決定する
+		if (0.0f <= H && H <= 60.0f)
+		{
+			col.r = nMax;
+			col.g = ((H / 60.0f) * (nMax - nMin) + nMin);
+			col.b = nMin;
+		}
+		else if (60.0f <= H && H <= 120.0f)
+		{
+			col.r = (((120.0f - H) / 60.0f) * (nMax - nMin) + nMin);
+			col.g = nMax;
+			col.b = nMin;
+		}
+		else if (120.0f <= H && H <= 180.0f)
+		{
+			col.r = nMin;
+			col.g = nMax;
+			col.b = (((H - 120.0f) / 60.0f) * (nMax - nMin) + nMin);
+		}
+		else if (180.0f <= H && H <= 240.0f)
+		{
+			col.r = nMin;
+			col.g = (((240.0f - H) / 60.0f) * (nMax - nMin) + nMin);
+			col.b = nMax;
+		}
+		else if (240.0f <= H && H <= 300.0f)
+		{
+			col.r = (((H - 240.0f) / 60.0f) * (nMax - nMin) + nMin);
+			col.g = nMin;
+			col.b = nMax;
+		}
+		else if (300.0f <= H && H <= 360.0f)
+		{
+			col.r = nMax;
+			col.g = nMin;
+			col.b = (((360.0f - H) / 60.0f) * (nMax - nMin) + nMin);
+		}
+		col /= 255.0f;
+		m_pButton->SetCubeColor(col);
+	}
 }

@@ -36,6 +36,7 @@ public:
 private:
 	// メンバ関数
 	void SetButtonSizing(void);	// ボタン大きさ設定
+	void ChangeColor(); // ボタンの色変更処理
 
 	// メンバ変数
 	CObjectMeshCube* m_pButton;	// ボタン

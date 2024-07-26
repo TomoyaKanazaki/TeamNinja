@@ -411,14 +411,13 @@ CPlayer *CPlayer::Create
 		const int nSave = GET_RETENTION->GetSave();
 
 		// 位置を設定
-		if (nSave == -1)
+		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
 			pPlayer->SetVec3Position(rPos);
 		}
 		else
 		{
 			// チェックポイントのリストを取得
-			if (CCheckPoint::GetList() == nullptr) { assert(false); }
 			CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
 
 			// チェックポイントの座標を設定する
