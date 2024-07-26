@@ -179,15 +179,12 @@ bool CWall::Collision
 		&bUp				// 上状況
 	);
 
-	if(bHit)
-	{ // 当たり判定に当たった場合
+	if (bUp &&
+		pJump != nullptr)
+	{ // 上に乗ったかつ、ジャンプ状況が NULL じゃない場合
 
-		if (pJump != nullptr)
-		{ // ジャンプ状況が NULL じゃない場合
-
-			// ジャンプ状況を設定する
-			*pJump = !bUp;
-		}
+		// ジャンプ状況を設定する
+		*pJump = false;
 	}
 
 	// ヒット状況を返す
