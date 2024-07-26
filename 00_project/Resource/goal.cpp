@@ -20,6 +20,7 @@ namespace
 	const D3DXVECTOR3 INIT_ROT = D3DXVECTOR3(0.7f, 0.0f, 0.0f);	// 初期向き
 	const float ROT_SPEED = 0.01f;		// 向きの速度
 	const float RADIUS = 50.0f;			// 半径
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
 }
 
 //------------------------------------------
@@ -31,7 +32,8 @@ CListManager<CGoal>* CGoal::m_pList = nullptr;	// オブジェクトリスト
 //  コンストラクタ
 //==========================================
 CGoal::CGoal():
-	m_bClear(false)
+	m_bClear(false),
+	m_pEffectdata(nullptr)
 {
 
 }
@@ -91,6 +93,16 @@ HRESULT CGoal::Init(void)
 //==========================================
 void CGoal::Uninit(void)
 {
+	//エフェクトの配列を取得
+	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	//現在のエフェクトを削除
+
+	if (!vEffect.empty())
+	{
+		delete m_pEffectdata;
+		m_pEffectdata = NULL;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -137,29 +149,32 @@ void CGoal::Draw(CShader* pShader)
 CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 {
 	// ポインタを宣言
-	CGoal* pSavePoint = new CGoal;	// セーブポイント生成用
+	CGoal* pGoal = new CGoal;	// セーブポイント生成用
 
 	// メモリの確保に失敗していた場合nullを返す
-	if (pSavePoint == nullptr) { assert(false); return nullptr; }
+	if (pGoal == nullptr) { assert(false); return nullptr; }
 
 	// ゴールの初期化
-	if (FAILED(pSavePoint->Init()))
+	if (FAILED(pGoal->Init()))
 	{
 		// メモリ開放
-		delete pSavePoint;
+		delete pGoal;
 
 		// nullを返す
 		return nullptr;
 	}
 
 	// 位置を設定
-	pSavePoint->SetVec3Position(D3DXVECTOR3(rPos.x, rPos.y + RADIUS, rPos.z));
+	pGoal->SetVec3Position(D3DXVECTOR3(rPos.x, rPos.y + RADIUS, rPos.z));
 
 	// 向きを設定
-	pSavePoint->SetVec3Rotation(INIT_ROT);
+	pGoal->SetVec3Rotation(INIT_ROT);
+
+	// エフェクトを出す TODO : ゴール用にする
+	pGoal->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
 
 	// 確保したアドレスを返す
-	return pSavePoint;
+	return pGoal;
 }
 
 //==========================================

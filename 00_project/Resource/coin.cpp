@@ -11,6 +11,8 @@
 #include "coin.h"
 #include "renderer.h"
 #include "collision.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	定数宣言
@@ -20,6 +22,7 @@ namespace
 	const char* MODEL = "data\\MODEL\\PLAYER\\02_head.x";	// モデルのパス
 	const char* SETUP_TXT = "data\\TXT\\coin.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// コインの優先順位
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);// エフェクト用オフセット
 }
 
 //************************************************************
@@ -181,6 +184,9 @@ bool CCoin::Collision
 {
 	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius))
 	{ // 当たった場合
+
+		// TODO : それっぽいエフェクトにする
+		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
 
 		// 終了処理
 		Uninit();
