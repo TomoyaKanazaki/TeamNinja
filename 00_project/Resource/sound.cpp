@@ -17,11 +17,15 @@ namespace
 	const CSound::SSoundInfo SOUND_FILE[] =	// サウンドファイル
 	{
 		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM
+		{ "data\\BGM\\bgm_game_forest.wav", -1 },	// BGM(森)
+		{ "data\\BGM\\bgm_result.wav", -1 },	// BGM(リザルト)
+
 		{ "data\\SE\\select000.wav", 0 },		// 選択操作音00
 		{ "data\\SE\\select001.wav", 0 },		// 選択操作音01
 		{ "data\\SE\\decision000.wav", 0 },		// 決定音00
 		{ "data\\SE\\decision001.wav", 0 },		// 決定音01
 		{ "data\\SE\\decision002.wav", 0 },		// 決定音02
+		{ "data\\SE\\goal.wav", 0 },			// ゴール音
 		{ "data\\SE\\land000.wav", 0 },			// 着地音 (小)
 		{ "data\\SE\\land001.wav", 0 },			// 着地音 (大)
 		{ "data\\SE\\stalkwalk000.wav", 0 },	// 追跡敵の歩く音
