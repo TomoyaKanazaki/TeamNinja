@@ -11,6 +11,7 @@
 #include "enemyStalk.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "stage.h"
 #include "sound.h"
 
 #include "multiModel.h"
@@ -48,9 +49,12 @@ namespace
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
 
 	// 音管理関係
-	const int WALK_SOUND_COUNT = 32;			// 歩行音を鳴らすカウント数
-	const int FOUND_SOUND_COUNT = 37;			// 発見音を鳴らすカウント数
-	const int UPSET_SOUND_COUNT = 200;			// 動揺音を鳴らすカウント数
+	namespace sound
+	{
+		const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
+		const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
+		const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
+	}
 }
 
 //************************************************************
@@ -387,6 +391,9 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 	// 着地判定処理
 	UpdateLanding(pPos);
 
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(*pPos, RADIUS);
+
 	// 現在のモーションを返す
 	return nCurMotion;
 }
@@ -621,7 +628,7 @@ CEnemyStalk::EMotion CEnemyStalk::Warning(D3DXVECTOR3* pPos, const float fDeltaT
 	// 状態カウントを加算する
 	m_nStateCount++;
 
-	if (m_nStateCount == FOUND_SOUND_COUNT)
+	if (m_nStateCount == sound::FOUND_COUNT)
 	{ // 一定時間経過した場合
 
 		// 発見音を鳴らす
@@ -829,7 +836,7 @@ CEnemyStalk::EMotion CEnemyStalk::Upset(void)
 	// 状態カウントを加算する
 	m_nStateCount++;
 
-	if (m_nStateCount == UPSET_SOUND_COUNT)
+	if (m_nStateCount == sound::UPSET_COUNT)
 	{ // 状態カウントが一定数になったとき
 
 		// 動揺音を鳴らす
@@ -1008,7 +1015,7 @@ void CEnemyStalk::SetState(const EState state)
 //============================================================
 void CEnemyStalk::WalkSound(void)
 {
-	if (m_nStateCount % WALK_SOUND_COUNT == 0)
+	if (m_nStateCount % sound::WALK_COUNT == 0)
 	{ // 一定カウントごとに
 
 		// 歩行音を鳴らす

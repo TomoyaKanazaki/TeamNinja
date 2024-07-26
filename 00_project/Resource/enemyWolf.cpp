@@ -11,6 +11,7 @@
 #include "enemyWolf.h"
 #include "renderer.h"
 #include "deltaTime.h"
+#include "stage.h"
 #include "sound.h"
 
 #include "enemyNavigation.h"
@@ -363,6 +364,9 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 
 	// 着地判定処理
 	UpdateLanding(pPos);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(*pPos, RADIUS);
 
 	// 現在のモーションを返す
 	return nCurMotion;
