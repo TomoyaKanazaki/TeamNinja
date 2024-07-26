@@ -16,8 +16,8 @@
 //==========================================
 namespace
 {
-	const char* TEXTURE = "data\\TEXTURE\\end.png";	// ゴールのテクスチャ
-
+	const char* MODEL = "data\\MODEL\\Scroll\\Scroll000.x";		// モデルのパス
+	const D3DXVECTOR3 INIT_ROT = D3DXVECTOR3(0.7f, 0.0f, 0.0f);	// 初期向き
 	const float ROT_SPEED = 0.01f;		// 向きの速度
 	const float RADIUS = 50.0f;			// 半径
 }
@@ -61,7 +61,7 @@ HRESULT CGoal::Init(void)
 	}
 
 	// モデルを割り当て
-	BindModel("data\\MODEL\\Kunai\\Kunai000.x");
+	BindModel(MODEL);
 
 	// 自身のラベルを設定
 	SetLabel(LABEL_GOALPOINT);
@@ -153,10 +153,10 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 	}
 
 	// 位置を設定
-	pSavePoint->SetVec3Position(rPos);
+	pSavePoint->SetVec3Position(D3DXVECTOR3(rPos.x, rPos.y + RADIUS, rPos.z));
 
 	// 向きを設定
-	pSavePoint->SetVec3Rotation(VEC3_ZERO);
+	pSavePoint->SetVec3Rotation(INIT_ROT);
 
 	// 確保したアドレスを返す
 	return pSavePoint;
