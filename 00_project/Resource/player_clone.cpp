@@ -152,19 +152,19 @@ HRESULT CPlayerClone::Init(void)
 
 
 	// 軌跡の生成
-	m_pOrbit = COrbit::Create
-	( // 引数
-		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-		ORBIT_OFFSET,	// オフセット情報
-		ORBIT_PART		// 分割数
-	);
-	if (m_pOrbit == nullptr)
-	{ // 非使用中の場合
+	//m_pOrbit = COrbit::Create
+	//( // 引数
+	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+	//	ORBIT_OFFSET,	// オフセット情報
+	//	ORBIT_PART		// 分割数
+	//);
+	//if (m_pOrbit == nullptr)
+	//{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	//	// 失敗を返す
+	//	assert(false);
+	//	return E_FAIL;
+	//}
 
 	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
@@ -328,11 +328,11 @@ void CPlayerClone::Update(const float fDeltaTime)
 	// 壁の当たり判定
 	(void)CollisionWall();
 
-	D3DXVECTOR3 pos = GetVec3Position();
-	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", pos.x, pos.y, pos.x);
-
 	// 軌跡の更新
-	m_pOrbit->Update(fDeltaTime);
+	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
+
+	// 現在座標と前回座標が一致した場合消滅して関数を抜ける
+	if (m_oldPos == GetVec3Position()) { Delete(this); return; }
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -827,6 +827,9 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 {
 	D3DXVECTOR3 posClone = GetVec3Position();	// クローン位置
 	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
+
+	// 過去位置の更新
+	UpdateOldPosition();
 
 	// 重力の更新
 	UpdateGravity();

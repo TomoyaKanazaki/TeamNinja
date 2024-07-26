@@ -203,6 +203,7 @@ CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D
 {
 	CEffectData* pEffect = new CEffectData;
 	pEffect->efcRef = Loading(path);
+	pEffect->Path = path;
 	// エフェクトの再生
 	pEffect->handle = m_EfkManager->Play(pEffect->efcRef, pos.x, pos.y, pos.z);
 	pEffect->m_pos = pos;

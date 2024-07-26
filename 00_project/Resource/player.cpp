@@ -180,19 +180,19 @@ HRESULT CPlayer::Init(void)
 	BindCharaData(SETUP_TXT);
 
 	// 軌跡の生成
-	m_pOrbit = COrbit::Create
-	( // 引数
-		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-		ORBIT_OFFSET,	// オフセット情報
-		ORBIT_PART		// 分割数
-	);
-	if (m_pOrbit == nullptr)
-	{ // 非使用中の場合
+	//m_pOrbit = COrbit::Create
+	//( // 引数
+	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+	//	ORBIT_OFFSET,	// オフセット情報
+	//	ORBIT_PART		// 分割数
+	//);
+	//if (m_pOrbit == nullptr)
+	//{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	//	// 失敗を返す
+	//	assert(false);
+	//	return E_FAIL;
+	//}
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -312,7 +312,7 @@ void CPlayer::Update(const float fDeltaTime)
 	WalkSound();
 
 	// 軌跡の更新
-	m_pOrbit->Update(fDeltaTime);
+	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -757,7 +757,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move);
 
 	// コインとの当たり判定処理
 	CollisionCoin(posPlayer);
@@ -1547,6 +1547,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_fTempStick = -fTemp;
 	}
 
+	// 分身生み出し音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_CLONEPOP_000);
+
 	return false;
 }
 
@@ -1572,6 +1575,13 @@ void CPlayer::DelelteClone()
 
 	// 右スティックの押し込みがなかった場合関数を抜ける
 	if (!pPad->IsTrigger(CInputPad::KEY_RSTICKPUSH)) { return; }
+
+	if (m_pList != nullptr)
+	{ // リストが NULL じゃない場合
+
+		// 分身消失音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
+	}
 
 	// 分身を削除する
 	CPlayerClone::Delete();

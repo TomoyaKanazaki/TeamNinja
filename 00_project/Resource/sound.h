@@ -45,6 +45,8 @@ public:
 		LABEL_SE_PLAYERJUMP_S,		// プレイヤーの小ジャンプ音
 		LABEL_SE_PLAYERSTEP_000,	// プレイヤーの回避音
 		LABEL_SE_SAVE_000,			// セーブ音
+		LABEL_SE_CLONEPOP_000,		// 分身生み出し音
+		LABEL_SE_CLONELOST_000,		// 分身消失音
 		LABEL_MAX					// この列挙型の総数
 	};
 
