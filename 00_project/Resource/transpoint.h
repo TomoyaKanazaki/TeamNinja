@@ -18,6 +18,11 @@
 #include "effekseerManager.h"
 
 //************************************************************
+//	前方宣言
+//************************************************************
+class CBalloon;	// 吹き出しクラス
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // 遷移ポイントクラス
@@ -51,8 +56,9 @@ private:
 
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
-	CEffekseer::CEffectData* m_pEffectData; // 保持するエフェクト情報
 	const std::string m_sTransMapPass;		// 遷移先マップパス
+	CEffekseer::CEffectData* m_pEffectData; // 保持するエフェクト情報
+	CBalloon* m_pBalloon;	// 吹き出し情報
 };
 
 #endif	// _TRANSPOINT_H_
