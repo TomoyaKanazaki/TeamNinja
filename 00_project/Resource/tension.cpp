@@ -13,6 +13,7 @@
 //===========================================
 namespace
 {
+	const int TENSION_MAX = 15; // 士気力の上限
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // ポリゴンの大きさ
 	const float	TENSION_WIDTH = SCREEN_WIDTH * 0.5f; // 士気力ゲージの幅
 	const char*	TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
@@ -137,6 +138,10 @@ CTension* CTension::Create()
 
 	// 初期化処理
 	if (FAILED(pTension->Init())) { SAFE_DELETE(pTension); return nullptr; }
+
+	// 最大数に達している場合nullを返す
+	if (m_pList->GetNumAll() > TENSION_MAX) 
+	{ SAFE_UNINIT(pTension); return nullptr; }
 
 	return pTension;
 }
