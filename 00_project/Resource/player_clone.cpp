@@ -253,6 +253,16 @@ void CPlayerClone::Update(const float fDeltaTime)
 			// 関数を抜ける
 			return;
 		}
+
+		DebugProc::Print(DebugProc::POINT_CENTER, "前回座標 : %f, %f, %f\n", m_oldPos.x, m_oldPos.y, m_oldPos.z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "現在座標 : %f, %f, %f\n", GetVec3Position().x, GetVec3Position().y, GetVec3Position().z);
+
+		// 現在座標と前回座標が一致した場合消滅して関数を抜ける
+		if (m_oldPos == GetVec3Position())
+		{
+			Delete(this); return;
+		}
+
 		break;
 
 	case ACTION_FALL_TO_WAIT: // 落とし穴警戒
@@ -315,6 +325,10 @@ void CPlayerClone::Update(const float fDeltaTime)
 		break;
 	}
 
+	// 壁の当たり判定
+	D3DXVECTOR3 pos = GetVec3Position();
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move);
+
 	// アクティブ状態の更新
 	if (UpdateActive(fDeltaTime))
 	{
@@ -322,17 +336,8 @@ void CPlayerClone::Update(const float fDeltaTime)
 		return;
 	}
 
-	// アクターの当たり判定
-	(void)CollisionActor();
-
-	// 壁の当たり判定
-	(void)CollisionWall();
-
 	// 軌跡の更新
 	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
-
-	// 現在座標と前回座標が一致した場合消滅して関数を抜ける
-	if (m_oldPos == GetVec3Position()) { Delete(this); return; }
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -828,9 +833,6 @@ CPlayerClone::EMotion CPlayerClone::UpdateMove(const float fDeltaTime)
 	D3DXVECTOR3 posClone = GetVec3Position();	// クローン位置
 	EMotion currentMotion = MOTION_DASH;		// 現在のモーション
 
-	// 過去位置の更新
-	UpdateOldPosition();
-
 	// 重力の更新
 	UpdateGravity();
 
@@ -1093,6 +1095,9 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 
 	// TODO
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d\n", m_pOldField == m_pCurField);
+
+	// アクターの当たり判定
+	(void)CollisionActor(rPos);
 
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
@@ -1445,7 +1450,7 @@ CPlayerClone* CPlayerClone::Block()
 	m_oldPos = GET_PLAYER->GetVec3Position();
 
 	// 何かに衝突した場合生成したものを削除する
-	if (CollisionActor() || CollisionWall())
+	if (CollisionActor(pos) || CollisionWall())
 	{
 		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 		Uninit();
@@ -1470,37 +1475,41 @@ CPlayerClone* CPlayerClone::Block()
 //==========================================
 // アクターの当たり判定
 //==========================================
-bool CPlayerClone::CollisionActor()
+bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 {
+	// 判定用変数
+	bool bJump = true;
+	bool bHit = false;
+
 	// アクターのリスト構造が無ければ抜ける
-	if (CActor::GetList() == nullptr) { return false; }
+	if (CActor::GetList() == nullptr) { return bHit; }
 
-	std::list<CActor*> list = CActor::GetList()->GetList(); // リストを取得
-	D3DXVECTOR3 pos = GetVec3Position(); // 位置
-	bool bHit = false; // 衝突判定
+	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
 
-	// 全てのアクターと判定を取る
-	for (auto actor : list)
+	for (CActor* actor : list)
 	{
 		// 当たり判定処理
-		bool bTemp = false; // 一時保存フラグ
 		actor->Collision
 		(
-			pos, m_oldPos,		// 座標
-			RADIUS, RADIUS,		// 判定範囲
-			m_move, m_bJump,	// 移動情報
-			bTemp				// 衝突判定
+			pos,		// 位置
+			m_oldPos,	// 前回の位置
+			RADIUS,		// 半径
+			HEIGHT,		// 高さ
+			m_move,		// 移動量
+			bJump,		// ジャンプ状況
+			bHit
 		);
-
-		// 一時保存フラグがfalseまたは衝突フラグがtrueの場合次に進む
-		if (!bTemp || bHit) { continue; }
-
-		// 衝突判定をtrueにする
-		bHit = true;
 	}
 
 	// 位置を適用
 	SetVec3Position(pos);
+
+	if (bJump == false)
+	{ // 着地状況が false かつ、ジャンプ状況が false の場合
+
+		// ジャンプ状況を false にする
+		m_bJump = false;
+	}
 
 	// 衝突判定を返す
 	return bHit;

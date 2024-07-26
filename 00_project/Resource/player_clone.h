@@ -157,7 +157,7 @@ private:
 	void CheckGimmick();	// ギミックの接触判定
 	void Approach();		// 目標位置に向かう処理
 	CPlayerClone* Block();	// 分身出させないよの処理
-	bool CollisionActor();	// アクターとの当たり判定
+	bool CollisionActor(D3DXVECTOR3& pos);	// アクターとの当たり判定
 	bool CollisionWall();	// 壁との当たり判定
 
 	// メンバ関数 (藤田追加)
