@@ -12,7 +12,7 @@
 //===========================================
 namespace
 {
-	const D3DXVECTOR3 POLYGON_SIZE = D3DXVECTOR3(20.0f, 60.0f, 0.0f);
+	const float POLYGON_WIDTH = 20.0f;		// ポリゴンの横幅
 }
 
 //===========================================
@@ -47,9 +47,6 @@ HRESULT CPlant::Init(void)
 	
 	// 回転設定
 	SetRotate(ROTATE_LATERAL);
-
-	// サイズの設定
-	SetVec3Sizing(POLYGON_SIZE);
 
 	// ラベルの変更
 	SetLabel(LABEL_GIMMICK);
@@ -124,6 +121,14 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 
 	// テクスチャ割り当て
 	pPlant->BindTexture(GET_MANAGER->GetTexture()->Regist(sPass));
+
+	// サイズの設定
+	pPlant->SetVec3Sizing(D3DXVECTOR3
+	(
+		POLYGON_WIDTH,
+		useful::GetTexHeightFromAspect(POLYGON_WIDTH, pPlant->GetTextureIndex()),
+		0.0f
+	));
 
 	// 確保したアドレスを返す
 	return pPlant;
