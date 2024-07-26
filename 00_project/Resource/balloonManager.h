@@ -1,32 +1,32 @@
 //============================================================
 //
-//	吹き出しヘッダー [balloon.h]
+//	吹き出しマネージャーヘッダー [balloonManager.h]
 //	Author：藤田勇一
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _BALLOON_H_
-#define _BALLOON_H_
+#ifndef _BALLOON_MANAGER_H_
+#define _BALLOON_MANAGER_H_
 
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "objectBillboard.h"
+#include "object.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// 吹き出しクラス
-class CBalloon : public CObjectBillboard
+// 吹き出しマネージャークラス
+class CBalloonManager : public CObject
 {
 public:
 	// コンストラクタ
-	CBalloon();
+	CBalloonManager();
 
 	// デストラクタ
-	~CBalloon();
+	~CBalloonManager();
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
@@ -35,10 +35,11 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CBalloon *Create(void);	// 生成
+	static CBalloonManager *Create(void);	// 生成
 
 private:
-	// メンバ変数
+	// オーバーライド関数
+	void Release(void) override { CObject::Release(); }	// 破棄
 };
 
-#endif	// _BALLOON_H_
+#endif	// _BALLOON_MANAGER_H_

@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource\balloon.h" />
+    <ClInclude Include="Resource\balloonManager.h" />
     <ClInclude Include="Resource\blink2D.h" />
     <ClInclude Include="Resource\clearFailManager.h" />
     <ClInclude Include="Resource\clearManager.h" />
@@ -348,6 +349,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\balloon.cpp" />
+    <ClCompile Include="Resource\balloonManager.cpp" />
     <ClCompile Include="Resource\blink2D.cpp" />
     <ClCompile Include="Resource\clearFailManager.cpp" />
     <ClCompile Include="Resource\clearManager.cpp" />

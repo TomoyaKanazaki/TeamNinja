@@ -10,7 +10,7 @@
 //===========================================
 //  ƒNƒ‰ƒX’è‹`
 //===========================================
-class CTension : CObject2D
+class CTension : public CObject2D
 {
 public:
 

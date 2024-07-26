@@ -159,7 +159,7 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
-	m_nWalkCount = 0;				// 歩行音カウント
+	m_nWalkCount	= 0;			// 歩行音カウント
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -180,19 +180,19 @@ HRESULT CPlayer::Init(void)
 	BindCharaData(SETUP_TXT);
 
 	// 軌跡の生成
-	m_pOrbit = COrbit::Create
-	( // 引数
-		GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-		ORBIT_OFFSET,	// オフセット情報
-		ORBIT_PART		// 分割数
-	);
-	if (m_pOrbit == nullptr)
-	{ // 非使用中の場合
+	//m_pOrbit = COrbit::Create
+	//( // 引数
+	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
+	//	ORBIT_OFFSET,	// オフセット情報
+	//	ORBIT_PART		// 分割数
+	//);
+	//if (m_pOrbit == nullptr)
+	//{ // 非使用中の場合
 
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
+	//	// 失敗を返す
+	//	assert(false);
+	//	return E_FAIL;
+	//}
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -312,7 +312,7 @@ void CPlayer::Update(const float fDeltaTime)
 	WalkSound();
 
 	// 軌跡の更新
-	m_pOrbit->Update(fDeltaTime);
+	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -470,6 +470,15 @@ bool CPlayer::Hit(const int nDamage)
 	CTension::Vanish();
 
 	return true;
+}
+
+//============================================================
+//	タイムアップ処理
+//============================================================
+void CPlayer::TimeUp(void)
+{
+	// 絶対殺す
+	m_state = STATE_DEATH;
 }
 
 //============================================================
@@ -748,7 +757,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move);
 
 	// コインとの当たり判定処理
 	CollisionCoin(posPlayer);
@@ -1431,14 +1440,15 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 {
 	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+
+	// 触れている遷移ポイントを取得
+	CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
+
+	// 遷移ポイントに触れていない場合抜ける
+	if (pHitTrans == nullptr) { return; }
+
 	if (pPad->IsTrigger(CInputPad::KEY_B))
 	{
-		// 触れている遷移ポイントを取得
-		CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
-
-		// 遷移ポイントに触れていない場合抜ける
-		if (pHitTrans == nullptr) { return; }
-
 		// 遷移ポイントのマップパスに遷移
 		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
 		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);

@@ -14,8 +14,8 @@
 namespace
 {
 	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // ポリゴンの大きさ
-	const float TENSION_WIDTH = SCREEN_WIDTH * 0.5f; // 士気力ゲージの幅
-	const char* TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
+	const float	TENSION_WIDTH = SCREEN_WIDTH * 0.5f; // 士気力ゲージの幅
+	const char*	TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
 }
 
 //===========================================
