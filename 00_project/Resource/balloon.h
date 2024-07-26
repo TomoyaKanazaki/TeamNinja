@@ -39,6 +39,8 @@ public:
 
 private:
 	// ƒƒ“ƒo•Ï”
+	float m_fScale;		// Šg‘å—¦
+	float m_fDestScale;	// –Ú•WŠg‘å—¦
 };
 
 #endif	// _BALLOON_H_
