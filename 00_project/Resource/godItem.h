@@ -26,9 +26,9 @@ public:
 	// Ћн—Ю
 	enum EType
 	{
-		TYPE_MIRROR = 0,	// ”Єљ@‹ѕ
-		TYPE_SWORD,			// ‘ђ“гЊ•
-		TYPE_MAGATAMA,		// ”ЄЋЪащЊщ‹К
+		TYPE_RED = 0,		// ђФ
+		TYPE_GREEN,			// —О
+		TYPE_BLUE,			// ђВ
 		TYPE_MAX			// ‚±‚М—с‹“Њ^‚М‘Ќђ”
 	};
 
