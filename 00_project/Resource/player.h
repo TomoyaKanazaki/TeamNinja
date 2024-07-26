@@ -127,6 +127,7 @@ public:
 	bool IsJump(void) const							{ return m_bJump; }		// ジャンプ状況設定
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
+	void TimeUp(void);							// タイムアップ
 	void SetSpawn(void);						// 出現設定
 	void SetResult();							// リザルト設定
 	void SetState(const EState state);			// 状態設定

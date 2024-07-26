@@ -159,7 +159,7 @@ HRESULT CPlayer::Init(void)
 	m_state			= STATE_NONE;	// 状態
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
-	m_nWalkCount = 0;				// 歩行音カウント
+	m_nWalkCount	= 0;			// 歩行音カウント
 	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
@@ -470,6 +470,15 @@ bool CPlayer::Hit(const int nDamage)
 	CTension::Vanish();
 
 	return true;
+}
+
+//============================================================
+//	タイムアップ処理
+//============================================================
+void CPlayer::TimeUp(void)
+{
+	// 絶対殺す
+	m_state = STATE_DEATH;
 }
 
 //============================================================
@@ -1431,14 +1440,15 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 {
 	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+
+	// 触れている遷移ポイントを取得
+	CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
+
+	// 遷移ポイントに触れていない場合抜ける
+	if (pHitTrans == nullptr) { return; }
+
 	if (pPad->IsTrigger(CInputPad::KEY_B))
 	{
-		// 触れている遷移ポイントを取得
-		CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
-
-		// 遷移ポイントに触れていない場合抜ける
-		if (pHitTrans == nullptr) { return; }
-
 		// 遷移ポイントのマップパスに遷移
 		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
 		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
