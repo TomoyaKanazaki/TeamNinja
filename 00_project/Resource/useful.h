@@ -57,6 +57,7 @@
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生
+#define STOP_SOUND(label)	(CManager::GetInstance()->GetSound()->Stop((CSound::ELabel)(label)))	// サウンド停止
 
 // D3DXVECTOR2関係
 #define VEC2_ZERO	(D3DXVECTOR2(0.0f, 0.0f))	// 0クリア
