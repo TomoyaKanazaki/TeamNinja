@@ -61,7 +61,7 @@ namespace
 	namespace item
 	{
 		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
-		const wchar_t	*STRING	= L"獲得した神器";		// 文字列
+		const wchar_t	*STRING	= L"獲得した勾玉";		// 文字列
 		const bool		ITALIC	= false;				// イタリック
 		const float	MOVE_TIME	= time::MOVE_TIME;		// 移動時間
 		const float	WAIT_TIME	= time::WAIT_TIME;		// タイトル待機時間
@@ -100,8 +100,8 @@ namespace
 		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
 		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
 		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
-		const D3DXCOLOR DEST_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, DEST_ALPHA);		// 目標色
-		const D3DXCOLOR INIT_COL	= D3DXCOLOR(0.2f, 0.2f, 0.2f, INIT_ALPHA);		// 初期色
+		const D3DXCOLOR DEST_COL	= D3DXCOLOR(0.35f, 0.35f, 0.35f, DEST_ALPHA);	// 目標色
+		const D3DXCOLOR INIT_COL	= D3DXCOLOR(0.35f, 0.35f, 0.35f, INIT_ALPHA);	// 初期色
 		const D3DXVECTOR3 DEST_POS	= icon_item::POS;								// 目標位置
 		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
 		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// 差分位置
