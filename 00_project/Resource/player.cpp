@@ -977,8 +977,8 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 #ifdef _DEBUG
 		if (pPad->IsPress(CInputPad::KEY_Y))
 		{
-			m_move.x *= 3.0f;
-			m_move.z *= 3.0f;
+			m_move.x *= 5.0f;
+			m_move.z *= 5.0f;
 		}
 #endif
 		// •àsƒ‚[ƒVƒ‡ƒ“‚É‚·‚é

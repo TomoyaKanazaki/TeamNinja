@@ -24,6 +24,7 @@ namespace
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;		// 神器の優先順位
 	const D3DXVECTOR3 EFFECT_OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// エフェクト用オフセット
+	const float COLLISION_RADIUS = 70.0f;						// 当たり判定用の半径
 
 	const float ADD_ROT = 0.03f;		// 向きの追加量
 	const float ADD_HEIGHT = 25.0f;		// 高さの追加量
@@ -228,7 +229,7 @@ bool CGodItem::Collision
 	const float fRadius			// 半径
 )
 {
-	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, GetModelData().fRadius))
+	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, COLLISION_RADIUS))
 	{ // 当たった場合
 
 		// 取得状況を true にする
