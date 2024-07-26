@@ -331,6 +331,11 @@ void CPlayer::Update(const float fDeltaTime)
 		RecoverJust();
 	}
 
+	if (pKeyboard->IsTrigger(DIK_UP))
+	{
+		CTension::Create();
+	}
+
 #endif
 }
 
