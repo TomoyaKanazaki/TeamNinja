@@ -37,6 +37,7 @@ public:
 	{
 		EWin win;		// 勝利状況
 		float fTime;	// 経過タイム
+		int nSave;		// 最後のセーブポイント
 	};
 
 	// メンバ関数
@@ -48,13 +49,16 @@ public:
 	static void Release(CRetentionManager *&prRetentionManager);	// 破棄
 
 	// メンバ関数
-	void SetResult(const EWin win, const float fTime);		// リザルト情報設定
+	void SetResult(const EWin win, const float fTime, const int nSave);		// リザルト情報設定
 	EWin GetWin(void) const		{ return m_result.win; }	// 勝利状況取得
 	float GetTime(void) const	{ return m_result.fTime; }	// 経過タイム取得
+	int GetSave(void) const		{ return m_result.nSave; }	// セーブポイント取得
 
 private:
+	
 	// メンバ変数
 	SResult m_result;	// リザルト情報
+
 };
 
 #endif	// _RETENTION_MANAGER_H_
