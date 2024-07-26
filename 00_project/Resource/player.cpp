@@ -1537,6 +1537,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_fTempStick = -fTemp;
 	}
 
+	// 分身生み出し音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_CLONEPOP_000);
+
 	return false;
 }
 
@@ -1565,6 +1568,9 @@ void CPlayer::DelelteClone()
 
 	// 分身を削除する
 	CPlayerClone::Delete();
+
+	// 分身消失音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
 }
 
 //===========================================
