@@ -13,27 +13,18 @@
 #include "collision.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char* MODEL[] =		// モデル
-	{
-		"data\\MODEL\\PLAYER\\02_head.x",	// 八咫鏡
-		"data\\MODEL\\PLAYER\\02_head.x",	// 草薙剣
-		"data\\MODEL\\PLAYER\\02_head.x",	// 八尺瓊勾玉
-	}; 
+	const char* MODEL = "data\\MODEL\\GODITEM\\Magatama.x";		// モデル
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
-	const int PRIORITY = 4;	// 神器の優先順位
+	const int PRIORITY = 4;		// 神器の優先順位
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);// エフェクト用オフセット
 }
-
-//************************************************************
-//	スタティックアサート
-//************************************************************
-static_assert(NUM_ARRAY(MODEL) == CGodItem::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 // 静的メンバ変数宣言
@@ -48,7 +39,7 @@ bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 //	コンストラクタ
 //============================================================
 CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_MIRROR)
+m_type(TYPE_RED)
 {
 
 }
@@ -143,9 +134,9 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 	assert(DuplicationCheck(type));
 
 	// モデルUIの生成
-	CGodItem* pCoin = new CGodItem;
+	CGodItem* pItem = new CGodItem;
 
-	if (pCoin == nullptr)
+	if (pItem == nullptr)
 	{ // 生成に失敗した場合
 
 		return nullptr;
@@ -154,34 +145,54 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 	{ // 生成に成功した場合
 
 		// 神器の初期化
-		if (FAILED(pCoin->Init()))
+		if (FAILED(pItem->Init()))
 		{ // 初期化に失敗した場合
 
 			// 神器の破棄
-			SAFE_DELETE(pCoin);
+			SAFE_DELETE(pItem);
 			return nullptr;
 		}
 
 		// 位置を設定
-		pCoin->SetVec3Position(rPos);
+		pItem->SetVec3Position(rPos);
 
 		// 向きを設定
-		pCoin->SetVec3Rotation(VEC3_ZERO);
+		pItem->SetVec3Rotation(VEC3_ZERO);
 
 		// 拡大率を設定
-		pCoin->SetVec3Scaling(VEC3_ONE);
+		pItem->SetVec3Scaling(VEC3_ONE);
 
 		// モデルの割り当て処理
-		pCoin->BindModel(MODEL[type]);
+		pItem->BindModel(MODEL);
+
+		// マテリアルの割り当て
+		switch (type)
+		{
+		case CGodItem::TYPE_RED:
+			pItem->SetAllMaterial(material::Red());		// 赤色
+			break;
+
+		case CGodItem::TYPE_GREEN:
+			pItem->SetAllMaterial(material::Green());	// 緑色
+			break;
+
+		case CGodItem::TYPE_BLUE:
+			pItem->SetAllMaterial(material::Blue());	// 青色
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
 
 		// 種類を設定する
-		pCoin->m_type = type;
+		pItem->m_type = type;
 
 		// 取得状況を false にする
-		m_aGet[pCoin->m_type] = false;
+		m_aGet[pItem->m_type] = false;
 
 		// 確保したアドレスを返す
-		return pCoin;
+		return pItem;
 	}
 }
 
@@ -211,6 +222,9 @@ bool CGodItem::Collision
 
 		// TODO : それっぽいエフェクトにする
 		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
+
+		// 神器取得音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GETGODITEM_000);
 
 		// 終了処理
 		Uninit();

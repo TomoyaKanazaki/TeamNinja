@@ -10,6 +10,7 @@
 #include "player.h"
 #include "collision.h"
 #include "popupUI.h"
+#include "sound.h"
 
 //==========================================
 //  定数定義
@@ -213,6 +214,14 @@ void CGoal::CollisionPlayer(void)
 
 	// クリアフラグをオンにする
 	m_bClear = true;
+
+	// BGMの停止
+	STOP_SOUND(CSound::LABEL_BGM_FOREST);
+
+	// SEの再生
+	PLAY_SOUND(CSound::LABEL_SE_GOAL);
+	// TODO：タイミング変えたいかも(BGMの再生)
+	PLAY_SOUND(CSound::LABEL_BGM_RESULT);
 }
 
 //============================================================
