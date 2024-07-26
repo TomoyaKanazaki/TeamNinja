@@ -21,6 +21,7 @@
 #include "player.h"
 #include "player_clone.h"
 #include "enemy.h"
+#include "sound.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -213,10 +214,17 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	{
 	case CRetentionManager::WIN_SUCCESS: // クリア成功
 		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), -1);
+
+		// TODO：タイミング変えたいかも(BGMの再生)
+		PLAY_SOUND(CSound::LABEL_BGM_RESULT);
 		break;
 
 	case CRetentionManager::WIN_FAIL: // クリア失敗
 		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), m_nSave);
+
+		// TODO：タイミング変えたいかも(BGMの再生)
+		PLAY_SOUND(CSound::LABEL_BGM_GAMEOVER);
+
 		break;
 
 	default:
@@ -244,6 +252,9 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;
+
+	// BGMの停止
+	STOP_SOUND(CSound::LABEL_BGM_FOREST);
 }
 
 //============================================================

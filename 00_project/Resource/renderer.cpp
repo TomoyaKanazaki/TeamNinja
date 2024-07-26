@@ -14,7 +14,6 @@
 #include "camera.h"
 #include "loading.h"
 #include "renderState.h"
-#include "renderTexture.h"
 #include "screen.h"
 #include "debug.h"
 #include "debugproc.h"

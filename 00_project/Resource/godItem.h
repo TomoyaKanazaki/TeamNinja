@@ -63,16 +63,22 @@ public:
 
 private:
 
+	// メンバ関数
+	void Cycle(void);		// 向き処理
+	void Height(void);		// 高さ設定処理
+
+	// メンバ変数
+	CListManager<CGodItem>::AIterator m_iterator;	// イテレーター
+	float m_fPosInitY;								// 初期位置(Y軸)
+	EType m_type;									// 種類
+	float m_fHeightRot;								// 高さの向き
+
 	// 静的メンバ関数
 	static bool DuplicationCheck(const EType type);		// 重複チェック処理
 
 	// 静的メンバ変数
 	static CListManager<CGodItem>* m_pList;			// リスト構造
 	static bool m_aGet[TYPE_MAX];					// 取得状況
-
-	// メンバ変数
-	CListManager<CGodItem>::AIterator m_iterator;	// イテレーター
-	EType m_type;									// 種類
 };
 
 #endif	// _COIN_H_

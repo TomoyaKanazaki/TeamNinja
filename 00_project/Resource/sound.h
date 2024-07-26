@@ -30,12 +30,14 @@ public:
 		LABEL_BGM_GENERAL,			// BGM (汎用)
 		LABEL_BGM_FOREST,			// BGM (森)
 		LABEL_BGM_RESULT,			// BGM (リザルト)
+		LABEL_BGM_GAMEOVER,			// BGM (ゲームオーバー)
 
 		LABEL_SE_SELECT_000,		// 選択操作音00
 		LABEL_SE_SELECT_001,		// 選択操作音01
 		LABEL_SE_DECISION_000,		// 決定音00
 		LABEL_SE_DECISION_001,		// 決定音01
 		LABEL_SE_DECISION_002,		// 決定音02
+		LABEL_SE_PAUSE000,			// ポーズ開く音
 		LABEL_SE_GOAL,				// ゴール音
 		LABEL_SE_LAND_S,			// 着地音 (小)
 		LABEL_SE_LAND_B,			// 着地音 (大)
@@ -54,6 +56,7 @@ public:
 		LABEL_SE_GETGODITEM_000,	// 神器取得音
 		LABEL_SE_GIMMICKSET_000,	// ギミックに分身セット
 		LABEL_SE_GIMMICKSET_001,	// ギミック完成
+		LABEL_SE_BUTTON000,			// ボタン音
 		LABEL_MAX					// この列挙型の総数
 	};
 

@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
+#include "renderTexture.h"
 
 //************************************************************
 //	前方宣言
@@ -48,6 +49,7 @@ public:
 		const CObject::EScene scene,	// 描画シーン
 		LPDIRECT3DSURFACE9* pSurface	// テクスチャサーフェイス
 	);
+	int GetRenderTextureIndex(const CObject::EScene scene) { return m_apRenderScene[scene]->GetTextureIndex(); }	// レンダーテクスチャインデックス取得
 
 	// 静的メンバ関数
 	static CRenderer *Create(HWND hWnd, BOOL bWindow);	// 生成
