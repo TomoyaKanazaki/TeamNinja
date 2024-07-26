@@ -144,8 +144,8 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 //============================================================
 void CRenderer::Uninit(void)
 {
-	for (int i = CObject::SCENE_MAX - 1; i >= 0; i--)
-	{ // シーンの総数分を逆順で繰り返す
+	for (int i = 0; i < CObject::SCENE_MAX; i++)
+	{ // シーンの総数分繰り返す
 
 		// レンダーテクスチャの破棄
 		SAFE_REF_RELEASE(m_apRenderScene[i]);
