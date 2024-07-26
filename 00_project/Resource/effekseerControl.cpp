@@ -259,7 +259,7 @@ CEffekseer::CEffectData::CEffectData()
 //======================================================
 CEffekseer::CEffectData::~CEffectData()
 {
-	if (handle != NULL)
+	if (CEffekseer::GetInstance()->GetManager()->Exists(handle))
 	{
 		CEffekseer::GetInstance()->GetManager()->StopEffect(handle);
 	}

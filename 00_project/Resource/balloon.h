@@ -37,8 +37,13 @@ public:
 	// 静的メンバ関数
 	static CBalloon *Create(void);	// 生成
 
+	// メンバ関数
+	void SetDisp(const bool bDisp);	// 吹き出し表示設定
+
 private:
 	// メンバ変数
+	float m_fScale;		// 拡大率
+	float m_fDestScale;	// 目標拡大率
 };
 
 #endif	// _BALLOON_H_

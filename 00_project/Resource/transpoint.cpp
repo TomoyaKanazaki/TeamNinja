@@ -11,6 +11,7 @@
 #include "collision.h"
 #include "manager.h"
 #include "stage.h"
+#include "balloon.h"
 
 //************************************************************
 //	定数宣言
@@ -38,8 +39,9 @@ CListManager<CTransPoint>* CTransPoint::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+	m_sTransMapPass	(pPass),	// 遷移先マップパス
 	m_pEffectData	(nullptr),	// 保持するエフェクト情報
-	m_sTransMapPass	(pPass)		// 遷移先マップパス
+	m_pBalloon		(nullptr)	// 吹き出し情報
 {
 
 }
@@ -59,10 +61,21 @@ HRESULT CTransPoint::Init(void)
 {
 	// メンバ変数を初期化
 	m_pEffectData = nullptr;	// 保持するエフェクト情報
+	m_pBalloon = nullptr;		// 吹き出し情報
 
 	// オブジェクトモデルの初期化
 	if (FAILED(CObjectModel::Init()))
 	{ // 初期化に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 吹き出しの生成
+	m_pBalloon = CBalloon::Create();
+	if (m_pBalloon == nullptr)
+	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
@@ -95,6 +108,9 @@ HRESULT CTransPoint::Init(void)
 //============================================================
 void CTransPoint::Uninit(void)
 {
+	// エフェクトの破棄
+	//SAFE_DELETE(m_pEffectData);	// TODO:やっぱ消せない
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -205,6 +221,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 			// 当たっている遷移ポイントを保存
 			pHitTransPoint = rList;
 
+			// 吹き出し表示をONにする
+			rList->m_pBalloon->SetDisp(true);
+
 			if (rList->m_pEffectData->Path != HIT_EFFECT_PASS)
 			{ // ヒット時のエフェクトではない場合
 
@@ -215,6 +234,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 		}
 		else
 		{ // 当たっていない場合
+
+			// 吹き出し表示をOFFにする
+			rList->m_pBalloon->SetDisp(false);
 
 			if (rList->m_pEffectData->Path != UNHIT_EFFECT_PASS)
 			{ // 未ヒット時のエフェクトではない場合

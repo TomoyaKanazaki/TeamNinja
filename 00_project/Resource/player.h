@@ -142,8 +142,6 @@ public:
 
 	// メンバ関数 (金崎朋弥)
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
-	void RecoverJust();			// ジャストアクションでの回復処理
-	void SetCheckPoint(CCheckPoint* checkpoint)	{ m_pCheckPoint = checkpoint; }	// チェックポイントを取得する処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
@@ -161,7 +159,6 @@ private:
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(void);		// 重力の更新
-	void UpdateSaveTeleport(void);	// 保存位置の更新
 
 	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
@@ -173,7 +170,6 @@ private:
 
 	// メンバ関数 (金崎追加)
 	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
-	void SaveReset();		// 直前のチェックポイントに帰る
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
