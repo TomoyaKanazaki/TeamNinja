@@ -14,6 +14,8 @@
 //	インクルードファイル
 //************************************************************
 #include "objectModel.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	クラス定義
@@ -49,7 +51,8 @@ private:
 
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
-	const std::string m_sTransMapPass;	// 遷移先マップパス
+	CEffekseer::CEffectData* m_pEffectData; // 保持するエフェクト情報
+	const std::string m_sTransMapPass;		// 遷移先マップパス
 };
 
 #endif	// _TRANSPOINT_H_

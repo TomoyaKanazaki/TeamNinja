@@ -236,8 +236,19 @@ void CGameManager::Update(const float fDeltaTime)
 		if (CGoal::GetGoal() != nullptr)
 		{
 			if (CGoal::GetGoal()->GetClear())
-			{
+			{ // クリアした場合
+
+				// クリア成功でリザルト遷移
 				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
+			}
+			else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
+			{ // 時間切れになった場合
+
+				// プレイヤーのタイムアップ処理
+				GET_PLAYER->TimeUp();
+
+				// クリア失敗でリザルト遷移
+				TransitionResult(CRetentionManager::EWin::WIN_FAIL);
 			}
 		}
 		break;
