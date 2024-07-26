@@ -30,14 +30,15 @@ namespace
 {
 	namespace timerInfo
 	{
-		const float TIME_START = 0.0f;		// 開始時間
-		const D3DXVECTOR3 POS		 = D3DXVECTOR3(1100.0f, 43.5f, 0.0f);	// タイマー位置
-		const D3DXVECTOR3 OFFSET	 = D3DXVECTOR3(146.0f, 13.0f, 0.0f);	// タイマー背景オフセット
-		const D3DXVECTOR3 VAL_SIZE	 = D3DXVECTOR3(46.8f, 62.4f, 0.0f);		// タイマー数字大きさ
-		const D3DXVECTOR3 PART_SIZE	 = D3DXVECTOR3(27.3f, 62.4f, 0.0f);		// タイマー区切り大きさ
-		const D3DXVECTOR3 BG_SIZE	 = D3DXVECTOR3(397.5f, 33.5f, 0.0f);	// タイマー背景大きさ
-		const D3DXVECTOR3 VAL_SPACE	 = D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);		// タイマー数字空白
-		const D3DXVECTOR3 PART_SPACE = D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// タイマー区切り空白
+		const float TIME_START			= 0.0f;	// 開始時間
+		const D3DXVECTOR3 POS			= D3DXVECTOR3(1270.0f, 47.5f, 0.0f);			// タイマー位置
+		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(46.8f, 62.4f, 0.0f) * 1.2f;		// タイマー数字大きさ
+		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(27.3f, 62.4f, 0.0f) * 1.2f;		// タイマー区切り大きさ
+		const D3DXVECTOR3 BG_SIZE		= D3DXVECTOR3(397.5f, 33.5f, 0.0f) * 1.2f;		// タイマー背景大きさ
+		const D3DXVECTOR3 VAL_SPACE		= D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);	// タイマー数字空白
+		const D3DXVECTOR3 PART_SPACE	= D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// タイマー区切り空白
+		const CValue::EType TYPE		= CValue::TYPE_NORMAL;		// 数字種類
+		const CTimeUI::EAlignX ALIGN_X	= CTimeUI::XALIGN_RIGHT;	// 横配置
 	}
 }
 
@@ -91,7 +92,9 @@ HRESULT CSceneGame::Init(void)
 		timerInfo::VAL_SIZE,	// 数字の大きさ
 		timerInfo::PART_SIZE,	// 区切りの大きさ
 		timerInfo::VAL_SPACE,	// 数字の空白
-		timerInfo::PART_SPACE	// 区切りの空白
+		timerInfo::PART_SPACE,	// 区切りの空白
+		timerInfo::TYPE,		// 数字種類
+		timerInfo::ALIGN_X		// 横配置
 	);
 	if (m_pTimerUI == nullptr)
 	{ // 生成に失敗した場合

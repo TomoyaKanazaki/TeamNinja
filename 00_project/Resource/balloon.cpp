@@ -8,6 +8,8 @@
 //	インクルードファイル
 //************************************************************
 #include "balloon.h"
+#include "manager.h"
+#include "renderer.h"
 
 //************************************************************
 //	定数宣言
@@ -72,7 +74,11 @@ HRESULT CBalloon::Init(void)
 	SetVec3Sizing(balloon::SIZE * m_fScale);
 
 	// テクスチャを割当
+#if 1
 	BindTexture("data\\TEXTURE\\balloon000.png");
+#else
+	BindTexture(GET_RENDERER->GetRenderTextureIndex(CObject::SCENE_BILLBOARD));
+#endif
 
 	// レンダーステートの情報を取得
 	CRenderState *pRenderState = GetRenderState();
