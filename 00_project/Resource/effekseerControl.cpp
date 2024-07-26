@@ -251,6 +251,7 @@ Effekseer::EffectRef CEffekseer::Loading(std::string path)
 //======================================================
 CEffekseer::CEffectData::CEffectData()
 {
+	handle = NULL;
 	GetInstance()->m_vEffect.push_back(this);
 }
 //======================================================
@@ -258,6 +259,9 @@ CEffekseer::CEffectData::CEffectData()
 //======================================================
 CEffekseer::CEffectData::~CEffectData()
 {
-	CEffekseer::GetInstance()->GetManager()->StopEffect(handle);
+	if (handle != NULL)
+	{
+		CEffekseer::GetInstance()->GetManager()->StopEffect(handle);
+	}
 	GetInstance()->m_vEffect.erase(std::find(GetInstance()->m_vEffect.begin(), GetInstance()->m_vEffect.end(), this));
 }
