@@ -171,7 +171,7 @@ HRESULT CSceneGame::Init(void)
 	m_pTimerUI->Start();
 
 	// BGM‚ÌÄ¶
-	PLAY_SOUND(CSound::LABEL_BGM_GENERAL);
+	PLAY_SOUND(CSound::LABEL_BGM_FOREST);
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;

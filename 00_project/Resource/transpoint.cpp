@@ -221,6 +221,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 			// 当たっている遷移ポイントを保存
 			pHitTransPoint = rList;
 
+			// 吹き出し表示をONにする
+			rList->m_pBalloon->SetDisp(true);
+
 			if (rList->m_pEffectData->Path != HIT_EFFECT_PASS)
 			{ // ヒット時のエフェクトではない場合
 
@@ -231,6 +234,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 		}
 		else
 		{ // 当たっていない場合
+
+			// 吹き出し表示をOFFにする
+			rList->m_pBalloon->SetDisp(false);
 
 			if (rList->m_pEffectData->Path != UNHIT_EFFECT_PASS)
 			{ // 未ヒット時のエフェクトではない場合

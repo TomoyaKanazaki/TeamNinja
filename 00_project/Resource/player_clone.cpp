@@ -428,6 +428,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 			7.5f,
 			false
 		);
+
+		// ギミック完成音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_001);
 	}
 	else
 	{ // 上記以外
@@ -442,6 +445,9 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 			7.5f,
 			false
 		);
+
+		// 分身セット音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_000);
 	}
 
 	// ギミック内での管理番号を取得する
