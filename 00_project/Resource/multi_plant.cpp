@@ -17,11 +17,11 @@ namespace
 	const char* TEXTURE_FILE[] = // テクスチャファイル
 	{
 		"data\\TEXTURE\\Flower000.png", // チューリップ
-		"data\\TEXTURE\\flower.png",	// テストテクスチャ
-		"data\\TEXTURE\\flower.png",	// テストテクスチャ
-		"data\\TEXTURE\\flower.png",	// テストテクスチャ
-		"data\\TEXTURE\\flower.png",	// テストテクスチャ
-		"data\\TEXTURE\\flower.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
 	};
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
