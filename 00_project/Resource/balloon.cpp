@@ -17,7 +17,10 @@ namespace
 	const int PRIORITY = 0;			// 吹き出しの優先順位
 	const int ALPHA_NUMREF = 180;	// αテストの参照値
 
-	const D3DXVECTOR3 SIZE = D3DXVECTOR3(320.0f, 180.0f, 0.0f);	// 大きさ
+	namespace balloon
+	{
+		const D3DXVECTOR3 SIZE = D3DXVECTOR3(320.0f, 180.0f, 0.0f);	// 大きさ
+	}
 }
 
 //************************************************************
@@ -63,7 +66,7 @@ HRESULT CBalloon::Init(void)
 	SetVec3Position(D3DXVECTOR3(0.0f, 240.0f, 0.0f));
 
 	// 大きさを設定
-	SetVec3Sizing(SIZE);
+	SetVec3Sizing(balloon::SIZE);
 
 	// テクスチャを割当
 	BindTexture("data\\TEXTURE\\balloon000.png");

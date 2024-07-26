@@ -122,3 +122,16 @@ CRenderTexture *CRenderTexture::Create(const CObject::EScene scene)
 		return pRenderTexture;
 	}
 }
+
+//============================================================
+//	破棄処理
+//============================================================
+void CRenderTexture::Release(CRenderTexture *&prRenderTexture)
+{
+	// レンダーテクスチャの終了
+	assert(prRenderTexture != nullptr);
+	prRenderTexture->Uninit();
+
+	// メモリ開放
+	SAFE_DELETE(prRenderTexture);
+}

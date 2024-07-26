@@ -36,6 +36,7 @@ public:
 
 	// Ã“Iƒƒ“ƒoŠÖ”
 	static CRenderTexture *Create(const CObject::EScene scene);	// ¶¬
+	static void Release(CRenderTexture *&prRenderTexture);		// ”jŠü
 
 private:
 	// ƒƒ“ƒo•Ï”
