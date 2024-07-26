@@ -14,9 +14,9 @@
 namespace
 {
 	const int TENSION_MAX = 15; // 士気力の上限
-	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // ポリゴンの大きさ
-	const float	TENSION_WIDTH = SCREEN_WIDTH * 0.5f; // 士気力ゲージの幅
-	const char*	TENSION_TEXTURE = "data\\TEXTURE\\flower.png"; // 士気力テクスチャ
+	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(65.0f, 75.0f, 0.0f); // ポリゴンの大きさ
+	const float	TENSION_WIDTH = 460.0f; // 士気力ゲージの幅
+	const char*	TENSION_TEXTURE = "data\\TEXTURE\\scroll.png"; // 士気力テクスチャ
 }
 
 //===========================================
@@ -204,7 +204,7 @@ void CTension::CalcPosition()
 	float fPosX = (TENSION_SIZE.x * 0.5f) + (fWidth * nIdx);
 
 	// 座標を設定
-	D3DXVECTOR3 pos = D3DXVECTOR3(fPosX, TENSION_SIZE.y * 0.5f, 0.0f);
+	D3DXVECTOR3 pos = D3DXVECTOR3(fPosX + 10.0f, TENSION_SIZE.y * 0.5f + 10.0f, 0.0f);
 
 	// 座標を適用
 	SetVec3Position(pos);
@@ -222,7 +222,7 @@ void CTension::ChangeColor()
 	}
 	else
 	{
-		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+		SetColor(D3DXCOLOR(0.5f, 0.5f, 0.5f, 0.5f));
 	}
 }
 

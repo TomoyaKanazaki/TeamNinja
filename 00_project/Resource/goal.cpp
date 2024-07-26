@@ -172,7 +172,7 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 	pGoal->SetVec3Rotation(INIT_ROT);
 
 	// エフェクトを出す TODO : ゴール用にする
-	pGoal->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+	pGoal->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\goal_atmosphere.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 80.0f, true);
 
 	// 確保したアドレスを返す
 	return pGoal;
