@@ -40,6 +40,7 @@
 #include "gimmick_action.h"
 #include "enemyAttack.h"
 #include "tension.h"
+#include "retentionManager.h"
 
 //************************************************************
 //	定数宣言
@@ -329,6 +330,10 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		CTension::Create();
 	}
+	if (pKeyboard->IsTrigger(DIK_DOWN))
+	{
+		m_state = STATE_DEATH;
+	}
 
 #endif
 }
@@ -402,8 +407,24 @@ CPlayer *CPlayer::Create
 			return nullptr;
 		}
 
+		// セーブ情報を取得
+		const int nSave = GET_RETENTION->GetSave();
+
 		// 位置を設定
-		pPlayer->SetVec3Position(rPos);
+		if (nSave == -1)
+		{
+			pPlayer->SetVec3Position(rPos);
+		}
+		else
+		{
+			// チェックポイントのリストを取得
+			if (CCheckPoint::GetList() == nullptr) { assert(false); }
+			CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
+
+			// チェックポイントの座標を設定する
+			pPlayer->SetVec3Position(point->GetVec3Position());
+		}
+
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
 
 		// 向きを設定

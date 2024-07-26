@@ -64,7 +64,8 @@ namespace
 //============================================================
 CGameManager::CGameManager() :
 	m_pResult	(nullptr),		// リザルトマネージャー
-	m_state		(STATE_NONE)	// 状態
+	m_state		(STATE_NONE),	// 状態
+	m_nSave		(-1)			// セーブポイント
 {
 
 }
@@ -85,6 +86,7 @@ HRESULT CGameManager::Init(void)
 	// メンバ変数を初期化
 	m_pResult	= nullptr;		// リザルトマネージャー
 	m_state		= STATE_NORMAL;	// 状態
+	m_nSave		= -1;			// セーブポイント
 
 	// リザルトマネージャーの生成
 	m_pResult = CResultManager::Create();
@@ -207,7 +209,21 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	CSceneGame::GetTimerUI()->End();
 
 	// リザルト情報の保存
-	GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime());
+	switch (win)
+	{
+	case CRetentionManager::WIN_SUCCESS: // クリア成功
+		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), -1);
+		break;
+
+	case CRetentionManager::WIN_FAIL: // クリア失敗
+		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), m_nSave);
+		break;
+
+	default:
+		assert(false);
+		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), -1);
+		break;
+	}
 
 	// キャラクターたちを全て消滅させる
 	CPlayerClone::VanishAll();	// 分身

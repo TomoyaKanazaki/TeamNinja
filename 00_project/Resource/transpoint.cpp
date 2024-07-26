@@ -109,7 +109,7 @@ HRESULT CTransPoint::Init(void)
 void CTransPoint::Uninit(void)
 {
 	// エフェクトの破棄
-	//SAFE_DELETE(m_pEffectData);	// TODO:やっぱ消せない
+	SAFE_DELETE(m_pEffectData);
 
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
