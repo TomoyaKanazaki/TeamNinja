@@ -36,6 +36,7 @@ namespace
 		{ "data\\SE\\save000.wav", 0 },			// セーブ音
 		{ "data\\SE\\clonepop000.wav", 0 },		// 分身生み出し音
 		{ "data\\SE\\clonelost000.wav", 0 },	// 分身消失音
+		{ "data\\SE\\getgoditem000.wav", 0 },	// 神器取得音
 	};
 }
 
