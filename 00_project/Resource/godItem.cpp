@@ -23,7 +23,10 @@ namespace
 	const char* MODEL = "data\\MODEL\\GODITEM\\Magatama.x";		// モデル
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;		// 神器の優先順位
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);// エフェクト用オフセット
+	const D3DXVECTOR3 EFFECT_OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// エフェクト用オフセット
+
+	const float ADD_ROT = 0.03f;		// 向きの追加量
+	const float ADD_HEIGHT = 25.0f;		// 高さの追加量
 }
 
 //************************************************************
@@ -39,7 +42,9 @@ bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 //	コンストラクタ
 //============================================================
 CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_RED)
+m_fPosInitY(0.0f),		// 初期位置(Y軸)
+m_type(TYPE_RED),		// 種類
+m_fHeightRot(0.0f)		// 高さの向き
 {
 
 }
@@ -112,6 +117,12 @@ void CGodItem::Uninit(void)
 //============================================================
 void CGodItem::Update(const float fDeltaTime)
 {
+	// 向き処理
+	Cycle();
+
+	// 高さ設定処理
+	Height();
+
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -155,6 +166,9 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 
 		// 位置を設定
 		pItem->SetVec3Position(rPos);
+
+		// 初期位置を設定
+		pItem->m_fPosInitY = rPos.y;
 
 		// 向きを設定
 		pItem->SetVec3Rotation(VEC3_ZERO);
@@ -221,7 +235,7 @@ bool CGodItem::Collision
 		m_aGet[m_type] = true;
 
 		// TODO : それっぽいエフェクトにする
-		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
 
 		// 神器取得音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_GETGODITEM_000);
@@ -389,4 +403,43 @@ bool CGodItem::IsGet(const EType type)
 {
 	// 取得状況を返す
 	return m_aGet[type];
+}
+
+//============================================================
+// 向き処理
+//============================================================
+void CGodItem::Cycle(void)
+{
+	// 向きを取得
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	// 回転させる
+	rot.y += ADD_ROT;
+
+	// 向きの正規化
+	useful::NormalizeRot(rot.y);
+
+	// 向きを適用
+	SetVec3Rotation(rot);
+}
+
+//============================================================
+// 高さ設定処理
+//============================================================
+void CGodItem::Height(void)
+{
+	// 位置を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 向きを加算する
+	m_fHeightRot += ADD_ROT;
+
+	// 向きの正規化
+	useful::NormalizeRot(m_fHeightRot);
+
+	// 高さを設定する
+	pos.y = m_fPosInitY + (cosf(m_fHeightRot) * -ADD_HEIGHT) + ADD_HEIGHT;
+
+	// 位置を適用
+	SetVec3Position(pos);
 }
