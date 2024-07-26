@@ -1437,7 +1437,8 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 //==========================================
 void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 {
-	CInputPad* pPad = GET_INPUTPAD;	// パッド情報
+	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
+	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
 
 	// 触れている遷移ポイントを取得
 	CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
@@ -1445,7 +1446,12 @@ void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
 	// 遷移ポイントに触れていない場合抜ける
 	if (pHitTrans == nullptr) { return; }
 
-	if (pPad->IsTrigger(CInputPad::KEY_B))
+	if (pKey->IsTrigger(DIK_SPACE)
+	||  pKey->IsTrigger(DIK_RETURN)
+	||  pPad->IsTrigger(CInputPad::KEY_A)
+	||  pPad->IsTrigger(CInputPad::KEY_B)
+	||  pPad->IsTrigger(CInputPad::KEY_X)
+	||  pPad->IsTrigger(CInputPad::KEY_Y))
 	{
 		// 遷移ポイントのマップパスに遷移
 		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
