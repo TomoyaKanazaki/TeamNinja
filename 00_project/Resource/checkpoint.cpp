@@ -23,7 +23,7 @@ namespace
 {
 
 	const float RADIUS = 50.0f;	// 半径
-	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);//エフェクト用オフセット
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 8.0f, 0.0f);//エフェクト用オフセット
 	const D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
 }
 

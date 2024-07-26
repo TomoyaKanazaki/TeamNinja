@@ -453,11 +453,6 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
 
-#ifdef _DEBUG
-	// マテリアルカラーを変えてわかりやすくする
-	SetAllMaterial(material::Yellow());
-#endif
-
 	// ギミックに対応したステータスを適用する
 	switch (m_pGimmick->GetType())
 	{
