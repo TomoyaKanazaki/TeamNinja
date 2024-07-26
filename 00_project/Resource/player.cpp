@@ -78,13 +78,11 @@ namespace
 	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
-	const float CLONE_MOVE		= NORMAL_MOVE * 1.1f; // 分身の移動量
-
-	const D3DXVECTOR3 TENSION_SIZE = D3DXVECTOR3(75.0f, 75.0f, 0.0f); // 士気力ゲージのサイズ
+	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
+	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
-	const int JUST_RECOVER = 500; // ジャストアクションでの回復量
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
 
@@ -325,10 +323,6 @@ void CPlayer::Update(const float fDeltaTime)
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
 		RecoverCheckPoint();
-	}
-	if (pKeyboard->IsTrigger(DIK_LEFT))
-	{
-		RecoverJust();
 	}
 
 	if (pKeyboard->IsTrigger(DIK_UP))
@@ -642,16 +636,11 @@ bool CPlayer::GimmickLand(void)
 //==========================================
 void CPlayer::RecoverCheckPoint()
 {
-
-}
-
-//==========================================
-//  ジャストアクションでの回復処理
-//==========================================
-void CPlayer::RecoverJust()
-{
-	// 回復エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
+	// 士気力を回復する
+	for (int i = 0; i < HEAL_CHECKPOINT; ++i)
+	{
+		CTension::Create();
+	}
 }
 
 //===========================================
