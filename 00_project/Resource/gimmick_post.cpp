@@ -135,7 +135,7 @@ void CGimmickPost::Update(const float fDeltaTime)
 		m_fButtonHeight -= BUTTON_MOVE * fDeltaTime;
 
 		// 色を変更
-		//ChangeColor();
+		ChangeColor();
 	}
 	else
 	{ // ボタンが押されていない場合
@@ -295,7 +295,7 @@ void CGimmickPost::ChangeColor()
 		}
 
 		// 値を更新する
-		++H;
+		H += 0.5f;
 
 		// 360を超えたら0に戻す
 		if (H > 360.0f)
