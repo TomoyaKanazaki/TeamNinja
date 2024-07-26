@@ -11,6 +11,8 @@
 #include "godItem.h"
 #include "renderer.h"
 #include "collision.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	定数宣言
@@ -25,6 +27,7 @@ namespace
 	}; 
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// 神器の優先順位
+	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);// エフェクト用オフセット
 }
 
 //************************************************************
@@ -205,6 +208,9 @@ bool CGodItem::Collision
 
 		// 取得状況を true にする
 		m_aGet[m_type] = true;
+
+		// TODO : それっぽいエフェクトにする
+		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
 
 		// 終了処理
 		Uninit();

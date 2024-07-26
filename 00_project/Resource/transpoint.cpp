@@ -114,10 +114,6 @@ void CTransPoint::Uninit(void)
 //============================================================
 void CTransPoint::Update(const float fDeltaTime)
 {
-	// エフェクトを設定
-	SAFE_DELETE(m_pEffectData);
-	m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, GetVec3Position() + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
-
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -188,6 +184,7 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 	// 遷移ポイントがない場合抜ける
 	if (m_pList == nullptr) { return nullptr; }
 
+	CTransPoint* pHitTransPoint = nullptr;	// ヒットした遷移ポイント
 	std::list<CTransPoint*> list = m_pList->GetList();	// 内部リスト
 	for (const auto& rList : list)
 	{ // 要素数分繰り返す
@@ -202,20 +199,35 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 			fRadius,	// 判定半径
 			RADIUS		// 判定目標半径
 		);
-		if (bHit)
-		{ // 当たっている場合
+		if (bHit && pHitTransPoint == nullptr)
+		{ // 当たっている且つまだどの遷移ポイントとも当たっていない場合
 
-			// ヒット時のエフェクトを設定
-			SAFE_DELETE(rList->m_pEffectData);
-			rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true);
+			// 当たっている遷移ポイントを保存
+			pHitTransPoint = rList;
 
-			// 当たっている遷移ポイントを返す
-			return rList;
+			if (rList->m_pEffectData->Path != HIT_EFFECT_PASS)
+			{ // ヒット時のエフェクトではない場合
+
+				// ヒット時のエフェクトを設定
+				SAFE_DELETE(rList->m_pEffectData);
+				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true);
+			}
+		}
+		else
+		{ // 当たっていない場合
+
+			if (rList->m_pEffectData->Path != UNHIT_EFFECT_PASS)
+			{ // 未ヒット時のエフェクトではない場合
+
+				// 未ヒット時のエフェクトを設定
+				SAFE_DELETE(rList->m_pEffectData);
+				rList->m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+			}
 		}
 	}
 
-	// 何一つ当たっていない場合nullptrを返す
-	return nullptr;
+	// 最終的に当たっている遷移ポイントを返す
+	return pHitTransPoint;
 }
 
 //============================================================
