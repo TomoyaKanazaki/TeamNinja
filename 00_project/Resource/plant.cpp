@@ -12,7 +12,8 @@
 //===========================================
 namespace
 {
-	const float POLYGON_WIDTH = 20.0f;		// ポリゴンの横幅
+	const float	POLYGON_WIDTH	= 40.0f;	// ポリゴンの横幅
+	const int	ALPHA_NUMREF	= 180;		// αテストの参照値
 }
 
 //===========================================
@@ -43,13 +44,24 @@ HRESULT CPlant::Init(void)
 	if (FAILED(CObjectBillboard::Init())) { assert(false); return E_FAIL; }
 
 	// 原点設定
-	SetOrigin(ORIGIN_DOWN);
+	SetOrigin(ORIGIN_CENTER);
 	
 	// 回転設定
 	SetRotate(ROTATE_LATERAL);
 
 	// ラベルの変更
 	SetLabel(LABEL_GIMMICK);
+
+	// レンダーステートの情報を取得
+	CRenderState *pRenderState = GetRenderState();
+
+	// αテストの設定
+	pRenderState->SetAlphaTest(true);			// αテストの有効 / 無効の設定
+	pRenderState->SetAlphaFunc(D3DCMP_GREATER);	// αテストの設定
+	pRenderState->SetAlphaNumRef(ALPHA_NUMREF);	// αテストの参照値設定
+
+	// ライティングをOFFにする
+	pRenderState->SetLighting(false);
 
 	// リストマネージャーの生成
 	if (m_pList == nullptr)
@@ -116,9 +128,6 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 	// 初期化
 	if (FAILED(pPlant->Init())) { assert(false); SAFE_DELETE(pPlant); return nullptr; }
 
-	// 位置を設定
-	pPlant->SetVec3Position(rPos);
-
 	// テクスチャ割り当て
 	pPlant->BindTexture(GET_MANAGER->GetTexture()->Regist(sPass));
 
@@ -129,6 +138,9 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 		useful::GetTexHeightFromAspect(POLYGON_WIDTH, pPlant->GetTextureIndex()),
 		0.0f
 	));
+
+	// 位置を設定
+	pPlant->SetVec3Position(rPos + D3DXVECTOR3(0.0f, pPlant->GetVec3Sizing().y * 0.5f, 0.0f));
 
 	// 確保したアドレスを返す
 	return pPlant;
