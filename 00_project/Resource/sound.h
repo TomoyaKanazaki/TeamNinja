@@ -47,6 +47,7 @@ public:
 		LABEL_SE_SAVE_000,			// セーブ音
 		LABEL_SE_CLONEPOP_000,		// 分身生み出し音
 		LABEL_SE_CLONELOST_000,		// 分身消失音
+		LABEL_SE_GETGODITEM_000,	// 神器取得音
 		LABEL_MAX					// この列挙型の総数
 	};
 

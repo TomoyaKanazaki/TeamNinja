@@ -210,9 +210,6 @@ void CCheckPoint::CollisionPlayer(void)
 	// プレイヤーを回復する
 	Player->RecoverCheckPoint();
 
-	// プレイヤーに自身の情報を与える
-	Player->SetCheckPoint(this);
-
 	// セーブ音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 

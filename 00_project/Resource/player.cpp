@@ -324,10 +324,6 @@ void CPlayer::Update(const float fDeltaTime)
 	{
 		RecoverCheckPoint();
 	}
-	if (pKeyboard->IsTrigger(DIK_LEFT))
-	{
-		RecoverJust();
-	}
 
 	if (pKeyboard->IsTrigger(DIK_UP))
 	{
@@ -647,15 +643,6 @@ void CPlayer::RecoverCheckPoint()
 	}
 }
 
-//==========================================
-//  ジャストアクションでの回復処理
-//==========================================
-void CPlayer::RecoverJust()
-{
-	// 回復エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\concentration.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 50.0f);
-}
-
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
@@ -764,7 +751,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move);
+	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 
 	// コインとの当たり判定処理
 	CollisionCoin(posPlayer);
@@ -787,9 +774,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 分身の処理
 	if(ControlClone(posPlayer, rotPlayer, fDeltaTime))
 	{ currentMotion = MOTION_DODGE; }
-
-	// 保存位置の更新
-	UpdateSaveTeleport();
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -1017,19 +1001,6 @@ void CPlayer::UpdateGravity(void)
 {
 	// 重力を加算
 	m_move.y -= GRAVITY;
-}
-
-//============================================================
-//	保存位置の更新処理
-//============================================================
-void CPlayer::UpdateSaveTeleport(void)
-{
-	CInputPad* pPad = GET_INPUTPAD;
-	if (pPad->IsTrigger(CInputPad::KEY_BACK))
-	{
-		// チェックポイントに帰る
-		SaveReset();
-	}
 }
 
 //============================================================
@@ -1558,18 +1529,6 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	PLAY_SOUND(CSound::LABEL_SE_CLONEPOP_000);
 
 	return false;
-}
-
-//==========================================
-//  直前のチェックポイントに帰る
-//==========================================
-void CPlayer::SaveReset()
-{
-	// セーブされていない場合関数を抜ける
-	if (m_pCheckPoint == nullptr) { return; }
-
-	// チェックポイントの座標に飛ぶ
-	SetVec3Position(m_pCheckPoint->GetVec3Position());
 }
 
 //==========================================

@@ -13,6 +13,7 @@
 #include "collision.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -211,6 +212,9 @@ bool CGodItem::Collision
 
 		// TODO : それっぽいエフェクトにする
 		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
+
+		// 神器取得音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GETGODITEM_000);
 
 		// 終了処理
 		Uninit();
