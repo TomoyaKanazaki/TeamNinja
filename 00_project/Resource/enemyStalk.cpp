@@ -47,6 +47,7 @@ namespace
 	const int BLANKATTACK_STATE_COUNT = 340;	// 空白攻撃状態のカウント数
 	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
+	const int THREAT_STATE_COUNT = 50;			// 威嚇状態のカウント数
 
 	// 音管理関係
 	namespace sound
@@ -492,6 +493,28 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 
 		break;
 
+	case CEnemyStalk::MOTION_STANDBY:	// 構え
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
+	case CEnemyStalk::MOTION_BATTLE:	// 威嚇
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
+
+		break;
+
 	default:
 
 		// 停止
@@ -609,8 +632,8 @@ CEnemyStalk::EMotion CEnemyStalk::Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 		// 構えた音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_STALKSTANCE_000);
 
-		// TODO：構えモーションを返す
-		return MOTION_WALK;
+		// 構えモーションを返す
+		return MOTION_STANDBY;
 	}
 
 	// 無対象にする
@@ -766,8 +789,8 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 			// 空白攻撃状態にする
 			SetState(STATE_BLANKATTACK);
 
-			// 攻撃モーションにする
-			return MOTION_ATTACK;
+			// 分身に対する攻撃モーションにする
+			return MOTION_BATTLE;
 		}
 		else
 		{ // 上記以外
@@ -824,8 +847,8 @@ CEnemyStalk::EMotion CEnemyStalk::BlankAttack(D3DXVECTOR3* pRot, const float fDe
 		SetState(STATE_UPSET);
 	}
 
-	// 動揺モーションにする
-	return MOTION_ATTACK;
+	// 分身に対する攻撃モーションにする
+	return MOTION_BATTLE;
 }
 
 //============================================================
@@ -882,7 +905,7 @@ CEnemyStalk::EMotion CEnemyStalk::Caution(void)
 		SetTarget(TARGET_NONE);
 	}
 
-	// TODO：待機モーションを返す
+	// TODO：警戒モーションを返す
 	return MOTION_IDOL;
 }
 
@@ -969,7 +992,7 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 		SetState(STATE_THREAT);
 
 		// TODO：威嚇モーションを返す
-		return MOTION_FALL;
+		return MOTION_LANDING;
 	}
 
 	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
@@ -982,8 +1005,8 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 		return MOTION_FOUND;
 	}
 
-	// TODO：構えモーションを返す
-	return MOTION_WALK;
+	// 構えモーションを返す
+	return MOTION_STANDBY;
 }
 
 //============================================================
@@ -991,11 +1014,18 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 //============================================================
 CEnemyStalk::EMotion CEnemyStalk::Threat(void)
 {
-	// フェードアウト状態にする
-	SetState(STATE_FADEOUT);
+	// 状態カウントを加算する
+	m_nStateCount++;
 
-	// TODO：歩行状態を返す
-	return MOTION_WALK;
+	if (m_nStateCount >= THREAT_STATE_COUNT)
+	{ // 状態カウントが一定以上になった場合
+
+		// フェードアウト状態にする
+		SetState(STATE_FADEOUT);
+	}
+
+	// TODO：威嚇モーションを返す
+	return MOTION_LANDING;
 }
 
 //============================================================

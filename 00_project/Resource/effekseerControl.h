@@ -8,7 +8,7 @@
 #include "main.h"
 #include <vector>
 #include <functional>
-
+#include <string>
 class CEffekseer
 {
 public:
@@ -27,6 +27,7 @@ public:
 		::Effekseer::Vector3D m_move;	//移動量
 		Effekseer::Handle handle;		//本体
 		Effekseer::EffectRef efcRef;	//参照情報
+		std::string Path;				//パス
 		float m_fScale;					//スケール
 		bool m_bLoop;					//ループ
 	};
