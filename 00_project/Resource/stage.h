@@ -27,15 +27,6 @@ class CField;	// 地面クラス
 class CStage
 {
 public:
-	// 神器列挙
-	enum EGodItem
-	{
-		GOD_MIRROR = 0,	// 八咫鏡
-		GOD_SWORD,		// 草薙剣
-		GOD_MAGATAMA,	// 八尺瓊勾玉
-		GOD_MAX			// この列挙型の総数
-	};
-
 	// 制限列挙
 	enum ELimit
 	{
