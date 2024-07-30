@@ -48,6 +48,7 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;			// 更新
 	void Draw(CShader *pShader = nullptr) override;			// 描画
+	void SetScene(const EScene scene) override;				// シーン設定
 	void SetPriority(const int nPriority) override;			// 優先順位設定
 	void SetEnableUpdate(const bool bUpdate) override;		// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;			// 描画状況設定

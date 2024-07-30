@@ -69,7 +69,7 @@ HRESULT CStage::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_limit, 0, sizeof(m_limit));	// 範囲情報
-	m_sInitMapPass = INIT_MAPPASS;			// 初期化時に生成するマップのパス
+	m_sInitMapPass = INIT_MAPPASS;			// 初期化時に生成するマップパス
 
 	// マップパス連想配列を初期化
 	m_mapPass.clear();
@@ -135,6 +135,9 @@ HRESULT CStage::BindStage(const char* pPass)
 //============================================================
 HRESULT CStage::BindStage(const SPass& rPass)
 {
+	// 割り当てるマップのステージパスを保存
+	m_sCurMapStagePass = rPass.sStage;
+
 	// ステージのセットアップの読込
 	if (FAILED(LoadSetup(rPass.sStage.c_str())))
 	{ // 読み込みに失敗した場合

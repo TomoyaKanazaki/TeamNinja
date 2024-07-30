@@ -354,6 +354,72 @@ void useful::StandardizePathPart(std::string *pPath)
 }
 
 //============================================================
+//	マルチバイト文字列のワイド文字列変換
+//============================================================
+std::wstring useful::MultiByteToWide(const std::string &rSrcStr)
+{
+	int nSrcSize = (int)rSrcStr.size();	// 変換前の文字列のサイズ
+	if (nSrcSize <= 0) { return L""; }	// 文字列がない場合抜ける
+
+	// 文字列を変換
+	std::wstring wsDest(nSrcSize, L'\0');	// 変換後の文字列
+	int nDestSize = MultiByteToWideChar
+	( // 引数
+		CP_ACP,				// 変換コードページ
+		0,					// 変換フラグ
+		&rSrcStr.front(),	// 変換前文字列の先頭アドレス
+		nSrcSize,			// 変換前文字列のサイズ
+		&wsDest.front(),	// 変換後文字列の先頭アドレス
+		(int)wsDest.size()	// 変換後文字列のサイズ
+	);
+
+	// 文字列サイズを修正
+	wsDest.resize(nDestSize);
+
+	// 変換後の文字列を返す
+	return wsDest;
+}
+
+//============================================================
+//	ワイド文字列のマルチバイト文字列変換
+//============================================================
+std::string useful::WideToMultiByte(const std::wstring &rSrcStr)
+{
+	int nSrcSize = (int)rSrcStr.size();	// 変換前の文字列のサイズ
+	if (nSrcSize <= 0) { return ""; }	// 文字列がない場合抜ける
+
+	// 変換後の文字列サイズを取得
+	int nDestSize = WideCharToMultiByte
+	( // 引数
+		CP_ACP,				// 変換コードページ
+		0,					// 変換フラグ
+		&rSrcStr.front(),	// 変換前文字列の先頭アドレス
+		nSrcSize,			// 変換前文字列のサイズ
+		nullptr,			// 変換後文字列の先頭アドレス
+		0,					// 変換後文字列のサイズ
+		nullptr,			// 変換不可時の置換文字
+		nullptr				// 変換不可な文字が存在したか
+	);
+
+	// 文字列を変換
+	std::string sDest(nDestSize, '\0');	// 変換後の文字列
+	WideCharToMultiByte
+	( // 引数
+		CP_ACP,				// 変換コードページ
+		0,					// 変換フラグ
+		&rSrcStr.front(),	// 変換前文字列の先頭アドレス
+		nSrcSize,			// 変換前文字列のサイズ
+		&sDest.front(),		// 変換後文字列の先頭アドレス
+		(int)sDest.size(),	// 変換後文字列のサイズ
+		nullptr,			// 変換不可時の置換文字
+		nullptr				// 変換不可な文字が存在したか
+	);
+
+	// 変換後の文字列を返す
+	return sDest;
+}
+
+//============================================================
 //	ベクトルの向き変換
 //============================================================
 void useful::VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta)
@@ -364,6 +430,7 @@ void useful::VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta)
 	// 仰角の計算
 	*pTheta = atan2f(sqrtf((rVec.x * rVec.x) + (rVec.y * rVec.y)), rVec.z);
 }
+
 //============================================================
 //	ベクトルの向き変換(丹野)
 //============================================================
@@ -380,9 +447,9 @@ D3DXVECTOR3 useful::VectorToAngles(const D3DXVECTOR3& vector)
 	// Roll（ロール）は0度に設定
 	angles.z = 0.0f;
 
-
 	return angles;
 }
+
 //============================================================
 //	向きのベクトル変換
 //============================================================

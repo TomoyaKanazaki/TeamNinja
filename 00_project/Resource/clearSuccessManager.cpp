@@ -16,7 +16,6 @@
 #include "scrollText2D.h"
 #include "timeUI.h"
 #include "blink2D.h"
-#include "godItem.h"
 
 //************************************************************
 //	定数宣言
@@ -274,7 +273,7 @@ HRESULT CClearSuccessManager::Init(void)
 	//--------------------------------------------------------
 	//	神器アイコン背景の生成 / 初期設定
 	//--------------------------------------------------------
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// アイコン背景生成位置を計算
@@ -309,7 +308,7 @@ HRESULT CClearSuccessManager::Init(void)
 	//--------------------------------------------------------
 	//	神器アイコンの生成 / 初期設定
 	//--------------------------------------------------------
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// アイコン生成位置を計算
@@ -419,7 +418,7 @@ void CClearSuccessManager::SkipStaging(void)
 	m_pGodItem->SetEnableDraw(true);				// 自動描画をONにする
 	m_pGodItem->SetCharHeight(item::DEST_HEIGHT);	// 目標サイズに設定
 
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// 神器アイコン背景の目標生成位置を計算
@@ -455,7 +454,7 @@ void CClearSuccessManager::SetAllMove(const D3DXVECTOR3& rMove)
 	// 神器タイトルの位置を移動
 	m_pGodItem->SetVec3Position(m_pGodItem->GetVec3Position() + rMove);
 
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// 神器アイコン背景の位置を移動
@@ -635,7 +634,7 @@ void CClearSuccessManager::UpdateItemIconBgWait(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		for (int i = 0; i < CStage::GOD_MAX; i++)
+		for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 		{ // 神器の総数分繰り返す
 
 			// 神器アイコン背景の自動描画をONにする
@@ -656,7 +655,7 @@ void CClearSuccessManager::UpdateItemIconBg(const float fDeltaTime)
 	m_fCurTime += fDeltaTime;
 
 	// アイコン背景の移動
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// アイコン背景それぞれの経過時間を計算
@@ -681,13 +680,13 @@ void CClearSuccessManager::UpdateItemIconBg(const float fDeltaTime)
 	}
 
 	// アイコン背景の移動補正
-	if (m_fCurTime >= icon_bg::MOVE_TIME + icon_bg::PLUS_TIME * (CStage::GOD_MAX - 1))
+	if (m_fCurTime >= icon_bg::MOVE_TIME + icon_bg::PLUS_TIME * (CGodItem::TYPE_MAX - 1))
 	{ // 全アイコン背景の待機が終了した場合
 
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		for (int i = 0; i < CStage::GOD_MAX; i++)
+		for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 		{ // 神器の総数分繰り返す
 
 			// アイコン背景の目標生成位置を計算
@@ -718,7 +717,7 @@ void CClearSuccessManager::UpdateItemIconWait(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		for (int i = 0; i < CStage::GOD_MAX; i++)
+		for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 		{ // 神器の総数分繰り返す
 
 			// 獲得した神器アイコンの自動描画をONにする
@@ -739,7 +738,7 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 	m_fCurTime += fDeltaTime;
 
 	// アイコンのサイズ変更
-	for (int i = 0; i < CStage::GOD_MAX; i++)
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 	{ // 神器の総数分繰り返す
 
 		// アイコン背景それぞれの経過時間を計算
@@ -761,13 +760,13 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 	}
 
 	// アイコンのサイズ変更補正
-	if (m_fCurTime >= icon_item::MOVE_TIME + icon_item::PLUS_TIME * (CStage::GOD_MAX - 1))
+	if (m_fCurTime >= icon_item::MOVE_TIME + icon_item::PLUS_TIME * (CGodItem::TYPE_MAX - 1))
 	{ // 全アイコンの待機が終了した場合
 
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		for (int i = 0; i < CStage::GOD_MAX; i++)
+		for (int i = 0; i < CGodItem::TYPE_MAX; i++)
 		{ // 神器の総数分繰り返す
 
 			// 神器アイコンの大きさを補正

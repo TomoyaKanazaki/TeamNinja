@@ -14,7 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "clearManager.h"
-#include "stage.h"
+#include "godItem.h"
 
 //************************************************************
 //	前方宣言
@@ -86,8 +86,8 @@ private:
 	void UpdateWait(const float fDeltaTime);			// 待機更新
 
 	// メンバ変数
-	CAnim2D* m_apGodItemBG[CStage::GOD_MAX];	// 神器アイコン背景情報
-	CAnim2D* m_apGodItemIcon[CStage::GOD_MAX];	// 神器アイコン情報
+	CAnim2D* m_apGodItemBG[CGodItem::TYPE_MAX];		// 神器アイコン背景情報
+	CAnim2D* m_apGodItemIcon[CGodItem::TYPE_MAX];	// 神器アイコン情報
 	CString2D* m_pTime;		// 遂行時間タイトル情報
 	CTimeUI* m_pTimeVal;	// 遂行時間情報
 	CString2D* m_pGodItem;	// 神器タイトル情報

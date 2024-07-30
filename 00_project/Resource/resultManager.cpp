@@ -12,6 +12,8 @@
 #include "manager.h"
 #include "camera.h"
 #include "fade.h"
+#include "loadtext.h"
+#include "stage.h"
 #include "clearManager.h"
 #include "object2D.h"
 #include "scrollText2D.h"
@@ -188,9 +190,8 @@ HRESULT CResultManager::Init(void)
 	// 優先順位を設定
 	m_pTitle->SetPriority(PRIORITY);
 
-	// TODO：ここにタイトル
-	m_pTitle->AddString(L"ここに");
-	m_pTitle->AddString(L"　ステージ名");
+	// テキストを割当
+	loadtext::BindText(m_pTitle, loadtext::LoadText(GET_STAGE->GetCurMapStagePass().c_str(), 0));
 
 	//--------------------------------------------------------
 	//	ハンコの生成 / 初期設定
@@ -628,9 +629,13 @@ void CResultManager::SkipStaging(void)
 	m_pStamp->SetEnableDraw(true);				// 自動描画をONにする
 	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// 目標サイズに設定
 
-	// クリアマネージャーの生成
-	m_pClear = CClearManager::Create(win);
-	assert(m_pClear != nullptr);
+	if (m_pClear == nullptr)
+	{ // クリアマネージャーが生成されていない場合
+
+		// クリアマネージャーの生成
+		m_pClear = CClearManager::Create(win);
+		assert(m_pClear != nullptr);
+	}
 
 	// クリアマネージャーの演出スキップ
 	assert(m_pClear != nullptr);
