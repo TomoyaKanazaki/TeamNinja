@@ -101,6 +101,22 @@ void CString2D::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
+//	シーンの設定処理
+//============================================================
+void CString2D::SetScene(const EScene scene)
+{
+	// 自身のシーンを設定
+	CObject::SetScene(scene);
+
+	for (int i = 0; i < (int)m_wsStr.size(); i++)
+	{ // 文字数分繰り返す
+
+		// 文字のシーンを設定
+		m_ppChar[i]->SetScene(scene);
+	}
+}
+
+//============================================================
 //	優先順位の設定処理
 //============================================================
 void CString2D::SetPriority(const int nPriority)

@@ -84,11 +84,11 @@ public:
 	SPass Regist(const char* pMapPass);		// マップパス登録
 	HRESULT BindStage(const char* pPass);	// ステージ割当 (パス)
 	HRESULT BindStage(const SPass& rPass);	// ステージ割当 (情報)
-
 	void SetInitMapPass(const std::string& rMapPass)	{ m_sInitMapPass = rMapPass; }	// 初期化マップパス設定
 	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
+	std::string GetCurMapStagePass(void) const			{ return m_sCurMapStagePass; }	// 現在マップのステージパス取得
 	void SetLimit(const SLimit& rLimit)	{ m_limit = rLimit; }	// 範囲設定
-	SLimit GetLimit(void) const			{ return m_limit;	}	// 範囲取得
+	SLimit GetLimit(void) const			{ return m_limit; }		// 範囲取得
 
 	bool LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight);	// 範囲外の着地判定
 	bool LandFieldPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rOldPos, D3DXVECTOR3& rMove, CField** ppCollField = nullptr);	// 地面着地
@@ -117,7 +117,8 @@ private:
 
 	// メンバ変数
 	std::map<std::string, SPass> m_mapPass;	// マップパス連想配列
-	std::string m_sInitMapPass;	// 初期化時に生成するマップのパス
+	std::string m_sInitMapPass;		// 初期化時に生成するマップパス
+	std::string m_sCurMapStagePass;	// 現在のマップのステージパス
 	SLimit m_limit;	// 範囲情報
 };
 

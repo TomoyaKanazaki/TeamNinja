@@ -235,6 +235,8 @@ namespace useful
 	void NormalizeRot(D3DXVECTOR3& rRot);			// 三軸向きの正規化
 	void PathToBaseName(std::string *pPath);		// パスのベースネーム変換
 	void StandardizePathPart(std::string *pPath);	// パス区切りの標準化
+	std::wstring MultiByteToWide(const std::string &rSrcStr);	// マルチバイト文字列のワイド文字列変換
+	std::string WideToMultiByte(const std::wstring &rSrcStr);	// ワイド文字列のマルチバイト文字列変換
 	void VecToRot(const D3DXVECTOR3& rVec, float *pPhi, float *pTheta);		// ベクトルの向き変換
 	D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);
 	void RotToVec(const float fPhi, const float fTheta, D3DXVECTOR3 *pVec);	// 向きのベクトル変換

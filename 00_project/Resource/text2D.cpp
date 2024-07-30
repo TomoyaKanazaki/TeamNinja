@@ -106,6 +106,22 @@ void CText2D::Draw(CShader * /*pShader*/)
 }
 
 //============================================================
+//	シーンの設定処理
+//============================================================
+void CText2D::SetScene(const EScene scene)
+{
+	// 自身のシーンを設定
+	CObject::SetScene(scene);
+
+	for (auto& rList : m_listString)
+	{ // 文字列の格納数分繰り返す
+
+		// 文字列のシーンを設定
+		rList->SetScene(scene);
+	}
+}
+
+//============================================================
 //	優先順位の設定処理
 //============================================================
 void CText2D::SetPriority(const int nPriority)
@@ -270,6 +286,9 @@ HRESULT CText2D::AddString(const std::wstring& rStr)
 
 	// 文字列のラベルを指定なしにする
 	pStr->SetLabel(LABEL_NONE);
+
+	// 文字列のシーンを自身のものにする
+	pStr->SetScene(GetScene());
 
 	// 文字列の優先順位を自身のものにする
 	pStr->SetPriority(GetPriority());
