@@ -55,8 +55,6 @@ public:
 	void DrawDebugInfo(void) override;		// 情報表示描画
 
 private:
-	// オーバーライド関数
-	void UpdateRotation(void) override;	// 向き更新
 
 	// メンバ関数
 	void UpdateSize(void);		// 大きさ更新
@@ -70,6 +68,7 @@ private:
 	// メンバ変数
 	CGimmick* m_pGimmick;		// フィールド情報
 	CObject3D* m_pAngleSign;	// 矢印の情報
+	CObject3D* m_pRange;		// 範囲の情報
 	SInfo m_infoCreate;	// フィールド配置情報
 	bool m_bSave;		// 保存状況
 };

@@ -51,6 +51,7 @@ namespace
 
 	const D3DXVECTOR3 INIT_SIZE = D3DXVECTOR3(editstage::SIZE, 0.0f, editstage::SIZE);	// 大きさ
 	const float	INIT_ALPHA = 0.5f;		// 配置前のα値
+	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, INIT_ALPHA);	// 色
 	const int DIGIT_FLOAT = 2;			// 小数点以下の桁数
 	const D3DXVECTOR3 ANGLE_SIZE = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 矢印のサイズ
 	const D3DXVECTOR3 ANGLE_SHIFT = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	// 矢印の高さ
@@ -85,6 +86,7 @@ CEditGimmick::CEditGimmick(CEditStage* pEditor) : CEditorObject(pEditor)
 	// メンバ変数をクリア
 	m_pGimmick = nullptr;	// ギミック情報
 	m_pAngleSign = nullptr;	// 矢印の情報
+	m_pRange = nullptr;		// 範囲の情報
 	m_bSave = false;		// 保存状況
 	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// ギミック配置情報
 
@@ -159,6 +161,24 @@ HRESULT CEditGimmick::Init(void)
 	// テクスチャの割り当て処理
 	m_pAngleSign->BindTexture(ANGLE_TEXTURE);
 
+	// 範囲を生成
+	m_pRange = CObject3D::Create
+	(
+		GetVec3Position(),
+		INIT_SIZE,
+		GetVec3Rotation()
+	);
+	if (m_pRange == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 色を適用
+	m_pRange->SetColor(COL);
+
 	// 成功を返す
 	return S_OK;
 
@@ -188,6 +208,9 @@ void CEditGimmick::Uninit(void)
 
 	// 方向の終了
 	SAFE_UNINIT(m_pAngleSign);
+
+	// 範囲の終了
+	SAFE_UNINIT(m_pRange);
 
 #endif	// _DEBUG
 }
@@ -228,6 +251,12 @@ void CEditGimmick::Update(void)
 
 	// 矢印の向きを反映
 	m_pAngleSign->SetVec3Rotation(GetVec3Rotation());
+
+	// 範囲の位置を反映
+	m_pRange->SetVec3Position(GetVec3Position());
+
+	// 範囲の向きを反映
+	m_pRange->SetVec3Rotation(VEC3_ZERO);
 
 #endif	// _DEBUG
 }
@@ -313,18 +342,6 @@ void CEditGimmick::DrawDebugInfo(void)
 }
 
 //============================================================
-//	向き更新処理
-//============================================================
-void CEditGimmick::UpdateRotation(void)
-{
-	// 向きの更新
-	CEditorObject::UpdateRotation();
-
-	// 向きを反映
-	m_pGimmick->SetVec3Rotation(GetVec3Rotation());
-}
-
-//============================================================
 //	大きさの更新処理
 //============================================================
 void CEditGimmick::UpdateSize(void)
@@ -377,6 +394,7 @@ void CEditGimmick::UpdateSize(void)
 
 	// 大きさを反映
 	m_pGimmick->CObject3D::SetVec3Sizing(m_infoCreate.size);
+	m_pRange->SetVec3Sizing(m_infoCreate.size);
 }
 
 //============================================================
