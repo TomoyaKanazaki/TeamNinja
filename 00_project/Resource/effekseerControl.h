@@ -19,9 +19,8 @@ public:
 
 		CEffectData();
 		~CEffectData();
+		void Erase();
 	
-
-
 		::Effekseer::Vector3D m_pos;	//座標
 		::Effekseer::Vector3D m_rot;	//向き
 		::Effekseer::Vector3D m_move;	//移動量
@@ -30,6 +29,7 @@ public:
 		std::string Path;				//パス
 		float m_fScale;					//スケール
 		bool m_bLoop;					//ループ
+		bool m_bAutoDelete;
 	};
 
 	CEffekseer();
@@ -40,13 +40,17 @@ public:
 
 	void Uninit();
 	Effekseer::EffectRef Loading(std::string path);
-	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false);
+	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false, bool bAutoDelete = true);
 	static CEffekseer* GetInstance() {
 		if (pInstance == NULL) { pInstance = new CEffekseer; return pInstance; }
 		else
 		{
 			return pInstance;
 		}
+	}
+	static void Release()
+	{
+			SAFE_DELETE(pInstance)
 	}
 	Effekseer::ManagerRef GetManager() { return m_EfkManager; }
 	std::vector<CEffectData*> GetList() { return m_vEffect; }

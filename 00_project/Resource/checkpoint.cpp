@@ -93,11 +93,9 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
-	//エフェクトの配列を取得
-	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+
 	//現在のエフェクトを削除
-	
-	if (!vEffect.empty())
+	if (m_pEffectdata != NULL)
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;
@@ -177,7 +175,7 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 	pSavePoint->m_pos = rPos;
 
 	// チェックポイントエフェクトを出す
-	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true,false);
 
 	// 確保したアドレスを返す
 	return pSavePoint;
@@ -228,7 +226,7 @@ void CCheckPoint::CollisionPlayer(void)
 	}
 	
 	// チェックポイントエフェクトを出す
-	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", m_pos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+	m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", m_pos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
 	GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", m_pos + OFFSET_CHECKEFFECT, VEC3_ZERO, VEC3_ZERO, 30.0f);
 
 	// セーブフラグをオンにする

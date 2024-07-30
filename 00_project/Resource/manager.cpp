@@ -403,9 +403,6 @@ void CManager::Uninit(void)
 	// データ保存マネージャーの破棄
 	SAFE_REF_RELEASE(m_pRetention);
 
-	// エフェクシアの破棄
-	SAFE_UNINIT(m_pEffekseer);
-
 	// ステージの破棄
 	SAFE_REF_RELEASE(m_pStage);
 
@@ -459,6 +456,10 @@ void CManager::Uninit(void)
 
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
+
+	// エフェクシアの破棄
+	m_pEffekseer->Uninit();
+	SAFE_DELETE(m_pEffekseer)
 
 	// 例外処理
 	assert(CObject::GetNumAll() == 0);	// 破棄の失敗

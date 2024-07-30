@@ -22,6 +22,8 @@
 
 #include "stage.h"
 #include "player.h"
+#include "effekseerControl.h"
+#include "ToonShadow.h"
 
 //************************************************************
 //	定数宣言
@@ -200,6 +202,10 @@ void CSceneGame::Uninit(void)
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
 
+
+
+	//シェーダーの破棄
+	CToonShadow::Release();
 #if _DEBUG
 
 	// エディットマネージャーの破棄

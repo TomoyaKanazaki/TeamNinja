@@ -94,11 +94,9 @@ HRESULT CGoal::Init(void)
 //==========================================
 void CGoal::Uninit(void)
 {
-	//エフェクトの配列を取得
-	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
+	
 	//現在のエフェクトを削除
-
-	if (!vEffect.empty())
+	if (m_pEffectdata != NULL)
 	{
 		delete m_pEffectdata;
 		m_pEffectdata = NULL;
@@ -172,7 +170,7 @@ CGoal* CGoal::Create(const D3DXVECTOR3& rPos)
 	pGoal->SetVec3Rotation(INIT_ROT);
 
 	// エフェクトを出す TODO : ゴール用にする
-	pGoal->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\goal_atmosphere.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 80.0f, true);
+	pGoal->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\goal_atmosphere.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 80.0f, true,false);
 
 	// 確保したアドレスを返す
 	return pGoal;

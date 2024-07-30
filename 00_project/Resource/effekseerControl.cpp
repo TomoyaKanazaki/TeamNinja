@@ -75,8 +75,11 @@ void CEffekseer::Uninit()
 	int nSize = (int)m_vEffect.size();
 	for (int i = 0; i < nSize; i++)
 	{
-			delete m_vEffect[0];
-			
+		if (m_vEffect[i]->m_bAutoDelete && m_vEffect[i] != NULL)
+		{
+			delete m_vEffect[i];
+			m_vEffect[i] = NULL;
+		}
 	}
 	m_vEffect.shrink_to_fit();
 	//onLostDevice();
@@ -113,9 +116,11 @@ void CEffekseer::Update()
 			// 削除
 			if (!m_vEffect[i]->m_bLoop)
 			{
-				delete m_vEffect[i];
-				
-
+				if (m_vEffect[i]->m_bAutoDelete)
+				{
+					delete m_vEffect[i];
+					m_vEffect[i]->Erase();
+				}
 			}
 			else
 			{
@@ -199,7 +204,7 @@ void CEffekseer::Draw()
 //======================================================
 //エフェクト生成
 //======================================================
-CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, bool bLoop)
+CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, bool bLoop, bool bAutoDelete)
 {
 	CEffectData* pEffect = new CEffectData;
 	pEffect->efcRef = Loading(path);
@@ -211,6 +216,7 @@ CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D
 	pEffect->m_move = move;
 	pEffect->m_fScale = fScale;
 	pEffect->m_bLoop = bLoop;
+	pEffect->m_bAutoDelete = bAutoDelete;
 	return pEffect;
 }
 //======================================================
@@ -263,5 +269,15 @@ CEffekseer::CEffectData::~CEffectData()
 	{
 		CEffekseer::GetInstance()->GetManager()->StopEffect(handle);
 	}
+	if (!m_bAutoDelete)
+	{
+		Erase();
+	}
+}
+//======================================================
+//配列から自身を削除
+//======================================================	
+void CEffekseer::CEffectData::Erase()
+{
 	GetInstance()->m_vEffect.erase(std::find(GetInstance()->m_vEffect.begin(), GetInstance()->m_vEffect.end(), this));
 }
