@@ -281,3 +281,10 @@ void CEffekseer::CEffectData::Erase()
 {
 	GetInstance()->m_vEffect.erase(std::find(GetInstance()->m_vEffect.begin(), GetInstance()->m_vEffect.end(), this));
 }
+//======================================================
+//エフェクトインスタンスの存在確認
+//======================================================	
+bool CEffekseer::CEffectData::GetExist()
+{
+	return CEffekseer::GetInstance()->GetManager()->Exists(handle);
+}
