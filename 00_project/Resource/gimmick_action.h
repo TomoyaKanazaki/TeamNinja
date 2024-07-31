@@ -71,11 +71,12 @@ public:
 private:
 
 	// メンバ関数
-	void SetEffect(); // エフェクトの生成
+	void ControlEffect(); // エフェクトの操作
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
 	int m_nNumClone;			// 範囲に入っている分身の数
+	int m_nOldNum;				// 範囲に入っている分身の数
 	bool m_bActive;				// 発動状況
 	bool m_bOldActive;			// 発動状況
 	bool m_bMoment;				// 発動中フラグ
