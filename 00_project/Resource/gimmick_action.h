@@ -71,7 +71,7 @@ public:
 private:
 
 	// メンバ関数
-	void DispEffect(); // 範囲表示処理
+	void SetEffect(); // エフェクトの生成
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
@@ -80,7 +80,7 @@ private:
 	bool m_bOldActive;			// 発動状況
 	bool m_bMoment;				// 発動中フラグ
 	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
-	CEffekseer::CEffectData* m_pEffect[4];	// エフェクトのポインタ配列
+	CEffekseer::CEffectData* m_pEffect;	// エフェクトのポインタ
 
 	// 静的メンバ変数
 	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト

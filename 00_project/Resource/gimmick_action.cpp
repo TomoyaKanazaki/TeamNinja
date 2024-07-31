@@ -59,9 +59,10 @@ m_nNumClone(0),					// 範囲に入っている分身の数
 m_bActive(false),				// 発動状況
 m_bOldActive(false),			// 発動状況
 m_bMoment(false),				// 発動中
-m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
+m_posAction(VEC3_ZERO),			// アクションポイント(待機座標)
+m_pEffect(nullptr)
 {
-	memset(&m_pEffect[0], 0, sizeof(m_pEffect));
+
 }
 
 //============================================================
@@ -126,10 +127,7 @@ void CGimmickAction::Uninit(void)
 	}
 
 	// エフェクトの終了
-	for (int i = 0; i < 4; ++i)
-	{
-		m_pEffect[i] = nullptr;
-	}
+	m_pEffect = nullptr;
 
 	// オブジェクト3Dの終了
 	CGimmick::Uninit();
@@ -174,7 +172,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	}
 
 	// エフェクトの生成
-	//DispEffect();
+	SetEffect();
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -294,64 +292,18 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 	return m_pList;
 }
 
-//===========================================
-//  範囲表示処理
-//===========================================
-void CGimmickAction::DispEffect()
+//==========================================
+//  エフェクトの生成
+//==========================================
+void CGimmickAction::SetEffect()
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 posThis = GetVec3Position();
+	// エフェクトが使用状態の場合関数を抜ける
+	if (m_pEffect != nullptr) { return; }
 
-	D3DXVECTOR3 posVtx[4] = {};
-	for (int i = 0; i < 4; ++i)
-	{
-		posVtx[i] = GetVertexPosition(i) + posThis;
-	}
+	// アクティブ状態の場合関数を抜ける
+	if (IsActive()) { return; }
 
-	// エフェクトの表示フラグ
-	bool bDisp = false;
 
-	// 全頂点を走査する
-	for (int i = 0; i < 4; ++i)
-	{
-		// 頂点座標を取得する
-		posVtx[i] = GetVertexPosition(i) + posThis;
-
-		// 1点でもスクリーン内の場合次に進む
-		if (bDisp) { continue; }
-
-		// スクリーン内判定
-		bDisp = SCREEN_IN(posVtx[i]);
-	}
-
-	//スクリーン外の場合エフェクトを削除して関数を抜ける
-	if (!bDisp)
-	{
-		// エフェクトの終了
-		for (int i = 0; i < 4; ++i)
-		{
-			if (m_pEffect[i] != nullptr) { SAFE_DELETE(m_pEffect[i]); }
-		}
-
-		return;
-	}
-	
-	// エフェクトの生成
-	for (int i = 0; i < 4; ++i)
-	{
-		// 既に生成されていた場合次に進む
-		if (m_pEffect[i] != nullptr) { continue; }
-
-		m_pEffect[i] = GET_EFFECT->Create
-		(
-			"data\\EFFEKSEER\\smoke.efkefc",
-			posVtx[i],
-			VEC3_ZERO,
-			VEC3_ZERO,
-			5.0f,
-			true
-		);
-	}
 }
 
 //===========================================
