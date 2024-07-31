@@ -231,12 +231,6 @@ void CPlayer::Uninit(void)
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
-	// エフェクトの終了
-	if (m_pEffectdata != nullptr)
-	{
-		delete m_pEffectdata;
-	}
-
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -1335,9 +1329,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
-
-			// エフェクトを削除する
-			SAFE_DELETE(m_pEffectdata);
 
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);

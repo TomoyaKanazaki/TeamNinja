@@ -16,6 +16,7 @@
 
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "sound.h"
 
 #include "camera.h"
 #include "multi_plant.h"
@@ -56,6 +57,7 @@ static_assert(NUM_ARRAY(ACTION_SET_FRAG) == CGimmick::TYPE_MAX, "ERROR : Type Co
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// 範囲に入っている分身の数
 m_bActive(false),				// 発動状況
+m_bOldActive(false),			// 発動状況
 m_bMoment(false),				// 発動中
 m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
 {
@@ -141,11 +143,35 @@ void CGimmickAction::Update(const float fDeltaTime)
 	// 分身との当たり判定
 	CollisionClone();
 
+	// 前回フラグを保存
+	m_bOldActive = m_bActive;
+
 	// 発動可能条件を false にする
 	m_bActive = false;
 
-	// 必要な分身が揃っていればフラグをon
-	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
+	// 必要な分身が揃っていればフラグを立てる
+	if (GetNumActive() <= m_nNumClone)
+	{
+		// 前フレームのフラグがオフの場合エフェクトを発生
+		if (!m_bOldActive)
+		{
+			GET_EFFECT->Create
+			(
+				"data\\EFFEKSEER\\guide_wind_ball.efkefc",
+				GetVec3Position(),
+				VEC3_ZERO,
+				VEC3_ZERO,
+				7.5f,
+				false
+			);
+
+			// ギミック完成音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_001);
+		}
+
+		// フラグをオン
+		m_bActive = true;
+	}
 
 	// エフェクトの生成
 	//DispEffect();
