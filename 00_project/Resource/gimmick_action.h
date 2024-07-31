@@ -77,6 +77,7 @@ private:
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
 	int m_nNumClone;			// 範囲に入っている分身の数
 	bool m_bActive;				// 発動状況
+	bool m_bOldActive;			// 発動状況
 	bool m_bMoment;				// 発動中フラグ
 	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
 	CEffekseer::CEffectData* m_pEffect[4];	// エフェクトのポインタ配列
