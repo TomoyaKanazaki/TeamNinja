@@ -60,7 +60,7 @@ m_bActive(false),				// 発動状況
 m_bOldActive(false),			// 発動状況
 m_bMoment(false),				// 発動中
 m_posAction(VEC3_ZERO),			// アクションポイント(待機座標)
-m_pEffect(nullptr)
+m_pEffect(nullptr)				// エフェクトのポインタ
 {
 
 }
@@ -127,7 +127,11 @@ void CGimmickAction::Uninit(void)
 	}
 
 	// エフェクトの終了
-	m_pEffect = nullptr;
+	if (m_pEffect != nullptr)
+	{
+		SAFE_DELETE(m_pEffect);
+		m_pEffect = nullptr;
+	}
 
 	// オブジェクト3Dの終了
 	CGimmick::Uninit();
@@ -172,7 +176,10 @@ void CGimmickAction::Update(const float fDeltaTime)
 	}
 
 	// エフェクトの生成
-	SetEffect();
+	ControlEffect();
+
+	// 分身数を保存する
+	m_nOldNum = m_nNumClone;
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -268,7 +275,22 @@ void CGimmickAction::AddNumClone()
 	if (m_nNumClone >= GetNumActive()) { return; }
 	
 	// 加算
-	++m_nNumClone;	
+	++m_nNumClone;
+
+	// エフェクトを生成
+	if (m_pEffect == nullptr)
+	{
+		m_pEffect = GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
+			m_posAction,
+			VEC3_ZERO,
+			VEC3_ZERO,
+			7.5f,
+			false,
+			false
+		);
+	}
 }
 
 //===========================================
@@ -295,15 +317,23 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 //==========================================
 //  エフェクトの生成
 //==========================================
-void CGimmickAction::SetEffect()
+void CGimmickAction::ControlEffect()
 {
-	// エフェクトが使用状態の場合関数を抜ける
-	if (m_pEffect != nullptr) { return; }
+	// エフェクトが存在しない場合関数を抜ける
+	if (m_pEffect == nullptr) { return; }
 
-	// アクティブ状態の場合関数を抜ける
-	if (IsActive()) { return; }
+	// ループが終了していた場合エフェクトを削除して関数を抜ける
+	if (!m_pEffect->GetExist())
+	{
+		SAFE_DELETE(m_pEffect);
+		m_pEffect = nullptr;
+		return;
+	}
 
-
+	// 待機位置に移動
+	m_pEffect->m_pos.X += (m_posAction.x - m_pEffect->m_pos.X) * 0.3f;
+	m_pEffect->m_pos.Y += (m_posAction.y - m_pEffect->m_pos.Y) * 0.3f;
+	m_pEffect->m_pos.Z += (m_posAction.z - m_pEffect->m_pos.Z) * 0.3f;
 }
 
 //===========================================

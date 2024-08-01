@@ -947,7 +947,7 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 			if (t < 0.0f || 1.0f < t) { continue; }
 
 			// ベクトルの内積を保存する変数
-			float fDot[2] = {};
+			float fDot[2] = { 0.0f, 0.0f };
 
 			// ベクトルの内積を求める
 			fDot[0] = vecScreen[i].y * (posVtx[j].x - posScreen[i].x) - vecScreen[i].x * (posVtx[j].y - posScreen[i].y);

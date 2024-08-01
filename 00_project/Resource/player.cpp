@@ -309,7 +309,7 @@ void CPlayer::Update(const float fDeltaTime)
 	}
 
 	// 歩行音処理
-	WalkSound();
+	WalkReaction();
 
 	// エフェクトの削除
 	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
@@ -1736,7 +1736,7 @@ void CPlayer::FloorEdgeJump()
 //==========================================
 // 歩行音処理
 //==========================================
-void CPlayer::WalkSound(void)
+void CPlayer::WalkReaction(void)
 {
 	if (GetMotionType() == MOTION_DASH)
 	{ // 歩いている場合
@@ -1757,6 +1757,9 @@ void CPlayer::WalkSound(void)
 
 		// 歩行音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+		// エフェクトを出す
+		GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
 	}
 }
 

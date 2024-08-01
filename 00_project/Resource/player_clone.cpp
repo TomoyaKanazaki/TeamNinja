@@ -415,17 +415,6 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミックの人数を加算
 	m_pGimmick->AddNumClone();
 
-	// エフェクトの生成TODO：向きも入れる
-	GET_EFFECT->Create
-	(
-		"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
-		GetVec3Position(),
-		VEC3_ZERO,
-		VEC3_ZERO,
-		7.5f,
-		false
-	);
-
 	// 分身セット音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_000);
 
