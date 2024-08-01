@@ -40,6 +40,7 @@ CRenderTexture::~CRenderTexture()
 HRESULT CRenderTexture::Init(void)
 {
 	CTexture *pTexture = GET_MANAGER->GetTexture();	// テクスチャへのポインタ
+	const D3DFORMAT format = (m_scene == CObject::SCENE_MAIN) ? D3DFMT_X8R8G8B8 : D3DFMT_A8R8G8B8;	// ピクセルフォーマット
 
 	// メンバ変数を初期化
 	m_pSurTexture	= nullptr;	// テクスチャサーフェイスへのポインタ
@@ -52,7 +53,7 @@ HRESULT CRenderTexture::Init(void)
 		SCREEN_HEIGHT,			// テクスチャ縦幅
 		0,						// ミップマップレベル
 		D3DUSAGE_RENDERTARGET,	// 性質・確保オプション
-		D3DFMT_X8R8G8B8,		// ピクセルフォーマット
+		format,					// ピクセルフォーマット
 		D3DPOOL_DEFAULT			// 格納メモリ
 	));
 

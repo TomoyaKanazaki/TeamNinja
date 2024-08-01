@@ -1049,29 +1049,25 @@ void CObject::SetEnableDebugDispAll(const bool bDisp2D, const bool bDisp3D)
 	// 変数を宣言
 	bool aDisp[DIM_MAX] = { bDisp3D, bDisp2D };	// 各次元の表示状況
 
-	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
-	{ // シーンの総数分繰り返す
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
 
-		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-		{ // 次元の総数分繰り返す
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
 
-			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-			{ // 優先順位の総数分繰り返す
+			// オブジェクトの先頭を代入
+			CObject *pObject = m_apTop[SCENE_MAIN][nCntDim][nCntPri];
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
 
-				// オブジェクトの先頭を代入
-				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
-				while (pObject != nullptr)
-				{ // オブジェクトが使用されている場合繰り返す
+				// 次のオブジェクトを代入
+				CObject *pObjectNext = pObject->m_pNext;
 
-					// 次のオブジェクトを代入
-					CObject *pObjectNext = pObject->m_pNext;
+				// 引数の表示フラグを設定
+				pObject->m_bDebugDisp = aDisp[nCntDim];
 
-					// 引数の表示フラグを設定
-					pObject->m_bDebugDisp = aDisp[nCntDim];
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-				}
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
 			}
 		}
 	}
