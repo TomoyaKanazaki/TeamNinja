@@ -13,6 +13,10 @@
 #include "stage.h"
 #include "balloon.h"
 
+// TODO
+#include "loadtext.h"
+#include "scrollText2D.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -21,7 +25,6 @@ namespace
 	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\checkpoint_blue.efkefc";	// 触れている際のエフェクトファイル
 	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\checkpoint_red.efkefc";		// 触れていない際のエフェクトファイル
 
-	const char*	MODEL_PASS	 = "data\\MODEL\\GATE\\gate001.x";	// モデルファイル
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);	// エフェクト用オフセット
 	const int	PRIORITY	 = 2;		// 遷移ポイントの優先順位
 	const float	RADIUS		 = 120.0f;	// 遷移ポイントに触れられる半径
@@ -73,7 +76,7 @@ HRESULT CTransPoint::Init(void)
 	}
 
 	// 吹き出しの生成
-	m_pBalloon = CBalloon::Create();
+	m_pBalloon = CBalloon::Create(GetVec3Position());
 	if (m_pBalloon == nullptr)
 	{ // 生成に失敗した場合
 
@@ -158,6 +161,18 @@ void CTransPoint::Draw(CShader *pShader)
 }
 
 //============================================================
+//	位置の設定処理
+//============================================================
+void CTransPoint::SetVec3Position(const D3DXVECTOR3& rPos)
+{
+	// 自身の位置を設定
+	CObjectModel::SetVec3Position(rPos);
+
+	// 吹き出しの位置を設定
+	m_pBalloon->SetVec3Position(rPos);
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CTransPoint *CTransPoint::Create(const char* pPass, const D3DXVECTOR3& rPos)
@@ -230,6 +245,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 				// ヒット時のエフェクトを設定
 				SAFE_DELETE(rList->m_pEffectData);
 				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true,false);
+
+				// ステージ情報テクスチャの作成
+				rList->CreateStageTexture();
 			}
 		}
 		else
@@ -259,6 +277,84 @@ CListManager<CTransPoint> *CTransPoint::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+//	ステージ情報テクスチャの作成処理
+//============================================================
+HRESULT CTransPoint::CreateStageTexture(void)
+{
+	// TODO：ここはマネージャー管理にするべき。
+
+	// ビルボードシーン内のオブジェクトを全破棄
+	CObject::ReleaseAll(CObject::SCENE_BILLBOARD);
+
+	// ステージ画面ポリゴンの生成
+	CObject2D* pStage = CObject2D::Create(SCREEN_CENT, SCREEN_SIZE * 0.66f);
+	if (pStage == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+	// 情報の設定
+	pStage->BindTexture("data\\TEXTURE\\stage000.png");	// ステージ画面のテクスチャ割当	// TODO：固定になってるよ
+	pStage->SetScene(CObject::SCENE_BILLBOARD);			// オブジェクトシーンをビルボードに
+	pStage->SetLabel(CObject::LABEL_UI);				// 自動更新/自動破棄するように
+
+	// フレームポリゴンの生成
+	CObject2D* pFrame = CObject2D::Create(SCREEN_CENT, D3DXVECTOR3(1227.0f, 720.0f, 0.0f));
+	if (pFrame == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+	// 情報の設定
+	pFrame->BindTexture("data\\TEXTURE\\stageFrame000.png");	// フレームのテクスチャ割当
+	pFrame->SetScene(CObject::SCENE_BILLBOARD);					// オブジェクトシーンをビルボードに
+	pFrame->SetLabel(CObject::LABEL_UI);						// 自動更新/自動破棄するように
+
+	// ステージ名の影の生成
+	CScrollText2D* pShadow = CScrollText2D::Create
+	( // 引数
+		"data\\FONT\\零ゴシック.otf",
+		false,
+		D3DXVECTOR3(90.0f, 40.0f, 0.0f) + D3DXVECTOR3(8.0f, 8.0f, 0.0f),
+		0.02f,
+		140.0f,
+		120.0f,
+		CString2D::XALIGN_LEFT,
+		CText2D::YALIGN_TOP,
+		VEC3_ZERO,
+		XCOL_BLUE
+	);
+	if (pShadow == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+	// 情報の設定
+	pShadow->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+	pShadow->SetEnableScroll(true);					// 文字送りを開始
+
+	// テキストを割当
+	loadtext::BindText(pShadow, loadtext::LoadText(GET_STAGE->Regist(m_sTransMapPass.c_str()).sStage.c_str(), 0));
+
+	// ステージ名の生成
+	CScrollText2D* pName = CScrollText2D::Create
+	(
+		"data\\FONT\\零ゴシック.otf",
+		false,
+		D3DXVECTOR3(90.0f, 40.0f, 0.0f),
+		0.02f,
+		140.0f,
+		120.0f,
+		CString2D::XALIGN_LEFT,
+		CText2D::YALIGN_TOP,
+		VEC3_ZERO,
+		XCOL_WHITE
+	);
+	if (pName == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+	// 情報の設定
+	pName->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+	pName->SetEnableScroll(true);				// 文字送りを開始
+
+	// テキストを割当
+	loadtext::BindText(pName, loadtext::LoadText(GET_STAGE->Regist(m_sTransMapPass.c_str()).sStage.c_str(), 0));
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

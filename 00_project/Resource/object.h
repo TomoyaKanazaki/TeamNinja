@@ -162,6 +162,7 @@ public:
 
 	// 静的メンバ関数
 	static void	ReleaseAll(const std::vector<ELabel> label);	// 全破棄 (ラベル指定)
+	static void	ReleaseAll(const EScene scene);					// 全破棄 (シーン指定)
 	static void	ReleaseAll(void);								// 全破棄
 	static void	UpdateAll(const float fDeltaTime);		// 全更新
 	static void	DrawAll(const EScene scene);			// 全描画

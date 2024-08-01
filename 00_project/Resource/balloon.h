@@ -33,9 +33,10 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 
 	// 静的メンバ関数
-	static CBalloon *Create(void);	// 生成
+	static CBalloon *Create(const D3DXVECTOR3& rPosParent);	// 生成
 
 	// メンバ関数
 	void SetDisp(const bool bDisp);	// 吹き出し表示設定

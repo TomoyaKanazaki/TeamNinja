@@ -624,9 +624,6 @@
     <ClInclude Include="Resource\balloon.h">
       <Filter>InGame\Select</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\balloonManager.h">
-      <Filter>InGame\Select</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\loadtext.h">
       <Filter>System</Filter>
     </ClInclude>
@@ -1185,9 +1182,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\balloon.cpp">
-      <Filter>InGame\Select</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\balloonManager.cpp">
       <Filter>InGame\Select</Filter>
     </ClCompile>
     <ClCompile Include="Resource\loadtext.cpp">

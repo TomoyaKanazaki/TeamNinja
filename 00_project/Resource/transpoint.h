@@ -40,6 +40,7 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
 
 	// 静的メンバ関数
 	static CTransPoint *Create(const char* pPass, const D3DXVECTOR3& rPos);			// 生成
@@ -53,6 +54,9 @@ public:
 private:
 	// 静的メンバ変数
 	static CListManager<CTransPoint>* m_pList;	// オブジェクトリスト
+
+	// メンバ関数
+	HRESULT CreateStageTexture(void);	// ステージ情報テクスチャ作成
 
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
