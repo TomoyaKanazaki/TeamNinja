@@ -627,6 +627,9 @@
     <ClInclude Include="Resource\loadtext.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\balloonManager.h">
+      <Filter>InGame\Select</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1186,6 +1189,9 @@
     </ClCompile>
     <ClCompile Include="Resource\loadtext.cpp">
       <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\balloonManager.cpp">
+      <Filter>InGame\Select</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

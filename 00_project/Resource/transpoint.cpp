@@ -10,12 +10,8 @@
 #include "transpoint.h"
 #include "collision.h"
 #include "manager.h"
-#include "stage.h"
 #include "balloon.h"
-
-// TODO
-#include "loadtext.h"
-#include "scrollText2D.h"
+#include "balloonManager.h"
 
 //************************************************************
 //	定数宣言
@@ -34,6 +30,7 @@ namespace
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CTransPoint>* CTransPoint::m_pList = nullptr;	// オブジェクトリスト
+CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャー情報
 
 //************************************************************
 //	子クラス [CTransPoint] のメンバ関数
@@ -119,6 +116,9 @@ void CTransPoint::Uninit(void)
 
 	if (m_pList->GetNumAll() == 0)
 	{ // オブジェクトが一つもない場合
+
+		// 吹き出しマネージャーの終了
+		SAFE_UNINIT(m_pBalloonManager);
 
 		// リストマネージャーの破棄
 		m_pList->Release(m_pList);
@@ -247,7 +247,13 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true,false);
 
 				// ステージ情報テクスチャの作成
-				rList->CreateStageTexture();
+				if (FAILED(rList->CreateStageTexture()))
+				{ // 生成に失敗した場合
+
+					// 失敗を返す
+					assert(false);
+					return nullptr;
+				}
 			}
 		}
 		else
@@ -284,74 +290,18 @@ CListManager<CTransPoint> *CTransPoint::GetList(void)
 //============================================================
 HRESULT CTransPoint::CreateStageTexture(void)
 {
-	// TODO：ここはマネージャー管理にするべき。
+	// 吹き出しマネージャーの終了
+	SAFE_UNINIT(m_pBalloonManager);
 
-	// ビルボードシーン内のオブジェクトを全破棄
-	CObject::ReleaseAll(CObject::SCENE_BILLBOARD);
+	// 吹き出しマネージャーの生成
+	m_pBalloonManager = CBalloonManager::Create(this);
+	if (m_pBalloonManager == nullptr)
+	{ // 生成に失敗した場合
 
-	// ステージ画面ポリゴンの生成
-	CObject2D* pStage = CObject2D::Create(SCREEN_CENT, SCREEN_SIZE * 0.66f);
-	if (pStage == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
-
-	// 情報の設定
-	pStage->BindTexture("data\\TEXTURE\\stage000.png");	// ステージ画面のテクスチャ割当	// TODO：固定になってるよ
-	pStage->SetScene(CObject::SCENE_BILLBOARD);			// オブジェクトシーンをビルボードに
-	pStage->SetLabel(CObject::LABEL_UI);				// 自動更新/自動破棄するように
-
-	// フレームポリゴンの生成
-	CObject2D* pFrame = CObject2D::Create(SCREEN_CENT, D3DXVECTOR3(1227.0f, 720.0f, 0.0f));
-	if (pFrame == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
-
-	// 情報の設定
-	pFrame->BindTexture("data\\TEXTURE\\stageFrame000.png");	// フレームのテクスチャ割当
-	pFrame->SetScene(CObject::SCENE_BILLBOARD);					// オブジェクトシーンをビルボードに
-	pFrame->SetLabel(CObject::LABEL_UI);						// 自動更新/自動破棄するように
-
-	// ステージ名の影の生成
-	CScrollText2D* pShadow = CScrollText2D::Create
-	( // 引数
-		"data\\FONT\\零ゴシック.otf",
-		false,
-		D3DXVECTOR3(90.0f, 40.0f, 0.0f) + D3DXVECTOR3(8.0f, 8.0f, 0.0f),
-		0.02f,
-		140.0f,
-		120.0f,
-		CString2D::XALIGN_LEFT,
-		CText2D::YALIGN_TOP,
-		VEC3_ZERO,
-		XCOL_BLUE
-	);
-	if (pShadow == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
-
-	// 情報の設定
-	pShadow->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
-	pShadow->SetEnableScroll(true);					// 文字送りを開始
-
-	// テキストを割当
-	loadtext::BindText(pShadow, loadtext::LoadText(GET_STAGE->Regist(m_sTransMapPass.c_str()).sStage.c_str(), 0));
-
-	// ステージ名の生成
-	CScrollText2D* pName = CScrollText2D::Create
-	(
-		"data\\FONT\\零ゴシック.otf",
-		false,
-		D3DXVECTOR3(90.0f, 40.0f, 0.0f),
-		0.02f,
-		140.0f,
-		120.0f,
-		CString2D::XALIGN_LEFT,
-		CText2D::YALIGN_TOP,
-		VEC3_ZERO,
-		XCOL_WHITE
-	);
-	if (pName == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
-
-	// 情報の設定
-	pName->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
-	pName->SetEnableScroll(true);				// 文字送りを開始
-
-	// テキストを割当
-	loadtext::BindText(pName, loadtext::LoadText(GET_STAGE->Regist(m_sTransMapPass.c_str()).sStage.c_str(), 0));
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// 成功を返す
 	return S_OK;

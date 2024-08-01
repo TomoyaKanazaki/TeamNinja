@@ -20,7 +20,8 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CBalloon;	// 吹き出しクラス
+class CBalloon;			// 吹き出しクラス
+class CBalloonManager;	// 吹き出しマネージャークラス
 
 //************************************************************
 //	クラス定義
@@ -54,6 +55,7 @@ public:
 private:
 	// 静的メンバ変数
 	static CListManager<CTransPoint>* m_pList;	// オブジェクトリスト
+	static CBalloonManager* m_pBalloonManager;	// 吹き出しマネージャー情報
 
 	// メンバ関数
 	HRESULT CreateStageTexture(void);	// ステージ情報テクスチャ作成
