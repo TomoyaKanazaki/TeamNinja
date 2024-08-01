@@ -71,15 +71,17 @@ public:
 private:
 
 	// メンバ関数
-	void DispEffect(); // 範囲表示処理
+	void ControlEffect(); // エフェクトの操作
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター
 	int m_nNumClone;			// 範囲に入っている分身の数
+	int m_nOldNum;				// 範囲に入っている分身の数
 	bool m_bActive;				// 発動状況
+	bool m_bOldActive;			// 発動状況
 	bool m_bMoment;				// 発動中フラグ
 	D3DXVECTOR3 m_posAction;	// アクションポイント(待機座標)
-	CEffekseer::CEffectData* m_pEffect[4];	// エフェクトのポインタ配列
+	CEffekseer::CEffectData* m_pEffect;	// エフェクトのポインタ
 
 	// 静的メンバ変数
 	static CListManager<CGimmickAction>* m_pList;	// オブジェクトリスト

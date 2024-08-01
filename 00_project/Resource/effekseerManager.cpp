@@ -56,7 +56,7 @@ void CEffekseerManager::Uninit(void)
 {
 	// エフェクシアの終了
 	GET_EFFECT->Uninit();
-
+	GET_EFFECT->Release();
 	// オブジェクトを破棄
 	Release();
 }

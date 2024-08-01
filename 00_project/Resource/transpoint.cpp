@@ -185,7 +185,7 @@ CTransPoint *CTransPoint::Create(const char* pPass, const D3DXVECTOR3& rPos)
 		pTransPoint->SetVec3Position(rPos);
 
 		// エフェクトを設定
-		pTransPoint->m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+		pTransPoint->m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true,false);
 
 		// 確保したアドレスを返す
 		return pTransPoint;
@@ -229,7 +229,7 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 
 				// ヒット時のエフェクトを設定
 				SAFE_DELETE(rList->m_pEffectData);
-				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true);
+				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true,false);
 			}
 		}
 		else
@@ -243,7 +243,7 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 
 				// 未ヒット時のエフェクトを設定
 				SAFE_DELETE(rList->m_pEffectData);
-				rList->m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true);
+				rList->m_pEffectData = GET_EFFECT->Create(UNHIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true,false);
 			}
 		}
 	}

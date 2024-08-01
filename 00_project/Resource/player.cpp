@@ -231,10 +231,11 @@ void CPlayer::Uninit(void)
 	// 軌跡の終了
 	SAFE_UNINIT(m_pOrbit);
 
-	// エフェクトの終了
+	// エフェクトの削除
 	if (m_pEffectdata != nullptr)
 	{
-		delete m_pEffectdata;
+		SAFE_DELETE(m_pEffectdata);
+		m_pEffectdata = nullptr;
 	}
 
 	// リストから自身のオブジェクトを削除
@@ -308,7 +309,14 @@ void CPlayer::Update(const float fDeltaTime)
 	}
 
 	// 歩行音処理
-	WalkSound();
+	WalkReaction();
+
+	// エフェクトの削除
+	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
+	{
+		SAFE_DELETE(m_pEffectdata);
+		m_pEffectdata = nullptr;
+	}
 
 	// 軌跡の更新
 	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
@@ -815,7 +823,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	D3DXVECTOR3 pos = GetVec3Position();
 
 	// エフェクトの位置を設定する
-	m_pEffectdata->m_pos = GetCenterPos();
+	if (m_pEffectdata != nullptr) { m_pEffectdata->m_pos = GetCenterPos(); }
 
 	// 重力の更新
 	UpdateGravity();
@@ -1336,9 +1344,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// エフェクトを削除する
-			SAFE_DELETE(m_pEffectdata);
-
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
@@ -1497,8 +1502,11 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.x = sinf(rRot.y) * DODGE_MOVE;
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
-		// TOOD エフェクトを出す ようわからんので丹野に相談
-		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f);
+		// TOOD エフェクトを出す
+		if (m_pEffectdata == nullptr)
+		{
+			m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f, false, false);
+		}
 
 		// 回避音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_PLAYERSTEP_000);
@@ -1613,6 +1621,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		}
 
 		// ギミックのリストを取得
+		if (CGimmickAction::GetList() == nullptr) { return false; }
 		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
 
 		// プレイヤーから最も近いギミックを取得する変数
@@ -1727,7 +1736,7 @@ void CPlayer::FloorEdgeJump()
 //==========================================
 // 歩行音処理
 //==========================================
-void CPlayer::WalkSound(void)
+void CPlayer::WalkReaction(void)
 {
 	if (GetMotionType() == MOTION_DASH)
 	{ // 歩いている場合
@@ -1748,6 +1757,9 @@ void CPlayer::WalkSound(void)
 
 		// 歩行音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+		// エフェクトを出す
+		GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
 	}
 }
 

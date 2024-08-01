@@ -415,40 +415,8 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミックの人数を加算
 	m_pGimmick->AddNumClone();
 
-	if (gimmick->GetNumActive() <= gimmick->GetNumClone())
-	{ // 分身の数が必要数に達した場合
-
-		// エフェクトの生成TODO：向きも入れる
-		GET_EFFECT->Create
-		(
-			"data\\EFFEKSEER\\guide_wind_ball.efkefc",
-			GetVec3Position(),
-			VEC3_ZERO,
-			VEC3_ZERO,
-			7.5f,
-			false
-		);
-
-		// ギミック完成音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_001);
-	}
-	else
-	{ // 上記以外
-
-		// エフェクトの生成TODO：向きも入れる
-		GET_EFFECT->Create
-		(
-			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
-			GetVec3Position(),
-			VEC3_ZERO,
-			VEC3_ZERO,
-			7.5f,
-			false
-		);
-
-		// 分身セット音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_000);
-	}
+	// 分身セット音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_000);
 
 	// ギミック内での管理番号を取得する
 	m_nIdxGimmick = m_pGimmick->GetNumClone() - 1;
@@ -1565,7 +1533,7 @@ CPlayerClone *CPlayerClone::GetGimmickNextClone()
 		}
 	}
 
-	// ここきたらおかしいよん
+	// ここにきたらおかしい
 	assert(false);
 	return nullptr;
 }

@@ -16,6 +16,7 @@
 
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "sound.h"
 
 #include "camera.h"
 #include "multi_plant.h"
@@ -56,10 +57,12 @@ static_assert(NUM_ARRAY(ACTION_SET_FRAG) == CGimmick::TYPE_MAX, "ERROR : Type Co
 CGimmickAction::CGimmickAction() : CGimmick(),
 m_nNumClone(0),					// 範囲に入っている分身の数
 m_bActive(false),				// 発動状況
+m_bOldActive(false),			// 発動状況
 m_bMoment(false),				// 発動中
-m_posAction(VEC3_ZERO)			// アクションポイント(待機座標)
+m_posAction(VEC3_ZERO),			// アクションポイント(待機座標)
+m_pEffect(nullptr)				// エフェクトのポインタ
 {
-	memset(&m_pEffect[0], 0, sizeof(m_pEffect));
+
 }
 
 //============================================================
@@ -124,9 +127,10 @@ void CGimmickAction::Uninit(void)
 	}
 
 	// エフェクトの終了
-	for (int i = 0; i < 4; ++i)
+	if (m_pEffect != nullptr)
 	{
-		m_pEffect[i] = nullptr;
+		SAFE_DELETE(m_pEffect);
+		m_pEffect = nullptr;
 	}
 
 	// オブジェクト3Dの終了
@@ -141,14 +145,41 @@ void CGimmickAction::Update(const float fDeltaTime)
 	// 分身との当たり判定
 	CollisionClone();
 
+	// 前回フラグを保存
+	m_bOldActive = m_bActive;
+
 	// 発動可能条件を false にする
 	m_bActive = false;
 
-	// 必要な分身が揃っていればフラグをon
-	if (GetNumActive() <= m_nNumClone) { m_bActive = true; }
+	// 必要な分身が揃っていればフラグを立てる
+	if (GetNumActive() <= m_nNumClone)
+	{
+		// 前フレームのフラグがオフの場合エフェクトを発生
+		if (!m_bOldActive)
+		{
+			GET_EFFECT->Create
+			(
+				"data\\EFFEKSEER\\guide_wind_ball.efkefc",
+				GetVec3Position(),
+				VEC3_ZERO,
+				VEC3_ZERO,
+				7.5f,
+				false
+			);
+
+			// ギミック完成音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_GIMMICKSET_001);
+		}
+
+		// フラグをオン
+		m_bActive = true;
+	}
 
 	// エフェクトの生成
-	//DispEffect();
+	ControlEffect();
+
+	// 分身数を保存する
+	m_nOldNum = m_nNumClone;
 
 	// 親クラスの更新
 	CGimmick::Update(fDeltaTime);
@@ -244,7 +275,22 @@ void CGimmickAction::AddNumClone()
 	if (m_nNumClone >= GetNumActive()) { return; }
 	
 	// 加算
-	++m_nNumClone;	
+	++m_nNumClone;
+
+	// エフェクトを生成
+	if (m_pEffect == nullptr)
+	{
+		m_pEffect = GET_EFFECT->Create
+		(
+			"data\\EFFEKSEER\\guide_wind_ribbon.efkefc",
+			m_posAction,
+			VEC3_ZERO,
+			VEC3_ZERO,
+			7.5f,
+			false,
+			false
+		);
+	}
 }
 
 //===========================================
@@ -268,64 +314,26 @@ CListManager<CGimmickAction>* CGimmickAction::GetList(void)
 	return m_pList;
 }
 
-//===========================================
-//  範囲表示処理
-//===========================================
-void CGimmickAction::DispEffect()
+//==========================================
+//  エフェクトの生成
+//==========================================
+void CGimmickAction::ControlEffect()
 {
-	// 自身の座標を取得
-	D3DXVECTOR3 posThis = GetVec3Position();
+	// エフェクトが存在しない場合関数を抜ける
+	if (m_pEffect == nullptr) { return; }
 
-	D3DXVECTOR3 posVtx[4] = {};
-	for (int i = 0; i < 4; ++i)
+	// ループが終了していた場合エフェクトを削除して関数を抜ける
+	if (!m_pEffect->GetExist())
 	{
-		posVtx[i] = GetVertexPosition(i) + posThis;
-	}
-
-	// エフェクトの表示フラグ
-	bool bDisp = false;
-
-	// 全頂点を走査する
-	for (int i = 0; i < 4; ++i)
-	{
-		// 頂点座標を取得する
-		posVtx[i] = GetVertexPosition(i) + posThis;
-
-		// 1点でもスクリーン内の場合次に進む
-		if (bDisp) { continue; }
-
-		// スクリーン内判定
-		bDisp = SCREEN_IN(posVtx[i]);
-	}
-
-	//スクリーン外の場合エフェクトを削除して関数を抜ける
-	if (!bDisp)
-	{
-		// エフェクトの終了
-		for (int i = 0; i < 4; ++i)
-		{
-			if (m_pEffect[i] != nullptr) { SAFE_DELETE(m_pEffect[i]); }
-		}
-
+		SAFE_DELETE(m_pEffect);
+		m_pEffect = nullptr;
 		return;
 	}
-	
-	// エフェクトの生成
-	for (int i = 0; i < 4; ++i)
-	{
-		// 既に生成されていた場合次に進む
-		if (m_pEffect[i] != nullptr) { continue; }
 
-		m_pEffect[i] = GET_EFFECT->Create
-		(
-			"data\\EFFEKSEER\\smoke.efkefc",
-			posVtx[i],
-			VEC3_ZERO,
-			VEC3_ZERO,
-			5.0f,
-			true
-		);
-	}
+	// 待機位置に移動
+	m_pEffect->m_pos.X += (m_posAction.x - m_pEffect->m_pos.X) * 0.3f;
+	m_pEffect->m_pos.Y += (m_posAction.y - m_pEffect->m_pos.Y) * 0.3f;
+	m_pEffect->m_pos.Z += (m_posAction.z - m_pEffect->m_pos.Z) * 0.3f;
 }
 
 //===========================================
