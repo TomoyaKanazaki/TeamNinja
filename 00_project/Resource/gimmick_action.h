@@ -72,6 +72,7 @@ private:
 
 	// メンバ関数
 	void ControlEffect(); // エフェクトの操作
+	void OnScreen(); // 描画のオンオフ
 
 	// メンバ変数
 	CListManager<CGimmickAction>::AIterator m_iterator;	// イテレーター

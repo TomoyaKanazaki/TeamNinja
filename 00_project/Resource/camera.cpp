@@ -903,68 +903,96 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 {
 	// 各頂点のスクリーン座標を算出
-	D3DXVECTOR3 posScreen[4] = {};
+	D3DXVECTOR3 posVtx[4] = {};
 	for (int i = 0; i < 4; ++i, ++pPos)
 	{
 		// 頂点が1つでもスクリーン内であればtrueを返す
-		if (OnScreen(*pPos, posScreen[i])) { return true; }
+		if (OnScreen(*pPos, posVtx[i])) { return true; }
 	}
 
 	// 各頂点を結ぶベクトル(4辺)を算出
-	D3DXVECTOR3 vecScreen[4] =
+	D3DXVECTOR3 vecVtx[4] =
 	{
-		posScreen[1] - posScreen[0],
-		posScreen[2] - posScreen[1],
-		posScreen[3] - posScreen[2],
-		posScreen[0] - posScreen[3]
+		posVtx[1] - posVtx[0],
+		posVtx[2] - posVtx[1],
+		posVtx[3] - posVtx[2],
+		posVtx[0] - posVtx[3]
 	};
 
-	// スクリーン範囲の4頂点を算出
-	D3DXVECTOR3 posVtx[4] =
+	// 各ベクトルの大きさを算出
+	float fLengthVtx[4] =
 	{
-		D3DXVECTOR3(0.0f, 0.0f, 0.0f),						// 左上
-		D3DXVECTOR3(0.0f, SCREEN_HEIGHT, 0.0f),				// 左下
-		D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),		// 右下
-		D3DXVECTOR3(SCREEN_WIDTH, 0.0f, 0.0f)				// 右上
+		sqrtf(vecVtx[0].x * vecVtx[0].x + vecVtx[0].y * vecVtx[0].y),
+		sqrtf(vecVtx[1].x * vecVtx[1].x + vecVtx[1].y * vecVtx[1].y),
+		sqrtf(vecVtx[2].x * vecVtx[2].x + vecVtx[2].y * vecVtx[2].y),
+		sqrtf(vecVtx[3].x * vecVtx[3].x + vecVtx[3].y * vecVtx[3].y)
+	};
+
+	// スクリーン範囲を取得
+	D3DXVECTOR3 posScreen[4] =
+	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		D3DXVECTOR3(0.0f, SCREEN_HEIGHT * 0.5f, 0.0f),
+		D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f),
+		D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 0.0f, 0.0f)
+	};
+
+	// スクリーン範囲の対角線を算出
+	D3DXVECTOR3 vecDiagonal[2] =
+	{
+		posScreen[2] - posScreen[0],
+		posScreen[3] - posScreen[1],
+	};
+
+	// 対角線の大きさを算出
+	float fLengthDiagonal[2] =
+	{
+		sqrtf(vecDiagonal[0].x * vecDiagonal[0].x + vecDiagonal[0].y * vecDiagonal[0].y),
+		sqrtf(vecDiagonal[1].x * vecDiagonal[1].x + vecDiagonal[1].y * vecDiagonal[1].y)
 	};
 
 	// 4辺と対角線の交差判定
 	for (int i = 0; i < 4; ++i)
 	{
-		for (int j = 0; j < 2; ++i)
+		for (int j = 0; j < 2; ++j)
 		{
-			// 頂点同士を結ぶベクトルを算出する
-			D3DXVECTOR3 vecPos = posScreen[i] - posVtx[j];
+			// ポリゴンの頂点を結んだ直線と対角線の内積を求める
+			float fDot = vecVtx[i].x * vecDiagonal[j].x + vecVtx[i].y * vecDiagonal[j].y;
 
-			// 各ベクトルの大きさを求める
-			float fLengthScreen = sqrtf((vecScreen[i].x * vecScreen[i].x) + (vecScreen[i].y * vecScreen[i].y));
-			float fLengthToPos = sqrtf((vecPos.x * vecPos.x) + (vecPos.y * vecPos.y));
+			// 2つのベクトルが平行な場合は交差しないため次に進む
+			if (fDot == fLengthVtx[i] * fLengthDiagonal[j]) { continue; }
 
-			// 媒介変数tを求める
-			float t = (fLengthScreen * fLengthToPos) / (fLengthScreen * fLengthScreen);
+			// 各ベクトルの始点を結ぶベクトルを算出
+			D3DXVECTOR3 vecStart = posScreen[j] - posVtx[i];
 
-			// tが0.0 ~ 1.0の範囲がだった場合交差しないため次に進む
-			if (t < 0.0f || 1.0f < t) { continue; }
+			// 対角線のベクトルに対する2つのベクトルの外積を算出する
+			float fCross[3] =
+			{
+				vecStart.x * vecDiagonal[j].y - vecStart.y * vecDiagonal[j].x,
+				vecStart.x * vecVtx[i].y - vecStart.y * vecVtx[i].x,
+				vecDiagonal[j].x * vecVtx[i].y - vecDiagonal[j].y * vecVtx[i].x
+			};
 
-			// ベクトルの内積を保存する変数
-			float fDot[2] = { 0.0f, 0.0f };
+			// ベクトルの外積から交点算出に利用する媒介変数を算出
+			float t[2] =
+			{
+				fCross[0] / fCross[2],
+				fCross[1] / fCross[2]
+			};
 
-			// ベクトルの内積を求める
-			fDot[0] = vecScreen[i].y * (posVtx[j].x - posScreen[i].x) - vecScreen[i].x * (posVtx[j].y - posScreen[i].y);
-			fDot[1] = vecScreen[i].y * (posVtx[j + 2].x - posScreen[i].x) - vecScreen[i].x * (posVtx[j + 2].y - posScreen[i].y);
-
-			// 内積の符号が不一致の場合trueを返す
-			if (fDot[0] * fDot[1] < 0.0f) { return true; }
+			// 媒介変数tが範囲内の場合trueを返す
+			if (t[0] >= 0.0f && t[0] <= 1.0f && t[1] >= 0.0f && t[1] <= 1.0f)
+			{ return true; }
 		}
 	}
 
 	// スクリーン範囲がスクリーン座標に包含されている場合trueを返す
 	for (int i = 0; i < 4; ++i)
 	{
-		// ベクトルの内積を求める
-		float fDot = vecScreen[i].y * (SCREEN_CENT.x - posScreen[i].x) - vecScreen[i].x * (SCREEN_CENT.y - posScreen[i].y);
+		// ベクトルの外積を求める
+		float fDot = vecVtx[i].y * (SCREEN_CENT.x - posVtx[i].x) - vecVtx[i].x * (SCREEN_CENT.y - posVtx[i].y);
 
-		// 内積の値が1つでも負の場合falseを返す
+		// 外積の値が1つでも負の場合falseを返す
 		if (fDot < 0.0f) { return false; }
 	}
 
