@@ -13,6 +13,7 @@
 #include "loadtext.h"
 #include "transpoint.h"
 #include "object2D.h"
+#include "roll2D.h"
 #include "scrollText2D.h"
 
 //************************************************************
@@ -31,6 +32,18 @@ namespace
 		const char* TEXTURE		= "data\\TEXTURE\\stageFrame000.png";	// フレームテクスチャパス
 		const D3DXVECTOR3 POS	= SCREEN_CENT;							// 位置
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(1227.0f, 720.0f, 0.0f);	// 大きさ
+	}
+
+	namespace star
+	{
+		const char*	TEXTURE	= "data\\TEXTURE\\star000.png";	// 手裏剣テクスチャパス
+		const int	NUM		= 2;	// 手裏剣の数
+
+		const D3DXVECTOR3 POS[NUM]	= { D3DXVECTOR3(140.0f, 230.0f, 0.0f),	D3DXVECTOR3(240.0f, 140.0f, 0.0f) };	// 位置
+		const D3DXVECTOR3 ROT[NUM]	= { D3DXVECTOR3(0.0f, 0.0f, 0.8f),		D3DXVECTOR3(0.0f, 0.0f, 0.2f) };		// 向き
+		const D3DXVECTOR3 SIZE[NUM]	= { D3DXVECTOR3(250.0f, 250.0f, 0.0f),	D3DXVECTOR3(320.0f, 320.0f, 0.0f) };	// 大きさ
+		const D3DXCOLOR COL[NUM]	= { XCOL_WHITE, D3DXCOLOR(0.75f, 0.75f, 0.75f, 1.0f) };	// 色
+		const float	ADD_ROT[NUM]	= { 2.0f, 3.0f };	// 回転量
 	}
 
 	namespace name
@@ -106,6 +119,24 @@ HRESULT CBalloonManager::Init(void)
 	pFrame->BindTexture(frame::TEXTURE);		// フレームのテクスチャ割当
 	pFrame->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
 	pFrame->SetLabel(CObject::LABEL_UI);		// 自動更新/自動破棄するように
+
+	//--------------------------------------------------------
+	//	手裏剣の生成 / 設定
+	//--------------------------------------------------------
+	for (int i = 0; i < star::NUM; i++)
+	{ // 手裏剣の総数分繰り返す
+
+		// 手裏剣の生成
+		CRoll2D* pStar = CRoll2D::Create(star::POS[i], star::SIZE[i], star::ADD_ROT[i], star::ROT[i], star::COL[i]);
+		if (pStar == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+		// 情報の設定
+		pStar->BindTexture(star::TEXTURE);			// フレームのテクスチャ割当
+		pStar->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+
+		// TODO：回転は文字送りし終わってから
+		pStar->SetRoll(true);
+	}
 
 	//--------------------------------------------------------
 	//	ステージ名の影の生成 / 設定

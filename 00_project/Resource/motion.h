@@ -176,6 +176,7 @@ public:
 	int GetKey(void) const			{ return m_info.nKey; }				// キー番号取得
 	int GetKeyCounter(void) const	{ return m_info.nKeyCounter; }		// モーションキーカウンター取得
 	int GetWholeCounter(void) const	{ return m_info.nWholeCounter; }	// モーション全体カウンター取得
+	int GetBlendFrame(void) const	{ return m_blend.nFrame; }			// モーションブレンドフレーム取得
 	DWORD GetNumLoop(void) const	{ return m_info.dwNumLoop; }		// モーションループ回数取得
 	bool IsFinish(void) const		{ return m_info.bFinish; }			// 終了取得
 	bool IsLoop(const int nType) const			{ return m_info.vecMotion[nType].bLoop; }			// ループ取得

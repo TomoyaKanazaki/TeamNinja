@@ -308,9 +308,6 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// 歩行音処理
-	WalkReaction();
-
 	// エフェクトの削除
 	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
 	{
@@ -1264,28 +1261,22 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 		break;
 
-#if 0
 	case MOTION_DASH:	// 歩行モーション
 
-		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
 		{ // 足がついたタイミングの場合
 
-			switch (m_land)
-			{ // 着地物ごとの処理
-			case LAND_OBSTACLE:
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
 
-				// サウンドの再生
-				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
-
-				break;
-
-			default:
-
-				// サウンドの再生
-				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
-
-				break;
-			}
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
 		}
 
 		break;
@@ -1293,7 +1284,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_STEALTHWALK:	// 忍び足モーション
 
 		break;
-#endif
 
 	case MOTION_JUMP_MINI:	// 小ジャンプモーション
 
@@ -1731,36 +1721,6 @@ void CPlayer::FloorEdgeJump()
 
 	// 小ジャンプ音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_PLAYERJUMP_S);
-}
-
-//==========================================
-// 歩行音処理
-//==========================================
-void CPlayer::WalkReaction(void)
-{
-	if (GetMotionType() == MOTION_DASH)
-	{ // 歩いている場合
-
-		// 歩行音カウントを加算する
-		m_nWalkCount++;
-	}
-	else
-	{ // 上記以外
-
-		// 歩行音カウントをリセットする
-		m_nWalkCount = 0;
-	}
-
-	if (m_nWalkCount > 0 &&
-		m_nWalkCount % sound::WALK_COUNT == 0)
-	{ // 一定時間ごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
-
-		// エフェクトを出す
-		GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
-	}
 }
 
 //==========================================
