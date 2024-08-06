@@ -10,6 +10,8 @@
 #include "balloon.h"
 #include "manager.h"
 #include "renderer.h"
+#include "sceneSelect.h"
+#include "selectManager.h"
 
 //************************************************************
 //	定数宣言
@@ -17,14 +19,15 @@
 namespace
 {
 	const int	PRIORITY	 = 0;		// 吹き出しの優先順位
-	const int	ALPHA_NUMREF = 180;		// αテストの参照値
+	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float	REV_SCALE	 = 0.4f;	// 拡大率の補正係数
-	const float	DISP_SCALE	 = 1.0f;	// 表示する際の拡大率
+	const float	DISP_SCALE	 = 1.4f;	// 表示する際の拡大率
 	const float	UNDISP_SCALE = 0.0f;	// 表示しない際の拡大率
 
 	namespace balloon
 	{
-		const D3DXVECTOR3 SIZE = D3DXVECTOR3(320.0f, 180.0f, 0.0f);	// 大きさ
+		const D3DXVECTOR3 SIZE	 = D3DXVECTOR3(320.0f, 180.0f, 0.0f);	// 大きさ
+		const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 240.0f, 0.0f);		// オフセット
 	}
 }
 
@@ -67,18 +70,11 @@ HRESULT CBalloon::Init(void)
 		return E_FAIL;
 	}
 
-	// 位置を設定
-	SetVec3Position(D3DXVECTOR3(0.0f, 240.0f, 0.0f));
-
 	// 大きさを設定
 	SetVec3Sizing(balloon::SIZE * m_fScale);
 
-	// テクスチャを割当
-#if 1
-	BindTexture("data\\TEXTURE\\balloon000.png");
-#else
+	// ビルボードシーンのレンダーテクスチャを割当
 	BindTexture(GET_RENDERER->GetRenderTextureIndex(CObject::SCENE_BILLBOARD));
-#endif
 
 	// レンダーステートの情報を取得
 	CRenderState *pRenderState = GetRenderState();
@@ -135,9 +131,18 @@ void CBalloon::Draw(CShader *pShader)
 }
 
 //============================================================
+//	位置の設定処理
+//============================================================
+void CBalloon::SetVec3Position(const D3DXVECTOR3& rPos)
+{
+	// 自身の位置を設定
+	CObjectBillboard::SetVec3Position(rPos + balloon::OFFSET);
+}
+
+//============================================================
 //	生成処理
 //============================================================
-CBalloon *CBalloon::Create(void)
+CBalloon *CBalloon::Create(const D3DXVECTOR3& rPosParent)
 {
 	// 吹き出しの生成
 	CBalloon *pBalloon = new CBalloon;
@@ -157,6 +162,9 @@ CBalloon *CBalloon::Create(void)
 			SAFE_DELETE(pBalloon);
 			return nullptr;
 		}
+
+		// 位置を設定
+		pBalloon->SetVec3Position(rPosParent);
 
 		// 確保したアドレスを返す
 		return pBalloon;

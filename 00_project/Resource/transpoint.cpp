@@ -10,8 +10,8 @@
 #include "transpoint.h"
 #include "collision.h"
 #include "manager.h"
-#include "stage.h"
 #include "balloon.h"
+#include "balloonManager.h"
 
 //************************************************************
 //	定数宣言
@@ -21,7 +21,6 @@ namespace
 	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\checkpoint_blue.efkefc";	// 触れている際のエフェクトファイル
 	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\checkpoint_red.efkefc";		// 触れていない際のエフェクトファイル
 
-	const char*	MODEL_PASS	 = "data\\MODEL\\GATE\\gate001.x";	// モデルファイル
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);	// エフェクト用オフセット
 	const int	PRIORITY	 = 2;		// 遷移ポイントの優先順位
 	const float	RADIUS		 = 120.0f;	// 遷移ポイントに触れられる半径
@@ -31,6 +30,7 @@ namespace
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CTransPoint>* CTransPoint::m_pList = nullptr;	// オブジェクトリスト
+CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャー情報
 
 //************************************************************
 //	子クラス [CTransPoint] のメンバ関数
@@ -73,7 +73,7 @@ HRESULT CTransPoint::Init(void)
 	}
 
 	// 吹き出しの生成
-	m_pBalloon = CBalloon::Create();
+	m_pBalloon = CBalloon::Create(GetVec3Position());
 	if (m_pBalloon == nullptr)
 	{ // 生成に失敗した場合
 
@@ -117,6 +117,9 @@ void CTransPoint::Uninit(void)
 	if (m_pList->GetNumAll() == 0)
 	{ // オブジェクトが一つもない場合
 
+		// 吹き出しマネージャーの終了
+		SAFE_UNINIT(m_pBalloonManager);
+
 		// リストマネージャーの破棄
 		m_pList->Release(m_pList);
 	}
@@ -155,6 +158,18 @@ void CTransPoint::Draw(CShader *pShader)
 		// オブジェクトモデルの描画
 		CObjectModel::Draw(pShader);
 	}
+}
+
+//============================================================
+//	位置の設定処理
+//============================================================
+void CTransPoint::SetVec3Position(const D3DXVECTOR3& rPos)
+{
+	// 自身の位置を設定
+	CObjectModel::SetVec3Position(rPos);
+
+	// 吹き出しの位置を設定
+	m_pBalloon->SetVec3Position(rPos);
 }
 
 //============================================================
@@ -230,6 +245,15 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 				// ヒット時のエフェクトを設定
 				SAFE_DELETE(rList->m_pEffectData);
 				rList->m_pEffectData = GET_EFFECT->Create(HIT_EFFECT_PASS, posTrans + OFFSET, VEC3_ZERO, VEC3_ZERO, 75.0f, true,false);
+
+				// ステージ情報テクスチャの作成
+				if (FAILED(rList->CreateStageTexture()))
+				{ // 生成に失敗した場合
+
+					// 失敗を返す
+					assert(false);
+					return nullptr;
+				}
 			}
 		}
 		else
@@ -259,6 +283,28 @@ CListManager<CTransPoint> *CTransPoint::GetList(void)
 {
 	// オブジェクトリストを返す
 	return m_pList;
+}
+
+//============================================================
+//	ステージ情報テクスチャの作成処理
+//============================================================
+HRESULT CTransPoint::CreateStageTexture(void)
+{
+	// 吹き出しマネージャーの終了
+	SAFE_UNINIT(m_pBalloonManager);
+
+	// 吹き出しマネージャーの生成
+	m_pBalloonManager = CBalloonManager::Create(this);
+	if (m_pBalloonManager == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

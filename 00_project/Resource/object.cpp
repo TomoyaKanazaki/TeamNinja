@@ -588,6 +588,57 @@ void CObject::ReleaseAll(const std::vector<ELabel> label)
 }
 
 //============================================================
+//	全破棄処理 (シーン指定)
+//============================================================
+void CObject::ReleaseAll(const EScene scene)
+{
+	// 存在しないシーンの場合抜ける
+	if (scene <= NONE_IDX || scene >= SCENE_MAX) { return; }
+
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
+
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
+
+			// オブジェクトの先頭を代入
+			CObject *pObject = m_apTop[scene][nCntDim][nCntPri];
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
+
+				// 次のオブジェクトを代入
+				CObject *pObjectNext = pObject->m_pNext;
+
+				if (pObject->m_label == LABEL_NONE)
+				{ // 自動破棄しないラベルの場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+				if (pObject->m_bDeath)
+				{ // 死亡している場合
+
+					// 次のオブジェクトへのポインタを代入
+					pObject = pObjectNext;
+					continue;
+				}
+
+				// オブジェクトの終了
+				pObject->Uninit();
+
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
+			}
+		}
+	}
+
+	// 全死亡処理
+	DeathAll();
+}
+
+//============================================================
 //	全破棄処理
 //============================================================
 void CObject::ReleaseAll(void)
@@ -1049,29 +1100,25 @@ void CObject::SetEnableDebugDispAll(const bool bDisp2D, const bool bDisp3D)
 	// 変数を宣言
 	bool aDisp[DIM_MAX] = { bDisp3D, bDisp2D };	// 各次元の表示状況
 
-	for (int nCntScene = 0; nCntScene < SCENE_MAX; nCntScene++)
-	{ // シーンの総数分繰り返す
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{ // 次元の総数分繰り返す
 
-		for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
-		{ // 次元の総数分繰り返す
+		for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
+		{ // 優先順位の総数分繰り返す
 
-			for (int nCntPri = 0; nCntPri < object::MAX_PRIO; nCntPri++)
-			{ // 優先順位の総数分繰り返す
+			// オブジェクトの先頭を代入
+			CObject *pObject = m_apTop[SCENE_MAIN][nCntDim][nCntPri];
+			while (pObject != nullptr)
+			{ // オブジェクトが使用されている場合繰り返す
 
-				// オブジェクトの先頭を代入
-				CObject *pObject = m_apTop[nCntScene][nCntDim][nCntPri];
-				while (pObject != nullptr)
-				{ // オブジェクトが使用されている場合繰り返す
+				// 次のオブジェクトを代入
+				CObject *pObjectNext = pObject->m_pNext;
 
-					// 次のオブジェクトを代入
-					CObject *pObjectNext = pObject->m_pNext;
+				// 引数の表示フラグを設定
+				pObject->m_bDebugDisp = aDisp[nCntDim];
 
-					// 引数の表示フラグを設定
-					pObject->m_bDebugDisp = aDisp[nCntDim];
-
-					// 次のオブジェクトへのポインタを代入
-					pObject = pObjectNext;
-				}
+				// 次のオブジェクトへのポインタを代入
+				pObject = pObjectNext;
 			}
 		}
 	}

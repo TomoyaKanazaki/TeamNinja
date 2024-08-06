@@ -176,7 +176,6 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void WalkReaction(void);								// 歩行音処理
 	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);		// アクターの当たり判定
 	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
 	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定

@@ -175,6 +175,8 @@
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
+    <ClInclude Include="Resource\roll2D.h" />
+    <ClInclude Include="Resource\scale2D.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
     <ClInclude Include="Resource\tension.h" />
@@ -365,6 +367,8 @@
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
+    <ClCompile Include="Resource\roll2D.cpp" />
+    <ClCompile Include="Resource\scale2D.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />
     <ClCompile Include="Resource\tension.cpp" />

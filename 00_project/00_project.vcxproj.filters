@@ -624,11 +624,17 @@
     <ClInclude Include="Resource\balloon.h">
       <Filter>InGame\Select</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\loadtext.h">
+      <Filter>System</Filter>
+    </ClInclude>
     <ClInclude Include="Resource\balloonManager.h">
       <Filter>InGame\Select</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\loadtext.h">
-      <Filter>System</Filter>
+    <ClInclude Include="Resource\roll2D.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\scale2D.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1187,11 +1193,17 @@
     <ClCompile Include="Resource\balloon.cpp">
       <Filter>InGame\Select</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\loadtext.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
     <ClCompile Include="Resource\balloonManager.cpp">
       <Filter>InGame\Select</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\loadtext.cpp">
-      <Filter>System</Filter>
+    <ClCompile Include="Resource\roll2D.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\scale2D.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
