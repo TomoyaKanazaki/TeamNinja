@@ -9,6 +9,8 @@
 //************************************************************
 #include "retentionManager.h"
 #include "manager.h"
+#include "stage.h"
+#include "godItem.h"
 
 //************************************************************
 //	親クラス [CRetentionManager] のメンバ関数
@@ -110,4 +112,23 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 
 	// 引数のセーブポイントを設定
 	m_result.nSave = nSave;
+
+	if (win == WIN_SUCCESS)
+	{ // ステージクリアした場合勾玉の獲得状況を更新
+
+		// 前回までの勾玉の獲得状況を読み込み
+		bool bOldGet[CGodItem::TYPE_MAX] = {};	// 保存されている獲得状況
+		CGodItem::LoadPossess(GET_STAGE->GetCurMapGodItemPass().c_str(), &bOldGet[0]);
+
+		// 今回の勾玉の獲得状況を適応
+		bool bCurGet[CGodItem::TYPE_MAX] = {};	// 今回の獲得状況
+		for (int i = 0; i < CGodItem::TYPE_MAX; i++)
+		{
+			// 今回の獲得状況を割り当て
+			bCurGet[i] = (CGodItem::IsGet((CGodItem::EType)i) || bOldGet[i]);
+		}
+
+		// 勾玉の獲得状況を書き出し
+		CGodItem::SavePossess(GET_STAGE->GetCurMapGodItemPass().c_str(), &bCurGet[0]);
+	}
 }
