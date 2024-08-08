@@ -319,49 +319,49 @@ void CGimmickPost::ChangeColor()
 
 	// HSV -> RGB •ÏŠ·
 	{
-		float nMax = 0.0f, nMin = 0.0f;
+		float fMax = 0.0f, fMin = 0.0f;
 		// Å‘å’l‚ğ‹‚ß‚é
-		nMax = V;
+		fMax = V;
 
 		// Å¬’l‚ğ‹‚ß‚é
-		nMin = nMax - ((S / 255.0f) * nMax);
+		fMin = fMax - ((S / 255.0f) * fMax);
 
 		// ê‡•ª‚¯‚ğ‚µ‚ÄRGB’l‚ğŒˆ’è‚·‚é
 		if (0.0f <= H && H <= 60.0f)
 		{
-			col.r = nMax;
-			col.g = ((H / 60.0f) * (nMax - nMin) + nMin);
-			col.b = nMin;
+			col.r = fMax;
+			col.g = ((H / 60.0f) * (fMax - fMin) + fMin);
+			col.b = fMin;
 		}
 		else if (60.0f <= H && H <= 120.0f)
 		{
-			col.r = (((120.0f - H) / 60.0f) * (nMax - nMin) + nMin);
-			col.g = nMax;
-			col.b = nMin;
+			col.r = (((120.0f - H) / 60.0f) * (fMax - fMin) + fMin);
+			col.g = fMax;
+			col.b = fMin;
 		}
 		else if (120.0f <= H && H <= 180.0f)
 		{
-			col.r = nMin;
-			col.g = nMax;
-			col.b = (((H - 120.0f) / 60.0f) * (nMax - nMin) + nMin);
+			col.r = fMin;
+			col.g = fMax;
+			col.b = (((H - 120.0f) / 60.0f) * (fMax - fMin) + fMin);
 		}
 		else if (180.0f <= H && H <= 240.0f)
 		{
-			col.r = nMin;
-			col.g = (((240.0f - H) / 60.0f) * (nMax - nMin) + nMin);
-			col.b = nMax;
+			col.r = fMin;
+			col.g = (((240.0f - H) / 60.0f) * (fMax - fMin) + fMin);
+			col.b = fMax;
 		}
 		else if (240.0f <= H && H <= 300.0f)
 		{
-			col.r = (((H - 240.0f) / 60.0f) * (nMax - nMin) + nMin);
-			col.g = nMin;
-			col.b = nMax;
+			col.r = (((H - 240.0f) / 60.0f) * (fMax - fMin) + fMin);
+			col.g = fMin;
+			col.b = fMax;
 		}
 		else if (300.0f <= H && H <= 360.0f)
 		{
-			col.r = nMax;
-			col.g = nMin;
-			col.b = (((360.0f - H) / 60.0f) * (nMax - nMin) + nMin);
+			col.r = fMax;
+			col.g = fMin;
+			col.b = (((360.0f - H) / 60.0f) * (fMax - fMin) + fMin);
 		}
 		col /= 255.0f;
 		m_pButton->SetCubeColor(col);
