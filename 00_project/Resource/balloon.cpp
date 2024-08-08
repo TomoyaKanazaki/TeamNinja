@@ -189,3 +189,12 @@ void CBalloon::SetDisp(const bool bDisp)
 		m_fDestScale = UNDISP_SCALE;
 	}
 }
+
+//============================================================
+//	‚«o‚µŠg‘åó‹µ‚Ìæ“¾ˆ—
+//============================================================
+bool CBalloon::IsSizeDisp(void) const
+{
+	// ‘å‚«‚­‚È‚Á‚Ä‚¢‚é‚©‚ğ•Ô‚·
+	return (fabsf(DISP_SCALE - m_fScale) <= 0.05f);
+}

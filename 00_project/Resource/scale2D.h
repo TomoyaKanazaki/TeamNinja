@@ -1,4 +1,3 @@
-#if 0
 //============================================================
 //
 //	拡縮オブジェクト2Dヘッダー [scale2D.h]
@@ -61,7 +60,7 @@ public:
 		const float fSubIn = LEVEL,				// 拡縮前のインの拡大率減少量
 		const float fAddOut = LEVEL,			// 拡縮後のアウトの拡大率増加量
 		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
-		const D3DXCOLOR& rCol = XCOL_AWHITE		// 色
+		const D3DXCOLOR& rCol = XCOL_WHITE		// 色
 	);
 
 	// メンバ関数
@@ -98,4 +97,3 @@ private:
 };
 
 #endif	// _SCALE2D_H_
-#endif
