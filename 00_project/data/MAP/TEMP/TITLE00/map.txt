@@ -7,5 +7,5 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS	= data\MAP\TITLE_TEMP00\stage.txt	# ステージ情報パス
-POINT_PASS	= data\MAP\TITLE_TEMP00\point.txt	# ポイント情報パス
+STAGE_PASS	= data\MAP\TEMP\TITLE00\stage.txt	# ステージ情報パス
+POINT_PASS	= data\MAP\TEMP\TITLE00\point.txt	# ポイント情報パス

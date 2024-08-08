@@ -43,7 +43,7 @@ namespace
 		const D3DXVECTOR3 ROT[CBalloonManager::NUM_STAR]	= { D3DXVECTOR3(0.0f, 0.0f, 0.8f),		D3DXVECTOR3(0.0f, 0.0f, 0.2f) };		// å¸Ç´
 		const D3DXVECTOR3 SIZE[CBalloonManager::NUM_STAR]	= { D3DXVECTOR3(250.0f, 250.0f, 0.0f),	D3DXVECTOR3(320.0f, 320.0f, 0.0f) };	// ëÂÇ´Ç≥
 		const D3DXCOLOR COL[CBalloonManager::NUM_STAR]		= { XCOL_WHITE, D3DXCOLOR(0.75f, 0.75f, 0.75f, 1.0f) };	// êF
-		const float	ADD_ROT[CBalloonManager::NUM_STAR]		= { 2.0f, 3.0f };	// âÒì]ó 
+		const float	ADD_ROT[CBalloonManager::NUM_STAR]		= { 0.2f, 0.3f };	// âÒì]ó 
 	}
 
 	namespace cont
