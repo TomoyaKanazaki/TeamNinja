@@ -1,4 +1,3 @@
-#if 0
 //============================================================
 //
 //	ägèkÉIÉuÉWÉFÉNÉg2Dèàóù [scale2D.cpp]
@@ -123,21 +122,19 @@ void CScale2D::Update(const float fDeltaTime)
 		// ägëÂó¶â¡éZó ÇåvéZ
 		float fAddScale = ((m_fMaxScale - m_fMinScale) * 0.5f) * (sinf(m_fSinScale) - 1.0f) * -1.0f;
 
-		// ägëÂó¶Çê›íË
-		SetScale(m_fMinScale + fAddScale);
+		// ägëÂó¶ÇåvéZ
+		m_fCurScale = m_fMinScale + fAddScale;
+
+		// ëÂÇ´Ç≥ÇîΩâf
+		SetVec3Sizing(m_sizeOrigin * m_fCurScale);
 		break;
 	}
 	case STATE_FADEIN:
 	{
-		// ç≈í·å¿ÇÃägëÂó¶Ç…ÇµÇƒÇ¢Ç≠
+		// è¡é∏Ç∑ÇÈägëÂó¶Ç…ÇµÇƒÇ¢Ç≠
 		m_fCurScale -= m_fSubIn * fDeltaTime;
 		if (m_fCurScale >= 0.0f)
-		{ // ç≈í·å¿ÇÃägëÂó¶Ç…Ç»Ç¡ÇΩèÍçá
-
-		// ìßñæÇ…ÇµÇƒÇ¢Ç≠
-		m_fCurScale -= m_fSubIn * fDeltaTime;
-		if (m_fCurScale <= 0.0f)
-		{ // ìßñæÇ…Ç»Ç¡ÇΩèÍçá
+		{ // è¡é∏Ç∑ÇÈägëÂó¶Ç…Ç»Ç¡ÇΩèÍçá
 
 			// ägëÂó¶Çï‚ê≥
 			m_fCurScale = 0.0f;
@@ -174,13 +171,13 @@ void CScale2D::Draw(CShader *pShader)
 CScale2D *CScale2D::Create
 (
 	const D3DXVECTOR3& rPos,		// à íu
-	const D3DXVECTOR3& rInitSize,	// èâä˙ëÂÇ´Ç≥
-	const D3DXVECTOR3& rDestSize,	// ñ⁄ïWëÂÇ´Ç≥
+	const D3DXVECTOR3& rOriginSize,	// å¥ì_ëÂÇ´Ç≥
 	const float fMinScale,			// ç≈í·ägëÂó¶
 	const float fMaxScale,			// ç≈ëÂägëÂó¶
+	const float fInitScale,			// èâä˙ägëÂó¶
 	const float fCalcScale,			// ägëÂó¶ÇÃâ¡å∏ó 
-	const float fSubIn,				// ÉCÉìÇÃägëÂó¶å∏è≠ó 
-	const float fAddOut,			// ÉAÉEÉgÇÃägëÂó¶ëùâ¡ó 
+	const float fSubIn,				// ägèkëOÇÃÉCÉìÇÃägëÂó¶å∏è≠ó 
+	const float fAddOut,			// ägèkå„ÇÃÉAÉEÉgÇÃägëÂó¶ëùâ¡ó 
 	const D3DXVECTOR3& rRot,		// å¸Ç´
 	const D3DXCOLOR& rCol			// êF
 )
@@ -211,7 +208,10 @@ CScale2D *CScale2D::Create
 		pScale2D->SetVec3Rotation(rRot);
 
 		// ëÂÇ´Ç≥Çê›íË
-		pScale2D->SetVec3Sizing(rInitSize);
+		pScale2D->SetVec3Sizing(rOriginSize * fInitScale);
+
+		// å¥ì_ëÂÇ´Ç≥Çê›íË
+		pScale2D->SetOriginSizing(rOriginSize);
 
 		// êFÇê›íË
 		pScale2D->SetColor(rCol);
@@ -221,6 +221,10 @@ CScale2D *CScale2D::Create
 
 		// ç≈ëÂägëÂó¶Çê›íË
 		pScale2D->SetMaxScale(fMaxScale);
+
+		// èâä˙ägëÂó¶Çê›íË
+		pScale2D->SetInitScale(fInitScale);
+		pScale2D->m_fCurScale = fInitScale;	// åªç›ÇÃägëÂó¶Ç‡ê›íË
 
 		// ägèkå¸Ç´ÇÃâ¡éZó Çê›íË
 		pScale2D->SetCalcScale(fCalcScale);
@@ -257,4 +261,3 @@ void CScale2D::SetScale(const bool bScale)
 		m_state = STATE_FADEIN;
 	}
 }
-#endif

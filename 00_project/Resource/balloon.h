@@ -40,6 +40,7 @@ public:
 
 	// メンバ関数
 	void SetDisp(const bool bDisp);	// 吹き出し表示設定
+	bool IsSizeDisp(void) const;	// 吹き出し拡大状況
 
 private:
 	// メンバ変数

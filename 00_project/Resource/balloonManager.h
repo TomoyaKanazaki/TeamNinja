@@ -18,7 +18,11 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CTransPoint;	// 遷移ポイントクラス
+class CTransPoint;		// 遷移ポイントクラス
+class CObject2D;		// オブジェクト2Dクラス
+class CRoll2D;			// 回転オブジェクト2Dクラス
+class CScale2D;			// 拡縮オブジェクト2Dクラス
+class CScrollText2D;	// 文字送りテキスト2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -27,6 +31,18 @@ class CTransPoint;	// 遷移ポイントクラス
 class CBalloonManager : public CObject
 {
 public:
+	// 定数
+	static constexpr int NUM_STAR = 2;	// 手裏剣の数
+
+	// 状態列挙
+	enum EState
+	{
+		STATE_NONE = 0,	// 無し
+		STATE_STAG,		// 演出
+		STATE_END,		// 終了
+		STATE_MAX		// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CBalloonManager(CTransPoint* pParent);
 
@@ -42,12 +58,23 @@ public:
 	// 静的メンバ関数
 	static CBalloonManager *Create(CTransPoint* pParent);	// 生成
 
+	// メンバ関数
+	void SetStag(void);	// 演出開始設定
+	bool IsNone(void)	{ return (m_state == STATE_NONE); }	// 演出状況取得
+
 private:
 	// オーバーライド関数
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	CTransPoint* m_pParent;	// 遷移ポイント情報
+	CTransPoint* m_pParent;			// 遷移ポイント情報
+	CObject2D* m_pStage;			// ステージ画面
+	CObject2D* m_pFrame;			// フレーム
+	CRoll2D* m_apStar[NUM_STAR];	// 手裏剣
+	CScale2D* m_pCont;				// 操作方法
+	CScrollText2D* m_pShadow;		// ステージ名の影
+	CScrollText2D* m_pName;			// ステージ名
+	EState m_state;					// 状態
 };
 
 #endif	// _BALLOON_MANAGER_H_

@@ -135,6 +135,20 @@ void CTransPoint::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
+
+	// 触れている遷移ポイントがない場合抜ける
+	if (m_pBalloonManager == nullptr) { return; }
+
+	if (m_pBalloonManager->IsNone()
+	&&  m_pBalloon->IsSizeDisp())
+	{ // 演出の開始タイミングの場合
+
+		// 演出を開始する
+		m_pBalloonManager->SetStag();
+	}
+
+	// 遷移ポイントの更新
+	m_pBalloonManager->Update(fDeltaTime);
 }
 
 //============================================================
