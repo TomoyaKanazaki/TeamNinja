@@ -80,8 +80,10 @@ private:
 	void UpdateFadeOutWait(const float fDeltaTime);		// フェードアウト待機更新
 	void UpdateFadeOutAccel(const float fDeltaTime);	// フェードアウト加速更新
 	void UpdateEnd(const float fDeltaTime);				// 終了更新
-	void SetAllMove(const D3DXVECTOR3& rMove);	// 全UIオブジェクト移動
-	void SkipStaging(void);	// 演出スキップ
+	void SetAllMove(const D3DXVECTOR3& rMove);			// 全UIオブジェクト移動
+	void UpdateSkip(void);		// スキップ操作更新
+	void SkipStaging(void);		// 演出スキップ
+	bool IsSkipOK(void) const;	// スキップ可能状況取得
 
 	// メンバ変数
 	CClearManager* m_pClear;	// クリアマネージャー情報

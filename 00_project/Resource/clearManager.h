@@ -35,6 +35,7 @@ public:
 	virtual void Update(const float fDeltaTime)			= 0;	// 更新
 	virtual void SetAllMove(const D3DXVECTOR3& rMove)	= 0;	// 全UIオブジェクト移動
 	virtual void SkipStaging(void)						= 0;	// 演出スキップ
+	virtual bool IsSkipOK(void) const					= 0;	// スキップ可能状況取得
 	virtual bool IsEndState(void) const					= 0;	// 終了状況取得
 
 	// 静的メンバ関数
