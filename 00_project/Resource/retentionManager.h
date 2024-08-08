@@ -50,9 +50,10 @@ public:
 
 	// メンバ関数
 	void SetResult(const EWin win, const float fTime, const int nSave);		// リザルト情報設定
-	EWin GetWin(void) const		{ return m_result.win; }	// 勝利状況取得
-	float GetTime(void) const	{ return m_result.fTime; }	// 経過タイム取得
-	int GetSave(void) const		{ return m_result.nSave; }	// セーブポイント取得
+	EWin GetWin(void) const		{ return m_result.win; }		// 勝利状況取得
+	float GetTime(void) const	{ return m_result.fTime; }		// 経過タイム取得
+	int GetSave(void) const		{ return m_result.nSave; }		// セーブポイント取得
+	void InitSave(void)			{ m_result.nSave = NONE_IDX; }	// セーブポイント初期化
 
 private:
 	

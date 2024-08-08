@@ -60,6 +60,7 @@ public:
 	static CGodItem* Create(const D3DXVECTOR3& rPos, const EType type);		// 生成処理
 	static CListManager<CGodItem>* GetList(void);	// リスト構造の取得処理
 	static bool IsGet(const EType type);			// 取得状況取得
+	static void InitGet(void);						// 取得状況初期化
 	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 	static HRESULT LoadPossess(const char* pPass, bool* pGet);	// 獲得状況読込
 	static HRESULT SavePossess(const char* pPass, bool* pGet);	// 獲得状況保存
