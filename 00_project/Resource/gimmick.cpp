@@ -223,7 +223,7 @@ CGimmick* CGimmick::Create
 		pGimmick->SetVec3Sizing(rSize);
 
 		// 自身を描画しない
-		pGimmick->SetEnableDraw(false);
+		//pGimmick->SetEnableDraw(false);
 
 		// 確保したアドレスを返す
 		return pGimmick;

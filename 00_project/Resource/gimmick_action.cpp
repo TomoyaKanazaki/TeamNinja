@@ -142,6 +142,8 @@ void CGimmickAction::Uninit(void)
 //============================================================
 void CGimmickAction::Update(const float fDeltaTime)
 {
+	OnScreen();
+
 	// 分身との当たり判定
 	CollisionClone();
 
@@ -334,6 +336,27 @@ void CGimmickAction::ControlEffect()
 	m_pEffect->m_pos.X += (m_posAction.x - m_pEffect->m_pos.X) * 0.3f;
 	m_pEffect->m_pos.Y += (m_posAction.y - m_pEffect->m_pos.Y) * 0.3f;
 	m_pEffect->m_pos.Z += (m_posAction.z - m_pEffect->m_pos.Z) * 0.3f;
+}
+
+//==========================================
+//  描画判定のオンオフ
+//==========================================
+void CGimmickAction::OnScreen()
+{
+	// 頂点座標を保存する変数
+	D3DXVECTOR3 posVtx[4] = {};
+
+	// 頂点座標を算出
+	for (int i = 0; i < 4; ++i)
+	{
+		posVtx[i] = GetVec3Position() + GetVertexPosition(i);
+	}
+
+	// 画面内判定
+	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
+	{
+		DebugProc::Print(DebugProc::POINT_CENTER, "見えている\n");
+	}
 }
 
 //===========================================
