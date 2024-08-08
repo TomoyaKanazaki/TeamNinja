@@ -158,7 +158,7 @@ private:
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
-	void UpdateGravity(void);		// 重力の更新
+	void UpdateGravity(const float fDeltaTime);		// 重力の更新
 
 	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新

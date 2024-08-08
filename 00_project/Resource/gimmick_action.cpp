@@ -344,18 +344,29 @@ void CGimmickAction::ControlEffect()
 void CGimmickAction::OnScreen()
 {
 	// 頂点座標を保存する変数
-	D3DXVECTOR3 posVtx[4] = {};
+	D3DXVECTOR3 posVtx[4] = {}, posScreen[4] = {};
 
 	// 頂点座標を算出
 	for (int i = 0; i < 4; ++i)
 	{
 		posVtx[i] = GetVec3Position() + GetVertexPosition(i);
+		GET_CAMERA->OnScreen(posVtx[i], posScreen[i]);
 	}
 
 	// 画面内判定
 	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
 	{
+		SetEnableDraw(true);
 		DebugProc::Print(DebugProc::POINT_CENTER, "見えている\n");
+		D3DXVECTOR3 pos = VEC3_ZERO;
+		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[0].x, posScreen[0].y, posScreen[0].z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[1].x, posScreen[1].y, posScreen[1].z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[2].x, posScreen[2].y, posScreen[2].z);
+		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n\n", posScreen[3].x, posScreen[3].y, posScreen[3].z);
+	}
+	else
+	{
+		SetEnableDraw(false);
 	}
 }
 

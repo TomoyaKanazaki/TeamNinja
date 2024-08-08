@@ -128,7 +128,7 @@ public:
 	D3DXVECTOR3 CalcPlayerPos(); // プレイヤーを二次元座標に変換する処理
 	D3DXVECTOR3 CalcWorldToScreen(const D3DXVECTOR3& pos); // ワールド座標をスクリーン座標に変換する
 	bool OnScreen(const D3DXVECTOR3& pos); // スクリーン内判定
-	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos); // スクリーン座標を返すスクリーン内判定
+	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut); // スクリーン座標を返すスクリーン内判定
 	bool OnScreenPolygon(const D3DXVECTOR3* pPos); // 矩形のスクリーン内判定
 	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 

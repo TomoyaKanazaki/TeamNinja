@@ -862,7 +862,7 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos)
 //===========================================
 //  スクリーン座標を返すスクリーン内判定
 //===========================================
-bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
+bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut)
 {
 	//ビューポートの設定
 	D3DVIEWPORT9 vp = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f };
@@ -876,7 +876,7 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 	//スクリーン座標を算出
 	D3DXVec3Project
 	(
-		&screenPos,
+		&posOut,
 		&pos,
 		&vp,
 		&m_aCamera[TYPE_MAIN].mtxProjection,
@@ -885,13 +885,13 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& screenPos)
 	);
 
 	// カメラの裏側にいるときfalseを返す
-	if (screenPos.z >= 1.0f) { return false; }
+	if (posOut.z >= 1.0f) { return false; }
 
 	// xの判定でfalseを返す
-	if (screenPos.x < 0.0f || screenPos.x > SCREEN_WIDTH) { return false; }
+	if (posOut.x < 0.0f || posOut.x > SCREEN_WIDTH) { return false; }
 
 	// yの判定でfalseを返す
-	if (screenPos.y < 0.0f || screenPos.y > SCREEN_HEIGHT) { return false; }
+	if (posOut.y < 0.0f || posOut.y > SCREEN_HEIGHT) { return false; }
 
 	// ここまで来れたらtrueを返す
 	return true;
@@ -932,35 +932,39 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 	D3DXVECTOR3 posScreen[4] =
 	{
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		D3DXVECTOR3(0.0f, SCREEN_HEIGHT * 0.5f, 0.0f),
-		D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f),
-		D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 0.0f, 0.0f)
+		D3DXVECTOR3(SCREEN_WIDTH, 0.0f, 0.0f),
+		D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
+		D3DXVECTOR3(0.0f, SCREEN_HEIGHT, 0.0f)
 	};
 
 	// スクリーン範囲の対角線を算出
-	D3DXVECTOR3 vecDiagonal[2] =
+	D3DXVECTOR3 vecScreen[4] =
 	{
-		posScreen[2] - posScreen[0],
-		posScreen[3] - posScreen[1],
+		posScreen[1] - posScreen[0],
+		posScreen[2] - posScreen[1],
+		posScreen[3] - posScreen[2],
+		posScreen[0] - posScreen[3]
 	};
 
 	// 対角線の大きさを算出
-	float fLengthDiagonal[2] =
+	float fLengthScreen[4] =
 	{
-		sqrtf(vecDiagonal[0].x * vecDiagonal[0].x + vecDiagonal[0].y * vecDiagonal[0].y),
-		sqrtf(vecDiagonal[1].x * vecDiagonal[1].x + vecDiagonal[1].y * vecDiagonal[1].y)
+		sqrtf(vecScreen[0].x * vecScreen[0].x + vecScreen[0].y * vecScreen[0].y),
+		sqrtf(vecScreen[1].x * vecScreen[1].x + vecScreen[1].y * vecScreen[1].y),
+		sqrtf(vecScreen[2].x * vecScreen[2].x + vecScreen[2].y * vecScreen[2].y),
+		sqrtf(vecScreen[3].x * vecScreen[3].x + vecScreen[3].y * vecScreen[3].y)
 	};
 
 	// 4辺と対角線の交差判定
 	for (int i = 0; i < 4; ++i)
 	{
-		for (int j = 0; j < 2; ++j)
+		for (int j = 0; j < 4; ++j)
 		{
 			// ポリゴンの頂点を結んだ直線と対角線の内積を求める
-			float fDot = vecVtx[i].x * vecDiagonal[j].x + vecVtx[i].y * vecDiagonal[j].y;
+			float fDot = vecVtx[i].x * vecScreen[j].x + vecVtx[i].y * vecScreen[j].y;
 
 			// 2つのベクトルが平行な場合は交差しないため次に進む
-			if (fDot == fLengthVtx[i] * fLengthDiagonal[j]) { continue; }
+			if (fabsf(fDot - (fLengthVtx[i] * fLengthScreen[j])) < (float)1e-6) { continue; }
 
 			// 各ベクトルの始点を結ぶベクトルを算出
 			D3DXVECTOR3 vecStart = posScreen[j] - posVtx[i];
@@ -968,9 +972,9 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 			// 対角線のベクトルに対する2つのベクトルの外積を算出する
 			float fCross[3] =
 			{
-				vecStart.x * vecDiagonal[j].y - vecStart.y * vecDiagonal[j].x,
+				vecStart.x * vecScreen[j].y - vecStart.y * vecScreen[j].x,
 				vecStart.x * vecVtx[i].y - vecStart.y * vecVtx[i].x,
-				vecDiagonal[j].x * vecVtx[i].y - vecDiagonal[j].y * vecVtx[i].x
+				vecScreen[j].x * vecVtx[i].y - vecScreen[j].y * vecVtx[i].x
 			};
 
 			// ベクトルの外積から交点算出に利用する媒介変数を算出
@@ -981,7 +985,7 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 			};
 
 			// 媒介変数tが範囲内の場合trueを返す
-			if (t[0] >= 0.0f && t[0] <= 1.0f && t[1] >= 0.0f && t[1] <= 1.0f)
+			if (0.0f <= t[0] && t[0] <= 1.0f && 0.0f <= t[1] && t[1] <= 1.0f)
 			{ return true; }
 		}
 	}
@@ -990,10 +994,10 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 	for (int i = 0; i < 4; ++i)
 	{
 		// ベクトルの外積を求める
-		float fDot = vecVtx[i].y * (SCREEN_CENT.x - posVtx[i].x) - vecVtx[i].x * (SCREEN_CENT.y - posVtx[i].y);
+		float fCross = vecVtx[i].y * (SCREEN_CENT.x - posVtx[i].x) - vecVtx[i].x * (SCREEN_CENT.y - posVtx[i].y);
 
 		// 外積の値が1つでも負の場合falseを返す
-		if (fDot < 0.0f) { return false; }
+		if (fCross < 0.0f) { return false; }
 	}
 
 	// ここまで来れたらtrueを返す

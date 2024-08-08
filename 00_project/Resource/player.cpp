@@ -55,7 +55,7 @@ namespace
 	const float	CANON_GRAVITY= 500.0f;			// 重力
 	const float CANON_MOVE	= CANON_GRAVITY * 30.0f;	// 吹っ飛ばし上昇量
 	const float REBOUND		= 500.0f;			// ジャンプの跳ね返り
-	const float	GRAVITY		= 60.0f;			// 重力
+	const float	GRAVITY		= 3600.0f;			// 重力
 	const float	RADIUS		= 20.0f;			// 半径
 	const float HEIGHT		= 80.0f;			// 身長
 	const float	REV_ROTA	= 9.0f;				// 向き変更の補正係数
@@ -704,7 +704,7 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
 
 	// 重力の更新
-	UpdateGravity();
+	UpdateGravity(fDeltaTime);
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
@@ -764,7 +764,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	currentMotion = UpdateMove();
 
 	// 重力の更新
-	UpdateGravity();
+	UpdateGravity(fDeltaTime);
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
@@ -823,7 +823,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	if (m_pEffectdata != nullptr) { m_pEffectdata->m_pos = GetCenterPos(); }
 
 	// 重力の更新
-	UpdateGravity();
+	UpdateGravity(fDeltaTime);
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
@@ -857,7 +857,7 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	D3DXVECTOR3 pos = GetVec3Position();
 
 	// 重力の更新
-	UpdateGravity();
+	UpdateGravity(fDeltaTime);
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
@@ -894,7 +894,7 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	D3DXVECTOR3 pos = GetVec3Position();
 
 	// 重力の更新
-	UpdateGravity();
+	UpdateGravity(fDeltaTime);
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
@@ -1022,10 +1022,10 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 //============================================================
 //	重力の更新処理
 //============================================================
-void CPlayer::UpdateGravity(void)
+void CPlayer::UpdateGravity(const float fDeltaTime)
 {
 	// 重力を加算
-	m_move.y -= GRAVITY;
+	m_move.y -= GRAVITY * fDeltaTime;
 }
 
 //============================================================
