@@ -50,7 +50,7 @@ namespace
 		"data\\TEXTURE\\end.png",	// 勝利のテクスチャ
 	};
 
-	const int HITSTOP_TIME = 75;	// ヒットストップフレーム
+	const int HITSTOP_TIME = 0;	// ヒットストップフレーム
 
 #ifdef _DEBUG
 	bool bCamera = false;
@@ -213,6 +213,7 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	switch (win)
 	{
 	case CRetentionManager::WIN_SUCCESS: // クリア成功
+
 		GET_RETENTION->SetResult(win, CSceneGame::GetTimerUI()->GetTime(), -1);
 
 		// TODO：タイミング変えたいかも(BGMの再生)
@@ -224,7 +225,6 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 		// TODO：タイミング変えたいかも(BGMの再生)
 		PLAY_SOUND(CSound::LABEL_BGM_GAMEOVER);
-
 		break;
 
 	default:

@@ -16,6 +16,7 @@
 #include "roll2D.h"
 #include "scale2D.h"
 #include "scrollText2D.h"
+#include "anim2D.h"
 
 //************************************************************
 //	定数宣言
@@ -48,12 +49,27 @@ namespace
 	namespace cont
 	{
 		const char* TEXTURE		= "data\\TEXTURE\\button_a.png";		// 操作方法テクスチャパス
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(973.0f, 500.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(975.0f, 500.0f, 0.0f);	// 位置
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(160.0f, 160.0f, 0.0f);	// 大きさ
-		const float MIN_SCALE	= 0.75f;	// 最低拡大率
-		const float MAX_SCALE	= 1.2f;		// 最大拡大率
-		const float INIT_SCALE	= 0.75f;	// 初期拡大率
+		const float MIN_SCALE	= 0.95f;	// 最低拡大率
+		const float MAX_SCALE	= 1.45f;	// 最大拡大率
+		const float INIT_SCALE	= 0.95f;	// 初期拡大率
 		const float CALC_SCALE	= 7.0f;		// 拡大率の加減量
+	}
+
+	namespace item
+	{
+		const D3DXCOLOR COL[] =
+		{
+			D3DXCOLOR(0.35f, 0.35f, 0.35f, 1.0f),	// 未獲得色
+			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)		// 獲得済み色
+		};
+
+		const char* TEXTURE		= "data\\TEXTURE\\itemGod000.png";		// 神器テクスチャ
+		const POSGRID2 TEX_PART	= POSGRID2(3, 1);						// テクスチャ分割
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(180.0f, 570.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(165.0f, 0.0f, 0.0f);		// 空白
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(190.0f, 190.0f, 0.0f);	// 大きさ
 	}
 
 	namespace name
@@ -82,7 +98,7 @@ namespace
 //	コンストラクタ
 //============================================================
 CBalloonManager::CBalloonManager(CTransPoint* pParent) :
-	m_pParent	(pParent),		// 遷移ポイント情報
+	m_pParent	(pParent),		// 遷移ポイント
 	m_pStage	(nullptr),		// ステージ画面
 	m_pFrame	(nullptr),		// フレーム
 	m_pCont		(nullptr),		// 操作方法
@@ -91,7 +107,8 @@ CBalloonManager::CBalloonManager(CTransPoint* pParent) :
 	m_state		(STATE_NONE)	// 状態
 {
 	// メンバ変数をクリア
-	memset(&m_apStar[0], 0, sizeof(m_apStar));	// 手裏剣
+	memset(&m_apGodItem[0], 0, sizeof(m_apGodItem));	// 神器アイコン
+	memset(&m_apStar[0], 0, sizeof(m_apStar));			// 手裏剣
 }
 
 //============================================================
@@ -108,7 +125,8 @@ CBalloonManager::~CBalloonManager()
 HRESULT CBalloonManager::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_apStar[0], 0, sizeof(m_apStar));	// 手裏剣
+	memset(&m_apGodItem[0], 0, sizeof(m_apGodItem));	// 神器アイコン
+	memset(&m_apStar[0], 0, sizeof(m_apStar));			// 手裏剣
 	m_pStage	= nullptr;		// ステージ画面
 	m_pFrame	= nullptr;		// フレーム
 	m_pCont		= nullptr;		// 操作方法
@@ -169,6 +187,35 @@ HRESULT CBalloonManager::Init(void)
 	m_pCont->BindTexture(cont::TEXTURE);			// 操作方法のテクスチャ割当
 	m_pCont->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
 	m_pCont->SetLabel(CObject::LABEL_UI);			// 自動更新/自動破棄するように
+
+	//--------------------------------------------------------
+	//	神器アイコンの生成 / 初期設定
+	//--------------------------------------------------------
+	// 神器獲得パスを作成
+	std::filesystem::path path = m_pParent->GetTransMapPass();	// マップディレクトリ
+	path = path.parent_path();	// マップディレクトリにする
+	path.append("goditem.bin");	// 神器獲得パスを追加
+
+	// 前回までの勾玉の獲得状況を読み込み
+	bool bOldGet[CGodItem::TYPE_MAX] = {};	// 保存されている獲得状況
+	CGodItem::LoadPossess(path.string().c_str(), &bOldGet[0]);
+
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// アイコン生成位置を計算
+		D3DXVECTOR3 posIcon = item::POS + (item::SPACE * (float)i);	// アイコン生成位置
+
+		// 神器アイコンの生成
+		m_apGodItem[i] = CAnim2D::Create(item::TEX_PART.x, item::TEX_PART.y, posIcon, item::SIZE, VEC3_ZERO, item::COL[(int)bOldGet[i]]);
+		if (m_apGodItem[i] == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+
+		// 情報の設定
+		m_apGodItem[i]->BindTexture(item::TEXTURE);			// 勾玉のテクスチャ割当
+		m_apGodItem[i]->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+		m_apGodItem[i]->SetLabel(CObject::LABEL_UI);		// 自動更新/自動破棄するように
+		m_apGodItem[i]->SetPattern(i);						// テクスチャパターンを設定
+	}
 
 	//--------------------------------------------------------
 	//	ステージ名の影の生成 / 設定

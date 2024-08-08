@@ -21,7 +21,7 @@ namespace
 {
 #ifdef _DEBUG
 
-	const CScene::EMode INIT_SCENE = CScene::MODE_GAME;		// 初期シーン
+	const CScene::EMode INIT_SCENE = CScene::MODE_SELECT;		// 初期シーン
 
 #else	// NDEBUG
 

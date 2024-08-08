@@ -371,6 +371,64 @@ HRESULT CGodItem::LoadSetup(const char* pPass)
 }
 
 //============================================================
+// 獲得状況の読込処理
+//============================================================
+HRESULT CGodItem::LoadPossess(const char* pPass, bool* pGet)
+{
+	// ファイルを開く
+	std::ifstream file(pPass, std::ios_base::binary);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "神器獲得状況の読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 獲得状況の保存
+		bool aGet[TYPE_MAX] = {};
+		SavePossess(pPass, &aGet[0]);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 引数の獲得状況を書き出し
+	file.read((char*)pGet, sizeof(bool) * TYPE_MAX);
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+// 獲得状況の保存処理
+//============================================================
+HRESULT CGodItem::SavePossess(const char* pPass, bool* pGet)
+{
+	// ファイルを開く
+	std::ofstream file(pPass, std::ios_base::binary);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "神器獲得状況の書き出しに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 引数の獲得状況を書き出し
+	file.write((char*)pGet, sizeof(bool) * TYPE_MAX);
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
 // 重複チェック処理
 //============================================================
 bool CGodItem::DuplicationCheck(const EType type)
