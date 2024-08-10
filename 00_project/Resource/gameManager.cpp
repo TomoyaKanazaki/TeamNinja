@@ -118,7 +118,23 @@ HRESULT CGameManager::Init(void)
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
+
+#if 1
+
+	// TODO：仮置き
+	// プレイヤーを通常状態にする
+	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
+	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
+
+	// 通常状態にする
+	m_state = STATE_NORMAL;
+
+#else
+
+	// スタートカメラのリセット処理
 	GET_MANAGER->GetCamera()->StartReset();
+
+#endif // 0
 
 	// 成功を返す
 	return S_OK;

@@ -1111,6 +1111,7 @@ void CCamera::StartCamera(void)
 
 		// プレイヤーを通常状態にする
 		player->SetState(CPlayer::EState::STATE_NORMAL);
+		player->SetAlpha(1.0f);
 
 		// ゲームを通常状態にする
 		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
@@ -1303,6 +1304,7 @@ void CCamera::StartBack(CPlayer* pPlayer)
 
 		// プレイヤーを通常状態にする
 		pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
+		pPlayer->SetAlpha(1.0f);
 
 		// ゲームを通常状態にする
 		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
