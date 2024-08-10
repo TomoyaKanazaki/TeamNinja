@@ -135,8 +135,9 @@ HRESULT CStage::BindStage(const char* pPass)
 //============================================================
 HRESULT CStage::BindStage(const SPass& rPass)
 {
-	// 割り当てるマップのステージパスを保存
-	m_sCurMapStagePass = rPass.sStage;
+	// 割り当てるマップのディレクトリを保存
+	std::filesystem::path path = rPass.sMap;
+	m_sCurMapFolder = path.parent_path().string();
 
 	// ステージのセットアップの読込
 	if (FAILED(LoadSetup(rPass.sStage.c_str())))
@@ -239,6 +240,28 @@ HRESULT CStage::BindStage(const SPass& rPass)
 
 	// 成功を返す
 	return S_OK;
+}
+
+//============================================================
+//	現在マップのステージパス取得処理
+//============================================================
+std::string CStage::GetCurMapStagePass(void) const
+{
+	// マップディレクトリにステージパスを追加し返す
+	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ
+	path.append("stage.txt");	// ステージパスを追加
+	return path.string();		// 文字列化して返す
+}
+
+//============================================================
+//	現在マップの神器保存パス取得処理
+//============================================================
+std::string CStage::GetCurMapGodItemPass(void) const
+{
+	// マップディレクトリに神器保存パスを追加し返す
+	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ
+	path.append("goditem.bin");	// 神器保存パスを追加
+	return path.string();		// 文字列化して返す
 }
 
 //============================================================
@@ -610,6 +633,9 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 		// 失敗を返す
 		return E_FAIL;
 	}
+
+	// マップパスを保存
+	pPassInfo->sMap = pMapPass;
 
 	// ファイルを読込
 	std::string str;	// 読込文字列

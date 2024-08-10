@@ -52,6 +52,7 @@ public:
 	void Update(const float fDeltaTime) override;		// 更新
 	void SetAllMove(const D3DXVECTOR3& rMove) override;	// 全UIオブジェクト移動
 	void SkipStaging(void) override;					// 演出スキップ
+	bool IsSkipOK(void) const override	 { return (m_state < STATE_WAIT); }	// スキップ可能状況取得
 	bool IsEndState(void) const override { return (m_state == STATE_END); }	// 終了状況取得
 
 private:

@@ -26,10 +26,10 @@ public:
 	// 種類
 	enum EType
 	{
-		TYPE_RED = 0,		// 赤
-		TYPE_GREEN,			// 緑
-		TYPE_BLUE,			// 青
-		TYPE_MAX			// この列挙型の総数
+		TYPE_RED = 0,	// 赤
+		TYPE_GREEN,		// 緑
+		TYPE_BLUE,		// 青
+		TYPE_MAX		// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -59,9 +59,11 @@ public:
 	// 静的メンバ関数
 	static CGodItem* Create(const D3DXVECTOR3& rPos, const EType type);		// 生成処理
 	static CListManager<CGodItem>* GetList(void);	// リスト構造の取得処理
-	static HRESULT LoadSetup(const char* pPass);	// セットアップ
 	static bool IsGet(const EType type);			// 取得状況取得
-
+	static void InitGet(void);						// 取得状況初期化
+	static HRESULT LoadSetup(const char* pPass);	// セットアップ
+	static HRESULT LoadPossess(const char* pPass, bool* pGet);	// 獲得状況読込
+	static HRESULT SavePossess(const char* pPass, bool* pGet);	// 獲得状況保存
 private:
 
 	// メンバ関数

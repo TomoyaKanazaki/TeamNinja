@@ -353,6 +353,8 @@ void CGimmickAction::OnScreen()
 		GET_CAMERA->OnScreen(posVtx[i], posScreen[i]);
 	}
 
+	// ‚µ‚Ë
+#if 0
 	// ‰æ–Ê“à”»’è
 	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
 	{
@@ -368,6 +370,7 @@ void CGimmickAction::OnScreen()
 	{
 		SetEnableDraw(false);
 	}
+#endif
 }
 
 //===========================================

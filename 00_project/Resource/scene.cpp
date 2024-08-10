@@ -19,6 +19,7 @@
 #include "collManager.h"
 #include "player.h"
 #include "stage.h"
+#include "godItem.h"
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -58,6 +59,12 @@ HRESULT CScene::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// 神器取得状況の初期化
+	CGodItem::InitGet();
+
+	// セーブポイントの初期化
+	GET_RETENTION->InitSave();
 
 	// ステージの割当
 	CStage* pStage = GET_STAGE;	// ステージ情報

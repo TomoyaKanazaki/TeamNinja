@@ -397,3 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /00_project/data/BIN/ranking.bin
+/00_project/data/MAP/*.bin

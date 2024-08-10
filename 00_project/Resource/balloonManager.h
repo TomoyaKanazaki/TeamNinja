@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
+#include "godItem.h"
 
 //************************************************************
 //	前方宣言
@@ -22,6 +23,7 @@ class CTransPoint;		// 遷移ポイントクラス
 class CObject2D;		// オブジェクト2Dクラス
 class CRoll2D;			// 回転オブジェクト2Dクラス
 class CScale2D;			// 拡縮オブジェクト2Dクラス
+class CAnim2D;			// アニメーション2Dクラス
 class CScrollText2D;	// 文字送りテキスト2Dクラス
 
 //************************************************************
@@ -67,7 +69,8 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ変数
-	CTransPoint* m_pParent;			// 遷移ポイント情報
+	CAnim2D* m_apGodItem[CGodItem::TYPE_MAX];	// 神器アイコン
+	CTransPoint* m_pParent;			// 遷移ポイント
 	CObject2D* m_pStage;			// ステージ画面
 	CObject2D* m_pFrame;			// フレーム
 	CRoll2D* m_apStar[NUM_STAR];	// 手裏剣
