@@ -86,7 +86,7 @@ HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_pResult	= nullptr;		// リザルトマネージャー
-	m_state		= STATE_NORMAL;	// 状態
+	m_state		= STATE_START;	// 状態
 	m_nSave		= -1;			// セーブポイント
 
 	// リザルトマネージャーの生成
@@ -118,6 +118,7 @@ HRESULT CGameManager::Init(void)
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
+	GET_MANAGER->GetCamera()->StartReset();
 
 	// 成功を返す
 	return S_OK;
@@ -180,6 +181,12 @@ void CGameManager::Update(const float fDeltaTime)
 				TransitionResult(CRetentionManager::EWin::WIN_FAIL);
 			}
 		}
+		break;
+
+	case STATE_START:
+
+		// 特に無し
+
 		break;
 
 	case STATE_RESULT:

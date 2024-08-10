@@ -71,6 +71,7 @@ namespace
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
+	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
@@ -92,12 +93,6 @@ namespace
 	{
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
-	}
-
-	// サウンド関連の情報
-	namespace sound
-	{
-		const int WALK_COUNT = 19;		// 歩行音を鳴らすカウント
 	}
 }
 
@@ -279,6 +274,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateSpawn(fDeltaTime);
 		break;
 
+	case STATE_START:
+
+		// スタート状態時の更新
+		currentMotion = UpdateStart(fDeltaTime);
+		break;
+
 	case STATE_NORMAL:
 
 		// 通常状態の更新
@@ -418,7 +419,7 @@ CPlayer *CPlayer::Create
 		// 位置を設定
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
-			pPlayer->SetVec3Position(rPos);
+			pPlayer->SetVec3Position(D3DXVECTOR3(rPos.x, rPos.y + SPAWN_ADD_HEIGHT, rPos.z));
 		}
 		else
 		{
@@ -744,8 +745,39 @@ CPlayer::EMotion CPlayer::UpdateSpawn(const float fDeltaTime)
 	{ // 不透明になり切った場合
 
 		// 状態を設定
-		SetState(STATE_NORMAL);
+		SetState(STATE_START);
 	}
+
+	// 現在のモーションを返す
+	return currentMotion;
+}
+
+//============================================================
+// スタート状態時の更新
+//============================================================
+CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
+{
+	// 変数を宣言
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	// 現在のモーションを返す
 	return currentMotion;

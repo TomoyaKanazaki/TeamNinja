@@ -87,6 +87,7 @@ public:
 	{
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_SPAWN,	// スポーン状態
+		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
@@ -152,6 +153,7 @@ private:
 	// メンバ関数
 	EMotion UpdateNone(const float fDeltaTime);		// 何もしない状態時の更新
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
+	EMotion UpdateStart(const float fDeltaTime);	// スタート状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新

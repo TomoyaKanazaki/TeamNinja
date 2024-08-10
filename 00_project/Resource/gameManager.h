@@ -31,6 +31,7 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,	// 何もしない状態
+		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
 		STATE_RESULT,	// リザルト状態
 		STATE_MAX		// この列挙型の総数

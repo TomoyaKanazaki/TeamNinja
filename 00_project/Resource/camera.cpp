@@ -21,6 +21,7 @@
 #include "ZTexture.h"
 #include "collision.h"
 #include "retentionManager.h"
+#include "gameManager.h"
 
 //************************************************************
 //	定数宣言
@@ -161,6 +162,27 @@ namespace
 		const float	PLUS_ROTY	= 0.28f;	// プレイヤーヨー向きに加算する量
 		const float REV_DIFF	= 0.035f;	// 差分の補正係数
 	}
+
+	// スタートカメラ情報
+	namespace start
+	{
+		const float INIT_POSR_HEIGHT = 40.0f;							// 注視点の初期高度
+		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, 0.0f, 0.0f);		// 着地待ち状態の向き
+		const float DISTANCE[CCamera::SStart::STATE_MAX] =				// 距離
+		{
+			200.0f,				// 着地待ち状態
+			400.0f,				// 回り込み状態
+			around::INIT_DIS	// 戻り状態
+		};
+		const float REV_DIFF = 0.035f;		// 差分の補正係数
+		const int LAND_COUNT = 70;			// 着地状態のカウント数
+		const D3DXVECTOR3 ROUND_ROT = D3DXVECTOR3(1.1f, D3DX_PI * -0.8f, 0.0f);	// 回り込み状態の向き
+		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(-0.011f, D3DX_PI * -0.008f, 0.0f);	// 回り込み状態の向きの移動量
+		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);			// カメラ視点の補正係数
+		const int ROUND_COUNT = 80;			// 周り込み状態の維持カウント数
+		const float BACK_REV_ROT = 0.05f;	// 戻り状態の向きの補正係数
+		const int BACK_COUNT = 140;			// 戻り状態のカウント数
+	}
 }
 
 //************************************************************
@@ -195,6 +217,7 @@ HRESULT CCamera::Init(void)
 	//	メンバ変数を初期化
 	//--------------------------------------------------------
 	memset(&m_aCamera[0], 0, sizeof(m_aCamera));	// カメラの情報
+	memset(&m_startInfo, 0, sizeof(m_startInfo));	// スタートカメラの情報
 	m_state		= STATE_AROUND;	// 状態
 	m_bUpdate	= true;			// 更新状況
 	m_fFov = basic::VIEW_ANGLE;
@@ -280,10 +303,20 @@ void CCamera::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 向き ]：%f %f %f\n", m_aCamera[TYPE_MAIN].rot.x, m_aCamera[TYPE_MAIN].rot.y, m_aCamera[TYPE_MAIN].rot.z);
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 距離 ]：%f\n", m_aCamera[TYPE_MAIN].fDis);
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 状態 ]：%d\n", m_state);
-	
 
 	// 更新を止めている場合抜ける
 	if (!m_bUpdate) { return; }
+
+	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME &&
+		CSceneGame::GetGameManager()->GetState() == CGameManager::EState::STATE_START)
+	{ // ゲームが始まった時のみ
+
+		// カメラ処理
+		StartCamera();
+
+		// この先の処理を行わない
+		return;
+	}
 
 	switch (m_state)
 	{ // 状態ごとの処理
@@ -1020,6 +1053,260 @@ bool CCamera::IsOverPlayer(const D3DXVECTOR3& pos)
 	if (posPlayer.z > posThis.z) { return true; }
 
 	return false;
+}
+
+//===========================================
+// スタート状態のリセット処理
+//===========================================
+void CCamera::StartReset(void)
+{
+	// 値をリセットする
+	m_startInfo.nCount = 0;			// カウント
+	m_startInfo.state = SStart::STATE_LAND;	// 状態
+}
+
+//===========================================
+// スタート演出時のカメラ
+//===========================================
+void CCamera::StartCamera(void)
+{
+	CListManager<CPlayer>* pList = CPlayer::GetList();	// プレイヤーリスト
+	if (pList == nullptr) { return; }	// リスト未使用
+	if (pList->GetNumAll() != 1) { return; }	// プレイヤーが1人じゃない
+
+	auto player = pList->GetList().front();	// プレイヤー情報
+
+	// プレイヤーが NULL じゃない場合、抜ける
+	if (player == nullptr) { return; }
+
+	// 距離を設定する
+	m_aCamera[TYPE_MAIN].fDestDis = start::DISTANCE[m_startInfo.state];
+
+	// 差分距離を計算
+	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
+
+	// 現在距離を計算
+	m_aCamera[TYPE_MAIN].fDis += fDiffDis * start::REV_DIFF;
+
+	if (GET_INPUTPAD->IsTrigger(CInputPad::EKey::KEY_A) ||
+		GET_INPUTKEY->IsTrigger(DIK_RETURN))
+	{ // スキップキーを押した場合
+
+		// 周り込みの計算
+		CalcAround(player->GetVec3Position());
+
+		// 向きを設定する
+		m_aCamera[TYPE_MAIN].rot = m_aCamera[TYPE_MAIN].destRot;
+
+		// 距離を設定する
+		m_aCamera[TYPE_MAIN].fDis = around::INIT_DIS;
+
+		// 注視点をプレイヤーの頭の位置にする
+		m_aCamera[TYPE_MAIN].posR = player->GetVec3Position() + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
+
+		// 視点の更新
+		m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+		m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
+		m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+		// プレイヤーを通常状態にする
+		player->SetState(CPlayer::EState::STATE_NORMAL);
+
+		// ゲームを通常状態にする
+		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+
+		// この先の処理を行わない
+		return;
+	}
+
+	switch (m_startInfo.state)
+	{
+	case SStart::STATE_LAND:		// 着地待ち状態
+
+		// 着地待ちカメラ処理
+		StartLand(player);
+
+		break;
+
+	case SStart::STATE_ROUND:		// 回り込み状態
+
+		// 回り込みカメラ処理
+		StartRound(player);
+
+		break;
+
+	case SStart::STATE_BACK:		// 戻り状態
+
+		// 戻り処理
+		StartBack(player);
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
+}
+
+//============================================================
+// 着地待ちカメラ
+//============================================================
+void CCamera::StartLand(CPlayer* pPlayer)
+{
+	// 向きを設定する
+	m_aCamera[TYPE_MAIN].rot = start::LAND_ROT;
+
+	// 注視点を設定する
+	m_aCamera[TYPE_MAIN].posR = D3DXVECTOR3
+	(
+		pPlayer->GetVec3Position().x,
+		start::INIT_POSR_HEIGHT,
+		pPlayer->GetVec3Position().z
+	);
+
+	// 視点を設定する
+	m_aCamera[TYPE_MAIN].posV = D3DXVECTOR3
+	(
+		m_aCamera[TYPE_MAIN].posR.x + (-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y),
+		m_aCamera[TYPE_MAIN].posR.y + m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x),
+		m_aCamera[TYPE_MAIN].posR.z + (-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y)
+	);
+
+	// 着地していない場合、抜ける
+	if (pPlayer->IsJump()) { return; }
+
+	// 状態カウントを加算する
+	m_startInfo.nCount++;
+
+	if (m_startInfo.nCount % start::LAND_COUNT == 0)
+	{ // 一定カウント経過した場合
+
+		// 回り込み状態にする
+		m_startInfo.state = SStart::STATE_ROUND;
+
+		// カウントを0にする
+		m_startInfo.nCount = 0;
+	}
+}
+
+//============================================================
+// 回り込みカメラ
+//============================================================
+void CCamera::StartRound(CPlayer* pPlayer)
+{
+	D3DXVECTOR3 diffPosV = VEC3_ZERO;		// 視点の差分
+	bool aComplete[2] = { false,false };	// 向き補正完了状況
+
+	// 目的の向きを設定する
+	m_aCamera[TYPE_MAIN].destRot = start::ROUND_ROT;
+
+	// 向きを減算する
+	m_aCamera[TYPE_MAIN].rot += start::ROUND_ROT_MOVE;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
+
+	// 向きを補正する
+	aComplete[0] = useful::LimitMinNum(m_aCamera[TYPE_MAIN].rot.x, start::ROUND_ROT.x);
+	aComplete[1] = useful::LimitMinNum(m_aCamera[TYPE_MAIN].rot.y, start::ROUND_ROT.y);
+
+	if (aComplete[0] && aComplete[1])
+	{ // 向きが一定値になった場合
+
+		// カウントを加算する
+		m_startInfo.nCount++;
+	}
+
+	// 視点を設定する
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視点の差分位置を計算
+	diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * start::REV_POSV.x;
+	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * start::REV_POSV.y;
+	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * start::REV_POSV.z;
+
+	if (m_startInfo.nCount >= start::ROUND_COUNT)
+	{ // 定位置について一定時間経過した場合
+
+		// 周り込みの計算
+		CalcAround(pPlayer->GetVec3Position());
+
+		// 戻り状態にする
+		m_startInfo.state = SStart::STATE_BACK;
+
+		// カウントをリセットする
+		m_startInfo.nCount = 0;
+	}
+}
+
+//============================================================
+// 戻りカメラ
+//============================================================
+void CCamera::StartBack(CPlayer* pPlayer)
+{
+	// カウントを加算する
+	m_startInfo.nCount++;
+
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+
+	// 差分向きを計算
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 差分向きを補正
+	if (diffRot.x > around::LIMIT_DIFF)
+	{
+		diffRot.x = around::LIMIT_DIFF;
+	}
+	if (diffRot.y > around::LIMIT_DIFF)
+	{
+		diffRot.y = around::LIMIT_DIFF;
+	}
+
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot += diffRot * start::BACK_REV_ROT;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 視点の差分位置を計算
+	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 注視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * 0.2f;
+	m_aCamera[TYPE_MAIN].posR.y += diffPosR.y * 0.1f;
+	m_aCamera[TYPE_MAIN].posR.z += diffPosR.z * 0.2f;
+
+	// 視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * 0.4f;
+	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * 0.1f;
+	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * 0.4f;
+
+	if (m_startInfo.nCount >= start::BACK_COUNT)
+	{ // カウントが一定数になった場合
+
+		// プレイヤーを通常状態にする
+		pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
+
+		// ゲームを通常状態にする
+		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+	}
 }
 
 //============================================================

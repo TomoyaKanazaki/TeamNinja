@@ -3,6 +3,7 @@
 //	カメラヘッダー [camera.h]
 //	Author：藤田勇一
 //	Adder : 金崎朋弥
+//	Adder : 小原立暉
 //
 //============================================================
 //************************************************************
@@ -15,6 +16,11 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
+
+//************************************************************
+// 前方宣言
+//************************************************************
+class CPlayer;		// プレイヤー
 
 //************************************************************
 //	クラス定義
@@ -94,6 +100,22 @@ public:
 		D3DXMATRIX		mtxView;		// ビューマトリックス
 	};
 
+	// スタートカメラ構造体
+	struct SStart
+	{
+		// 状態
+		enum EState
+		{
+			STATE_LAND = 0,		// 着地待ち状態
+			STATE_ROUND,		// 回り込み状態
+			STATE_BACK,			// 戻り状態
+			STATE_MAX			// この列挙型の総数
+		};
+
+		int nCount;			// カウント
+		EState state;		// 状態
+	};
+
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -132,6 +154,13 @@ public:
 	bool OnScreenPolygon(const D3DXVECTOR3* pPos); // 矩形のスクリーン内判定
 	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 
+	// 小原追加
+	void StartReset(void);					// スタート状態のリセット処理
+	void StartCamera(void);					// スタート演出時のカメラ
+	void StartLand(CPlayer* pPlayer);		// 着地待ちカメラ
+	void StartRound(CPlayer* pPlayer);		// 回り込みカメラ
+	void StartBack(CPlayer* pPlayer);		// 戻りカメラ
+
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成
 	static void Release(CCamera *&prCamera);	// 破棄
@@ -154,6 +183,7 @@ private:
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
+	SStart m_startInfo;	// スタートカメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 	float	m_fFov;		// 視野角
