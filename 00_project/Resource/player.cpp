@@ -1640,65 +1640,62 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// スティック入力があった場合
-	if (pPad->GetTriggerRStick())
+	// スティック入力がない場合関数を抜ける
+	if (!pPad->GetTriggerRStick()) { return false; }
+
+	// 前回入力との誤差が許容範囲外の場合関数を抜ける
+	if (m_fTempStick - pPad->GetPressRStickRot() > STICK_ERROR)
 	{
-		// 前回入力との誤差が許容範囲外の場合関数を抜ける
-		if (m_fTempStick - pPad->GetPressRStickRot() > STICK_ERROR)
-		{
-			m_fGimmickTimer = 0.0f;
-			m_bGimmickClone = false;
-			return false;
-		}
-
-		// ギミックのリストを取得
-		if (CGimmickAction::GetList() == nullptr) { return false; }
-		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
-
-		// プレイヤーから最も近いギミックを取得する変数
-		CGimmickAction* pGimmick = nullptr;
-		float fTempDistance = 0.0f; // 最も近いギミックまでの距離の2乗
-
-		// 最も近いギミックを走査する
-		for (auto gimmick : list)
-		{
-			// 保存してるギミックがnullの場合保存して次に進む
-			if (pGimmick == nullptr)
-			{
-				pGimmick = gimmick;
-				D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
-				fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
-				continue;
-			}
-
-			// プレイヤーと対象ギミックを結ぶベクトルの算出
-			D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
-
-			// 距離の2乗が保存された数値よりも大きい場合次に進む
-			float fDistance = vecToGimmick.x* vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
-			if (fTempDistance < fDistance)
-			{ continue; }
-
-			// 対象ギミックを保存する
-			pGimmick = gimmick;
-			fTempDistance = fDistance;
-		}
-
-		// 距離が近くて使用可能な士気力が足りている場合
-		if (pGimmick->CollisionPlayer() && CTension::GetUseNum() >= pGimmick->GetNumActive())
-		{
-			// 直接ギミックになる分身を必要分生成
-			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
-			{
-				CPlayerClone::Create(pGimmick);
-			}
-		}
-
-		// フラグをリセットし関数を抜ける
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
-		return true;
+		return false;
+		}
+
+	// ギミックのリストを取得
+	if (CGimmickAction::GetList() == nullptr) { return false; }
+	std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
+
+	// プレイヤーから最も近いギミックを取得する変数
+	CGimmickAction* pGimmick = nullptr;
+	float fTempDistance = 0.0f; // 最も近いギミックまでの距離の2乗
+
+	// 最も近いギミックを走査する
+	for (auto gimmick : list)
+	{
+		// 保存してるギミックがnullの場合保存して次に進む
+		if (pGimmick == nullptr)
+		{
+			pGimmick = gimmick;
+			D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
+			fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+			continue;
+		}
+
+		// プレイヤーと対象ギミックを結ぶベクトルの算出
+		D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
+
+		// 距離の2乗が保存された数値よりも大きい場合次に進む
+		float fDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+		if (fTempDistance < fDistance) { continue; }
+
+		// 対象ギミックを保存する
+		pGimmick = gimmick;
+		fTempDistance = fDistance;
 	}
+
+	// 距離が近くて使用可能な士気力が足りていない場合関数を抜ける
+	int nNumNeed = pGimmick->GetNumActive() - pGimmick->GetNumClone();
+	if (!pGimmick->CollisionPlayer() || CTension::GetUseNum() < nNumNeed) { return false; }
+
+	// 直接ギミックになる分身を必要分生成
+	for (int i = 0; i < nNumNeed; ++i)
+	{
+		CPlayerClone::Create(pGimmick);
+	}
+
+	// フラグをリセットし関数を抜ける
+	m_fGimmickTimer = 0.0f;
+	m_bGimmickClone = false;
 
 	return true;
 }
