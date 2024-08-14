@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "retentionManager.h"
+#include "godItem.h"
 
 //************************************************************
 //	前方宣言
@@ -33,6 +34,7 @@ public:
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
+		STATE_GODITEM,	// 神器獲得状態
 		STATE_RESULT,	// リザルト状態
 		STATE_MAX		// この列挙型の総数
 	};
@@ -50,6 +52,7 @@ public:
 	void SetState(const EState state)	{ m_state = state; }	// 状態設定
 	EState GetState(void) const			{ return m_state; }		// 状態取得
 	void SetSave(const int nSave)		{ m_nSave = nSave; }	// セーブ設定
+	void PossessGodItem(const CGodItem::EType typeID);			// 勾玉獲得
 	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
 	// 静的メンバ関数

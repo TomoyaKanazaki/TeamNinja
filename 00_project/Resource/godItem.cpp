@@ -14,6 +14,8 @@
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "sound.h"
+#include "sceneGame.h"
+#include "gameManager.h"
 
 //************************************************************
 //	定数宣言
@@ -240,6 +242,13 @@ bool CGodItem::Collision
 
 		// 神器取得音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_GETGODITEM_000);
+
+		if (GET_MANAGER->GetMode() == CScene::MODE_GAME)
+		{ // ゲームシーンの場合
+
+			// ゲームマネージャーを神器獲得状態にする
+			CSceneGame::GetGameManager()->PossessGodItem(m_type);
+		}
 
 		// 終了処理
 		Uninit();

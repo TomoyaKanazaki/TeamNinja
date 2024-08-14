@@ -178,31 +178,42 @@ void CGameManager::Update(const float fDeltaTime)
 	case STATE_NONE:
 	case STATE_NORMAL:
 
-		// ゴールしていた場合リザルト
-		if (CGoal::GetGoal() != nullptr)
-		{
-			if (CGoal::GetGoal()->GetClear())
-			{ // クリアした場合
+		// ゴールがない場合抜ける
+		if (CGoal::GetGoal() == nullptr) { break; }
 
-				// クリア成功でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
-			}
-			else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
-			{ // 時間切れになった場合
+		if (CGoal::GetGoal()->GetClear())
+		{ // クリアした場合
 
-				// プレイヤーのタイムアップ処理
-				GET_PLAYER->TimeUp();
+			// クリア成功でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
+		}
+		else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
+		{ // 時間切れになった場合
 
-				// クリア失敗でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_FAIL);
-			}
+			// プレイヤーのタイムアップ処理
+			GET_PLAYER->TimeUp();
+
+			// クリア失敗でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_FAIL);
 		}
 		break;
 
 	case STATE_START:
+		break;
 
-		// 特に無し
+	case STATE_GODITEM:
 
+		if (GET_INPUTKEY->IsTrigger(DIK_0))
+		{
+			// タイマーの計測再開
+			CSceneGame::GetTimerUI()->EnableStop(false);
+
+			// プレイヤーの状態を元に戻す
+			GET_PLAYER->SetEnableGodItem(false);
+
+			// 通常状態に戻す
+			m_state = STATE_NORMAL;
+		}
 		break;
 
 	case STATE_RESULT:
@@ -219,6 +230,21 @@ void CGameManager::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+//	勾玉獲得処理
+//============================================================
+void CGameManager::PossessGodItem(const CGodItem::EType typeID)
+{
+	// タイマーの計測一時停止
+	CSceneGame::GetTimerUI()->EnableStop(true);
+
+	// プレイヤーの状態を神器獲得状態にする
+	GET_PLAYER->SetEnableGodItem(true);
+
+	// 神器獲得状態にする
+	m_state = STATE_GODITEM;
 }
 
 //============================================================

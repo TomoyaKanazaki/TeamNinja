@@ -1,0 +1,24 @@
+#==============================================================================
+#
+#	神器配置のセーブデータ [goditem.txt]
+#	Author : 藤田 勇一
+#
+#==============================================================================
+STAGE_GODITEMSET
+
+	GODITEMSET
+		POS		= 0.00 0.00 -450.00
+		TYPE	= 0
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 0.00 0.00 -300.00
+		TYPE	= 1
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 0.00 0.00 -150.00
+		TYPE	= 2
+	END_GODITEMSET
+
+END_STAGE_GODITEMSET
