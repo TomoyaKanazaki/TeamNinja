@@ -19,6 +19,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
+class CGodItemManager;	// 神器獲得演出マネージャー
 class CResultManager;	// リザルトマネージャー
 
 //************************************************************
@@ -61,9 +62,10 @@ public:
 
 private:
 	// メンバ変数
-	CResultManager *m_pResult;	// リザルトマネージャー
+	CGodItemManager *m_pGodItem;	// 神器獲得演出マネージャー
+	CResultManager *m_pResult;		// リザルトマネージャー
 	EState m_state;	// 状態
-	int m_nSave; // 最後のセーブポイント
+	int m_nSave;	// 最後のセーブポイント
 };
 
 #endif	// _GAMEMANAGER_H_

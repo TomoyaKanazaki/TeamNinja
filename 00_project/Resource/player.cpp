@@ -552,7 +552,7 @@ void CPlayer::SetSpawn(void)
 void CPlayer::SetEnableGodItem(const bool bGet)
 {
 	if (bGet)
-	{
+	{ // 取得状態の設定
 
 		// プレイヤー向きを設定
 		D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
@@ -571,7 +571,8 @@ void CPlayer::SetEnableGodItem(const bool bGet)
 		m_state = STATE_GODITEM;
 	}
 	else
-	{
+	{ // 取得状態の解除
+
 		// 待機モーションにする
 		SetMotion(MOTION_IDOL);
 
@@ -898,6 +899,9 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 向き反映
+	SetVec3Rotation(m_destRot);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
