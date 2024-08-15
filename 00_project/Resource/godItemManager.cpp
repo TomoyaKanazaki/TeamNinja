@@ -201,8 +201,11 @@ HRESULT CGodItemManager::Init(void)
 	// テキストを割当
 	loadtext::BindText(m_pName, loadtext::LoadText(GET_STAGE->GetCurMapStagePass().c_str(), 0));
 #else
-	//m_pName->SetString(L"仮テキスト　ここに情景を文章化");
+	m_pName->SetString(L"仮テキスト　ここに情景を文章化");
 #endif
+
+	// カメラを神器獲得状態にする
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_GODITEM);
 
 	// 成功を返す
 	return S_OK;
@@ -403,6 +406,10 @@ void CGodItemManager::UpdateWait(const float fDeltaTime)
 
 		// ゲームマネージャーを通常状態に戻す
 		CSceneGame::GetGameManager()->SetState(CGameManager::STATE_NORMAL);
+
+		// カメラを回り込み状態にする
+		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
+		GET_MANAGER->GetCamera()->SetDestAround();
 
 		// UI消失状態にする
 		m_state = STATE_FALL;

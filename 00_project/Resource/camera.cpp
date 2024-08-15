@@ -141,6 +141,16 @@ namespace
 		const float VIEW_ANGLE = D3DXToRadian(70.0f);	// 視野角
 	}
 
+	// 神器獲得カメラ情報
+	namespace god
+	{
+		const float	INIT_DIS	= 260.0f;	// 追従カメラの距離
+		const float	INIT_ROTX	= HALF_PI;	// 追従カメラの向きX初期値
+		const float	PLUS_ROTY	= 0.0f;		// プレイヤーヨー向きに加算する量
+		const float	PLUS_UP		= 80.0f;	// プレイヤー縦位置に加算する量
+		const float	REV_DIFF	= 0.04f;	// 差分の補正係数
+	}
+
 	// リザルトカメラ情報
 	namespace result
 	{
@@ -351,6 +361,12 @@ void CCamera::Update(const float fDeltaTime)
 
 		// 望遠の更新
 		Telephoto();
+		break;
+
+	case STATE_GODITEM:	// 神器獲得
+
+		// 神器獲得の更新
+		GodItem();
 		break;
 
 	case STATE_RESULT:	// リザルト
@@ -614,6 +630,53 @@ void CCamera::SetDestTelephoto(void)
 	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
 	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
 	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
+}
+
+//============================================================
+//	カメラ目標位置の設定処理 (神器獲得)
+//============================================================
+void CCamera::SetDestGodItem(void)
+{
+	// カメラが神器獲得状態以外なら抜ける
+	if (m_state != STATE_GODITEM) { return; }
+
+	// プレイヤーの情報を取得
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = pPlayer->GetDestRotation();	// プレイヤー目標向き
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 向きを設定
+	m_aCamera[TYPE_MAIN].destRot.x = m_aCamera[TYPE_MAIN].rot.x = god::INIT_ROTX;
+	m_aCamera[TYPE_MAIN].destRot.y = m_aCamera[TYPE_MAIN].rot.y = rotPlayer.y + god::PLUS_ROTY;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);		// 現在向きを正規化
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 距離を設定
+	m_aCamera[TYPE_MAIN].fDestDis = m_aCamera[TYPE_MAIN].fDis = god::INIT_DIS;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += god::PLUS_UP;	// プレイヤーの縦方向にずらす
+
+	// 目標位置をそのまま現在位置にも設定
+	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR;
+
+	// 視点位置を設定
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN]. fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
 
 	// 視野角を設定
 	m_fFov = basic::VIEW_ANGLE;
@@ -1351,6 +1414,75 @@ void CCamera::Release(CCamera *&prCamera)
 
 	// メモリ開放
 	SAFE_DELETE(prCamera);
+}
+
+//============================================================
+//	カメラの更新処理 (神器獲得)
+//============================================================
+void CCamera::GodItem(void)
+{
+	// カメラが神器獲得状態以外なら抜ける
+	if (m_state != STATE_GODITEM) { return; }
+
+	// プレイヤーの情報を取得
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = pPlayer->GetDestRotation();	// プレイヤー目標向き
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 目標向きを設定
+	m_aCamera[TYPE_MAIN].destRot.x = god::INIT_ROTX;
+	m_aCamera[TYPE_MAIN].destRot.y = rotPlayer.y + god::PLUS_ROTY;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	// 差分向きを計算
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 現在向きを計算
+	m_aCamera[TYPE_MAIN].rot += diffRot * god::REV_DIFF;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDestDis = god::INIT_DIS;
+
+	// 差分距離を計算
+	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
+
+	// 現在距離を計算
+	m_aCamera[TYPE_MAIN].fDis += fDiffDis * god::REV_DIFF;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;			// プレイヤー位置を基準点にする
+	m_aCamera[TYPE_MAIN].destPosR.y += god::PLUS_UP;	// プレイヤーの縦方向にずらす
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 注視点の現在位置を計算
+	m_aCamera[TYPE_MAIN].posR += diffPosR * god::REV_DIFF;
+
+	// 視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN]. fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視点の差分位置を計算
+	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 視点の現在位置を計算
+	m_aCamera[TYPE_MAIN].posV += diffPosV * god::REV_DIFF;
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
 }
 
 //============================================================
