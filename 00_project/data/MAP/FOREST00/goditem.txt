@@ -19,7 +19,7 @@ STAGE_GODITEMSET
 		POS		= 7850.00 650.00 -200.00
 		TYPE	= 1
 		
-		TEXT_0
+		TEXT_1
 			STR	= ‚±‚ê‚ª“ñ‚Â–Ú‚ÌŒù‹Ê
 		END_TEXT
 	END_GODITEMSET
@@ -28,7 +28,7 @@ STAGE_GODITEMSET
 		POS		= 19050.00 1700.00 -550.00
 		TYPE	= 2
 		
-		TEXT_0
+		TEXT_2
 			STR	= ‚±‚ê‚ªŽO‚Â–Ú‚ÌŒù‹Ê
 		END_TEXT
 	END_GODITEMSET
