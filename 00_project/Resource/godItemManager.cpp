@@ -17,6 +17,11 @@
 #include "object2D.h"
 #include "scrollString2D.h"
 
+#include "sceneGame.h"
+#include "gameManager.h"
+#include "timerUI.h"
+#include "player.h"
+
 //************************************************************
 //	íËêîêÈåæ
 //************************************************************
@@ -28,7 +33,6 @@ namespace
 	{
 		const char *TEXTURE		= "data\\TEXTURE\\get_magatama.png";	// ÉeÉNÉXÉ`ÉÉÉpÉX
 		const float	MOVE_TIME	= 0.68f;	// à⁄ìÆéûä‘
-		const float	WAIT_TIME	= 0.15f;	// êîílë“ã@éûä‘
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(632.0f, 184.0f, 0.0f);	// ëÂÇ´Ç≥
 		const D3DXCOLOR DEST_COL	= XCOL_WHITE;			// ñ⁄ïWêF
 		const D3DXCOLOR INIT_COL	= XCOL_AWHITE;			// èâä˙êF
@@ -41,7 +45,6 @@ namespace
 	namespace line
 	{
 		const float	MOVE_TIME	= 0.5f;	// à⁄ìÆéûä‘
-		const float	WAIT_TIME	= 0.5f;	// ë“ã@éûä‘
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(SCREEN_CENT.x, 530.0f, 0.0f);	// à íu
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(980.0f, 20.0f, 0.0f);		// ñ⁄ïWëÂÇ´Ç≥
 		const D3DXVECTOR3 INIT_SIZE	= D3DXVECTOR3(0.0f, DEST_SIZE.y, 0.0f);	// èâä˙ëÂÇ´Ç≥
@@ -52,11 +55,19 @@ namespace
 	{
 		const char *FONT	= "data\\FONT\\óÎÉSÉVÉbÉN.otf";	// ÉtÉHÉìÉgÉpÉX
 		const bool	ITALIC	= false;			// ÉCÉ^ÉäÉbÉN
-		const float	WAIT_TIME		= 0.5f;		// ë“ã@éûä‘
 		const float	CHAR_HEIGHT		= 70.0f;	// ï∂éöècïù
 		const float	WAIT_TIME_NOR	= 0.012f;	// ï∂éöï\é¶ÇÃë“ã@éûä‘
 		const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_CENT.x, 580.0f, 0.0f);	// à íu
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_CENTER;		// â°îzíu
+	}
+
+	namespace fall
+	{
+		const float	MOVE_TIME = 2.0f;	// à⁄ìÆéûä‘
+		const D3DXCOLOR DEST_COL	 = XCOL_AWHITE;			// ñ⁄ïWêF
+		const D3DXCOLOR INIT_COL	 = XCOL_WHITE;			// èâä˙êF
+		const D3DXCOLOR DIFF_COL	 = DEST_COL - INIT_COL;	// ç∑ï™êF
+		const D3DXVECTOR3 OFFSET_POS = D3DXVECTOR3(0.0f, 30.0f, 0.0f);	// èâä˙à íuÉIÉtÉZÉbÉg
 	}
 }
 
@@ -70,8 +81,10 @@ CGodItemManager::AFuncUpdateState CGodItemManager::m_aFuncUpdateState[] =	// èÛë
 	&CGodItemManager::UpdateTitle,	// É^ÉCÉgÉãèoåªçXêV
 	&CGodItemManager::UpdateName,	// ñºëOèoåªçXêV
 	&CGodItemManager::UpdateWait,	// ë“ã@çXêV
+	&CGodItemManager::UpdateFall,	// UIè¡é∏çXêV
 	&CGodItemManager::UpdateEnd,	// èIóπçXêV
 };
+CGodItemManager* CGodItemManager::m_pThisClass = nullptr;	// é©êgÇÃÉCÉìÉXÉ^ÉìÉX
 
 //************************************************************
 //	êeÉNÉâÉX [CGodItemManager] ÇÃÉÅÉìÉoä÷êî
@@ -79,7 +92,7 @@ CGodItemManager::AFuncUpdateState CGodItemManager::m_aFuncUpdateState[] =	// èÛë
 //============================================================
 //	ÉRÉìÉXÉgÉâÉNÉ^
 //============================================================
-CGodItemManager::CGodItemManager() :
+CGodItemManager::CGodItemManager() : CObject(CObject::LABEL_MANAGER, CObject::SCENE_MAIN, CObject::DIM_2D, 7),
 	m_pTitle	(nullptr),		// É^ÉCÉgÉãèÓïÒ
 	m_pLine		(nullptr),		// â∫ê¸èÓïÒ
 	m_pName		(nullptr),		// ñºëOèÓïÒ
@@ -104,11 +117,11 @@ CGodItemManager::~CGodItemManager()
 HRESULT CGodItemManager::Init(void)
 {
 	// ÉÅÉìÉoïœêîÇèâä˙âª
-	m_state		= STATE_LINE;	// èÛë‘	// TODOÅFÇ†Ç∆Ç≈ïœÇÌÇÈ
-	m_pTitle	= nullptr;	// É^ÉCÉgÉãèÓïÒ
-	m_pLine		= nullptr;	// â∫ê¸èÓïÒ
-	m_pName		= nullptr;	// ñºëOèÓïÒ
-	m_fCurTime	= 0.0f;		// åªç›ÇÃë“ã@éûä‘
+	m_state		= STATE_LINE;	// èÛë‘
+	m_pTitle	= nullptr;		// É^ÉCÉgÉãèÓïÒ
+	m_pLine		= nullptr;		// â∫ê¸èÓïÒ
+	m_pName		= nullptr;		// ñºëOèÓïÒ
+	m_fCurTime	= 0.0f;			// åªç›ÇÃë“ã@éûä‘
 
 	//--------------------------------------------------------
 	//	É^ÉCÉgÉãÇÃê∂ê¨ / èâä˙ê›íË
@@ -135,9 +148,6 @@ HRESULT CGodItemManager::Init(void)
 	// óDêÊèáà Çê›íË
 	m_pTitle->SetPriority(PRIORITY);
 
-	// ÉâÉxÉãÇê›íË
-	m_pTitle->SetLabel(CObject::LABEL_UI);	// é©ìÆîjä¸/çXêVÇÇ∑ÇÈÉâÉxÉã
-
 	//--------------------------------------------------------
 	//	â∫ê¸ÇÃê∂ê¨ / èâä˙ê›íË
 	//--------------------------------------------------------
@@ -158,9 +168,6 @@ HRESULT CGodItemManager::Init(void)
 	// óDêÊèáà Çê›íË
 	m_pLine->SetPriority(PRIORITY);
 
-	// ÉâÉxÉãÇê›íË
-	m_pLine->SetLabel(CObject::LABEL_UI);	// é©ìÆîjä¸/çXêVÇÇ∑ÇÈÉâÉxÉã
-
 	//--------------------------------------------------------
 	//	ñºëOÇÃê∂ê¨ / èâä˙ê›íË
 	//--------------------------------------------------------
@@ -169,7 +176,7 @@ HRESULT CGodItemManager::Init(void)
 	( // à¯êî
 		name::FONT,				// ÉtÉHÉìÉgÉpÉX
 		name::ITALIC,			// ÉCÉ^ÉäÉbÉN
-		L"",					// ï\é¶ï∂éöóÒ
+		L"ÉeÉLÉXÉgì«çûÉGÉâÅ[",	// ï\é¶ï∂éöóÒ
 		name::POS,				// å¥ì_à íu
 		name::WAIT_TIME_NOR,	// ï∂éöï\é¶ÇÃë“ã@éûä‘
 		name::CHAR_HEIGHT,		// ï∂éöècïù
@@ -186,12 +193,15 @@ HRESULT CGodItemManager::Init(void)
 	// óDêÊèáà Çê›íË
 	m_pName->SetPriority(PRIORITY);
 
+	// ÉâÉxÉãÇê›íË
+	m_pName->SetLabel(CObject::LABEL_NONE);	// é©ìÆîjä¸/çXêVÇÇµÇ»Ç¢ÉâÉxÉã
+
 	// TODO
 #if 0
 	// ÉeÉLÉXÉgÇäÑìñ
 	loadtext::BindText(m_pName, loadtext::LoadText(GET_STAGE->GetCurMapStagePass().c_str(), 0));
 #else
-	m_pName->SetString(L"âºÉeÉLÉXÉgÅ@Ç±Ç±Ç…èÓåiÇï∂èÕâª");
+	//m_pName->SetString(L"âºÉeÉLÉXÉgÅ@Ç±Ç±Ç…èÓåiÇï∂èÕâª");
 #endif
 
 	// ê¨å˜Çï‘Ç∑
@@ -211,6 +221,12 @@ void CGodItemManager::Uninit(void)
 
 	// ñºëOÇÃèIóπ
 	SAFE_UNINIT(m_pName);
+
+	// ÉIÉuÉWÉFÉNÉgÇîjä¸
+	Release();
+
+	// é©êgÇÃï€ë∂ÇµÇƒÇ¢ÇΩÉCÉìÉXÉ^ÉìÉXÇèâä˙âª
+	m_pThisClass = nullptr;
 }
 
 //============================================================
@@ -218,6 +234,15 @@ void CGodItemManager::Uninit(void)
 //============================================================
 void CGodItemManager::Update(const float fDeltaTime)
 {
+	// É^ÉCÉgÉãÇÃçXêV
+	m_pTitle->Update(fDeltaTime);
+
+	// â∫ê¸ÇÃçXêV
+	m_pLine->Update(fDeltaTime);
+
+	// ñºëOÇÃçXêV
+	m_pName->Update(fDeltaTime);
+
 	assert(m_state > NONE_IDX && m_state < STATE_MAX);
 	if (m_aFuncUpdateState[m_state] != nullptr)
 	{ // çXêVä÷êîÇ™éwíËÇ≥ÇÍÇƒÇ¢ÇÈèÍçá
@@ -231,10 +256,25 @@ void CGodItemManager::Update(const float fDeltaTime)
 }
 
 //============================================================
+//	ï`âÊèàóù
+//============================================================
+void CGodItemManager::Draw(CShader * /*pShader*/)
+{
+
+}
+
+//============================================================
 //	ê∂ê¨èàóù
 //============================================================
 CGodItemManager *CGodItemManager::Create(void)
 {
+	if (m_pThisClass != nullptr)
+	{ // é©ÉNÉâÉXÇÃëºÉCÉìÉXÉ^ÉìÉXÇ™Ç†ÇÈèÍçá
+
+		// ÉCÉìÉXÉ^ÉìÉXÇîjä¸
+		SAFE_UNINIT(m_pThisClass);
+	}
+
 	// ê_äÌälìæââèoÉ}ÉlÅ[ÉWÉÉÅ[ÇÃê∂ê¨
 	CGodItemManager *pGodItemManager = new CGodItemManager;
 	if (pGodItemManager == nullptr)
@@ -254,22 +294,13 @@ CGodItemManager *CGodItemManager::Create(void)
 			return nullptr;
 		}
 
+		// ÉCÉìÉXÉ^ÉìÉXÇï€ë∂
+		assert(m_pThisClass == nullptr);
+		m_pThisClass = pGodItemManager;
+
 		// ämï€ÇµÇΩÉAÉhÉåÉXÇï‘Ç∑
 		return pGodItemManager;
 	}
-}
-
-//============================================================
-//	îjä¸èàóù
-//============================================================
-void CGodItemManager::Release(CGodItemManager *&prGodItemManager)
-{
-	// ê_äÌälìæââèoÉ}ÉlÅ[ÉWÉÉÅ[ÇÃèIóπ
-	assert(prGodItemManager != nullptr);
-	prGodItemManager->Uninit();
-
-	// ÉÅÉÇÉääJï˙
-	SAFE_DELETE(prGodItemManager);
 }
 
 //============================================================
@@ -311,10 +342,10 @@ void CGodItemManager::UpdateTitle(const float fDeltaTime)
 	// åoâﬂéûçèÇÃäÑçáÇåvéZ
 	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, title::MOVE_TIME);
 
-	// êãçséûä‘ÇÃêFÇîΩâf
+	// É^ÉCÉgÉãÇÃêFÇîΩâf
 	m_pTitle->SetColor(title::INIT_COL + (title::DIFF_COL * fRate));
 
-	// êãçséûä‘ÇÃà íuÇîΩâf
+	// É^ÉCÉgÉãÇÃà íuÇîΩâf
 	m_pTitle->SetVec3Position(title::INIT_POS + (title::DIFF_POS * fRate));
 
 	if (m_fCurTime >= title::MOVE_TIME)
@@ -323,10 +354,10 @@ void CGodItemManager::UpdateTitle(const float fDeltaTime)
 		// É^ÉCÉ}Å[Çèâä˙âª
 		m_fCurTime = 0.0f;
 
-		// êãçséûä‘ÇÃêFÇï‚ê≥
+		// É^ÉCÉgÉãÇÃêFÇï‚ê≥
 		m_pTitle->SetColor(title::DEST_COL);
 
-		// êãçséûä‘ÇÃà íuÇï‚ê≥
+		// É^ÉCÉgÉãÇÃà íuÇï‚ê≥
 		m_pTitle->SetVec3Position(title::DEST_POS);
 
 		// ñºëOÇÃï∂éöëóÇËÇäJénÇ∑ÇÈ
@@ -355,7 +386,64 @@ void CGodItemManager::UpdateName(const float fDeltaTime)
 //============================================================
 void CGodItemManager::UpdateWait(const float fDeltaTime)
 {
+	CInputKeyboard*	pKey = GET_INPUTKEY;	// ÉLÅ[É{Å[ÉhèÓïÒ
+	CInputPad*		pPad = GET_INPUTPAD;	// ÉpÉbÉhèÓïÒ
+	if (pKey->IsTrigger(DIK_SPACE)
+	||  pKey->IsTrigger(DIK_RETURN)
+	||  pPad->IsTrigger(CInputPad::KEY_A)
+	||  pPad->IsTrigger(CInputPad::KEY_B)
+	||  pPad->IsTrigger(CInputPad::KEY_X)
+	||  pPad->IsTrigger(CInputPad::KEY_Y))
+	{
+		// É^ÉCÉ}Å[ÇÃåvë™çƒäJ
+		CSceneGame::GetTimerUI()->EnableStop(false);
 
+		// ÉvÉåÉCÉÑÅ[ÇÃèÛë‘Çå≥Ç…ñﬂÇ∑
+		GET_PLAYER->SetEnableGodItem(false);
+
+		// ÉQÅ[ÉÄÉ}ÉlÅ[ÉWÉÉÅ[Çí èÌèÛë‘Ç…ñﬂÇ∑
+		CSceneGame::GetGameManager()->SetState(CGameManager::STATE_NORMAL);
+
+		// UIè¡é∏èÛë‘Ç…Ç∑ÇÈ
+		m_state = STATE_FALL;
+	}
+}
+
+//============================================================
+//	UIè¡é∏ÇÃçXêVèàóù
+//============================================================
+void CGodItemManager::UpdateFall(const float fDeltaTime)
+{
+	// É^ÉCÉ}Å[Çâ¡éZ
+	m_fCurTime += fDeltaTime;
+
+	// åoâﬂéûçèÇÃäÑçáÇåvéZ
+	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, fall::MOVE_TIME);
+
+	// êFÇîΩâf
+	m_pTitle->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// É^ÉCÉgÉãèÓïÒ
+	m_pLine->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// â∫ê¸èÓïÒ
+	m_pName->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// ñºëOèÓïÒ
+
+	// à íuÇîΩâf
+	m_pTitle->SetVec3Position(title::DEST_POS + (((title::DEST_POS + fall::OFFSET_POS) - title::DEST_POS) * fRate));	// É^ÉCÉgÉãèÓïÒ
+	m_pLine->SetVec3Position(line::POS + (((line::POS + fall::OFFSET_POS) - line::POS) * fRate));	// â∫ê¸èÓïÒ
+	m_pName->SetVec3Position(name::POS + (((name::POS + fall::OFFSET_POS) - name::POS) * fRate));	// ñºëOèÓïÒ
+
+	if (m_fCurTime >= fall::MOVE_TIME)
+	{ // ë“ã@Ç™èIóπÇµÇΩèÍçá
+
+		// É^ÉCÉ}Å[Çèâä˙âª
+		m_fCurTime = 0.0f;
+
+		// êFÇï‚ê≥
+		m_pTitle->SetColor(fall::DEST_COL);	// É^ÉCÉgÉãèÓïÒ
+		m_pLine->SetColor(fall::DEST_COL);	// â∫ê¸èÓïÒ
+		m_pName->SetColor(fall::DEST_COL);	// ñºëOèÓïÒ
+
+		// èIóπèÛë‘Ç…Ç∑ÇÈ
+		m_state = STATE_END;
+	}
 }
 
 //============================================================
@@ -363,7 +451,8 @@ void CGodItemManager::UpdateWait(const float fDeltaTime)
 //============================================================
 void CGodItemManager::UpdateEnd(const float fDeltaTime)
 {
-
+	// é©êgÇÃèIóπ
+	Uninit();
 }
 
 //============================================================
@@ -371,7 +460,7 @@ void CGodItemManager::UpdateEnd(const float fDeltaTime)
 //============================================================
 void CGodItemManager::UpdateSkip(void)
 {
-	//if (m_state >= STATE_WAIT)	// TODOÅFÇ‹ÇæÇ»Ç¢ÇØÇ«WAITÇÕçÏÇÁÇ»Ç¢Ç∆ÇÀ
+	if (m_state < STATE_WAIT)
 	{ // ââèoÉXÉLÉbÉvÇ™â¬î\Ç»èÍçá
 
 		CInputKeyboard*	pKey = GET_INPUTKEY;	// ÉLÅ[É{Å[ÉhèÓïÒ
@@ -394,39 +483,18 @@ void CGodItemManager::UpdateSkip(void)
 //============================================================
 void CGodItemManager::SkipStaging(void)
 {
-	// TODOÅFââèoÉXÉLÉbÉvÇ‡Ç¬Ç≠ÇÎÇ§ÇÀ
-#if 0
-	CRetentionManager::EWin win = GET_RETENTION->GetWin();	// ÉNÉäÉAèÛãµ
+	// ë“ã@èÛë‘Ç…Ç∑ÇÈ
+	m_state = STATE_WAIT;
 
-	// ÉNÉäÉAÉ}ÉlÅ[ÉWÉÉÅ[çXêVèÛë‘Ç…Ç∑ÇÈ
-	m_state = STATE_CLEAR;
+	// â∫ê¸ÇÃëÂÇ´Ç≥Çï‚ê≥
+	m_pLine->SetVec3Sizing(line::DEST_SIZE);
 
-	// ê_äÌälìæââèoÉJÉÅÉâÇñ⁄ïWà íuÇ…ê›íË
-	GET_MANAGER->GetCamera()->SetDestGodItem();
+	// É^ÉCÉgÉãÇÃêFÇï‚ê≥
+	m_pTitle->SetColor(title::DEST_COL);
 
-	// ÉtÉFÅ[ÉhÇñ⁄ïWà íuÇ…ê›íË
-	m_pFade->SetVec3Position(fade::CENT_POS);
+	// É^ÉCÉgÉãÇÃà íuÇï‚ê≥
+	m_pTitle->SetVec3Position(title::DEST_POS);
 
-	// ëSï∂éöÇï\é¶Ç≥ÇπÇÈ
-	m_pTitle->SetEnableDraw(true);
-
-	// ÉNÉäÉAÇ≤Ç∆ÇÃÉnÉìÉRÉeÉNÉXÉ`ÉÉÇäÑìñ
-	m_pStamp->BindTexture(stamp::TEXTURE[win]);
-
-	// ÉnÉìÉRÇââèoå„ÇÃå©ÇΩñ⁄Ç…Ç∑ÇÈ
-	m_pStamp->SetEnableDraw(true);				// é©ìÆï`âÊÇONÇ…Ç∑ÇÈ
-	m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// ñ⁄ïWÉTÉCÉYÇ…ê›íË
-
-	if (m_pClear == nullptr)
-	{ // ÉNÉäÉAÉ}ÉlÅ[ÉWÉÉÅ[Ç™ê∂ê¨Ç≥ÇÍÇƒÇ¢Ç»Ç¢èÍçá
-
-		// ÉNÉäÉAÉ}ÉlÅ[ÉWÉÉÅ[ÇÃê∂ê¨
-		m_pClear = CClearManager::Create(win);
-		assert(m_pClear != nullptr);
-	}
-
-	// ÉNÉäÉAÉ}ÉlÅ[ÉWÉÉÅ[ÇÃââèoÉXÉLÉbÉv
-	assert(m_pClear != nullptr);
-	m_pClear->SkipStaging();
-#endif
+	// ñºëOÇÃï∂éöÇÇ∑Ç◊Çƒï\é¶
+	m_pName->SetEnableDraw(true);
 }

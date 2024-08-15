@@ -65,7 +65,6 @@ namespace
 //	コンストラクタ
 //============================================================
 CGameManager::CGameManager() :
-	m_pGodItem	(nullptr),		// 神器獲得演出マネージャー
 	m_pResult	(nullptr),		// リザルトマネージャー
 	m_state		(STATE_NONE),	// 状態
 	m_nSave		(-1)			// セーブポイント
@@ -87,7 +86,6 @@ CGameManager::~CGameManager()
 HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
-	m_pGodItem	= nullptr;		// 神器獲得演出マネージャー
 	m_pResult	= nullptr;		// リザルトマネージャー
 	m_state		= STATE_START;	// 状態
 	m_nSave		= -1;			// セーブポイント
@@ -148,9 +146,6 @@ HRESULT CGameManager::Init(void)
 //============================================================
 void CGameManager::Uninit(void)
 {
-	// 神器獲得演出マネージャーの破棄
-	SAFE_REF_RELEASE(m_pGodItem);
-
 	// リザルトマネージャーの破棄
 	SAFE_REF_RELEASE(m_pResult);
 }
@@ -209,25 +204,10 @@ void CGameManager::Update(const float fDeltaTime)
 
 	case STATE_GODITEM:
 
-		// 神器獲得演出マネージャーの更新
-		assert(m_pGodItem != nullptr);
-		m_pGodItem->Update(fDeltaTime);
-
-		// TODO：ここの管理はマネージャー側に
-		if (GET_INPUTKEY->IsTrigger(DIK_0))
-		{
-			// タイマーの計測再開
-			CSceneGame::GetTimerUI()->EnableStop(false);
-
-			// プレイヤーの状態を元に戻す
-			GET_PLAYER->SetEnableGodItem(false);
-
-			// 神器獲得演出マネージャーを破棄
-			SAFE_REF_RELEASE(m_pGodItem);
-
-			// 通常状態に戻す
-			m_state = STATE_NORMAL;
-		}
+		/*
+			この状態時は自動的に更新が行われる神器獲得演出マネージャーがゲーム画面を操作します。
+			状態の復帰もマネージャーがプレイヤーの操作を検知し行うのでこちら側から管理する必要はないです。
+		*/
 		break;
 
 	case STATE_RESULT:
@@ -258,8 +238,7 @@ void CGameManager::PossessGodItem(const CGodItem::EType typeID)
 	GET_PLAYER->SetEnableGodItem(true);
 
 	// 神器獲得演出マネージャーを生成
-	assert(m_pGodItem == nullptr);
-	m_pGodItem = CGodItemManager::Create();
+	CGodItemManager::Create();
 
 	// 神器獲得状態にする
 	m_state = STATE_GODITEM;
