@@ -2,6 +2,7 @@
 //
 //	神器処理 [godItem.cpp]
 //	Author：小原立暉
+//	Adder ：藤田勇一
 //
 //============================================================
 //************************************************************
@@ -16,6 +17,7 @@
 #include "sound.h"
 #include "sceneGame.h"
 #include "gameManager.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -47,6 +49,7 @@ bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 m_fPosInitY(0.0f),		// 初期位置(Y軸)
 m_type(TYPE_RED),		// 種類
+m_state(STATE_ITEM),	// 状態
 m_fHeightRot(0.0f)		// 高さの向き
 {
 
@@ -120,11 +123,24 @@ void CGodItem::Uninit(void)
 //============================================================
 void CGodItem::Update(const float fDeltaTime)
 {
-	// 向き処理
-	Cycle();
+	switch (m_state)
+	{ // 状態ごとの処理
+	case STATE_ITEM:
 
-	// 高さ設定処理
-	Height();
+		// 向き処理
+		Cycle();
+
+		// 高さ設定処理
+		Height();
+
+		break;
+
+	case STATE_ROLL:
+
+		// 回転移動の更新
+		UpdateRoll(fDeltaTime);
+		break;
+	}
 
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
@@ -223,6 +239,29 @@ CListManager<CGodItem>* CGodItem::GetList(void)
 }
 
 //============================================================
+//	回転移動状態の目標位置設定処理
+//============================================================
+void CGodItem::SetRollPosition(void)
+{
+	// 総数が全種類以上の場合エラー
+	if (m_pList->GetNumAll() > TYPE_MAX) { assert(false); }
+
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();				// プレイヤー位置
+	D3DXVECTOR3 posDest = posPlayer + D3DXVECTOR3(0.0f, 100.0f, 0.0f);	// 移動目標位置
+	// TODO：定数化
+
+	for (auto& item : m_pList->GetList())
+	{
+		if (item->m_state == STATE_ROLL)
+		{ // 買い手にどう状態の場合
+
+			// 現在位置を反映
+			item->SetVec3Position(posDest);
+		}
+	}
+}
+
+//============================================================
 // 当たり判定処理
 //============================================================
 bool CGodItem::Collision
@@ -231,6 +270,9 @@ bool CGodItem::Collision
 	const float fRadius			// 半径
 )
 {
+	// アイテム状態ではない場合抜ける
+	if (m_state != STATE_ITEM) { return false; }
+
 	if (collision::Circle3D(rPos, GetVec3Position(), fRadius, COLLISION_RADIUS))
 	{ // 当たった場合
 
@@ -250,8 +292,8 @@ bool CGodItem::Collision
 			CSceneGame::GetGameManager()->PossessGodItem(m_type);
 		}
 
-		// 終了処理
-		Uninit();
+		// 回転移動状態にする
+		m_state = STATE_ROLL;
 
 		// true を返す
 		return true;
@@ -496,6 +538,25 @@ void CGodItem::InitGet(void)
 }
 
 //============================================================
+//	神器の削除処理
+//============================================================
+void CGodItem::Delete(const EType type)
+{
+	// 総数が全種類以上の場合エラー
+	if (m_pList->GetNumAll() > TYPE_MAX) { assert(false); }
+
+	for (auto& item : m_pList->GetList())
+	{
+		if (item->m_type == type)
+		{ // 種類が重複していた場合
+
+			// 終了処理
+			item->Uninit();
+		}
+	}
+}
+
+//============================================================
 // 向き処理
 //============================================================
 void CGodItem::Cycle(void)
@@ -532,4 +593,28 @@ void CGodItem::Height(void)
 
 	// 位置を適用
 	SetVec3Position(pos);
+}
+
+//============================================================
+//	回転移動の更新処理
+//============================================================
+void CGodItem::UpdateRoll(const float fDeltaTime)
+{
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();				// プレイヤー位置
+	D3DXVECTOR3 posDest = posPlayer + D3DXVECTOR3(0.0f, 100.0f, 0.0f);	// 移動目標位置
+	D3DXVECTOR3 posCur = GetVec3Position();	// 現在位置
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 posDiff = posDest - posCur;
+
+	// 注視点の現在位置を更新
+	posCur += posDiff * 2.0f * fDeltaTime;
+
+	// 現在位置を反映
+	SetVec3Position(posCur);
+
+	// 向きを回転
+	SetVec3Rotation(GetVec3Rotation() + D3DXVECTOR3(0.0f, 3.5f, 0.0f) * fDeltaTime);
+
+	// TODO：定数化
 }

@@ -144,7 +144,7 @@ namespace
 	// 神器獲得カメラ情報
 	namespace god
 	{
-		const float	INIT_DIS	= 260.0f;	// 追従カメラの距離
+		const float	INIT_DIS	= 300.0f;	// 追従カメラの距離
 		const float	INIT_ROTX	= HALF_PI;	// 追従カメラの向きX初期値
 		const float	PLUS_ROTY	= 0.0f;		// プレイヤーヨー向きに加算する量
 		const float	PLUS_UP		= 80.0f;	// プレイヤー縦位置に加算する量

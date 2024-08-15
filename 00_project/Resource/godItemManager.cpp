@@ -107,7 +107,8 @@ CGodItemManager* CGodItemManager::m_pThisClass = nullptr;	// 自身のインスタンス
 //============================================================
 //	コンストラクタ
 //============================================================
-CGodItemManager::CGodItemManager() : CObject(CObject::LABEL_MANAGER, CObject::SCENE_MAIN, CObject::DIM_2D, PRIO_UI),
+CGodItemManager::CGodItemManager(const CGodItem::EType typeID) : CObject(CObject::LABEL_MANAGER, CObject::SCENE_MAIN, CObject::DIM_2D, PRIO_UI),
+	m_typeID	(typeID),		// 取得神器の種類
 	m_pFade		(nullptr),		// フェード情報
 	m_pTitle	(nullptr),		// タイトル情報
 	m_pLine		(nullptr),		// 下線情報
@@ -316,7 +317,7 @@ CGodItemManager *CGodItemManager::Create(const CGodItem::EType typeID)
 	}
 
 	// 神器獲得演出マネージャーの生成
-	CGodItemManager *pGodItemManager = new CGodItemManager;
+	CGodItemManager *pGodItemManager = new CGodItemManager(typeID);
 	if (pGodItemManager == nullptr)
 	{ // 生成に失敗した場合
 
@@ -479,6 +480,9 @@ void CGodItemManager::UpdateWait(const float fDeltaTime)
 		GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 		GET_MANAGER->GetCamera()->SetDestAround();
 
+		// 神器の削除
+		CGodItem::Delete(m_typeID);
+
 		// フェードイン状態にする
 		m_state = STATE_FADEIN;
 	}
@@ -613,6 +617,9 @@ void CGodItemManager::SkipStaging(void)
 	// 名前の文字をすべて表示
 	m_pName->SetEnableDraw(true);
 
-	// 神器獲得カメラの目標位置にする
+	// 勾玉を目標位置にする
+	CGodItem::SetRollPosition();
+
+	// 神器獲得カメラを目標位置にする
 	GET_MANAGER->GetCamera()->SetDestGodItem();
 }

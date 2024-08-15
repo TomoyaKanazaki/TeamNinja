@@ -894,17 +894,8 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
 
-	// 重力の更新
-	UpdateGravity(fDeltaTime);
-
-	// 位置更新
-	UpdatePosition(pos, fDeltaTime);
-
 	// 向き反映
 	SetVec3Rotation(m_destRot);
-
-	// 着地判定
-	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
 	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);

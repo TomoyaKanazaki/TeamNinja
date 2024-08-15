@@ -45,7 +45,7 @@ public:
 	};
 
 	// コンストラクタ
-	CGodItemManager();
+	CGodItemManager(const CGodItem::EType typeID);
 
 	// デストラクタ
 	~CGodItemManager() override;
@@ -88,12 +88,13 @@ private:
 	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
-	CObject2D* m_pFade;			// フェード情報
-	CObject2D* m_pTitle;		// タイトル情報
-	CObject2D* m_pLine;			// 下線情報
-	CScrollString2D* m_pName;	// 名前情報
-	EState m_state;				// 状態
-	float m_fCurTime;			// 現在の待機時間
+	const CGodItem::EType m_typeID;	// 取得神器の種類
+	CObject2D* m_pFade;				// フェード情報
+	CObject2D* m_pTitle;			// タイトル情報
+	CObject2D* m_pLine;				// 下線情報
+	CScrollString2D* m_pName;		// 名前情報
+	EState m_state;					// 状態
+	float m_fCurTime;				// 現在の待機時間
 };
 
 #endif	// _GODITEM_MANAGER_H_
