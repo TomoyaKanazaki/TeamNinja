@@ -32,10 +32,12 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,	// 何もしない状態
+		STATE_FADEOUT,	// フェードアウト状態
 		STATE_LINE,		// 下線出現状態
 		STATE_TITLE,	// タイトル出現状態
 		STATE_NAME,		// 名前出現状態
 		STATE_WAIT,		// 待機状態
+		STATE_FADEIN,	// フェードイン状態
 		STATE_FALL,		// UI消失状態
 		STATE_END,		// 終了状態
 		STATE_MAX		// この列挙型の総数
@@ -72,16 +74,19 @@ private:
 	void Release(void) override { CObject::Release(); }	// 破棄
 
 	// メンバ関数
+	void UpdateFadeOut(const float fDeltaTime);	// フェードアウト更新
 	void UpdateLine(const float fDeltaTime);	// 下線出現更新
 	void UpdateTitle(const float fDeltaTime);	// タイトル出現更新
 	void UpdateName(const float fDeltaTime);	// 名前出現更新
 	void UpdateWait(const float fDeltaTime);	// 待機更新
+	void UpdateFadeIn(const float fDeltaTime);	// フェードイン更新
 	void UpdateFall(const float fDeltaTime);	// UI消失更新
 	void UpdateEnd(const float fDeltaTime);		// 終了更新
 	void UpdateSkip(void);	// スキップ操作更新
 	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
+	CObject2D* m_pFade;			// フェード情報
 	CObject2D* m_pTitle;		// タイトル情報
 	CObject2D* m_pLine;			// 下線情報
 	CScrollString2D* m_pName;	// 名前情報
