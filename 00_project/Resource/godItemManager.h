@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
+#include "godItem.h"
 
 //************************************************************
 //	前方宣言
@@ -60,7 +61,7 @@ public:
 	EState GetState(void) const			{ return m_state; }		// 状態取得
 
 	// 静的メンバ関数
-	static CGodItemManager *Create(void);	// 生成
+	static CGodItemManager *Create(const CGodItem::EType typeID);	// 生成
 
 private:
 	// 状態更新の関数ポインタ型エイリアス定義
@@ -82,6 +83,7 @@ private:
 	void UpdateFadeIn(const float fDeltaTime);	// フェードイン更新
 	void UpdateFall(const float fDeltaTime);	// UI消失更新
 	void UpdateEnd(const float fDeltaTime);		// 終了更新
+	void SetName(const CGodItem::EType typeID);	// 名前の文字列設定
 	void UpdateSkip(void);	// スキップ操作更新
 	void SkipStaging(void);	// 演出スキップ
 

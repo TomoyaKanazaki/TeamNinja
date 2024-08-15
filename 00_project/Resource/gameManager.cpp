@@ -238,7 +238,7 @@ void CGameManager::PossessGodItem(const CGodItem::EType typeID)
 	GET_PLAYER->SetEnableGodItem(true);
 
 	// 神器獲得演出マネージャーを生成
-	CGodItemManager::Create();
+	CGodItemManager::Create(typeID);
 
 	// 神器獲得状態にする
 	m_state = STATE_GODITEM;

@@ -118,7 +118,7 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 
 		// ‘O‰ñ‚Ü‚Å‚ÌŒù‹Ê‚ÌŠl“¾ó‹µ‚ð“Ç‚Ýž‚Ý
 		bool bOldGet[CGodItem::TYPE_MAX] = {};	// •Û‘¶‚³‚ê‚Ä‚¢‚éŠl“¾ó‹µ
-		CGodItem::LoadPossess(GET_STAGE->GetCurMapGodItemPass().c_str(), &bOldGet[0]);
+		CGodItem::LoadPossess(GET_STAGE->GetCurMapSaveGodItemPass().c_str(), &bOldGet[0]);
 
 		// ¡‰ñ‚ÌŒù‹Ê‚ÌŠl“¾ó‹µ‚ð“K‰ž
 		bool bCurGet[CGodItem::TYPE_MAX] = {};	// ¡‰ñ‚ÌŠl“¾ó‹µ
@@ -129,6 +129,6 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 		}
 
 		// Œù‹Ê‚ÌŠl“¾ó‹µ‚ð‘‚«o‚µ
-		CGodItem::SavePossess(GET_STAGE->GetCurMapGodItemPass().c_str(), &bCurGet[0]);
+		CGodItem::SavePossess(GET_STAGE->GetCurMapSaveGodItemPass().c_str(), &bCurGet[0]);
 	}
 }

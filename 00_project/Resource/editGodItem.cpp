@@ -385,6 +385,10 @@ HRESULT CEditGodItem::Save(void)
 		file << "	GODITEMSET" << std::endl;
 		file << "		POS		= " << pos.x << " " << fPosInitY << " " << pos.z << std::endl;
 		file << "		TYPE	= " << type << std::endl;
+		file << "		" << std::endl;
+		file << "		TEXT_" << type << std::endl;
+		file << "			STR = ‚±‚ê‚ª" << type << "‚Â–Ú‚ÌŒù‹Ê" << std::endl;
+		file << "		END_TEXT" << std::endl;
 		file << "	END_GODITEMSET\n" << std::endl;
 	}
 

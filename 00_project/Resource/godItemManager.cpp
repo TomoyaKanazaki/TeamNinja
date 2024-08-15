@@ -235,14 +235,6 @@ HRESULT CGodItemManager::Init(void)
 	// ラベルを設定
 	m_pName->SetLabel(CObject::LABEL_NONE);	// 自動破棄/更新をしないラベル
 
-	// TODO
-#if 0
-	// テキストを割当
-	loadtext::BindText(m_pName, loadtext::LoadText(GET_STAGE->GetCurMapStagePass().c_str(), 0));
-#else
-	m_pName->SetString(L"仮テキスト　ここに情景を文章化");
-#endif
-
 	// カメラを神器獲得状態にする
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_GODITEM);
 
@@ -314,7 +306,7 @@ void CGodItemManager::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CGodItemManager *CGodItemManager::Create(void)
+CGodItemManager *CGodItemManager::Create(const CGodItem::EType typeID)
 {
 	if (m_pThisClass != nullptr)
 	{ // 自クラスの他インスタンスがある場合
@@ -341,6 +333,9 @@ CGodItemManager *CGodItemManager::Create(void)
 			SAFE_DELETE(pGodItemManager);
 			return nullptr;
 		}
+
+		// 名前の文字列を設定
+		pGodItemManager->SetName(typeID);
 
 		// インスタンスを保存
 		assert(m_pThisClass == nullptr);
@@ -561,6 +556,15 @@ void CGodItemManager::UpdateEnd(const float fDeltaTime)
 {
 	// 自身の終了
 	Uninit();
+}
+
+//============================================================
+//	名前の文字列設定処理
+//============================================================
+void CGodItemManager::SetName(const CGodItem::EType typeID)
+{
+	// テキストを割当
+	loadtext::BindString(m_pName, loadtext::LoadText(GET_STAGE->GetCurMapGodItemPass().c_str(), (int)typeID));
 }
 
 //============================================================
