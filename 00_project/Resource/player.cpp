@@ -439,10 +439,13 @@ CPlayer *CPlayer::Create
 		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
 		{ // ゲームモードの場合
 
+#if 0
 			// 位置を設定する
 			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
 			pos.y += SPAWN_ADD_HEIGHT;
 			pPlayer->SetVec3Position(pos);
+
+#endif // 0
 		}
 
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
