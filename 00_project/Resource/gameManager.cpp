@@ -120,7 +120,7 @@ HRESULT CGameManager::Init(void)
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
-#if 1
+#if 0
 
 	// TODO：仮置き
 	// プレイヤーを通常状態にする

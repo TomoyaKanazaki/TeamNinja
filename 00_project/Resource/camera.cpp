@@ -1155,6 +1155,11 @@ void CCamera::StartCamera(void)
 		GET_INPUTKEY->IsTrigger(DIK_RETURN))
 	{ // スキップキーを押した場合
 
+		// TODO：今はとりあえず0.0fにしているがしっかり地面に着地するようにしたい
+		D3DXVECTOR3 posPlayer = player->GetVec3Position();
+		posPlayer.y = 0.0f;
+		player->SetVec3Position(posPlayer);
+
 		// 周り込みの計算
 		CalcAround(player->GetVec3Position());
 
