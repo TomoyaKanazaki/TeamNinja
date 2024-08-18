@@ -286,6 +286,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
+	case STATE_GODITEM:
+
+		// 神器獲得状態の更新
+		currentMotion = UpdateGodItem(fDeltaTime);
+		break;
+
 	case STATE_DODGE:
 
 		// 回避状態の更新
@@ -433,10 +439,13 @@ CPlayer *CPlayer::Create
 		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
 		{ // ゲームモードの場合
 
+#if 1
 			// 位置を設定する
 			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
 			pos.y += SPAWN_ADD_HEIGHT;
 			pPlayer->SetVec3Position(pos);
+
+#endif // 0
 		}
 
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
@@ -538,6 +547,41 @@ void CPlayer::SetSpawn(void)
 
 	// 描画を再開
 	SetEnableDraw(true);
+}
+
+//============================================================
+//	神器獲得の設定処理
+//============================================================
+void CPlayer::SetEnableGodItem(const bool bGet)
+{
+	if (bGet)
+	{ // 取得状態の設定
+
+		// プレイヤー向きを設定
+		D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
+		rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
+
+		// 向きをカメラ目線に
+		SetDestRotation(rotDest);
+
+		// 移動量を初期化
+		SetMove(VEC3_ZERO);
+
+		// 神器獲得モーションにする
+		//SetMotion(MOTION_DEATH);	// TODO：モーション作ってもらう
+
+		// 神器獲得状態にする
+		m_state = STATE_GODITEM;
+	}
+	else
+	{ // 取得状態の解除
+
+		// 待機モーションにする
+		SetMotion(MOTION_IDOL);
+
+		// 通常状態にする
+		m_state = STATE_NORMAL;	// TODO：ここわんちゃん過去状態の方がいいか
+	}
 }
 
 //============================================================
@@ -840,6 +884,30 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 分身の処理
 	if(ControlClone(posPlayer, rotPlayer, fDeltaTime))
 	{ currentMotion = MOTION_DODGE; }
+
+	// 現在のモーションを返す
+	return currentMotion;
+}
+
+//===========================================
+//	神器獲得状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
+{
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 向き反映
+	SetVec3Rotation(m_destRot);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	// 現在のモーションを返す
 	return currentMotion;

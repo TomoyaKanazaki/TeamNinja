@@ -20,7 +20,7 @@
 //************************************************************
 // 前方宣言
 //************************************************************
-class CPlayer;		// プレイヤー
+class CPlayer;	// プレイヤー
 
 //************************************************************
 //	クラス定義
@@ -46,6 +46,7 @@ public:
 		STATE_FOLLOW,		// 追従状態
 		STATE_AROUND,		// 回り込み
 		STATE_TELEPHOTO,	// 望遠
+		STATE_GODITEM,		// 神器獲得
 		STATE_RESULT,		// リザルト
 		STATE_MAX			// この列挙型の総数
 	};
@@ -132,6 +133,7 @@ public:
 	void SetDestFollow(void);		// カメラ目標位置設定 (追従)
 	void SetDestAround(void);		// カメラ目標位置設定 (回り込み)
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)
+	void SetDestGodItem(void);		// カメラ目標位置設定 (神器獲得)
 	void SetDestResult(void);		// カメラ目標位置設定 (リザルト)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
@@ -170,6 +172,7 @@ private:
 	void Rotate(void);		// カメラの更新 (回転)
 	void Follow(void);		// カメラの更新 (追従)
 	void Control(void);		// カメラの更新 (操作)
+	void GodItem(void);		// カメラの更新 (神器獲得)
 	void Result(void);		// カメラの更新 (リザルト)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)

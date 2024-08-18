@@ -15,6 +15,7 @@
 #include "cinemaScope.h"
 #include "timerUI.h"
 #include "hitstop.h"
+#include "godItemManager.h"
 #include "resultManager.h"
 #include "retentionManager.h"
 #include "camera.h"
@@ -119,7 +120,7 @@ HRESULT CGameManager::Init(void)
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
-#if 1
+#if 0
 
 	// TODO：仮置き
 	// プレイヤーを通常状態にする
@@ -178,31 +179,35 @@ void CGameManager::Update(const float fDeltaTime)
 	case STATE_NONE:
 	case STATE_NORMAL:
 
-		// ゴールしていた場合リザルト
-		if (CGoal::GetGoal() != nullptr)
-		{
-			if (CGoal::GetGoal()->GetClear())
-			{ // クリアした場合
+		// ゴールがない場合抜ける
+		if (CGoal::GetGoal() == nullptr) { break; }
 
-				// クリア成功でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
-			}
-			else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
-			{ // 時間切れになった場合
+		if (CGoal::GetGoal()->GetClear())
+		{ // クリアした場合
 
-				// プレイヤーのタイムアップ処理
-				GET_PLAYER->TimeUp();
+			// クリア成功でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
+		}
+		else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
+		{ // 時間切れになった場合
 
-				// クリア失敗でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_FAIL);
-			}
+			// プレイヤーのタイムアップ処理
+			GET_PLAYER->TimeUp();
+
+			// クリア失敗でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_FAIL);
 		}
 		break;
 
 	case STATE_START:
+		break;
 
-		// 特に無し
+	case STATE_GODITEM:
 
+		/*
+			この状態時は自動的に更新が行われる神器獲得演出マネージャーがゲーム画面を操作します。
+			状態の復帰もマネージャーがプレイヤーの操作を検知し行うのでこちら側から管理する必要はないです。
+		*/
 		break;
 
 	case STATE_RESULT:
@@ -219,6 +224,24 @@ void CGameManager::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+//	勾玉獲得処理
+//============================================================
+void CGameManager::PossessGodItem(const CGodItem::EType typeID)
+{
+	// タイマーの計測一時停止
+	CSceneGame::GetTimerUI()->EnableStop(true);
+
+	// プレイヤーの状態を神器獲得状態にする
+	GET_PLAYER->SetEnableGodItem(true);
+
+	// 神器獲得演出マネージャーを生成
+	CGodItemManager::Create(typeID);
+
+	// 神器獲得状態にする
+	m_state = STATE_GODITEM;
 }
 
 //============================================================

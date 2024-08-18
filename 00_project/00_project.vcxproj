@@ -172,6 +172,7 @@
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
+    <ClInclude Include="Resource\godItemManager.h" />
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
+    <ClCompile Include="Resource\godItemManager.cpp" />
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />

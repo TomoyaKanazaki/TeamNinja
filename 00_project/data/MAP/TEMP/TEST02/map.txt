@@ -7,5 +7,6 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS	= data\MAP\TEMP\TEST02\stage.txt	# ステージ情報パス
-POINT_PASS	= data\MAP\TEMP\TEST02\point.txt	# ポイント情報パス
+STAGE_PASS	 = data\MAP\TEMP\TEST02\stage.txt	# ステージ情報パス
+POINT_PASS	 = data\MAP\TEMP\TEST02\point.txt	# ポイント情報パス
+GODITEM_PASS = data\MAP\TEMP\TEST02\goditem.txt	# 神器情報パス
