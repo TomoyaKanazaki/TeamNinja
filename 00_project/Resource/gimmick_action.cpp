@@ -211,7 +211,7 @@ bool CGimmickAction::CollisionPlayer(void)
 	std::list<CPlayer*> list = CPlayer::GetList()->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
-	size.y = HEIGHT;								// 判定に高さを設定する
+	size.y = HEIGHT;							// 判定に高さを設定する
 	D3DXVECTOR3 posPlayer = VEC3_ZERO;			// プレイヤーの位置
 	D3DXVECTOR3 sizePlayer = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);		// プレイヤーのサイズ
 
