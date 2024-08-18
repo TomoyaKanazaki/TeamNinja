@@ -358,8 +358,8 @@ void CGimmickAction::OnScreen()
 	// ‰æ–Ê“à”»’è
 	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
 	{
-		SetEnableDraw(true);
-		DebugProc::Print(DebugProc::POINT_CENTER, "Œ©‚¦‚Ä‚¢‚é\n");
+		//SetEnableDraw(true);
+		//DebugProc::Print(DebugProc::POINT_CENTER, "Œ©‚¦‚Ä‚¢‚é\n");
 	}
 	else
 	{
