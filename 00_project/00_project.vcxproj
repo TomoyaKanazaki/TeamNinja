@@ -170,6 +170,7 @@
     <ClInclude Include="Resource\editGodItem.h" />
     <ClInclude Include="Resource\enemyAmbush.h" />
     <ClInclude Include="Resource\fade2D.h" />
+    <ClInclude Include="Resource\fog.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
     <ClInclude Include="Resource\godItemManager.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="Resource\editGodItem.cpp" />
     <ClCompile Include="Resource\enemyAmbush.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
+    <ClCompile Include="Resource\fog.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
     <ClCompile Include="Resource\godItemManager.cpp" />
