@@ -1516,13 +1516,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_START:	// スタートモーション
 
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_LAND);
-		}
-
 		break;
 	}
 }
