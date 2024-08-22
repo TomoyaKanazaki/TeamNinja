@@ -53,6 +53,7 @@ public:
 	inline void SetOldPosition(const D3DXVECTOR3& rPosOld)	{ m_oldPos = rPosOld; }				// 過去位置設定
 	inline D3DXVECTOR3 GetOldPosition(void) const			{ return m_oldPos; }				// 過去位置取得
 	inline D3DXVECTOR3 GetPosInit(void) const				{ return m_posInit; }				// 初期位置取得
+	inline D3DXVECTOR3 GetRotInit(void) const				{ return m_rotInit; }				// 初期向き取得
 	inline void SetDestRotation(D3DXVECTOR3& rRot)			{ useful::NormalizeRot(rRot); m_destRot = rRot; }	// 目的の向き設定
 	inline D3DXVECTOR3 GetDestRotation(void) const			{ return m_destRot; }				// 目的の向き取得
 	inline void SetMovePosition(const D3DXVECTOR3& rMove)	{ m_move = rMove; }					// 位置移動量設定
@@ -80,6 +81,7 @@ protected:
 	void UpdateGravity(void);	// 重力更新
 
 	inline void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置設定(生成時のみ設定)
+	inline void SetRotInit(const D3DXVECTOR3& rRotInit) { m_rotInit = rRotInit; }	// 初期向き設定(生成時のみ設定)
 	inline bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
 
 private:
@@ -97,6 +99,7 @@ private:
 	D3DXVECTOR3 m_posInit;			// 初期位置
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
+	D3DXVECTOR3 m_rotInit;			// 初期向き
 	float m_fAlpha;					// 透明度
 	bool m_bJump;					// ジャンプ状況
 	bool m_bVanish;					// 消滅状況
