@@ -177,7 +177,7 @@ namespace
 	namespace start
 	{
 		const float INIT_POSR_HEIGHT = 40.0f;							// 注視点の初期高度
-		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, 0.0f, 0.0f);		// 着地待ち状態の向き
+		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, D3DX_PI * -0.5f, 0.0f);	// 着地待ち状態の向き
 		const float DISTANCE[CCamera::SStart::STATE_MAX] =				// 距離
 		{
 			200.0f,				// 着地待ち状態
@@ -186,12 +186,10 @@ namespace
 		};
 		const float REV_DIFF = 0.035f;		// 差分の補正係数
 		const int LAND_COUNT = 70;			// 着地状態のカウント数
-		const D3DXVECTOR3 ROUND_ROT = D3DXVECTOR3(1.1f, D3DX_PI * -0.8f, 0.0f);	// 回り込み状態の向き
-		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(-0.011f, D3DX_PI * -0.008f, 0.0f);	// 回り込み状態の向きの移動量
+		const D3DXVECTOR3 ROUND_ROT = D3DXVECTOR3(1.6f, D3DX_PI * 0.4f, 0.0f);	// 回り込み状態の向き
+		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(0.016f, D3DX_PI * 0.009f, 0.0f);	// 回り込み状態の向きの移動量
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);			// カメラ視点の補正係数
 		const int ROUND_COUNT = 80;			// 周り込み状態の維持カウント数
-		const float BACK_REV_ROT = 0.05f;	// 戻り状態の向きの補正係数
-		const int BACK_COUNT = 140;			// 戻り状態のカウント数
 	}
 }
 
@@ -1277,8 +1275,8 @@ void CCamera::StartRound(CPlayer* pPlayer)
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);
 
 	// 向きを補正する
-	aComplete[0] = useful::LimitMinNum(m_aCamera[TYPE_MAIN].rot.x, start::ROUND_ROT.x);
-	aComplete[1] = useful::LimitMinNum(m_aCamera[TYPE_MAIN].rot.y, start::ROUND_ROT.y);
+	aComplete[0] = useful::LimitMaxNum(m_aCamera[TYPE_MAIN].rot.x, start::ROUND_ROT.x);
+	aComplete[1] = useful::LimitMaxNum(m_aCamera[TYPE_MAIN].rot.y, start::ROUND_ROT.y);
 
 	if (aComplete[0] && aComplete[1])
 	{ // 向きが一定値になった場合
@@ -1319,64 +1317,15 @@ void CCamera::StartRound(CPlayer* pPlayer)
 //============================================================
 void CCamera::StartBack(CPlayer* pPlayer)
 {
-	// カウントを加算する
-	m_startInfo.nCount++;
+	// カメラ目標位置設定
+	SetDestAround();
 
-	// プレイヤーの座標を取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+	// プレイヤーを通常状態にする
+	pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
+	pPlayer->SetAlpha(1.0f);
 
-	// 差分向きを計算
-	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
-	useful::NormalizeRot(diffRot);	// 差分向きを正規化
-
-	// 差分向きを補正
-	if (diffRot.x > around::LIMIT_DIFF)
-	{
-		diffRot.x = around::LIMIT_DIFF;
-	}
-	if (diffRot.y > around::LIMIT_DIFF)
-	{
-		diffRot.y = around::LIMIT_DIFF;
-	}
-
-	// 現在向きの更新
-	m_aCamera[TYPE_MAIN].rot += diffRot * start::BACK_REV_ROT;
-	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
-
-	// 注視点をプレイヤーの頭の位置にする
-	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);
-
-	// 視点の更新
-	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
-	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
-	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
-
-	// 注視点の差分位置を計算
-	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
-
-	// 視点の差分位置を計算
-	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
-
-	// 注視点の現在位置を更新
-	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * 0.2f;
-	m_aCamera[TYPE_MAIN].posR.y += diffPosR.y * 0.1f;
-	m_aCamera[TYPE_MAIN].posR.z += diffPosR.z * 0.2f;
-
-	// 視点の現在位置を更新
-	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * 0.4f;
-	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * 0.1f;
-	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * 0.4f;
-
-	if (m_startInfo.nCount >= start::BACK_COUNT)
-	{ // カウントが一定数になった場合
-
-		// プレイヤーを通常状態にする
-		pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
-		pPlayer->SetAlpha(1.0f);
-
-		// ゲームを通常状態にする
-		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
-	}
+	// ゲームを通常状態にする
+	CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
 }
 
 //============================================================
