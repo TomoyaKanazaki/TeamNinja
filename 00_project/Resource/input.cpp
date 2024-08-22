@@ -775,8 +775,6 @@ void CInputPad::Update(void)
 			UpdateVibration(&m_aVibration[nCntJoyKey], nCntJoyKey);
 		}
 	}
-
-	DebugProc::Print(DebugProc::POINT_CENTER, "スティック向き %f", atan2f((float)GetPressRStickY(0), (float)GetPressRStickX(0)));
 }
 
 //============================================================
