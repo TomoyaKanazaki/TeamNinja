@@ -254,9 +254,20 @@ std::string CStage::GetCurMapStagePass(void) const
 }
 
 //============================================================
-//	現在マップの神器保存パス取得処理
+//	現在マップの神器パス取得処理
 //============================================================
 std::string CStage::GetCurMapGodItemPass(void) const
+{
+	// マップディレクトリに神器パスを追加し返す
+	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ
+	path.append("goditem.txt");	// 神器パスを追加
+	return path.string();		// 文字列化して返す
+}
+
+//============================================================
+//	現在マップの神器保存パス取得処理
+//============================================================
+std::string CStage::GetCurMapSaveGodItemPass(void) const
 {
 	// マップディレクトリに神器保存パスを追加し返す
 	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ

@@ -71,6 +71,7 @@ namespace
 	const D3DXVECTOR3 DMG_ADDROT	= D3DXVECTOR3(0.04f, 0.0f, -0.02f);	// ダメージ状態時のプレイヤー回転量
 	const D3DXVECTOR3 SHADOW_SIZE	= D3DXVECTOR3(80.0f, 0.0f, 80.0f);	// 影の大きさ
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
+	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
 	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
 	const int ORBIT_PART = 15;	// 分割数
@@ -92,12 +93,6 @@ namespace
 	{
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
-	}
-
-	// サウンド関連の情報
-	namespace sound
-	{
-		const int WALK_COUNT = 19;		// 歩行音を鳴らすカウント
 	}
 }
 
@@ -279,10 +274,22 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateSpawn(fDeltaTime);
 		break;
 
+	case STATE_START:
+
+		// スタート状態時の更新
+		currentMotion = UpdateStart(fDeltaTime);
+		break;
+
 	case STATE_NORMAL:
 
 		// 通常状態の更新
 		currentMotion = UpdateNormal(fDeltaTime);
+		break;
+
+	case STATE_GODITEM:
+
+		// 神器獲得状態の更新
+		currentMotion = UpdateGodItem(fDeltaTime);
 		break;
 
 	case STATE_DODGE:
@@ -429,6 +436,18 @@ CPlayer *CPlayer::Create
 			pPlayer->SetVec3Position(point->GetVec3Position());
 		}
 
+		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+		{ // ゲームモードの場合
+
+#if 1
+			// 位置を設定する
+			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
+			pos.y += SPAWN_ADD_HEIGHT;
+			pPlayer->SetVec3Position(pos);
+
+#endif // 0
+		}
+
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
 
 		// 向きを設定
@@ -528,6 +547,41 @@ void CPlayer::SetSpawn(void)
 
 	// 描画を再開
 	SetEnableDraw(true);
+}
+
+//============================================================
+//	神器獲得の設定処理
+//============================================================
+void CPlayer::SetEnableGodItem(const bool bGet)
+{
+	if (bGet)
+	{ // 取得状態の設定
+
+		// プレイヤー向きを設定
+		D3DXVECTOR3 rotDest = VEC3_ZERO;	// 目標向き
+		rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
+
+		// 向きをカメラ目線に
+		SetDestRotation(rotDest);
+
+		// 移動量を初期化
+		SetMove(VEC3_ZERO);
+
+		// 神器獲得モーションにする
+		//SetMotion(MOTION_DEATH);	// TODO：モーション作ってもらう
+
+		// 神器獲得状態にする
+		m_state = STATE_GODITEM;
+	}
+	else
+	{ // 取得状態の解除
+
+		// 待機モーションにする
+		SetMotion(MOTION_IDOL);
+
+		// 通常状態にする
+		m_state = STATE_NORMAL;	// TODO：ここわんちゃん過去状態の方がいいか
+	}
 }
 
 //============================================================
@@ -744,8 +798,39 @@ CPlayer::EMotion CPlayer::UpdateSpawn(const float fDeltaTime)
 	{ // 不透明になり切った場合
 
 		// 状態を設定
-		SetState(STATE_NORMAL);
+		SetState(STATE_START);
 	}
+
+	// 現在のモーションを返す
+	return currentMotion;
+}
+
+//============================================================
+// スタート状態時の更新
+//============================================================
+CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
+{
+	// 変数を宣言
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -799,6 +884,30 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	// 分身の処理
 	if(ControlClone(posPlayer, rotPlayer, fDeltaTime))
 	{ currentMotion = MOTION_DODGE; }
+
+	// 現在のモーションを返す
+	return currentMotion;
+}
+
+//===========================================
+//	神器獲得状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
+{
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 向き反映
+	SetVec3Rotation(m_destRot);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	// 現在のモーションを返す
 	return currentMotion;
@@ -1599,65 +1708,62 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 
-	// スティック入力があった場合
-	if (pPad->GetTriggerRStick())
+	// スティック入力がない場合関数を抜ける
+	if (!pPad->GetTriggerRStick()) { return false; }
+
+	// 前回入力との誤差が許容範囲外の場合関数を抜ける
+	if (m_fTempStick - pPad->GetPressRStickRot() > STICK_ERROR)
 	{
-		// 前回入力との誤差が許容範囲外の場合関数を抜ける
-		if (m_fTempStick - pPad->GetPressRStickRot() > STICK_ERROR)
-		{
-			m_fGimmickTimer = 0.0f;
-			m_bGimmickClone = false;
-			return false;
-		}
-
-		// ギミックのリストを取得
-		if (CGimmickAction::GetList() == nullptr) { return false; }
-		std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
-
-		// プレイヤーから最も近いギミックを取得する変数
-		CGimmickAction* pGimmick = nullptr;
-		float fTempDistance = 0.0f; // 最も近いギミックまでの距離の2乗
-
-		// 最も近いギミックを走査する
-		for (auto gimmick : list)
-		{
-			// 保存してるギミックがnullの場合保存して次に進む
-			if (pGimmick == nullptr)
-			{
-				pGimmick = gimmick;
-				D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
-				fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
-				continue;
-			}
-
-			// プレイヤーと対象ギミックを結ぶベクトルの算出
-			D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
-
-			// 距離の2乗が保存された数値よりも大きい場合次に進む
-			float fDistance = vecToGimmick.x* vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
-			if (fTempDistance < fDistance)
-			{ continue; }
-
-			// 対象ギミックを保存する
-			pGimmick = gimmick;
-			fTempDistance = fDistance;
-		}
-
-		// 距離が近くて使用可能な士気力が足りている場合
-		if (pGimmick->CollisionPlayer() && CTension::GetUseNum() >= pGimmick->GetNumActive())
-		{
-			// 直接ギミックになる分身を必要分生成
-			for (int i = 0; i < pGimmick->GetNumActive(); ++i)
-			{
-				CPlayerClone::Create(pGimmick);
-			}
-		}
-
-		// フラグをリセットし関数を抜ける
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
-		return true;
+		return false;
+		}
+
+	// ギミックのリストを取得
+	if (CGimmickAction::GetList() == nullptr) { return false; }
+	std::list<CGimmickAction*> list = CGimmickAction::GetList()->GetList();
+
+	// プレイヤーから最も近いギミックを取得する変数
+	CGimmickAction* pGimmick = nullptr;
+	float fTempDistance = 0.0f; // 最も近いギミックまでの距離の2乗
+
+	// 最も近いギミックを走査する
+	for (auto gimmick : list)
+	{
+		// 保存してるギミックがnullの場合保存して次に進む
+		if (pGimmick == nullptr)
+		{
+			pGimmick = gimmick;
+			D3DXVECTOR3 vecToGimmick = GetVec3Position() - pGimmick->GetVec3Position();
+			fTempDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+			continue;
+		}
+
+		// プレイヤーと対象ギミックを結ぶベクトルの算出
+		D3DXVECTOR3 vecToGimmick = GetVec3Position() - gimmick->GetVec3Position();
+
+		// 距離の2乗が保存された数値よりも大きい場合次に進む
+		float fDistance = vecToGimmick.x * vecToGimmick.x + vecToGimmick.y * vecToGimmick.y + vecToGimmick.z * vecToGimmick.z;
+		if (fTempDistance < fDistance) { continue; }
+
+		// 対象ギミックを保存する
+		pGimmick = gimmick;
+		fTempDistance = fDistance;
 	}
+
+	// 距離が近くて使用可能な士気力が足りていない場合関数を抜ける
+	int nNumNeed = pGimmick->GetNumActive() - pGimmick->GetNumClone();
+	if (!pGimmick->CollisionPlayer() || CTension::GetUseNum() < nNumNeed) { return false; }
+
+	// 直接ギミックになる分身を必要分生成
+	for (int i = 0; i < nNumNeed; ++i)
+	{
+		CPlayerClone::Create(pGimmick);
+	}
+
+	// フラグをリセットし関数を抜ける
+	m_fGimmickTimer = 0.0f;
+	m_bGimmickClone = false;
 
 	return true;
 }

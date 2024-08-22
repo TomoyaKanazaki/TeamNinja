@@ -26,6 +26,7 @@
 // 定数定義
 namespace
 {
+	const float HEIGHT = 50.0f; // 判定用の高さ
 	const float RADIUS = 70.0f;	// 半径
 	const bool ACTION_SET_FRAG[] = // アクションポイントの設定可能フラグ
 	{
@@ -210,6 +211,7 @@ bool CGimmickAction::CollisionPlayer(void)
 	std::list<CPlayer*> list = CPlayer::GetList()->GetList();	// リストを取得
 	D3DXVECTOR3 pos = GetVec3Position();		// 位置
 	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;	// サイズ
+	size.y = HEIGHT;							// 判定に高さを設定する
 	D3DXVECTOR3 posPlayer = VEC3_ZERO;			// プレイヤーの位置
 	D3DXVECTOR3 sizePlayer = D3DXVECTOR3(RADIUS, 0.0f, RADIUS);		// プレイヤーのサイズ
 
@@ -218,7 +220,7 @@ bool CGimmickAction::CollisionPlayer(void)
 		// 位置を取得
 		posPlayer = player->GetVec3Position();
 
-		if (collision::Box2D
+		if (collision::Box3D
 		(
 			pos,		// 判定位置
 			posPlayer,	// 判定目標位置
@@ -353,24 +355,16 @@ void CGimmickAction::OnScreen()
 		GET_CAMERA->OnScreen(posVtx[i], posScreen[i]);
 	}
 
-	// しね
-#if 0
 	// 画面内判定
 	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
 	{
-		SetEnableDraw(true);
-		DebugProc::Print(DebugProc::POINT_CENTER, "見えている\n");
-		D3DXVECTOR3 pos = VEC3_ZERO;
-		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[0].x, posScreen[0].y, posScreen[0].z);
-		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[1].x, posScreen[1].y, posScreen[1].z);
-		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posScreen[2].x, posScreen[2].y, posScreen[2].z);
-		DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n\n", posScreen[3].x, posScreen[3].y, posScreen[3].z);
+		//SetEnableDraw(true);
+		//DebugProc::Print(DebugProc::POINT_CENTER, "見えている\n");
 	}
 	else
 	{
 		SetEnableDraw(false);
 	}
-#endif
 }
 
 //===========================================

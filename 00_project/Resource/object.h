@@ -89,6 +89,7 @@ public:
 	enum ELabel
 	{
 		LABEL_NONE = 0,		// なし
+		LABEL_MANAGER,		// マネージャー
 		LABEL_UI,			// UI
 		LABEL_TIMER,		// タイマー
 		LABEL_WAVE,			// 波動

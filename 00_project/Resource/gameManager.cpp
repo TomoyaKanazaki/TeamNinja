@@ -15,6 +15,7 @@
 #include "cinemaScope.h"
 #include "timerUI.h"
 #include "hitstop.h"
+#include "godItemManager.h"
 #include "resultManager.h"
 #include "retentionManager.h"
 #include "camera.h"
@@ -86,7 +87,7 @@ HRESULT CGameManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_pResult	= nullptr;		// リザルトマネージャー
-	m_state		= STATE_NORMAL;	// 状態
+	m_state		= STATE_START;	// 状態
 	m_nSave		= -1;			// セーブポイント
 
 	// リザルトマネージャーの生成
@@ -118,6 +119,23 @@ HRESULT CGameManager::Init(void)
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
+
+#if 0
+
+	// TODO：仮置き
+	// プレイヤーを通常状態にする
+	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
+	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
+
+	// 通常状態にする
+	m_state = STATE_NORMAL;
+
+#else
+
+	// スタートカメラのリセット処理
+	GET_MANAGER->GetCamera()->StartReset();
+
+#endif // 0
 
 	// 成功を返す
 	return S_OK;
@@ -161,25 +179,35 @@ void CGameManager::Update(const float fDeltaTime)
 	case STATE_NONE:
 	case STATE_NORMAL:
 
-		// ゴールしていた場合リザルト
-		if (CGoal::GetGoal() != nullptr)
-		{
-			if (CGoal::GetGoal()->GetClear())
-			{ // クリアした場合
+		// ゴールがない場合抜ける
+		if (CGoal::GetGoal() == nullptr) { break; }
 
-				// クリア成功でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
-			}
-			else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
-			{ // 時間切れになった場合
+		if (CGoal::GetGoal()->GetClear())
+		{ // クリアした場合
 
-				// プレイヤーのタイムアップ処理
-				GET_PLAYER->TimeUp();
-
-				// クリア失敗でリザルト遷移
-				TransitionResult(CRetentionManager::EWin::WIN_FAIL);
-			}
+			// クリア成功でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_SUCCESS);
 		}
+		else if (CSceneGame::GetTimerUI()->GetState() == CTimer::STATE_END)
+		{ // 時間切れになった場合
+
+			// プレイヤーのタイムアップ処理
+			GET_PLAYER->TimeUp();
+
+			// クリア失敗でリザルト遷移
+			TransitionResult(CRetentionManager::EWin::WIN_FAIL);
+		}
+		break;
+
+	case STATE_START:
+		break;
+
+	case STATE_GODITEM:
+
+		/*
+			この状態時は自動的に更新が行われる神器獲得演出マネージャーがゲーム画面を操作します。
+			状態の復帰もマネージャーがプレイヤーの操作を検知し行うのでこちら側から管理する必要はないです。
+		*/
 		break;
 
 	case STATE_RESULT:
@@ -196,6 +224,24 @@ void CGameManager::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+}
+
+//============================================================
+//	勾玉獲得処理
+//============================================================
+void CGameManager::PossessGodItem(const CGodItem::EType typeID)
+{
+	// タイマーの計測一時停止
+	CSceneGame::GetTimerUI()->EnableStop(true);
+
+	// プレイヤーの状態を神器獲得状態にする
+	GET_PLAYER->SetEnableGodItem(true);
+
+	// 神器獲得演出マネージャーを生成
+	CGodItemManager::Create(typeID);
+
+	// 神器獲得状態にする
+	m_state = STATE_GODITEM;
 }
 
 //============================================================

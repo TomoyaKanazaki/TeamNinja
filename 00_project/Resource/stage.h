@@ -76,8 +76,9 @@ public:
 	SPass Regist(const char* pMapPass);		// マップパス登録
 	HRESULT BindStage(const char* pPass);	// ステージ割当 (パス)
 	HRESULT BindStage(const SPass& rPass);	// ステージ割当 (情報)
-	std::string GetCurMapStagePass(void) const;		// 現在マップのステージパス取得
-	std::string GetCurMapGodItemPass(void) const;	// 現在マップの神器保存パス取得
+	std::string GetCurMapStagePass(void) const;			// 現在マップのステージパス取得
+	std::string GetCurMapGodItemPass(void) const;		// 現在マップの神器パス取得
+	std::string GetCurMapSaveGodItemPass(void) const;	// 現在マップの神器保存パス取得
 	void SetInitMapPass(const std::string& rMapPass)	{ m_sInitMapPass = rMapPass; }	// 初期化マップパス設定
 	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
 	std::string GetCurMapDirectory(void) const			{ return m_sCurMapFolder; }		// 現在マップのディレクトリ取得

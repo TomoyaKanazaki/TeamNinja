@@ -108,13 +108,8 @@ void CObject::Release(void)
 	if (this != nullptr)
 	{ // 使用されている場合
 
-		if (!m_bDeath)
-		{ // 死亡フラグが立っていない場合
-
-			// 死亡フラグを立てる
-			m_bDeath = true;
-		}
-		else { assert(false); }	// 死亡済み
+		// 死亡フラグを立てる
+		m_bDeath = true;
 	}
 }
 

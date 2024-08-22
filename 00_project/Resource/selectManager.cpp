@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "scene.h"
 #include "sceneSelect.h"
+#include "player.h"
 
 //************************************************************
 //	親クラス [CSelectManager] のメンバ関数
@@ -45,6 +46,11 @@ HRESULT CSelectManager::Init(void)
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
+
+	// TODO：仮置き
+	// プレイヤーを通常状態にする
+	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
+	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
 
 	// 成功を返す
 	return S_OK;

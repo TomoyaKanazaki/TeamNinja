@@ -3,6 +3,7 @@
 //	カメラヘッダー [camera.h]
 //	Author：藤田勇一
 //	Adder : 金崎朋弥
+//	Adder : 小原立暉
 //
 //============================================================
 //************************************************************
@@ -15,6 +16,11 @@
 //	インクルードファイル
 //************************************************************
 #include "object.h"
+
+//************************************************************
+// 前方宣言
+//************************************************************
+class CPlayer;	// プレイヤー
 
 //************************************************************
 //	クラス定義
@@ -40,6 +46,7 @@ public:
 		STATE_FOLLOW,		// 追従状態
 		STATE_AROUND,		// 回り込み
 		STATE_TELEPHOTO,	// 望遠
+		STATE_GODITEM,		// 神器獲得
 		STATE_RESULT,		// リザルト
 		STATE_MAX			// この列挙型の総数
 	};
@@ -94,6 +101,22 @@ public:
 		D3DXMATRIX		mtxView;		// ビューマトリックス
 	};
 
+	// スタートカメラ構造体
+	struct SStart
+	{
+		// 状態
+		enum EState
+		{
+			STATE_LAND = 0,		// 着地待ち状態
+			STATE_ROUND,		// 回り込み状態
+			STATE_BACK,			// 戻り状態
+			STATE_MAX			// この列挙型の総数
+		};
+
+		int nCount;			// カウント
+		EState state;		// 状態
+	};
+
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -110,6 +133,7 @@ public:
 	void SetDestFollow(void);		// カメラ目標位置設定 (追従)
 	void SetDestAround(void);		// カメラ目標位置設定 (回り込み)
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)
+	void SetDestGodItem(void);		// カメラ目標位置設定 (神器獲得)
 	void SetDestResult(void);		// カメラ目標位置設定 (リザルト)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
@@ -132,6 +156,13 @@ public:
 	bool OnScreenPolygon(const D3DXVECTOR3* pPos); // 矩形のスクリーン内判定
 	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 
+	// 小原追加
+	void StartReset(void);					// スタート状態のリセット処理
+	void StartCamera(void);					// スタート演出時のカメラ
+	void StartLand(CPlayer* pPlayer);		// 着地待ちカメラ
+	void StartRound(CPlayer* pPlayer);		// 回り込みカメラ
+	void StartBack(CPlayer* pPlayer);		// 戻りカメラ
+
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成
 	static void Release(CCamera *&prCamera);	// 破棄
@@ -141,6 +172,7 @@ private:
 	void Rotate(void);		// カメラの更新 (回転)
 	void Follow(void);		// カメラの更新 (追従)
 	void Control(void);		// カメラの更新 (操作)
+	void GodItem(void);		// カメラの更新 (神器獲得)
 	void Result(void);		// カメラの更新 (リザルト)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
@@ -154,6 +186,7 @@ private:
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
+	SStart m_startInfo;	// スタートカメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 	float	m_fFov;		// 視野角
