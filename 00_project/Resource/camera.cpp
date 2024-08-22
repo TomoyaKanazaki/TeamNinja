@@ -185,7 +185,8 @@ namespace
 			around::INIT_DIS	// 戻り状態
 		};
 		const float REV_DIFF = 0.035f;		// 差分の補正係数
-		const int LAND_COUNT = 70;			// 着地状態のカウント数
+		const int LAND_COUNT = 50;			// 着地状態のカウント数
+		const int START_MOTION_BLEND = 15;	// スタートモーションのモーションブレンド数
 		const D3DXVECTOR3 ROUND_ROT = D3DXVECTOR3(1.6f, D3DX_PI * 0.4f, 0.0f);	// 回り込み状態の向き
 		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(0.016f, D3DX_PI * 0.009f, 0.0f);	// 回り込み状態の向きの移動量
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);			// カメラ視点の補正係数
@@ -1247,6 +1248,13 @@ void CCamera::StartLand(CPlayer* pPlayer)
 
 	// 状態カウントを加算する
 	m_startInfo.nCount++;
+
+	if (pPlayer->GetMotionType() != CPlayer::MOTION_LANDING)
+	{ // モーションが大着地じゃない場合
+
+		// スタートモーションに設定する
+		pPlayer->SetMotion(CPlayer::MOTION_START, start::START_MOTION_BLEND);
+	}
 
 	if (m_startInfo.nCount % start::LAND_COUNT == 0)
 	{ // 一定カウント経過した場合
