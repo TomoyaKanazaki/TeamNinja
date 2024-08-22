@@ -481,10 +481,30 @@ CListManager<CPlayer> *CPlayer::GetList(void)
 //============================================================
 //	ノックバックヒット処理
 //============================================================
-bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
+bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 {
-	if (IsDeath())				 { return false; }	// 死亡済み
+	if (IsDeath()) { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// ヒットエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// ダメージ状態に変更
+	m_state = STATE_DAMAGE;
+
+	// ノックバック方向を向く
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y = atan2f(rVecKnock.x, rVecKnock.z);
+	SetVec3Rotation(rot);
+
+	// 死んじゃうｶﾓ
+	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
+	{
+		m_state = STATE_DEATH;
+	}
+
+	// 士気力が減少する
+	CTension::Vanish();
 
 	return true;
 }
@@ -503,7 +523,7 @@ bool CPlayer::Hit(const int nDamage)
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
-	// 死んじゃうｶﾓ~
+	// 死んじゃうｶﾓ
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
 		m_state = STATE_DEATH;
@@ -1750,7 +1770,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
 		return false;
-		}
+	}
 
 	// ギミックのリストを取得
 	if (CGimmickAction::GetList() == nullptr) { return false; }
@@ -1836,6 +1856,21 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 			// 当たっていない場合は次に進む
 			continue;
 		}
+
+		// スティック入力の方向を取得する
+		float fRotStick = pPad->GetPressRStickRot() + D3DX_PI * 0.5f;
+
+		// カメラの向きを取得
+		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+
+		// スティック方向を3D空間に対応する
+		float fTemp = (fRotStick - fCameraRot);
+		useful::NormalizeRot(fTemp);
+
+		// スティック方向を向く
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		rot.y = fTemp;
+		SetVec3Rotation(rot);
 
 		// 回避に成功しtrueを返す
 		return true;

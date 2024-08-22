@@ -627,8 +627,11 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			// 回避カウントを初期化する
 			m_nAttackCount = 0;
 
+			// 自身とプレイヤーを結ぶベクトルを算出
+			D3DXVECTOR3 vec = posPlayer - rPos;
+
 			// ヒット処理
-			CScene::GetPlayer()->Hit(500);
+			CScene::GetPlayer()->HitKnockBack(500, vec);
 
 			// ヒット状況を true にする
 			bHit = true;
