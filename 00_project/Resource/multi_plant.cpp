@@ -16,12 +16,12 @@ namespace
 	// TODO ちゃんとした植物のテクスチャ用意する
 	const char* TEXTURE_FILE[] = // テクスチャファイル
 	{
-		"data\\TEXTURE\\Flower000.png", // チューリップ
-		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower000.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower001.png",	// チューリップ
+		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
 	};
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲

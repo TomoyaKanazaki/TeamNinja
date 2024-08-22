@@ -37,6 +37,9 @@
 #include "MapModel.h"
 #include "camera_change.h"
 
+// TODO
+#include "weed.h"
+
 //************************************************************
 //	’è”éŒ¾
 //************************************************************
@@ -114,6 +117,11 @@ HRESULT CGameManager::Init(void)
 	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
 
+#endif
+
+// TODOF‘
+#if 0
+	CWeed::Create(VEC3_ZERO, VEC3_ZERO);
 #endif
 
 	// ‰ñ‚è‚İƒJƒƒ‰‚Ìİ’è

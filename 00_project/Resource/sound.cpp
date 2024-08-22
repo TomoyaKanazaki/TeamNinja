@@ -31,8 +31,8 @@ namespace
 		{ "data\\SE\\land000.wav", 0 },			// ’…’n‰¹ (¬)
 		{ "data\\SE\\land001.wav", 0 },			// ’…’n‰¹ (‘å)
 		{ "data\\SE\\stalkwalk000.wav", 0 },	// ’ÇÕ“G‚Ì•à‚­‰¹
-		{ "data\\SE\\cloneattack000.wav", 0 },	// •ªg‚ğUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\stalkattack000.wav", 0 },	// ’ÇÕ“G‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\stalkattack001.wav", 0 },	// ’ÇÕ“G‚ª•ªg‚ğUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\stalkfound000.wav", 0 },	// ’ÇÕ“G‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\stalkupset000.wav", 0 },	// ’ÇÕ“G‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\stalkstance000.wav", 0 },	// ’ÇÕ“G‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
@@ -46,6 +46,11 @@ namespace
 		{ "data\\SE\\gimmickset000.wav", 0 },	// ƒMƒ~ƒbƒN‚É•ªgƒZƒbƒg
 		{ "data\\SE\\gimmickset001.wav", 0 },	// ƒMƒ~ƒbƒNŠ®¬
 		{ "data\\SE\\button000.wav", 0 },		// ƒ{ƒ^ƒ“‰¹
+		{ "data\\SE\\wolfattack000.wav", 0 },	// ˜T‚ªUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\wolfattack001.wav", 0 },	// ˜T‚ª•ªg‚ğUŒ‚‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\wolffound000.wav", 0 },	// ˜T‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\wolfupset000.wav", 0 },	// ˜T‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\wolfstance000.wav", 0 },	// ˜T‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
 	};
 }
 
