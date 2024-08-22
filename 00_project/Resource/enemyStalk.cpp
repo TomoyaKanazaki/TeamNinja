@@ -795,6 +795,9 @@ CEnemyStalk::EMotion CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
 			// 空白攻撃状態にする
 			SetState(STATE_BLANKATTACK);
 
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_001);
+
 			// 分身に対する攻撃モーションにする
 			return MOTION_BATTLE;
 		}

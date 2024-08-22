@@ -53,7 +53,7 @@ namespace sound
 {
 	const int WALK_COUNT = 32;		// 歩行音を鳴らすカウント数
 	const int FOUND_COUNT = 2;		// 発見音を鳴らすカウント数
-	const int UPSET_COUNT = 200;	// 動揺音を鳴らすカウント数
+	const int UPSET_COUNT = 80;		// 動揺音を鳴らすカウント数
 }
 
 //************************************************************
@@ -600,7 +600,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		SetState(STATE_STANCE);
 
 		// 構えた音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKSTANCE_000);
+		PLAY_SOUND(CSound::LABEL_SE_WOLFSTANCE_000);
 
 		// TODO：構えモーションを返す
 		return MOTION_LANDING;
@@ -760,6 +760,9 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 			// 空白攻撃状態にする
 			SetState(STATE_BLANKATTACK);
 
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_WOLFATTACK_001);
+
 			// 噛みつきモーションにする
 			return MOTION_BITE;
 		}
@@ -832,7 +835,7 @@ int CEnemyWolf::UpdateUpset(void)
 	{ // 状態カウントが一定数になったとき
 
 		// 動揺音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKUPSET_000);
+		PLAY_SOUND(CSound::LABEL_SE_WOLFUPSET_000);
 	}
 
 	// 動揺モーションにする

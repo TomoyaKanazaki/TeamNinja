@@ -713,9 +713,6 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	// 分身との戦闘エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
 
-	// 分身攻撃音を鳴らす
-	PLAY_SOUND(CSound::LABEL_SE_CLONEATTACK_000);
-
 	// 回避受付フラグを false にする
 	m_bDodge = false;
 
