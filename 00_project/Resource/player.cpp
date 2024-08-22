@@ -1737,7 +1737,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
 		return false;
-		}
+	}
 
 	// ギミックのリストを取得
 	if (CGimmickAction::GetList() == nullptr) { return false; }
@@ -1825,14 +1825,19 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 		}
 
 		// スティック入力の方向を取得する
-		float fRotStick = pPad->GetPressRStickRot();
+		float fRotStick = pPad->GetPressRStickRot() + D3DX_PI * 0.5f;
 
 		// カメラの向きを取得
 		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 		// スティック方向を3D空間に対応する
-		float fTemp = -(fRotStick + fCameraRot);
+		float fTemp = (fRotStick - fCameraRot);
 		useful::NormalizeRot(fTemp);
+
+		// スティック方向を向く
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		rot.y = fTemp;
+		SetVec3Rotation(rot);
 
 		// 回避に成功しtrueを返す
 		return true;
