@@ -102,6 +102,26 @@ HRESULT CEditGodItem::Init(void)
 	// モデルを割り当てる
 	m_pGodItem->BindModel(MODEL);
 
+	// マテリアルの割り当て
+	switch (m_infoCreate.type)
+	{
+	case CGodItem::TYPE_RED:
+		m_pGodItem->SetAllMaterial(material::Red());	// 赤色
+		break;
+
+	case CGodItem::TYPE_GREEN:
+		m_pGodItem->SetAllMaterial(material::Green());	// 緑色
+		break;
+
+	case CGodItem::TYPE_BLUE:
+		m_pGodItem->SetAllMaterial(material::Blue());	// 青色
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
 	// 成功を返す
 	return S_OK;
 
@@ -245,8 +265,25 @@ void CEditGodItem::ChangeType(void)
 	{
 		m_infoCreate.type = (CGodItem::EType)((m_infoCreate.type + 1) % CGodItem::TYPE_MAX);
 
-		// モデルを生成し直す
-		m_pGodItem->BindModel(MODEL);
+		// マテリアルの割り当て
+		switch (m_infoCreate.type)
+		{
+		case CGodItem::TYPE_RED:
+			m_pGodItem->SetAllMaterial(material::Red());	// 赤色
+			break;
+
+		case CGodItem::TYPE_GREEN:
+			m_pGodItem->SetAllMaterial(material::Green());	// 緑色
+			break;
+
+		case CGodItem::TYPE_BLUE:
+			m_pGodItem->SetAllMaterial(material::Blue());	// 青色
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
 	}
 }
 
