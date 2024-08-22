@@ -218,9 +218,6 @@ void CCheckPoint::CollisionPlayer(void)
 	// セーブ音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 
-	// セーブモーションを設定する
-	Player->SetState(CPlayer::STATE_SAVE);
-
 	//現在のエフェクトを削除
 	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();
 	if (!vEffect.empty())

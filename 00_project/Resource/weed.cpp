@@ -18,8 +18,13 @@
 //************************************************************
 namespace
 {
-	const int PRIORITY		= 6;	// 草表示の優先順位
-	const int ALPHA_NUMREF	= 120;	// αテストの参照値
+	const int	PRIORITY	 = 6;		// 草表示の優先順位
+	const int	ALPHA_NUMREF = 120;		// αテストの参照値
+	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
+	const float STOMP_REV	 = 0.25f;	// 踏んだ時の補正係数
+	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
+	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
+	const float SWING_REV	 = 0.1f;	// 遷移時の補正係数
 }
 
 //************************************************************
@@ -29,10 +34,13 @@ namespace
 //	コンストラクタ
 //============================================================
 CWeed::CWeed() : CObject3D(CObject::LABEL_WEED, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_fCurLength	(0.0f),	// 現在の距離
-	m_fDestLength	(0.0f),	// 目標の距離
-	m_fCurAngle		(0.0f),	// 現在の角度
-	m_fDestAngle	(0.0f)	// 目標の角度
+	m_offset		(VEC3_ZERO),	// 上頂点オフセット
+	m_bChange		(false),		// 自然揺れと踏みつけの遷移フラグ
+	m_fCurLength	(0.0f),			// 現在の距離
+	m_fDestLength	(0.0f),			// 目標の距離
+	m_fCurAngle		(0.0f),			// 現在の角度
+	m_fDestAngle	(0.0f),			// 目標の角度
+	m_fGapRate		(0.0f)			// 揺れの範囲
 {
 
 }
@@ -51,10 +59,13 @@ CWeed::~CWeed()
 HRESULT CWeed::Init(void)
 {
 	// メンバ変数を初期化
-	m_fCurLength	= 0.0f;	// 現在の距離
-	m_fDestLength	= 0.0f;	// 目標の距離
-	m_fCurAngle		= 0.0f;	// 現在の角度
-	m_fDestAngle	= 0.0f;	// 目標の角度
+	m_offset		= VEC3_ZERO;	// 上頂点オフセット
+	m_bChange		= false;		// 自然揺れと踏みつけの遷移フラグ
+	m_fCurLength	= 0.0f;			// 現在の距離
+	m_fDestLength	= 0.0f;			// 目標の距離
+	m_fCurAngle		= 0.0f;			// 現在の角度
+	m_fDestAngle	= 0.0f;			// 目標の角度
+	m_fGapRate		= (float)(rand() % 628 + 1) * 0.01f;	// 揺れの範囲
 
 	// オブジェクト3Dの初期化
 	if (FAILED(CObject3D::Init()))
@@ -107,7 +118,16 @@ void CWeed::Uninit(void)
 void CWeed::Update(const float fDeltaTime)
 {
 	// プレイヤーとの当たり判定
-	CollisionPlayer();
+	if (!CollisionPlayer())
+	{ // プレイヤーが踏んでいない場合
+
+		// 風で草をなびかせる
+		UpdateSwing(fDeltaTime);
+	}
+
+	// 上頂点座標のずらす量を設定
+	SetGapPosition(0, m_offset);
+	SetGapPosition(1, m_offset);
 
 	// オブジェクト3Dの更新
 	CObject3D::Update(fDeltaTime);
@@ -164,12 +184,12 @@ CWeed *CWeed::Create
 //============================================================
 //	プレイヤーとの当たり判定
 //============================================================
-void CWeed::CollisionPlayer(void)
+bool CWeed::CollisionPlayer(void)
 {
 	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
 
 	// プレイヤーがいない場合抜ける
-	if (pPlayer == nullptr) { return; }
+	if (pPlayer == nullptr) { return false; }
 
 	// プレイヤーとの接触判定
 	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
@@ -184,31 +204,85 @@ void CWeed::CollisionPlayer(void)
 
 		// 草の先端をずらす距離を求める
 		m_fDestLength = fabsf(fDistance - (fRadPlayer + fRadWeed));
-		useful::LimitMaxNum(m_fDestLength, (fRadPlayer + fRadWeed) - 60.0f);
+		useful::LimitMaxNum(m_fDestLength, (fRadPlayer + fRadWeed) - STOMP_MIN);
 
 		// プレイヤー方向を求める
-		m_fDestAngle = atan2f(posWeed.x - posPlayer.x, posWeed.z - posPlayer.z);
+		m_fDestAngle = atan2f(posWeed.x - posPlayer.x, posWeed.z - posPlayer.z) - GetVec3Rotation().y;
+
+		// 現在の距離を求める
+		float fDiffLength = m_fDestLength - m_fCurLength;	// 差分の距離
+		m_fCurLength += fDiffLength * STOMP_REV;			// 距離を目標に近づける
+
+		// 現在の角度を求める
+		float fDiffAngle = m_fDestAngle - m_fCurAngle;	// 差分の角度
+		useful::NormalizeRot(fDiffAngle);		// 差分の角度を補正
+		m_fCurAngle += fDiffAngle * STOMP_REV;	// 距離を目標に近づける
+		useful::NormalizeRot(m_fCurAngle);		// 現在の角度を補正
+
+		// 上頂点移動オフセットを求める
+		m_offset = D3DXVECTOR3
+		(
+			m_fCurLength * sinf(m_fCurAngle),
+			0.0f,
+			m_fCurLength * cosf(m_fCurAngle)
+		);
+
+		// 踏んづけたので遷移フラグオン
+		m_bChange = true;
+
+		return true;
+	}
+
+	return false;
+}
+
+//============================================================
+//	風でなびく更新処理
+//============================================================
+void CWeed::UpdateSwing(const float fDeltaTime)
+{
+	const D3DXVECTOR3 rotWeed = GetVec3Rotation();	// 草向き
+	if (m_bChange)
+	{ // 遷移中の場合
+
+		// 目標オフセットを求める
+		const D3DXVECTOR3 destOffset = D3DXVECTOR3
+		(
+			SWING_OFFSET * sinf(m_fGapRate) * sinf(SWING_ANGLE - rotWeed.y),
+			0.0f,
+			SWING_OFFSET * sinf(m_fGapRate) * cosf(SWING_ANGLE - rotWeed.y)
+		);
+
+		// 上頂点移動オフセットを求める
+		const D3DXVECTOR3 diffOffset = destOffset - m_offset;
+		m_offset += diffOffset * SWING_REV;
+
+		if (fabsf(m_offset.x - destOffset.x) <= 1.0f
+		&&  fabsf(m_offset.z - destOffset.z) <= 1.0f)
+		{ // なびく初期位置に到達した場合
+
+			// 遷移完了したのでフラグオフ
+			m_bChange = false;
+		}
 	}
 	else
-	{ // 踏んでいない場合
+	{ // 遷移済みの場合
 
-		// 踏まれていないので初期値に戻す
-		m_fDestLength = 0.0f;	// 目標の距離
-		m_fDestAngle = 0.0f;	// 目標の角度
+		// 揺れ時間の加算
+		m_fGapRate += fDeltaTime;
+
+		// 時間の丸め込み
+		if (m_fGapRate > D3DX_PI * 2.0f)
+		{
+			m_fGapRate -= D3DX_PI * 2.0f;
+		}
+
+		// 揺れた後のオフセットを計算
+		m_offset = D3DXVECTOR3
+		(
+			SWING_OFFSET * sinf(m_fGapRate) * sinf(SWING_ANGLE - rotWeed.y),
+			0.0f,
+			SWING_OFFSET * sinf(m_fGapRate) * cosf(SWING_ANGLE - rotWeed.y)
+		);
 	}
-
-	// 現在の距離を求める
-	float fDiffLength = m_fDestLength - m_fCurLength;	// 差分の距離
-	m_fCurLength += fDiffLength * 0.5f;					// 距離を目標に近づける
-
-	// 現在の角度を求める
-	float fDiffAngle = m_fDestAngle - m_fCurAngle;		// 差分の角度
-	m_fCurAngle += fDiffAngle * 0.5f;					// 距離を目標に近づける
-
-	// 上頂点移動オフセットを求める
-	D3DXVECTOR3 offset = D3DXVECTOR3(m_fCurLength * sinf(m_fCurAngle), 0.0f, m_fCurLength * cosf(m_fCurAngle));
-
-	// 座標のずらす量を設定
-	SetGapPosition(0, offset);
-	SetGapPosition(1, offset);
 }

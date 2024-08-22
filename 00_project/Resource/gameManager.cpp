@@ -103,9 +103,6 @@ HRESULT CGameManager::Init(void)
 		return E_FAIL;
 	}
 
-	// スタートUIを生成
-	CPopUpUI::Create(START_TEXTURE);
-
 // わんわんおー
 #if 0
 	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
@@ -120,8 +117,11 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // TODO：草
-#if 0
-	CWeed::Create(VEC3_ZERO, VEC3_ZERO);
+#if 1
+	CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 0.0f, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 1.0f, D3DXVECTOR3(0.0f, 1.57f, 0.0f));
+	CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 2.0f, D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+	CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 3.0f, D3DXVECTOR3(0.0f, -1.57f, 0.0f));
 #endif
 
 	// 回り込みカメラの設定

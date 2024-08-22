@@ -17,6 +17,7 @@
 #include "screen.h"
 #include "debug.h"
 #include "debugproc.h"
+#include "fog.h"
 
 //************************************************************
 //	定数宣言
@@ -207,6 +208,9 @@ void CRenderer::Draw(void)
 	// 画面の描画
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{ // 描画開始が成功した場合
+
+		// フォグの描画 TODO : 丹野がシェーダー書く
+		Fog::Draw();
 
 		// 現在のビューポートを取得
 		m_pD3DDevice->GetViewport(&viewportDef);

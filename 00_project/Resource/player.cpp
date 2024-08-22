@@ -77,7 +77,7 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 480.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
@@ -310,12 +310,6 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDamage(fDeltaTime);
 		break;
 
-	case STATE_SAVE:
-
-		// セーブ状態の更新
-		currentMotion = UpdateSave(fDeltaTime);
-		break;
-
 	default:
 		assert(false);
 		break;
@@ -342,15 +336,6 @@ void CPlayer::Update(const float fDeltaTime)
 	if (pKeyboard->IsTrigger(DIK_RIGHT))
 	{
 		RecoverCheckPoint();
-	}
-
-	if (pKeyboard->IsTrigger(DIK_UP))
-	{
-		CTension::Create();
-	}
-	if (pKeyboard->IsTrigger(DIK_DOWN))
-	{
-		m_state = STATE_DEATH;
 	}
 
 #endif
@@ -1051,42 +1036,6 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 }
 
 //============================================================
-// セーブ状態時の更新
-//============================================================
-CPlayer::EMotion CPlayer::UpdateSave(const float fDeltaTime)
-{
-	// 状態管理カウントを0にする
-	m_nCounterState = 0;
-
-	// 移動量を0にする
-	m_move = VEC3_ZERO;
-
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	// 重力の更新
-	UpdateGravity(fDeltaTime);
-
-	// 位置更新
-	UpdatePosition(pos, fDeltaTime);
-
-	// 着地判定
-	UpdateLanding(pos, fDeltaTime);
-
-	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
-
-	// 大人の壁の判定
-	GET_STAGE->LimitPosition(pos, RADIUS);
-
-	// 位置を反映
-	SetVec3Position(pos);
-
-	// セーブモーションを返す
-	return MOTION_SAVE;
-}
-
-//============================================================
 //	過去位置の更新処理
 //============================================================
 void CPlayer::UpdateOldPosition(void)
@@ -1557,13 +1506,6 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
-
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_LAND);
-		}
 
 		break;
 	}

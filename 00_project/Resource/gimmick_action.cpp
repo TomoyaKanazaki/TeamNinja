@@ -144,7 +144,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 	if (GetNumActive() <= m_nNumClone)
 	{
 		// 前フレームのフラグがオフの場合エフェクトを発生
-		if (!m_bOldActive)
+		if (!m_bOldActive && GetType() != TYPE_POST)
 		{
 			GET_EFFECT->Create
 			(
@@ -266,6 +266,9 @@ void CGimmickAction::AddNumClone()
 	
 	// 加算
 	++m_nNumClone;
+
+	// ボタンギミックの場合関数を抜ける
+	if (GetType() == TYPE_POST) { return; }
 
 	// エフェクトを生成
 	if (m_pEffect == nullptr)
