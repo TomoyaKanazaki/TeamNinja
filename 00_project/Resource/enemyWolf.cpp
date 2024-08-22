@@ -18,6 +18,7 @@
 #include "enemyNavStreet.h"
 #include "enemyNavRandom.h"
 #include "enemyChaseRange.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -116,6 +117,23 @@ void CEnemyWolf::Uninit(void)
 //============================================================
 void CEnemyWolf::Update(const float fDeltaTime)
 {
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetVec3Position()))
+	{ // 画面内にいない場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 位置と向きを設定する
+		SetVec3Position(GetPosInit());
+		SetVec3Rotation(GetRotInit());
+
+		// 透明度を1.0fにする
+		SetAlpha(1.0f);
+
+		// 抜ける
+		return;
+	}
+
 	// 敵の更新
 	CEnemyAttack::Update(fDeltaTime);
 }

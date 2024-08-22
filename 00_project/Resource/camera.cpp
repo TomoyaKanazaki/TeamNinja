@@ -1155,6 +1155,11 @@ void CCamera::StartCamera(void)
 		GET_INPUTKEY->IsTrigger(DIK_RETURN))
 	{ // スキップキーを押した場合
 
+		// プレイヤーの位置を設定する(空中から始まらないように)
+		D3DXVECTOR3 posPlayer = player->GetVec3Position();
+		posPlayer.y = 0.0f;
+		player->SetVec3Position(posPlayer);
+
 		// ゲーム遷移処理
 		EnterGame(player);
 
