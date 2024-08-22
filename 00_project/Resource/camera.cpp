@@ -22,6 +22,7 @@
 #include "collision.h"
 #include "retentionManager.h"
 #include "gameManager.h"
+#include "timerUI.h"
 
 //************************************************************
 //	定数宣言
@@ -1154,34 +1155,8 @@ void CCamera::StartCamera(void)
 		GET_INPUTKEY->IsTrigger(DIK_RETURN))
 	{ // スキップキーを押した場合
 
-		// TODO：今はとりあえず0.0fにしているがしっかり地面に着地するようにしたい
-		D3DXVECTOR3 posPlayer = player->GetVec3Position();
-		posPlayer.y = 0.0f;
-		player->SetVec3Position(posPlayer);
-
-		// 周り込みの計算
-		CalcAround(player->GetVec3Position());
-
-		// 向きを設定する
-		m_aCamera[TYPE_MAIN].rot = m_aCamera[TYPE_MAIN].destRot;
-
-		// 距離を設定する
-		m_aCamera[TYPE_MAIN].fDis = around::INIT_DIS;
-
-		// 注視点をプレイヤーの頭の位置にする
-		m_aCamera[TYPE_MAIN].posR = player->GetVec3Position() + D3DXVECTOR3(0.0f, player->GetHeight(), 0.0f);
-
-		// 視点の更新
-		m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
-		m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
-		m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
-
-		// プレイヤーを通常状態にする
-		player->SetState(CPlayer::EState::STATE_NORMAL);
-		player->SetAlpha(1.0f);
-
-		// ゲームを通常状態にする
-		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+		// ゲーム遷移処理
+		EnterGame(player);
 
 		// この先の処理を行わない
 		return;
@@ -1205,8 +1180,8 @@ void CCamera::StartCamera(void)
 
 	case SStart::STATE_BACK:		// 戻り状態
 
-		// 戻り処理
-		StartBack(player);
+		// ゲーム遷移処理
+		EnterGame(player);
 
 		break;
 
@@ -1321,9 +1296,9 @@ void CCamera::StartRound(CPlayer* pPlayer)
 }
 
 //============================================================
-// 戻りカメラ
+// ゲーム遷移処理
 //============================================================
-void CCamera::StartBack(CPlayer* pPlayer)
+void CCamera::EnterGame(CPlayer* pPlayer)
 {
 	// カメラ目標位置設定
 	SetDestAround();
@@ -1334,6 +1309,9 @@ void CCamera::StartBack(CPlayer* pPlayer)
 
 	// ゲームを通常状態にする
 	CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+
+	// タイマーの計測を開始する
+	CSceneGame::GetTimerUI()->Start();
 }
 
 //============================================================
