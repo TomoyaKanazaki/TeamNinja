@@ -338,15 +338,6 @@ void CPlayer::Update(const float fDeltaTime)
 		RecoverCheckPoint();
 	}
 
-	if (pKeyboard->IsTrigger(DIK_UP))
-	{
-		CTension::Create();
-	}
-	if (pKeyboard->IsTrigger(DIK_DOWN))
-	{
-		m_state = STATE_DEATH;
-	}
-
 #endif
 }
 
