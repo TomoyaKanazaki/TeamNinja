@@ -1006,13 +1006,25 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 		if (OnScreen(*pPos, posVtx[i])) { return true; }
 	}
 
+	// 全ての頂点がカメラの裏側の場合falseを返す
+	if
+	(
+		posVtx[0].z >= 1.0f &&
+		posVtx[1].z >= 1.0f &&
+		posVtx[2].z >= 1.0f &&
+		posVtx[3].z >= 1.0f
+	)
+	{
+		return false;
+	}
+
 	// 各頂点を結ぶベクトル(4辺)を算出
 	D3DXVECTOR3 vecVtx[4] =
 	{
 		posVtx[1] - posVtx[0],
-		posVtx[2] - posVtx[1],
-		posVtx[3] - posVtx[2],
-		posVtx[0] - posVtx[3]
+		posVtx[3] - posVtx[1],
+		posVtx[0] - posVtx[2],
+		posVtx[2] - posVtx[3]
 	};
 
 	// 各ベクトルの大きさを算出
@@ -1093,7 +1105,7 @@ bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
 		float fCross = vecVtx[i].y * (SCREEN_CENT.x - posVtx[i].x) - vecVtx[i].x * (SCREEN_CENT.y - posVtx[i].y);
 
 		// 外積の値が1つでも負の場合falseを返す
-		if (fCross < 0.0f) { return false; }
+		if (fCross > 0.0f) { return false; }
 	}
 
 	// ここまで来れたらtrueを返す
