@@ -46,6 +46,8 @@ namespace
 		{ "data\\SE\\gimmickset000.wav", 0 },	// ギミックに分身セット
 		{ "data\\SE\\gimmickset001.wav", 0 },	// ギミック完成
 		{ "data\\SE\\button000.wav", 0 },		// ボタン音
+		{ "data\\SE\\wolfattack000.wav", 0 },	// 狼が攻撃したときの音
+		{ "data\\SE\\wolffound000.wav", 0 },	// 狼が発見したときの音
 	};
 }
 
