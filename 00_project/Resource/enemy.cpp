@@ -47,6 +47,7 @@ m_oldPos(VEC3_ZERO),		// 過去位置
 m_posInit(VEC3_ZERO),		// 初期位置
 m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
+m_rotInit(VEC3_ZERO),		// 初期向き
 m_fAlpha(1.0f),				// 透明度
 m_bJump(false),				// 着地状況
 m_bVanish(false)			// 消滅状況
