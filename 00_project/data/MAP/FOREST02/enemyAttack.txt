@@ -1,0 +1,27 @@
+#==============================================================================
+#
+#	敵のセットアップ [enemy.txt]
+#	Author : 小原 立暉
+#
+#==============================================================================
+STAGE_ENEMYSET
+
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= 325.00 0.00 -325.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 200.0 0.0
+		CHASESIZE 	= 350.0 300.0
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= 875.00 0.00 -325.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 200.0 0.0
+		CHASESIZE 	= 350.0 300.0
+	END_ENEMYSET
+
+END_STAGE_ENEMYSET
