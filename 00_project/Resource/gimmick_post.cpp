@@ -133,9 +133,6 @@ void CGimmickPost::Update(const float fDeltaTime)
 
 		// ボタンを押しこむ
 		m_fButtonHeight -= BUTTON_MOVE * fDeltaTime;
-
-		// 色を変更
-		ChangeColor();
 	}
 	else
 	{ // ボタンが押されていない場合
