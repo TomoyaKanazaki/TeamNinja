@@ -21,6 +21,7 @@
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
 #include "camera.h"
+#include "player.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -119,6 +120,8 @@ void CEnemyStalk::Uninit(void)
 //============================================================
 void CEnemyStalk::Update(const float fDeltaTime)
 {
+	// TODOF‰ñ”ğ‚µ‚½‚Æ‚«‚ÉX‰æ–ÊŠO”»’è‚É“ü‚Á‚Ä‚µ‚Ü‚¤
+
 	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetVec3Position()))
 	{ // ‰æ–Ê“à‚É‚¢‚È‚¢ê‡
 
