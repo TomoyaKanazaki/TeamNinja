@@ -6,14 +6,15 @@
 //===========================================
 #include "plant.h"
 #include "manager.h"
+#include "camera.h"
 
 //===========================================
 //  定数定義
 //===========================================
 namespace
 {
-	const float	POLYGON_WIDTH	= 40.0f;	// ポリゴンの横幅
-	const int	ALPHA_NUMREF	= 180;		// αテストの参照値
+	const float	POLYGON_SCALE = 60.0f;		// ポリゴンのサイズ
+	const int	ALPHA_NUMREF = 180;			// αテストの参照値
 }
 
 //===========================================
@@ -41,13 +42,10 @@ CPlant::~CPlant()
 HRESULT CPlant::Init(void)
 {
 	// 親クラスの初期化
-	if (FAILED(CObjectBillboard::Init())) { assert(false); return E_FAIL; }
+	if (FAILED(CObject3D::Init())) { assert(false); return E_FAIL; }
 
 	// 原点設定
 	SetOrigin(ORIGIN_CENTER);
-	
-	// 回転設定
-	SetRotate(ROTATE_LATERAL);
 
 	// ラベルの変更
 	SetLabel(LABEL_GIMMICK);
@@ -93,7 +91,7 @@ void CPlant::Uninit(void)
 	}
 
 	// 親クラスの終了
-	CObjectBillboard::Uninit();
+	CObject3D::Uninit();
 }
 
 //===========================================
@@ -101,8 +99,11 @@ void CPlant::Uninit(void)
 //===========================================
 void CPlant::Update(const float fDeltaTime)
 {
+	// 方向転換
+	Rotation();
+
 	// 親クラスの更新
-	CObjectBillboard::Update(fDeltaTime);
+	CObject3D::Update(fDeltaTime);
 }
 
 //===========================================
@@ -111,7 +112,7 @@ void CPlant::Update(const float fDeltaTime)
 void CPlant::Draw(CShader* pShader)
 {
 	// 親クラスの描画
-	CObjectBillboard::Draw(pShader);
+	CObject3D::Draw(pShader);
 }
 
 //===========================================
@@ -132,12 +133,7 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 	pPlant->BindTexture(GET_MANAGER->GetTexture()->Regist(sPass));
 
 	// サイズの設定
-	pPlant->SetVec3Sizing(D3DXVECTOR3
-	(
-		POLYGON_WIDTH,
-		useful::GetTexHeightFromAspect(POLYGON_WIDTH, pPlant->GetTextureIndex()),
-		0.0f
-	));
+	pPlant->SetVec3Sizing(useful::GetTexAspect(GET_MANAGER->GetTexture()->Regist(sPass)) * POLYGON_SCALE);
 
 	// 位置を設定
 	pPlant->SetVec3Position(rPos + D3DXVECTOR3(0.0f, pPlant->GetVec3Sizing().y * 0.5f, 0.0f));
@@ -152,4 +148,31 @@ CPlant* CPlant::Create(const D3DXVECTOR3& rPos, const char* sPass)
 CListManager<CPlant>* CPlant::GetList(void)
 {
 	return m_pList;
+}
+
+//==========================================
+//  回転処理
+//==========================================
+void CPlant::Rotation()
+{
+	// 自身の座標を取得
+	D3DXVECTOR3 posThis = GetVec3Position();
+
+	// 視点の座標を取得
+	D3DXVECTOR3 posCamera = GET_CAMERA->GetPositionV();
+
+	// 自身の座標と視点の座標を結ぶベクトルを作成
+	D3DXVECTOR3 vecToPos = posThis - posCamera;
+
+	// 2点間を結ぶベクトルの角度を算出
+	float fRot = atan2f(vecToPos.x, vecToPos.z);
+
+	// 自身の向きを取得
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	// yの向きをカメラに向ける
+	rot.y = fRot;
+
+	// 向きを設定
+	SetVec3Rotation(rot);
 }

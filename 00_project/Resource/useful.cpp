@@ -462,6 +462,21 @@ void useful::RotToVec(const float fPhi, const float fTheta, D3DXVECTOR3 *pVec)
 }
 
 //============================================================
+//	テクスチャのアスペクト比の取得処理
+//============================================================
+D3DXVECTOR3 useful::GetTexAspect(const int nTexID)
+{
+	// テクスチャアスペクト比を取得
+	D3DXVECTOR2 aspect = GET_MANAGER->GetTexture()->GetInfo(nTexID).aspect;
+
+	// アスペクト比を3D座標に変換
+	D3DXVECTOR3 aspect3 = D3DXVECTOR3(aspect.x, aspect.y, 0.0f);
+
+	// アスペクト比から計算した横幅を返す
+	return aspect3;
+}
+
+//============================================================
 //	縦幅からテクスチャのアスペクト比を考慮した横幅の取得処理
 //============================================================
 float useful::GetTexWidthFromAspect(const float fHeight, const int nTexID)

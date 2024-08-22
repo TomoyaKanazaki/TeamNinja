@@ -5,12 +5,12 @@
 //  Author : Tomoya Kanazaki
 //
 //===========================================
-#include "objectBillboard.h"
+#include "object3D.h"
 
 //===========================================
 //  クラス定義
 //===========================================
-class CPlant : public CObjectBillboard
+class CPlant : public CObject3D
 {
 public:
 
@@ -28,6 +28,9 @@ public:
 	static CListManager<CPlant>* GetList(void); // リスト取得
 
 private:
+
+	// メンバ関数
+	void Rotation(); // 回転処理
 
 	// 静的メンバ変数
 	static CListManager<CPlant>* m_pList; // オブジェクトリスト
