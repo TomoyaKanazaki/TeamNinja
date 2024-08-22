@@ -1677,7 +1677,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = -(fRotStick + fCameraRot);
+	float fTemp = fCameraRot - fRotStick;
 	useful::NormalizeRot(fTemp);
 
 	// 分身の位置を算出
@@ -1701,7 +1701,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	{
 		m_bGimmickClone = true;
 		m_fGimmickTimer = 0.0f;
-		m_fTempStick = -fTemp;
+		m_fTempStick = fRotStick;
 	}
 
 	// 分身生み出し音を鳴らす
@@ -1838,12 +1838,12 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 		// ボックスの当たり判定
 		if (!collision::Box3D
 		(
-			rPos,				// 判定位置
-			enemy->GetVec3Position(),			// 判定目標位置
-			GetVec3Sizing(),	// 判定サイズ(右・上・後)
-			GetVec3Sizing(),	// 判定サイズ(左・下・前)
-			coliisionUp,		// 判定目標サイズ(右・上・後)
-			coliisionDown		// 判定目標サイズ(左・下・前)
+			rPos,						// 判定位置
+			enemy->GetVec3Position(),	// 判定目標位置
+			GetVec3Sizing(),			// 判定サイズ(右・上・後)
+			GetVec3Sizing(),			// 判定サイズ(左・下・前)
+			coliisionUp,				// 判定目標サイズ(右・上・後)
+			coliisionDown				// 判定目標サイズ(左・下・前)
 		))
 		{
 			// 当たっていない場合は次に進む
@@ -1857,7 +1857,7 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 		// スティック方向を3D空間に対応する
-		float fTemp = (fRotStick - fCameraRot);
+		float fTemp = fRotStick - fCameraRot;
 		useful::NormalizeRot(fTemp);
 
 		// スティック方向を向く
