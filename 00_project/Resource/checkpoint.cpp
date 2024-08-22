@@ -22,9 +22,10 @@
 namespace
 {
 
-	const float RADIUS = 50.0f;	// 半径
+	const float RADIUS = 50.0f;			// 半径
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 8.0f, 0.0f);//エフェクト用オフセット
 	const D3DXVECTOR3 OFFSET_CHECKEFFECT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);//チェックエフェクト用オフセット
+	const int SAVE_MOTION_BLEND = 8;	// セーブモーションのブレンドカウント
 }
 
 //==========================================
@@ -216,6 +217,9 @@ void CCheckPoint::CollisionPlayer(void)
 
 	// セーブ音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
+
+	// セーブモーションを設定する
+	Player->SetState(CPlayer::STATE_SAVE);
 
 	//現在のエフェクトを削除
 	std::vector<CEffekseer::CEffectData*> vEffect = GET_EFFECT->GetList();

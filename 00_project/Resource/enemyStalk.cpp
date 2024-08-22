@@ -20,6 +20,8 @@
 #include "enemyNavRandom.h"
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
+#include "camera.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -118,6 +120,25 @@ void CEnemyStalk::Uninit(void)
 //============================================================
 void CEnemyStalk::Update(const float fDeltaTime)
 {
+	// TODO：回避したときに時々画面外判定に入ってしまう
+
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetVec3Position()))
+	{ // 画面内にいない場合
+
+		// 巡回状態にする
+		m_state = STATE_CRAWL;
+
+		// 位置と向きを設定する
+		SetVec3Position(GetPosInit());
+		SetVec3Rotation(GetRotInit());
+
+		// 透明度を1.0fにする
+		SetAlpha(1.0f);
+
+		// 抜ける
+		return;
+	}
+
 	// 敵の更新
 	CEnemyAttack::Update(fDeltaTime);
 }

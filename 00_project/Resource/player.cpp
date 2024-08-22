@@ -310,6 +310,12 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDamage(fDeltaTime);
 		break;
 
+	case STATE_SAVE:
+
+		// セーブ状態の更新
+		currentMotion = UpdateSave(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -481,10 +487,30 @@ CListManager<CPlayer> *CPlayer::GetList(void)
 //============================================================
 //	ノックバックヒット処理
 //============================================================
-bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
+bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 {
-	if (IsDeath())				 { return false; }	// 死亡済み
+	if (IsDeath()) { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// ヒットエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// ダメージ状態に変更
+	m_state = STATE_DAMAGE;
+
+	// ノックバック方向を向く
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y = atan2f(rVecKnock.x, rVecKnock.z);
+	SetVec3Rotation(rot);
+
+	// 死んじゃうｶﾓ
+	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
+	{
+		m_state = STATE_DEATH;
+	}
+
+	// 士気力が減少する
+	CTension::Vanish();
 
 	return true;
 }
@@ -503,7 +529,7 @@ bool CPlayer::Hit(const int nDamage)
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
-	// 死んじゃうｶﾓ~
+	// 死んじゃうｶﾓ
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
 		m_state = STATE_DEATH;
@@ -1025,6 +1051,42 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 }
 
 //============================================================
+// セーブ状態時の更新
+//============================================================
+CPlayer::EMotion CPlayer::UpdateSave(const float fDeltaTime)
+{
+	// 状態管理カウントを0にする
+	m_nCounterState = 0;
+
+	// 移動量を0にする
+	m_move = VEC3_ZERO;
+
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	// セーブモーションを返す
+	return MOTION_SAVE;
+}
+
+//============================================================
 //	過去位置の更新処理
 //============================================================
 void CPlayer::UpdateOldPosition(void)
@@ -1074,9 +1136,8 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_destRot.y = fMoveRot;
 
 		// 移動量を設定する
-		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
-		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
-		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
+		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
 
 		// 橋に乗っている場合移動量を消す
 		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
@@ -1469,6 +1530,42 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 
 		break;
+
+	case MOTION_SAVE:	// チェックポイントモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
+		}
+
+		break;
+
+	case MOTION_GET:	// 神器取得モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+
+	case MOTION_START:	// スタートモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
 	}
 }
 
@@ -1717,7 +1814,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
 		return false;
-		}
+	}
 
 	// ギミックのリストを取得
 	if (CGimmickAction::GetList() == nullptr) { return false; }
@@ -1803,6 +1900,21 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 			// 当たっていない場合は次に進む
 			continue;
 		}
+
+		// スティック入力の方向を取得する
+		float fRotStick = pPad->GetPressRStickRot() + D3DX_PI * 0.5f;
+
+		// カメラの向きを取得
+		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+
+		// スティック方向を3D空間に対応する
+		float fTemp = (fRotStick - fCameraRot);
+		useful::NormalizeRot(fTemp);
+
+		// スティック方向を向く
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		rot.y = fTemp;
+		SetVec3Rotation(rot);
 
 		// 回避に成功しtrueを返す
 		return true;

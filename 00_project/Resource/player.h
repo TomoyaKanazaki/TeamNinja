@@ -79,6 +79,9 @@ public:
 		MOTION_DODGE,		// 回避モーション
 		MOTION_DEATH,		// 死亡モーション
 		MOTION_DAMAGE,		// ダメージモーション
+		MOTION_SAVE,		// チェックポイントモーション
+		MOTION_GET,			// 神器取得モーション
+		MOTION_START,		// スタートモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -93,6 +96,7 @@ public:
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
+		STATE_SAVE,		// セーブ状態
 		STATE_MAX		// この列挙型の総数
 	};
 
@@ -161,6 +165,7 @@ private:
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
+	EMotion UpdateSave(const float fDeltaTime);		// セーブ状態時の更新
 	void UpdateOldPosition(void);	// 過去位置の更新
 	EMotion UpdateMove(void);		// 移動量・目標向きの更新
 	void UpdateGravity(const float fDeltaTime);		// 重力の更新

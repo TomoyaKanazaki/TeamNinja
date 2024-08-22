@@ -24,22 +24,22 @@ namespace
 {
 	const char *TEXTURE_FILE[] =	// テクスチャファイル
 	{
-		"data\\TEXTURE\\pause000.png",	// 再開テクスチャ
-		"data\\TEXTURE\\pause001.png",	// リトライテクスチャ
-		"data\\TEXTURE\\pause002.png",	// 終了テクスチャ
+		"data\\TEXTURE\\pause003.png",	// 再開テクスチャ
+		"data\\TEXTURE\\pause004.png",	// リトライテクスチャ
+		"data\\TEXTURE\\pause005.png",	// 終了テクスチャ
 	};
 
 	const int PRIORITY = 6;	// ポーズ表示の優先順位
 
-	const D3DXCOLOR BG_COL		= D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.6f);	// 背景カラー
+	const D3DXCOLOR BG_COL		= D3DXCOLOR(0.0f, 0.0f, 0.1f, 0.6f);	// 背景カラー
 	const D3DXCOLOR CHOICE_COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 選択中カラー
 	const D3DXCOLOR DEFAULT_COL	= D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);	// 非選択中カラー
 
 	namespace select
 	{
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(640.0f, 210.0f, 0.0f);	// セレクトメニューの位置
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(340.0f, 360.0f, 0.0f);	// セレクトメニューの位置
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(440.0f, 110.0f, 0.0f);	// セレクトメニューの大きさ
-		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(0.0f, 150.0f, 0.0f);		// セレクトメニューの空白
+		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(300.0f, 0.0f, 0.0f);		// セレクトメニューの空白
 	}
 }
 
@@ -326,9 +326,9 @@ void CPause::Select(void)
 	// フェード中なら抜ける
 	if (GET_MANAGER->GetFade()->IsFade()) { return; }
 
-	if (pKeyboard->IsTrigger(DIK_W)
-	||  pKeyboard->IsTrigger(DIK_UP)
-	||  pPad->IsTrigger(CInputPad::KEY_UP))
+	if (pKeyboard->IsTrigger(DIK_A)
+	||  pKeyboard->IsTrigger(DIK_LEFT)
+	||  pPad->IsTrigger(CInputPad::KEY_LEFT))
 	{ // 上移動の操作が行われた場合
 
 		// 上に選択をずらす
@@ -337,9 +337,9 @@ void CPause::Select(void)
 		// サウンドの再生
 		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 	}
-	if (pKeyboard->IsTrigger(DIK_S)
-	||  pKeyboard->IsTrigger(DIK_DOWN)
-	||  pPad->IsTrigger(CInputPad::KEY_DOWN))
+	if (pKeyboard->IsTrigger(DIK_D)
+	||  pKeyboard->IsTrigger(DIK_RIGHT)
+	||  pPad->IsTrigger(CInputPad::KEY_RIGHT))
 	{ // 下移動の操作が行われた場合
 
 		// 下に選択をずらす
