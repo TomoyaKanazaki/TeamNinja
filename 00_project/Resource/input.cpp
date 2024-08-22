@@ -1176,7 +1176,7 @@ float CInputPad::GetPressLStickTilt(int nPadID)
 {
 	// 変数を宣言
 	D3DXVECTOR3	vecLTilt = D3DXVECTOR3((float)GetPressLStickX(nPadID), (float)GetPressLStickY(nPadID), 0.0f);	// Lスティック各軸の傾き量
-	float fLTilt = sqrtf(vecLTilt.x * vecLTilt.x + vecLTilt.y * vecLTilt.y) * 0.5f;	// Lスティックの傾き量
+	float fLTilt = sqrtf(vecLTilt.x * vecLTilt.x + vecLTilt.y * vecLTilt.y);	// Lスティックの傾き量
 
 	// Lスティックの傾きを返す
 	return fLTilt;
