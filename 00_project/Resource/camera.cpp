@@ -192,6 +192,9 @@ namespace
 		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(0.016f, D3DX_PI * 0.009f, 0.0f);	// 回り込み状態の向きの移動量
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);			// カメラ視点の補正係数
 		const int ROUND_COUNT = 80;			// 周り込み状態の維持カウント数
+		const float BACK_REV_ROT = 0.05f;	// 戻り状態の向きの補正係数
+		const int BACK_COUNT = 140;			// 戻り状態のカウント数
+		const float ENTRY_GAME_SHIFT = -63.30f;		// ゲームに入る時にずらす距離
 	}
 }
 
@@ -1169,11 +1172,26 @@ void CCamera::StartCamera(void)
 
 		// プレイヤーの位置を設定する(空中から始まらないように)
 		D3DXVECTOR3 posPlayer = player->GetVec3Position();
+		posPlayer.x += sinf(player->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
 		posPlayer.y = 0.0f;
+		posPlayer.z += cosf(player->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
 		player->SetVec3Position(posPlayer);
 
-		// ゲーム遷移処理
-		EnterGame(player);
+		// カメラ目標位置設定
+		SetDestAround();
+
+		// プレイヤーを通常状態にする
+		player->SetState(CPlayer::EState::STATE_NORMAL);
+		player->SetAlpha(1.0f);
+
+		// ゲームを通常状態にする
+		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+
+		// タイマーの計測を開始する
+		CSceneGame::GetTimerUI()->Start();
+
+		// 現在のモーションの設定
+		player->SetMotion(CPlayer::MOTION_IDOL);
 
 		// この先の処理を行わない
 		return;
@@ -1301,8 +1319,13 @@ void CCamera::StartRound(CPlayer* pPlayer)
 	if (m_startInfo.nCount >= start::ROUND_COUNT)
 	{ // 定位置について一定時間経過した場合
 
+		// プレイヤーの位置を設定する(空中から始まらないように)
+		D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+		posPlayer.x += sinf(pPlayer->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
+		posPlayer.z += cosf(pPlayer->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
+
 		// 周り込みの計算
-		CalcAround(pPlayer->GetVec3Position());
+		CalcAround(posPlayer);
 
 		// 戻り状態にする
 		m_startInfo.state = SStart::STATE_BACK;
@@ -1317,18 +1340,75 @@ void CCamera::StartRound(CPlayer* pPlayer)
 //============================================================
 void CCamera::EnterGame(CPlayer* pPlayer)
 {
-	// カメラ目標位置設定
-	SetDestAround();
+	// カウントを加算する
+	m_startInfo.nCount++;
 
-	// プレイヤーを通常状態にする
-	pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
-	pPlayer->SetAlpha(1.0f);
+	// プレイヤーの座標を設定
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+	posPlayer.x += sinf(pPlayer->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
+	posPlayer.z += cosf(pPlayer->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
 
-	// ゲームを通常状態にする
-	CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+	// 差分向きを計算
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
 
-	// タイマーの計測を開始する
-	CSceneGame::GetTimerUI()->Start();
+	// 差分向きを補正
+	if (diffRot.x > around::LIMIT_DIFF)
+	{
+		diffRot.x = around::LIMIT_DIFF;
+	}
+	if (diffRot.y > around::LIMIT_DIFF)
+	{
+		diffRot.y = around::LIMIT_DIFF;
+	}
+
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot += diffRot * start::BACK_REV_ROT;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	// 注視点をプレイヤーの頭の位置にする
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].destPosR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].destPosR.y + ((around::INIT_HEIGHT * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：Yの距離だけ定数はきもすぎる。後マイナスにしてないのもやばい。
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].destPosR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 視点の差分位置を計算
+	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 注視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posR.x += diffPosR.x * 0.2f;
+	m_aCamera[TYPE_MAIN].posR.y += diffPosR.y * 0.1f;
+	m_aCamera[TYPE_MAIN].posR.z += diffPosR.z * 0.2f;
+
+	// 視点の現在位置を更新
+	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * 0.4f;
+	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * 0.1f;
+	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * 0.4f;
+
+	if (m_startInfo.nCount >= start::BACK_COUNT)
+	{ // カウントが一定数になった場合
+
+		// 位置を設定する
+		pPlayer->SetVec3Position(posPlayer);
+
+		// プレイヤーを通常状態にする
+		pPlayer->SetState(CPlayer::EState::STATE_NORMAL);
+		pPlayer->SetAlpha(1.0f);
+
+		// ゲームを通常状態にする
+		CSceneGame::GetGameManager()->SetState(CGameManager::EState::STATE_NORMAL);
+
+		// タイマーの計測を開始する
+		CSceneGame::GetTimerUI()->Start();
+
+		// 現在のモーションの設定
+		pPlayer->SetMotion(CPlayer::MOTION_IDOL);
+	}
 }
 
 //============================================================

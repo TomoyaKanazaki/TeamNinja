@@ -973,8 +973,7 @@ CEnemyStalk::EMotion CEnemyStalk::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	}
 
 	// 透明度を適用
-	CObjectChara::SetAlpha(fAlpha);
-	CEnemy::SetAlpha(fAlpha);
+	SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
@@ -1002,8 +1001,7 @@ CEnemyStalk::EMotion CEnemyStalk::FadeIn(void)
 	}
 
 	// 透明度を適用
-	CObjectChara::SetAlpha(fAlpha);
-	CEnemy::SetAlpha(fAlpha);
+	SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
