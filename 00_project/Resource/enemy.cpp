@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "collision.h"
+#include "camera.h"
 
 #include "player.h"
 #include "player_clone.h"
@@ -158,33 +159,36 @@ void CEnemy::Update(const float fDeltaTime)
 		// この先の処理を行わない
 		return;
 	}
-	else
-	{ // 上記以外
 
-		D3DXVECTOR3 posEnemy = GetVec3Position();	// 敵位置
-		D3DXVECTOR3 rotEnemy = GetVec3Rotation();	// 敵向き
+	D3DXVECTOR3 posEnemy = GetVec3Position();	// 敵位置
+	D3DXVECTOR3 rotEnemy = GetVec3Rotation();	// 敵向き
 
-		// 過去位置更新
-		UpdateOldPosition();
+	// 過去位置更新
+	UpdateOldPosition();
 
-		// 状態更新
-		int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
+	// 状態更新
+	int nCurMotion = UpdateState(&posEnemy, &rotEnemy, fDeltaTime);	// 現在のモーションを取得
 
-		SetVec3Position(posEnemy);	// 位置を反映
-		SetVec3Rotation(rotEnemy);	// 向きを反映
+	SetVec3Position(posEnemy);	// 位置を反映
+	SetVec3Rotation(rotEnemy);	// 向きを反映
 
-		// モーション・オブジェクトキャラクター更新
-		UpdateMotion(nCurMotion, fDeltaTime);
+	// モーション・オブジェクトキャラクター更新
+	UpdateMotion(nCurMotion, fDeltaTime);
 
-		if (m_pItem != nullptr)
-		{ // アイテムを持っている場合
+	if (m_pItem != nullptr)
+	{ // アイテムを持っている場合
 
-			// アイテムのオフセット処理
-			m_pItem->Update(fDeltaTime);
+		// アイテムのオフセット処理
+		m_pItem->Update(fDeltaTime);
 
-			// 透明度を設定する
-			m_pItem->SetAlpha(m_fAlpha);
-		}
+		// 透明度を設定する
+		m_pItem->SetAlpha(m_fAlpha);
+	}
+
+	// 画面外で消滅
+	if (!GET_CAMERA->OnScreen(GetVec3Position()))
+	{
+		m_bVanish = true;
 	}
 }
 
