@@ -1,0 +1,36 @@
+#==============================================================================
+#
+#	神器配置のセーブデータ [goditem.txt]
+#	Author : 藤田 勇一
+#
+#==============================================================================
+STAGE_GODITEMSET
+
+	GODITEMSET
+		POS		= 600.00 0.00 625.00
+		TYPE	= 0
+		
+		TEXT_0
+			STR = これが0つ目の勾玉
+		END_TEXT
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 5175.00 300.00 325.00
+		TYPE	= 1
+		
+		TEXT_1
+			STR = これが1つ目の勾玉
+		END_TEXT
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 8850.00 350.00 50.00
+		TYPE	= 2
+		
+		TEXT_2
+			STR = これが2つ目の勾玉
+		END_TEXT
+	END_GODITEMSET
+
+END_STAGE_GODITEMSET

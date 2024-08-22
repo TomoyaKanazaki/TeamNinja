@@ -42,8 +42,8 @@ public:
 		LABEL_SE_LAND_S,			// 着地音 (小)
 		LABEL_SE_LAND_B,			// 着地音 (大)
 		LABEL_SE_STALKWALK_000,		// 追跡敵の歩く音
-		LABEL_SE_CLONEATTACK_000,	// 分身を攻撃したときの音
 		LABEL_SE_STALKATTACK_000,	// 追跡敵が攻撃したときの音
+		LABEL_SE_STALKATTACK_001,	// 追跡敵が分身を攻撃したときの音
 		LABEL_SE_STALKFOUND_000,	// 追跡敵が発見したときの音
 		LABEL_SE_STALKUPSET_000,	// 追跡敵が動揺したときの音
 		LABEL_SE_STALKSTANCE_000,	// 追跡敵が構えたときの音
@@ -57,6 +57,11 @@ public:
 		LABEL_SE_GIMMICKSET_000,	// ギミックに分身セット
 		LABEL_SE_GIMMICKSET_001,	// ギミック完成
 		LABEL_SE_BUTTON000,			// ボタン音
+		LABEL_SE_WOLFATTACK_000,	// 狼が攻撃したときの音
+		LABEL_SE_WOLFATTACK_001,	// 狼が分身を攻撃したときの音
+		LABEL_SE_WOLFFOUND_000,		// 狼が発見したときの音
+		LABEL_SE_WOLFUPSET_000,		// 狼が動揺したときの音
+		LABEL_SE_WOLFSTANCE_000,	// 狼が構えたときの音
 		LABEL_MAX					// この列挙型の総数
 	};
 

@@ -202,6 +202,9 @@ CEnemyAmbush* CEnemyAmbush::Create
 		// 初期位置を設定
 		pEnemy->SetPosInit(rPos);
 
+		// 初期向きを設定
+		pEnemy->SetRotInit(rRot);
+
 		// 情報の設定処理
 		pEnemy->SetData();
 
@@ -791,11 +794,11 @@ CEnemyAmbush::EMotion CEnemyAmbush::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot
 		// 位置を設定する
 		*pPos = GetPosInit();
 
+		// 向きを設定する
+		*pRot = GetRotInit();
+
 		// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
 		SetOldPosition(*pPos);
-
-		// 向きを設定する
-		*pRot = VEC3_ZERO;
 
 		// 目的の向きを設定する(復活後に無意味に向いてしまうため)
 		SetDestRotation(*pRot);

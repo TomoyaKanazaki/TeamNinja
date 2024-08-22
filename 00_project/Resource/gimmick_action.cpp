@@ -28,26 +28,12 @@ namespace
 {
 	const float HEIGHT = 50.0f; // 判定用の高さ
 	const float RADIUS = 70.0f;	// 半径
-	const bool ACTION_SET_FRAG[] = // アクションポイントの設定可能フラグ
-	{
-		true, // ジャンプ台
-		true, // 踏み台
-		false, // 設置
-		true, // 飛び降り
-		false, // 重い扉
-		false, // 橋
-	};
 }
 
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
 CListManager<CGimmickAction>* CGimmickAction::m_pList = nullptr;	// オブジェクトリスト
-
-//===========================================
-//  静的警告処理
-//===========================================
-static_assert(NUM_ARRAY(ACTION_SET_FRAG) == CGimmick::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CGimmickAction] のメンバ関数
@@ -163,7 +149,7 @@ void CGimmickAction::Update(const float fDeltaTime)
 			GET_EFFECT->Create
 			(
 				"data\\EFFEKSEER\\guide_wind_ball.efkefc",
-				GetVec3Position(),
+				m_posAction,
 				VEC3_ZERO,
 				VEC3_ZERO,
 				7.5f,
@@ -372,10 +358,6 @@ void CGimmickAction::OnScreen()
 //===========================================
 void CGimmickAction::SetActionPoint(const D3DXVECTOR3& pos)
 {
-	// 設定可能フラグがoffの場合中心座標を設定し関数を抜ける
-	if (!ACTION_SET_FRAG[GetType()])
-	{ m_posAction = GetVec3Position(); return; }
-
 	// 待機位置に引数を設定する
 	m_posAction = pos;
 }
