@@ -310,12 +310,6 @@ void CPlayer::Update(const float fDeltaTime)
 		currentMotion = UpdateDamage(fDeltaTime);
 		break;
 
-	case STATE_SAVE:
-
-		// セーブ状態の更新
-		currentMotion = UpdateSave(fDeltaTime);
-		break;
-
 	default:
 		assert(false);
 		break;
@@ -1048,42 +1042,6 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 
 	// ダメージモーション
 	return MOTION_DAMAGE;
-}
-
-//============================================================
-// セーブ状態時の更新
-//============================================================
-CPlayer::EMotion CPlayer::UpdateSave(const float fDeltaTime)
-{
-	// 状態管理カウントを0にする
-	m_nCounterState = 0;
-
-	// 移動量を0にする
-	m_move = VEC3_ZERO;
-
-	// 位置の取得
-	D3DXVECTOR3 pos = GetVec3Position();
-
-	// 重力の更新
-	UpdateGravity(fDeltaTime);
-
-	// 位置更新
-	UpdatePosition(pos, fDeltaTime);
-
-	// 着地判定
-	UpdateLanding(pos, fDeltaTime);
-
-	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
-
-	// 大人の壁の判定
-	GET_STAGE->LimitPosition(pos, RADIUS);
-
-	// 位置を反映
-	SetVec3Position(pos);
-
-	// セーブモーションを返す
-	return MOTION_SAVE;
 }
 
 //============================================================
