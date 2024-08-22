@@ -77,7 +77,7 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 480.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
