@@ -16,9 +16,13 @@
 namespace
 {
 	bool m_bUse = true;
-	float m_fStart = 1000.0f;
-	float m_fEnd = 2000.0f;
+	float m_fStart = 1500.0f;
+	float m_fEnd = 3000.0f;
 	D3DXCOLOR m_col = D3DXCOLOR(0.0f, 0.0f, 0.2f, 0.0f);
+
+	/*
+	ステージによって色変えてみるとか？(章先生)
+	*/
 }
 
 //==========================================

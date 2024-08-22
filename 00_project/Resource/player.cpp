@@ -1670,7 +1670,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = fCameraRot - fRotStick;
+	float fTemp = -(fCameraRot + fRotStick);
 	useful::NormalizeRot(fTemp);
 
 	// 分身の位置を算出
