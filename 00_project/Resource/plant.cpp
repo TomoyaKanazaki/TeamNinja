@@ -15,6 +15,7 @@ namespace
 {
 	const float	POLYGON_SCALE = 60.0f;		// ポリゴンのサイズ
 	const int	ALPHA_NUMREF = 180;			// αテストの参照値
+	const D3DXVECTOR3 GAP_SCALE = D3DXVECTOR3(15.0f, 0.0f, 0.0f); // 揺れ範囲
 }
 
 //===========================================
@@ -25,7 +26,8 @@ CListManager<CPlant>* CPlant::m_pList = nullptr; // オブジェクトリスト
 //===========================================
 //  コンストラクタ
 //===========================================
-CPlant::CPlant()
+CPlant::CPlant():
+	m_fGapRate(0.0f)
 {
 }
 
@@ -71,6 +73,9 @@ HRESULT CPlant::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// 揺れ周期を設定
+	m_fGapRate = (float)(rand() % 628 + 1) * 0.01f;
+
 	// 成功を返す
 	return S_OK;
 }
@@ -101,6 +106,9 @@ void CPlant::Update(const float fDeltaTime)
 {
 	// 方向転換
 	Rotation();
+
+	// 揺れを設定
+	Shake(fDeltaTime);
 
 	// 親クラスの更新
 	CObject3D::Update(fDeltaTime);
@@ -175,4 +183,23 @@ void CPlant::Rotation()
 
 	// 向きを設定
 	SetVec3Rotation(rot);
+}
+
+//==========================================
+//  揺れる処理
+//==========================================
+void CPlant::Shake(const float fDeltaTime)
+{
+	// 揺れ時間の加算
+	m_fGapRate += fDeltaTime;
+
+	// 時間の丸め込み
+	if (m_fGapRate > D3DX_PI * 2.0f)
+	{
+		m_fGapRate -= D3DX_PI * 2.0f;
+	}
+
+	// 上半分を移動する
+	SetGapPosition(0, GAP_SCALE * sinf(m_fGapRate));
+	SetGapPosition(1, GAP_SCALE * sinf(m_fGapRate));
 }

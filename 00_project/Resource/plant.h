@@ -31,11 +31,13 @@ private:
 
 	// メンバ関数
 	void Rotation(); // 回転処理
+	void Shake(const float fDeltaTime); // 揺れる処理
 
 	// 静的メンバ変数
 	static CListManager<CPlant>* m_pList; // オブジェクトリスト
 
 	// メンバ変数
 	CListManager<CPlant>::AIterator m_iterator; // イテレーター
+	float m_fGapRate; // 揺れの範囲
 
 };
