@@ -161,7 +161,7 @@ public:
 	void StartCamera(void);					// スタート演出時のカメラ
 	void StartLand(CPlayer* pPlayer);		// 着地待ちカメラ
 	void StartRound(CPlayer* pPlayer);		// 回り込みカメラ
-	void StartBack(CPlayer* pPlayer);		// 戻りカメラ
+	void EnterGame(CPlayer* pPlayer);		// ゲーム遷移処理
 
 	// 静的メンバ関数
 	static CCamera *Create(void);				// 生成

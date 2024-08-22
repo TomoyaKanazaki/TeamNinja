@@ -169,12 +169,6 @@ HRESULT CSceneGame::Init(void)
 
 #endif	// _DEBUG
 
-	//--------------------------------------------------------
-	//	初期設定
-	//--------------------------------------------------------
-	// タイマーの計測を開始する
-	m_pTimerUI->Start();
-
 	// BGMの再生
 	PLAY_SOUND(CSound::LABEL_BGM_FOREST);
 
