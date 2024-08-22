@@ -79,6 +79,9 @@ public:
 		MOTION_DODGE,		// 回避モーション
 		MOTION_DEATH,		// 死亡モーション
 		MOTION_DAMAGE,		// ダメージモーション
+		MOTION_SAVE,		// チェックポイントモーション
+		MOTION_GET,			// 神器取得モーション
+		MOTION_START,		// スタートモーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
