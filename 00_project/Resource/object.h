@@ -114,6 +114,7 @@ public:
 		LABEL_COLLISION,	// コリジョン
 		LABEL_COIN,			// コイン
 		LABEL_GODITEM,		// 神器
+		LABEL_WEED,			// 草
 		LABEL_DEBUG,		// デバッグ
 		LABEL_MAX			// この列挙型の総数
 	};
