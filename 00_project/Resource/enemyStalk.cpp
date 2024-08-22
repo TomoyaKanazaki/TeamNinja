@@ -48,14 +48,14 @@ namespace
 	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
 	const int THREAT_STATE_COUNT = 50;			// 威嚇状態のカウント数
+}
 
-	// 音管理関係
-	namespace sound
-	{
-		const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
-		const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
-		const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
-	}
+// 音管理関係
+namespace sound
+{
+	const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
+	const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
+	const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
 }
 
 //************************************************************

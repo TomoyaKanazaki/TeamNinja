@@ -46,11 +46,14 @@ namespace
 	const int BLANKBITE_STATE_COUNT = 340;	// 動揺状態のカウント数
 	const int BLANKBITE_CYCLE_COUNT = 18;	// 動揺状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
+}
 
-	// 音管理関係
-	const int WALK_SOUND_COUNT = 32;			// 歩行音を鳴らすカウント数
-	const int FOUND_SOUND_COUNT = 37;			// 発見音を鳴らすカウント数
-	const int UPSET_SOUND_COUNT = 200;			// 動揺音を鳴らすカウント数
+// 音関連
+namespace sound
+{
+	const int WALK_COUNT = 32;		// 歩行音を鳴らすカウント数
+	const int FOUND_COUNT = 2;		// 発見音を鳴らすカウント数
+	const int UPSET_COUNT = 200;	// 動揺音を鳴らすカウント数
 }
 
 //************************************************************
@@ -618,6 +621,13 @@ int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, const float fDeltaTime)
 	// 状態カウントを加算する
 	m_nStateCount++;
 
+	if (m_nStateCount == sound::FOUND_COUNT)
+	{ // 一定時間経過した場合
+
+		// 発見音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_WOLFFOUND_000);
+	}
+
 	if (m_nStateCount % CAVEAT_STATE_COUNT == 0)
 	{ // 一定時間経過した場合
 
@@ -726,7 +736,7 @@ int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
 		if (HitPlayer(rPos))
 		{
 			// 攻撃音を鳴らす
-			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
+			PLAY_SOUND(CSound::LABEL_SE_WOLFATTACK_000);
 		}
 
 		// 状態カウントを加算する
@@ -818,7 +828,7 @@ int CEnemyWolf::UpdateUpset(void)
 	// 状態カウントを加算する
 	m_nStateCount++;
 
-	if (m_nStateCount == UPSET_SOUND_COUNT)
+	if (m_nStateCount == sound::UPSET_COUNT)
 	{ // 状態カウントが一定数になったとき
 
 		// 動揺音を鳴らす
@@ -1024,7 +1034,7 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 //============================================================
 void CEnemyWolf::WalkSound(void)
 {
-	if (m_nStateCount % WALK_SOUND_COUNT == 0)
+	if (m_nStateCount % sound::WALK_COUNT == 0)
 	{ // 一定カウントごとに
 
 		// 歩行音を鳴らす
