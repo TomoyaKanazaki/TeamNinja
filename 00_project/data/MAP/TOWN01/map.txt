@@ -9,5 +9,6 @@
 #------------------------------------------------------------------------------
 STAGE_PASS = data\MAP\TOWN01\stage.txt	# ステージ情報パス
 ACTOR_PASS = data\MAP\TOWN01\actor.txt	# アクター情報パス
+GODITEM_PASS = data\MAP\TOWN01\goditem.txt		# 神器情報パス
 POINT_PASS = data\MAP\TOWN01\point.txt	# ポイント情報パス
 GIMMICK_PASS = data\MAP\\TOWN01\gimmick.txt
