@@ -752,7 +752,7 @@ void CObject::DrawAll(const EScene scene)
 	// デバッグ時のシェーダー切り替え	
 	if (pDeb->GetEnableShader())
 	{
-		DrawAll_ZShader(scene);
+	//	DrawAll_ZShader(scene);
 		DrawAll_ToonShadow(scene);
 		DrawAll_Compensate(scene);
 	}

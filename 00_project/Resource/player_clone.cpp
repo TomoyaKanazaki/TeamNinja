@@ -70,6 +70,7 @@ namespace
 	const float FALL = 100.0f; // 落とし穴による落下
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
 	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
+	const D3DXVECTOR3 BRIDGE_SCALE = D3DXVECTOR3(1.5f, 1.5f, 1.25f); // 橋状態での大きさの倍率
 }
 
 //************************************************************
@@ -225,7 +226,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 		// 腰の親モデルを初期化
 		GetParts(MODEL_WAIST)->SetParentModel(nullptr);
 
-		// 少しキャラクターを大きくする
+		// スケールをもとに戻す
 		SetVec3Scaling(VEC3_ONE);
 
 		// 寝そべってる向きを修正
@@ -256,9 +257,6 @@ void CPlayerClone::Update(const float fDeltaTime)
 			// 関数を抜ける
 			return;
 		}
-
-		DebugProc::Print(DebugProc::POINT_CENTER, "前回座標 : %f, %f, %f\n", m_oldPos.x, m_oldPos.y, m_oldPos.z);
-		DebugProc::Print(DebugProc::POINT_CENTER, "現在座標 : %f, %f, %f\n", GetVec3Position().x, GetVec3Position().y, GetVec3Position().z);
 
 		// 現在座標と前回座標が一致した場合消滅して関数を抜ける
 		if (m_oldPos == GetVec3Position())
@@ -645,8 +643,11 @@ void CPlayerClone::Delete()
 		// 分身が所持しているギミックを削除
 		pClone->DeleteGimmick();
 
+		// 中心座標を取得
+		D3DXVECTOR3 pos = useful::GetMatrixPosition(pClone->GetParts(MODEL_WAIST)->GetMtxWorld());
+
 		// 消去のエフェクトを生成する
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 		// 分身の終了
 		pClone->Uninit();
@@ -673,8 +674,11 @@ void CPlayerClone::Delete(const int nNum)
 	// 分身が所持しているギミックを削除
 	pClone->DeleteGimmick();
 
+	// 中心座標を取得
+	D3DXVECTOR3 pos = useful::GetMatrixPosition(pClone->GetParts(MODEL_WAIST)->GetMtxWorld());
+
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	SAFE_UNINIT(pClone)
@@ -732,8 +736,11 @@ void CPlayerClone::Delete(CPlayerClone* pClone)
 	// 分身所持しているギミックを削除
 	pClone->DeleteGimmick();
 
+	// 中心座標を取得
+	D3DXVECTOR3 pos = useful::GetMatrixPosition(pClone->GetParts(MODEL_WAIST)->GetMtxWorld());
+
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pClone->GetVec3Position(), pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	pClone->Uninit();
@@ -786,8 +793,11 @@ void CPlayerClone::VanishAll(void)
 //============================================================
 void CPlayerClone::Vanish(void)
 {
+	// 中心座標を取得
+	D3DXVECTOR3 pos = useful::GetMatrixPosition(GetParts(MODEL_WAIST)->GetMtxWorld());
+
 	// 消去のエフェクトを生成する
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
 	// 分身の終了
 	Uninit();
@@ -978,26 +988,24 @@ CPlayerClone::EMotion CPlayerClone::UpdateBridge(const float fDeltaTime)
 		}
 
 		// 少しキャラクターを大きくする
-		SetVec3Scaling(D3DXVECTOR3(1.5f, 1.5f, 1.25f));	// TODO：定数
+		SetVec3Scaling(BRIDGE_SCALE);
 
 		// 橋になる為のモーションを返す
 		if (m_nIdxGimmick == 0)	{ SetMotion(MOTION_LADDER); return MOTION_LADDER; }	// 先頭は梯子モーション
 		else					{ SetMotion(MOTION_BRIDGE); return MOTION_BRIDGE; }	// それ以降は橋モーション
 	}
-	else
-	{
-		// 重力
-		UpdateGravity();
 
-		// 位置の取得
-		D3DXVECTOR3 pos = GetVec3Position();
+	// 重力
+	UpdateGravity();
 
-		// 着地判定
-		UpdateLanding(pos);
+	// 位置の取得
+	D3DXVECTOR3 pos = GetVec3Position();
 
-		// 待機モーションを返す
-		return MOTION_IDOL;
-	}
+	// 着地判定
+	UpdateLanding(pos);
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================

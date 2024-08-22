@@ -57,6 +57,8 @@ public:
 		LABEL_SE_GIMMICKSET_000,	// ギミックに分身セット
 		LABEL_SE_GIMMICKSET_001,	// ギミック完成
 		LABEL_SE_BUTTON000,			// ボタン音
+		LABEL_SE_WOLFATTACK_000,	// 狼が攻撃したときの音
+		LABEL_SE_WOLFFOUND_000,		// 狼が発見したときの音
 		LABEL_MAX					// この列挙型の総数
 	};
 
