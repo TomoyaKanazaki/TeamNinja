@@ -195,7 +195,7 @@ void PS
 
 		// 算出点がシャドウマップのZ値よりも大きければ影と判断
 		if (ZValue > SM_Z + 0.0001f) {
-			outCol.rgb = outCol.rgb * 0.6f;
+			outCol.rgb = outCol.rgb * 0.8f;
 		}
 	}
 
