@@ -109,6 +109,7 @@ private:
 	HRESULT LoadSky(const char* pString, FILE *pFile);		// 空情報の読込
 	HRESULT LoadLiquid(const char* pString, FILE* pFile);	// 液体情報の読込
 	HRESULT LoadChanger(const char* pString, FILE* pFile);	// カメラ変更地点情報の読込
+	HRESULT LoadWeed(const char* pString, FILE* pFile);		// 草の読込
 
 	// メンバ変数
 	std::map<std::string, SPass> m_mapPass;	// マップパス連想配列
