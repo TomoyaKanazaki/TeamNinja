@@ -213,7 +213,7 @@ void PS
 	//===============================
 	float d = distance(inVertex.PosWVP.xyz, s_EyePos.xyz);
 	float f = (s_FogFar - d) / (s_FogFar - s_FogNear); //フォグの適応割合をもとめる
-	f = clamp(f, 0.0f, 1.0f)
+	f = clamp(f, 0.0f, 1.0f);
 	f *= s_FogColor.a;
 	outCol.rgb = outCol.rgb * (f ) + s_FogColor.rgb * (1.0f - f);
 
