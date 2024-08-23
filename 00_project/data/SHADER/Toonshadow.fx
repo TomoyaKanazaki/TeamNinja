@@ -15,7 +15,7 @@ texture  s_textureToon;				// トゥーンマップテクスチャ
 float3	 s_dirLight = float3(0.0f, 0.0f, 0.0f);			// 平行光源の方向ベクトル
 float4x4 s_mtxLightView;								// ライトビュー変換行列
 float4x4 s_mtxLightProj;								// 射影変換行列
-float4   s_LightColor = float4(0.5f, 0.7f, 0.8f, 1.0f);	// ライト色
+float4   s_LightColor = float4(0.7f, 0.9f, 1.0f, 1.0f);	// ライト色
 
 
 float4	s_diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);		// 拡散光

@@ -11,7 +11,7 @@ STAGE_GODITEMSET
 		TYPE	= 0
 		
 		TEXT_0
-			STR = ‚±‚ê‚ª0‚Â–Ú‚ÌŒù‹Ê
+			STR = ö“ü‚±‚»”E‚Ì–{‰ù
 		END_TEXT
 	END_GODITEMSET
 
@@ -20,7 +20,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = ‚±‚ê‚ª1‚Â–Ú‚ÌŒù‹Ê
+			STR = ˆÓŽ¯‚Ì— ‘¤
 		END_TEXT
 	END_GODITEMSET
 
@@ -29,7 +29,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR = ‚±‚ê‚ª2‚Â–Ú‚ÌŒù‹Ê
+			STR = —E‹C‚ ‚é’µ–ô
 		END_TEXT
 	END_GODITEMSET
 
