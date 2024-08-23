@@ -52,6 +52,9 @@ private:
 
 	void Count(); // 乗っているキャラクター総数の計算処理
 
+	// 小原追加
+	void Floor(void);		// 床の処理
+
 	// メンバ変数
 	CObjectMeshCube* m_apFloor[NUM_FLOOR];	// 床の情報
 	bool m_bFall; // 落下フラグ
