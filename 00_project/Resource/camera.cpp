@@ -178,7 +178,7 @@ namespace
 	namespace start
 	{
 		const float INIT_POSR_HEIGHT = 40.0f;							// 注視点の初期高度
-		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, D3DX_PI * -0.3f, 0.0f);	// 着地待ち状態の向き
+		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, D3DX_PI * -0.15f, 0.0f);	// 着地待ち状態の向き
 		const float DISTANCE[CCamera::SStart::STATE_MAX] =				// 距離
 		{
 			200.0f,				// 着地待ち状態
@@ -189,7 +189,7 @@ namespace
 		const int LAND_COUNT = 50;			// 着地状態のカウント数
 		const int START_MOTION_BLEND = 15;	// スタートモーションのモーションブレンド数
 		const D3DXVECTOR3 ROUND_ROT = D3DXVECTOR3(1.6f, D3DX_PI * 0.4f, 0.0f);	// 回り込み状態の向き
-		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(0.016f, D3DX_PI * 0.009f, 0.0f);	// 回り込み状態の向きの移動量
+		const D3DXVECTOR3 ROUND_ROT_MOVE = D3DXVECTOR3(0.01f, D3DX_PI * 0.004f, 0.0f);	// 回り込み状態の向きの移動量
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);			// カメラ視点の補正係数
 		const int ROUND_COUNT = 80;			// 周り込み状態の維持カウント数
 		const float BACK_REV_ROT = 0.05f;	// 戻り状態の向きの補正係数
