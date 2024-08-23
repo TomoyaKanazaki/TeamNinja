@@ -26,9 +26,9 @@ float4 s_EyePos;										// 視点
 float4 s_FogColor = float4(0.2f, 0.3f, 0.3f, 1.0f);	// フォグ色
 float  s_FogNear = 500.0f;								// フォグの開始位置
 float  s_FogFar = 10000.0f;								// フォグの終了位置
-float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.5f);	// 高さフォグ色
-float  s_AltiFogStart = 1000.0f;						// 高さフォグ開始位置
-float  s_AltiFogEnd	= -500.0f;								// 高さフォグ終了位置
+float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.25f);	// 高さフォグ色
+float  s_AltiFogStart = 100.0f;						// 高さフォグ開始位置
+float  s_AltiFogEnd	= -100.0f;								// 高さフォグ終了位置
 
 float	s_fRefEdge = 1.0f;								// エッジ生成参照値
 

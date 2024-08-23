@@ -43,7 +43,9 @@ public:
 	static CListManager<CWeed>* GetList(void);	// リスト取得
 
 	// メンバ関数
+	bool Collision(const D3DXVECTOR3& rPosTarg, const float fRadTarg);	// 当たり判定
 	bool CollisionPlayer(void);					// プレイヤーとの当たり判定
+	bool CollisionClone(void);					// 分身との当たり判定
 	void UpdateSwing(const float fDeltaTime);	// 風でなびく更新
 
 private:
