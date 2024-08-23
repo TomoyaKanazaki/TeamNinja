@@ -118,7 +118,7 @@ HRESULT CGameManager::Init(void)
 #endif
 
 // TODOÅFëê
-#if 0
+#if 1
 	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 0.0f, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 1.0f, D3DXVECTOR3(0.0f, 1.57f, 0.0f));
 	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 2.0f, D3DXVECTOR3(0.0f, 3.14f, 0.0f));

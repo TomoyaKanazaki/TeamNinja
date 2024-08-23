@@ -19,6 +19,15 @@
 //************************************************************
 namespace
 {
+	const char* TEXTURE[] =	// 草テクスチャ
+	{
+		"data\\TEXTURE\\grass000.png",
+		"data\\TEXTURE\\grass001.png",
+		"data\\TEXTURE\\grass002.png",
+		"data\\TEXTURE\\grass003.png",
+		"data\\TEXTURE\\grass004.png",
+	};
+
 	const int	PRIORITY	 = 6;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
@@ -85,7 +94,7 @@ HRESULT CWeed::Init(void)
 	}
 
 	// 草のテクスチャを割当
-	BindTexture("data\\TEXTURE\\grass001.png");
+	BindTexture(TEXTURE[rand() % NUM_ARRAY(TEXTURE)]);
 
 	// 原点を下にする
 	SetOrigin(CObject3D::ORIGIN_DOWN);
