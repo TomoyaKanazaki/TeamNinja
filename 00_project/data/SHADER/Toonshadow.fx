@@ -15,7 +15,7 @@ texture  s_textureToon;				// トゥーンマップテクスチャ
 float3	 s_dirLight = float3(0.0f, 0.0f, 0.0f);			// 平行光源の方向ベクトル
 float4x4 s_mtxLightView;								// ライトビュー変換行列
 float4x4 s_mtxLightProj;								// 射影変換行列
-float4   s_LightColor = float4(0.5f, 0.7f, 0.8f, 1.0f);		// ライト色
+float4   s_LightColor = float4(0.5f, 0.7f, 0.8f, 1.0f);	// ライト色
 
 
 float4	s_diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);		// 拡散光
@@ -23,12 +23,12 @@ float4	s_ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);		// 環境光
 float4	s_emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);	// 放射光
 
 float4 s_EyePos;										// 視点
-float4 s_FogColor = float4(0.2f, 0.3f, 0.3f, 1.0f);	// フォグ色
+float4 s_FogColor = float4(0.2f, 0.3f, 0.3f, 1.0f);		// フォグ色
 float  s_FogNear = 500.0f;								// フォグの開始位置
 float  s_FogFar = 10000.0f;								// フォグの終了位置
-float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.25f);	// 高さフォグ色
-float  s_AltiFogStart = 100.0f;						// 高さフォグ開始位置
-float  s_AltiFogEnd	= -100.0f;								// 高さフォグ終了位置
+float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.6f);	// 高さフォグ色
+float  s_AltiFogStart = 60.0f;							// 高さフォグ開始位置
+float  s_AltiFogEnd	= -500.0f;							// 高さフォグ終了位置
 
 float	s_fRefEdge = 1.0f;								// エッジ生成参照値
 
