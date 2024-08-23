@@ -42,14 +42,18 @@ public:
 	);
 
 	// メンバ関数
-	void CollisionPlayer(void);	// プレイヤーとの当たり判定
+	bool CollisionPlayer(void);					// プレイヤーとの当たり判定
+	void UpdateSwing(const float fDeltaTime);	// 風でなびく更新
 
 private:
 	// メンバ変数
+	D3DXVECTOR3 m_offset;	// 上頂点オフセット
+	bool m_bChange;			// 自然揺れと踏みつけの遷移フラグ
 	float m_fCurLength;		// 現在の距離
 	float m_fDestLength;	// 目標の距離
 	float m_fCurAngle;		// 現在の角度
 	float m_fDestAngle;		// 目標の角度
+	float m_fGapRate;		// 揺れの範囲
 };
 
 #endif	// _WEED_H_

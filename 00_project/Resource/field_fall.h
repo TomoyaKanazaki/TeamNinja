@@ -7,12 +7,20 @@
 //=========================================
 #include "field.h"
 
+//*****************************************
+// 前方宣言
+//*****************************************
+class CObjectMeshCube;		// メッシュキューブ
+
 //=========================================
 //  クラス定義
 //=========================================
 class CGimmickFall : public CField
 {
 public:
+
+	// 静的メンバ変数
+	static constexpr int NUM_FLOOR = 2;			// 床の総数
 
 	// メンバ関数
 	CGimmickFall();
@@ -25,6 +33,9 @@ public:
 
 	bool IsFall() const override { return m_bFall; } // 落下判定
 
+	// 静的メンバ関数
+	static int GetNumFloor(void) { return NUM_FLOOR; }		// 床の総数の取得処理
+
 private:
 
 	// メンバ関数
@@ -36,6 +47,7 @@ private:
 	void Count(); // 乗っているキャラクター総数の計算処理
 
 	// メンバ変数
+	CObjectMeshCube* m_apFloor[NUM_FLOOR];	// 床の情報
 	bool m_bFall; // 落下フラグ
 
 };

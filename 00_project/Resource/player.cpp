@@ -77,7 +77,7 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE = 600.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 480.0f;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
@@ -338,15 +338,6 @@ void CPlayer::Update(const float fDeltaTime)
 		RecoverCheckPoint();
 	}
 
-	if (pKeyboard->IsTrigger(DIK_UP))
-	{
-		CTension::Create();
-	}
-	if (pKeyboard->IsTrigger(DIK_DOWN))
-	{
-		m_state = STATE_DEATH;
-	}
-
 #endif
 }
 
@@ -481,10 +472,30 @@ CListManager<CPlayer> *CPlayer::GetList(void)
 //============================================================
 //	ノックバックヒット処理
 //============================================================
-bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& /*rVecKnock*/)
+bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 {
-	if (IsDeath())				 { return false; }	// 死亡済み
+	if (IsDeath()) { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
+
+	// ヒットエフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
+
+	// ダメージ状態に変更
+	m_state = STATE_DAMAGE;
+
+	// ノックバック方向を向く
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	rot.y = atan2f(rVecKnock.x, rVecKnock.z);
+	SetVec3Rotation(rot);
+
+	// 死んじゃうｶﾓ
+	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
+	{
+		m_state = STATE_DEATH;
+	}
+
+	// 士気力が減少する
+	CTension::Vanish();
 
 	return true;
 }
@@ -503,7 +514,7 @@ bool CPlayer::Hit(const int nDamage)
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
-	// 死んじゃうｶﾓ~
+	// 死んじゃうｶﾓ
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
 		m_state = STATE_DEATH;
@@ -1074,9 +1085,8 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_destRot.y = fMoveRot;
 
 		// 移動量を設定する
-		D3DXVECTOR3 fRate = pPad->GetStickRateL(pad::DEAD_RATE);
-		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE;
-		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE;
+		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
 
 		// 橋に乗っている場合移動量を消す
 		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
@@ -1469,6 +1479,35 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		}
 
 		break;
+
+	case MOTION_SAVE:	// チェックポイントモーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
+
+			// 状態の更新
+			m_state = STATE_NORMAL;
+		}
+
+		break;
+
+	case MOTION_GET:	// 神器取得モーション
+
+		if (IsMotionFinish())
+		{ // モーションが再生終了した場合
+
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_LAND);
+		}
+
+		break;
+
+	case MOTION_START:	// スタートモーション
+
+		break;
 	}
 }
 
@@ -1631,7 +1670,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = -(fRotStick + fCameraRot);
+	float fTemp = -(fCameraRot + fRotStick);
 	useful::NormalizeRot(fTemp);
 
 	// 分身の位置を算出
@@ -1655,7 +1694,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	{
 		m_bGimmickClone = true;
 		m_fGimmickTimer = 0.0f;
-		m_fTempStick = -fTemp;
+		m_fTempStick = fRotStick;
 	}
 
 	// 分身生み出し音を鳴らす
@@ -1717,7 +1756,7 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 		m_fGimmickTimer = 0.0f;
 		m_bGimmickClone = false;
 		return false;
-		}
+	}
 
 	// ギミックのリストを取得
 	if (CGimmickAction::GetList() == nullptr) { return false; }
@@ -1792,17 +1831,32 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 		// ボックスの当たり判定
 		if (!collision::Box3D
 		(
-			rPos,				// 判定位置
-			enemy->GetVec3Position(),			// 判定目標位置
-			GetVec3Sizing(),	// 判定サイズ(右・上・後)
-			GetVec3Sizing(),	// 判定サイズ(左・下・前)
-			coliisionUp,		// 判定目標サイズ(右・上・後)
-			coliisionDown		// 判定目標サイズ(左・下・前)
+			rPos,						// 判定位置
+			enemy->GetVec3Position(),	// 判定目標位置
+			GetVec3Sizing(),			// 判定サイズ(右・上・後)
+			GetVec3Sizing(),			// 判定サイズ(左・下・前)
+			coliisionUp,				// 判定目標サイズ(右・上・後)
+			coliisionDown				// 判定目標サイズ(左・下・前)
 		))
 		{
 			// 当たっていない場合は次に進む
 			continue;
 		}
+
+		// スティック入力の方向を取得する
+		float fRotStick = pPad->GetPressRStickRot() + D3DX_PI * 0.5f;
+
+		// カメラの向きを取得
+		float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
+
+		// スティック方向を3D空間に対応する
+		float fTemp = fRotStick - fCameraRot;
+		useful::NormalizeRot(fTemp);
+
+		// スティック方向を向く
+		D3DXVECTOR3 rot = GetVec3Rotation();
+		rot.y = fTemp;
+		SetVec3Rotation(rot);
 
 		// 回避に成功しtrueを返す
 		return true;

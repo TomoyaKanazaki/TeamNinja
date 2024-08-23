@@ -627,8 +627,11 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			// 回避カウントを初期化する
 			m_nAttackCount = 0;
 
+			// 自身とプレイヤーを結ぶベクトルを算出
+			D3DXVECTOR3 vec = posPlayer - rPos;
+
 			// ヒット処理
-			CScene::GetPlayer()->Hit(500);
+			CScene::GetPlayer()->HitKnockBack(500, vec);
 
 			// ヒット状況を true にする
 			bHit = true;
@@ -709,9 +712,6 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 
 	// 分身との戦闘エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
-
-	// 分身攻撃音を鳴らす
-	PLAY_SOUND(CSound::LABEL_SE_CLONEATTACK_000);
 
 	// 回避受付フラグを false にする
 	m_bDodge = false;

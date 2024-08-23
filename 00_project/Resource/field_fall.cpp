@@ -9,6 +9,8 @@
 #include "player_clone.h"
 #include "player.h"
 
+#include "objectMeshCube.h"
+
 //==========================================
 //  定数定義
 //==========================================
@@ -48,6 +50,11 @@ HRESULT CGimmickFall::Init(void)
 		return E_FAIL;
 	}
 
+	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
+	{
+		// TODO：ここクリエイト!!
+	}
+
 	// 成功を返す
 	return S_OK;
 }
@@ -57,6 +64,12 @@ HRESULT CGimmickFall::Init(void)
 //=========================================
 void CGimmickFall::Uninit(void)
 {
+	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
+	{
+		// 床の終了処理
+		SAFE_UNINIT(m_apFloor[nCnt]);
+	}
+
 	// 親クラスの終了
 	CField::Uninit();
 }

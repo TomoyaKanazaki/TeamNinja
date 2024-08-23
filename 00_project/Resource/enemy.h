@@ -60,8 +60,6 @@ public:
 	inline D3DXVECTOR3 GetMovePosition(void) const			{ return m_move; }					// 位置移動量取得
 	inline void SetItem(CEnemyItem* pItem)					{ m_pItem = pItem; }				// 敵の持ち物設定
 	inline CEnemyItem* GetItem(void) const					{ return m_pItem; }					// 敵の持ち物取得
-	void SetAlpha(const float fAlpha)						{ m_fAlpha = fAlpha; }				// 透明度設定
-	float GetAlpha(void) const								{ return m_fAlpha; }				// 透明度取得
 	virtual float GetRadius(void) const = 0;			// 半径の取得処理
 	virtual float GetHeight(void) const = 0;			// 高さの取得処理
 
@@ -100,7 +98,6 @@ private:
 	D3DXVECTOR3 m_destRot;			// 目的の向き
 	D3DXVECTOR3	m_move;				// 移動量
 	D3DXVECTOR3 m_rotInit;			// 初期向き
-	float m_fAlpha;					// 透明度
 	bool m_bJump;					// ジャンプ状況
 	bool m_bVanish;					// 消滅状況
 };

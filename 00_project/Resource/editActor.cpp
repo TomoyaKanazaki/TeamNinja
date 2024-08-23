@@ -817,7 +817,7 @@ HRESULT CEditActor::Save(void)
 	{ // ファイルが開けなかった場合
 
 		// エラーメッセージボックス
-		MessageBox(nullptr, "ステージ地面配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, "アクター配置の書き出しに失敗！", "警告！", MB_ICONWARNING);
 
 		// 失敗を返す
 		return E_FAIL;
@@ -844,8 +844,12 @@ HRESULT CEditActor::Save(void)
 	for (const auto& rList : listActor)
 	{ // 地面の総数分繰り返す
 
-		// 同じアドレスだった場合次へ
-		if (rList == m_pActor) { continue; }
+		// 同じアドレスだった場合または、ドアの場合次へ
+		if (rList == m_pActor ||
+			rList->GetType() == CActor::TYPE_DOOR)
+		{
+			continue;
+		}
 
 		// 書き出す情報を取得
 		CActor::EType type = rList->GetType();			// 種類

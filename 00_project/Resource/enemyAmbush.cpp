@@ -17,6 +17,7 @@
 #include "multiModel.h"
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -111,6 +112,23 @@ void CEnemyAmbush::Uninit(void)
 //============================================================
 void CEnemyAmbush::Update(const float fDeltaTime)
 {
+	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetVec3Position()))
+	{ // 画面内にいない場合
+
+		// 待ち伏せ状態にする
+		m_state = STATE_AMBUSH;
+
+		// 位置と向きを設定する
+		SetVec3Position(GetPosInit());
+		SetVec3Rotation(GetRotInit());
+
+		// 透明度を1.0fにする
+		SetAlpha(1.0f);
+
+		// 抜ける
+		return;
+	}
+
 	// 敵の更新
 	CEnemyAttack::Update(fDeltaTime);
 }
@@ -808,8 +826,7 @@ CEnemyAmbush::EMotion CEnemyAmbush::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot
 	}
 
 	// 透明度を適用
-	CObjectChara::SetAlpha(fAlpha);
-	CEnemy::SetAlpha(fAlpha);
+	SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
@@ -837,8 +854,7 @@ CEnemyAmbush::EMotion CEnemyAmbush::FadeIn(void)
 	}
 
 	// 透明度を適用
-	CObjectChara::SetAlpha(fAlpha);
-	CEnemy::SetAlpha(fAlpha);
+	SetAlpha(fAlpha);
 
 	// 待機モーションにする
 	return MOTION_IDOL;
