@@ -22,7 +22,8 @@ namespace
 	// 床関連
 	namespace floor
 	{
-		const float HEIGHT = 30.0f;		// 高さ
+		const float HEIGHT = 30.0f;				// 高さ
+		const float NONE_ROT = D3DX_PI * 0.5f;	// 通常状態の向き
 	}
 }
 
@@ -102,7 +103,8 @@ void CGimmickFall::Update(const float fDeltaTime)
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
 
-
+	// 床の処理
+	Floor();
 }
 
 //=========================================
@@ -110,8 +112,8 @@ void CGimmickFall::Update(const float fDeltaTime)
 //=========================================
 void CGimmickFall::Draw(CShader* pShader)
 {
-	//// 親クラスの描画
-	//CField::Draw(pShader);
+	// 親クラスの描画
+	CField::Draw(pShader);
 }
 
 //===========================================
@@ -261,4 +263,47 @@ void CGimmickFall::Count()
 
 	// 落下フラグを立てる
 	m_bFall = true;
+}
+
+//===========================================
+// 床の処理
+//===========================================
+void CGimmickFall::Floor(void)
+{
+	// 位置・向き・サイズを取得
+	D3DXVECTOR3 pos = GetVec3Position();
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	D3DXVECTOR2 size = GetVec2Sizing();
+	D3DXVECTOR3 posFloor = VEC3_ZERO;
+	D3DXVECTOR3 rotFloor = VEC3_ZERO;
+	D3DXVECTOR3 sizeFloor = VEC3_ZERO;
+
+	// 床が無かった場合、停止
+	if (m_apFloor[0] == nullptr || m_apFloor[1] == nullptr) { assert(false); return; }
+
+	// 床の位置を設定する
+	posFloor.x = pos.x + sinf(rot.y) * -(size.x * 0.5f);
+	posFloor.y = pos.y - floor::HEIGHT * 0.5f;
+	posFloor.z = pos.z + cosf(rot.y) * -(size.y * 0.5f);
+	m_apFloor[0]->SetVec3Position(posFloor);
+
+	// 床の位置を設定する
+	posFloor.x = pos.x + sinf(rot.y) * (size.x * 0.5f);
+	posFloor.y = pos.y - floor::HEIGHT * 0.5f;
+	posFloor.z = pos.z + cosf(rot.y) * (size.y * 0.5f);
+	m_apFloor[1]->SetVec3Position(posFloor);
+
+	// 向きを設定する
+	rotFloor = rot;
+	rotFloor.x = -floor::NONE_ROT;
+	m_apFloor[0]->SetVec3Rotation(rotFloor);
+	rotFloor.x = floor::NONE_ROT;
+	m_apFloor[1]->SetVec3Rotation(rotFloor);
+
+	// サイズを設定する
+	sizeFloor.x = size.x * 0.5f;
+	sizeFloor.y = size.y * 0.5f;
+	sizeFloor.z = floor::HEIGHT;
+	m_apFloor[0]->SetVec3Sizing(sizeFloor);
+	m_apFloor[1]->SetVec3Sizing(sizeFloor);
 }

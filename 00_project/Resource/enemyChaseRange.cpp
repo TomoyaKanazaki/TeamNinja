@@ -174,6 +174,9 @@ CEnemyChaseRange* CEnemyChaseRange::Create(const D3DXVECTOR3& pos, const float f
 			XCOL_CYAN
 		);
 
+		// “–‚½‚è”»’èƒ‰ƒxƒ‹‚É•Ï‚¦‚é
+		pNav->m_pRangeCube->SetLabel(CObject::LABEL_COLLISION);
+
 #endif // _DEBUG
 #endif // 0
 
