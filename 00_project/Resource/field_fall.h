@@ -19,6 +19,14 @@ class CGimmickFall : public CField
 {
 public:
 
+	// 状態
+	enum EState
+	{
+		STATE_NONE = 0,		// 通常状態
+		STATE_OPEN,			// 開扉状態
+		STATE_MAX			// この列挙型の総数
+	};
+
 	// 静的メンバ変数
 	static constexpr int NUM_FLOOR = 2;			// 床の総数
 
@@ -53,10 +61,12 @@ private:
 	void Count(); // 乗っているキャラクター総数の計算処理
 
 	// 小原追加
+	void State(void);		// 状態処理
 	void Floor(void);		// 床の処理
 
 	// メンバ変数
 	CObjectMeshCube* m_apFloor[NUM_FLOOR];	// 床の情報
+	EState m_state;		// 状態
 	bool m_bFall; // 落下フラグ
 
 };
