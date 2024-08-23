@@ -654,6 +654,9 @@
     <ClInclude Include="Resource\fog.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\editWeed.h">
+      <Filter>Map\Editter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1231,6 +1234,9 @@
     </ClCompile>
     <ClCompile Include="Resource\fog.cpp">
       <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\editWeed.cpp">
+      <Filter>Map\Editter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

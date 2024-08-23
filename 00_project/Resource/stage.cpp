@@ -28,6 +28,7 @@
 #include "checkpoint.h"
 #include "goal.h"
 #include "transpoint.h"
+#include "weed.h"
 
 //************************************************************
 //	定数宣言
@@ -716,6 +717,14 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 			// ポイント読込パスを保存
 			pPassInfo->sPoint = str;
 		}
+		else if (str == "WEED_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// ポイント読込パスを読込
+
+			// ポイント読込パスを保存
+			pPassInfo->sPoint = str;
+		}
 	}
 
 	// ファイルを閉じる
@@ -813,6 +822,15 @@ HRESULT CStage::LoadSetup(const char* pPass)
 			
 			// カメラ変更地点の読込
 			else if (FAILED(LoadChanger(&aString[0], pFile)))
+			{ // 読み込みに失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+
+			// 草の読込
+			else if (FAILED(LoadWeed(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
 
 				// 失敗を返す
@@ -1631,6 +1649,67 @@ HRESULT CStage::LoadChanger(const char* pString, FILE* pFile)
 				}
 			}
 		} while (strcmp(&aTemp[0], "END_STAGE_CHANGERSET") != 0);
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//==========================================
+//  草の読み込み
+//==========================================
+HRESULT CStage::LoadWeed(const char* pString, FILE* pFile)
+{
+	// 読込に失敗した場合関数を抜ける
+	if (pString == nullptr || pFile == nullptr) { assert(false); return E_FAIL; }
+
+	// オブジェクトの設定
+	if (strcmp(pString, "STAGE_WEEDSET") == 0) // 読込開始フラグ
+	{
+		// 一時格納用変数
+		char aTemp[MAX_STRING];
+
+		do // 読込が完了するまでループする
+		{
+			// 文字列の読み込み
+			fscanf(pFile, "%s", &aTemp[0]);
+
+			// オブジェクトの配置
+			if (strcmp(&aTemp[0], "WEEDSET") == 0)
+			{
+				// 変数を宣言
+				D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の格納用
+				D3DXVECTOR3 rot = VEC3_ZERO;	// 大きさの格納用
+
+				do // 読込が完了するまでループする
+				{
+					// ファイルから文字列を読み込む
+					fscanf(pFile, "%s", &aTemp[0]);
+
+					if (strcmp(&aTemp[0], "POS") == 0) // 位置の読み込み 
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%f", &pos.x); // X
+						fscanf(pFile, "%f", &pos.y); // Y
+						fscanf(pFile, "%f", &pos.z); // Z
+					}
+					if (strcmp(&aTemp[0], "ROT") == 0)
+					{
+						fscanf(pFile, "%s", &aTemp[0]); // =
+						fscanf(pFile, "%f", &rot.x); // X
+						fscanf(pFile, "%f", &rot.y); // Y
+						fscanf(pFile, "%f", &rot.z); // Z
+					}
+
+				} while (strcmp(&aTemp[0], "ENDWEEDSET") != 0);
+
+				// オブジェクトの生成
+				if (CWeed::Create(pos, rot) == nullptr)
+				{
+					assert(false); return E_FAIL;
+				}
+			}
+		} while (strcmp(&aTemp[0], "END_STAGE_WEEDSET") != 0);
 	}
 
 	// 成功を返す

@@ -105,7 +105,7 @@ public:
 
 	// メンバ関数
 	void SetTerrain(const ETerrain terrain);	// 地形設定
-	void SetType(const EType type);				// 種類設定
+	virtual void SetType(const EType type);				// 種類設定
 	ETerrain GetTerrain(void) const	{ return m_terrain; }	// 地形取得
 	EType GetType(void) const		{ return m_type; }		// 種類取得
 	virtual bool IsFall() const { return bool(); }			// 落下判定の取得
