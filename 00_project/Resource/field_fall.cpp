@@ -102,7 +102,8 @@ void CGimmickFall::Update(const float fDeltaTime)
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
 
-
+	// 床の処理
+	Floor();
 }
 
 //=========================================
@@ -261,4 +262,26 @@ void CGimmickFall::Count()
 
 	// 落下フラグを立てる
 	m_bFall = true;
+}
+
+//===========================================
+// 床の処理
+//===========================================
+void CGimmickFall::Floor(void)
+{
+	//// 位置・向き・サイズを取得
+	//D3DXVECTOR3 pos = GetVec3Position();
+	//D3DXVECTOR3 rot = GetVec3Rotation();
+	//D3DXVECTOR2 size = GetVec2Sizing();
+	//D3DXVECTOR3 posFloor = VEC3_ZERO;
+	//D3DXVECTOR3 rotFloor = VEC3_ZERO;
+	//D3DXVECTOR3 sizeFloor = VEC3_ZERO;
+
+	//for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
+	//{
+	//	// 床が NULL の場合、抜ける
+	//	if (m_apFloor[nCnt] == nullptr) { continue; }
+
+	//	posFloor.x = pos.x + (sinf(rot.y) * (size.x * 0.5f)) + (size.x * )
+	//}
 }
