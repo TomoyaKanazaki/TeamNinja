@@ -25,7 +25,7 @@
 namespace
 {
 	const D3DFORMAT	FORMAT_DEPTH_STENCIL = D3DFMT_D24S8;		// 深度ステンシルのフォーマット (深度バッファ：24bit, ステンシルバッファ：8bit使用)
-	const D3DCOLOR	COL_CLEAR = D3DCOLOR_RGBA(38, 30, 71, 0);	// 画面クリア時の色
+	const D3DCOLOR	COL_CLEAR = D3DXCOLOR(0.0f, 0.0f, 0.2f, 0.0f);	// 画面クリア時の色
 
 	const DWORD FLAG_CLEAR = (D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);	// クリアするバッファーのビットフラグ
 }

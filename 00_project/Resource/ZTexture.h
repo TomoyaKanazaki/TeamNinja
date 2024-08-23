@@ -20,12 +20,12 @@
 //************************************************************
 namespace
 {
-	const UINT ZTEX_WIDTH = SCREEN_WIDTH;								//Zテクスチャの幅
-	const UINT ZTEX_HEIGHT = SCREEN_HEIGHT;								//Zテクスチャの高さ
+	const UINT ZTEX_WIDTH = SCREEN_WIDTH*10.0f;								//Zテクスチャの幅
+	const UINT ZTEX_HEIGHT = SCREEN_HEIGHT * 10.0f;										//Zテクスチャの高さ
 	const float VIEWING_ANGLE = 45.0f;										//視野角
 	const float NEAR_CLIP = 10.0f;											//描画最小深度
 	const float FAR_CLIP = 30000.0f;										//描画最大深度
-	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(-1600.0f, 2000.0f, 1000.0f);		//視点
+	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(-1600.0f, 20000.0f, 1000.0f);		//視点
 	const D3DXVECTOR3 FOCUS_POINT = D3DXVECTOR3(-1700.0f, -10.0f, 0.0f);		//注視点
 	const D3DXVECTOR3 LOOK_UP = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				//上向きのベクトル *警告:書き換えるな*
 }

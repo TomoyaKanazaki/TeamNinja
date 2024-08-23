@@ -213,7 +213,7 @@ HRESULT CPlayer::Init(void)
 	{
 		CTension::Create();
 	}
-
+	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
 	// 成功を返す
 	return S_OK;
 }
@@ -232,7 +232,12 @@ void CPlayer::Uninit(void)
 		SAFE_DELETE(m_pEffectdata);
 		m_pEffectdata = nullptr;
 	}
-
+	// エフェクトの削除
+	if (m_pEffectFirefly != nullptr)
+	{
+		SAFE_DELETE(m_pEffectFirefly);
+		m_pEffectFirefly = nullptr;
+	}
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -579,7 +584,7 @@ void CPlayer::SetEnableGodItem(const bool bGet)
 		SetMove(VEC3_ZERO);
 
 		// 神器獲得モーションにする
-		//SetMotion(MOTION_DEATH);	// TODO：モーション作ってもらう
+		SetMotion(MOTION_GET);
 
 		// 神器獲得状態にする
 		m_state = STATE_GODITEM;
@@ -905,7 +910,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 {
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
 
 	// 向き反映
@@ -920,8 +924,8 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(pos);
 
-	// 現在のモーションを返す
-	return currentMotion;
+	// 神器獲得モーションを返す
+	return MOTION_GET;
 }
 
 //===========================================
@@ -1133,7 +1137,10 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
-
+	if (m_pEffectFirefly != nullptr)
+	{
+		m_pEffectFirefly->m_pos = GetVec3Position();
+	}
 	// モーションを返す
 	return currentMotion;
 }
@@ -1495,18 +1502,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_GET:	// 神器取得モーション
-
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_LAND);
-		}
-
 		break;
 
 	case MOTION_START:	// スタートモーション
-
 		break;
 	}
 }
@@ -1670,7 +1668,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	float fCameraRot = GET_MANAGER->GetCamera()->GetRotation().y;
 
 	// スティック方向を3D空間に対応する
-	float fTemp = fCameraRot - fRotStick;
+	float fTemp = -(fCameraRot + fRotStick);
 	useful::NormalizeRot(fTemp);
 
 	// 分身の位置を算出

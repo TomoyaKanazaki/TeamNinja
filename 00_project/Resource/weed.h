@@ -40,13 +40,21 @@ public:
 		const D3DXVECTOR3& rPos,	// 位置
 		const D3DXVECTOR3& rRot		// 向き
 	);
+	static CListManager<CWeed>* GetList(void);	// リスト取得
 
 	// メンバ関数
+	bool Collision(const D3DXVECTOR3& rPosTarg, const float fRadTarg);	// 当たり判定
 	bool CollisionPlayer(void);					// プレイヤーとの当たり判定
+	bool CollisionClone(void);					// 分身との当たり判定
 	void UpdateSwing(const float fDeltaTime);	// 風でなびく更新
 
 private:
+
+	// 静的メンバ変数
+	static CListManager<CWeed>* m_pList;	// オブジェクトリスト
+
 	// メンバ変数
+	CListManager<CWeed>::AIterator m_iterator;	// イテレーター
 	D3DXVECTOR3 m_offset;	// 上頂点オフセット
 	bool m_bChange;			// 自然揺れと踏みつけの遷移フラグ
 	float m_fCurLength;		// 現在の距離

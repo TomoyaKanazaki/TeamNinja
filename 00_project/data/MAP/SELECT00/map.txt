@@ -8,5 +8,6 @@
 #	パスの情報
 #------------------------------------------------------------------------------
 STAGE_PASS = data\MAP\SELECT00\stage.txt	# ステージ情報パス
+GIMMICK_PASS = data\MAP\SELECT00\gimmick.txt	# ギミック情報パス
 ACTOR_PASS = data\MAP\SELECT00\actor.txt	# アクター情報パス
 POINT_PASS = data\MAP\SELECT00\point.txt	# ポイント情報パス

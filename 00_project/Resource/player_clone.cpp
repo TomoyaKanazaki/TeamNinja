@@ -616,6 +616,10 @@ CPlayerClone* CPlayerClone::Create(CGimmickAction* gimmick)
 		return nullptr;
 	}
 
+	// 生成座標をプレイヤーの座標に設定する
+	pPlayer->SetVec3Position(GET_PLAYER->GetVec3Position());
+	pPlayer->m_oldPos = GET_PLAYER->GetVec3Position();
+
 	// 受け取ったギミックを割り当てる
 	pPlayer->SetGimmick(gimmick);
 
