@@ -600,21 +600,49 @@ void CGodItem::Height(void)
 //============================================================
 void CGodItem::UpdateRoll(const float fDeltaTime)
 {
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();				// プレイヤー位置
-	D3DXVECTOR3 posDest = posPlayer + D3DXVECTOR3(0.0f, 100.0f, 0.0f);	// 移動目標位置
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();	// プレイヤー向き
 	D3DXVECTOR3 posCur = GetVec3Position();	// 現在位置
 
-	// 注視点の差分位置を計算
+	//--------------------------------------------------------
+	//	位置の設定
+	//--------------------------------------------------------
+	// 目標位置を計算
+	D3DXVECTOR3 posDest = posPlayer + D3DXVECTOR3
+	(
+		23.0f * sinf(rotPlayer.y - HALF_PI) + 14.0f * sinf(rotPlayer.y - D3DX_PI),
+		118.0f,
+		23.0f * cosf(rotPlayer.y - HALF_PI) + 14.0f * cosf(rotPlayer.y - D3DX_PI)
+	);
+
+	// 差分位置を計算
 	D3DXVECTOR3 posDiff = posDest - posCur;
 
-	// 注視点の現在位置を更新
-	posCur += posDiff * 2.0f * fDeltaTime;
+	// 現在位置を更新
+	posCur += posDiff * 4.0f * fDeltaTime;
 
 	// 現在位置を反映
 	SetVec3Position(posCur);
 
+	//--------------------------------------------------------
+	//	拡大率の設定
+	//--------------------------------------------------------
+	D3DXVECTOR3 scaleCur = GetVec3Scaling();	// 現在拡大率
+
+	// 差分拡大率を計算
+	D3DXVECTOR3 scaleDiff = D3DXVECTOR3(0.75f, 0.75f, 0.75f) - scaleCur;
+
+	// 現在拡大率を更新
+	scaleCur += scaleDiff * 2.0f * fDeltaTime;
+
+	// 現在拡大率を反映
+	SetVec3Scaling(scaleCur);
+
+	//--------------------------------------------------------
+	//	向きの設定
+	//--------------------------------------------------------
 	// 向きを回転
-	SetVec3Rotation(GetVec3Rotation() + D3DXVECTOR3(0.0f, 3.5f, 0.0f) * fDeltaTime);
+	SetVec3Rotation(GetVec3Rotation() + D3DXVECTOR3(0.0f, 4.5f, 0.0f) * fDeltaTime);
 
 	// TODO：定数化
 }

@@ -579,7 +579,7 @@ void CPlayer::SetEnableGodItem(const bool bGet)
 		SetMove(VEC3_ZERO);
 
 		// 神器獲得モーションにする
-		//SetMotion(MOTION_DEATH);	// TODO：モーション作ってもらう
+		SetMotion(MOTION_GET);
 
 		// 神器獲得状態にする
 		m_state = STATE_GODITEM;
@@ -905,7 +905,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 {
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
 
 	// 向き反映
@@ -920,8 +919,8 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(pos);
 
-	// 現在のモーションを返す
-	return currentMotion;
+	// 神器獲得モーションを返す
+	return MOTION_GET;
 }
 
 //===========================================
@@ -1495,18 +1494,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_GET:	// 神器取得モーション
-
-		if (IsMotionFinish())
-		{ // モーションが再生終了した場合
-
-			// 現在のモーションの設定
-			SetMotion(nMotion, BLEND_FRAME_LAND);
-		}
-
 		break;
 
 	case MOTION_START:	// スタートモーション
-
 		break;
 	}
 }
