@@ -186,12 +186,6 @@ void CEnemy::Update(const float fDeltaTime)
 		// “§–¾“x‚ðÝ’è‚·‚é
 		m_pItem->SetAlpha(fAlpha);
 	}
-
-	// ‰æ–ÊŠO‚ÅÁ–Å
-	if (!GET_CAMERA->OnScreen(GetVec3Position()))
-	{
-		m_bVanish = true;
-	}
 }
 
 //============================================================
