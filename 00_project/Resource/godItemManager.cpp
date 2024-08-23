@@ -27,8 +27,8 @@
 //************************************************************
 namespace
 {
-	const int PRIO_BG = 5;	// ”wŒi‚Ì—Dæ‡ˆÊ
-	const int PRIO_UI = 6;	// UI‚Ì—Dæ‡ˆÊ
+	const int PRIO_BG = 4;	// ”wŒi‚Ì—Dæ‡ˆÊ
+	const int PRIO_UI = 5;	// UI‚Ì—Dæ‡ˆÊ
 
 	namespace fade
 	{
