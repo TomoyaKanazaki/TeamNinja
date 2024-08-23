@@ -21,10 +21,12 @@ namespace
 	const int	PRIORITY	 = 6;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
-	const float STOMP_REV	 = 0.25f;	// 踏んだ時の補正係数
+	const float STOMP_REV	 = 0.05f;	// 踏んだ時の補正係数
 	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
 	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
-	const float SWING_REV	 = 0.1f;	// 遷移時の補正係数
+	const float SWING_REV	 = 0.02f;	// 遷移時の補正係数
+	const float STOMP_MAX_ADD_OFFSET = 45.0f;	// ずらす先端の最高加算距離
+	const float STOMP_MIN_OFFSET	 = 30.0f;	// ずらす先端の最低距離
 }
 
 //************************************************************
@@ -102,7 +104,7 @@ HRESULT CWeed::Init(void)
 	pRenderState->SetLighting(false);
 
 	// 大きさを設定
-	SetVec3Sizing(D3DXVECTOR3(100.0f, 100.0f, 0.0f));	// TODO
+	SetVec3Sizing(D3DXVECTOR3(80.0f, 80.0f, 0.0f));	// TODO
 
 	// 成功を返す
 	return S_OK;
@@ -209,7 +211,7 @@ bool CWeed::CollisionPlayer(void)
 	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 posWeed = GetVec3Position();			// 草位置
 	float fRadPlayer = pPlayer->GetRadius();			// プレイヤー半径
-	float fRadWeed = GetVec3Sizing().x;					// 草半径
+	float fRadWeed = GetVec3Sizing().x * 0.5f;			// 草半径
 	if (collision::Circle3D(posPlayer, posWeed, fRadPlayer, fRadWeed))
 	{ // 踏んでいた場合
 
@@ -217,8 +219,7 @@ bool CWeed::CollisionPlayer(void)
 		float fDistance = sqrtf((posPlayer.x - posWeed.x) * (posPlayer.x - posWeed.x) + (posPlayer.z - posWeed.z) * (posPlayer.z - posWeed.z));
 
 		// 草の先端をずらす距離を求める
-		m_fDestLength = fabsf(fDistance - (fRadPlayer + fRadWeed));
-		useful::LimitMaxNum(m_fDestLength, (fRadPlayer + fRadWeed) - STOMP_MIN);
+		m_fDestLength = fDistance / (fRadPlayer + fRadWeed) * STOMP_MAX_ADD_OFFSET + STOMP_MIN_OFFSET;
 
 		// プレイヤー方向を求める
 		m_fDestAngle = atan2f(posWeed.x - posPlayer.x, posWeed.z - posPlayer.z) - GetVec3Rotation().y;
@@ -237,7 +238,7 @@ bool CWeed::CollisionPlayer(void)
 		m_offset = D3DXVECTOR3
 		(
 			m_fCurLength * sinf(m_fCurAngle),
-			0.0f,
+			-m_fCurLength,
 			m_fCurLength * cosf(m_fCurAngle)
 		);
 
@@ -256,6 +257,14 @@ bool CWeed::CollisionPlayer(void)
 void CWeed::UpdateSwing(const float fDeltaTime)
 {
 	const D3DXVECTOR3 rotWeed = GetVec3Rotation();	// 草向き
+
+	// 草の先端をずらす距離を求める
+	m_fDestLength = 0.0f;
+
+	// 現在の距離を求める
+	float fDiffLength = m_fDestLength - m_fCurLength;	// 差分の距離
+	m_fCurLength += fDiffLength * SWING_REV;			// 距離を目標に近づける
+
 	if (m_bChange)
 	{ // 遷移中の場合
 
@@ -295,7 +304,7 @@ void CWeed::UpdateSwing(const float fDeltaTime)
 		m_offset = D3DXVECTOR3
 		(
 			SWING_OFFSET * sinf(m_fGapRate) * sinf(SWING_ANGLE - rotWeed.y),
-			0.0f,
+			-m_fCurLength,
 			SWING_OFFSET * sinf(m_fGapRate) * cosf(SWING_ANGLE - rotWeed.y)
 		);
 	}
