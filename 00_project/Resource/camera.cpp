@@ -178,7 +178,7 @@ namespace
 	namespace start
 	{
 		const float INIT_POSR_HEIGHT = 40.0f;							// 注視点の初期高度
-		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, D3DX_PI * -0.5f, 0.0f);	// 着地待ち状態の向き
+		const D3DXVECTOR3 LAND_ROT = D3DXVECTOR3(1.3f, D3DX_PI * -0.3f, 0.0f);	// 着地待ち状態の向き
 		const float DISTANCE[CCamera::SStart::STATE_MAX] =				// 距離
 		{
 			200.0f,				// 着地待ち状態
