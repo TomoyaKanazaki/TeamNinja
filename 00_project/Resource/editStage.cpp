@@ -54,6 +54,7 @@ namespace
 		"カメラ変更地点",
 		"コイン",
 		"神器",
+		"草",
 	};
 
 	const float MOVE = editstage::SIZE * 0.5f;	// 移動量
