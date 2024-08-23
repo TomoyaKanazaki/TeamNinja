@@ -213,7 +213,7 @@ HRESULT CPlayer::Init(void)
 	{
 		CTension::Create();
 	}
-
+	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
 	// 成功を返す
 	return S_OK;
 }
@@ -232,7 +232,12 @@ void CPlayer::Uninit(void)
 		SAFE_DELETE(m_pEffectdata);
 		m_pEffectdata = nullptr;
 	}
-
+	// エフェクトの削除
+	if (m_pEffectFirefly != nullptr)
+	{
+		SAFE_DELETE(m_pEffectFirefly);
+		m_pEffectFirefly = nullptr;
+	}
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -1132,7 +1137,10 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
-
+	if (m_pEffectFirefly != nullptr)
+	{
+		m_pEffectFirefly->m_pos = GetVec3Position();
+	}
 	// モーションを返す
 	return currentMotion;
 }
