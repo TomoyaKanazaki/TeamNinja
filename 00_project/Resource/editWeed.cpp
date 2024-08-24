@@ -134,6 +134,12 @@ void CEditWeed::Update(void)
 	// 大きさの更新
 	UpdateSize();
 
+	// 生成頻度の更新
+	UpdateTime();
+
+	// 生成数の更新
+	UpdateNum();
+
 	// 生成
 	Create();
 
@@ -226,8 +232,8 @@ void CEditWeed::DrawDebugInfo(void)
 	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：[ 生成範囲 ]\n", m_infoCreate.fSize);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：[ 生成頻度 ]\n", CREATE_TIME);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：  [ 生成数 ]\n", m_nNum);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[ 生成頻度 ]\n", CREATE_TIME);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：  [ 生成数 ]\n", m_nNum);
 
 #endif	// _DEBUG
 }
@@ -350,11 +356,12 @@ void CEditWeed::Create(void)
 		{
 			// 乱数を取得
 			float fTheta = (float)(rand() % 628 + 1) * 0.01f;
+			float fDistance = (float)(rand() % 100 + 1) * 0.01f;
 
 			// 生成位置を設定する
 			D3DXVECTOR3 pos = GetVec3Position();
-			pos.x += sinf(fTheta);
-			pos.z += cosf(fTheta);
+			pos.x += sinf(fTheta) * m_pCylinder->GetRadius() * fDistance;
+			pos.z += cosf(fTheta) * m_pCylinder->GetRadius() * fDistance;
 
 			// 生成向きを設定する
 			D3DXVECTOR3 rot = D3DXVECTOR3
@@ -397,21 +404,19 @@ void CEditWeed::DeleteCollision(const bool bRelase)
 	// リストを取得
 	CListManager<CWeed> *pListManager = CWeed::GetList();
 	if (pListManager == nullptr) { return; }
-	std::list<CWeed*> listChanger = pListManager->GetList();
+	std::list<CWeed*> listWeed = pListManager->GetList();
 
 	// リスト内を全て確認する
-	for (auto& rList : listChanger)
+	for (auto& rList : listWeed)
 	{
 		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
-		D3DXVECTOR3 sizeThis = VEC3_ZERO;	// 自身の大きさ
-		D3DXVECTOR3 sizeOther = VEC3_ZERO;	// 対象の大きさ
 
-		// 矩形の当たり判定
+		// 円形の当たり判定
 		if (collision::Circle3D
 		( // 引数
 			GetVec3Position(),	// 判定位置
 			posOther,			// 判定目標位置
-			m_infoCreate.fSize,	// 判定半径
+			m_pCylinder->GetRadius(),	// 判定半径
 			50.0f
 		))
 		{ // 判定内だった場合
