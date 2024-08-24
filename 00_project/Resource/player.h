@@ -226,6 +226,7 @@ private:
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
 	CEffekseer::CEffectData* m_pEffectdata;	//エフェクト情報
+	CEffekseer::CEffectData* m_pEffectFirefly;	//エフェクト情報
 
 };
 

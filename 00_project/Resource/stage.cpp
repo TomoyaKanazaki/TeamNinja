@@ -238,7 +238,8 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			return E_FAIL;
 		}
 	}
-
+	CObject::DrawAll_ZShader(CObject::EScene::SCENE_MAIN);
+	CObject::DrawAll_ZShader(CObject::EScene::SCENE_BILLBOARD);
 	// ê¨å˜Çï‘Ç∑
 	return S_OK;
 }

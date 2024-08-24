@@ -86,6 +86,7 @@ HRESULT CEditWeed::Init(void)
 		m_infoCreate.fSize,					// 半径
 		25.0f								// 高さ
 	);
+	m_pCylinder->GetRenderState()->SetCulling(D3DCULL_NONE);	// カリングオフ
 
 	// 生成情報の初期化
 	m_nCoolTime = CREATE_TIME;
@@ -322,11 +323,11 @@ void CEditWeed::UpdateNum(void)
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
 	// 生成数の変更
-	if (pKeyboard->IsTrigger(KEY_UP_TIME))
+	if (pKeyboard->IsTrigger(KEY_UP_NUM))
 	{
 		m_nNum += 1;
 	}
-	if (pKeyboard->IsTrigger(KEY_DOWN_TIME))
+	if (pKeyboard->IsTrigger(KEY_DOWN_NUM))
 	{
 		m_nNum -= 1;
 	}
@@ -352,10 +353,16 @@ void CEditWeed::Create(void)
 		m_bSave = false;
 
 		// 生成
+		D3DXVECTOR3 posCent = GetVec3Position();	// 生成中心位置
+		D3DXVECTOR3 posSet;	// 位置設定用
+		D3DXVECTOR3 rotSet;	// 向き設定用
 		for (int i = 0; i < m_nNum; ++i)
 		{
-			// 乱数を取得
-			float fTheta = (float)(rand() % 628 + 1) * 0.01f;
+			// 生成位置を設定
+			posSet = posCent;
+			posSet.x += (float)(rand() % ((int)m_infoCreate.fSize * 2) - (int)m_infoCreate.fSize + 1);
+			posSet.y += 0.0f;
+			posSet.z += (float)(rand() % ((int)m_infoCreate.fSize * 2) - (int)m_infoCreate.fSize + 1);
 			float fDistance = (float)(rand() % 100 + 1) * 0.01f;
 
 			// 生成位置を設定する
@@ -363,16 +370,11 @@ void CEditWeed::Create(void)
 			pos.x += sinf(fTheta) * m_pCylinder->GetRadius() * fDistance;
 			pos.z += cosf(fTheta) * m_pCylinder->GetRadius() * fDistance;
 
-			// 生成向きを設定する
-			D3DXVECTOR3 rot = D3DXVECTOR3
-			(
-				0.0f,
-				(float)(rand() % 628 + 1) * 0.01f,
-				0.0f
-			);
+			// 生成向きを設定
+			rotSet = D3DXVECTOR3(0.0f, (float)(rand() % 628 + 1) * 0.01f, 0.0f);
 
-			// 生成
-			CWeed::Create(pos, rot);
+			// 草オブジェクトの生成
+			CWeed::Create(posSet, rotSet);
 		}
 	}
 }

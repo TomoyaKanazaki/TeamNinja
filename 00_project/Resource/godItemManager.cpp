@@ -27,8 +27,8 @@
 //************************************************************
 namespace
 {
-	const int PRIO_BG = 5;	// ”wŒi‚Ì—Dæ‡ˆÊ
-	const int PRIO_UI = 6;	// UI‚Ì—Dæ‡ˆÊ
+	const int PRIO_BG = 4;	// ”wŒi‚Ì—Dæ‡ˆÊ
+	const int PRIO_UI = 5;	// UI‚Ì—Dæ‡ˆÊ
 
 	namespace fade
 	{
@@ -59,7 +59,7 @@ namespace
 	{
 		const float	MOVE_TIME	= 0.5f;	// ˆÚ“®ŠÔ
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(SCREEN_CENT.x, 590.0f, 0.0f);	// ˆÊ’u
-		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(980.0f, 20.0f, 0.0f);		// –Ú•W‘å‚«‚³
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(980.0f, 10.0f, 0.0f);		// –Ú•W‘å‚«‚³
 		const D3DXVECTOR3 INIT_SIZE	= D3DXVECTOR3(0.0f, DEST_SIZE.y, 0.0f);	// ‰Šú‘å‚«‚³
 		const D3DXVECTOR3 DIFF_SIZE	= DEST_SIZE - INIT_SIZE;				// ·•ª‘å‚«‚³
 	}

@@ -299,7 +299,7 @@ void CZTexture::DrawSprite()
 {
 	//スケーリング
 	D3DXMATRIX SpriteScaleMat;
-	D3DXMatrixScaling(&SpriteScaleMat, 0.25f, 0.25f, 1.0f);
+	D3DXMatrixScaling(&SpriteScaleMat, 0.025f, 0.025f, 1.0f);
 	m_pSprite->SetTransform(&SpriteScaleMat);
 	//描画
 	m_pSprite->Begin(0);

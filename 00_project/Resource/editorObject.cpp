@@ -166,7 +166,7 @@ CEditorObject *CEditorObject::Create(CEditStage* pEditor, CEditStage::EType type
 		break;
 
 	case CEditStage::TYPE_WEED:
-		pEditorObject = new CEditWeed(pEditor);		// エディット神器
+		pEditorObject = new CEditWeed(pEditor);			// エディット草
 		break;
 
 	default:	// 例外処理
