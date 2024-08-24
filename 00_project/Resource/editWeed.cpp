@@ -39,7 +39,7 @@ namespace
 	const char* NAME_UP_NUM			= "U"; // 拡大表示
 	const char* NAME_DOWN_NUM		= "J"; // 縮小表示
 
-	int CREATE_TIME = 30; // 生成頻度
+	const int INIT_TIME = 30; // 生成頻度
 	const int INIT_NUM = 3; // 初期生成数
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
 
@@ -52,6 +52,7 @@ CEditWeed::CEditWeed(CEditStage* pEditor) : CEditorObject(pEditor),
 m_pCylinder(nullptr),
 m_bSave(false),
 m_nCoolTime(0),
+m_nCreateTime(0),
 m_nNum(0)
 {
 	// メンバ変数をクリア
@@ -89,7 +90,7 @@ HRESULT CEditWeed::Init(void)
 	m_pCylinder->GetRenderState()->SetCulling(D3DCULL_NONE);	// カリングオフ
 
 	// 生成情報の初期化
-	m_nCoolTime = CREATE_TIME;
+	m_nCreateTime = INIT_TIME;
 	m_nNum = INIT_NUM;
 
 	//生成に失敗した場合関数を抜ける
@@ -214,8 +215,8 @@ void CEditWeed::DrawDebugControl(void)
 		NAME_UP_SIZE, NAME_DOWN_SIZE, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "生成頻度：[ %s / %s+%s ]\n",
 		NAME_UP_TIME, NAME_DOWN_TIME, NAME_TRIGGER);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "生成数  ：[ %s / %s ]\n",
-		NAME_UP_NUM, NAME_DOWN_NUM);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "生成数  ：[ %s / %s+%s ]\n",
+		NAME_UP_NUM, NAME_DOWN_NUM, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[ %s ]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[ %s ]\n", NAME_CREATE);
 
@@ -233,7 +234,7 @@ void CEditWeed::DrawDebugInfo(void)
 	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：[ 生成範囲 ]\n", m_infoCreate.fSize);
-	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[ 生成頻度 ]\n", CREATE_TIME);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[ 生成頻度 ]\n", m_nCreateTime);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：  [ 生成数 ]\n", m_nNum);
 
 #endif	// _DEBUG
@@ -289,29 +290,29 @@ void CEditWeed::UpdateTime(void)
 	{
 		if (pKeyboard->IsPress(KEY_UP_TIME))
 		{
-			CREATE_TIME += 1;
+			m_nCreateTime += 1;
 		}
 		if (pKeyboard->IsPress(KEY_DOWN_TIME))
 		{
-			CREATE_TIME -= 1;
+			m_nCreateTime -= 1;
 		}
 	}
 	else
 	{
 		if (pKeyboard->IsTrigger(KEY_UP_TIME))
 		{
-			CREATE_TIME += 1;
+			m_nCreateTime += 1;
 		}
 		if (pKeyboard->IsTrigger(KEY_DOWN_TIME))
 		{
-			CREATE_TIME -= 1;
+			m_nCreateTime -= 1;
 		}
 	}
 
 	// 生成頻度の補正
-	if (CREATE_TIME < 1)
+	if (m_nCreateTime < 1)
 	{
-		CREATE_TIME = 1;
+		m_nCreateTime = 1;
 	}
 }
 
@@ -322,14 +323,28 @@ void CEditWeed::UpdateNum(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
-	// 生成数の変更
-	if (pKeyboard->IsTrigger(KEY_UP_NUM))
+	// 生成頻度の変更
+	if (!pKeyboard->IsPress(KEY_TRIGGER))
 	{
-		m_nNum += 1;
+		if (pKeyboard->IsPress(KEY_UP_NUM))
+		{
+			m_nNum += 1;
+		}
+		if (pKeyboard->IsPress(KEY_DOWN_NUM))
+		{
+			m_nNum -= 1;
+		}
 	}
-	if (pKeyboard->IsTrigger(KEY_DOWN_NUM))
+	else
 	{
-		m_nNum -= 1;
+		if (pKeyboard->IsTrigger(KEY_UP_NUM))
+		{
+			m_nNum += 1;
+		}
+		if (pKeyboard->IsTrigger(KEY_DOWN_NUM))
+		{
+			m_nNum -= 1;
+		}
 	}
 
 	// 生成数の補正
@@ -349,29 +364,74 @@ void CEditWeed::Create(void)
 	// 配置
 	if (pKeyboard->IsTrigger(KEY_CREATE))
 	{
+		// クールタイムをリセット
+		m_nCoolTime = 0;
+
 		// 未保存を設定
 		m_bSave = false;
 
 		// 生成
 		D3DXVECTOR3 posCent = GetVec3Position();	// 生成中心位置
-		D3DXVECTOR3 posSet;	// 位置設定用
-		D3DXVECTOR3 rotSet;	// 向き設定用
+		float fRadius = m_pCylinder->GetRadius();
 		for (int i = 0; i < m_nNum; ++i)
 		{
-			// 生成位置を設定
-			posSet = posCent;
-			posSet.x += (float)(rand() % ((int)m_infoCreate.fSize * 2) - (int)m_infoCreate.fSize + 1);
-			posSet.y += 0.0f;
-			posSet.z += (float)(rand() % ((int)m_infoCreate.fSize * 2) - (int)m_infoCreate.fSize + 1);
-			float fDistance = (float)(rand() % 100 + 1) * 0.01f;
+			// 乱数を取得
+			float fTheta = (float)(rand() % 628 + 1) * 0.01f;
+			float fDistance = (float)rand() / (float)RAND_MAX;
 
-			// 生成位置を設定する
-			D3DXVECTOR3 pos = GetVec3Position();
-			pos.x += sinf(fTheta) * m_pCylinder->GetRadius() * fDistance;
-			pos.z += cosf(fTheta) * m_pCylinder->GetRadius() * fDistance;
+			// 生成位置を設定
+			D3DXVECTOR3 posSet = D3DXVECTOR3
+			(
+				posCent.x + sinf(fTheta) * (fRadius * fDistance),
+				0.0f,
+				posCent.z + cosf(fTheta) * (fRadius * fDistance)
+			);
 
 			// 生成向きを設定
-			rotSet = D3DXVECTOR3(0.0f, (float)(rand() % 628 + 1) * 0.01f, 0.0f);
+			D3DXVECTOR3 rotSet = D3DXVECTOR3(0.0f, (float)(rand() % 628 + 1) * 0.01f, 0.0f);
+
+			// 草オブジェクトの生成
+			CWeed::Create(posSet, rotSet);
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 連続配置
+	if (pKeyboard->IsPress(KEY_CREATE))
+	{
+		// クールタイムを加算
+		++m_nCoolTime;
+
+		// クールタイムが生成頻度未満の場合関数を抜ける
+		if (m_nCoolTime < m_nCreateTime) { return; }
+
+		// クールタイムをリセット
+		m_nCoolTime = 0;
+
+		// 未保存を設定
+		m_bSave = false;
+
+		// 生成
+		D3DXVECTOR3 posCent = GetVec3Position();	// 生成中心位置
+		float fRadius = m_pCylinder->GetRadius();
+		for (int i = 0; i < m_nNum; ++i)
+		{
+			// 乱数を取得
+			float fTheta = (float)(rand() % 628 + 1) * 0.01f;
+			float fDistance = (float)rand() / (float)RAND_MAX;
+
+			// 生成位置を設定
+			D3DXVECTOR3 posSet = D3DXVECTOR3
+			(
+				posCent.x + sinf(fTheta) * (fRadius * fDistance),
+				0.0f,
+				posCent.z + cosf(fTheta) * (fRadius * fDistance)
+			);
+
+			// 生成向きを設定
+			D3DXVECTOR3 rotSet = D3DXVECTOR3(0.0f, (float)(rand() % 628 + 1) * 0.01f, 0.0f);
 
 			// 草オブジェクトの生成
 			CWeed::Create(posSet, rotSet);
@@ -388,7 +448,7 @@ void CEditWeed::Release(void)
 	bool bRelease = false;	// 破棄状況
 
 	// 削除
-	if (pKeyboard->IsTrigger(KEY_RELEASE))
+	if (pKeyboard->IsPress(KEY_RELEASE))
 	{
 		// 破棄する状態を設定
 		bRelease = true;

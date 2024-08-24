@@ -142,6 +142,16 @@ HRESULT CWeed::Init(void)
 //============================================================
 void CWeed::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクト3Dの終了
 	CObject3D::Uninit();
 }
