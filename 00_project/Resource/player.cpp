@@ -84,6 +84,7 @@ namespace
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
+	const int HEAL_ITEM = 3; // アイテムの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
@@ -733,6 +734,18 @@ void CPlayer::RecoverCheckPoint()
 {
 	// 士気力を回復する
 	for (int i = 0; i < HEAL_CHECKPOINT; ++i)
+	{
+		CTension::Create();
+	}
+}
+
+//==========================================
+//  アイテムでの回復
+//==========================================
+void CPlayer::RecoverItem()
+{
+	// 士気力を回復する
+	for (int i = 0; i < HEAL_ITEM; ++i)
 	{
 		CTension::Create();
 	}
@@ -1958,11 +1971,15 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 	for (auto godItem : list)
 	{
 		// 当たり判定処理
-		godItem->Collision
+		if (godItem->Collision
 		(
 			pos,		// 位置
 			RADIUS		// 半径
-		);
+		))
+		{
+			// 回復
+			RecoverItem();
+		}
 	}
 }
 
