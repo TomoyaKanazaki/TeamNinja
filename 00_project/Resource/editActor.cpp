@@ -844,9 +844,10 @@ HRESULT CEditActor::Save(void)
 	for (const auto& rList : listActor)
 	{ // 地面の総数分繰り返す
 
-		// 同じアドレスだった場合または、ドアの場合次へ
+		// 同じアドレスだった場合または、ドア・竹の格子の場合次へ
 		if (rList == m_pActor ||
-			rList->GetType() == CActor::TYPE_DOOR)
+			rList->GetType() == CActor::TYPE_DOOR || 
+			rList->GetType() == CActor::TYPE_B_LATTICE)
 		{
 			continue;
 		}
