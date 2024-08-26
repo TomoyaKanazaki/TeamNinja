@@ -276,7 +276,7 @@ int CEnemyAmbush::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float 
 		case CEnemyAmbush::STATE_STANCE:
 
 			// 構え処理
-			nCurMotion = Stance(pPos, pRot);
+			nCurMotion = Stance();
 
 			break;
 
@@ -374,7 +374,7 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 			// TODO：警戒モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
-			// 警戒状態にする
+			// 待ち伏せ状態にする
 			SetState(STATE_AMBUSH);
 		}
 
@@ -721,7 +721,7 @@ CEnemyAmbush::EMotion CEnemyAmbush::Upset(void)
 //============================================================
 // 構え処理
 //============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::Stance(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+CEnemyAmbush::EMotion CEnemyAmbush::Stance(void)
 {
 	// 分身の発見処理
 	JudgeClone();
@@ -768,7 +768,7 @@ bool CEnemyAmbush::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	// 回帰カウントが一定数以下の場合、抜ける
 	if (m_nRegressionCount < REGRESSION_COUNT) { return false; }
 
-	// フェードイン状態にする
+	// 待ち伏せ状態にする
 	SetState(STATE_AMBUSH);
 
 	// 位置を設定する
