@@ -41,7 +41,8 @@ CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャ
 CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_sTransMapPass	(pPass),	// 遷移先マップパス
 	m_pEffectData	(nullptr),	// 保持するエフェクト情報
-	m_pBalloon		(nullptr)	// 吹き出し情報
+	m_pBalloon		(nullptr),	// 吹き出し情報
+	m_bOpen			(false)		// ステージ解放フラグ
 {
 
 }
@@ -62,6 +63,7 @@ HRESULT CTransPoint::Init(void)
 	// メンバ変数を初期化
 	m_pEffectData = nullptr;	// 保持するエフェクト情報
 	m_pBalloon = nullptr;		// 吹き出し情報
+	m_bOpen = true;			// ステージ解放フラグ	// TODO：ここfalseね
 
 	// オブジェクトモデルの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -269,6 +271,13 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 					return nullptr;
 				}
 			}
+
+			if (!rList->m_bOpen)
+			{ // 解放されていない場合
+
+				// 入っちゃダメなのでnullに戻す
+				pHitTransPoint = nullptr;
+			}
 		}
 		else
 		{ // 当たっていない場合
@@ -308,7 +317,7 @@ HRESULT CTransPoint::CreateStageTexture(void)
 	SAFE_UNINIT(m_pBalloonManager);
 
 	// 吹き出しマネージャーの生成
-	m_pBalloonManager = CBalloonManager::Create(this);
+	m_pBalloonManager = CBalloonManager::Create(this, m_bOpen);
 	if (m_pBalloonManager == nullptr)
 	{ // 生成に失敗した場合
 
