@@ -289,7 +289,7 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 	float fRot = GetVec3Rotation().y + D3DX_PI;		// 向き
 	float fLength = FLT_MAX;						// 距離
 	float fLengthComp = FLT_MAX;					// 比較する距離
-	int nIdx = INT_MAX;								// 追わせるインデックス
+	CPlayerClone* pChaseClone = nullptr;			// 追跡する分身
 
 	// 向きを正規化
 	useful::NormalizeRot(fRot);
@@ -302,10 +302,13 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 		return false;
 	}
 
-	for (int nCnt = 0; nCnt < CPlayerClone::GetList()->GetNumAll(); nCnt++)
+	for (auto& clone : CPlayerClone::GetList()->GetList())
 	{
+		// 歩行状態じゃない場合、次に進む
+		if (clone->GetAction() != CPlayerClone::ACTION_MOVE) { continue; }
+
 		// 分身の位置を取得する
-		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+		pos = clone->GetVec3Position();
 
 		// 距離を測る
 		fLengthComp = sqrtf((posEnemy.x - pos.x) * (posEnemy.x - pos.x) + (posEnemy.z - pos.z) * (posEnemy.z - pos.z));
@@ -316,12 +319,15 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 		// 距離を更新する
 		fLength = fLengthComp;
 
-		// インデックスを設定する
-		nIdx = nCnt;
+		// 追跡する分身を設定
+		pChaseClone = clone;
 	}
 
+	// 追跡する分身がいない場合、抜ける
+	if (pChaseClone == nullptr) { return false; }
+
 	// 位置を設定する
-	pos = (*CPlayerClone::GetList()->GetIndex(nIdx))->GetVec3Position();
+	pos = pChaseClone->GetVec3Position();
 
 	// 視界内に居なかった場合 false を返す
 	if (!collision::Sector(GetVec3Position(), pos, fRot, VIEW_RANGE, D3DX_PI)) { return false; }
@@ -330,7 +336,7 @@ bool CEnemy::SearchClone(D3DXVECTOR3* pPos, CPlayerClone** pClone)
 	if (pPos != nullptr) { *pPos = pos; }
 
 	// 分身の情報を取得する
-	if (pClone != nullptr) { *pClone = *CPlayerClone::GetList()->GetIndex(nIdx); }
+	if (pClone != nullptr) { *pClone = pChaseClone; }
 
 	// true を返す
 	return true;
