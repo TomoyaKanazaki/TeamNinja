@@ -1213,6 +1213,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// “–‚½‚Á‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
 			m_pOldField->Miss(this);
 		}
+
+		// °‚ª…‚Ìê‡E‚·
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_state = STATE_DEATH;
+		}
 	}
 
 	// Œ»İ‚Ìƒ‚[ƒVƒ‡ƒ“í—Ş‚ğæ“¾
@@ -1255,8 +1261,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 				// ’…’n‰¹(¬)‚ÌÄ¶
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
-
-			
 		}
 	}
 	else
