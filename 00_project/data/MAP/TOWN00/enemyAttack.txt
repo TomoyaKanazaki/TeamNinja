@@ -1,0 +1,72 @@
+#==============================================================================
+#
+#	敵のセットアップ [enemy.txt]
+#	Author : 小原 立暉
+#
+#==============================================================================
+STAGE_ENEMYSET
+
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= -619.00 0.00 0.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 750.00 350.00
+		CHASESIZE 	= 1000.0 500.0
+	END_ENEMYSET
+	
+		ENEMYSET
+		TYPE		= 1
+		NAVTYPE	 	= 0
+		POS			= 2222.00 450.00 0.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 300.0 300.0
+		CHASESIZE 	= 300.0 500.0
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= 8069.00 150.00 0.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 250.00 800.00
+		CHASESIZE 	= 250.00 800.00
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 1
+		NAVTYPE	 	= 0
+		POS			= 8803.00 150.00 -671.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 570.00 130.00
+		CHASESIZE 	= 570.00 130.00
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 1
+		NAVTYPE	 	= 0
+		POS			= 8803.00 150.00 671.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 570.00 130.00
+		CHASESIZE 	= 570.00 130.00
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= 10468.00 0.00 100.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 700.00 700.00
+		CHASESIZE 	= 700.00 700.00
+	END_ENEMYSET
+	
+	ENEMYSET
+		TYPE		= 0
+		NAVTYPE	 	= 0
+		POS			= 10468.00 0.00 -100.00
+		ROT			= 0.00 0.00 0.00
+		MOVESIZE 	= 700.00 700.00
+		CHASESIZE 	= 700.00 700.00
+	END_ENEMYSET
+
+END_STAGE_ENEMYSET
