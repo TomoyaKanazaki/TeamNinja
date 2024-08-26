@@ -153,6 +153,7 @@ public:
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
+	D3DXVECTOR3 GetOldPosition() const { return m_oldPos; }		// 過去位置の取得
 
 private:
 
