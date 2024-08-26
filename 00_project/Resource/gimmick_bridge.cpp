@@ -308,6 +308,9 @@ void CGimmickBridge::Active()
 	// nullチェック
 	if (m_pField != nullptr) { return; }
 
+	// 向きが一定の値を上回っている場合関数を抜ける
+	if (m_fRot - -HALF_PI > 0.2f) { return; }
+
 	// 足場の座標を設定
 	D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;
 
