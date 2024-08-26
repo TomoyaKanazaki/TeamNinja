@@ -383,7 +383,7 @@ void CEditWeed::Create(void)
 			D3DXVECTOR3 posSet = D3DXVECTOR3
 			(
 				posCent.x + sinf(fTheta) * (fRadius * fDistance),
-				0.0f,
+				posCent.y,
 				posCent.z + cosf(fTheta) * (fRadius * fDistance)
 			);
 

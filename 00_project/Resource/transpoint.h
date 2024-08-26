@@ -63,8 +63,9 @@ private:
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
 	const std::string m_sTransMapPass;		// 遷移先マップパス
-	CEffekseer::CEffectData* m_pEffectData; // 保持するエフェクト情報
+	CEffekseer::CEffectData* m_pEffectData;	// 保持するエフェクト情報
 	CBalloon* m_pBalloon;	// 吹き出し情報
+	bool m_bOpen;			// ステージ解放フラグ
 };
 
 #endif	// _TRANSPOINT_H_
