@@ -32,7 +32,8 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil004.png",	// 草土テクスチャ
 		"data\\TEXTURE\\FIELD\\soil003.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\OldWood002.jpg",	// 床テクスチャ
-		"data\\TEXTURE\\FIELD\\soil001.png",	// 砂利道テクスチャ
+		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
+		"data\\TEXTURE\\FIELD\\Gravel.png",	// 砂利道テクスチャ
 		"data\\TEXTURE\\FIELD\\Mud000.jpg",		// 泥テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 掃除床テクスチャ
 		"data\\TEXTURE\\FIELD\\pitfall.jpg",	// 落とし穴テクスチャ
@@ -48,6 +49,7 @@ namespace
 		' ',	// 草土フラグ
 		' ',	// 草フラグ
 		' ',	// 床フラグ
+		' ',	// 城の漆喰フラグ
 		'g',	// 砂利フラグ
 		'b',	// 泥
 		'c',	// 掃除床

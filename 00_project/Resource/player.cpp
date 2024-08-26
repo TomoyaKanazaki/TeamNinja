@@ -1213,6 +1213,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// 当たっていない状態にする
 			m_pOldField->Miss(this);
 		}
+
+		// 床が水の場合殺す
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_state = STATE_DEATH;
+		}
 	}
 
 	// 現在のモーション種類を取得
@@ -1255,8 +1261,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 				// 着地音(小)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
-
-			
 		}
 	}
 	else
@@ -1830,8 +1834,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// 攻撃範囲を取得
-	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();
-	D3DXVECTOR3 coliisionDown = CEnemyAttack::GetAttackDown();
+	D3DXVECTOR3 collisionUp = CEnemyAttack::GetAttackUp();
+	D3DXVECTOR3 collisionDown = CEnemyAttack::GetAttackDown();
 
 	// 全ての敵を確認する
 	for (CEnemyAttack* enemy : list)
@@ -1846,8 +1850,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 			enemy->GetVec3Position(),	// 判定目標位置
 			GetVec3Sizing(),			// 判定サイズ(右・上・後)
 			GetVec3Sizing(),			// 判定サイズ(左・下・前)
-			coliisionUp,				// 判定目標サイズ(右・上・後)
-			coliisionDown				// 判定目標サイズ(左・下・前)
+			collisionUp,				// 判定目標サイズ(右・上・後)
+			collisionDown				// 判定目標サイズ(左・下・前)
 		))
 		{
 			// 当たっていない場合は次に進む

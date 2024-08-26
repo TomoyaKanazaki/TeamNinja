@@ -9,43 +9,26 @@
 #------------------------------------------------------------------------------
 STAGE_PLAYERSET
 	TYPE = GAME
-	POS = 0.00 0.00 -300.00
-	ROT = 0.00 180.00 0.00
+	POS = 0.00 0.00 2500.00
+	ROT = 0.00 270.00 0.00
 END_STAGE_PLAYERSET
 
 #------------------------------------------------------------------------------
-#	遷移ポイントの情報
+#	チェックポイントの情報
 #------------------------------------------------------------------------------
-STAGE_TRANSSET
+STAGE_CHECKSET
 
-	TRANSSET
-		TRANS_PASS = data\MAP\CASTLE00\map.txt
-		POS = -750 0 0
-	END_TRANSSET
+	CHECKSET
+		POS = 5950.00 300.00 0.00
+	END_CHECKSET
 
-	TRANSSET
-		TRANS_PASS = data\MAP\FOREST02\map.txt
-		POS = -500 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\FOREST00\map.txt
-		POS = -250 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\TEMP\TEST00\map.txt
-		POS = 0 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\TEMP\TEST01\map.txt
-		POS = 250 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\TEMP\TEST02\map.txt
-		POS = 500 0 0
-	END_TRANSSET
+END_STAGE_CHECKSET
 
-END_STAGE_TRANSSET
+#------------------------------------------------------------------------------
+#	ゴールの情報
+#------------------------------------------------------------------------------
+STAGE_GOALSET
+
+	POS = -2025.00 50.00 -400.00
+
+END_STAGE_GOALSET
