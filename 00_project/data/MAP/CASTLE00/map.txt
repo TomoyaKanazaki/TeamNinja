@@ -1,0 +1,15 @@
+#==============================================================================
+#
+#	マップ配置情報のパス [map.txt]
+#	Author : 藤田 勇一
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+#	パスの情報
+#------------------------------------------------------------------------------
+STAGE_PASS 			= data\MAP\CASTLE00\stage.txt	# ステージ情報パス
+ENEMYATTACK_PASS	= data\MAP\CASTLE00\enemyAttack.txt	# 敵情報パス
+GODITEM_PASS		= data\MAP\CASTLE00\goditem.txt	# 神器情報パス
+ACTOR_PASS 			= data\MAP\CASTLE00\actor.txt	# アクター情報パス
+GIMMICK_PASS 		= data\MAP\CASTLE00\gimmick.txt	# ギミック情報パス
+POINT_PASS 			= data\MAP\CASTLE00\point.txt	# ポイント情報パス
