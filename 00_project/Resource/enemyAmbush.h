@@ -91,7 +91,7 @@ private:
 	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
 	EMotion BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);		// 空白攻撃処理
 	EMotion Upset(void);						// 動揺処理
-	EMotion Stance(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);				// 構え処理
+	EMotion Stance(void);						// 構え処理
 	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);			// 元の位置に戻る処理
 	void SetState(const EState state);			// 状態の設定処理
 	void WalkSound(void);						// 歩行音処理

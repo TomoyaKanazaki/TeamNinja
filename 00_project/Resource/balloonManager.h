@@ -46,7 +46,7 @@ public:
 	};
 
 	// コンストラクタ
-	CBalloonManager(CTransPoint* pParent);
+	CBalloonManager(CTransPoint* pParent, const bool bOpen);
 
 	// デストラクタ
 	~CBalloonManager();
@@ -58,7 +58,7 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CBalloonManager *Create(CTransPoint* pParent);	// 生成
+	static CBalloonManager *Create(CTransPoint* pParent, const bool bOpen);	// 生成
 
 	// メンバ関数
 	void SetStag(void);	// 演出開始設定
@@ -78,6 +78,7 @@ private:
 	CScrollText2D* m_pShadow;		// ステージ名の影
 	CScrollText2D* m_pName;			// ステージ名
 	EState m_state;					// 状態
+	const bool m_bOpen;				// ステージ解放フラグ
 };
 
 #endif	// _BALLOON_MANAGER_H_

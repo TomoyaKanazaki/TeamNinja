@@ -23,6 +23,9 @@
 //************************************************************
 namespace
 {
+	const D3DXCOLOR COL_OPEN	= XCOL_WHITE;							// 入場可能色
+	const D3DXCOLOR COL_UNOPEN	= D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f);	// 入場不可能色
+
 	namespace stage
 	{
 		const D3DXVECTOR3 POS	= SCREEN_CENT;			// 位置
@@ -97,14 +100,15 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CBalloonManager::CBalloonManager(CTransPoint* pParent) :
+CBalloonManager::CBalloonManager(CTransPoint* pParent, const bool bOpen) :
 	m_pParent	(pParent),		// 遷移ポイント
 	m_pStage	(nullptr),		// ステージ画面
 	m_pFrame	(nullptr),		// フレーム
 	m_pCont		(nullptr),		// 操作方法
 	m_pShadow	(nullptr),		// ステージ名の影
 	m_pName		(nullptr),		// ステージ名
-	m_state		(STATE_NONE)	// 状態
+	m_state		(STATE_NONE),	// 状態
+	m_bOpen		(bOpen)			// ステージ解放フラグ
 {
 	// メンバ変数をクリア
 	memset(&m_apGodItem[0], 0, sizeof(m_apGodItem));	// 神器アイコン
@@ -137,11 +141,14 @@ HRESULT CBalloonManager::Init(void)
 	// ビルボードシーン内のオブジェクトを全破棄
 	CObject::ReleaseAll(CObject::SCENE_BILLBOARD);
 
+	// ポリゴン色を設定
+	D3DXCOLOR colPoly = (m_bOpen) ? COL_OPEN : COL_UNOPEN;
+
 	//--------------------------------------------------------
 	//	ステージ画面ポリゴンの生成 / 設定
 	//--------------------------------------------------------
 	// ステージ画面ポリゴンの生成
-	m_pStage = CObject2D::Create(stage::POS, stage::SIZE);
+	m_pStage = CObject2D::Create(stage::POS, stage::SIZE, VEC3_ZERO, colPoly);
 	if (m_pStage == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 	// 情報の設定
@@ -153,7 +160,7 @@ HRESULT CBalloonManager::Init(void)
 	//	フレームポリゴンの生成 / 設定
 	//--------------------------------------------------------
 	// フレームポリゴンの生成
-	m_pFrame = CObject2D::Create(frame::POS, frame::SIZE);
+	m_pFrame = CObject2D::Create(frame::POS, frame::SIZE, VEC3_ZERO, colPoly);
 	if (m_pFrame == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 	// 情報の設定
@@ -167,8 +174,11 @@ HRESULT CBalloonManager::Init(void)
 	for (int i = 0; i < CBalloonManager::NUM_STAR; i++)
 	{ // 手裏剣の総数分繰り返す
 
+		// 手裏剣の色を設定
+		D3DXCOLOR colStar = (m_bOpen) ? star::COL[i] : COL_UNOPEN;
+
 		// 手裏剣の生成
-		m_apStar[i] = CRoll2D::Create(star::POS[i], star::SIZE[i], star::ADD_ROT[i], star::ROT[i], star::COL[i]);
+		m_apStar[i] = CRoll2D::Create(star::POS[i], star::SIZE[i], star::ADD_ROT[i], star::ROT[i], colStar);
 		if (m_apStar[i] == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 		// 情報の設定
@@ -180,7 +190,7 @@ HRESULT CBalloonManager::Init(void)
 	//	操作方法の生成 / 設定
 	//--------------------------------------------------------
 	// 操作方法の生成
-	m_pCont = CScale2D::Create(cont::POS, cont::SIZE, cont::MIN_SCALE, cont::MAX_SCALE, cont::INIT_SCALE, cont::CALC_SCALE);
+	m_pCont = CScale2D::Create(cont::POS, cont::SIZE, cont::MIN_SCALE, cont::MAX_SCALE, cont::INIT_SCALE, cont::CALC_SCALE, 1.0f, 1.0f, VEC3_ZERO, colPoly);
 	if (m_pCont == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 	// 情報の設定
@@ -204,10 +214,13 @@ HRESULT CBalloonManager::Init(void)
 	{ // 神器の総数分繰り返す
 
 		// アイコン生成位置を計算
-		D3DXVECTOR3 posIcon = item::POS + (item::SPACE * (float)i);	// アイコン生成位置
+		D3DXVECTOR3 posIcon = item::POS + (item::SPACE * (float)i);
+
+		// 手裏剣の色を設定
+		D3DXCOLOR colIcon = (m_bOpen) ? item::COL[(int)bOldGet[i]] : item::COL[(int)false];
 
 		// 神器アイコンの生成
-		m_apGodItem[i] = CAnim2D::Create(item::TEX_PART.x, item::TEX_PART.y, posIcon, item::SIZE, VEC3_ZERO, item::COL[(int)bOldGet[i]]);
+		m_apGodItem[i] = CAnim2D::Create(item::TEX_PART.x, item::TEX_PART.y, posIcon, item::SIZE, VEC3_ZERO, colIcon);
 		if (m_apGodItem[i] == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 		// 情報の設定
@@ -217,55 +230,59 @@ HRESULT CBalloonManager::Init(void)
 		m_apGodItem[i]->SetPattern(i);						// テクスチャパターンを設定
 	}
 
-	//--------------------------------------------------------
-	//	ステージ名の影の生成 / 設定
-	//--------------------------------------------------------
-	// ステージ名の影の生成
-	m_pShadow = CScrollText2D::Create
-	( // 引数
-		name::FONT,					// フォントパス
-		name::ITALIC,				// イタリック
-		name::POS + name::OFFSET,	// 原点位置
-		name::WAIT_TIME_NOR,		// 文字表示の待機時間
-		name::CHAR_HEIGHT,			// 文字縦幅
-		name::LINE_HEIGHT,			// 行間縦幅
-		name::ALIGN_X,				// 横配置
-		name::ALIGN_Y,				// 縦配置
-		name::ROT,					// 原点向き
-		name::COL_SHADOW			// 色
-	);
-	if (m_pShadow == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+	if (m_bOpen)
+	{ // 解放されている場合
 
-	// 情報の設定
-	m_pShadow->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+		//----------------------------------------------------
+		//	ステージ名の影の生成 / 設定
+		//----------------------------------------------------
+		// ステージ名の影の生成
+		m_pShadow = CScrollText2D::Create
+		( // 引数
+			name::FONT,					// フォントパス
+			name::ITALIC,				// イタリック
+			name::POS + name::OFFSET,	// 原点位置
+			name::WAIT_TIME_NOR,		// 文字表示の待機時間
+			name::CHAR_HEIGHT,			// 文字縦幅
+			name::LINE_HEIGHT,			// 行間縦幅
+			name::ALIGN_X,				// 横配置
+			name::ALIGN_Y,				// 縦配置
+			name::ROT,					// 原点向き
+			name::COL_SHADOW			// 色
+		);
+		if (m_pShadow == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
-	// テキストを割当
-	loadtext::BindText(m_pShadow, loadtext::LoadText(GET_STAGE->Regist(m_pParent->GetTransMapPass().c_str()).sStage.c_str(), 0));
+		// 情報の設定
+		m_pShadow->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
 
-	//--------------------------------------------------------
-	//	ステージ名の生成 / 設定
-	//--------------------------------------------------------
-	// ステージ名の生成
-	m_pName = CScrollText2D::Create
-	( // 引数
-		name::FONT,				// フォントパス
-		name::ITALIC,			// イタリック
-		name::POS,				// 原点位置
-		name::WAIT_TIME_NOR,	// 文字表示の待機時間
-		name::CHAR_HEIGHT,		// 文字縦幅
-		name::LINE_HEIGHT,		// 行間縦幅
-		name::ALIGN_X,			// 横配置
-		name::ALIGN_Y,			// 縦配置
-		name::ROT,				// 原点向き
-		name::COL_NAME			// 色
-	);
-	if (m_pName == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
+		// テキストを割当
+		loadtext::BindText(m_pShadow, loadtext::LoadText(GET_STAGE->Regist(m_pParent->GetTransMapPass().c_str()).sStage.c_str(), 0));
 
-	// 情報の設定
-	m_pName->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+		//----------------------------------------------------
+		//	ステージ名の生成 / 設定
+		//----------------------------------------------------
+		// ステージ名の生成
+		m_pName = CScrollText2D::Create
+		( // 引数
+			name::FONT,				// フォントパス
+			name::ITALIC,			// イタリック
+			name::POS,				// 原点位置
+			name::WAIT_TIME_NOR,	// 文字表示の待機時間
+			name::CHAR_HEIGHT,		// 文字縦幅
+			name::LINE_HEIGHT,		// 行間縦幅
+			name::ALIGN_X,			// 横配置
+			name::ALIGN_Y,			// 縦配置
+			name::ROT,				// 原点向き
+			name::COL_NAME			// 色
+		);
+		if (m_pName == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
-	// テキストを割当
-	loadtext::BindText(m_pName, loadtext::LoadText(GET_STAGE->Regist(m_pParent->GetTransMapPass().c_str()).sStage.c_str(), 0));
+		// 情報の設定
+		m_pName->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+
+		// テキストを割当
+		loadtext::BindText(m_pName, loadtext::LoadText(GET_STAGE->Regist(m_pParent->GetTransMapPass().c_str()).sStage.c_str(), 0));
+	}
 
 	// 成功を返す
 	return S_OK;
@@ -322,7 +339,7 @@ void CBalloonManager::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CBalloonManager::Draw(CShader *pShader)
+void CBalloonManager::Draw(CShader * /*pShader*/)
 {
 
 }
@@ -330,10 +347,10 @@ void CBalloonManager::Draw(CShader *pShader)
 //============================================================
 //	生成処理
 //============================================================
-CBalloonManager *CBalloonManager::Create(CTransPoint* pParent)
+CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
 {
 	// 吹き出しマネージャーの生成
-	CBalloonManager *pBalloonManager = new CBalloonManager(pParent);
+	CBalloonManager *pBalloonManager = new CBalloonManager(pParent, bOpen);
 	if (pBalloonManager == nullptr)
 	{ // 生成に失敗した場合
 
@@ -361,10 +378,20 @@ CBalloonManager *CBalloonManager::Create(CTransPoint* pParent)
 //============================================================
 void CBalloonManager::SetStag(void)
 {
-	// 文字送りを開始
-	m_pShadow->SetEnableScroll(true);
-	m_pName->SetEnableScroll(true);
+	if (m_bOpen)
+	{ // 解放されている場合
 
-	// 演出状態にする
-	m_state = STATE_STAG;
+		// 文字送りを開始
+		m_pShadow->SetEnableScroll(true);
+		m_pName->SetEnableScroll(true);
+
+		// 演出状態にする
+		m_state = STATE_STAG;
+	}
+	else
+	{ // 解放されていない場合
+
+		// 終了状態にする
+		m_state = STATE_END;
+	}
 }
