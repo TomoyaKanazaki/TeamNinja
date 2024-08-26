@@ -934,6 +934,9 @@ bool CEnemyStalk::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
 	// ターゲットを無対象にする
 	SetTarget(TARGET_NONE);
 
+	// ナビゲーションリセット処理
+	m_pNav->NavReset();
+
 	// true を返す
 	return true;
 }
