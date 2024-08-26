@@ -33,6 +33,8 @@ public:
 
 	bool IsSet() override { return IsActive(); } // 設置フラグの取得
 
+	bool CollisionPlayer() override; // プレイヤーとの当たり判定
+
 private:
 	// メンバ関数
 	void SetButtonSizing(void);	// ボタン大きさ設定

@@ -12,6 +12,7 @@
 #include "player_clone.h"
 
 #include "directxmath.h"
+#include "collision.h"
 
 //=========================================
 //  コンストラクタ
@@ -144,6 +145,9 @@ void CGimmickPost::Update(const float fDeltaTime)
 	// ボタンの大きさ設定
 	SetButtonSizing();
 
+	// プレイヤーとの当たり判定
+	CollisionPlayer();
+
 	// 親クラスの更新
 	CGimmickAction::Update(fDeltaTime);
 }
@@ -226,6 +230,40 @@ D3DXVECTOR3 CGimmickPost::CalcWaitRotation(const int Idx, const CPlayerClone* pC
 
 	// 算出した向きを返す
 	return rotWait;
+}
+
+//==========================================
+//  プレイヤーとの当たり判定
+//==========================================
+bool CGimmickPost::CollisionPlayer()
+{
+	// プレイヤー座標を取得
+	CPlayer* pPlayer = GET_PLAYER;
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+	D3DXVECTOR3 oldPlayer = pPlayer->GetOldPosition();
+	float fRadius = pPlayer->GetRadius();
+
+	// 自身のサイズを取得
+	D3DXVECTOR3 size = GetVec3Sizing() * 0.5f;
+
+	//当たり判定
+	bool bHit = collision::BoxPillar
+	(
+		posPlayer, oldPlayer,
+		GetVec3Position(),
+		D3DXVECTOR3(fRadius, fRadius, fRadius),
+		D3DXVECTOR3(fRadius, fRadius, fRadius),
+		size,
+		size
+	);
+
+	// 当たっている場合プレイヤー座標を補正する
+	if (bHit)
+	{
+		pPlayer->SetVec3Position(posPlayer);
+	}
+
+	return bHit;
 }
 
 //=========================================

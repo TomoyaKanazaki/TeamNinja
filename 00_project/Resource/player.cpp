@@ -84,6 +84,7 @@ namespace
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
+	const int HEAL_ITEM = 3; // アイテムの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
@@ -738,6 +739,18 @@ void CPlayer::RecoverCheckPoint()
 	}
 }
 
+//==========================================
+//  アイテムでの回復
+//==========================================
+void CPlayer::RecoverItem()
+{
+	// 士気力を回復する
+	for (int i = 0; i < HEAL_ITEM; ++i)
+	{
+		CTension::Create();
+	}
+}
+
 //===========================================
 //  文字列(フラグ)の追加
 //===========================================
@@ -1200,6 +1213,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// 当たっていない状態にする
 			m_pOldField->Miss(this);
 		}
+
+		// 床が水の場合殺す
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_state = STATE_DEATH;
+		}
 	}
 
 	// 現在のモーション種類を取得
@@ -1242,8 +1261,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 				// 着地音(小)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
-
-			
 		}
 	}
 	else
@@ -1817,8 +1834,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// 攻撃範囲を取得
-	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();
-	D3DXVECTOR3 coliisionDown = CEnemyAttack::GetAttackDown();
+	D3DXVECTOR3 collisionUp = CEnemyAttack::GetAttackUp();
+	D3DXVECTOR3 collisionDown = CEnemyAttack::GetAttackDown();
 
 	// 全ての敵を確認する
 	for (CEnemyAttack* enemy : list)
@@ -1833,8 +1850,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 			enemy->GetVec3Position(),	// 判定目標位置
 			GetVec3Sizing(),			// 判定サイズ(右・上・後)
 			GetVec3Sizing(),			// 判定サイズ(左・下・前)
-			coliisionUp,				// 判定目標サイズ(右・上・後)
-			coliisionDown				// 判定目標サイズ(左・下・前)
+			collisionUp,				// 判定目標サイズ(右・上・後)
+			collisionDown				// 判定目標サイズ(左・下・前)
 		))
 		{
 			// 当たっていない場合は次に進む
@@ -1958,11 +1975,15 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 	for (auto godItem : list)
 	{
 		// 当たり判定処理
-		godItem->Collision
+		if (godItem->Collision
 		(
 			pos,		// 位置
 			RADIUS		// 半径
-		);
+		))
+		{
+			// 回復
+			RecoverItem();
+		}
 	}
 }
 
