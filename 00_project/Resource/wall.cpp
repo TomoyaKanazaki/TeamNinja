@@ -25,6 +25,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil005.png",	// 草土テクスチャ
 		"data\\TEXTURE\\FIELD\\soil002.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\water.png",		// 水テクスチャ
+		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
 	};
 
 	const int PRIORITY = 0;	// 壁の優先順位
