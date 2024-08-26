@@ -29,6 +29,7 @@ public:
 		TYPE_WEED_SOIL,	// 草土テクスチャ
 		TYPE_WEED,		// 草テクスチャ
 		TYPE_WATER,		// 水テクスチャ
+		TYPE_PLASTER,	// 城の漆喰テクスチャ
 		TYPE_MAX		// この列挙型の総数
 	};
 
