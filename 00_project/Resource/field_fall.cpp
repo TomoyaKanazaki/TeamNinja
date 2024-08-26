@@ -76,6 +76,9 @@ HRESULT CGimmickFall::Init(void)
 		);
 	}
 
+	// 描画しない
+	SetEnableDraw(false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -112,8 +115,8 @@ void CGimmickFall::Update(const float fDeltaTime)
 //=========================================
 void CGimmickFall::Draw(CShader* pShader)
 {
-	//// 親クラスの描画
-	//CField::Draw(pShader);
+	// 親クラスの描画
+	CField::Draw(pShader);
 }
 
 //===========================================
@@ -239,6 +242,9 @@ void CGimmickFall::Count()
 		// 自身の上の分身数を加算
 		++nNum;
 	}
+
+	// プレイヤーが乗っていても加算する
+	if (GET_PLAYER->GetField() == this) { ++nNum; }
 
 	// 分身の数が最大数未満の場合関数を抜ける
 	if (nNum < FALL_NUM) { m_bFall = false; return; }

@@ -154,6 +154,7 @@ public:
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	D3DXVECTOR3 GetOldPosition() const { return m_oldPos; }		// 過去位置の取得
+	CField* GetField() const { return m_pCurField; }			// フィールドの取得
 
 private:
 
