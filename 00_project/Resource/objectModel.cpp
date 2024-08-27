@@ -13,6 +13,9 @@
 #include "texture.h"
 #include "ZTexture.h"
 #include "ToonShadow.h"
+
+#include "camera.h"
+
 //************************************************************
 //	子クラス [CObjectModel] のメンバ関数
 //************************************************************
@@ -91,7 +94,19 @@ void CObjectModel::Uninit(void)
 //============================================================
 void CObjectModel::Update(const float fDeltaTime)
 {
+	// 最大値と最小値を算出する
+	D3DXVECTOR3 min = m_pos + m_modelData.vtxMin;
+	D3DXVECTOR3 max = m_pos + m_modelData.vtxMax;
 
+	if (GET_CAMERA->OnScreenBox(min, max))
+	{
+		//SetEnableDraw(true);
+		//DebugProc::Print(DebugProc::POINT_CENTER, "見えている\n");
+	}
+	else
+	{
+		//SetEnableDraw(false);
+	}
 }
 
 //============================================================
