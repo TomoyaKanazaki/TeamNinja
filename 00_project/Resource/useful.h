@@ -243,9 +243,17 @@ namespace useful
 	D3DXVECTOR3 GetTexAspect(const int nTexID);								// テクスチャのアスペクト比を取得
 	float GetTexWidthFromAspect(const float fHeight, const int nTexID);		// 縦幅からアスペクト比を考慮した横幅取得
 	float GetTexHeightFromAspect(const float fWidth, const int nTexID);		// 横幅からアスペクト比を考慮した縦幅取得
+	D3DXVECTOR3 GetMatrixPoint
+	(
+		const D3DXMATRIX& rMtx,
+		const D3DXVECTOR3& rPos,
+		const D3DXVECTOR3& rRot,
+		const D3DXVECTOR3& rScale
+		); // マトリックスを考慮した頂点の取得
 	D3DXVECTOR3 GetMatrixPosition(const D3DXMATRIX& rMtx);	// マトリックス位置取得
 	D3DXVECTOR3 GetMatrixRotation(const D3DXMATRIX& rMtx);	// マトリックス向き取得
 	D3DXVECTOR3 GetMatrixScaling(const D3DXMATRIX& rMtx);	// マトリックス拡大率取得
+	bool IsNearPlayer(const D3DXVECTOR3& pos);
 
 	// テンプレート関数
 	template<class T> T *ZeroClear(T *pClear);	// ゼロクリア
