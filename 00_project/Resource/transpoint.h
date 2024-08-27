@@ -48,10 +48,10 @@ public:
 	static CTransPoint* Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
+	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込
+	static HRESULT SaveOpen(const char* pPass, const bool bOpen);	// 解放フラグ保存
 
 	// メンバ関数
-	HRESULT LoadOpen(void);	// 解放フラグ読込
-	HRESULT SaveOpen(void);	// 解放フラグ保存
 	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
 
 private:

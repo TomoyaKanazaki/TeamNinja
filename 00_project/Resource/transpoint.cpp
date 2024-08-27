@@ -64,8 +64,12 @@ HRESULT CTransPoint::Init(void)
 	m_pBalloon = nullptr;		// 吹き出し情報
 	m_bOpen = false;			// ステージ解放フラグ
 
+	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
+	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
+	fsDirectory.append("open.txt");								// ディレクトリに解放フラグのベースネーム追加
+
 	// 解放状況の読込
-	LoadOpen();
+	LoadOpen(fsDirectory.string().c_str(), &m_bOpen);
 
 	// オブジェクトモデルの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -428,17 +432,10 @@ HRESULT CTransPoint::LoadSetup(const char* pPass)
 //============================================================
 //	解放フラグの読込処理
 //============================================================
-HRESULT CTransPoint::LoadOpen(void)
+HRESULT CTransPoint::LoadOpen(const char* pPass, bool *pOpen)
 {
-	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
-	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
-	fsDirectory.append("open.txt");								// ディレクトリに解放フラグのベースネーム追加
-
-	// 解放フラグパスを作成
-	std::string sOpen = fsDirectory.string();
-
 	// ファイルを開く
-	std::ifstream file(sOpen);	// ファイルストリーム
+	std::ifstream file(pPass);	// ファイルストリーム
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
@@ -446,7 +443,7 @@ HRESULT CTransPoint::LoadOpen(void)
 		MessageBox(nullptr, "解放フラグの読み込みに失敗！", "警告！", MB_ICONWARNING);
 
 		// 解放状況の保存
-		if (FAILED(SaveOpen()))
+		if (FAILED(SaveOpen(pPass, false)))
 		{ // 保存に失敗した場合
 
 			// 失敗を返す
@@ -469,7 +466,9 @@ HRESULT CTransPoint::LoadOpen(void)
 		{
 			file >> sStr;	// ＝を読込
 			file >> sStr;	// フラグを読込
-			m_bOpen = (sStr == "TRUE");	// フラグ文字列を変換
+
+			// フラグ文字列を変換
+			*pOpen = (sStr == "TRUE");
 		}
 	}
 
@@ -483,17 +482,10 @@ HRESULT CTransPoint::LoadOpen(void)
 //============================================================
 //	解放フラグの保存処理
 //============================================================
-HRESULT CTransPoint::SaveOpen(void)
+HRESULT CTransPoint::SaveOpen(const char* pPass, const bool bOpen)
 {
-	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
-	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
-	fsDirectory.append("open.txt");								// ディレクトリに解放フラグのベースネーム追加
-
-	// 解放フラグパスを作成
-	std::string sOpen = fsDirectory.string();
-
 	// ファイルを開く
-	std::ofstream file(sOpen);	// ファイルストリーム
+	std::ofstream file(pPass);	// ファイルストリーム
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
@@ -511,12 +503,13 @@ HRESULT CTransPoint::SaveOpen(void)
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-
-	// フラグを書き出し
 	file << "#------------------------------------------------------------------------------" << std::endl;
 	file << "#	解放フラグ" << std::endl;
 	file << "#------------------------------------------------------------------------------" << std::endl;
-	file << "FLAG = FALSE" << std::endl;
+
+	// フラグを書き出し
+	std::string sFlag = (bOpen) ? "TRUE" : "FALSE";	// フラグ文字列
+	file << "FLAG = " << sFlag << std::endl;
 
 	// ファイルを閉じる
 	file.close();
