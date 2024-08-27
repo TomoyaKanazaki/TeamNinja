@@ -13,7 +13,7 @@ STAGE_GODITEMSET
 		TYPE	= 0
 		
 		TEXT_0
-			STR = ドーモ、ニンジャ=サン。マガタマデス。(^_-)-☆
+			STR = The Newcomer Ninja
 		END_TEXT
 	END_GODITEMSET
 
@@ -22,7 +22,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = 橋の下のマガタマ(●´ω｀●)
+			STR = TUOB(THE_UNDER_OF_BRIDGE)
 		END_TEXT
 	END_GODITEMSET
 
@@ -31,7 +31,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR = 危険地帯のマガタマ(；一_一)
+			STR = DANGER AREA IN MAGATAMA
 		END_TEXT
 	END_GODITEMSET
 

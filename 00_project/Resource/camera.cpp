@@ -23,6 +23,7 @@
 #include "retentionManager.h"
 #include "gameManager.h"
 #include "timerUI.h"
+#include "cinemaScope.h"
 
 //************************************************************
 //	定数宣言
@@ -1033,6 +1034,9 @@ void CCamera::StartCamera(void)
 		GET_INPUTKEY->IsTrigger(DIK_RETURN))
 	{ // スキップキーを押した場合
 
+		// スコープアウト
+		CSceneGame::GetCinemaScope()->SetScopeOut();
+
 		// プレイヤーの位置を設定する(空中から始まらないように)
 		D3DXVECTOR3 posPlayer = player->GetVec3Position();
 		posPlayer.x += sinf(player->GetVec3Rotation().y) * start::ENTRY_GAME_SHIFT;
@@ -1255,6 +1259,9 @@ void CCamera::EnterGame(CPlayer* pPlayer)
 
 	if (m_startInfo.nCount >= start::BACK_COUNT)
 	{ // カウントが一定数になった場合
+
+		// スコープアウト
+		CSceneGame::GetCinemaScope()->SetScopeOut();
 
 		// 位置を設定する
 		pPlayer->SetVec3Position(posPlayer);

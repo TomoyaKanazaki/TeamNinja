@@ -41,7 +41,6 @@ private:
 
 	// ƒƒ“ƒoŠÖ”
 	bool HitPlayer();
-
 };
 
 #endif	// _GIMMICK_H_
