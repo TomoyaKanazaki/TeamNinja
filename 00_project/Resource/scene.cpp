@@ -64,7 +64,7 @@ HRESULT CScene::Init(void)
 	CGodItem::InitGet();
 
 	// セーブポイントの初期化
-	GET_RETENTION->InitSave();
+	//GET_RETENTION->InitSave();
 
 	// ステージの割当
 	CStage* pStage = GET_STAGE;	// ステージ情報

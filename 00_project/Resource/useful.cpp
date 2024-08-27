@@ -595,7 +595,7 @@ D3DXVECTOR3 useful::GetMatrixScaling(const D3DXMATRIX& rMtx)
 //==========================================
 //  プレイヤーとの距離が遠い判定
 //==========================================
-bool useful::IsNearPlayer(const D3DXVECTOR3& pos)
+bool useful::IsNearPosR(const D3DXVECTOR3& pos)
 {
 	// プレイヤー座標を取得
 	D3DXVECTOR3 posPlayer = GET_CAMERA->GetPositionR();
