@@ -846,6 +846,7 @@ HRESULT CEditActor::Save(void)
 
 		// 同じアドレスだった場合または、ドア・竹の格子の場合次へ
 		if (rList == m_pActor ||
+			rList->GetType() == CActor::TYPE_GATE ||
 			rList->GetType() == CActor::TYPE_DOOR || 
 			rList->GetType() == CActor::TYPE_B_LATTICE)
 		{
