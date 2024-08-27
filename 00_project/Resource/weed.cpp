@@ -35,8 +35,8 @@ namespace
 	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
 	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
 	const float SWING_REV	 = 0.02f;	// 遷移時の補正係数
-	const float STOMP_MAX_ADD_OFFSET = 65.0f;	// ずらす先端の最高加算距離
-	const float STOMP_MIN_OFFSET	 = 50.0f;	// ずらす先端の最低距離
+	const float STOMP_MAX_ADD_OFFSET = 45.0f;	// ずらす先端の最高加算距離
+	const float STOMP_MIN_OFFSET	 = 30.0f;	// ずらす先端の最低距離
 }
 
 //************************************************************
@@ -114,7 +114,7 @@ HRESULT CWeed::Init(void)
 	pRenderState->SetLighting(false);
 
 	// 大きさを設定
-	SetVec3Sizing(D3DXVECTOR3(80.0f, 120.0f, 0.0f));	// TODO
+	SetVec3Sizing(D3DXVECTOR3(45.0f, 80.0f, 0.0f));	// TODO
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
