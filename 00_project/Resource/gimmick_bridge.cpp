@@ -29,7 +29,8 @@ CGimmickBridge::CGimmickBridge() : CGimmickAction(),
 m_ConectPoint(),
 m_vecToWait(VEC3_ZERO),
 m_nIdxWait(0),
-m_pField(nullptr)
+m_pField(nullptr),
+m_fRot(0.0f)
 {
 }
 
@@ -187,8 +188,21 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 			break;
 		}
 
-		// 向きを寝そべる形にする
-		return D3DXVECTOR3(-HALF_PI, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
+		// 分身の向きを取得
+		float fRot = pClone->GetVec3Rotation().x;
+
+		// 向きを補正する
+		fRot += (-HALF_PI - fRot) * 0.07f;
+		if (fRot < -HALF_PI)
+		{
+			fRot = -HALF_PI;
+		}
+
+		// 向きを保存する
+		m_fRot = fRot;
+
+		// 向きを返す
+		return D3DXVECTOR3(fRot, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
 
 	// 向きを求める
@@ -291,8 +305,11 @@ void CGimmickBridge::CalcConectPoint()
 //===========================================
 void CGimmickBridge::Active()
 {
-	// 足場を生成する
+	// nullチェック
 	if (m_pField != nullptr) { return; }
+
+	// 向きが一定の値を上回っている場合関数を抜ける
+	if (m_fRot - -HALF_PI > 0.2f) { return; }
 
 	// 足場の座標を設定
 	D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;

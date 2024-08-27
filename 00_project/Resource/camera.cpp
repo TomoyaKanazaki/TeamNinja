@@ -23,6 +23,7 @@
 #include "retentionManager.h"
 #include "gameManager.h"
 #include "timerUI.h"
+#include "cinemaScope.h"
 
 //************************************************************
 //	定数宣言
@@ -997,139 +998,59 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut)
 }
 
 //===========================================
-//  矩形のスクリーン内判定
+//  モデルのスクリーン内判定
 //===========================================
-bool CCamera::OnScreenPolygon(const D3DXVECTOR3* pPos)
+bool CCamera::OnScreenBox(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax)
 {
-	// 各頂点のスクリーン座標を算出
-	D3DXVECTOR3 posVtx[4] = {};
-	for (int i = 0; i < 4; ++i, ++pPos)
+	// 視点座標と方向を取得する
+	D3DXVECTOR3 pos = this->GetDestPositionV();
+	float fRot = this->GetRotation().y + D3DX_PI;
+
+	// 方向を適用して視野角の向きを求める
+	float fRotFov[2] =
 	{
-		// 頂点が1つでもスクリーン内であればtrueを返す
-		if (OnScreen(*pPos, posVtx[i])) { return true; }
+		fRot - m_fFov,
+		fRot + m_fFov
+	};
+	useful::NormalizeRot(fRotFov[0]);
+	useful::NormalizeRot(fRotFov[1]);
+
+	// 視点から引数までのベクトルを算出
+	D3DXVECTOR3 vecToPos[2] =
+	{
+		posMin - pos,
+		posMax - pos
+	};
+
+	// 算出した向きから描画範囲を求める
+	D3DXVECTOR3 vecToFar[2];
+	for (int i = 0; i < 2; ++i)
+	{
+		vecToFar[i] = D3DXVECTOR3(basic::VIEW_FAR * cosf(fRotFov[i]), 0.0f, basic::VIEW_FAR * sinf(fRotFov[i])) 
+					- D3DXVECTOR3(basic::VIEW_NEAR * cosf(fRotFov[i]), 0.0f, basic::VIEW_NEAR * sinf(fRotFov[i]));
 	}
 
-	// 全ての頂点がカメラの裏側の場合falseを返す
-	if
-	(
-		posVtx[0].z >= 1.0f &&
-		posVtx[1].z >= 1.0f &&
-		posVtx[2].z >= 1.0f &&
-		posVtx[3].z >= 1.0f
-	)
+	// 外積の計算を行う
+	float fCloss[4];
+	for (int i = 0; i < 2; ++i)
 	{
-		return false;
-	}
-
-	// 各頂点を結ぶベクトル(4辺)を算出
-	D3DXVECTOR3 vecVtx[4] =
-	{
-		posVtx[1] - posVtx[0],
-		posVtx[3] - posVtx[1],
-		posVtx[0] - posVtx[2],
-		posVtx[2] - posVtx[3]
-	};
-
-	// 各ベクトルの大きさを算出
-	float fLengthVtx[4] =
-	{
-		sqrtf(vecVtx[0].x * vecVtx[0].x + vecVtx[0].y * vecVtx[0].y),
-		sqrtf(vecVtx[1].x * vecVtx[1].x + vecVtx[1].y * vecVtx[1].y),
-		sqrtf(vecVtx[2].x * vecVtx[2].x + vecVtx[2].y * vecVtx[2].y),
-		sqrtf(vecVtx[3].x * vecVtx[3].x + vecVtx[3].y * vecVtx[3].y)
-	};
-
-	// スクリーン範囲を取得
-	D3DXVECTOR3 posScreen[4] =
-	{
-		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		D3DXVECTOR3(SCREEN_WIDTH, 0.0f, 0.0f),
-		D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
-		D3DXVECTOR3(0.0f, SCREEN_HEIGHT, 0.0f)
-	};
-
-	// スクリーン範囲の対角線を算出
-	D3DXVECTOR3 vecScreen[4] =
-	{
-		posScreen[1] - posScreen[0],
-		posScreen[2] - posScreen[1],
-		posScreen[3] - posScreen[2],
-		posScreen[0] - posScreen[3]
-	};
-
-	// 対角線の大きさを算出
-	float fLengthScreen[4] =
-	{
-		sqrtf(vecScreen[0].x * vecScreen[0].x + vecScreen[0].y * vecScreen[0].y),
-		sqrtf(vecScreen[1].x * vecScreen[1].x + vecScreen[1].y * vecScreen[1].y),
-		sqrtf(vecScreen[2].x * vecScreen[2].x + vecScreen[2].y * vecScreen[2].y),
-		sqrtf(vecScreen[3].x * vecScreen[3].x + vecScreen[3].y * vecScreen[3].y)
-	};
-
-	// 4辺と対角線の交差判定
-	for (int i = 0; i < 4; ++i)
-	{
-		for (int j = 0; j < 4; ++j)
+		for (int j = 0; j < 2; ++j)
 		{
-			// ポリゴンの頂点を結んだ直線と対角線の内積を求める
-			float fDot = vecVtx[i].x * vecScreen[j].x + vecVtx[i].y * vecScreen[j].y;
-
-			// 2つのベクトルが平行な場合は交差しないため次に進む
-			if (fabsf(fDot - (fLengthVtx[i] * fLengthScreen[j])) < (float)1e-6) { continue; }
-
-			// 各ベクトルの始点を結ぶベクトルを算出
-			D3DXVECTOR3 vecStart = posScreen[j] - posVtx[i];
-
-			// 対角線のベクトルに対する2つのベクトルの外積を算出する
-			float fCross[3] =
-			{
-				vecStart.x * vecScreen[j].y - vecStart.y * vecScreen[j].x,
-				vecStart.x * vecVtx[i].y - vecStart.y * vecVtx[i].x,
-				vecScreen[j].x * vecVtx[i].y - vecScreen[j].y * vecVtx[i].x
-			};
-
-			// ベクトルの外積から交点算出に利用する媒介変数を算出
-			float t[2] =
-			{
-				fCross[0] / fCross[2],
-				fCross[1] / fCross[2]
-			};
-
-			// 媒介変数tが範囲内の場合trueを返す
-			if (0.0f <= t[0] && t[0] <= 1.0f && 0.0f <= t[1] && t[1] <= 1.0f)
-			{ return true; }
+			fCloss[i + j] = vecToPos[i].x * vecToFar[j].z - vecToPos[i].z * vecToFar[j].x;
 		}
 	}
 
-	// スクリーン範囲がスクリーン座標に包含されている場合trueを返す
-	for (int i = 0; i < 4; ++i)
-	{
-		// ベクトルの外積を求める
-		float fCross = vecVtx[i].y * (SCREEN_CENT.x - posVtx[i].x) - vecVtx[i].x * (SCREEN_CENT.y - posVtx[i].y);
+	// 最小と最大のどちらも死角の場合falseを返す
+	if (fCloss[0] * fCloss[1] > 0.0f && fCloss[2] * fCloss[3] > 0.0f) { return false; }
 
-		// 外積の値が1つでも負の場合falseを返す
-		if (fCross > 0.0f) { return false; }
-	}
-
-	// ここまで来れたらtrueを返す
 	return true;
 }
 
-//===========================================
-//  プレイヤーよりも手前にいる
-//===========================================
-bool CCamera::IsOverPlayer(const D3DXVECTOR3& pos)
+//==========================================
+//  ポリゴンのスクリーン内判定
+//==========================================
+bool CCamera::OnScreenPolygon(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax)
 {
-	// プレイヤーのスクリーン座標を取得
-	D3DXVECTOR3 posPlayer = CalcPlayerPos();
-
-	// 自身のスクリーン座標を取得
-	D3DXVECTOR3 posThis = VEC3_ZERO;
-	OnScreen(pos, posThis);
-
-	// z値がプレイヤーより大きい場合trueを返す
-	if (posPlayer.z > posThis.z) { return true; }
-
 	return false;
 }
 
@@ -1169,6 +1090,9 @@ void CCamera::StartCamera(void)
 	if (GET_INPUTPAD->IsTrigger(CInputPad::EKey::KEY_A) ||
 		GET_INPUTKEY->IsTrigger(DIK_RETURN))
 	{ // スキップキーを押した場合
+
+		// スコープアウト
+		CSceneGame::GetCinemaScope()->SetScopeOut();
 
 		// プレイヤーの位置を設定する(空中から始まらないように)
 		D3DXVECTOR3 posPlayer = player->GetVec3Position();
@@ -1392,6 +1316,9 @@ void CCamera::EnterGame(CPlayer* pPlayer)
 
 	if (m_startInfo.nCount >= start::BACK_COUNT)
 	{ // カウントが一定数になった場合
+
+		// スコープアウト
+		CSceneGame::GetCinemaScope()->SetScopeOut();
 
 		// 位置を設定する
 		pPlayer->SetVec3Position(posPlayer);

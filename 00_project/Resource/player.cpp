@@ -1154,6 +1154,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	{
 		m_pEffectFirefly->m_pos = GetVec3Position();
 	}
+
 	// ƒ‚[ƒVƒ‡ƒ“‚ğ•Ô‚·
 	return currentMotion;
 }

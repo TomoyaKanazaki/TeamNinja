@@ -1701,7 +1701,7 @@ HRESULT CStage::LoadWeed(const char* pString, FILE* pFile)
 						fscanf(pFile, "%f", &rot.z); // Z
 					}
 
-				} while (strcmp(&aTemp[0], "ENDWEEDSET") != 0);
+				} while (strcmp(&aTemp[0], "END_WEEDSET") != 0);
 
 				// オブジェクトの生成
 				if (CWeed::Create(pos, rot) == nullptr)

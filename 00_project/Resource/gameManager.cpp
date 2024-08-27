@@ -108,6 +108,9 @@ HRESULT CGameManager::Init(void)
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
+	// シネマスコープ始め
+	CSceneGame::GetCinemaScope()->SetScopeIn();
+
 #if 0
 
 	// TODO：仮置き
