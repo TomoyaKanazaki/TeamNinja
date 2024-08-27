@@ -11,7 +11,7 @@ STAGE_GODITEMSET
 		TYPE	= 0
 		
 		TEXT_0
-			STR = アイエエエ!?マガタマ!?マガタマナンデ!?"( ﾟДﾟ)"
+			STR = YOU'RE STILL Newcomer Ninja 
 		END_TEXT
 	END_GODITEMSET
 
@@ -20,7 +20,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = 天から見下ろす美麗のマガタマ(; ･`д･´)
+			STR = SEE!?LOWER PEPOPLE!?IM ON TOP!!
 		END_TEXT
 	END_GODITEMSET
 
@@ -29,7 +29,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR = ナゼバレマシタノ?( ;∀;)
+			STR = YEAH!!YOU'RE MID-LEVEL NINJA!!
 		END_TEXT
 	END_GODITEMSET
 
