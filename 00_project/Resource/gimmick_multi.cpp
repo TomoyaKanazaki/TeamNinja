@@ -54,19 +54,6 @@ HRESULT CGimmickMulti::Init(void)
 		return E_FAIL;
 	}
 
-	// ƒ‚ƒfƒ‹‚Ì¶¬
-	m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, GetVec3Position(), VEC3_ZERO);
-	if (m_pModel == nullptr)
-	{ // ¶¬‚ÉŽ¸”s‚µ‚½ê‡
-
-		// Ž¸”s‚ð•Ô‚·
-		assert(false);
-		return E_FAIL;
-	}
-
-	// ƒ‚ƒfƒ‹‚Ìƒ‰ƒxƒ‹‚ð•ÏX
-	m_pModel->SetLabel(CObject::LABEL_GIMMICK);
-
 	// ¬Œ÷‚ð•Ô‚·
 	return S_OK;
 }
@@ -134,30 +121,10 @@ void CGimmickMulti::SetVec3Position(const D3DXVECTOR3& rPos)
 	m_pModel->SetVec3Position(rPos);
 
 	// Šp“x‚ðŽæ“¾
-	EAngle angle = GetAngle();
 	D3DXVECTOR3 rot = VEC3_ZERO;
-	switch (angle)
-	{
-	case EAngle::ANGLE_0: // 0
-		rot.y = D3DX_PI * 0.0f;
-		break;
 
-	case EAngle::ANGLE_90: // 1.57
-		rot.y = D3DX_PI * 0.5f;
-		break;
-
-	case EAngle::ANGLE_180: // 3.14
-		rot.y = D3DX_PI * 1.0f;
-		break;
-
-	case EAngle::ANGLE_270: // 4.71
-		rot.y = D3DX_PI * 1.5f;
-		break;
-
-	default:
-		assert(false);
-		break;
-	}
+	// ƒAƒ“ƒOƒ‹‚ÌŒü‚«•ÏŠ·
+	rot.y = useful::FourDireToRot(GetAngle());
 
 	// Œ©‚½–Ú‚ÌŠp“x‚ðÝ’è
 	m_pModel->SetVec3Rotation(rot);
@@ -189,6 +156,20 @@ CGimmickMulti* CGimmickMulti::Create(const D3DXVECTOR3& rPos, const EAngle angle
 		SAFE_DELETE(pGimmick);
 		return nullptr;
 	}
+
+	// ƒ‚ƒfƒ‹‚Ì¶¬
+	pGimmick->m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, rPos, D3DXVECTOR3(0.0f, useful::FourDireToRot(angle), 0.0f));
+	if (pGimmick->m_pModel == nullptr)
+	{ // ¶¬‚ÉŽ¸”s‚µ‚½ê‡
+
+		// Ž¸”s‚ð•Ô‚·
+		assert(false);
+		SAFE_DELETE(pGimmick);
+		return nullptr;
+	}
+
+	// ƒ‚ƒfƒ‹‚Ìƒ‰ƒxƒ‹‚ð•ÏX
+	pGimmick->m_pModel->SetLabel(CObject::LABEL_GIMMICK);
 
 	// Œü‚«‚ÌÝ’è
 	pGimmick->SetAngle(angle);

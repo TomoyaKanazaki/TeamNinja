@@ -292,6 +292,41 @@ EAngle useful::RotToFourDire(float fRot)
 }
 
 //============================================================
+//	ƒAƒ“ƒOƒ‹‚ÌŒü‚«•ÏŠ·
+//============================================================
+float useful::FourDireToRot(const EAngle angle)
+{
+	// Šp“x‚ğæ“¾
+	float fRot = 0.0f;
+
+	switch (angle)
+	{
+	case EAngle::ANGLE_0: // 0
+		fRot = D3DX_PI * 0.0f;
+		break;
+
+	case EAngle::ANGLE_90: // 1.57
+		fRot = D3DX_PI * 0.5f;
+		break;
+
+	case EAngle::ANGLE_180: // 3.14
+		fRot = D3DX_PI * 1.0f;
+		break;
+
+	case EAngle::ANGLE_270: // 4.71
+		fRot = D3DX_PI * 1.5f;
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// Œü‚«‚ğ•Ô‚·
+	return fRot;
+}
+
+//============================================================
 //	Œü‚«‚Ì³‹K‰»
 //============================================================
 void useful::NormalizeRot(float& rRot)
