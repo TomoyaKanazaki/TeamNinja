@@ -164,6 +164,11 @@ void CActor::Uninit(void)
 //============================================================
 void CActor::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPlayer(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	for (auto cube : m_cube)
 	{
 		// オフセット処理

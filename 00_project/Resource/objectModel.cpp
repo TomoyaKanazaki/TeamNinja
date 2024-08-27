@@ -94,19 +94,6 @@ void CObjectModel::Uninit(void)
 //============================================================
 void CObjectModel::Update(const float fDeltaTime)
 {
-	// Å‘å’l‚ÆÅ¬’l‚ðŽZo‚·‚é
-	D3DXVECTOR3 min = m_pos + m_modelData.vtxMin;
-	D3DXVECTOR3 max = m_pos + m_modelData.vtxMax;
-
-	if (GET_CAMERA->OnScreenBox(min, max))
-	{
-		//SetEnableDraw(true);
-		//DebugProc::Print(DebugProc::POINT_CENTER, "Œ©‚¦‚Ä‚¢‚é\n");
-	}
-	else
-	{
-		//SetEnableDraw(false);
-	}
 }
 
 //============================================================
