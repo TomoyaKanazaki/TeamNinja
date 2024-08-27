@@ -165,7 +165,7 @@ void CActor::Uninit(void)
 void CActor::Update(const float fDeltaTime)
 {
 	// ‰“‹——£”»’è
-	bool bFar = useful::IsNearPlayer(GetVec3Position());
+	bool bFar = useful::IsNearPosR(GetVec3Position());
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
