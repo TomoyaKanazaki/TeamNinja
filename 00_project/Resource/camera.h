@@ -153,8 +153,8 @@ public:
 	D3DXVECTOR3 CalcWorldToScreen(const D3DXVECTOR3& pos); // ワールド座標をスクリーン座標に変換する
 	bool OnScreen(const D3DXVECTOR3& pos); // スクリーン内判定
 	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut); // スクリーン座標を返すスクリーン内判定
-	bool OnScreenPolygon(const D3DXVECTOR3* pPos); // 矩形のスクリーン内判定
-	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
+	bool OnScreenBox(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax); // モデルのスクリーン内判定
+	bool OnScreenPolygon(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax); // ポリゴンのスクリーン内判定
 
 	// 小原追加
 	void StartReset(void);					// スタート状態のリセット処理
