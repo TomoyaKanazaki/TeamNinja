@@ -26,6 +26,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil002.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\water.png",		// 水テクスチャ
 		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
+		"data\\TEXTURE\\FIELD\\OldWood001.jpg",	// 木テクスチャ
 	};
 
 	const int PRIORITY = 0;	// 壁の優先順位
