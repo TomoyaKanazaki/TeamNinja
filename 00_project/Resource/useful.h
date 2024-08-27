@@ -53,7 +53,7 @@
 #define GET_STAGE		(CManager::GetInstance()->GetStage())		// ステージ情報取得
 #define GET_DEVICE		(CManager::GetInstance()->GetRenderer()->GetDevice())	// デバイス情報取得
 #define GET_PLAYER		(CManager::GetInstance()->GetScene()->GetPlayer())		// プレイヤー情報取得
-#define GET_CAMERA		(CManager::GetInstance()->GetCamera())		// プレイヤー情報取得
+#define GET_CAMERA		(CManager::GetInstance()->GetCamera())		// カメラ情報取得
 
 #define GET_EFFECT			(CEffekseer::GetInstance())	// エフェクシアインスタンス取得
 #define PLAY_SOUND(label)	(CManager::GetInstance()->GetSound()->Play((CSound::ELabel)(label)))	// サウンド再生

@@ -50,6 +50,8 @@ public:
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 
 	// メンバ関数
+	HRESULT LoadOpen(void);	// 解放フラグ読込
+	HRESULT SaveOpen(void);	// 解放フラグ保存
 	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
 
 private:
