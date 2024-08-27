@@ -253,7 +253,7 @@ namespace useful
 	D3DXVECTOR3 GetMatrixPosition(const D3DXMATRIX& rMtx);	// マトリックス位置取得
 	D3DXVECTOR3 GetMatrixRotation(const D3DXMATRIX& rMtx);	// マトリックス向き取得
 	D3DXVECTOR3 GetMatrixScaling(const D3DXMATRIX& rMtx);	// マトリックス拡大率取得
-	bool IsNearPlayer(const D3DXVECTOR3& pos);
+	bool IsNearPosR(const D3DXVECTOR3& pos);
 
 	// テンプレート関数
 	template<class T> T *ZeroClear(T *pClear);	// ゼロクリア
