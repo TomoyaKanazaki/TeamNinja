@@ -43,6 +43,8 @@ public:
 		TYPE_WATER,		// 水
 		TYPE_GUTTER,	// ドブ
 		TYPE_PLASTER,	// 城の漆喰テクスチャ
+		TYPE_WOOD,		// 木テクスチャ
+
 		TYPE_XBRIDGE,	// 橋
 		TYPE_ZBRIDGE,	// 橋
 		TYPE_MAX,		// この列挙型の総数

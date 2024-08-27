@@ -161,6 +161,11 @@ void CWeed::Uninit(void)
 //============================================================
 void CWeed::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	// プレイヤーとの当たり判定
 	if (!CollisionPlayer())
 	{ // プレイヤーが踏んでいない場合
