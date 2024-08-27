@@ -12,13 +12,6 @@
 #include "player.h"
 #include "player_clone.h"
 
-#include "camera.h"
-
-//===========================================
-// マクロ定義
-//===========================================
-#define JUMP_SWING(n)		CCamera::SSwing(6.0f + (n * 2.0f), 1.3f, 0.05f + (n * 0.05f))		// ジャンプ時の揺れ
-//10.0f + (n * 3.0f), 2.1f, 0.5f + (n * 0.15f)		// 元
 //===========================================
 //  定数定義
 //===========================================
@@ -83,9 +76,6 @@ void CGimmickJumpTable::Update(const float fDeltaTime)
 	{
 		// プレイヤーを大ジャンプ！
 		SetMoment(GET_PLAYER->GimmickHighJump(GetNumActive()));
-
-		// ジャンプ時にカメラを揺らす
-		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, JUMP_SWING(GetNumActive()));
 	}
 	else
 	{
