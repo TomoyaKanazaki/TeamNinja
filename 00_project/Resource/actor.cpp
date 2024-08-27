@@ -169,29 +169,8 @@ void CActor::Update(const float fDeltaTime)
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
-	for (auto cube : m_cube)
-	{
-		// オフセット処理
-		cube->OffSet(GetMtxWorld());
-	}
-
-	for (auto cylinder : m_cylinder)
-	{
-		// オフセット処理
-		cylinder->OffSet(GetMtxWorld());
-	}
-
-	for (auto sphere : m_sphere)
-	{
-		// オフセット処理
-		sphere->OffSet(GetMtxWorld());
-	}
-
-	for (auto polygon : m_polygon)
-	{
-		// オフセット処理
-		polygon->OffSet(GetMtxWorld());
-	}
+	// 当たり判定のオフセット設定処理
+	CollisionOffset();
 
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
@@ -403,6 +382,40 @@ void CActor::ClearCollision(void)
 }
 
 //============================================================
+// マトリックス計算処理
+//============================================================
+D3DXMATRIX CActor::CalcMatrix(void)
+{
+	// 変数を宣言
+	D3DXMATRIX   mtxScale, mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DXMATRIX   mtx;
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtx);
+
+	// 拡大率を反映
+	D3DXMatrixScaling(&mtxScale, GetVec3Scaling().x, GetVec3Scaling().y, GetVec3Scaling().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxScale);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, GetVec3Rotation().y, GetVec3Rotation().x, GetVec3Rotation().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, GetVec3Position().x, GetVec3Position().y, GetVec3Position().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxTrans);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
+
+	// マトリックスの計算結果を返す
+	return mtx;
+}
+
+//============================================================
 // 当たり判定の割り当て処理
 //============================================================
 void CActor::BindCollision(void)
@@ -449,7 +462,7 @@ void CActor::BindCollision(void)
 
 	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_polygon.size()); nCnt++)
 	{
-		// スフィアの情報を追加する
+		// ポリゴンの情報を追加する
 		m_polygon.push_back(CCollisionPolygon::Create
 		(
 			GetVec3Position(),				// 位置
@@ -459,28 +472,40 @@ void CActor::BindCollision(void)
 		));
 	}
 
+	// 当たり判定の初期化処理
+	CollisionOffset();
+}
+
+//============================================================
+// 当たり判定の初期化処理
+//============================================================
+void CActor::CollisionOffset(void)
+{
+	// マトリックスの計算結果を取得
+	D3DXMATRIX mtx = CalcMatrix();
+
 	for (auto cube : m_cube)
 	{
-		// オフセット処理
-		cube->OffSet(GetMtxWorld());
+		// 位置反映
+		cube->OffSet(mtx);
 	}
 
 	for (auto cylinder : m_cylinder)
 	{
-		// オフセット処理
-		cylinder->OffSet(GetMtxWorld());
+		// 位置反映
+		cylinder->OffSet(mtx);
 	}
 
 	for (auto sphere : m_sphere)
 	{
-		// オフセット処理
-		sphere->OffSet(GetMtxWorld());
+		// 位置反映
+		sphere->OffSet(mtx);
 	}
 
 	for (auto polygon : m_polygon)
 	{
-		// オフセット処理
-		polygon->OffSet(GetMtxWorld());
+		// 位置反映
+		polygon->OffSet(mtx);
 	}
 }
 
