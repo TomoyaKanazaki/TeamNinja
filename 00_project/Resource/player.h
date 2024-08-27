@@ -36,6 +36,10 @@ class CObject2D;		// オブジェクト2D
 class CPlayer : public CObjectChara
 {
 public:
+
+	// 静的メンバ変数宣言
+	static constexpr int MAX_ORBIT = 4;		// 軌跡の総数
+
 	// 種類列挙
 	enum EType
 	{
@@ -205,18 +209,18 @@ private:
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 
-	COrbit		*m_pOrbit;			// 軌跡の情報
-	D3DXVECTOR3	m_oldPos;			// 過去位置
-	D3DXVECTOR3	m_move;				// 移動量
-	D3DXVECTOR3	m_destRot;			// 目標向き
-	EState		m_state;			// 状態
-	int			m_nCounterState;	// 状態管理カウンター
-	int			m_nWalkCount;		// 歩行音カウント
-	bool		m_bJump;			// ジャンプ状況
-	float		m_fScalar;			// 移動量
-	bool		m_bGimmickClone;	// ギミッククローンの生成フラグ
-	float		m_fGimmickTimer;	// ギミッククローンの生成タイマー
-	float		m_fTempStick;		// スティックの入力角を保存する変数
+	COrbit		*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
+	D3DXVECTOR3	m_oldPos;				// 過去位置
+	D3DXVECTOR3	m_move;					// 移動量
+	D3DXVECTOR3	m_destRot;				// 目標向き
+	EState		m_state;				// 状態
+	int			m_nCounterState;		// 状態管理カウンター
+	int			m_nWalkCount;			// 歩行音カウント
+	bool		m_bJump;				// ジャンプ状況
+	float		m_fScalar;				// 移動量
+	bool		m_bGimmickClone;		// ギミッククローンの生成フラグ
+	float		m_fGimmickTimer;		// ギミッククローンの生成タイマー
+	float		m_fTempStick;			// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
 	CCheckPoint* m_pCheckPoint;				// セーブしたチェックポイント

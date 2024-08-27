@@ -73,7 +73,20 @@ namespace
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
-	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
+	const COrbit::SOffset ORBIT_OFFSET[CPlayer::MAX_ORBIT] =			// 軌跡のオフセット情報
+	{
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+	};
+	const int ORBIT_PART_NUMBER[CPlayer::MAX_ORBIT] =		// 軌跡のパーツの番号
+	{
+		CPlayer::MODEL_HANDL,
+		CPlayer::MODEL_HANDR,
+		CPlayer::MODEL_FOOTL,
+		CPlayer::MODEL_FOOTR
+	};
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
@@ -109,7 +122,6 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
@@ -147,7 +159,7 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pOrbit		= nullptr;		// 軌跡の情報
+	memset(&m_apOrbit[0], 0, sizeof(m_apOrbit));		// 軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
 	m_destRot		= VEC3_ZERO;	// 目標向き
@@ -174,20 +186,26 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 軌跡の生成
-	//m_pOrbit = COrbit::Create
-	//( // 引数
-	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-	//	ORBIT_OFFSET,	// オフセット情報
-	//	ORBIT_PART		// 分割数
-	//);
-	//if (m_pOrbit == nullptr)
-	//{ // 非使用中の場合
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の生成
+		m_apOrbit[nCnt] = COrbit::Create
+		( // 引数
+			GetParts(ORBIT_PART_NUMBER[nCnt])->GetPtrMtxWorld(),	// 親マトリックス
+			ORBIT_OFFSET[nCnt],	// オフセット情報
+			ORBIT_PART		// 分割数
+		);
+		if (m_apOrbit[nCnt] == nullptr)
+		{ // 非使用中の場合
 
-	//	// 失敗を返す
-	//	assert(false);
-	//	return E_FAIL;
-	//}
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 表示しない
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH);
+	}
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -224,8 +242,11 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	// 軌跡の終了
-	SAFE_UNINIT(m_pOrbit);
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の終了
+		SAFE_UNINIT(m_apOrbit[nCnt]);
+	}
 
 	// エフェクトの削除
 	if (m_pEffectdata != nullptr)
@@ -328,8 +349,19 @@ void CPlayer::Update(const float fDeltaTime)
 		m_pEffectdata = nullptr;
 	}
 
-	// 軌跡の更新
-	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
+	int nMotion = GetMotionType();
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の更新
+		if (m_apOrbit[nCnt] == nullptr) { return; }
+
+		// ハイジャンプ中の場合、表示する
+		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
+
+		// 更新処理
+		m_apOrbit[nCnt]->Update(fDeltaTime);
+	}
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
@@ -688,6 +720,12 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 
 	// モーションの設定
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 表示する
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+	}
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
