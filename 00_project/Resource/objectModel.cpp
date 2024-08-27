@@ -100,12 +100,12 @@ void CObjectModel::Update(const float fDeltaTime)
 
 	if (GET_CAMERA->OnScreenBox(min, max))
 	{
-		SetEnableDraw(true);
+		//SetEnableDraw(true);
 		//DebugProc::Print(DebugProc::POINT_CENTER, "Œ©‚¦‚Ä‚¢‚é\n");
 	}
 	else
 	{
-		SetEnableDraw(false);
+		//SetEnableDraw(false);
 	}
 }
 
