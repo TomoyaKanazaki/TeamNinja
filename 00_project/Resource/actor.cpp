@@ -453,6 +453,30 @@ void CActor::BindCollision(void)
 			D3DXVECTOR3(coll.m_polygon[nCnt].size.x * GetVec3Scaling().x, 0.0f, coll.m_polygon[nCnt].size.z * GetVec3Scaling().z)		// サイズ
 		));
 	}
+
+	for (auto cube : m_cube)
+	{
+		// オフセット処理
+		cube->OffSet(GetMtxWorld());
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// オフセット処理
+		cylinder->OffSet(GetMtxWorld());
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// オフセット処理
+		sphere->OffSet(GetMtxWorld());
+	}
+
+	for (auto polygon : m_polygon)
+	{
+		// オフセット処理
+		polygon->OffSet(GetMtxWorld());
+	}
 }
 
 //============================================================
