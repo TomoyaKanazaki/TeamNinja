@@ -9,7 +9,10 @@
 //************************************************************
 #include "useful.h"
 #include "manager.h"
+#include "renderer.h"
 #include "texture.h"
+#include "fog.h"
+#include "camera.h"
 #include <regex>
 
 //************************************************************
@@ -500,6 +503,40 @@ float useful::GetTexHeightFromAspect(const float fWidth, const int nTexID)
 	return fWidth * aspect.y;
 }
 
+//==========================================
+//  マトリックスを考慮した頂点の取得
+//==========================================
+D3DXVECTOR3 useful::GetMatrixPoint(const D3DXMATRIX& rMtx, const D3DXVECTOR3& rPos, const D3DXVECTOR3& rRot, const D3DXVECTOR3& rScale)
+{
+	// 変数を宣言
+	D3DXMATRIX mtx = rMtx; // ワールドマトリックス
+	D3DXMATRIX  mtxScale, mtxRot, mtxTrans;	// 計算用マトリックス
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtx);
+
+	// 拡大率を反映
+	D3DXMatrixScaling(&mtxScale, rScale.x, rScale.y, rScale.z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxScale);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rRot.y, rRot.x, rRot.z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, rPos.x, rPos.y, rPos.z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxTrans);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
+
+	// 頂点情報を抽出して返す
+	return D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
+}
+
 //============================================================
 //	マトリックスの位置取得
 //============================================================
@@ -553,6 +590,23 @@ D3DXVECTOR3 useful::GetMatrixScaling(const D3DXMATRIX& rMtx)
 
 	// マトリックスの拡大率を返す
 	return scale;
+}
+
+//==========================================
+//  プレイヤーとの距離が遠い判定
+//==========================================
+bool useful::IsNearPosR(const D3DXVECTOR3& pos)
+{
+	// プレイヤー座標を取得
+	D3DXVECTOR3 posPlayer = GET_CAMERA->GetPositionR();
+
+	// フォグの距離を取得
+	float fFar = Fog::GetEnd();
+
+	// プレイヤーとの距離を算出
+	D3DXVECTOR3 vec = pos - posPlayer;
+
+	return fFar * fFar > vec.x * vec.x + vec.z * vec.z;
 }
 
 //************************************************************

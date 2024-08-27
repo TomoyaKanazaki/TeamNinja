@@ -133,7 +133,9 @@ public:
 private:
 
 	// メンバ関数
+	D3DXMATRIX CalcMatrix(void);					// マトリックス計算処理
 	void BindCollision(void);						// 当たり判定の割り当て処理
+	void CollisionOffset(void);						// 当たり判定の初期化処理
 
 	// 静的メンバ変数
 	static CListManager<CActor>* m_pList;			// リスト構造

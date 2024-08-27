@@ -998,63 +998,6 @@ bool CCamera::OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut)
 }
 
 //===========================================
-//  モデルのスクリーン内判定
-//===========================================
-bool CCamera::OnScreenBox(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax)
-{
-	// 視点座標と方向を取得する
-	D3DXVECTOR3 pos = this->GetDestPositionV();
-	float fRot = this->GetRotation().y + D3DX_PI;
-
-	// 方向を適用して視野角の向きを求める
-	float fRotFov[2] =
-	{
-		fRot - m_fFov,
-		fRot + m_fFov
-	};
-	useful::NormalizeRot(fRotFov[0]);
-	useful::NormalizeRot(fRotFov[1]);
-
-	// 視点から引数までのベクトルを算出
-	D3DXVECTOR3 vecToPos[2] =
-	{
-		posMin - pos,
-		posMax - pos
-	};
-
-	// 算出した向きから描画範囲を求める
-	D3DXVECTOR3 vecToFar[2];
-	for (int i = 0; i < 2; ++i)
-	{
-		vecToFar[i] = D3DXVECTOR3(basic::VIEW_FAR * cosf(fRotFov[i]), 0.0f, basic::VIEW_FAR * sinf(fRotFov[i])) 
-					- D3DXVECTOR3(basic::VIEW_NEAR * cosf(fRotFov[i]), 0.0f, basic::VIEW_NEAR * sinf(fRotFov[i]));
-	}
-
-	// 外積の計算を行う
-	float fCloss[4];
-	for (int i = 0; i < 2; ++i)
-	{
-		for (int j = 0; j < 2; ++j)
-		{
-			fCloss[i + j] = vecToPos[i].x * vecToFar[j].z - vecToPos[i].z * vecToFar[j].x;
-		}
-	}
-
-	// 最小と最大のどちらも死角の場合falseを返す
-	if (fCloss[0] * fCloss[1] > 0.0f && fCloss[2] * fCloss[3] > 0.0f) { return false; }
-
-	return true;
-}
-
-//==========================================
-//  ポリゴンのスクリーン内判定
-//==========================================
-bool CCamera::OnScreenPolygon(const D3DXVECTOR3& posMin, const D3DXVECTOR3& posMax)
-{
-	return false;
-}
-
-//===========================================
 // スタート状態のリセット処理
 //===========================================
 void CCamera::StartReset(void)
