@@ -28,9 +28,11 @@ public:
 private:
 
 	// メンバ関数
-	void Move(); // 移動
+	void Move(const float fDeltaTime); // 移動
 
 	// メンバ変数
 	D3DXVECTOR3 m_posDefault; // 初期位置を保存する変数
+	D3DXVECTOR3 m_offsetMove; // 移動先のオフセットを保存する変数
+	D3DXVECTOR3 m_move; // 移動量を保存する変数
 
 };

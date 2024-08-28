@@ -225,11 +225,11 @@ CActor* CActor::Create
 			return nullptr;
 		}
 
-		// ˆÊ’u‚ðÝ’è
-		pActor->SetVec3Position(rPos);
-
 		// Œü‚«‚ðÝ’è
 		pActor->SetVec3Rotation(rRot);
+
+		// ˆÊ’u‚ðÝ’è
+		pActor->SetVec3Position(rPos);
 
 		// Šg‘å—¦‚ðÝ’è
 		pActor->SetVec3Scaling(rScale);

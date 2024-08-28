@@ -18,7 +18,9 @@ namespace
 //  コンストラクタ
 //==========================================
 CMash::CMash() :
-	m_posDefault(VEC3_ZERO)
+	m_posDefault(VEC3_ZERO),
+	m_offsetMove(VEC3_ZERO),
+	m_move(VEC3_ZERO)
 {
 	// Do Nothing
 }
@@ -75,6 +77,26 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 初期位置を保存する
 	m_posDefault = rPos;
 
+	// 移動する距離を取得する
+	float offsetMax = GetModelData().vtxMax.z * 2.0f;
+
+	// 向きから移動先オフセットを算出する
+	float fRot = GetVec3Rotation().y + (D3DX_PI * 0.5f);
+	m_offsetMove = D3DXVECTOR3
+	(
+		offsetMax * cosf(fRot),
+		0.0f,
+		offsetMax * sinf(fRot)
+	);
+
+	// 向きから移動量を算出する
+	m_move = D3DXVECTOR3
+	(
+		MOVE_SPEED * cosf(fRot),
+		0.0f,
+		MOVE_SPEED * sinf(fRot)
+	);
+
 	// 親クラスの位置設定
 	CObject::SetVec3Position(rPos);
 }
@@ -82,6 +104,11 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 //==========================================
 //  移動処理
 //==========================================
-void CMash::Move()
+void CMash::Move(const float fDeltaTime)
 {
+	// 座標を取得
+	D3DXVECTOR3 pos = GetVec3Position();
+
+	// 移動量を加算
+	pos += m_move * fDeltaTime;
 }
