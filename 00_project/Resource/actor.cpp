@@ -64,7 +64,8 @@ namespace
 		"data\\MODEL\\Stairs\\WoodStairs001.x",			// 階段
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
-		"data\\MODEL\\RoofFloor\\FloorRooftop003.x"		// レンガ柄風の屋根裏の木
+		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
+		"data\\MODEL\\Kakejiku\\Kakejiku000.x"			// ふすま(になる予定) : TODO
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -197,7 +198,15 @@ CActor* CActor::Create
 )
 {
 	// モデルUIの生成
-	CActor* pActor = new CActor;
+	CActor* pActor = nullptr;
+	if (type == TYPE_MASH) // ふすまだけ子クラスを生成
+	{
+
+	}
+	else
+	{
+		pActor = new CActor;
+	}
 
 	if (pActor == nullptr)
 	{ // 生成に失敗した場合
