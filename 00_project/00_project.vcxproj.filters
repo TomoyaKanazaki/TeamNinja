@@ -657,7 +657,7 @@
     <ClInclude Include="Resource\editWeed.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="mash.h">
+    <ClInclude Include="Resource\mash.h">
       <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1241,7 +1241,7 @@
     <ClCompile Include="Resource\editWeed.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
-    <ClCompile Include="mash.cpp">
+    <ClCompile Include="Resource\mash.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
