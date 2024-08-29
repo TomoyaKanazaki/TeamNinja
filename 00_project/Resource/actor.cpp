@@ -202,7 +202,7 @@ CActor* CActor::Create
 	CActor* pActor = nullptr;
 	if (type == TYPE_MASH) // ふすまだけ子クラスを生成
 	{
-		pActor = new CMash;
+		pActor = new CMash(rPos);
 	}
 	else
 	{
@@ -218,6 +218,9 @@ CActor* CActor::Create
 		return nullptr;
 	}
 
+	// モデルの割り当て処理
+	pActor->BindModel(MODEL[type]);
+
 	// 向きを設定
 	pActor->SetVec3Rotation(rRot);
 
@@ -226,9 +229,6 @@ CActor* CActor::Create
 
 	// 拡大率を設定
 	pActor->SetVec3Scaling(rScale);
-
-	// モデルの割り当て処理
-	pActor->BindModel(MODEL[type]);
 
 	// 種類を設定
 	pActor->m_type = type;

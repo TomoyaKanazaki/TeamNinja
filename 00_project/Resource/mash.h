@@ -23,7 +23,7 @@ public:
 	};
 
 	// メンバ関数
-	CMash();
+	CMash(const D3DXVECTOR3& rPos);
 	~CMash();
 
 	HRESULT Init(void) override;	// 初期化
@@ -56,7 +56,9 @@ private:
 	) override;
 
 	// メンバ関数
-	void Move(const float fDeltaTime); // 移動
+	void State(const float fDeltaTime);	// 状態処理
+	void Close(const float fDeltaTime);	// 閉扉処理
+	void Open(const float fDeltaTime);	// 開扉状態
 
 	// メンバ変数
 	D3DXVECTOR3 m_posDefault;	// 初期位置を保存する変数
