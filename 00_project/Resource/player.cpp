@@ -468,6 +468,16 @@ CPlayer *CPlayer::Create
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
 			pPlayer->SetVec3Position(rPos);
+
+			if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+			{ // ゲームモードの場合
+
+				// 位置を設定する
+				D3DXVECTOR3 pos = pPlayer->GetVec3Position();
+				pos.y += SPAWN_ADD_HEIGHT;
+				pPlayer->SetVec3Position(pos);
+
+			}
 		}
 		else
 		{
@@ -476,18 +486,6 @@ CPlayer *CPlayer::Create
 
 			// チェックポイントの座標を設定する
 			pPlayer->SetVec3Position(point->GetVec3Position());
-		}
-
-		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
-		{ // ゲームモードの場合
-
-#if 1
-			// 位置を設定する
-			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
-			pos.y += SPAWN_ADD_HEIGHT;
-			pPlayer->SetVec3Position(pos);
-
-#endif // 0
 		}
 
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
