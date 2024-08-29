@@ -18,6 +18,7 @@
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
 #include "collisionPolygon.h"
+#include "mash.h"
 
 //************************************************************
 //	定数宣言
@@ -64,7 +65,8 @@ namespace
 		"data\\MODEL\\Stairs\\WoodStairs001.x",			// 階段
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
-		"data\\MODEL\\RoofFloor\\FloorRooftop003.x"		// レンガ柄風の屋根裏の木
+		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
+		"data\\MODEL\\Kakejiku\\Kakejiku000.x"			// ふすま(になる予定) : TODO
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -197,46 +199,45 @@ CActor* CActor::Create
 )
 {
 	// モデルUIの生成
-	CActor* pActor = new CActor;
-
-	if (pActor == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
+	CActor* pActor = nullptr;
+	if (type == TYPE_MASH) // ふすまだけ子クラスを生成
+	{
+		pActor = new CMash;
 	}
 	else
-	{ // 生成に成功した場合
-
-		// アクターの初期化
-		if (FAILED(pActor->Init()))
-		{ // 初期化に失敗した場合
-
-			// アクターの破棄
-			SAFE_DELETE(pActor);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pActor->SetVec3Position(rPos);
-
-		// 向きを設定
-		pActor->SetVec3Rotation(rRot);
-
-		// 拡大率を設定
-		pActor->SetVec3Scaling(rScale);
-
-		// モデルの割り当て処理
-		pActor->BindModel(MODEL[type]);
-
-		// 種類を設定
-		pActor->m_type = type;
-
-		// 当たり判定の割り当て処理
-		pActor->BindCollision();
-
-		// 確保したアドレスを返す
-		return pActor;
+	{
+		pActor = new CActor;
 	}
+
+	// アクターの初期化
+	if (FAILED(pActor->Init()))
+	{ // 初期化に失敗した場合
+
+		// アクターの破棄
+		SAFE_DELETE(pActor);
+		return nullptr;
+	}
+
+	// 向きを設定
+	pActor->SetVec3Rotation(rRot);
+
+	// 位置を設定
+	pActor->SetVec3Position(rPos);
+
+	// 拡大率を設定
+	pActor->SetVec3Scaling(rScale);
+
+	// モデルの割り当て処理
+	pActor->BindModel(MODEL[type]);
+
+	// 種類を設定
+	pActor->m_type = type;
+
+	// 当たり判定の割り当て処理
+	pActor->BindCollision();
+
+	// 確保したアドレスを返す
+	return pActor;
 }
 
 //============================================================

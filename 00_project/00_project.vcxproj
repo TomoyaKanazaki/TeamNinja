@@ -176,6 +176,7 @@
     <ClInclude Include="Resource\godItem.h" />
     <ClInclude Include="Resource\godItemManager.h" />
     <ClInclude Include="Resource\loadtext.h" />
+    <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="Resource\godItem.cpp" />
     <ClCompile Include="Resource\godItemManager.cpp" />
     <ClCompile Include="Resource\loadtext.cpp" />
+    <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />
