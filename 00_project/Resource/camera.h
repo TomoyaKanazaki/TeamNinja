@@ -90,6 +90,8 @@ public:
 		D3DXVECTOR3		posR;			// 現在の注視点
 		D3DXVECTOR3		destPosV;		// 目標の視点
 		D3DXVECTOR3		destPosR;		// 目標の注視点
+		D3DXVECTOR3		posOldV;		// 現在の視点
+		D3DXVECTOR3		posOldR;		// 現在の注視点
 		D3DXVECTOR3		vecU;			// 上方向ベクトル
 		D3DXVECTOR3		rot;			// 現在の向き
 		D3DXVECTOR3		destRot;		// 目標の向き
@@ -181,10 +183,13 @@ private:
 	void Around();										// 回り込み
 	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
 	void Telephoto();									// 望遠
+	void CollisionWallV();								// 視点と壁の当たり判定
+	void CollisionWallR();								// 注視点と壁の当たり判定
+	void ClearWall();									// 壁の透過処理
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
-	SStart m_startInfo;	// スタートカメラの情報
+	SStart	m_startInfo;	// スタートカメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 	float	m_fFov;		// 視野角
