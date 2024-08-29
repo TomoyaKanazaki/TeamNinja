@@ -2,9 +2,11 @@
 //
 //  ふすまクラス(mash.cpp)
 //  Author : Tomoya Kanazaki
+//  Adder：Ritsuki Obara
 //
 //==========================================
 #include "mash.h"
+#include "collision.h"
 
 //==========================================
 //  定数定義
@@ -20,7 +22,8 @@ namespace
 CMash::CMash() :
 	m_posDefault(VEC3_ZERO),
 	m_offsetMove(VEC3_ZERO),
-	m_move(VEC3_ZERO)
+	m_move(VEC3_ZERO),
+	m_state(STATE_CLOSE)
 {
 	// Do Nothing
 }
@@ -99,6 +102,44 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 
 	// 親クラスの位置設定
 	CActor::SetVec3Position(rPos);
+}
+
+//==========================================
+// 当たり判定処理
+//==========================================
+void CMash::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump						// ジャンプ状況
+)
+{
+	// 位置を取得
+	D3DXVECTOR3 posMash = GetVec3Position();
+	D3DXVECTOR3 vtxMax = D3DXVECTOR3(fRadius, fHeight, fRadius);
+	D3DXVECTOR3 vtxMin = D3DXVECTOR3(-fRadius, 0.0f, -fRadius);
+
+	useful::RotToFourDire(GetVec3Rotation().y);
+}
+
+//==========================================
+// 当たり判定処理(判定を返すオーバーライド)
+//==========================================
+void CMash::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump,					// ジャンプ状況
+	bool& bHit						// 衝突判定
+)
+{
+
 }
 
 //==========================================
