@@ -22,7 +22,7 @@ namespace
 	const float ACTIVE_UP = 10.0f; // ‹´‚ª‚©‚¯‚ç‚ê‚½Û‚ÌYˆÊ’uã¸—Ê
 	const float FIELD_SIZE = 55.0f; // ‹´‚Ì•
 	const float PLANT_RANGE = 50.0f; // ‰Ô‚Ìç‚­”ÍˆÍ
-	const CCamera::SSwing SWING = CCamera::SSwing(9.0f, 2.0f, 0.6f);		// ƒJƒƒ‰—h‚ê‚Ì’l
+	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// ƒJƒƒ‰—h‚ê‚Ì’l
 }
 
 //===========================================
@@ -355,6 +355,6 @@ void CGimmickBridge::Active()
 		break;
 	}
 
-	// ƒJƒƒ‰‚ð—h‚ç‚·
+	// TODOF‚±‚ê‚ðŒÄ‚×‚ÎƒJƒƒ‰‚ª—h‚ê‚é
 	CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
 }
