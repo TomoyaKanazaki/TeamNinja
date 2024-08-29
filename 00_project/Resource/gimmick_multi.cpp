@@ -54,6 +54,18 @@ HRESULT CGimmickMulti::Init(void)
 		return E_FAIL;
 	}
 
+	// ƒ‚ƒfƒ‹‚Ì¶¬
+	m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, VEC3_ZERO, VEC3_ZERO);
+	if (m_pModel == nullptr)
+	{ // ¶¬‚ÉŽ¸”s‚µ‚½ê‡
+
+		// Ž¸”s‚ð•Ô‚·
+		assert(false);
+	}
+
+	// ƒ‚ƒfƒ‹‚Ìƒ‰ƒxƒ‹‚ð•ÏX
+	m_pModel->SetLabel(CObject::LABEL_GIMMICK);
+
 	// ¬Œ÷‚ð•Ô‚·
 	return S_OK;
 }
@@ -128,6 +140,9 @@ void CGimmickMulti::SetVec3Position(const D3DXVECTOR3& rPos)
 
 	// Œ©‚½–Ú‚ÌŠp“x‚ðÝ’è
 	m_pModel->SetVec3Rotation(rot);
+
+	// ’|ŠiŽq‚ÌƒIƒtƒZƒbƒgÝ’èˆ—
+	m_pModel->CollisionOffset();
 }
 
 //===========================================
@@ -156,20 +171,6 @@ CGimmickMulti* CGimmickMulti::Create(const D3DXVECTOR3& rPos, const EAngle angle
 		SAFE_DELETE(pGimmick);
 		return nullptr;
 	}
-
-	// ƒ‚ƒfƒ‹‚Ì¶¬
-	pGimmick->m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, rPos, D3DXVECTOR3(0.0f, useful::FourDireToRot(angle), 0.0f));
-	if (pGimmick->m_pModel == nullptr)
-	{ // ¶¬‚ÉŽ¸”s‚µ‚½ê‡
-
-		// Ž¸”s‚ð•Ô‚·
-		assert(false);
-		SAFE_DELETE(pGimmick);
-		return nullptr;
-	}
-
-	// ƒ‚ƒfƒ‹‚Ìƒ‰ƒxƒ‹‚ð•ÏX
-	pGimmick->m_pModel->SetLabel(CObject::LABEL_GIMMICK);
 
 	// Œü‚«‚ÌÝ’è
 	pGimmick->SetAngle(angle);

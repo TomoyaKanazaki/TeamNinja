@@ -240,6 +240,10 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 見た目の位置設定
 	m_pGateModel->SetVec3Position(rPos);
 	m_pDoorModel->SetVec3Position(rPos);
+
+	// 見た目の当たり判定オフセット設定処理
+	m_pGateModel->CollisionOffset();
+	m_pDoorModel->CollisionOffset();
 }
 
 //============================================================
