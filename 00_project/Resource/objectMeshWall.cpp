@@ -332,6 +332,18 @@ void CObjectMeshWall::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
+//	F‚Ìİ’èˆ—
+//============================================================
+void CObjectMeshWall::SetAlpha(const float& rAlpha)
+{
+	// ˆø”‚ÌF‚ğİ’è
+	m_meshWall.col.a = rAlpha;
+
+	// ’¸“_î•ñ‚Ìİ’è
+	SetVtx();
+}
+
+//============================================================
 //	•ªŠ„”‚Ìİ’èˆ—
 //============================================================
 HRESULT CObjectMeshWall::SetPattern(const POSGRID2& rPart)
