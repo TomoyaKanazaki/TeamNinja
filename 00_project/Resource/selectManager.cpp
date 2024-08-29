@@ -47,11 +47,6 @@ HRESULT CSelectManager::Init(void)
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
-	// TODO：仮置き
-	// プレイヤーを通常状態にする
-	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
-	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
-
 	// 成功を返す
 	return S_OK;
 }
