@@ -64,7 +64,7 @@ private:
 	static CPause		*m_pPause;			// ポーズ
 	static CHitStop		*m_pHitStop;		// ヒットストップ
 	static CFlash		*m_pFlash;			// フラッシュ
-	static CEditManager *m_pEditManager;	// エディターマネージャー
+	static CEditManager	*m_pEditManager;	// エディターマネージャー
 };
 
 #endif	// _SCENE_GAME_H_

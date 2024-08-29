@@ -98,7 +98,7 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 	);
 
 	// 親クラスの位置設定
-	CObject::SetVec3Position(rPos);
+	CActor::SetVec3Position(rPos);
 }
 
 //==========================================

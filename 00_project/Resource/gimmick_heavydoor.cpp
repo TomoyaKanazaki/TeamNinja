@@ -31,6 +31,8 @@ namespace
 	const D3DXVECTOR3 MOVEUP		= D3DXVECTOR3(0.0f, 60.0f, 0.0f);	// 扉が上がる移動量
 	const float GRAVITY	= 360.0f;	// 重力
 	const float CLONE_UP = 2.0f;	// 分身の身長に加算する値
+
+	const CCamera::SSwing OPEN_SWING = CCamera::SSwing(9.0f, 2.0f, 0.1f);		// 開扉時の揺れの値
 }
 
 //============================================================
@@ -152,6 +154,9 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 
 			m_move = MOVEUP;		// 移動量
 			m_state = STATE_OPEN;	// 扉上げる
+
+			// カメラ揺れを設定する
+			CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, OPEN_SWING);
 		}
 
 		break;
@@ -235,6 +240,10 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 見た目の位置設定
 	m_pGateModel->SetVec3Position(rPos);
 	m_pDoorModel->SetVec3Position(rPos);
+
+	// 見た目の当たり判定オフセット設定処理
+	m_pGateModel->CollisionOffset();
+	m_pDoorModel->CollisionOffset();
 }
 
 //============================================================

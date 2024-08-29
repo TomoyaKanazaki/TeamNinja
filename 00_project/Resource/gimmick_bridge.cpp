@@ -11,6 +11,8 @@
 #include "field.h"
 #include "multi_plant.h"
 
+#include "camera.h"
+
 //===========================================
 //  定数定義
 //===========================================
@@ -20,6 +22,7 @@ namespace
 	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
 	const float FIELD_SIZE = 55.0f; // 橋の幅
 	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
+	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// カメラ揺れの値
 }
 
 //===========================================
@@ -351,4 +354,7 @@ void CGimmickBridge::Active()
 		assert(false);
 		break;
 	}
+
+	// TODO：これを呼べばカメラが揺れる
+	CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
 }

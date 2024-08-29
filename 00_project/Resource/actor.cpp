@@ -66,7 +66,7 @@ namespace
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
 		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
-		"data\\MODEL\\Kakejiku\\Kakejiku000.x"			// ふすま(になる予定) : TODO
+		"data\\MODEL\\FUSUMA\\Fusuma000.x"				// ふすま
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -478,7 +478,7 @@ void CActor::BindCollision(void)
 }
 
 //============================================================
-// 当たり判定の初期化処理
+// 当たり判定のオフセット処理
 //============================================================
 void CActor::CollisionOffset(void)
 {

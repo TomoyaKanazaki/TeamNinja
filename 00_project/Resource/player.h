@@ -93,6 +93,8 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,	// 何もしない状態
+
+		// ゲーム画面状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
@@ -100,7 +102,12 @@ public:
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
-		STATE_MAX		// この列挙型の総数
+
+		// セレクト画面状態
+		STATE_SELECT_SPAWN,		// スポーン状態
+		STATE_SELECT_NORMAL,	// 移動状態
+
+		STATE_MAX	// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -116,6 +123,9 @@ public:
 	void Draw(CShader *pShader = nullptr) override;		// 描画
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
+
+	// 仮想関数
+	virtual EMotion UpdateState(const float fDeltaTime);	// 状態更新
 
 	// 静的メンバ関数
 	static CPlayer *Create	// 生成
@@ -160,10 +170,23 @@ public:
 	D3DXVECTOR3 GetOldPosition() const { return m_oldPos; }		// 過去位置の取得
 	CField* GetField() const { return m_pCurField; }			// フィールドの取得
 
-private:
-
+protected:
 	// メンバ関数
-	EMotion UpdateNone(const float fDeltaTime);		// 何もしない状態時の更新
+	EMotion UpdateNone(const float fDeltaTime);	// 何もしない状態時の更新
+	EMotion UpdateMove(void);					// 移動量・目標向きの更新
+	void UpdateGravity(const float fDeltaTime);	// 重力の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
+	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
+	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
+	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
+	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
+	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
+
+	// メンバ関数 (金崎追加)
+	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
+
+private:
+	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateStart(const float fDeltaTime);	// スタート状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
@@ -171,20 +194,10 @@ private:
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
-	void UpdateOldPosition(void);	// 過去位置の更新
-	EMotion UpdateMove(void);		// 移動量・目標向きの更新
-	void UpdateGravity(const float fDeltaTime);		// 重力の更新
-
-	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
-	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
-	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
-	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
-	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
-	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
-	void UpdateTrans(D3DXVECTOR3& rPos);	// ステージ遷移の更新
+	void UpdateOldPosition(void);					// 過去位置の更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 
 	// メンバ関数 (金崎追加)
-	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
