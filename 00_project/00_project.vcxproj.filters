@@ -660,6 +660,9 @@
     <ClInclude Include="Resource\mash.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\playerSelect.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1243,6 +1246,9 @@
     </ClCompile>
     <ClCompile Include="Resource\mash.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\playerSelect.cpp">
+      <Filter>InGame\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

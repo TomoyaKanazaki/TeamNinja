@@ -10,6 +10,7 @@
 //	インクルードファイル
 //************************************************************
 #include "player.h"
+#include "playerSelect.h"
 #include "manager.h"
 #include "sceneGame.h"
 #include "gameManager.h"
@@ -30,7 +31,6 @@
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
-#include "transpoint.h"
 #include "effect3D.h"
 #include "actor.h"
 #include "coin.h"
@@ -224,8 +224,8 @@ HRESULT CPlayer::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
-	// プレイヤーを出現させる
-	SetSpawn();
+	//// プレイヤーを出現させる
+	//SetSpawn();
 
 	// 士気力ゲージの生成
 	for (int i = 0; i < INIT_CLONE; ++i)
@@ -282,11 +282,82 @@ void CPlayer::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_CENTER, "pos : (%f, %f, %f)\n", m_posCenter.x, m_posCenter.y, m_posCenter.z);
 	DebugProc::Print(DebugProc::POINT_CENTER, "move : (%f, %f, %f)\n", m_move.x * fDeltaTime, m_move.y * fDeltaTime, m_move.z * fDeltaTime);
 
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
-
 	// 過去位置の更新
 	UpdateOldPosition();
 
+	// 状態の更新
+	EMotion currentMotion = UpdateState(fDeltaTime);
+
+	// エフェクトの削除
+	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
+	{
+		SAFE_DELETE(m_pEffectdata);
+		m_pEffectdata = nullptr;
+	}
+
+	int nMotion = GetMotionType();
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の更新
+		if (m_apOrbit[nCnt] == nullptr) { return; }
+
+		// ハイジャンプ中の場合、表示する
+		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
+
+		// 更新処理
+		m_apOrbit[nCnt]->Update(fDeltaTime);
+	}
+
+	// モーション・オブジェクトキャラクターの更新
+	UpdateMotion(currentMotion, fDeltaTime);
+
+#ifdef _DEBUG
+
+	// 入力情報を受け取るポインタ
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;
+
+	if (pKeyboard->IsTrigger(DIK_RIGHT))
+	{
+		RecoverCheckPoint();
+	}
+
+#endif
+}
+
+//============================================================
+//	描画処理
+//============================================================
+void CPlayer::Draw(CShader *pShader)
+{
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
+}
+
+//============================================================
+//	更新状況の設定処理
+//============================================================
+void CPlayer::SetEnableUpdate(const bool bUpdate)
+{
+	// 引数の更新状況を設定
+	CObject::SetEnableUpdate(bUpdate);	// 自身
+}
+
+//============================================================
+//	描画状況の設定処理
+//============================================================
+void CPlayer::SetEnableDraw(const bool bDraw)
+{
+	// 引数の描画状況を設定
+	CObject::SetEnableDraw(bDraw);	// 自身
+}
+
+//============================================================
+//	状態の更新処理
+//============================================================
+CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
+{
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
@@ -342,69 +413,8 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// エフェクトの削除
-	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
-	{
-		SAFE_DELETE(m_pEffectdata);
-		m_pEffectdata = nullptr;
-	}
-
-	int nMotion = GetMotionType();
-
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
-	{
-		// 軌跡の更新
-		if (m_apOrbit[nCnt] == nullptr) { return; }
-
-		// ハイジャンプ中の場合、表示する
-		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
-
-		// 更新処理
-		m_apOrbit[nCnt]->Update(fDeltaTime);
-	}
-
-	// モーション・オブジェクトキャラクターの更新
-	UpdateMotion(currentMotion, fDeltaTime);
-
-#ifdef _DEBUG
-
-	// 入力情報を受け取るポインタ
-	CInputKeyboard* pKeyboard = GET_INPUTKEY;
-
-	if (pKeyboard->IsTrigger(DIK_RIGHT))
-	{
-		RecoverCheckPoint();
-	}
-
-#endif
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CPlayer::Draw(CShader *pShader)
-{
-	// オブジェクトキャラクターの描画
-	CObjectChara::Draw(pShader);
-}
-
-//============================================================
-//	更新状況の設定処理
-//============================================================
-void CPlayer::SetEnableUpdate(const bool bUpdate)
-{
-	// 引数の更新状況を設定
-	CObject::SetEnableUpdate(bUpdate);		// 自身
-
-}
-
-//============================================================
-//	描画状況の設定処理
-//============================================================
-void CPlayer::SetEnableDraw(const bool bDraw)
-{
-	// 引数の描画状況を設定
-	CObject::SetEnableDraw(bDraw);		// 自身
+	// 現在のモーションを返す
+	return currentMotion;
 }
 
 //============================================================
@@ -422,6 +432,9 @@ CPlayer *CPlayer::Create
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_SELECT:
+		pPlayer = new CPlayerSelect;
+		break;
+
 	case TYPE_GAME:
 		pPlayer = new CPlayer;
 		break;
@@ -837,7 +850,7 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(posPlayer);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(posPlayer, RADIUS);
@@ -891,7 +904,7 @@ CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -928,7 +941,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(posPlayer);
 
 	// コインとの当たり判定処理
 	CollisionCoin(posPlayer);
@@ -938,9 +951,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(posPlayer, RADIUS);
-
-	// ステージ遷移の更新
-	UpdateTrans(posPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -967,7 +977,7 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 	SetVec3Rotation(m_destRot);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1007,7 +1017,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1041,7 +1051,7 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1078,7 +1088,7 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1630,30 +1640,12 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-//	ステージ遷移の更新処理
+//	壁との当たり判定
 //==========================================
-void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
+bool CPlayer::CollisionWall(D3DXVECTOR3& rPos)
 {
-	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
-	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
-
-	// 触れている遷移ポイントを取得
-	CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
-
-	// 遷移ポイントに触れていない場合抜ける
-	if (pHitTrans == nullptr) { return; }
-
-	if (pKey->IsTrigger(DIK_SPACE)
-	||  pKey->IsTrigger(DIK_RETURN)
-	||  pPad->IsTrigger(CInputPad::KEY_A)
-	||  pPad->IsTrigger(CInputPad::KEY_B)
-	||  pPad->IsTrigger(CInputPad::KEY_X)
-	||  pPad->IsTrigger(CInputPad::KEY_Y))
-	{
-		// 遷移ポイントのマップパスに遷移
-		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
-		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
-	}
+	// 壁との当たり判定
+	return GET_STAGE->CollisionWall(rPos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 }
 
 //==========================================
