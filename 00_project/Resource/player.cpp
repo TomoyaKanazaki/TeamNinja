@@ -1473,6 +1473,22 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_STEALTHWALK:	// 忍び足モーション
 
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_001);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_JUMP_MINI:	// 小ジャンプモーション

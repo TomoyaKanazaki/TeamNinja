@@ -611,8 +611,12 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 	{
 	case CEnemyAttack::TARGET_PLAYER:
 
-		// プレイヤーの当たり判定処理
-		HitPlayer(rPos);
+		if (HitPlayer(rPos))
+		{ // プレイヤーに当たった場合
+
+			// 攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
+		}
 
 		// 状態カウントを加算する
 		m_nStateCount++;
@@ -636,6 +640,9 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 
 			// 空白攻撃状態にする
 			SetState(STATE_BLANKATTACK);
+
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_001);
 
 			// 分身に対する攻撃モーションにする
 			return MOTION_BATTLE;
