@@ -125,7 +125,6 @@ CPlayer::EMotion CPlayerSelect::UpdateState(const float fDeltaTime)
 //============================================================
 CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 {
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	if (IsMotionFinish())
 	{ // 選択モーションが終了した場合
 
@@ -135,12 +134,17 @@ CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 		// 待機モーションを設定
 		SetMotion(MOTION_IDOL);
 
+		// TODO：ここで解放先があるなら別状態へ
+#if 1
 		// 通常状態を設定
 		SetState(STATE_SELECT_NORMAL);
+#else
+
+#endif
 	}
 
-	// 現在のモーションを返す
-	return currentMotion;
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================
@@ -195,7 +199,12 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 //==========================================
 CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 {
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	if (GetMotionWholeCounter() == 30)
+	{
+		// TODO：開始エフェクトを生成
+		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
+	}
+
 	if (IsMotionFinish())
 	{ // 選択モーションが終了した場合
 
@@ -206,8 +215,8 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	// 向きを反映
 	SetVec3Rotation(GetDestRotation());
 
-	// 現在のモーションを返す
-	return currentMotion;
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //==========================================
@@ -268,6 +277,9 @@ void CPlayerSelect::SetSpawn(void)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
+
+	// TODO：開始エフェクトを生成
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
 }
 
 //==========================================
@@ -291,7 +303,4 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
-
-	// TODO：開始エフェクトを生成
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
 }
