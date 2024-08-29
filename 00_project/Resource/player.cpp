@@ -224,15 +224,13 @@ HRESULT CPlayer::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
-	//// プレイヤーを出現させる
-	//SetSpawn();
-
 	// 士気力ゲージの生成
 	for (int i = 0; i < INIT_CLONE; ++i)
 	{
 		CTension::Create();
 	}
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -496,15 +494,8 @@ CPlayer *CPlayer::Create
 		pPlayer->SetVec3Rotation(rRot);
 		pPlayer->m_destRot = rRot;	// 目標向きも同一の向きにする
 
-		// 開始エフェクトを生成
-		GET_EFFECT->Create
-		( // 引数
-			"data\\EFFEKSEER\\gamestart.efkefc",	// エフェクトパス
-			pPlayer->GetVec3Position(),				// 位置
-			VEC3_ZERO,	// 向き
-			VEC3_ZERO,	// 移動量
-			60.0f		// 拡大率
-		);
+		// プレイヤーを出現させる
+		pPlayer->SetSpawn();
 
 		// 確保したアドレスを返す
 		return pPlayer;
@@ -1571,6 +1562,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
+		break;
+
+	case MOTION_SELECT:	// 選択モーション
 		break;
 	}
 }

@@ -86,6 +86,7 @@ public:
 		MOTION_SAVE,		// チェックポイントモーション
 		MOTION_GET,			// 神器取得モーション
 		MOTION_START,		// スタートモーション
+		MOTION_SELECT,		// 選択モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -106,6 +107,7 @@ public:
 		// セレクト画面状態
 		STATE_SELECT_SPAWN,		// スポーン状態
 		STATE_SELECT_NORMAL,	// 移動状態
+		STATE_SELECT_ENTER,		// 入場状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -126,6 +128,7 @@ public:
 
 	// 仮想関数
 	virtual EMotion UpdateState(const float fDeltaTime);	// 状態更新
+	virtual void SetSpawn(void);	// 出現設定
 
 	// 静的メンバ関数
 	static CPlayer *Create	// 生成
@@ -147,7 +150,6 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void TimeUp(void);							// タイムアップ
-	void SetSpawn(void);						// 出現設定
 	void SetEnableGodItem(const bool bGet);		// 神器獲得設定
 	void SetResult();							// リザルト設定
 	void SetState(const EState state);			// 状態設定

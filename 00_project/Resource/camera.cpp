@@ -114,6 +114,7 @@ namespace
 	{
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);	// カメラ視点の補正係数
 		const D3DXVECTOR3 REV_POSR = D3DXVECTOR3(1.0f, 0.35f, 1.0f);	// カメラ注視点の補正係数
+		const float REV_DIFF = 0.35f;	// 差分の補正係数
 
 		const float	STICK_REV = 0.00000225f;	// カメラ操作スティックの傾き量の補正係数
 
@@ -196,6 +197,16 @@ namespace
 		const float BACK_REV_ROT = 0.05f;	// 戻り状態の向きの補正係数
 		const int BACK_COUNT = 140;			// 戻り状態のカウント数
 		const float ENTRY_GAME_SHIFT = -63.30f;		// ゲームに入る時にずらす距離
+	}
+
+	// 選択カメラ情報
+	namespace select
+	{
+		const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 45.0f, 0.0f);	// 位置オフセット
+		const float	INIT_DIS	 = 140.0f;	// カメラの距離
+		const float	INIT_ROTX	 = HALF_PI;	// カメラの向きX初期値
+		const float	INIT_ROTY	 = 0.0f;	// カメラの向きY初期値
+		const float REV_DIFF	 = 0.045f;	// 差分の補正係数
 	}
 }
 
@@ -377,6 +388,12 @@ void CCamera::Update(const float fDeltaTime)
 
 		// リザルトの更新
 		Result();
+		break;
+
+	case STATE_SELECT:	// 選択
+
+		// 選択の更新
+		Select();
 		break;
 
 	default:	// 例外処理
@@ -728,6 +745,51 @@ void CCamera::SetDestResult(void)
 
 	// 目標位置をそのまま現在位置にも設定
 	m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR;
+
+	// 視点位置を設定
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN]. fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
+}
+
+//============================================================
+//	カメラの目標位置の設定処理 (選択)
+//============================================================
+void CCamera::SetDestSelect(void)
+{
+	// カメラが選択状態以外なら抜ける
+	if (m_state != STATE_SELECT) { return; }
+
+	// プレイヤーの情報を取得
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 目標の角度を算出
+	CalcAround(posPlayer);
+
+	// 向きを設定
+	m_aCamera[TYPE_MAIN].rot.x = m_aCamera[TYPE_MAIN].destRot.x = select::INIT_ROTX;
+	m_aCamera[TYPE_MAIN].rot.y = m_aCamera[TYPE_MAIN].destRot.y;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);		// 現在向きを正規化
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 距離を設定
+	m_aCamera[TYPE_MAIN].fDestDis = m_aCamera[TYPE_MAIN].fDis = select::INIT_DIS;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点位置を設定
+	m_aCamera[TYPE_MAIN].destPosR = m_aCamera[TYPE_MAIN].posR = posPlayer + select::OFFSET;
 
 	// 視点位置を設定
 	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
@@ -1467,6 +1529,75 @@ void CCamera::Result(void)
 }
 
 //============================================================
+//	カメラの更新処理 (選択)
+//============================================================
+void CCamera::Select(void)
+{
+	// カメラが選択状態以外なら抜ける
+	if (m_state != STATE_SELECT) { return; }
+
+	// プレイヤーの情報を取得
+	CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 目標の角度を算出
+	CalcAround(posPlayer);
+
+	// 目標向きを設定
+	m_aCamera[TYPE_MAIN].destRot.x = select::INIT_ROTX;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	// 差分向きを計算
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 現在向きを計算
+	m_aCamera[TYPE_MAIN].rot += diffRot * result::REV_DIFF;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDestDis = select::INIT_DIS;
+
+	// 差分距離を計算
+	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
+
+	// 現在距離を計算
+	m_aCamera[TYPE_MAIN].fDis += fDiffDis * select::REV_DIFF;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer + select::OFFSET;	// プレイヤー位置を基準点にする
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 注視点の現在位置を計算
+	m_aCamera[TYPE_MAIN].posR += diffPosR * select::REV_DIFF;
+
+	// 視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+	m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視点の差分位置を計算
+	D3DXVECTOR3 diffPosV = m_aCamera[TYPE_MAIN].destPosV - m_aCamera[TYPE_MAIN].posV;
+
+	// 視点の現在位置を計算
+	m_aCamera[TYPE_MAIN].posV += diffPosV * result::REV_DIFF;
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
+}
+
+//============================================================
 //	カメラの更新処理 (回転)
 //============================================================
 void CCamera::Rotate(void)
@@ -1785,7 +1916,13 @@ void CCamera::Around(void)
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
 
 	// 目標距離を設定
-	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+	m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+
+	// 差分距離を計算
+	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
+
+	// 現在距離を計算
+	m_aCamera[TYPE_MAIN].fDis += fDiffDis * around::REV_DIFF;
 
 	// 注視点をプレイヤーの頭の位置にする
 	m_aCamera[TYPE_MAIN].destPosR = posPlayer + D3DXVECTOR3(0.0f, pPlayer->GetHeight(), 0.0f);

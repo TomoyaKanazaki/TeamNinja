@@ -10,6 +10,7 @@
 #include "playerSelect.h"
 #include "manager.h"
 #include "stage.h"
+#include "camera.h"
 #include "transpoint.h"
 
 //************************************************************
@@ -53,21 +54,8 @@ HRESULT CPlayerSelect::Init(void)
 		return E_FAIL;
 	}
 
-	// 情報を初期化
-	SetState(STATE_SELECT_SPAWN);	// スポーン状態の設定
-	SetMotion(MOTION_LANDING);		// 着地モーションを設定
-
-	// 移動量を初期化
-	SetMove(VEC3_ZERO);
-
-	// マテリアルを再設定
-	ResetMaterial();
-
-	// 透明度を不透明に設定
-	SetAlpha(1.0f);
-
-	// 描画を再開
-	SetEnableDraw(true);
+	// スポーンの設定
+	SetSpawn();
 
 	// 成功を返す
 	return S_OK;
@@ -117,6 +105,12 @@ CPlayer::EMotion CPlayerSelect::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateNormal(fDeltaTime);
 		break;
 
+	case STATE_SELECT_ENTER:
+
+		// 入場状態時の更新
+		currentMotion = UpdateEnter(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -132,8 +126,14 @@ CPlayer::EMotion CPlayerSelect::UpdateState(const float fDeltaTime)
 CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 {
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
-	//if (GetType)
-	{ // 場合
+	if (IsMotionFinish())
+	{ // 選択モーションが終了した場合
+
+		// 回り込みカメラに遷移
+		GET_CAMERA->SetState(CCamera::STATE_AROUND);
+
+		// 待機モーションを設定
+		SetMotion(MOTION_IDOL);
 
 		// 通常状態を設定
 		SetState(STATE_SELECT_NORMAL);
@@ -191,6 +191,26 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 }
 
 //==========================================
+//	入場状態時の更新処理
+//==========================================
+CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
+{
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
+	if (IsMotionFinish())
+	{ // 選択モーションが終了した場合
+
+		// 設定済みマップパスに遷移
+		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+	}
+
+	// 向きを反映
+	SetVec3Rotation(GetDestRotation());
+
+	// 現在のモーションを返す
+	return currentMotion;
+}
+
+//==========================================
 //	ステージ遷移の更新処理
 //==========================================
 void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
@@ -211,8 +231,67 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 	||  pPad->IsTrigger(CInputPad::KEY_X)
 	||  pPad->IsTrigger(CInputPad::KEY_Y))
 	{
-		// 遷移ポイントのマップパスに遷移
-		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
-		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+		// 遷移ポイントインデックスを保存
+		GET_RETENTION->SetTransIdx(CTransPoint::GetList()->GetIndex(pHitTrans));
+
+		// 入場の設定
+		SetEnter(pHitTrans->GetTransMapPass().c_str());
 	}
+}
+
+//==========================================
+//	スポーンの設定処理
+//==========================================
+void CPlayerSelect::SetSpawn(void)
+{
+	// 情報を初期化
+	SetState(STATE_SELECT_SPAWN);	// スポーン状態の設定
+	SetMotion(MOTION_SELECT);		// 選択モーションを設定
+
+	// 移動量を初期化
+	SetMove(VEC3_ZERO);
+
+	// マテリアルを再設定
+	ResetMaterial();
+
+	// 透明度を不透明に設定
+	SetAlpha(1.0f);
+
+	// 描画を再開
+	SetEnableDraw(true);
+
+	// 回り込みカメラの設定
+	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_SELECT);
+	GET_MANAGER->GetCamera()->SetDestSelect();
+
+	// プレイヤーの向きをカメラ方向に設定
+	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
+	SetVec3Rotation(rotCamera);
+	SetDestRotation(rotCamera);
+}
+
+//==========================================
+//	入場の設定処理
+//==========================================
+void CPlayerSelect::SetEnter(const char* pTransMapPath)
+{
+	// 遷移ポイントのマップパスを保存
+	GET_STAGE->SetInitMapPass(pTransMapPath);
+
+	// 選択モーションにする
+	SetMotion(MOTION_SELECT);
+
+	// 入場状態にする
+	SetState(STATE_SELECT_ENTER);
+
+	// 選択カメラにする
+	GET_CAMERA->SetState(CCamera::STATE_SELECT);
+
+	// プレイヤーの向きをカメラ方向に設定
+	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
+	SetVec3Rotation(rotCamera);
+	SetDestRotation(rotCamera);
+
+	// TODO：開始エフェクトを生成
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
 }

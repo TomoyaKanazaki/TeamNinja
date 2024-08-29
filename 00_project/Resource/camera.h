@@ -48,6 +48,7 @@ public:
 		STATE_TELEPHOTO,	// 望遠
 		STATE_GODITEM,		// 神器獲得
 		STATE_RESULT,		// リザルト
+		STATE_SELECT,		// 選択
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -135,6 +136,7 @@ public:
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)
 	void SetDestGodItem(void);		// カメラ目標位置設定 (神器獲得)
 	void SetDestResult(void);		// カメラ目標位置設定 (リザルト)
+	void SetDestSelect(void);		// カメラ目標位置設定 (選択)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -172,6 +174,7 @@ private:
 	void Control(void);		// カメラの更新 (操作)
 	void GodItem(void);		// カメラの更新 (神器獲得)
 	void Result(void);		// カメラの更新 (リザルト)
+	void Select(void);		// カメラの更新 (選択)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)

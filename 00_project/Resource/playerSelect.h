@@ -33,12 +33,15 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;			// 更新
 	EMotion UpdateState(const float fDeltaTime) override;	// 状態更新
+	void SetSpawn(void) override;	// スポーン設定
 
 private:
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
+	EMotion UpdateEnter(const float fDeltaTime);	// 入場状態時の更新
 	void UpdateTrans(D3DXVECTOR3& rPos);			// ステージ遷移の更新
+	void SetEnter(const char* pTransMapPath);		// 入場設定
 };
 
 #endif	// _PLAYER_SELECT_H_

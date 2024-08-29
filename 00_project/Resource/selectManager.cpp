@@ -14,6 +14,7 @@
 #include "scene.h"
 #include "sceneSelect.h"
 #include "player.h"
+#include "transpoint.h"
 
 //************************************************************
 //	親クラス [CSelectManager] のメンバ関数
@@ -43,9 +44,25 @@ HRESULT CSelectManager::Init(void)
 	// メンバ変数を初期化
 	m_state = STATE_NORMAL;	// 状態
 
-	// 回り込みカメラの設定
-	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
-	GET_MANAGER->GetCamera()->SetDestAround();
+	int nTransIdx = GET_RETENTION->GetTransIdx();	// 遷移ポイントインデックス
+	if (nTransIdx != NONE_IDX)
+	{ // 前回の遷移ポイントが設定されている場合
+
+		CTransPoint* pTransPoint = *CTransPoint::GetList()->GetIndex(nTransIdx);	// 遷移ポイント情報
+		CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+		CCamera* pCamera = GET_CAMERA;	// カメラ情報
+
+		// プレイヤーの位置を遷移ポイントに補正
+		pPlayer->SetVec3Position(pTransPoint->GetVec3Position());
+
+		// カメラ目標位置の補正
+		pCamera->SetDestSelect();
+
+		// プレイヤーの向きをカメラ方向に設定
+		D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, pCamera->GetDestRotation().y, 0.0f);	// カメラ向き
+		pPlayer->SetVec3Rotation(rotCamera);
+		pPlayer->SetDestRotation(rotCamera);
+	}
 
 	// 成功を返す
 	return S_OK;
