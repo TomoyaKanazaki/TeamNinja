@@ -92,7 +92,7 @@ HRESULT CGameManager::Init(void)
 	// メンバ変数を初期化
 	m_pResult	= nullptr;		// リザルトマネージャー
 	m_state		= STATE_START;	// 状態
-	m_nSave		= -1;			// セーブポイント
+	m_nSave = GET_RETENTION->GetSave();			// セーブポイント
 
 	// リザルトマネージャーの生成
 	m_pResult = CResultManager::Create();
@@ -108,25 +108,24 @@ HRESULT CGameManager::Init(void)
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
+	// セーブ済みの場合、スタートカメラの設定を行わない
+	if (m_nSave != -1)
+	{
+		// プレイヤーを通常状態にする
+		CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
+		CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
+
+		// 通常状態にする
+		m_state = STATE_NORMAL;
+
+		return S_OK; 
+	}
+
 	// シネマスコープ始め
 	CSceneGame::GetCinemaScope()->SetScopeIn();
 
-#if 0
-
-	// TODO：仮置き
-	// プレイヤーを通常状態にする
-	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
-	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
-
-	// 通常状態にする
-	m_state = STATE_NORMAL;
-
-#else
-
 	// スタートカメラのリセット処理
 	GET_MANAGER->GetCamera()->StartReset();
-
-#endif // 0
 
 	// 成功を返す
 	return S_OK;

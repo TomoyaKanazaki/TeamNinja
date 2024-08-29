@@ -466,6 +466,16 @@ CPlayer *CPlayer::Create
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
 			pPlayer->SetVec3Position(rPos);
+
+			if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+			{ // ゲームモードの場合
+
+				// 位置を設定する
+				D3DXVECTOR3 pos = pPlayer->GetVec3Position();
+				pos.y += SPAWN_ADD_HEIGHT;
+				pPlayer->SetVec3Position(pos);
+
+			}
 		}
 		else
 		{
@@ -474,18 +484,6 @@ CPlayer *CPlayer::Create
 
 			// チェックポイントの座標を設定する
 			pPlayer->SetVec3Position(point->GetVec3Position());
-		}
-
-		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
-		{ // ゲームモードの場合
-
-#if 1
-			// 位置を設定する
-			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
-			pos.y += SPAWN_ADD_HEIGHT;
-			pPlayer->SetVec3Position(pos);
-
-#endif // 0
 		}
 
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
@@ -1465,6 +1463,22 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_STEALTHWALK:	// 忍び足モーション
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_001);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
 
 		break;
 

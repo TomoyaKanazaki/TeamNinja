@@ -22,7 +22,7 @@ namespace
 	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
 	const float FIELD_SIZE = 55.0f; // 橋の幅
 	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
-	const CCamera::SSwing SWING = CCamera::SSwing(9.0f, 2.0f, 0.6f);		// カメラ揺れの値
+	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// カメラ揺れの値
 }
 
 //===========================================
@@ -312,7 +312,13 @@ void CGimmickBridge::Active()
 	if (m_pField != nullptr) { return; }
 
 	// 向きが一定の値を上回っている場合関数を抜ける
-	if (m_fRot - -HALF_PI > 0.2f) { return; }
+	if (m_fRot - -HALF_PI > 0.01f)
+	{
+		// カメラが揺れる
+		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
+
+		return;
+	}
 
 	// 足場の座標を設定
 	D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;
@@ -354,7 +360,4 @@ void CGimmickBridge::Active()
 		assert(false);
 		break;
 	}
-
-	// カメラを揺らす
-	CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
 }

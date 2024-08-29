@@ -24,6 +24,7 @@
 #include "gameManager.h"
 #include "timerUI.h"
 #include "cinemaScope.h"
+#include "wall.h"
 
 //************************************************************
 //	定数宣言
@@ -331,6 +332,10 @@ void CCamera::Update(const float fDeltaTime)
 
 	// 更新を止めている場合抜ける
 	if (!m_bUpdate) { return; }
+
+	// 前回の座標情報を保存する
+	m_aCamera[TYPE_MAIN].posOldV = m_aCamera[TYPE_MAIN].posV;
+	m_aCamera[TYPE_MAIN].posOldR = m_aCamera[TYPE_MAIN].posR;
 
 	if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME &&
 		CSceneGame::GetGameManager()->GetState() == CGameManager::EState::STATE_START)
@@ -2054,4 +2059,42 @@ void CCamera::Telephoto()
 	m_aCamera[TYPE_MAIN].posV.x += diffPosV.x * telephoto::REV_POSV.x;
 	m_aCamera[TYPE_MAIN].posV.y += diffPosV.y * telephoto::REV_POSV.y;
 	m_aCamera[TYPE_MAIN].posV.z += diffPosV.z * telephoto::REV_POSV.z;
+}
+
+//==========================================
+//  視点と壁の当たり判定
+//==========================================
+void CCamera::CollisionWallV()
+{
+	// 移動量を算出する
+	D3DXVECTOR3 move = m_aCamera[TYPE_MAIN].posV - m_aCamera[TYPE_MAIN].posOldV;
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall
+	(
+		m_aCamera[TYPE_MAIN].posV,
+		m_aCamera[TYPE_MAIN].posOldV,
+		0.0f,
+		0.0f,
+		move
+	);
+}
+
+//==========================================
+//  注視点と壁の当たり判定
+//==========================================
+void CCamera::CollisionWallR()
+{
+	// 移動量を算出する
+	D3DXVECTOR3 move = m_aCamera[TYPE_MAIN].posR - m_aCamera[TYPE_MAIN].posOldR;
+
+	// 壁の当たり判定
+	GET_STAGE->CollisionWall
+	(
+		m_aCamera[TYPE_MAIN].posR,
+		m_aCamera[TYPE_MAIN].posOldR,
+		0.0f,
+		0.0f,
+		move
+	);
 }
