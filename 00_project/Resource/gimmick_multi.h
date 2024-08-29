@@ -61,4 +61,5 @@ private:
 	CActor* m_pModel; // モデル情報
 	std::vector<CGimmick*> m_vecButton; // ボタン動的配列
 	bool m_bActive; // アクティブフラグ
+	bool m_bActiveOld; // 前回のアクティブフラグ
 };

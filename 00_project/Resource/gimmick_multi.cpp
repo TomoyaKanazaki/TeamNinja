@@ -11,6 +11,8 @@
 #include "player_clone.h"
 #include "actor.h"
 
+#include "camera.h"
+
 //===========================================
 //  定数定義
 //===========================================
@@ -19,6 +21,7 @@ namespace
 	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
 	const float MOVE_SPEED = 150.0f; // 移動速度
 	const D3DXVECTOR3 MOVE_POS = D3DXVECTOR3(0.0f, -250.0f, 0.0f); // 移動後の位置(オフセット)
+	const CCamera::SSwing CAMERA_SWING = CCamera::SSwing(3.0f, 1.8f, 0.02f);		// 竹格子が動くときの揺れ
 }
 
 //=========================================
@@ -26,6 +29,7 @@ namespace
 //=========================================
 CGimmickMulti::CGimmickMulti() : CGimmick(),
 m_bActive (true), // アクティブフラグ
+m_bActiveOld(false), // 前回のアクティブフラグ
 m_pModel (nullptr) // モデル情報
 {
 	// ボタン動的配列をクリア
@@ -217,7 +221,16 @@ HRESULT CGimmickMulti::CreateButton(std::vector<SButton> vecButton)
 //  モデルの移動
 //===========================================
 void CGimmickMulti::MoveModel(const float fDeltaTime)
-{
+{	
+	// 竹格子が動いた時、カメラを揺らす
+	if (m_bActive != m_bActiveOld)
+	{
+		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CAMERA_SWING);
+	}
+
+	// 前回のアクティブフラグを設定する
+	m_bActiveOld = m_bActive;
+
 	// モデルの位置を取得
 	D3DXVECTOR3 posModel = m_pModel->GetVec3Position();
 
