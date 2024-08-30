@@ -1139,8 +1139,10 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_destRot.y = fMoveRot;
 
 		// ˆÚ“®—Ê‚ğİ’è‚·‚é
-		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
-		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		m_move.x = -sinf(fMoveRot);
+		m_move.z = -cosf(fMoveRot);
+		D3DXVec3Normalize(&m_move, &m_move);
+		m_move *= NORMAL_MOVE * (fSpeed / SHRT_MAX);
 
 		// ‹´‚Éæ‚Á‚Ä‚¢‚éê‡ˆÚ“®—Ê‚ğÁ‚·
 		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
