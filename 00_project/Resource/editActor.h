@@ -58,6 +58,7 @@ private:
 	void ChangeType(void);		// 種類更新
 	void RotCorrect(void);		// 向きの補正処理
 	void CreateActor(void);		// アクター生成
+	void SetMash(void);			// ふすまの設定処理
 	void ReleaseActor(void);	// アクター破棄
 	void DeleteCollisionActor(const bool bRelase);	// アクターの削除判定
 	void InitAllColorActor(void);					// アクターの色全初期化

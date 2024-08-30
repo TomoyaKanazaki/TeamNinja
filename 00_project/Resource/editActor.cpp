@@ -20,6 +20,7 @@
 #include "collisionSphere.h"
 #include "collisionPolygon.h"
 #include "collManager.h"
+#include "mash.h"
 
 //************************************************************
 //	マクロ定義
@@ -176,6 +177,9 @@ void CEditActor::Update(void)
 
 	// 位置を反映
 	m_pActor->SetVec3Position(GetVec3Position());
+
+	// ふすまの設定処理
+	SetMash();
 
 #endif	// _DEBUG
 }
@@ -627,6 +631,9 @@ void CEditActor::CreateActor(void)
 		m_pActor->SetEnableUpdate(true);
 		m_pActor->SetEnableDraw(true);
 
+		// ふすまの設定処理
+		SetMash();
+
 		// 未保存を設定
 		m_bSave = false;
 
@@ -682,6 +689,21 @@ void CEditActor::CreateActor(void)
 			));
 		}
 	}
+}
+
+//============================================================
+// ふすまの設定処理
+//============================================================
+void CEditActor::SetMash(void)
+{
+	// ふすまにダイナミックキャスト
+	CMash* pMash = dynamic_cast<CMash*>(m_pActor);
+
+	// 動くふすまが NULL の場合、抜ける
+	if (pMash == nullptr) { return; }
+
+	// 初期位置を反映する
+	pMash->SetDefaultPos(m_pActor->GetVec3Position());
 }
 
 //============================================================

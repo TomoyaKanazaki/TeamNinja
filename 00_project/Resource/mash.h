@@ -33,6 +33,13 @@ public:
 
 	void SetVec3Position(const D3DXVECTOR3& rPos) override;
 
+#ifdef _DEBUG
+
+	void SetDefaultPos(const D3DXVECTOR3& rPos);		// ‰ŠúˆÊ’u‚Ìİ’èˆ—
+
+#endif // _DEBUG
+
+
 private:
 
 	void Collision						// “–‚½‚è”»’èˆ—

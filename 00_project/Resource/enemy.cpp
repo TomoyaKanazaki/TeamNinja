@@ -130,6 +130,11 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
+	//// ‰“‹——£”»’è
+	//bool bFar = useful::IsNearPosR(GetVec3Position());
+	//SetEnableDraw(bFar);
+	//if (!bFar) { return; }
+
 	// “§–¾“x‚ðŽæ“¾
 	float fAlpha = GetAlpha();
 
