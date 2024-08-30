@@ -233,12 +233,9 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 	// 遷移ポイントに触れていない場合抜ける
 	if (pHitTrans == nullptr) { return; }
 
-	if (pKey->IsTrigger(DIK_SPACE)
-	||  pKey->IsTrigger(DIK_RETURN)
+	if (pKey->IsTrigger(DIK_RETURN)
 	||  pPad->IsTrigger(CInputPad::KEY_A)
-	||  pPad->IsTrigger(CInputPad::KEY_B)
-	||  pPad->IsTrigger(CInputPad::KEY_X)
-	||  pPad->IsTrigger(CInputPad::KEY_Y))
+	||  pPad->IsTrigger(CInputPad::KEY_B))
 	{
 		// 遷移ポイントインデックスを保存
 		GET_RETENTION->SetTransIdx(CTransPoint::GetList()->GetIndex(pHitTrans));
