@@ -121,6 +121,11 @@ void CGoal::Uninit(void)
 //==========================================
 void CGoal::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è
 	CollisionPlayer();
 

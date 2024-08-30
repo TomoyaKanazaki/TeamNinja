@@ -94,6 +94,10 @@ void CGimmickMulti::Uninit(void)
 //=========================================
 void CGimmickMulti::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// フラグをリセット
 	m_bActive = true;
 

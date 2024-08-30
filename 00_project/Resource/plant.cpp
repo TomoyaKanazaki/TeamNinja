@@ -104,6 +104,11 @@ void CPlant::Uninit(void)
 //===========================================
 void CPlant::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	// •ûŒü“]Š·
 	Rotation();
 

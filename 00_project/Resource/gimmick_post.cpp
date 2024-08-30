@@ -128,6 +128,10 @@ void CGimmickPost::Uninit(void)
 //=========================================
 void CGimmickPost::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// アクティブ状態ならボタンが押されてる
 	if (IsActive())
 	{ // ボタンが押されている場合
