@@ -68,6 +68,10 @@ void CGimmickStep::Uninit(void)
 //=========================================
 void CGimmickStep::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// “o‚é
 	if (IsActive())
 	{

@@ -84,6 +84,10 @@ void CMultiPlant::Uninit(void)
 //===========================================
 void CMultiPlant::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// ‰æ‚è‚ÌF‚ğXV
 	FrameAlpha();
 
