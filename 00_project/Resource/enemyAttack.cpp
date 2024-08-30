@@ -24,6 +24,7 @@
 #include "enemyAmbush.h"
 #include "effekseerControl.h"
 #include "enemyNavigation.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -35,6 +36,7 @@ namespace
 	const int DODGE_COUNT = 20;					// 回避カウント数
 	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
+	const int REGRESSION_COUNT = 120;			// 回帰するカウント数
 }
 
 //************************************************************
@@ -54,6 +56,7 @@ m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
 m_nAttackCount(0),			// 攻撃カウント
+m_nRegressionCount(0),		// 回帰カウント
 m_type(TYPE_STALK),			// 種類
 m_bDodge(false)				// 回避受付フラグ
 {
@@ -734,4 +737,52 @@ D3DXVECTOR3 CEnemyAttack::GetAttackUp()
 D3DXVECTOR3 CEnemyAttack::GetAttackDown()
 {
 	return ATTACK_COLLDOWN;
+}
+
+//===========================================
+// 元の位置に戻る処理
+//===========================================
+bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
+{
+	if (CManager::GetInstance()->GetCamera()->OnScreen(*pPos) ||
+		CManager::GetInstance()->GetCamera()->OnScreen(D3DXVECTOR3(pPos->x, pPos->y + fHeight, pPos->z)) ||
+		CManager::GetInstance()->GetCamera()->OnScreen(GetPosInit()))
+	{ // 画面内にいる場合
+
+		// 回帰カウントをリセットする
+		m_nRegressionCount = 0;
+
+		// false を返す
+		return false;
+	}
+
+	// 回帰カウントを加算する
+	m_nRegressionCount++;
+
+	// 回帰カウントが一定数以下の場合、抜ける
+	if (m_nRegressionCount < REGRESSION_COUNT) { return false; }
+
+	// 位置を設定する
+	*pPos = GetPosInit();
+
+	// 向きを設定する
+	*pRot = GetRotInit();
+
+	// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
+	SetOldPosition(*pPos);
+
+	// 目的の向きを設定する(復活後に無意味に向いてしまうため)
+	SetDestRotation(*pRot);
+
+	// 透明度を1.0fにする
+	SetAlpha(1.0f);
+
+	// 移動量をリセットする
+	SetMovePosition(VEC3_ZERO);
+
+	// ターゲットを無対象にする
+	SetTarget(TARGET_NONE);
+
+	// true を返す
+	return true;
 }
