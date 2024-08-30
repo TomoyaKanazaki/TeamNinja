@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "useful.h"
+#include "camera.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -242,7 +243,7 @@ CWall *CWall::Create
 		pWall->SetColor(rCol);
 
 		// •ªŠ„”‚ðÝ’è
-		if (FAILED(pWall->SetPattern(rPart)))
+		if (FAILED(pWall->SetPattern(rTexPart)))
 		{ // •ªŠ„”‚ÌÝ’è‚ÉŽ¸”s‚µ‚½ê‡
 
 			// •Ç‚Ì”jŠü
@@ -282,4 +283,19 @@ void CWall::SetType(const EType type)
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 	}
 	else { assert(false); }	// ”ÍˆÍŠO
+}
+
+//==========================================
+//  “§–¾‰»ˆ—
+//==========================================
+void CWall::Invisible()
+{
+	// ƒJƒƒ‰î•ñ‚ÌŽæ“¾
+	CCamera* pCamera = GET_CAMERA;
+
+	// À•W‚Æ‹——£‚ÌŽæ“¾
+	D3DXVECTOR3 posV = pCamera->GetPositionV();
+	float fDistance = pCamera->GetDistance();
+
+	// 
 }
