@@ -76,6 +76,10 @@ public:
 		TYPE_ROOFFLOOR2,		// レンガ柄風の屋根裏の木
 		TYPE_MASH_MOVE,			// ふすま(動く)
 		TYPE_MASH_STOP,			// ふすま(動かない)
+		TYPE_FENCE_00,			// フェンス00
+		TYPE_FENCE_01,			// フェンス01
+		TYPE_FENCE_02,			// フェンス02
+		TYPE_FENCE_03,			// フェンス03
 		TYPE_MAX				// この列挙型の総数
 	};
 
