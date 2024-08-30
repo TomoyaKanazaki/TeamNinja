@@ -66,7 +66,8 @@ namespace
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
 		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
-		"data\\MODEL\\FUSUMA\\Fusuma000.x"				// ふすま
+		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// ふすま(動く)
+		"data\\MODEL\\FUSUMA\\Fusuma000.x"				// ふすま(動かない)
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -200,7 +201,7 @@ CActor* CActor::Create
 {
 	// モデルUIの生成
 	CActor* pActor = nullptr;
-	if (type == TYPE_MASH) // ふすまだけ子クラスを生成
+	if (type == TYPE_MASH_MOVE) // ふすまだけ子クラスを生成
 	{
 		pActor = new CMash(rPos);
 	}
