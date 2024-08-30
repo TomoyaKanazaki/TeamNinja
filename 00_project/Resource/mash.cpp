@@ -80,8 +80,10 @@ void CMash::Draw(CShader* pShader)
 //==========================================
 void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 {
+	D3DXVECTOR3 scale = GetVec3Scaling();
+
 	// 移動する距離を取得する
-	float offsetMax = GetModelData().vtxMax.x * 2.0f;
+	float offsetMax = (GetModelData().vtxMax.x * scale.x) * 2.0f;
 
 	// 向きから移動先オフセットを算出する
 	float fRot = GetVec3Rotation().y + (D3DX_PI * 0.5f);
@@ -95,9 +97,9 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 向きから移動量を算出する
 	m_move = D3DXVECTOR3
 	(
-		MOVE_SPEED * sinf(fRot),
+		(MOVE_SPEED * scale.x) * sinf(fRot),
 		0.0f,
-		MOVE_SPEED * cosf(fRot)
+		(MOVE_SPEED * scale.x) * cosf(fRot)
 	);
 
 	// 親クラスの位置設定
