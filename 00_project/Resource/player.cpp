@@ -90,7 +90,7 @@ namespace
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE = 100.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 480;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
@@ -1139,10 +1139,14 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		m_destRot.y = fMoveRot;
 
 		// 移動量を設定する
-		D3DXVECTOR3 move = pPad->GetStickRateL(0.01f);
+		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		D3DXVECTOR3 move = m_move;
+		move.y = 0.0f;
 		D3DXVec3Normalize(&move, &move);
-		move *= NORMAL_MOVE;
-		m_move += move;
+		m_move.x = move.x * NORMAL_MOVE;
+		m_move.z = move.z * NORMAL_MOVE;
+
 
 		// 橋に乗っている場合移動量を消す
 		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
