@@ -130,6 +130,11 @@ void CCheckPoint::Update(const float fDeltaTime)
 
 #endif // _DEBUG
 
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è
 	CollisionPlayer();
 }

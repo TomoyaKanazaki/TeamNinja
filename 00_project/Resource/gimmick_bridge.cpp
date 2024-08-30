@@ -76,6 +76,10 @@ void CGimmickBridge::Uninit(void)
 //===========================================
 void CGimmickBridge::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// ‹´‚ð‰Ë‚¯‚é
 	if (IsActive()) { Active(); }
 	else { SAFE_UNINIT(m_pField); }

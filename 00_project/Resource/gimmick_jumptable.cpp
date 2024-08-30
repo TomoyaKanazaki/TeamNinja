@@ -71,6 +71,10 @@ void CGimmickJumpTable::Uninit(void)
 //============================================================
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è
 	if (HitPlayer())
 	{
