@@ -135,6 +135,10 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// ‰ß‹ŽˆÊ’u‚ðXV
 	m_oldPosDoor = m_pDoorModel->GetVec3Position();
 	

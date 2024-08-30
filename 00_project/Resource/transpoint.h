@@ -45,7 +45,7 @@ public:
 
 	// 静的メンバ関数
 	static CTransPoint *Create(const char* pPass, const D3DXVECTOR3& rPos);			// 生成
-	static CTransPoint* Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
+	static CTransPoint *Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込
