@@ -1353,7 +1353,7 @@ bool CInputPad::GetRStick(int nPadID)
 D3DXVECTOR3 CInputPad::GetStickRateL(float fDead, int nPadID)
 {
 	//ƒ[ƒJƒ‹•Ï”éŒ¾
-	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 Stick = VEC3_ZERO;
 
 	Stick.x = (float)m_aKeyStatePress[nPadID].Gamepad.sThumbLX / SHRT_MAX;
 	if (fabsf(Stick.x) < fDead)
