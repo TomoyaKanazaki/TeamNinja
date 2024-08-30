@@ -30,6 +30,7 @@ public:
 		ROTATION_DEFAULT = 0, // デフォルトの角度
 		ROTATION_UP, // 上
 		ROTATION_DOWN, // 下
+		ROTATION_HALFUP, // ちょっと上
 		ROTATION_MAX
 	};
 

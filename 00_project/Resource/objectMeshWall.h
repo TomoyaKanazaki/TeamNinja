@@ -93,6 +93,8 @@ protected:
 		const float fTexU,	// テクスチャの横座標の開始位置
 		const float fTexV	// テクスチャの縦座標の開始位置
 	);
+	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff() { return m_pVtxBuff; } // 頂点情報の取得
+	SMeshWall GetMeshWall() { return m_meshWall; } // メッシュ情報の取得
 
 private:
 	// オーバーライド関数
@@ -103,6 +105,7 @@ private:
 	void DrawShader(CShader *pShader);	// シェーダー描画
 	void DrawZTexture(void);			//Zテクスチャ書き込み
 	void DrawToonShadow(void);			//影書き込み
+
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;	// インデックスバッファへのポインタ
