@@ -104,6 +104,20 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 	CActor::SetVec3Position(rPos);
 }
 
+#ifdef _DEBUG
+
+//==========================================
+// ‰ŠúˆÊ’u‚Ìİ’èˆ—
+//==========================================
+void CMash::SetDefaultPos(const D3DXVECTOR3& rPos)
+{
+	// ‰ŠúˆÊ’u‚ğİ’è‚·‚é
+	m_posDefault = rPos;
+}
+
+#endif // _DEBUG
+
+
 //==========================================
 // “–‚½‚è”»’èˆ—
 //==========================================
