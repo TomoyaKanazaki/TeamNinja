@@ -21,6 +21,9 @@
 #include "enemyChaseRange.h"
 #include "enemy_item.h"
 #include "camera.h"
+#include "actor.h"
+#include "wall.h"
+#include "collision.h"
 #include "player.h"
 
 //************************************************************
@@ -882,6 +885,46 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 
 	// 構えモーションを返す
 	return MOTION_STANDBY;
+}
+
+//============================================================
+// 当たり判定処理
+//============================================================
+void CEnemyStalk::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CActor*> list = CActor::GetList()->GetList();
+	D3DXVECTOR3 pos = GetPosInit();
+	D3DXVECTOR3 vtxChase = D3DXVECTOR3(GetChaseRange()->GetWidth(), 0.0f, GetChaseRange()->GetDepth());
+	D3DXVECTOR3 move = GetMovePosition();		// 移動量
+	bool bJump = IsJump();						// ジャンプ状況
+
+	for (auto actor : list)
+	{
+		assert(actor != nullptr);
+
+		// モデルが追跡範囲内にない場合、次に進む
+		if (!collision::Box2D(pos, actor->GetVec3Position(), vtxChase, vtxChase, actor->GetModelData().vtxMax, -actor->GetModelData().vtxMin)) { continue; }
+
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,				// 位置
+			GetOldPosition(),	// 前回の位置
+			GetRadius(),		// 半径
+			GetHeight(),		// 高さ
+			move,				// 移動量
+			bJump,				// ジャンプ状況
+			bHit				// ヒット状況
+		);
+	}
+
+	// 移動量とジャンプ状況を設定する
+	SetMovePosition(move);
+	SetEnableJump(bJump);
 }
 
 //============================================================

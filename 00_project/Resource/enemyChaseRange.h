@@ -40,6 +40,10 @@ public:
 	// 静的メンバ関数
 	static CEnemyChaseRange* Create(const D3DXVECTOR3& rPos, const float fWidth, const float fDepth);		// 生成処理
 
+	// ゲッター
+	float GetWidth(void) const { return m_fWidth; }		// 幅取得
+	float GetDepth(void) const { return m_fDepth; }		// 奥行取得
+
 private:
 
 	// メンバ変数

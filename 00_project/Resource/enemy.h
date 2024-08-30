@@ -71,7 +71,7 @@ protected:
 	virtual void UpdateLanding(D3DXVECTOR3* pPos) = 0;	// 着地更新
 
 	// メンバ関数
-	bool Collision(D3DXVECTOR3& rPos);				// 当たり判定処理
+	bool Collision(D3DXVECTOR3& rPos);		// 当たり判定処理
 	bool SearchPlayer(D3DXVECTOR3* pPos = nullptr);	// プレイヤーの探索処理
 	bool SearchClone(D3DXVECTOR3* pPos = nullptr, CPlayerClone** pClone = nullptr);	// 分身の探索処理
 
@@ -80,12 +80,13 @@ protected:
 
 	inline void SetPosInit(const D3DXVECTOR3& rPosInit) { m_posInit = rPosInit; }	// 初期位置設定(生成時のみ設定)
 	inline void SetRotInit(const D3DXVECTOR3& rRotInit) { m_rotInit = rRotInit; }	// 初期向き設定(生成時のみ設定)
-	inline bool IsJump(void) { return m_bJump; }	// ジャンプ状況取得
+	inline void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }		// ジャンプ状況設定
+	inline bool IsJump(void)							{ return m_bJump; }			// ジャンプ状況取得
 
 private:
 
 	// メンバ関数
-	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit);		// アクターの当たり判定処理
+	virtual void CollisionActor(D3DXVECTOR3& rPos, bool& bHit);		// アクターの当たり判定処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト

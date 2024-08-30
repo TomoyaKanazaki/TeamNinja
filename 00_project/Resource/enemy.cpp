@@ -243,13 +243,6 @@ bool CEnemy::Collision(D3DXVECTOR3& rPos)
 	// アクターの当たり判定処理
 	CollisionActor(rPos, bHit);
 
-	// 壁の当たり判定(ifを挟まないとヒット状況が上書きされる)
-	if (GET_STAGE->CollisionWall(rPos, m_oldPos, GetRadius(), GetHeight(), m_move))
-	{
-		// ヒット状況を true にする
-		bHit = true;
-	}
-
 	// ヒット状況を返す
 	return bHit;
 }

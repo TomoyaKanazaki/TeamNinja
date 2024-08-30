@@ -306,6 +306,8 @@ void CActor::Collision
 	bool& bHit						// 衝突判定
 )
 {
+	float fLength = 0.0f;	// 距離
+
 	// スフィア判定
 	for (auto sphere : m_sphere)
 	{
