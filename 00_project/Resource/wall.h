@@ -75,6 +75,10 @@ public:
 	EType GetType(void) const { return m_type; }	// 種類取得
 
 private:
+
+	// メンバ関数
+	void Invisible();
+
 	// 静的メンバ変数
 	static CListManager<CWall> *m_pList;	// オブジェクトリスト
 

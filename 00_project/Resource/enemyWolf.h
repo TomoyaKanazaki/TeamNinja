@@ -106,7 +106,7 @@ private:
 	int UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);					// 空白攻撃処理
 	int UpdateUpset(void);		// 動揺状態時の更新
 	int UpdateStance(void);		// 構え処理
-	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot);		// 元の位置に戻る処理
+	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight) override;		// 元の位置に戻る処理
 	void SetState(const EState state);			// 状態の設定処理
 	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
 	void WalkSound(void);							// 歩行音処理

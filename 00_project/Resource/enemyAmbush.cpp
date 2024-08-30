@@ -65,8 +65,7 @@ namespace
 //============================================================
 CEnemyAmbush::CEnemyAmbush() : CEnemyAttack(),
 m_state(STATE_AMBUSH),
-m_nStateCount(0),
-m_nRegressionCount(0)
+m_nStateCount(0)
 {
 
 }
@@ -227,7 +226,7 @@ int CEnemyAmbush::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float 
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
 
 	// 元の位置に戻る処理が true の場合、抜ける
-	if (!BackOriginPos(pPos, pRot))
+	if (!BackOriginPos(pPos, pRot, HEIGHT))
 	{
 		switch (m_state)
 		{
@@ -753,51 +752,16 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stance(void)
 //============================================================
 // 元の位置に戻る処理
 //============================================================
-bool CEnemyAmbush::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
+bool CEnemyAmbush::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
 {
-	// 一定の状態以外で画面内にいる場合、抜ける
-	if (m_state == STATE_BLANKATTACK ||
-		m_state == STATE_UPSET ||
-		CManager::GetInstance()->GetCamera()->OnScreen(*pPos) ||
-		CManager::GetInstance()->GetCamera()->OnScreen(D3DXVECTOR3(pPos->x, pPos->y + HEIGHT, pPos->z)) ||
-		CManager::GetInstance()->GetCamera()->OnScreen(GetPosInit()))
-	{
-		// 回帰カウントをリセットする
-		m_nRegressionCount = 0;
+	// 一定の状態の場合、false を返す
+	if (m_state == STATE_BLANKATTACK || m_state == STATE_UPSET) { SetRegressionCount(0); return false; }
 
-		// false を返す
-		return false;
-	}
-
-	// 回帰カウントを加算する
-	m_nRegressionCount++;
-
-	// 回帰カウントが一定数以下の場合、抜ける
-	if (m_nRegressionCount < REGRESSION_COUNT) { return false; }
+	// 初期位置回帰処理に失敗した場合、false を返す
+	if (!CEnemyAttack::BackOriginPos(pPos, pRot, fHeight)) { return false; }
 
 	// 待ち伏せ状態にする
 	SetState(STATE_AMBUSH);
-
-	// 位置を設定する
-	*pPos = GetPosInit();
-
-	// 向きを設定する
-	*pRot = GetRotInit();
-
-	// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
-	SetOldPosition(*pPos);
-
-	// 目的の向きを設定する(復活後に無意味に向いてしまうため)
-	SetDestRotation(*pRot);
-
-	// 透明度を1.0fにする
-	SetAlpha(1.0f);
-
-	// 移動量をリセットする
-	SetMovePosition(VEC3_ZERO);
-
-	// ターゲットを無対象にする
-	SetTarget(TARGET_NONE);
 
 	// true を返す
 	return true;
