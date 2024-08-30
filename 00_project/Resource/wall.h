@@ -77,7 +77,7 @@ public:
 private:
 
 	// メンバ関数
-	void Invisible();
+	void Invisible(); // 透明化処理
 
 	// 静的メンバ変数
 	static CListManager<CWall> *m_pList;	// オブジェクトリスト

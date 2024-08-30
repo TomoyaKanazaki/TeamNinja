@@ -30,7 +30,8 @@ namespace
 		"data\\TEXTURE\\FIELD\\OldWood001.jpg",	// 木テクスチャ
 	};
 
-	const int PRIORITY = 0;	// 壁の優先順位
+	const int PRIORITY = 4;	// 壁の優先順位
+	const float INVISIBLE_DISTANCE = 500.0f; // 透明化範囲
 }
 
 //************************************************************
@@ -125,6 +126,9 @@ void CWall::Uninit(void)
 //============================================================
 void CWall::Update(const float fDeltaTime)
 {
+	// 頂点情報の設定
+	Invisible();
+
 	// オブジェクトメッシュウォールの更新
 	CObjectMeshWall::Update(fDeltaTime);
 }
@@ -286,16 +290,76 @@ void CWall::SetType(const EType type)
 }
 
 //==========================================
-//  透明化処理
+//  頂点情報の設定
 //==========================================
 void CWall::Invisible()
 {
 	// カメラ情報の取得
 	CCamera* pCamera = GET_CAMERA;
 
-	// 座標と距離の取得
-	D3DXVECTOR3 posV = pCamera->GetPositionV();
-	float fDistance = pCamera->GetDistance();
+	// 向きを取得
+	EAngle angleCamera = useful::RotToFourDire(pCamera->GetRotation().y);
+	EAngle angleWall = useful::RotToFourDire(GetVec3Rotation().y);
 
-	// 
+	// 座標の取得
+	D3DXVECTOR3 posV = pCamera->GetPositionV();
+
+	// 自身の情報を取得する
+	POSGRID2 part = GetPattern();
+	POSGRID2 texPart = GetTexPattern();
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
+	SMeshWall meshWall = GetMeshWall();
+
+	// ポインタを宣言
+	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
+
+	// テクスチャ分割数の割合を計算
+	D3DXVECTOR2 texRate = D3DXVECTOR2
+	(
+		(float)texPart.x / (float)part.x,
+		(float)texPart.y / (float)part.y
+	);
+
+	if (pVtxBuff != nullptr)
+	{ // 使用中の場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++)
+		{ // 縦の分割数 +1回繰り返す
+
+			for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++)
+			{ // 横の分割数 +1回繰り返す
+
+				// 頂点座標の設定
+				pVtx[0].pos = D3DXVECTOR3
+				( // 引数
+					nCntWidth * (meshWall.size.x / (float)part.x) - (meshWall.size.x * 0.5f),	// x
+					-(nCntHeight * (meshWall.size.y / (float)part.y)) + meshWall.size.y,		// y
+					0.0f																		// z
+				);
+
+				// 法線ベクトルの設定
+				pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+				// 頂点カラーの設定
+				D3DXVECTOR3 vec = pVtx[0].pos - posV;
+				
+				if (INVISIBLE_DISTANCE * INVISIBLE_DISTANCE > vec.x * vec.x + vec.z * vec.z) { meshWall.col.a = 0.0f; }
+				else { meshWall.col.a = 1.0f; }
+				
+				pVtx[0].col = meshWall.col;
+
+				// テクスチャ座標の設定
+				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
+
+				// 頂点データのポインタを 1つ分進める
+				pVtx += 1;
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
 }

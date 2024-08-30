@@ -67,7 +67,11 @@ namespace
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
 		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
 		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// ふすま(動く)
-		"data\\MODEL\\FUSUMA\\Fusuma000.x"				// ふすま(動かない)
+		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// ふすま(動かない)
+		"data\\MODEL\\FENCE\\fence000.x",				// フェンス00
+		"data\\MODEL\\FENCE\\fence001.x",				// フェンス01
+		"data\\MODEL\\FENCE\\fence002.x",				// フェンス02
+		"data\\MODEL\\FENCE\\fence003.x",				// フェンス03
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
