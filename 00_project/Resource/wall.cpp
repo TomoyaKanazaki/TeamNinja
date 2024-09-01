@@ -14,6 +14,7 @@
 #include "texture.h"
 #include "useful.h"
 #include "camera.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -31,7 +32,7 @@ namespace
 	};
 
 	const int PRIORITY = 4;	// 壁の優先順位
-	const float INVISIBLE_DISTANCE = 500.0f; // 透明化範囲
+	const float INVISIBLE_DISTANCE = 250.0f; // 透明化範囲
 }
 
 //************************************************************
@@ -297,12 +298,22 @@ void CWall::Invisible()
 	// カメラ情報の取得
 	CCamera* pCamera = GET_CAMERA;
 
+	// 回り込み状態でなければ関数を抜ける
+	if (pCamera->GetState() != CCamera::STATE_AROUND) { return; }
+
 	// 向きを取得
 	EAngle angleCamera = useful::RotToFourDire(pCamera->GetRotation().y);
 	EAngle angleWall = useful::RotToFourDire(GetVec3Rotation().y);
+	bool bAngle = ((int)angleCamera - (int)angleWall) % 2;
 
 	// 座標の取得
 	D3DXVECTOR3 posV = pCamera->GetPositionV();
+	D3DXVECTOR3 posP = GET_PLAYER->GetCenterPos();
+	D3DXVECTOR3 posHalf = (posV + posP) * 0.5f;
+
+	// 距離の取得
+	D3DXVECTOR3 vecToPlayer = (posV - posHalf);
+	float fDisPlayer = vecToPlayer.x * vecToPlayer.x + vecToPlayer.z * vecToPlayer.z;
 
 	// 自身の情報を取得する
 	POSGRID2 part = GetPattern();
@@ -343,11 +354,17 @@ void CWall::Invisible()
 				// 法線ベクトルの設定
 				pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
+				D3DXVECTOR3 vec = pVtx[0].pos - posHalf;
+
 				// 頂点カラーの設定
-				D3DXVECTOR3 vec = pVtx[0].pos - posV;
-				
-				if (INVISIBLE_DISTANCE * INVISIBLE_DISTANCE > vec.x * vec.x + vec.z * vec.z) { meshWall.col.a = 0.0f; }
-				else { meshWall.col.a = 1.0f; }
+				if (fDisPlayer < vec.x * vec.x + vec.z * vec.z || bAngle)
+				{
+					meshWall.col.a = 1.0f;
+				}
+				else
+				{
+					meshWall.col.a = 0.0f;
+				}
 				
 				pVtx[0].col = meshWall.col;
 
