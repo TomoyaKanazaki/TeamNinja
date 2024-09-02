@@ -392,11 +392,12 @@ float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlaye
 	D3DXVECTOR3 pos = D3DXVECTOR3(meshWall.mtxWorld._41, meshWall.mtxWorld._42, meshWall.mtxWorld._43);
 
 	// xz平面上における視点との距離を算出
-	D3DXVECTOR3 vecPlayer = posPlayerWorld - pCamera->GetPositionV();
-	D3DXVECTOR3 vecVtx = pos - pCamera->GetPositionV();
+	D3DXVECTOR3 posCameraV = pCamera->GetPositionV();
+	D3DXVECTOR3 vecPlayer = posPlayerWorld - posCameraV;
+	D3DXVECTOR3 vecVtx = pos - posCameraV;
 
 	// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
-	if (vecPlayer.x * vecPlayer.x * vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x * vecVtx.z * vecVtx.z)
+	if (vecPlayer.x * vecPlayer.x + vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x + vecVtx.z * vecVtx.z)
 	{
 		return 1.0f;
 	}
