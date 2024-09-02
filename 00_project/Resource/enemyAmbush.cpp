@@ -341,6 +341,17 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case CEnemyAmbush::MOTION_WALK:		// 歩行
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+		}
+
 		break;
 
 	case CEnemyAmbush::MOTION_FOUND:		// 発見
@@ -536,9 +547,6 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, 
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -777,17 +785,4 @@ void CEnemyAmbush::SetState(const EState state)
 
 	// 状態カウントを0にする
 	m_nStateCount = 0;
-}
-
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyAmbush::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
 }

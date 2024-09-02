@@ -422,6 +422,17 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case CEnemyStalk::MOTION_WALK:		// 歩行
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+		}
+
 		break;
 
 	case CEnemyStalk::MOTION_FOUND:		// 発見
@@ -557,9 +568,6 @@ void CEnemyStalk::NavMotionSet(EMotion* pMotion)
 		// 移動モーションを設定
 		*pMotion = MOTION_WALK;
 
-		// 歩行音処理
-		WalkSound();
-
 		break;
 
 	default:
@@ -671,9 +679,6 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -960,15 +965,3 @@ void CEnemyStalk::SetState(const EState state)
 	m_nStateCount = 0;
 }
 
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyStalk::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
-}
