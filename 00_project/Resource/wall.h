@@ -83,7 +83,7 @@ private:
 
 	// メンバ関数
 	void Invisible(); // 透明化処理
-	float InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, SMeshWall meshWall, CCamera* pCamera); // 頂点計算処理
+	float InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, const D3DXVECTOR3& posPlayerWorld, SMeshWall meshWall, CCamera* pCamera); // 頂点計算処理
 
 	// 静的メンバ変数
 	static CListManager<CWall> *m_pList;	// オブジェクトリスト

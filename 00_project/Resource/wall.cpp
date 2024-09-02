@@ -308,8 +308,9 @@ void CWall::Invisible()
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
 	SMeshWall meshWall = GetMeshWall();
 
-	// プレイヤーのスクリーン座標を取得
-	D3DXVECTOR3 posPlayer = pCamera->CalcPlayerPos();
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayerScreen = pCamera->CalcPlayerPos();
+	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetCenterPos();
 
 	// ポインタを宣言
 	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
@@ -349,7 +350,7 @@ void CWall::Invisible()
 
 				// 頂点カラーの設定
 				D3DXCOLOR col = meshWall.col;
-				col.a = InvisibleVtx(pVtx[0].pos, posPlayer, meshWall, pCamera);
+				col.a = InvisibleVtx(pVtx[0].pos, posPlayerScreen, posPlayerWorld, meshWall, pCamera);
 				pVtx[0].col = col;
 
 				// 頂点情報を進める
@@ -365,7 +366,7 @@ void CWall::Invisible()
 //==========================================
 //  頂点計算処理
 //==========================================
-float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, SMeshWall meshWall, CCamera* pCamera)
+float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, const D3DXVECTOR3& posPlayerWorld, SMeshWall meshWall, CCamera* pCamera)
 {
 	// 変数を宣言
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
@@ -389,6 +390,16 @@ float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlaye
 
 	// マトリックスから頂点座標を抽出
 	D3DXVECTOR3 pos = D3DXVECTOR3(meshWall.mtxWorld._41, meshWall.mtxWorld._42, meshWall.mtxWorld._43);
+
+	// xz平面上における視点との距離を算出
+	D3DXVECTOR3 vecPlayer = posPlayerWorld - pCamera->GetPositionV();
+	D3DXVECTOR3 vecVtx = pos - pCamera->GetPositionV();
+
+	// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
+	if (vecPlayer.x * vecPlayer.x * vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x * vecVtx.z * vecVtx.z)
+	{
+		return 1.0f;
+	}
 
 	// 頂点のスクリーン座標を算出
 	if (!pCamera->OnScreen(pos, pos))
