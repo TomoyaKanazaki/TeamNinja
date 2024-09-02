@@ -56,6 +56,7 @@ private:
 	// メンバ関数
 	void UpdateScaling(void);	// 大きさ更新
 	void ChangeType(void);		// 種類更新
+	void MoveSet(void);			// 移動量の設定
 	void RotCorrect(void);		// 向きの補正処理
 	void CreateActor(void);		// アクター生成
 	void SetMash(void);			// ふすまの設定処理
@@ -66,6 +67,7 @@ private:
 	// メンバ変数
 	CActor* m_pActor;	// アクター情報
 	SInfo m_infoCreate;	// アクター配置情報
+	float m_fMove;		// 移動量
 	bool m_bSave;		// 保存状況
 };
 
