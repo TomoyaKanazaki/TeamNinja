@@ -398,28 +398,16 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_RUN:	// 警戒モーション
 
-#if 0
-		if (GetMotionPose() % 4 == 0 && GetMotionCounter() == 0)
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
 		{ // 足がついたタイミングの場合
 
-			switch (m_land)
-			{ // 着地物ごとの処理
-			case LAND_OBSTACLE:
-
-				// サウンドの再生
-				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_OBS);	// 歩行音（障害物）
-
-				break;
-
-			default:
-
-				// サウンドの再生
-				CManager::GetInstance()->GetSound()->Play(CSound::LABEL_SE_WALK_BUILD);	// 歩行音（ビル）
-
-				break;
-			}
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
 		}
-#endif
+
 		break;
 
 	case MOTION_FOUND:	// 発見モーション
@@ -520,9 +508,6 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 
 		// 移動モーションを設定
 		*pMotion = MOTION_RUN;
-
-		// 歩行音処理
-		WalkSound();
 
 		break;
 
@@ -635,9 +620,6 @@ int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -908,17 +890,4 @@ void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
 	}
 
 	SetMovePosition(move);	// 移動量を反映
-}
-
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyWolf::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
 }
