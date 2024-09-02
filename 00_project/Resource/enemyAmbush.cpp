@@ -139,6 +139,9 @@ void CEnemyAmbush::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+
+	// 情報の設定処理
+	CEnemyAttack::SetData();
 }
 
 //============================================================
@@ -205,11 +208,11 @@ CEnemyAmbush* CEnemyAmbush::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
