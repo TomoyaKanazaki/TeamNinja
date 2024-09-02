@@ -23,6 +23,8 @@
 #define NAME_RELEASE	("9")	// 破棄表示
 #define KEY_TYPE		(DIK_4)	// 種類変更キー
 #define NAME_TYPE		("4")	// 種類変更表示
+#define KEY_TURN		(DIK_8)	// 種類変更キー
+#define NAME_TURN		("8")	// 種類変更表示
 
 #define KEY_UP_SIZE_X		(DIK_T)	// X軸拡大キー
 #define NAME_UP_SIZE_X		("T")	// X軸拡大表示
@@ -236,6 +238,7 @@ void CEditField::DrawDebugControl(void)
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s/%s/%s+%s]\n", NAME_UP_SIZE_X, NAME_DOWN_SIZE_X, NAME_UP_SIZE_Y, NAME_DOWN_SIZE_Y, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s]\n", NAME_TYPE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "ひっくり返す：[%s]\n", NAME_TURN);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
 
@@ -265,6 +268,26 @@ void CEditField::DrawDebugInfo(void)
 //============================================================
 void CEditField::UpdateRotation(void)
 {
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
+
+	// 向きを反転
+	if (pKeyboard->IsTrigger(KEY_TURN))
+	{
+		// 向きを取得
+		D3DXVECTOR3 rot = GetVec3Rotation();
+
+		if (rot.x == 0.0f)
+		{
+			rot.x = D3DX_PI;
+		}
+		else
+		{
+			rot.x = 0.0f;
+		}
+
+		SetVec3Rotation(rot);
+	}
+
 	// 向きの更新
 	CEditorObject::UpdateRotation();
 
