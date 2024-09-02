@@ -10,6 +10,7 @@
 //	インクルードファイル
 //************************************************************
 #include "player.h"
+#include "playerSelect.h"
 #include "manager.h"
 #include "sceneGame.h"
 #include "gameManager.h"
@@ -30,7 +31,6 @@
 #include "input.h"
 #include "player_clone.h"
 #include "checkpoint.h"
-#include "transpoint.h"
 #include "effect3D.h"
 #include "actor.h"
 #include "coin.h"
@@ -73,17 +73,31 @@ namespace
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
-	const COrbit::SOffset ORBIT_OFFSET = COrbit::SOffset(D3DXVECTOR3(0.0f, 15.0f, 0.0f), D3DXVECTOR3(0.0f, -15.0f, 0.0f), XCOL_CYAN);	// オフセット情報
+	const COrbit::SOffset ORBIT_OFFSET[CPlayer::MAX_ORBIT] =			// 軌跡のオフセット情報
+	{
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
+	};
+	const int ORBIT_PART_NUMBER[CPlayer::MAX_ORBIT] =		// 軌跡のパーツの番号
+	{
+		CPlayer::MODEL_HANDL,
+		CPlayer::MODEL_HANDR,
+		CPlayer::MODEL_FOOTL,
+		CPlayer::MODEL_FOOTR
+	};
 	const int ORBIT_PART = 15;	// 分割数
 
 	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
-	const float	NORMAL_MOVE = 480.0f;	// 通常の移動量
+	const float	NORMAL_MOVE = 480;	// 通常の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
+	const int HEAL_ITEM = 3; // アイテムの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
@@ -108,7 +122,6 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_pOrbit		(nullptr),		// 軌跡の情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
@@ -146,7 +159,7 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	m_pOrbit		= nullptr;		// 軌跡の情報
+	memset(&m_apOrbit[0], 0, sizeof(m_apOrbit));		// 軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
 	m_destRot		= VEC3_ZERO;	// 目標向き
@@ -173,20 +186,26 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 軌跡の生成
-	//m_pOrbit = COrbit::Create
-	//( // 引数
-	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-	//	ORBIT_OFFSET,	// オフセット情報
-	//	ORBIT_PART		// 分割数
-	//);
-	//if (m_pOrbit == nullptr)
-	//{ // 非使用中の場合
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の生成
+		m_apOrbit[nCnt] = COrbit::Create
+		( // 引数
+			GetParts(ORBIT_PART_NUMBER[nCnt])->GetPtrMtxWorld(),	// 親マトリックス
+			ORBIT_OFFSET[nCnt],	// オフセット情報
+			ORBIT_PART		// 分割数
+		);
+		if (m_apOrbit[nCnt] == nullptr)
+		{ // 非使用中の場合
 
-	//	// 失敗を返す
-	//	assert(false);
-	//	return E_FAIL;
-	//}
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 表示しない
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH);
+	}
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -205,15 +224,13 @@ HRESULT CPlayer::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
-	// プレイヤーを出現させる
-	SetSpawn();
-
 	// 士気力ゲージの生成
 	for (int i = 0; i < INIT_CLONE; ++i)
 	{
 		CTension::Create();
 	}
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -223,8 +240,11 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	// 軌跡の終了
-	SAFE_UNINIT(m_pOrbit);
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の終了
+		SAFE_UNINIT(m_apOrbit[nCnt]);
+	}
 
 	// エフェクトの削除
 	if (m_pEffectdata != nullptr)
@@ -260,11 +280,82 @@ void CPlayer::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_CENTER, "pos : (%f, %f, %f)\n", m_posCenter.x, m_posCenter.y, m_posCenter.z);
 	DebugProc::Print(DebugProc::POINT_CENTER, "move : (%f, %f, %f)\n", m_move.x * fDeltaTime, m_move.y * fDeltaTime, m_move.z * fDeltaTime);
 
-	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
-
 	// 過去位置の更新
 	UpdateOldPosition();
 
+	// 状態の更新
+	EMotion currentMotion = UpdateState(fDeltaTime);
+
+	// エフェクトの削除
+	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
+	{
+		SAFE_DELETE(m_pEffectdata);
+		m_pEffectdata = nullptr;
+	}
+
+	int nMotion = GetMotionType();
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の更新
+		if (m_apOrbit[nCnt] == nullptr) { return; }
+
+		// ハイジャンプ中の場合、表示する
+		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
+
+		// 更新処理
+		m_apOrbit[nCnt]->Update(fDeltaTime);
+	}
+
+	// モーション・オブジェクトキャラクターの更新
+	UpdateMotion(currentMotion, fDeltaTime);
+
+#ifdef _DEBUG
+
+	// 入力情報を受け取るポインタ
+	CInputKeyboard* pKeyboard = GET_INPUTKEY;
+
+	if (pKeyboard->IsTrigger(DIK_RIGHT))
+	{
+		RecoverCheckPoint();
+	}
+
+#endif
+}
+
+//============================================================
+//	描画処理
+//============================================================
+void CPlayer::Draw(CShader *pShader)
+{
+	// オブジェクトキャラクターの描画
+	CObjectChara::Draw(pShader);
+}
+
+//============================================================
+//	更新状況の設定処理
+//============================================================
+void CPlayer::SetEnableUpdate(const bool bUpdate)
+{
+	// 引数の更新状況を設定
+	CObject::SetEnableUpdate(bUpdate);	// 自身
+}
+
+//============================================================
+//	描画状況の設定処理
+//============================================================
+void CPlayer::SetEnableDraw(const bool bDraw)
+{
+	// 引数の描画状況を設定
+	CObject::SetEnableDraw(bDraw);	// 自身
+}
+
+//============================================================
+//	状態の更新処理
+//============================================================
+CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
+{
+	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
@@ -320,58 +411,8 @@ void CPlayer::Update(const float fDeltaTime)
 		break;
 	}
 
-	// エフェクトの削除
-	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
-	{
-		SAFE_DELETE(m_pEffectdata);
-		m_pEffectdata = nullptr;
-	}
-
-	// 軌跡の更新
-	if (m_pOrbit != nullptr) { m_pOrbit->Update(fDeltaTime); }
-
-	// モーション・オブジェクトキャラクターの更新
-	UpdateMotion(currentMotion, fDeltaTime);
-
-#ifdef _DEBUG
-
-	// 入力情報を受け取るポインタ
-	CInputKeyboard* pKeyboard = GET_INPUTKEY;
-
-	if (pKeyboard->IsTrigger(DIK_RIGHT))
-	{
-		RecoverCheckPoint();
-	}
-
-#endif
-}
-
-//============================================================
-//	描画処理
-//============================================================
-void CPlayer::Draw(CShader *pShader)
-{
-	// オブジェクトキャラクターの描画
-	CObjectChara::Draw(pShader);
-}
-
-//============================================================
-//	更新状況の設定処理
-//============================================================
-void CPlayer::SetEnableUpdate(const bool bUpdate)
-{
-	// 引数の更新状況を設定
-	CObject::SetEnableUpdate(bUpdate);		// 自身
-
-}
-
-//============================================================
-//	描画状況の設定処理
-//============================================================
-void CPlayer::SetEnableDraw(const bool bDraw)
-{
-	// 引数の描画状況を設定
-	CObject::SetEnableDraw(bDraw);		// 自身
+	// 現在のモーションを返す
+	return currentMotion;
 }
 
 //============================================================
@@ -389,6 +430,9 @@ CPlayer *CPlayer::Create
 	switch (type)
 	{ // 種類ごとの処理
 	case TYPE_SELECT:
+		pPlayer = new CPlayerSelect;
+		break;
+
 	case TYPE_GAME:
 		pPlayer = new CPlayer;
 		break;
@@ -422,6 +466,16 @@ CPlayer *CPlayer::Create
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
 			pPlayer->SetVec3Position(rPos);
+
+			if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+			{ // ゲームモードの場合
+
+				// 位置を設定する
+				D3DXVECTOR3 pos = pPlayer->GetVec3Position();
+				pos.y += SPAWN_ADD_HEIGHT;
+				pPlayer->SetVec3Position(pos);
+
+			}
 		}
 		else
 		{
@@ -432,33 +486,14 @@ CPlayer *CPlayer::Create
 			pPlayer->SetVec3Position(point->GetVec3Position());
 		}
 
-		if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
-		{ // ゲームモードの場合
-
-#if 1
-			// 位置を設定する
-			D3DXVECTOR3 pos = pPlayer->GetVec3Position();
-			pos.y += SPAWN_ADD_HEIGHT;
-			pPlayer->SetVec3Position(pos);
-
-#endif // 0
-		}
-
 		pPlayer->m_oldPos = rPos;	// 過去位置も同一の位置にする
 
 		// 向きを設定
 		pPlayer->SetVec3Rotation(rRot);
 		pPlayer->m_destRot = rRot;	// 目標向きも同一の向きにする
 
-		// 開始エフェクトを生成
-		GET_EFFECT->Create
-		( // 引数
-			"data\\EFFEKSEER\\gamestart.efkefc",	// エフェクトパス
-			pPlayer->GetVec3Position(),				// 位置
-			VEC3_ZERO,	// 向き
-			VEC3_ZERO,	// 移動量
-			60.0f		// 拡大率
-		);
+		// プレイヤーを出現させる
+		pPlayer->SetSpawn();
 
 		// 確保したアドレスを返す
 		return pPlayer;
@@ -688,6 +723,12 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// モーションの設定
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 表示する
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+	}
+
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
@@ -733,6 +774,18 @@ void CPlayer::RecoverCheckPoint()
 {
 	// 士気力を回復する
 	for (int i = 0; i < HEAL_CHECKPOINT; ++i)
+	{
+		CTension::Create();
+	}
+}
+
+//==========================================
+//  アイテムでの回復
+//==========================================
+void CPlayer::RecoverItem()
+{
+	// 士気力を回復する
+	for (int i = 0; i < HEAL_ITEM; ++i)
 	{
 		CTension::Create();
 	}
@@ -786,7 +839,7 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(posPlayer);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(posPlayer, RADIUS);
@@ -840,7 +893,7 @@ CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -877,7 +930,7 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 	UpdateRotation(rotPlayer, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(posPlayer, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(posPlayer);
 
 	// コインとの当たり判定処理
 	CollisionCoin(posPlayer);
@@ -887,9 +940,6 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(posPlayer, RADIUS);
-
-	// ステージ遷移の更新
-	UpdateTrans(posPlayer);
 
 	// 位置を反映
 	SetVec3Position(posPlayer);
@@ -916,7 +966,7 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 	SetVec3Rotation(m_destRot);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -956,7 +1006,7 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -990,7 +1040,7 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1027,7 +1077,7 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	UpdateLanding(pos, fDeltaTime);
 
 	// 壁の当たり判定
-	GET_STAGE->CollisionWall(pos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
+	CollisionWall(pos);
 
 	// 大人の壁の判定
 	GET_STAGE->LimitPosition(pos, RADIUS);
@@ -1091,6 +1141,12 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		// 移動量を設定する
 		m_move.x = -sinf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
 		m_move.z = -cosf(fMoveRot) * NORMAL_MOVE * (fSpeed / SHRT_MAX);
+		D3DXVECTOR3 move = m_move;
+		move.y = 0.0f;
+		D3DXVec3Normalize(&move, &move);
+		m_move.x = move.x * NORMAL_MOVE;
+		m_move.z = move.z * NORMAL_MOVE;
+
 
 		// 橋に乗っている場合移動量を消す
 		if (m_sFrags.find(CField::GetFlag(CField::TYPE_XBRIDGE)) != std::string::npos)
@@ -1141,6 +1197,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	{
 		m_pEffectFirefly->m_pos = GetVec3Position();
 	}
+
 	// モーションを返す
 	return currentMotion;
 }
@@ -1200,6 +1257,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			// 当たっていない状態にする
 			m_pOldField->Miss(this);
 		}
+
+		// 床が水の場合殺す
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_state = STATE_DEATH;
+		}
 	}
 
 	// 現在のモーション種類を取得
@@ -1242,8 +1305,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 				// 着地音(小)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
-
-			
 		}
 	}
 	else
@@ -1409,6 +1470,22 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_STEALTHWALK:	// 忍び足モーション
 
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_001);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_JUMP_MINI:	// 小ジャンプモーション
@@ -1506,6 +1583,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 
 	case MOTION_START:	// スタートモーション
 		break;
+
+	case MOTION_SELECT:	// 選択モーション
+		break;
 	}
 }
 
@@ -1574,30 +1654,12 @@ bool CPlayer::UpdateFadeIn(const float fSub)
 }
 
 //==========================================
-//	ステージ遷移の更新処理
+//	壁との当たり判定
 //==========================================
-void CPlayer::UpdateTrans(D3DXVECTOR3& rPos)
+bool CPlayer::CollisionWall(D3DXVECTOR3& rPos)
 {
-	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
-	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
-
-	// 触れている遷移ポイントを取得
-	CTransPoint *pHitTrans = CTransPoint::Collision(rPos, RADIUS);
-
-	// 遷移ポイントに触れていない場合抜ける
-	if (pHitTrans == nullptr) { return; }
-
-	if (pKey->IsTrigger(DIK_SPACE)
-	||  pKey->IsTrigger(DIK_RETURN)
-	||  pPad->IsTrigger(CInputPad::KEY_A)
-	||  pPad->IsTrigger(CInputPad::KEY_B)
-	||  pPad->IsTrigger(CInputPad::KEY_X)
-	||  pPad->IsTrigger(CInputPad::KEY_Y))
-	{
-		// 遷移ポイントのマップパスに遷移
-		GET_STAGE->SetInitMapPass(pHitTrans->GetTransMapPass().c_str());
-		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
-	}
+	// 壁との当たり判定
+	return GET_STAGE->CollisionWall(rPos, m_oldPos, RADIUS, HEIGHT, m_move, &m_bJump);
 }
 
 //==========================================
@@ -1817,8 +1879,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// 攻撃範囲を取得
-	D3DXVECTOR3 coliisionUp = CEnemyAttack::GetAttackUp();
-	D3DXVECTOR3 coliisionDown = CEnemyAttack::GetAttackDown();
+	D3DXVECTOR3 collisionUp = CEnemyAttack::GetAttackUp();
+	D3DXVECTOR3 collisionDown = CEnemyAttack::GetAttackDown();
 
 	// 全ての敵を確認する
 	for (CEnemyAttack* enemy : list)
@@ -1833,8 +1895,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 			enemy->GetVec3Position(),	// 判定目標位置
 			GetVec3Sizing(),			// 判定サイズ(右・上・後)
 			GetVec3Sizing(),			// 判定サイズ(左・下・前)
-			coliisionUp,				// 判定目標サイズ(右・上・後)
-			coliisionDown				// 判定目標サイズ(左・下・前)
+			collisionUp,				// 判定目標サイズ(右・上・後)
+			collisionDown				// 判定目標サイズ(左・下・前)
 		))
 		{
 			// 当たっていない場合は次に進む
@@ -1958,11 +2020,15 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 	for (auto godItem : list)
 	{
 		// 当たり判定処理
-		godItem->Collision
+		if (godItem->Collision
 		(
 			pos,		// 位置
 			RADIUS		// 半径
-		);
+		))
+		{
+			// 回復
+			RecoverItem();
+		}
 	}
 }
 

@@ -54,6 +54,7 @@ private:
 	CObjectMeshCylinder* m_pCylinder; // オブジェクト情報
 	SInfo m_infoCreate; // オブジェクト配置情報
 	bool m_bSave; // 保存状況
-	int m_nCoolTime; // 生成頻度
+	int m_nCoolTime; // 生成クールタイム
+	int m_nCreateTime; // 生成頻度
 	int m_nNum; // 生成数
 };

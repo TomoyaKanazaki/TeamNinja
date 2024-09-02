@@ -74,6 +74,12 @@ public:
 		TYPE_B_LATTICE,			// 竹の格子
 		TYPE_ROOFFLOOR1,		// 骨組みみたいな屋根裏の木
 		TYPE_ROOFFLOOR2,		// レンガ柄風の屋根裏の木
+		TYPE_MASH_MOVE,			// ふすま(動く)
+		TYPE_MASH_STOP,			// ふすま(動かない)
+		TYPE_FENCE_00,			// フェンス00
+		TYPE_FENCE_01,			// フェンス01
+		TYPE_FENCE_02,			// フェンス02
+		TYPE_FENCE_03,			// フェンス03
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -90,7 +96,7 @@ public:
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// メンバ関数
-	void Collision						// 当たり判定処理
+	virtual void Collision				// 当たり判定処理
 	(
 		D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -99,7 +105,7 @@ public:
 		D3DXVECTOR3& rMove,				// 移動量
 		bool& bJump						// ジャンプ状況
 	);
-	void Collision						// 当たり判定処理(判定を返すオーバーライド)
+	virtual void Collision				// 当たり判定処理(判定を返すオーバーライド)
 	(
 		D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -109,6 +115,7 @@ public:
 		bool& bJump,					// ジャンプ状況
 		bool& bHit						// 衝突判定
 	);
+	void CollisionOffset(void);			// 当たり判定のオフセット処理
 	void ClearCollision(void);			// 当たり判定の消去処理
 
 	// セット・ゲット関数
@@ -133,6 +140,7 @@ public:
 private:
 
 	// メンバ関数
+	D3DXMATRIX CalcMatrix(void);					// マトリックス計算処理
 	void BindCollision(void);						// 当たり判定の割り当て処理
 
 	// 静的メンバ変数

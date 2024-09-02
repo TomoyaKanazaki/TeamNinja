@@ -50,7 +50,6 @@ namespace
 	// 音管理関係
 	namespace sound
 	{
-		const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
 		const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
 		const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
 	}
@@ -112,23 +111,6 @@ void CEnemyAmbush::Uninit(void)
 //============================================================
 void CEnemyAmbush::Update(const float fDeltaTime)
 {
-	if (!CManager::GetInstance()->GetCamera()->OnScreen(GetVec3Position()))
-	{ // 画面内にいない場合
-
-		// 待ち伏せ状態にする
-		m_state = STATE_AMBUSH;
-
-		// 位置と向きを設定する
-		SetVec3Position(GetPosInit());
-		SetVec3Rotation(GetRotInit());
-
-		// 透明度を1.0fにする
-		SetAlpha(1.0f);
-
-		// 抜ける
-		return;
-	}
-
 	// 敵の更新
 	CEnemyAttack::Update(fDeltaTime);
 }
@@ -240,91 +222,68 @@ CEnemyAmbush* CEnemyAmbush::Create
 int CEnemyAmbush::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	int nCurMotion = MOTION_IDOL;	// 現在のモーション
-	switch (m_state)
+
+	// 元の位置に戻る処理が true の場合、抜ける
+	if (!BackOriginPos(pPos, pRot, HEIGHT))
 	{
-	case CEnemyAmbush::STATE_AMBUSH:
+		switch (m_state)
+		{
+		case CEnemyAmbush::STATE_AMBUSH:
 
-		// 待ち伏せ処理
-		nCurMotion = Ambush(pPos, fDeltaTime);
+			// 待ち伏せ処理
+			nCurMotion = Ambush(pPos, fDeltaTime);
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_WARNING:
+		case CEnemyAmbush::STATE_WARNING:
 
-		// 警告処理
-		nCurMotion = Warning(pPos, fDeltaTime);
+			// 警告処理
+			nCurMotion = Warning(pPos, pRot, fDeltaTime);
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_STALK:
+		case CEnemyAmbush::STATE_STALK:
 
-		// 追跡処理
-		nCurMotion = Stalk(pPos, pRot, fDeltaTime);
+			// 追跡処理
+			nCurMotion = Stalk(pPos, pRot, fDeltaTime);
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_ATTACK:
+		case CEnemyAmbush::STATE_ATTACK:
 
-		// 攻撃処理
-		nCurMotion = Attack(*pPos);
+			// 攻撃処理
+			nCurMotion = Attack(*pPos);
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_BLANKATTACK:
+		case CEnemyAmbush::STATE_BLANKATTACK:
 
-		// 空白攻撃処理
-		nCurMotion = BlankAttack(pRot, fDeltaTime);
+			// 空白攻撃処理
+			nCurMotion = BlankAttack(pRot, fDeltaTime);
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_UPSET:
+		case CEnemyAmbush::STATE_UPSET:
 
-		// 動揺処理
-		nCurMotion = Upset();
+			// 動揺処理
+			nCurMotion = Upset();
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_CAUTION:
+		case CEnemyAmbush::STATE_STANCE:
 
-		// 警戒処理
-		nCurMotion = Caution();
+			// 構え処理
+			nCurMotion = Stance();
 
-		break;
+			break;
 
-	case CEnemyAmbush::STATE_FADEOUT:
+		default:
 
-		// フェードアウト処理
-		nCurMotion = FadeOut(pPos, pRot);
+			// 停止
+			assert(false);
 
-		break;
-
-	case CEnemyAmbush::STATE_FADEIN:
-
-		// フェードイン処理
-		nCurMotion = FadeIn();
-
-		break;
-
-	case CEnemyAmbush::STATE_STANCE:
-
-		// 構え処理
-		nCurMotion = Stance();
-
-		break;
-
-	case CEnemyAmbush::STATE_THREAT:
-
-		// 威嚇処理
-		nCurMotion = Threat();
-
-		break;
-
-	default:
-
-		// 停止
-		assert(false);
-
-		break;
+			break;
+		}
 	}
 
 	// 重力の更新
@@ -380,6 +339,17 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case CEnemyAmbush::MOTION_WALK:		// 歩行
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+		}
+
 		break;
 
 	case CEnemyAmbush::MOTION_FOUND:		// 発見
@@ -412,8 +382,8 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 			// TODO：警戒モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
-			// 警戒状態にする
-			SetState(STATE_CAUTION);
+			// 待ち伏せ状態にする
+			SetState(STATE_AMBUSH);
 		}
 
 		break;
@@ -539,7 +509,7 @@ CEnemyAmbush::EMotion CEnemyAmbush::Ambush(D3DXVECTOR3* pPos, const float fDelta
 //============================================================
 // 警告処理
 //============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::Warning(D3DXVECTOR3* pPos, const float fDeltaTime)
+CEnemyAmbush::EMotion CEnemyAmbush::Warning(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
 	// 状態カウントを加算する
 	m_nStateCount++;
@@ -550,6 +520,12 @@ CEnemyAmbush::EMotion CEnemyAmbush::Warning(D3DXVECTOR3* pPos, const float fDelt
 		// 発見音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_STALKFOUND_000);
 	}
+
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 向きの移動処理
+	RotMove(*pRot, ROT_REV, fDeltaTime);
 
 	if (m_nStateCount % FOUND_STATE_COUNT == 0)
 	{ // 一定時間経過した場合
@@ -569,9 +545,6 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, 
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -626,14 +599,8 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, 
 		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
-		// フェードアウト状態にする
-		SetState(STATE_FADEOUT);
-
-		// 移動量をリセットする
-		SetMovePosition(VEC3_ZERO);
-
-		// ターゲットを無対象にする
-		SetTarget(TARGET_NONE);
+		// 構え状態にする
+		SetState(STATE_STANCE);
 	}
 
 	// 歩行モーションを返す
@@ -649,8 +616,12 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 	{
 	case CEnemyAttack::TARGET_PLAYER:
 
-		// プレイヤーの当たり判定処理
-		HitPlayer(rPos);
+		if (HitPlayer(rPos))
+		{ // プレイヤーに当たった場合
+
+			// 攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_000);
+		}
 
 		// 状態カウントを加算する
 		m_nStateCount++;
@@ -674,6 +645,9 @@ CEnemyAmbush::EMotion CEnemyAmbush::Attack(const D3DXVECTOR3& rPos)
 
 			// 空白攻撃状態にする
 			SetState(STATE_BLANKATTACK);
+
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKATTACK_001);
 
 			// 分身に対する攻撃モーションにする
 			return MOTION_BATTLE;
@@ -757,124 +731,15 @@ CEnemyAmbush::EMotion CEnemyAmbush::Upset(void)
 }
 
 //============================================================
-// 警戒処理
-//============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::Caution(void)
-{
-	// 状態カウントを加算する
-	m_nStateCount++;
-
-	if (m_nStateCount % CAUTION_STATE_COUNT == 0)
-	{ // 状態カウントが一定数になった場合
-
-		// フェードアウト状態にする
-		SetState(STATE_FADEOUT);
-	}
-
-	if (JudgeClone() ||
-		JudgePlayer())
-	{ // 分身かプレイヤーが目に入った場合
-
-		// 警告状態にする
-		SetState(STATE_WARNING);
-
-		// 発見モーションを返す
-		return MOTION_FOUND;
-	}
-	else
-	{ // 上記以外
-
-		// 無対象にする
-		SetTarget(TARGET_NONE);
-	}
-
-	// TODO：警戒モーションを返す
-	return MOTION_IDOL;
-}
-
-//============================================================
-// フェードアウト処理
-//============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::FadeOut(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot)
-{
-	// 透明度を取得
-	float fAlpha = GetAlpha();
-
-	// 透明度を減算する
-	fAlpha -= FADE_ALPHA_TRANS;
-
-	if (fAlpha <= 0.0f)
-	{ // 透明度が0以下になった場合
-
-		// フェードイン状態にする
-		SetState(STATE_FADEIN);
-
-		// 位置を設定する
-		*pPos = GetPosInit();
-
-		// 向きを設定する
-		*pRot = GetRotInit();
-
-		// 過去の位置を適用する(こうしないと当たり判定に引っかかってしまう)
-		SetOldPosition(*pPos);
-
-		// 目的の向きを設定する(復活後に無意味に向いてしまうため)
-		SetDestRotation(*pRot);
-
-		// 透明度を補正する
-		fAlpha = 0.0f;
-	}
-
-	// 透明度を適用
-	SetAlpha(fAlpha);
-
-	// 待機モーションにする
-	return MOTION_IDOL;
-}
-
-//============================================================
-// フェードイン処理
-//============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::FadeIn(void)
-{
-	// 透明度を取得
-	float fAlpha = GetAlpha();
-
-	// 透明度を減算する
-	fAlpha += FADE_ALPHA_TRANS;
-
-	if (fAlpha >= 1.0f)
-	{ // 透明度が一定数以上になった場合
-
-		// 待ち伏せ状態にする
-		SetState(STATE_AMBUSH);
-
-		// 透明度を補正する
-		fAlpha = 1.0f;
-	}
-
-	// 透明度を適用
-	SetAlpha(fAlpha);
-
-	// 待機モーションにする
-	return MOTION_IDOL;
-}
-
-//============================================================
 // 構え処理
 //============================================================
 CEnemyAmbush::EMotion CEnemyAmbush::Stance(void)
 {
-	if (!JudgeClone() &&
-		!JudgePlayer())
-	{ // 分身もプレイヤーも視界から居なくなった場合
+	// 分身の発見処理
+	JudgeClone();
 
-		// 威嚇状態にする
-		SetState(STATE_THREAT);
-
-		// TODO：威嚇モーションを返す
-		return MOTION_LANDING;
-	}
+	// プレイヤーの発見処理
+	JudgePlayer();
 
 	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
 	{ // 範囲内に入った場合
@@ -891,15 +756,21 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stance(void)
 }
 
 //============================================================
-// 威嚇処理
+// 元の位置に戻る処理
 //============================================================
-CEnemyAmbush::EMotion CEnemyAmbush::Threat(void)
+bool CEnemyAmbush::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
 {
-	// フェードアウト状態にする
-	SetState(STATE_FADEOUT);
+	// 一定の状態の場合、false を返す
+	if (m_state == STATE_BLANKATTACK || m_state == STATE_UPSET) { SetRegressionCount(0); return false; }
 
-	// TODO：威嚇モーションを返す
-	return MOTION_LANDING;
+	// 初期位置回帰処理に失敗した場合、false を返す
+	if (!CEnemyAttack::BackOriginPos(pPos, pRot, fHeight)) { return false; }
+
+	// 待ち伏せ状態にする
+	SetState(STATE_AMBUSH);
+
+	// true を返す
+	return true;
 }
 
 //============================================================
@@ -912,17 +783,4 @@ void CEnemyAmbush::SetState(const EState state)
 
 	// 状態カウントを0にする
 	m_nStateCount = 0;
-}
-
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyAmbush::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
 }

@@ -49,7 +49,9 @@ public:
 	static void Release(CRetentionManager *&prRetentionManager);	// 破棄
 
 	// メンバ関数
-	void SetResult(const EWin win, const float fTime, const int nSave);		// リザルト情報設定
+	void SetResult(const EWin win, const float fTime, const int nSave);	// リザルト情報設定
+	void SetTransIdx(const int nIdx) { m_nTransIdx = nIdx; }	// 遷移ポイントインデックス設定
+	int GetTransIdx(void) const		 { return m_nTransIdx; }	// 遷移ポイントインデックス取得
 	EWin GetWin(void) const		{ return m_result.win; }		// 勝利状況取得
 	float GetTime(void) const	{ return m_result.fTime; }		// 経過タイム取得
 	int GetSave(void) const		{ return m_result.nSave; }		// セーブポイント取得
@@ -59,6 +61,7 @@ private:
 	
 	// メンバ変数
 	SResult m_result;	// リザルト情報
+	int m_nTransIdx;	// 遷移ポイントインデックス
 
 };
 

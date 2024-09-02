@@ -48,6 +48,7 @@ public:
 		STATE_TELEPHOTO,	// 望遠
 		STATE_GODITEM,		// 神器獲得
 		STATE_RESULT,		// リザルト
+		STATE_SELECT,		// 選択
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -90,6 +91,8 @@ public:
 		D3DXVECTOR3		posR;			// 現在の注視点
 		D3DXVECTOR3		destPosV;		// 目標の視点
 		D3DXVECTOR3		destPosR;		// 目標の注視点
+		D3DXVECTOR3		posOldV;		// 現在の視点
+		D3DXVECTOR3		posOldR;		// 現在の注視点
 		D3DXVECTOR3		vecU;			// 上方向ベクトル
 		D3DXVECTOR3		rot;			// 現在の向き
 		D3DXVECTOR3		destRot;		// 目標の向き
@@ -135,6 +138,7 @@ public:
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)
 	void SetDestGodItem(void);		// カメラ目標位置設定 (神器獲得)
 	void SetDestResult(void);		// カメラ目標位置設定 (リザルト)
+	void SetDestSelect(void);		// カメラ目標位置設定 (選択)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -153,8 +157,6 @@ public:
 	D3DXVECTOR3 CalcWorldToScreen(const D3DXVECTOR3& pos); // ワールド座標をスクリーン座標に変換する
 	bool OnScreen(const D3DXVECTOR3& pos); // スクリーン内判定
 	bool OnScreen(const D3DXVECTOR3& pos, D3DXVECTOR3& posOut); // スクリーン座標を返すスクリーン内判定
-	bool OnScreenPolygon(const D3DXVECTOR3* pPos); // 矩形のスクリーン内判定
-	bool IsOverPlayer(const D3DXVECTOR3& pos); // プレイヤーよりも手前に存在している
 
 	// 小原追加
 	void StartReset(void);					// スタート状態のリセット処理
@@ -174,6 +176,7 @@ private:
 	void Control(void);		// カメラの更新 (操作)
 	void GodItem(void);		// カメラの更新 (神器獲得)
 	void Result(void);		// カメラの更新 (リザルト)
+	void Select(void);		// カメラの更新 (選択)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)
@@ -183,10 +186,13 @@ private:
 	void Around();										// 回り込み
 	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
 	void Telephoto();									// 望遠
+	void CollisionWallV();								// 視点と壁の当たり判定
+	void CollisionWallR();								// 注視点と壁の当たり判定
+	void ClearWall();									// 壁の透過処理
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
-	SStart m_startInfo;	// スタートカメラの情報
+	SStart	m_startInfo;	// スタートカメラの情報
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 	float	m_fFov;		// 視野角

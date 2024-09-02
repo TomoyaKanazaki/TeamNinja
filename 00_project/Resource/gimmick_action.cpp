@@ -343,19 +343,6 @@ void CGimmickAction::OnScreen()
 		posVtx[i] = GetVec3Position() + GetVertexPosition(i);
 		GET_CAMERA->OnScreen(posVtx[i], posScreen[i]);
 	}
-
-	// ‰æ–Ê“à”»’è
-	if (GET_CAMERA->OnScreenPolygon(&posVtx[0]))
-	{
-//#ifdef _DEBUG
-//		SetEnableDraw(true);
-//#endif
-//		DebugProc::Print(DebugProc::POINT_CENTER, "Œ©‚¦‚Ä‚¢‚é\n");
-	}
-	else
-	{
-		SetEnableDraw(false);
-	}
 }
 
 //===========================================

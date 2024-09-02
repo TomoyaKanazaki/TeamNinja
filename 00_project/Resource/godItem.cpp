@@ -123,6 +123,11 @@ void CGodItem::Uninit(void)
 //============================================================
 void CGodItem::Update(const float fDeltaTime)
 {
+	// ‰“‹——£”»’è
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	switch (m_state)
 	{ // ó‘Ô‚²‚Æ‚Ìˆ—
 	case STATE_ITEM:

@@ -8,7 +8,7 @@
 #	プレイヤーの情報
 #------------------------------------------------------------------------------
 STAGE_PLAYERSET
-	TYPE = GAME
+	TYPE = SELECT
 	POS = 0.00 0.00 -300.00
 	ROT = 0.00 180.00 0.00
 END_STAGE_PLAYERSET
@@ -17,6 +17,26 @@ END_STAGE_PLAYERSET
 #	遷移ポイントの情報
 #------------------------------------------------------------------------------
 STAGE_TRANSSET
+
+	TRANSSET
+		TRANS_PASS = data\MAP\CASTLE00\map.txt
+		POS = -1500 0 0
+	END_TRANSSET
+	
+		TRANSSET
+		TRANS_PASS = data\MAP\TOWN02\map.txt
+		POS = -1250 0 0
+	END_TRANSSET
+	
+		TRANSSET
+		TRANS_PASS = data\MAP\TOWN01\map.txt
+		POS = -1000 0 0
+	END_TRANSSET
+	
+		TRANSSET
+		TRANS_PASS = data\MAP\TOWN00\map.txt
+		POS = -750 0 0
+	END_TRANSSET
 
 	TRANSSET
 		TRANS_PASS = data\MAP\FOREST02\map.txt

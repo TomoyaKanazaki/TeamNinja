@@ -11,6 +11,8 @@
 #include "field.h"
 #include "multi_plant.h"
 
+#include "camera.h"
+
 //===========================================
 //  定数定義
 //===========================================
@@ -20,6 +22,7 @@ namespace
 	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
 	const float FIELD_SIZE = 55.0f; // 橋の幅
 	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
+	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// カメラ揺れの値
 }
 
 //===========================================
@@ -29,7 +32,8 @@ CGimmickBridge::CGimmickBridge() : CGimmickAction(),
 m_ConectPoint(),
 m_vecToWait(VEC3_ZERO),
 m_nIdxWait(0),
-m_pField(nullptr)
+m_pField(nullptr),
+m_fRot(0.0f)
 {
 }
 
@@ -72,6 +76,10 @@ void CGimmickBridge::Uninit(void)
 //===========================================
 void CGimmickBridge::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// 橋を架ける
 	if (IsActive()) { Active(); }
 	else { SAFE_UNINIT(m_pField); }
@@ -187,8 +195,21 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 			break;
 		}
 
-		// 向きを寝そべる形にする
-		return D3DXVECTOR3(-HALF_PI, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
+		// 分身の向きを取得
+		float fRot = pClone->GetVec3Rotation().x;
+
+		// 向きを補正する
+		fRot += (-HALF_PI - fRot) * 0.07f;
+		if (fRot < -HALF_PI)
+		{
+			fRot = -HALF_PI;
+		}
+
+		// 向きを保存する
+		m_fRot = fRot;
+
+		// 向きを返す
+		return D3DXVECTOR3(fRot, fTemp + (D3DX_PI * (float)m_nIdxWait), 0.0f);
 	}
 
 	// 向きを求める
@@ -291,8 +312,17 @@ void CGimmickBridge::CalcConectPoint()
 //===========================================
 void CGimmickBridge::Active()
 {
-	// 足場を生成する
+	// nullチェック
 	if (m_pField != nullptr) { return; }
+
+	// 向きが一定の値を上回っている場合関数を抜ける
+	if (m_fRot - -HALF_PI > 0.01f)
+	{
+		// カメラが揺れる
+		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
+
+		return;
+	}
 
 	// 足場の座標を設定
 	D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;

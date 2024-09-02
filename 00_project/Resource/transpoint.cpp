@@ -20,7 +20,6 @@ namespace
 {
 	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\checkpoint_blue.efkefc";	// 触れている際のエフェクトファイル
 	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\checkpoint_red.efkefc";		// 触れていない際のエフェクトファイル
-
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);	// エフェクト用オフセット
 	const int	PRIORITY	 = 2;		// 遷移ポイントの優先順位
 	const float	RADIUS		 = 120.0f;	// 遷移ポイントに触れられる半径
@@ -41,7 +40,8 @@ CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャ
 CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_sTransMapPass	(pPass),	// 遷移先マップパス
 	m_pEffectData	(nullptr),	// 保持するエフェクト情報
-	m_pBalloon		(nullptr)	// 吹き出し情報
+	m_pBalloon		(nullptr),	// 吹き出し情報
+	m_bOpen			(false)		// ステージ解放フラグ
 {
 
 }
@@ -62,6 +62,14 @@ HRESULT CTransPoint::Init(void)
 	// メンバ変数を初期化
 	m_pEffectData = nullptr;	// 保持するエフェクト情報
 	m_pBalloon = nullptr;		// 吹き出し情報
+	m_bOpen = false;			// ステージ解放フラグ
+
+	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
+	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
+	fsDirectory.append("open.txt");								// ディレクトリに解放フラグのベースネーム追加
+
+	// 解放状況の読込
+	LoadOpen(fsDirectory.string().c_str(), &m_bOpen);
 
 	// オブジェクトモデルの初期化
 	if (FAILED(CObjectModel::Init()))
@@ -286,6 +294,17 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 		}
 	}
 
+	if (pHitTransPoint != nullptr)
+	{ // 遷移ポイントに触れていた場合
+
+		if (!pHitTransPoint->m_bOpen)
+		{ // 解放されていない遷移ポイントの場合
+
+			// 入れないのnulllptrを返す
+			return nullptr;
+		}
+	}
+
 	// 最終的に当たっている遷移ポイントを返す
 	return pHitTransPoint;
 }
@@ -308,7 +327,7 @@ HRESULT CTransPoint::CreateStageTexture(void)
 	SAFE_UNINIT(m_pBalloonManager);
 
 	// 吹き出しマネージャーの生成
-	m_pBalloonManager = CBalloonManager::Create(this);
+	m_pBalloonManager = CBalloonManager::Create(this, m_bOpen);
 	if (m_pBalloonManager == nullptr)
 	{ // 生成に失敗した場合
 
@@ -402,6 +421,95 @@ HRESULT CTransPoint::LoadSetup(const char* pPass)
 			} while (str != "END_STAGE_TRANSSET");	// END_STAGE_TRANSSETを読み込むまでループ
 		}
 	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	解放フラグの読込処理
+//============================================================
+HRESULT CTransPoint::LoadOpen(const char* pPass, bool *pOpen)
+{
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "解放フラグの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 解放状況の保存
+		if (FAILED(SaveOpen(pPass, false)))
+		{ // 保存に失敗した場合
+
+			// 失敗を返す
+			return E_FAIL;
+		}
+	}
+
+	// ファイルを読込
+	std::string sStr;	// 読込文字列
+	while (file >> sStr)
+	{ // ファイルの終端ではない場合ループ
+
+		if (sStr.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, sStr);
+		}
+		else if (sStr == "FLAG")
+		{
+			file >> sStr;	// ＝を読込
+			file >> sStr;	// フラグを読込
+
+			// フラグ文字列を変換
+			*pOpen = (sStr == "TRUE");
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}
+
+//============================================================
+//	解放フラグの保存処理
+//============================================================
+HRESULT CTransPoint::SaveOpen(const char* pPass, const bool bOpen)
+{
+	// ファイルを開く
+	std::ofstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "解放フラグの書き出しに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 見出しを書き出し
+	file << "#==============================================================================" << std::endl;
+	file << "#" << std::endl;
+	file << "#	マップ解放のセットアップ [open.txt]" << std::endl;
+	file << "#	Author : 藤田 勇一" << std::endl;
+	file << "#" << std::endl;
+	file << "#==============================================================================" << std::endl;
+	file << "#------------------------------------------------------------------------------" << std::endl;
+	file << "#	解放フラグ" << std::endl;
+	file << "#------------------------------------------------------------------------------" << std::endl;
+
+	// フラグを書き出し
+	std::string sFlag = (bOpen) ? "TRUE" : "FALSE";	// フラグ文字列
+	file << "FLAG = " << sFlag << std::endl;
 
 	// ファイルを閉じる
 	file.close();

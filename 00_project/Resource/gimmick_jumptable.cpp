@@ -17,7 +17,7 @@
 //===========================================
 namespace
 {
-	const float DISTANCE_CENTER = 50.0f; // 待機中心との距離
+	const float DISTANCE_CENTER = 50.0f;	// 待機中心との距離
 }
 
 //************************************************************
@@ -71,6 +71,10 @@ void CGimmickJumpTable::Uninit(void)
 //============================================================
 void CGimmickJumpTable::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// プレイヤーとの当たり判定
 	if (HitPlayer())
 	{

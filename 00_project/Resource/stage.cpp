@@ -240,6 +240,7 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	}
 	
 
+
 	// 成功を返す
 	return S_OK;
 }
@@ -766,6 +767,15 @@ HRESULT CStage::LoadSetup(const char* pPass)
 				break;
 			}
 
+			// 解放マップディレクトリの読込
+			if (FAILED(LoadOpen(&aString[0], pFile)))
+			{ // 読み込みに失敗した場合
+
+				// 失敗を返す
+				assert(false);
+				return E_FAIL;
+			}
+
 			// 範囲情報の読込
 			if (FAILED(LoadLimit(&aString[0], pFile)))
 			{ // 読み込みに失敗した場合
@@ -854,6 +864,37 @@ HRESULT CStage::LoadSetup(const char* pPass)
 		// 失敗を返す
 		return E_FAIL;
 	}
+}
+
+//============================================================
+//	解放マップディレクトリの読込処理
+//============================================================
+HRESULT CStage::LoadOpen(const char* pString, FILE *pFile)
+{
+	// 変数配列を宣言
+	char aString[MAX_STRING];	// テキストの文字列の代入用
+
+	if (pString == nullptr || pFile == nullptr)
+	{ // 文字列・ファイルが存在しない場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ステージ範囲の設定
+	if (strcmp(pString, "OPEN_PATH") == 0)
+	{ // 読み込んだ文字列が OPEN_PATH の場合
+
+		fscanf(pFile, "%s", &aString[0]);	// = を読み込む (不要)
+		fscanf(pFile, "%s", &aString[0]);	// 解放マップディレクトリを読み込む
+
+		// 解放マップディレクトリを保存
+		m_sOpenMapFolder = &aString[0];
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================
@@ -1701,7 +1742,7 @@ HRESULT CStage::LoadWeed(const char* pString, FILE* pFile)
 						fscanf(pFile, "%f", &rot.z); // Z
 					}
 
-				} while (strcmp(&aTemp[0], "ENDWEEDSET") != 0);
+				} while (strcmp(&aTemp[0], "END_WEEDSET") != 0);
 
 				// オブジェクトの生成
 				if (CWeed::Create(pos, rot) == nullptr)

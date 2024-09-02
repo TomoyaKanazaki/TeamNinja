@@ -34,8 +34,10 @@
 #define NAME_CHANGE_OBJECT_FRONT	("2")	// オブジェクトタイプ前進変更表示
 #define KEY_CHANGE_OBJECT_BACK		(DIK_3)	// オブジェクトタイプ後進変更キー
 #define NAME_CHANGE_OBJECT_BACK		("3")	// オブジェクトタイプ後進変更表示
-#define KEY_CHANGE_ACTOR			(DIK_4)	// アクターの種類変更キー
-#define NAME_CHANGE_ACTOR			("4")	// アクターの種類変更表示
+#define KEY_CHANGE_ACTOR_UP			(DIK_4)	// アクターの種類前進キー
+#define NAME_CHANGE_ACTOR_UP		("4")	// アクターの種類前進表示
+#define KEY_CHANGE_ACTOR_DOWN		(DIK_5)	// アクターの種類後進キー
+#define NAME_CHANGE_ACTOR_DOWN		("5")	// アクターの種類後進表示
 
 //************************************************************
 //	定数宣言
@@ -434,7 +436,10 @@ void CEditCollision::DrawDebugControl(void)
 {
 #if _DEBUG
 
-	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ前進変更：[%s]\nエディットステージタイプ後進変更：[%s]\n", NAME_CHANGE_OBJECT_FRONT, NAME_CHANGE_OBJECT_BACK);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ前進変更：[%s]\n", NAME_CHANGE_OBJECT_FRONT);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "エディットステージタイプ後進変更：[%s]\n", NAME_CHANGE_OBJECT_BACK);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "アクタータイプ前進変更：[%s]\n",NAME_CHANGE_ACTOR_UP);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "アクタータイプ後進変更：[%s]\n", NAME_CHANGE_ACTOR_DOWN);
 
 	// エディター情報の操作表示
 	assert(m_pEditor != nullptr);
@@ -623,9 +628,49 @@ void CEditCollision::ChangeActorType(void)
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
 	// 種類を変更
-	if (pKeyboard->IsTrigger(KEY_CHANGE_ACTOR))
+	if (pKeyboard->IsTrigger(KEY_CHANGE_ACTOR_UP))
 	{
 		m_actorType = (CActor::EType)((m_actorType + 1) % CActor::TYPE_MAX);
+
+		// モデルを生成し直す
+		m_pActor->Uninit();
+		m_pActor = CActor::Create(m_actorType, VEC3_ZERO);
+		m_pActor->ClearCollision();
+		for (auto& rCube : m_cube)
+		{ // コリジョンキューブ数分繰り返す
+
+			// 終了処理
+			rCube.Uninit();
+		}
+		for (auto& rCylinder : m_cylinder)
+		{ // コリジョンシリンダー数分繰り返す
+
+			// 終了処理
+			rCylinder.Uninit();
+		}
+		for (auto& rSphere : m_sphere)
+		{ // コリジョンスフィア数分繰り返す
+
+			// 終了処理
+			rSphere.Uninit();
+		}
+		for (auto& rPolygon : m_polygon)
+		{ // コリジョンポリゴン数分繰り返す
+
+			// 終了処理
+			rPolygon.Uninit();
+		}
+		// 配列を全消去する
+		m_cube.clear();
+		m_cylinder.clear();
+		m_sphere.clear();
+		m_polygon.clear();
+	}
+
+	// 種類を変更
+	if (pKeyboard->IsTrigger(KEY_CHANGE_ACTOR_DOWN))
+	{
+		m_actorType = (CActor::EType)((m_actorType + (CActor::TYPE_MAX - 1)) % CActor::TYPE_MAX);
 
 		// モデルを生成し直す
 		m_pActor->Uninit();

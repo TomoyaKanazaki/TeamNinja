@@ -75,12 +75,14 @@ public:
 	void BindTexture(const int nTextureID);			// テクスチャ割当 (インデックス)
 	void BindTexture(const char *pTexturePass);		// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	void SetAlpha(const float& rAlpha);			// 色設定
 	HRESULT SetPattern(const POSGRID2& rPart);		// 分割数設定
 	void SetTexPattern(const POSGRID2& rTexPart);	// テクスチャ分割数設定
-	int GetTextureIndex(void) const		{ return m_nTextureID; }	// テクスチャインデックス取得
-	D3DXCOLOR GetColor(void) const		{ return m_meshWall.col; }	// 色取得
-	POSGRID2 GetPattern(void) const		{ return m_part; }			// 分割数取得
-	POSGRID2 GetTexPattern(void) const	{ return m_texPart; }		// テクスチャ分割数取得
+	int GetTextureIndex(void) const		{ return m_nTextureID; }		// テクスチャインデックス取得
+	D3DXCOLOR GetColor(void) const		{ return m_meshWall.col; }		// 色取得
+	float GetAlpha(void) const			{ return m_meshWall.col.a; }	// α値取得
+	POSGRID2 GetPattern(void) const		{ return m_part; }				// 分割数取得
+	POSGRID2 GetTexPattern(void) const	{ return m_texPart; }			// テクスチャ分割数取得
 
 protected:
 	// メンバ関数
@@ -91,6 +93,8 @@ protected:
 		const float fTexU,	// テクスチャの横座標の開始位置
 		const float fTexV	// テクスチャの縦座標の開始位置
 	);
+	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff() { return m_pVtxBuff; } // 頂点情報の取得
+	SMeshWall GetMeshWall() { return m_meshWall; } // メッシュ情報の取得
 
 private:
 	// オーバーライド関数
@@ -101,6 +105,7 @@ private:
 	void DrawShader(CShader *pShader);	// シェーダー描画
 	void DrawZTexture(void);			//Zテクスチャ書き込み
 	void DrawToonShadow(void);			//影書き込み
+
 	// メンバ変数
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;	// インデックスバッファへのポインタ

@@ -11,6 +11,8 @@
 #include "player_clone.h"
 #include "actor.h"
 
+#include "camera.h"
+
 //===========================================
 //  定数定義
 //===========================================
@@ -19,6 +21,7 @@ namespace
 	const int NUM_CLONE = 1;	// ボタン押し込みに必要な人数
 	const float MOVE_SPEED = 150.0f; // 移動速度
 	const D3DXVECTOR3 MOVE_POS = D3DXVECTOR3(0.0f, -250.0f, 0.0f); // 移動後の位置(オフセット)
+	const CCamera::SSwing CAMERA_SWING = CCamera::SSwing(3.0f, 1.8f, 0.02f);		// 竹格子が動くときの揺れ
 }
 
 //=========================================
@@ -26,6 +29,7 @@ namespace
 //=========================================
 CGimmickMulti::CGimmickMulti() : CGimmick(),
 m_bActive (true), // アクティブフラグ
+m_bActiveOld(false), // 前回のアクティブフラグ
 m_pModel (nullptr) // モデル情報
 {
 	// ボタン動的配列をクリア
@@ -55,13 +59,12 @@ HRESULT CGimmickMulti::Init(void)
 	}
 
 	// モデルの生成
-	m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, GetVec3Position(), VEC3_ZERO);
+	m_pModel = CActor::Create(CActor::TYPE_B_LATTICE, VEC3_ZERO, VEC3_ZERO);
 	if (m_pModel == nullptr)
 	{ // 生成に失敗した場合
 
 		// 失敗を返す
 		assert(false);
-		return E_FAIL;
 	}
 
 	// モデルのラベルを変更
@@ -91,6 +94,10 @@ void CGimmickMulti::Uninit(void)
 //=========================================
 void CGimmickMulti::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// フラグをリセット
 	m_bActive = true;
 
@@ -134,33 +141,16 @@ void CGimmickMulti::SetVec3Position(const D3DXVECTOR3& rPos)
 	m_pModel->SetVec3Position(rPos);
 
 	// 角度を取得
-	EAngle angle = GetAngle();
 	D3DXVECTOR3 rot = VEC3_ZERO;
-	switch (angle)
-	{
-	case EAngle::ANGLE_0: // 0
-		rot.y = D3DX_PI * 0.0f;
-		break;
 
-	case EAngle::ANGLE_90: // 1.57
-		rot.y = D3DX_PI * 0.5f;
-		break;
-
-	case EAngle::ANGLE_180: // 3.14
-		rot.y = D3DX_PI * 1.0f;
-		break;
-
-	case EAngle::ANGLE_270: // 4.71
-		rot.y = D3DX_PI * 1.5f;
-		break;
-
-	default:
-		assert(false);
-		break;
-	}
+	// アングルの向き変換
+	rot.y = useful::FourDireToRot(GetAngle());
 
 	// 見た目の角度を設定
 	m_pModel->SetVec3Rotation(rot);
+
+	// 竹格子のオフセット設定処理
+	m_pModel->CollisionOffset();
 }
 
 //===========================================
@@ -235,7 +225,16 @@ HRESULT CGimmickMulti::CreateButton(std::vector<SButton> vecButton)
 //  モデルの移動
 //===========================================
 void CGimmickMulti::MoveModel(const float fDeltaTime)
-{
+{	
+	// 竹格子が動いた時、カメラを揺らす
+	if (m_bActive != m_bActiveOld)
+	{
+		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CAMERA_SWING);
+	}
+
+	// 前回のアクティブフラグを設定する
+	m_bActiveOld = m_bActive;
+
 	// モデルの位置を取得
 	D3DXVECTOR3 posModel = m_pModel->GetVec3Position();
 

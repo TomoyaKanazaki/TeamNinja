@@ -13,6 +13,8 @@
 #include "renderer.h"
 #include "texture.h"
 #include "useful.h"
+#include "camera.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -25,9 +27,13 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil005.png",	// 草土テクスチャ
 		"data\\TEXTURE\\FIELD\\soil002.png",	// 草テクスチャ
 		"data\\TEXTURE\\FIELD\\water.png",		// 水テクスチャ
+		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
+		"data\\TEXTURE\\FIELD\\OldWood001.jpg",	// 木テクスチャ
 	};
 
-	const int PRIORITY = 0;	// 壁の優先順位
+	const int PRIORITY = 4;	// 壁の優先順位
+	const float INVISIBLE_MIN = 300.0f; // 透明化最小範囲
+	const float INVISIBLE_MAX = 500.0f; // 透明化最小範囲
 }
 
 //************************************************************
@@ -122,6 +128,9 @@ void CWall::Uninit(void)
 //============================================================
 void CWall::Update(const float fDeltaTime)
 {
+	// 頂点情報の設定
+	Invisible();
+
 	// オブジェクトメッシュウォールの更新
 	CObjectMeshWall::Update(fDeltaTime);
 }
@@ -240,7 +249,7 @@ CWall *CWall::Create
 		pWall->SetColor(rCol);
 
 		// 分割数を設定
-		if (FAILED(pWall->SetPattern(rPart)))
+		if (FAILED(pWall->SetPattern(rTexPart)))
 		{ // 分割数の設定に失敗した場合
 
 			// 壁の破棄
@@ -280,4 +289,138 @@ void CWall::SetType(const EType type)
 		BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE_FILE[type]));
 	}
 	else { assert(false); }	// 範囲外
+}
+
+//==========================================
+//  頂点情報の設定
+//==========================================
+void CWall::Invisible()
+{
+	// カメラ情報の取得
+	CCamera* pCamera = GET_CAMERA;
+
+	// 回り込み状態でなければ関数を抜ける
+	if (pCamera->GetState() != CCamera::STATE_AROUND) { return; }
+
+	// 自身の情報を取得する
+	POSGRID2 part = GetPattern();
+	POSGRID2 texPart = GetTexPattern();
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
+	SMeshWall meshWall = GetMeshWall();
+
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 posPlayerScreen = pCamera->CalcPlayerPos();
+	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetCenterPos();
+
+	// ポインタを宣言
+	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
+
+	// テクスチャ分割数の割合を計算
+	D3DXVECTOR2 texRate = D3DXVECTOR2
+	(
+		(float)texPart.x / (float)part.x,
+		(float)texPart.y / (float)part.y
+	);
+
+	if (pVtxBuff != nullptr)
+	{ // 使用中の場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++)
+		{ // 縦の分割数 +1回繰り返す
+
+			for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++)
+			{ // 横の分割数 +1回繰り返す
+
+				// 頂点座標の設定
+				pVtx[0].pos = D3DXVECTOR3
+				( // 引数
+					nCntWidth * (meshWall.size.x / (float)part.x) - (meshWall.size.x * 0.5f),	// x
+					-(nCntHeight * (meshWall.size.y / (float)part.y)) + meshWall.size.y,		// y
+					0.0f																		// z
+				);
+
+				// 法線ベクトルの設定
+				pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+				// テクスチャ座標の設定
+				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
+
+				// 頂点カラーの設定
+				D3DXCOLOR col = meshWall.col;
+				col.a = InvisibleVtx(pVtx[0].pos, posPlayerScreen, posPlayerWorld, meshWall, pCamera);
+				pVtx[0].col = col;
+
+				// 頂点情報を進める
+				pVtx += 1;
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
+}
+
+//==========================================
+//  頂点計算処理
+//==========================================
+float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, const D3DXVECTOR3& posPlayerWorld, SMeshWall meshWall, CCamera* pCamera)
+{
+	// 変数を宣言
+	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&meshWall.mtxWorld);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, meshWall.rot.y, meshWall.rot.x, meshWall.rot.z);
+	D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, posVtx.x + meshWall.pos.x, posVtx.y + meshWall.pos.y, posVtx.z + meshWall.pos.z);
+	D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxTrans);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &meshWall.mtxWorld);
+
+	// マトリックスから頂点座標を抽出
+	D3DXVECTOR3 pos = D3DXVECTOR3(meshWall.mtxWorld._41, meshWall.mtxWorld._42, meshWall.mtxWorld._43);
+
+	// xz平面上における視点との距離を算出
+	D3DXVECTOR3 vecPlayer = posPlayerWorld - pCamera->GetPositionV();
+	D3DXVECTOR3 vecVtx = pos - pCamera->GetPositionV();
+
+	// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
+	if (vecPlayer.x * vecPlayer.x * vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x * vecVtx.z * vecVtx.z)
+	{
+		return 1.0f;
+	}
+
+	// 頂点のスクリーン座標を算出
+	if (!pCamera->OnScreen(pos, pos))
+	{
+		// 画面外の場合1.0を返す
+		return 1.0f;
+	}
+
+	// プレイヤーよりも奥に描画される場合1.0を返す
+	if (pos.z >= posPlayer.z)
+	{
+		return 1.0f;
+	}
+
+	// プレイヤーとの距離^2を算出
+	D3DXVECTOR3 vec = posPlayer - pos;
+	float fLength = sqrtf(vec.x * vec.x + vec.y * vec.y);
+
+	// プレイヤーとの距離が近い場合は0を返す
+	if (fLength < INVISIBLE_MIN) { return 0.0f; }
+
+	// 透過範囲内の割合を算出し返す
+	return (fLength - INVISIBLE_MIN) / (INVISIBLE_MAX - INVISIBLE_MIN);
 }

@@ -19,6 +19,15 @@
 //************************************************************
 namespace
 {
+	const char* TEXTURE[] =	// 草テクスチャ
+	{
+		"data\\TEXTURE\\grass000.png",
+		"data\\TEXTURE\\grass001.png",
+		"data\\TEXTURE\\grass002.png",
+		"data\\TEXTURE\\grass003.png",
+		"data\\TEXTURE\\grass004.png",
+	};
+
 	const int	PRIORITY	 = 6;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
@@ -26,8 +35,8 @@ namespace
 	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
 	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
 	const float SWING_REV	 = 0.02f;	// 遷移時の補正係数
-	const float STOMP_MAX_ADD_OFFSET = 65.0f;	// ずらす先端の最高加算距離
-	const float STOMP_MIN_OFFSET	 = 50.0f;	// ずらす先端の最低距離
+	const float STOMP_MAX_ADD_OFFSET = 45.0f;	// ずらす先端の最高加算距離
+	const float STOMP_MIN_OFFSET	 = 30.0f;	// ずらす先端の最低距離
 }
 
 //************************************************************
@@ -85,7 +94,7 @@ HRESULT CWeed::Init(void)
 	}
 
 	// 草のテクスチャを割当
-	BindTexture("data\\TEXTURE\\grass001.png");
+	BindTexture(TEXTURE[rand() % NUM_ARRAY(TEXTURE)]);
 
 	// 原点を下にする
 	SetOrigin(CObject3D::ORIGIN_DOWN);
@@ -105,7 +114,24 @@ HRESULT CWeed::Init(void)
 	pRenderState->SetLighting(false);
 
 	// 大きさを設定
-	SetVec3Sizing(D3DXVECTOR3(80.0f, 120.0f, 0.0f));	// TODO
+	SetVec3Sizing(D3DXVECTOR3(45.0f, 80.0f, 0.0f));	// TODO
+
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CWeed>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
 
 	// 成功を返す
 	return S_OK;
@@ -116,6 +142,16 @@ HRESULT CWeed::Init(void)
 //============================================================
 void CWeed::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// オブジェクト3Dの終了
 	CObject3D::Uninit();
 }
@@ -125,6 +161,11 @@ void CWeed::Uninit(void)
 //============================================================
 void CWeed::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
 	// プレイヤーとの当たり判定
 	if (!CollisionPlayer())
 	{ // プレイヤーが踏んでいない場合

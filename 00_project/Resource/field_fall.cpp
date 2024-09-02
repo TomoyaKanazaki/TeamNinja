@@ -22,7 +22,7 @@ namespace
 	// 床関連
 	namespace floor
 	{
-		const float HEIGHT = 30.0f;				// 高さ
+		const float HEIGHT = 5.0f;				// 高さ
 		const float NONE_ROT = D3DX_PI * 0.5f;	// 通常状態の向き
 	}
 }
@@ -31,7 +31,8 @@ namespace
 //  コンストラクタ
 //==========================================
 CGimmickFall::CGimmickFall() : CField(),
-m_bFall(false) // 落下フラグ
+m_state(STATE_NONE),	// 状態
+m_bFall(false)			// 落下フラグ
 {
 
 }
@@ -60,7 +61,6 @@ HRESULT CGimmickFall::Init(void)
 
 	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
 	{
-		// TODO：ここクリエイト!!
 		m_apFloor[nCnt] = CObjectMeshCube::Create
 		(
 			VEC3_ZERO,
@@ -75,6 +75,9 @@ HRESULT CGimmickFall::Init(void)
 			CObjectMeshCube::ORIGIN_UP
 		);
 	}
+
+	// 描画しない
+	SetEnableDraw(false);
 
 	// 成功を返す
 	return S_OK;
@@ -100,11 +103,11 @@ void CGimmickFall::Uninit(void)
 //=========================================
 void CGimmickFall::Update(const float fDeltaTime)
 {
+	// 状態処理
+	State();
+
 	// 親クラスの更新
 	CField::Update(fDeltaTime);
-
-	// 床の処理
-	Floor();
 }
 
 //=========================================
@@ -124,14 +127,8 @@ void CGimmickFall::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 位置を設定する
 	CField::SetVec3Position(rPos);
 
-	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
-	{
-		// 床が NULL の場合、抜ける
-		if (m_apFloor[nCnt] == nullptr) { continue; }
-
-		// 床の位置を設定する
-		m_apFloor[nCnt]->SetVec3Position(rPos);
-	}
+	// 床の処理
+	Floor();
 }
 
 //===========================================
@@ -142,14 +139,8 @@ void CGimmickFall::SetVec3Rotation(const D3DXVECTOR3& rRot)
 	// 向きを設定する
 	CField::SetVec3Rotation(rRot);
 
-	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
-	{
-		// 床が NULL の場合、抜ける
-		if (m_apFloor[nCnt] == nullptr) { continue; }
-
-		// 床の向きを設定する
-		m_apFloor[nCnt]->SetVec3Rotation(rRot);
-	}
+	// 床の処理
+	Floor();
 }
 
 //===========================================
@@ -160,14 +151,8 @@ void CGimmickFall::SetVec2Sizing(const D3DXVECTOR2& rSize)
 	// サイズを設定する
 	CField::SetVec2Sizing(rSize);
 
-	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
-	{
-		// 床が NULL の場合、抜ける
-		if (m_apFloor[nCnt] == nullptr) { continue; }
-
-		// 床のサイズを設定する
-		m_apFloor[nCnt]->SetVec3Sizing(D3DXVECTOR3(rSize.x, floor::HEIGHT, rSize.y));
-	}
+	// 床の処理
+	Floor();
 }
 
 //===========================================
@@ -258,11 +243,64 @@ void CGimmickFall::Count()
 		++nNum;
 	}
 
+	// プレイヤーが乗っていても加算する
+	if (GET_PLAYER->GetField() == this) { ++nNum; }
+
 	// 分身の数が最大数未満の場合関数を抜ける
 	if (nNum < FALL_NUM) { m_bFall = false; return; }
 
+	// 開扉状態にする
+	m_state = STATE_OPEN;
+
 	// 落下フラグを立てる
 	m_bFall = true;
+}
+
+//===========================================
+// 状態処理
+//===========================================
+void CGimmickFall::State(void)
+{
+	// 向き
+	D3DXVECTOR3 rot = VEC3_ZERO;
+
+	switch (m_state)
+	{
+	case CGimmickFall::STATE_NONE:
+
+		break;
+
+	case CGimmickFall::STATE_OPEN:
+
+		rot = m_apFloor[0]->GetVec3Rotation();
+		rot.x += 0.25f;
+		if (rot.x >= 0.0f)
+		{ // 向きが0.0f以上の場合
+
+			// 向きを補正する
+			rot.x = 0.0f;
+		}
+		m_apFloor[0]->SetVec3Rotation(rot);
+
+		rot = m_apFloor[1]->GetVec3Rotation();
+		rot.x -= 0.25f;
+		if (rot.x <= 0.0f)
+		{ // 向きが0.0f以下の場合
+
+			// 向きを補正する
+			rot.x = 0.0f;
+		}
+		m_apFloor[1]->SetVec3Rotation(rot);
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
 }
 
 //===========================================
@@ -281,29 +319,26 @@ void CGimmickFall::Floor(void)
 	// 床が無かった場合、停止
 	if (m_apFloor[0] == nullptr || m_apFloor[1] == nullptr) { assert(false); return; }
 
-	// 床の位置を設定する
-	posFloor.x = pos.x + sinf(rot.y) * -(size.x * 0.5f);
-	posFloor.y = pos.y - floor::HEIGHT * 0.5f;
-	posFloor.z = pos.z + cosf(rot.y) * -(size.y * 0.5f);
-	m_apFloor[0]->SetVec3Position(posFloor);
+	for (int nCnt = 0; nCnt < NUM_FLOOR; nCnt++)
+	{
+		// 床が NULL の場合、抜ける
+		if (m_apFloor[nCnt] == nullptr) { continue; }
 
-	// 床の位置を設定する
-	posFloor.x = pos.x + sinf(rot.y) * (size.x * 0.5f);
-	posFloor.y = pos.y - floor::HEIGHT * 0.5f;
-	posFloor.z = pos.z + cosf(rot.y) * (size.y * 0.5f);
-	m_apFloor[1]->SetVec3Position(posFloor);
+		// 床の位置を設定する
+		posFloor.x = pos.x + sinf(rot.y) * ((nCnt * size.x) - (size.x * 0.5f));
+		posFloor.y = pos.y - floor::HEIGHT;
+		posFloor.z = pos.z + cosf(rot.y) * ((nCnt * size.y) - (size.y * 0.5f));
+		m_apFloor[nCnt]->SetVec3Position(posFloor);
 
-	// 向きを設定する
-	rotFloor = rot;
-	rotFloor.x = -floor::NONE_ROT;
-	m_apFloor[0]->SetVec3Rotation(rotFloor);
-	rotFloor.x = floor::NONE_ROT;
-	m_apFloor[1]->SetVec3Rotation(rotFloor);
+		// 向きを設定する
+		rotFloor = rot;
+		rotFloor.x = ((floor::NONE_ROT * 2.0f) * nCnt) - floor::NONE_ROT;
+		m_apFloor[nCnt]->SetVec3Rotation(rotFloor);
 
-	// サイズを設定する
-	sizeFloor.x = size.x * 0.5f;
-	sizeFloor.y = size.y * 0.5f;
-	sizeFloor.z = floor::HEIGHT;
-	m_apFloor[0]->SetVec3Sizing(sizeFloor);
-	m_apFloor[1]->SetVec3Sizing(sizeFloor);
+		// サイズを設定する
+		sizeFloor.x = size.x * 0.5f;
+		sizeFloor.y = size.y * 0.25f;
+		sizeFloor.z = floor::HEIGHT;
+		m_apFloor[nCnt]->SetVec3Sizing(sizeFloor);
+	}
 }

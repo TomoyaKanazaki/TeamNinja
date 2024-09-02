@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "stage.h"
 #include "godItem.h"
+#include "transpoint.h"
 
 //************************************************************
 //	親クラス [CRetentionManager] のメンバ関数
@@ -18,7 +19,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CRetentionManager::CRetentionManager()
+CRetentionManager::CRetentionManager() : m_nTransIdx(NONE_IDX)	// 遷移ポイントインデックス
 {
 	// メンバ変数をクリア
 	memset(&m_result, 0, sizeof(m_result));	// リザルト情報
@@ -39,8 +40,9 @@ HRESULT CRetentionManager::Init(void)
 {
 	// メンバ変数を初期化
 	m_result.win	= WIN_NONE;	// 勝利状況
-	m_result.fTime = 0.0f;		// 経過タイム
-	m_result.nSave = -1;		// 最後のセーブポイント
+	m_result.fTime	= 0.0f;		// 経過タイム
+	m_result.nSave	= -1;		// 最後のセーブポイント
+	m_nTransIdx		= NONE_IDX;	// 遷移ポイントインデックス
 
 	// 成功を返す
 	return S_OK;
@@ -130,5 +132,12 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 
 		// 勾玉の獲得状況を書き出し
 		CGodItem::SavePossess(GET_STAGE->GetCurMapSaveGodItemPass().c_str(), &bCurGet[0]);
+
+		// 遷移先の解放フラグテキストパスを作成
+		std::filesystem::path fsPath(GET_STAGE->GetOpenMapDirectory());	// 遷移先マップパス
+		fsPath.append("open.txt");										// ディレクトリに解放フラグのベースネーム追加
+
+		// 解放状況の書き出し
+		CTransPoint::SaveOpen(fsPath.string().c_str(), true);
 	}
 }

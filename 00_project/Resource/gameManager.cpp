@@ -92,7 +92,7 @@ HRESULT CGameManager::Init(void)
 	// メンバ変数を初期化
 	m_pResult	= nullptr;		// リザルトマネージャー
 	m_state		= STATE_START;	// 状態
-	m_nSave		= -1;			// セーブポイント
+	m_nSave = GET_RETENTION->GetSave();			// セーブポイント
 
 	// リザルトマネージャーの生成
 	m_pResult = CResultManager::Create();
@@ -104,68 +104,28 @@ HRESULT CGameManager::Init(void)
 		return E_FAIL;
 	}
 
-// わんわんおー
-#if 0
-	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, 300.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyWolf::Create(D3DXVECTOR3(0.0f, 2000.0f, -300.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
-#endif
-
-// さむらい
-#if 0
-	//CEnemyStalk::Create(D3DXVECTOR3(300.0f, 0.0f, 400.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
-	CEnemyStalk::Create(D3DXVECTOR3(700.0f, 0.0f, -60.0f), VEC3_ZERO, 400.0f, 400.0f, 600.0, 500.0f);
-
-#endif
-
-// TODO：草
-#if 0
-	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 0.0f, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 1.0f, D3DXVECTOR3(0.0f, 1.57f, 0.0f));
-	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 2.0f, D3DXVECTOR3(0.0f, 3.14f, 0.0f));
-	//CWeed::Create(VEC3_ZERO + D3DXVECTOR3(100.0f, 0.0f, 0.0f) * 3.0f, D3DXVECTOR3(0.0f, -1.57f, 0.0f));
-
-	D3DXVECTOR3 posSet;	// 位置設定用
-	D3DXVECTOR3 rotSet;	// 向き設定用
-	const float PREC_IN_RADIUS = 175.0f;
-	for (int nCntGrow = 0; nCntGrow < 128; nCntGrow++)
-	{ // 生成数分繰り返す
-
-		// 生成位置を設定
-		posSet.x = (float)(rand() % ((int)PREC_IN_RADIUS * 2) - (int)PREC_IN_RADIUS + 1);
-		posSet.y = 0.0f;
-		posSet.z = (float)(rand() % ((int)PREC_IN_RADIUS * 2) - (int)PREC_IN_RADIUS + 1);
-
-		// 生成位置を補正
-		collision::InCirclePillar(posSet, VEC3_ZERO, 50.0f, PREC_IN_RADIUS);	// 範囲外の生成防止
-
-		// 生成向きを設定
-		rotSet = D3DXVECTOR3(0.0f, (float)(rand() % 628 + 1) * 0.01f, 0.0f);
-
-		// 草オブジェクトの生成
-		CWeed::Create(posSet, rotSet);
-	}
-#endif
-
 	// 回り込みカメラの設定
 	GET_MANAGER->GetCamera()->SetState(CCamera::STATE_AROUND);
 	GET_MANAGER->GetCamera()->SetDestAround();
 
-#if 0
+	// セーブ済みの場合、スタートカメラの設定を行わない
+	if (m_nSave != -1)
+	{
+		// プレイヤーを通常状態にする
+		CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
+		CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
 
-	// TODO：仮置き
-	// プレイヤーを通常状態にする
-	CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
-	CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
+		// 通常状態にする
+		m_state = STATE_NORMAL;
 
-	// 通常状態にする
-	m_state = STATE_NORMAL;
+		return S_OK; 
+	}
 
-#else
+	// シネマスコープ始め
+	CSceneGame::GetCinemaScope()->SetScopeIn();
 
 	// スタートカメラのリセット処理
 	GET_MANAGER->GetCamera()->StartReset();
-
-#endif // 0
 
 	// 成功を返す
 	return S_OK;

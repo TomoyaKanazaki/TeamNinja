@@ -18,6 +18,7 @@
 #include "collisionCylinder.h"
 #include "collisionSphere.h"
 #include "collisionPolygon.h"
+#include "mash.h"
 
 //************************************************************
 //	定数宣言
@@ -64,7 +65,13 @@ namespace
 		"data\\MODEL\\Stairs\\WoodStairs001.x",			// 階段
 		"data\\MODEL\\B-Lattice\\BambooLattice001.x",	// 竹の格子
 		"data\\MODEL\\RoofFloor\\FloorRooftop002.x",	// 骨組みみたいな屋根裏の木
-		"data\\MODEL\\RoofFloor\\FloorRooftop003.x"		// レンガ柄風の屋根裏の木
+		"data\\MODEL\\RoofFloor\\FloorRooftop003.x",	// レンガ柄風の屋根裏の木
+		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// ふすま(動く)
+		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// ふすま(動かない)
+		"data\\MODEL\\FENCE\\fence000.x",				// フェンス00
+		"data\\MODEL\\FENCE\\fence001.x",				// フェンス01
+		"data\\MODEL\\FENCE\\fence002.x",				// フェンス02
+		"data\\MODEL\\FENCE\\fence003.x",				// フェンス03
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -164,29 +171,13 @@ void CActor::Uninit(void)
 //============================================================
 void CActor::Update(const float fDeltaTime)
 {
-	for (auto cube : m_cube)
-	{
-		// オフセット処理
-		cube->OffSet(GetMtxWorld());
-	}
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
 
-	for (auto cylinder : m_cylinder)
-	{
-		// オフセット処理
-		cylinder->OffSet(GetMtxWorld());
-	}
-
-	for (auto sphere : m_sphere)
-	{
-		// オフセット処理
-		sphere->OffSet(GetMtxWorld());
-	}
-
-	for (auto polygon : m_polygon)
-	{
-		// オフセット処理
-		polygon->OffSet(GetMtxWorld());
-	}
+	// 当たり判定のオフセット設定処理
+	CollisionOffset();
 
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
@@ -213,46 +204,45 @@ CActor* CActor::Create
 )
 {
 	// モデルUIの生成
-	CActor* pActor = new CActor;
-
-	if (pActor == nullptr)
-	{ // 生成に失敗した場合
-
-		return nullptr;
+	CActor* pActor = nullptr;
+	if (type == TYPE_MASH_MOVE) // ふすまだけ子クラスを生成
+	{
+		pActor = new CMash(rPos);
 	}
 	else
-	{ // 生成に成功した場合
-
-		// アクターの初期化
-		if (FAILED(pActor->Init()))
-		{ // 初期化に失敗した場合
-
-			// アクターの破棄
-			SAFE_DELETE(pActor);
-			return nullptr;
-		}
-
-		// 位置を設定
-		pActor->SetVec3Position(rPos);
-
-		// 向きを設定
-		pActor->SetVec3Rotation(rRot);
-
-		// 拡大率を設定
-		pActor->SetVec3Scaling(rScale);
-
-		// モデルの割り当て処理
-		pActor->BindModel(MODEL[type]);
-
-		// 種類を設定
-		pActor->m_type = type;
-
-		// 当たり判定の割り当て処理
-		pActor->BindCollision();
-
-		// 確保したアドレスを返す
-		return pActor;
+	{
+		pActor = new CActor;
 	}
+
+	// アクターの初期化
+	if (FAILED(pActor->Init()))
+	{ // 初期化に失敗した場合
+
+		// アクターの破棄
+		SAFE_DELETE(pActor);
+		return nullptr;
+	}
+
+	// モデルの割り当て処理
+	pActor->BindModel(MODEL[type]);
+
+	// 向きを設定
+	pActor->SetVec3Rotation(rRot);
+
+	// 位置を設定
+	pActor->SetVec3Position(rPos);
+
+	// 拡大率を設定
+	pActor->SetVec3Scaling(rScale);
+
+	// 種類を設定
+	pActor->m_type = type;
+
+	// 当たり判定の割り当て処理
+	pActor->BindCollision();
+
+	// 確保したアドレスを返す
+	return pActor;
 }
 
 //============================================================
@@ -398,6 +388,40 @@ void CActor::ClearCollision(void)
 }
 
 //============================================================
+// マトリックス計算処理
+//============================================================
+D3DXMATRIX CActor::CalcMatrix(void)
+{
+	// 変数を宣言
+	D3DXMATRIX   mtxScale, mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DXMATRIX   mtx;
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtx);
+
+	// 拡大率を反映
+	D3DXMatrixScaling(&mtxScale, GetVec3Scaling().x, GetVec3Scaling().y, GetVec3Scaling().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxScale);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, GetVec3Rotation().y, GetVec3Rotation().x, GetVec3Rotation().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, GetVec3Position().x, GetVec3Position().y, GetVec3Position().z);
+	D3DXMatrixMultiply(&mtx, &mtx, &mtxTrans);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
+
+	// マトリックスの計算結果を返す
+	return mtx;
+}
+
+//============================================================
 // 当たり判定の割り当て処理
 //============================================================
 void CActor::BindCollision(void)
@@ -444,7 +468,7 @@ void CActor::BindCollision(void)
 
 	for (int nCnt = 0; nCnt < static_cast<int>(coll.m_polygon.size()); nCnt++)
 	{
-		// スフィアの情報を追加する
+		// ポリゴンの情報を追加する
 		m_polygon.push_back(CCollisionPolygon::Create
 		(
 			GetVec3Position(),				// 位置
@@ -452,6 +476,42 @@ void CActor::BindCollision(void)
 			D3DXVECTOR3(coll.m_polygon[nCnt].rot.x,GetVec3Rotation().y, coll.m_polygon[nCnt].rot.z),		// 向き
 			D3DXVECTOR3(coll.m_polygon[nCnt].size.x * GetVec3Scaling().x, 0.0f, coll.m_polygon[nCnt].size.z * GetVec3Scaling().z)		// サイズ
 		));
+	}
+
+	// 当たり判定の初期化処理
+	CollisionOffset();
+}
+
+//============================================================
+// 当たり判定のオフセット処理
+//============================================================
+void CActor::CollisionOffset(void)
+{
+	// マトリックスの計算結果を取得
+	D3DXMATRIX mtx = CalcMatrix();
+
+	for (auto cube : m_cube)
+	{
+		// 位置反映
+		cube->OffSet(mtx);
+	}
+
+	for (auto cylinder : m_cylinder)
+	{
+		// 位置反映
+		cylinder->OffSet(mtx);
+	}
+
+	for (auto sphere : m_sphere)
+	{
+		// 位置反映
+		sphere->OffSet(mtx);
+	}
+
+	for (auto polygon : m_polygon)
+	{
+		// 位置反映
+		polygon->OffSet(mtx);
 	}
 }
 

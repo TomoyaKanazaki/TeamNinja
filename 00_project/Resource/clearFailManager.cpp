@@ -420,12 +420,9 @@ void CClearFailManager::UpdateWait(const float fDeltaTime)
 	//--------------------------------------------------------
 	//	‘I‘ğˆŒˆ’è
 	//--------------------------------------------------------
-	if (pKey->IsTrigger(DIK_SPACE)
-	||  pKey->IsTrigger(DIK_RETURN)
-	||  pPad->IsTrigger(CInputPad::KEY_A)
-	||  pPad->IsTrigger(CInputPad::KEY_B)
-	||  pPad->IsTrigger(CInputPad::KEY_X)
-	||  pPad->IsTrigger(CInputPad::KEY_Y))
+	if (pKey->IsTrigger(DIK_RETURN)
+	|| pPad->IsTrigger(CInputPad::KEY_A)
+	|| pPad->IsTrigger(CInputPad::KEY_B))
 	{
 		switch (m_nCurSelect)
 		{ // ‘I‘ğˆ‚²‚Æ‚Ìˆ—

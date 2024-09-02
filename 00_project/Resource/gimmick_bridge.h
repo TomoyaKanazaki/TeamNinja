@@ -44,4 +44,5 @@ private:
 	D3DXVECTOR3 m_vecToWait; // 中心座標から待機中心へのベクトル(単位ベクトル)
 	int m_nIdxWait; // 待機中心のインデックス
 	CField* m_pField; // アクティブ状態での足場
+	float m_fRot; // 橋の向き
 };

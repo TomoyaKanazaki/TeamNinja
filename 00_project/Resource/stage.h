@@ -82,6 +82,7 @@ public:
 	void SetInitMapPass(const std::string& rMapPass)	{ m_sInitMapPass = rMapPass; }	// 初期化マップパス設定
 	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
 	std::string GetCurMapDirectory(void) const			{ return m_sCurMapFolder; }		// 現在マップのディレクトリ取得
+	std::string GetOpenMapDirectory(void) const			{ return m_sOpenMapFolder; }	// クリア時解放マップのディレクトリ取得
 	void SetLimit(const SLimit& rLimit)	{ m_limit = rLimit; }	// 範囲設定
 	SLimit GetLimit(void) const			{ return m_limit; }		// 範囲取得
 
@@ -102,6 +103,7 @@ public:
 private:
 	// メンバ関数
 	HRESULT LoadSetup(const char* pPass);					// セットアップ
+	HRESULT LoadOpen(const char* pString, FILE *pFile);		// 解放マップディレクトリの読込
 	HRESULT LoadLimit(const char* pString, FILE *pFile);	// 範囲情報の読込
 	HRESULT LoadField(const char* pString, FILE *pFile);	// 地面情報の読込
 	HRESULT LoadWall(const char* pString, FILE *pFile);		// 壁情報の読込
@@ -115,6 +117,7 @@ private:
 	std::map<std::string, SPass> m_mapPass;	// マップパス連想配列
 	std::string m_sInitMapPass;		// 初期化時に生成するマップパス
 	std::string m_sCurMapFolder;	// 現在マップのフォルダパス
+	std::string m_sOpenMapFolder;	// クリア時解放マップのフォルダパス
 	SLimit m_limit;	// 範囲情報
 };
 

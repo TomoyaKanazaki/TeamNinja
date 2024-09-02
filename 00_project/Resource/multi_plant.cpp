@@ -13,15 +13,14 @@
 //===========================================
 namespace
 {
-	// TODO ちゃんとした植物のテクスチャ用意する
 	const char* TEXTURE_FILE[] = // テクスチャファイル
 	{
-		"data\\TEXTURE\\Flower001.png",	// チューリップ
-		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
-		"data\\TEXTURE\\Flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\flower000.png",	// チューリップ
+		"data\\TEXTURE\\flower001.png",	// テストテクスチャ
+		"data\\TEXTURE\\flower002.png",	// テストテクスチャ
+		"data\\TEXTURE\\flower003.png",	// テストテクスチャ
+		"data\\TEXTURE\\flower004.png",	// テストテクスチャ
+		"data\\TEXTURE\\flower005.png",	// テストテクスチャ
 	};
 
 	const float PERMISSION = 0.05f; // 重なりの許容範囲
@@ -85,6 +84,10 @@ void CMultiPlant::Uninit(void)
 //===========================================
 void CMultiPlant::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// 縁取りの色を更新
 	FrameAlpha();
 

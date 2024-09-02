@@ -13,6 +13,9 @@
 #include "texture.h"
 #include "ZTexture.h"
 #include "ToonShadow.h"
+
+#include "camera.h"
+
 //************************************************************
 //	子クラス [CObjectModel] のメンバ関数
 //************************************************************
@@ -91,7 +94,6 @@ void CObjectModel::Uninit(void)
 //============================================================
 void CObjectModel::Update(const float fDeltaTime)
 {
-
 }
 
 //============================================================

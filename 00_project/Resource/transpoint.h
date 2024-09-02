@@ -45,9 +45,11 @@ public:
 
 	// 静的メンバ関数
 	static CTransPoint *Create(const char* pPass, const D3DXVECTOR3& rPos);			// 生成
-	static CTransPoint* Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
+	static CTransPoint *Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
+	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込
+	static HRESULT SaveOpen(const char* pPass, const bool bOpen);	// 解放フラグ保存
 
 	// メンバ関数
 	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
@@ -63,8 +65,9 @@ private:
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
 	const std::string m_sTransMapPass;		// 遷移先マップパス
-	CEffekseer::CEffectData* m_pEffectData; // 保持するエフェクト情報
+	CEffekseer::CEffectData* m_pEffectData;	// 保持するエフェクト情報
 	CBalloon* m_pBalloon;	// 吹き出し情報
+	bool m_bOpen;			// ステージ解放フラグ
 };
 
 #endif	// _TRANSPOINT_H_

@@ -36,6 +36,10 @@ class CObject2D;		// オブジェクト2D
 class CPlayer : public CObjectChara
 {
 public:
+
+	// 静的メンバ変数宣言
+	static constexpr int MAX_ORBIT = 4;		// 軌跡の総数
+
 	// 種類列挙
 	enum EType
 	{
@@ -82,6 +86,7 @@ public:
 		MOTION_SAVE,		// チェックポイントモーション
 		MOTION_GET,			// 神器取得モーション
 		MOTION_START,		// スタートモーション
+		MOTION_SELECT,		// 選択モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -89,6 +94,8 @@ public:
 	enum EState
 	{
 		STATE_NONE = 0,	// 何もしない状態
+
+		// ゲーム画面状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
@@ -96,7 +103,13 @@ public:
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
-		STATE_MAX		// この列挙型の総数
+
+		// セレクト画面状態
+		STATE_SELECT_SPAWN,		// スポーン状態
+		STATE_SELECT_NORMAL,	// 移動状態
+		STATE_SELECT_ENTER,		// 入場状態
+
+		STATE_MAX	// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -112,6 +125,10 @@ public:
 	void Draw(CShader *pShader = nullptr) override;		// 描画
 	void SetEnableUpdate(const bool bUpdate) override;	// 更新状況設定
 	void SetEnableDraw(const bool bDraw) override;		// 描画状況設定
+
+	// 仮想関数
+	virtual EMotion UpdateState(const float fDeltaTime);	// 状態更新
+	virtual void SetSpawn(void);	// 出現設定
 
 	// 静的メンバ関数
 	static CPlayer *Create	// 生成
@@ -133,7 +150,6 @@ public:
 	bool HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock);		// ノックバックヒット
 	bool Hit(const int nDamage);				// ヒット
 	void TimeUp(void);							// タイムアップ
-	void SetSpawn(void);						// 出現設定
 	void SetEnableGodItem(const bool bGet);		// 神器獲得設定
 	void SetResult();							// リザルト設定
 	void SetState(const EState state);			// 状態設定
@@ -148,15 +164,31 @@ public:
 
 	// メンバ関数 (金崎朋弥)
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
+	void RecoverItem();			// アイテムでの回復処理
 	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
 	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
+	D3DXVECTOR3 GetOldPosition() const { return m_oldPos; }		// 過去位置の取得
+	CField* GetField() const { return m_pCurField; }			// フィールドの取得
+
+protected:
+	// メンバ関数
+	EMotion UpdateNone(const float fDeltaTime);	// 何もしない状態時の更新
+	EMotion UpdateMove(void);					// 移動量・目標向きの更新
+	void UpdateGravity(const float fDeltaTime);	// 重力の更新
+	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
+	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
+	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
+	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
+	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
+	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
+
+	// メンバ関数 (金崎追加)
+	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
 
 private:
-
 	// メンバ関数
-	EMotion UpdateNone(const float fDeltaTime);		// 何もしない状態時の更新
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateStart(const float fDeltaTime);	// スタート状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
@@ -164,20 +196,10 @@ private:
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
-	void UpdateOldPosition(void);	// 過去位置の更新
-	EMotion UpdateMove(void);		// 移動量・目標向きの更新
-	void UpdateGravity(const float fDeltaTime);		// 重力の更新
-
-	bool UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime);	// 着地状況の更新
-	void UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime);	// 位置の更新
-	void UpdateRotation(D3DXVECTOR3& rRot, const float fDeltaTime);	// 向きの更新
-	void UpdateMotion(int nMotion, const float fDeltaTime);			// モーション・キャラクターの更新
-	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
-	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
-	void UpdateTrans(D3DXVECTOR3& rPos);	// ステージ遷移の更新
+	void UpdateOldPosition(void);					// 過去位置の更新
+	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 
 	// メンバ関数 (金崎追加)
-	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
 	void DelelteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
@@ -202,18 +224,18 @@ private:
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 
-	COrbit		*m_pOrbit;			// 軌跡の情報
-	D3DXVECTOR3	m_oldPos;			// 過去位置
-	D3DXVECTOR3	m_move;				// 移動量
-	D3DXVECTOR3	m_destRot;			// 目標向き
-	EState		m_state;			// 状態
-	int			m_nCounterState;	// 状態管理カウンター
-	int			m_nWalkCount;		// 歩行音カウント
-	bool		m_bJump;			// ジャンプ状況
-	float		m_fScalar;			// 移動量
-	bool		m_bGimmickClone;	// ギミッククローンの生成フラグ
-	float		m_fGimmickTimer;	// ギミッククローンの生成タイマー
-	float		m_fTempStick;		// スティックの入力角を保存する変数
+	COrbit		*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
+	D3DXVECTOR3	m_oldPos;				// 過去位置
+	D3DXVECTOR3	m_move;					// 移動量
+	D3DXVECTOR3	m_destRot;				// 目標向き
+	EState		m_state;				// 状態
+	int			m_nCounterState;		// 状態管理カウンター
+	int			m_nWalkCount;			// 歩行音カウント
+	bool		m_bJump;				// ジャンプ状況
+	float		m_fScalar;				// 移動量
+	bool		m_bGimmickClone;		// ギミッククローンの生成フラグ
+	float		m_fGimmickTimer;		// ギミッククローンの生成タイマー
+	float		m_fTempStick;			// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
 	CCheckPoint* m_pCheckPoint;				// セーブしたチェックポイント

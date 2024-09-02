@@ -30,8 +30,8 @@ public:
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
 	AIterator GetBegin(void);	// リスト先頭取得
-	AIterator GetEnd(void);	// リスト最後尾取得
-	AIterator GetIndex(const int nID);	// リストインデックス取得
+	AIterator GetEnd(void);		// リスト最後尾取得
+	AIterator GetIndex(const int nID);		// リストインデックス取得
 	AIterator AddList(T *pObject);			// リスト追加
 	void DelList(const AIterator iterator);	// リスト削除
 	int GetNumAll(void);			// リスト内の要素数取得

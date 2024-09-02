@@ -31,6 +31,8 @@ namespace
 	const D3DXVECTOR3 MOVEUP		= D3DXVECTOR3(0.0f, 60.0f, 0.0f);	// 扉が上がる移動量
 	const float GRAVITY	= 360.0f;	// 重力
 	const float CLONE_UP = 2.0f;	// 分身の身長に加算する値
+
+	const CCamera::SSwing OPEN_SWING = CCamera::SSwing(9.0f, 2.0f, 0.1f);		// 開扉時の揺れの値
 }
 
 //============================================================
@@ -133,6 +135,10 @@ void CGimmickHeavyDoor::Uninit(void)
 //============================================================
 void CGimmickHeavyDoor::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
+
 	// 過去位置を更新
 	m_oldPosDoor = m_pDoorModel->GetVec3Position();
 	
@@ -152,6 +158,9 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 
 			m_move = MOVEUP;		// 移動量
 			m_state = STATE_OPEN;	// 扉上げる
+
+			// カメラ揺れを設定する
+			CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, OPEN_SWING);
 		}
 
 		break;
@@ -235,6 +244,10 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 見た目の位置設定
 	m_pGateModel->SetVec3Position(rPos);
 	m_pDoorModel->SetVec3Position(rPos);
+
+	// 見た目の当たり判定オフセット設定処理
+	m_pGateModel->CollisionOffset();
+	m_pDoorModel->CollisionOffset();
 }
 
 //============================================================
@@ -248,24 +261,28 @@ void CGimmickHeavyDoor::SetVec3Sizing(const D3DXVECTOR3& rSize)
 	// 座標を取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
-	// サイズの1/4を算出
-	D3DXVECTOR3 sizeQuartile = rSize * 0.25f;
-
-	// 植物の生成中心を設定する
-	D3DXVECTOR3 posPlant[4] =
+	// 花の生成情報を設定する
+	D3DXVECTOR3 posPlant[2] = {};
+	D3DXVECTOR3 sizePlant = {};
+	if ((int)GetAngle() % 2)
 	{
-		D3DXVECTOR3(pos.x + sizeQuartile.x, 0.0f, pos.z + sizeQuartile.z),
-		D3DXVECTOR3(pos.x - sizeQuartile.x, 0.0f, pos.z + sizeQuartile.z),
-		D3DXVECTOR3(pos.x + sizeQuartile.x, 0.0f, pos.z - sizeQuartile.z),
-		D3DXVECTOR3(pos.x - sizeQuartile.x, 0.0f, pos.z - sizeQuartile.z)
-	};
-
-	// 植物の生成
-	for (int i = 0; i < 4; ++i)
+		posPlant[0] = pos + D3DXVECTOR3(rSize.x * 0.25f, 0.0f, 0.0f);
+		posPlant[1] = pos - D3DXVECTOR3(rSize.x * 0.25f, 0.0f, 0.0f);
+		sizePlant = D3DXVECTOR3(rSize.x * 0.5f, 0.0f, rSize.z);
+	}
+	else
 	{
-		CMultiPlant::Create(posPlant[i], sizeQuartile * 2.0f, GetType(), GetNumActive() / 2);
+		posPlant[0] = pos + D3DXVECTOR3(0.0f, 0.0f, rSize.z * 0.25f);
+		posPlant[1] = pos - D3DXVECTOR3(0.0f, 0.0f, rSize.z * 0.25f);
+		sizePlant = D3DXVECTOR3(rSize.x, 0.0f, rSize.z * 0.5f);
 	}
 
+	// 花を生成
+	for (int i = 0; i < 2; ++i)
+	{
+		CMultiPlant::Create(posPlant[i], sizePlant, GetType(), GetNumActive());
+	}
+	
 	// 待機中心の設定
 	CalcConectPoint();
 }

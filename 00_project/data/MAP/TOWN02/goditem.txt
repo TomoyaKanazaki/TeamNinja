@@ -1,0 +1,36 @@
+#==============================================================================
+#
+#	神器配置のセーブデータ [goditem.txt]
+#	Author : 藤田 勇一
+#
+#==============================================================================
+STAGE_GODITEMSET
+
+	GODITEMSET
+		POS		= 3925.00 200.00 -550.00
+		TYPE	= 0
+		
+		TEXT_0
+			STR = WOW!!YOU'RE REAL JAPANESE NINJA!!(*^▽^*)
+		END_TEXT
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 5806.00 600.00 -775.00
+		TYPE	= 1
+		
+		TEXT_1
+			STR = SEEK PRO NINJA!!(*^▽^*)/
+		END_TEXT
+	END_GODITEMSET
+
+	GODITEMSET
+		POS		= 10356.00 1850.00 303.00
+		TYPE	= 2
+		
+		TEXT_2
+			STR =  EXCELENT WORK!! By WK(/・ω・)/
+		END_TEXT
+	END_GODITEMSET
+
+END_STAGE_GODITEMSET
