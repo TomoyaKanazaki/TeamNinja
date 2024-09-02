@@ -1,57 +1,61 @@
 //============================================================
 //
-//	ƒgƒD[ƒ“ƒVƒF[ƒ_[+ƒVƒƒƒhƒEƒ}ƒbƒsƒ“ƒO‚ÌƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹ [Toonshadow.fx]
-//	AuthorF’O–ì—³”V‰î
+//	ãƒˆã‚¥ãƒ¼ãƒ³ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼+ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ”ãƒ³ã‚°ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ« [Toonshadow.fx]
+//	Authorï¼šä¸¹é‡ç«œä¹‹ä»‹
 //
 //============================================================
 //************************************************************
-//	ƒOƒ[ƒoƒ‹•Ï”éŒ¾
+//	ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°å®£è¨€
 //************************************************************
-float4x4 s_mtxWorld	: WORLD;		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX
-float4x4 s_mtxView	: VIEW;			// ƒrƒ…[ƒ}ƒgƒŠƒbƒNƒX
-float4x4 s_mtxProj	: PROJECTION;	// ƒvƒƒWƒFƒNƒVƒ‡ƒ“ƒ}ƒgƒŠƒbƒNƒX
-texture  s_textureToon;				// ƒgƒD[ƒ“ƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
-
-float3	 s_dirLight = float3(0.0f, 0.0f, 0.0f);			// •½sŒõŒ¹‚Ì•ûŒüƒxƒNƒgƒ‹
-float4x4 s_mtxLightView;								// ƒ‰ƒCƒgƒrƒ…[•ÏŠ·s—ñ
-float4x4 s_mtxLightProj;								// Ë‰e•ÏŠ·s—ñ
-float4   s_LightColor = float4(0.5f, 0.7f, 0.8f, 1.0f);		// ƒ‰ƒCƒgF
+float4x4 s_mtxWorld	: WORLD;		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+float4x4 s_mtxView	: VIEW;			// ãƒ“ãƒ¥ãƒ¼ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+float4x4 s_mtxProj	: PROJECTION;	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+texture  s_textureToon;				// ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
 
-float4	s_diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);		// ŠgUŒõ
-float4	s_ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);		// ŠÂ‹«Œõ
-float4	s_emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);	// •úËŒõ
+float3	 s_dirLight = float3(0.0f, 0.0f, 0.0f);			// å¹³è¡Œå…‰æºã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+float4x4 s_mtxLightView;								// ãƒ©ã‚¤ãƒˆãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+float4x4 s_mtxLightProj;								// å°„å½±å¤‰æ›è¡Œåˆ—
+float4   s_LightColor = float4(0.5f, 0.7f, 0.8f, 1.0f);		// ãƒ©ã‚¤ãƒˆè‰²
 
-float4 s_EyePos;										// ‹“_
-float4 s_FogColor = float4(0.2f, 0.3f, 0.3f, 1.0f);	// ƒtƒHƒOF
-float  s_FogNear = 500.0f;								// ƒtƒHƒO‚ÌŠJnˆÊ’u
-float  s_FogFar = 10000.0f;								// ƒtƒHƒO‚ÌI—¹ˆÊ’u
-float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.25f);	// ‚‚³ƒtƒHƒOF
-float  s_AltiFogStart = 100.0f;						// ‚‚³ƒtƒHƒOŠJnˆÊ’u
-float  s_AltiFogEnd	= -100.0f;								// ‚‚³ƒtƒHƒOI—¹ˆÊ’u
 
-float	s_fRefEdge = 1.0f;								// ƒGƒbƒW¶¬QÆ’l
+float4	s_diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);		// æ‹¡æ•£å…‰
+float4	s_ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);		// ç’°å¢ƒå…‰
+float4	s_emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);	// æ”¾å°„å…‰
 
+float4 s_EyePos;										// è¦–ç‚¹
+float4 s_FogColor = float4(0.2f, 0.3f, 0.3f, 1.0f);	// ãƒ•ã‚©ã‚°è‰²
+float  s_FogNear = 500.0f;								// ãƒ•ã‚©ã‚°ã®é–‹å§‹ä½ç½®
+float  s_FogFar = 10000.0f;								// ãƒ•ã‚©ã‚°ã®çµ‚äº†ä½ç½®
+float4 s_AltiFogColor = float4(1.0f, 1.0f, 1.0f, 0.25f);	// é«˜ã•ãƒ•ã‚©ã‚°è‰²
+float  s_AltiFogStart = 100.0f;						// é«˜ã•ãƒ•ã‚©ã‚°é–‹å§‹ä½ç½®
+float  s_AltiFogEnd	= -100.0f;								// é«˜ã•ãƒ•ã‚©ã‚°çµ‚äº†ä½ç½®
+
+float	s_fRefEdge = 1.0f;								// ã‚¨ãƒƒã‚¸ç”Ÿæˆå‚ç…§å€¤
+
+
+float NearClip = 5000.0f;
+float FarClip = 10000.0f;
 //************************************************************
-//	ƒTƒ“ƒvƒ‰[éŒ¾
+//	ã‚µãƒ³ãƒ—ãƒ©ãƒ¼å®£è¨€
 //************************************************************
-sampler texObject : register(s0);	// ƒIƒuƒWƒFƒNƒgƒeƒNƒXƒ`ƒƒ
-sampler texToon =	// ƒgƒD[ƒ“ƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
-sampler_state		// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg
+sampler texObject : register(s0);	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£
+sampler texToon =	// ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
+sampler_state		// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆ
 {
-	// ‘ÎÛƒeƒNƒXƒ`ƒƒ
-	Texture = <s_textureToon>;	// ƒgƒD[ƒ“ƒ}ƒbƒv
+	// å¯¾è±¡ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	Texture = <s_textureToon>;	// ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—
 
-	// ŠgkEƒ~ƒbƒvƒ}ƒbƒv
-	Filter = MIN_MAG_MIP_LINEAR;	// üŒ`•âŠ®
+	// æ‹¡ç¸®ãƒ»ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—
+	Filter = MIN_MAG_MIP_LINEAR;	// ç·šå½¢è£œå®Œ
 
-	// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh
-	AddressU = Clamp;	// U¬•ª‚Ì’[‚ğˆø‚«‰„‚Î‚·
-	AddressV = Clamp;	// V¬•ª‚Ì’[‚ğˆø‚«‰„‚Î‚·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
+	AddressU = Clamp;	// Uæˆåˆ†ã®ç«¯ã‚’å¼•ãå»¶ã°ã™
+	AddressV = Clamp;	// Væˆåˆ†ã®ç«¯ã‚’å¼•ãå»¶ã°ã™
 };
 
-texture s_texShadowMap;					// ƒVƒƒƒhƒEƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
-sampler ShadowSampler = sampler_state	// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg
+texture s_texShadowMap;					// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
+sampler ShadowSampler = sampler_state	// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆ
 {
 	texture = (s_texShadowMap);
 	AddressU =	CLAMP;
@@ -63,67 +67,68 @@ sampler ShadowSampler = sampler_state	// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg
 };
 
 //************************************************************
-//	\‘¢‘Ì’è‹`
+//	æ§‹é€ ä½“å®šç¾©
 //************************************************************
-// ’¸“_ƒVƒF[ƒ_[o—Íî•ñ
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å‡ºåŠ›æƒ…å ±
 struct VS_OUTPUT
 {
-	float4 pos		: POSITION;		// ’¸“_À•W
-	float2 tex		: TEXCOORD0;	// ƒeƒNƒZƒ‹À•W
-	float4 ZCalcTex : TEXCOORD1;	// Z’lZo—pƒeƒNƒXƒ`ƒƒ
-	float4 PosWVP	: TEXCOORD2;	// ’¸“_À•W(ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_‚Å‚ÍPOSITION‚ªg—p‚Å‚«‚È‚¢‚½‚ß‘ã—p‚·‚é)
-	float3 nor		: TEXCOORD3;	// –@ü
-	float4 Col		: COLOR0;		// o—ÍF
+	float4 pos		: POSITION;		// é ‚ç‚¹åº§æ¨™
+	float2 tex		: TEXCOORD0;	// ãƒ†ã‚¯ã‚»ãƒ«åº§æ¨™
+	float4 ZCalcTex : TEXCOORD1;	// Zå€¤ç®—å‡ºç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	float4 PosWVP	: TEXCOORD2;	// é ‚ç‚¹åº§æ¨™(ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ã§ã¯POSITIONãŒä½¿ç”¨ã§ããªã„ãŸã‚ä»£ç”¨ã™ã‚‹)
+	float3 nor		: TEXCOORD3;	// æ³•ç·š
+	float4 Col		: COLOR0;		// å‡ºåŠ›è‰²
 };
 
 //************************************************************
-//	ƒOƒ[ƒoƒ‹ŠÖ”
+//	ã‚°ãƒ­ãƒ¼ãƒãƒ«é–¢æ•°
 //************************************************************
 //============================================================
-//	’¸“_À•W‚ÌË‰e•ÏŠ·
+//	é ‚ç‚¹åº§æ¨™ã®å°„å½±å¤‰æ›
 //============================================================
 float4 TransVertex
 (
-	in float4	inPos		: POSITION,		// ’¸“_À•W
-	in float4x4	inMtxWorld	: WORLD,			// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX
-	in float4x4	inMtxView	: VIEW,			// ƒrƒ…[ƒ}ƒgƒŠƒbƒNƒX
-	in float4x4	inMtxProj	: PROJECTION		// ƒvƒƒWƒFƒNƒVƒ‡ƒ“ƒ}ƒgƒŠƒbƒNƒX
+	in float4	inPos		: POSITION,		// é ‚ç‚¹åº§æ¨™
+	in float4x4	inMtxWorld	: WORLD,			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+	in float4x4	inMtxView	: VIEW,			// ãƒ“ãƒ¥ãƒ¼ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
+	in float4x4	inMtxProj	: PROJECTION		// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒˆãƒªãƒƒã‚¯ã‚¹
 )
 {
-	// ’¸“_À•W‚ğË‰e•ÏŠ·
+	// é ‚ç‚¹åº§æ¨™ã‚’å°„å½±å¤‰æ›
 	inPos = mul(inPos, inMtxWorld);
 	inPos = mul(inPos, inMtxView);
 	inPos = mul(inPos, inMtxProj);
 
-	// •ÏŠ·Œã‚Ì’¸“_À•W‚ğ•Ô‚·
+	// å¤‰æ›å¾Œã®é ‚ç‚¹åº§æ¨™ã‚’è¿”ã™
 	return inPos;
 }
 
 //============================================================
-//	’¸“_ƒVƒF[ƒ_[
+//	é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
 //============================================================
 VS_OUTPUT VS
 (
-	in	float4		inPos	: POSITION,		// ’¸“_À•W
-	in	float3		inNor : NORMAL,		// –@üƒxƒNƒgƒ‹
-	in	float2		inTex : TEXCOORD0	// ƒeƒNƒZƒ‹À•W
+	in	float4		inPos	: POSITION,		// é ‚ç‚¹åº§æ¨™
+	in	float3		inNor : NORMAL,		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	in	float2		inTex : TEXCOORD0	// ãƒ†ã‚¯ã‚»ãƒ«åº§æ¨™
 )
 {
-	VS_OUTPUT outVertex = (VS_OUTPUT)0;		// ’¸“_î•ñ
+	VS_OUTPUT outVertex = (VS_OUTPUT)0;		// é ‚ç‚¹æƒ…å ±
 
 
-	// •’Ê‚ÉƒJƒƒ‰‚Ì–Úü‚É‚æ‚éƒ[ƒ‹ƒhƒrƒ…[Ë‰e•ÏŠ·‚ğ‚·‚é
+	// æ™®é€šã«ã‚«ãƒ¡ãƒ©ã®ç›®ç·šã«ã‚ˆã‚‹ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ“ãƒ¥ãƒ¼å°„å½±å¤‰æ›ã‚’ã™ã‚‹
 	float4x4 mat;
 	mat = mul(s_mtxWorld, s_mtxView);
 	mat = mul(mat, s_mtxProj);
 	outVertex.pos = mul(inPos, mat);
 	outVertex.PosWVP = mul(inPos, s_mtxWorld);
 	outVertex.tex = inTex;
-	// ƒ‰ƒCƒg‚Ì–Úü‚É‚æ‚éƒ[ƒ‹ƒhƒrƒ…[Ë‰e•ÏŠ·‚ğ‚·‚é
+
+	// ãƒ©ã‚¤ãƒˆã®ç›®ç·šã«ã‚ˆã‚‹ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ“ãƒ¥ãƒ¼å°„å½±å¤‰æ›ã‚’ã™ã‚‹
 	mat = mul(s_mtxWorld, s_mtxLightView);
 	mat = mul(mat, s_mtxLightProj);
 	outVertex.ZCalcTex = mul(inPos, mat);
-	// ƒeƒNƒZƒ‹À•W‚ğİ’è
+	// ãƒ†ã‚¯ã‚»ãƒ«åº§æ¨™ã‚’è¨­å®š
 	outVertex.tex = inTex;
 	outVertex.nor = inNor;
 	
@@ -131,98 +136,108 @@ VS_OUTPUT VS
 }
 
 //============================================================
-//	ƒsƒNƒZƒ‹ƒVƒF[ƒ_[
+//	ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
 //============================================================
 void PS
 (
-	in	VS_OUTPUT	inVertex,			// ’¸“_î•ñ
-	float4 ZCalcTex : TEXCOORD1,		// [“xî•ñ
-	out	float4		outCol : COLOR0,	// ƒsƒNƒZƒ‹F
-	out	float4		outRef : COLOR1		// ƒsƒNƒZƒ‹‰æ‚èQÆ’l
+	in	VS_OUTPUT	inVertex,			// é ‚ç‚¹æƒ…å ±
+	float4 ZCalcTex : TEXCOORD1,		// æ·±åº¦æƒ…å ±
+	out	float4		outCol : COLOR0,	// ãƒ”ã‚¯ã‚»ãƒ«è‰²
+	out	float4		outRef : COLOR1		// ãƒ”ã‚¯ã‚»ãƒ«ç¸å–ã‚Šå‚ç…§å€¤
 )
 {
-	// •Ï”‚ğéŒ¾
-	float  fLight = 0.0f;	// ƒ‰ƒCƒeƒBƒ“ƒOŒõ—Ê
-	float4 toonCol = float4(0.0f, 0.0f, 0.0f, 0.0f);	// ƒgƒD[ƒ“ƒ}ƒbƒvƒeƒNƒZƒ‹F
+	// å¤‰æ•°ã‚’å®£è¨€
+	float  fLight = 0.0f;	// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°å…‰é‡
+	float4 toonCol = float4(0.0f, 0.0f, 0.0f, 0.0f);	// ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚»ãƒ«è‰²
 	float4 Col = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 
 
 	//===============================
-	//		ƒgƒD[ƒ“ƒ}ƒbƒsƒ“ƒO
+	//		ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ”ãƒ³ã‚°
 	//===============================
-	// ’Êíƒ‰ƒCƒeƒBƒ“ƒO‚ÌŒõ—Ê‚ğ‹‚ß‚é
+	// é€šå¸¸ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã®å…‰é‡ã‚’æ±‚ã‚ã‚‹
 	fLight = dot(normalize(inVertex.nor), normalize(-s_dirLight));
 	fLight = fLight * 0.5f + 0.5f;
 	fLight = fLight * fLight;
 
-	// ƒ‰ƒCƒeƒBƒ“ƒO‚ÌŒõ—Ê‚ğƒgƒD[ƒ“ƒ}ƒbƒv‚ÌƒeƒNƒZƒ‹U¬•ª‚É•ÏŠ·
+	// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã®å…‰é‡ã‚’ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—ã®ãƒ†ã‚¯ã‚»ãƒ«Uæˆåˆ†ã«å¤‰æ›
 	toonCol = tex2D(texToon, float2(fLight, 0.5f));
 
-	// ƒsƒNƒZƒ‹‚ÌFî•ñ‚ğİ’è
-	outCol = s_diffuse;		// ŠgUŒõ‚ğİ’è
-	outCol += s_ambient;		// ŠÂ‹«Œõ‚ğ‰ÁZ
-	outCol += s_emissive;	// •úËŒõ‚ğ‰ÁZ
-	outCol *= toonCol;		// ƒgƒD[ƒ“ƒ}ƒbƒvƒeƒNƒZƒ‹F‚ğæZ
-	outCol *= s_LightColor;	// ƒ‰ƒCƒgF‚ğæZ
+	// ãƒ”ã‚¯ã‚»ãƒ«ã®è‰²æƒ…å ±ã‚’è¨­å®š
+	outCol = s_diffuse;		// æ‹¡æ•£å…‰ã‚’è¨­å®š
+	outCol += s_ambient;		// ç’°å¢ƒå…‰ã‚’åŠ ç®—
+	outCol += s_emissive;	// æ”¾å°„å…‰ã‚’åŠ ç®—
+	outCol *= toonCol;		// ãƒˆã‚¥ãƒ¼ãƒ³ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚»ãƒ«è‰²ã‚’ä¹—ç®—
+	outCol *= s_LightColor;	// ãƒ©ã‚¤ãƒˆè‰²ã‚’ä¹—ç®—
 
 
 	if ((tex2D(texObject, inVertex.tex).r + tex2D(texObject, inVertex.tex).g + tex2D(texObject, inVertex.tex).b) != 0.0f)
-	{ // ƒeƒNƒXƒ`ƒƒ‚ªw’è‚³‚ê‚Ä‚¢‚éê‡
+	{ // ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 
-		// ƒeƒNƒZƒ‹‚ÌF‚ğæZ
+		// ãƒ†ã‚¯ã‚»ãƒ«ã®è‰²ã‚’ä¹—ç®—
 		outCol *= tex2D(texObject, inVertex.tex);
 	}
 
-	// ƒsƒNƒZƒ‹“§–¾“x‚ğŠgUŒõ‚Ì‚à‚Ì‚É‚·‚é
+	// ãƒ”ã‚¯ã‚»ãƒ«é€æ˜åº¦ã‚’æ‹¡æ•£å…‰ã®ã‚‚ã®ã«ã™ã‚‹
 	outCol.a = s_diffuse.a;
 
 	//===============================
-	//		ƒVƒƒƒhƒEƒ}ƒbƒsƒ“ƒO
+	//		ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ”ãƒ³ã‚°
 	//===============================
-	// ƒ‰ƒCƒg–Úü‚É‚æ‚éZ’l‚ÌÄZo
-	float ZValue = ZCalcTex.z / ZCalcTex.w;
+	// ãƒ©ã‚¤ãƒˆç›®ç·šã«ã‚ˆã‚‹Zå€¤ã®å†ç®—å‡º
+	float ZValue = (ZCalcTex.z - NearClip) / (FarClip - NearClip);
 
-	// ƒeƒNƒXƒ`ƒƒÀ•W‚É•ÏŠ·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ã«å¤‰æ›
 	float2 TransTexCoord;
 	TransTexCoord.x = (1.0f + ZCalcTex.x / ZCalcTex.w) * 0.5f;
 	TransTexCoord.y = (1.0f - ZCalcTex.y / ZCalcTex.w) * 0.5f;
 	if (TransTexCoord.x <= 1.0f && TransTexCoord.x >= 0.0f && TransTexCoord.y <= 1.0f && TransTexCoord.y >= 0.0f)
 	{
 		float4 TexCol = tex2D(ShadowSampler, TransTexCoord);
-		// “¯‚¶À•W‚ÌZ’l‚ğ’Šo
+
+		// åŒã˜åº§æ¨™ã®Zå€¤ã‚’æŠ½å‡º
+		float depth = TexCol.x;
+		depth += TexCol.y;
+		depth += TexCol.z;
+		depth += TexCol.w;
+
+		// å„ãƒãƒ£ãƒ³ãƒãƒ«ã‹ã‚‰å…ƒã®æ·±åº¦ã‚’å¾©å…ƒã™ã‚‹
+		float linearDepth = (TexCol.x + sqrt(TexCol.y) + pow(TexCol.z, 1.0 / 3.0) + pow(TexCol.w, 1.0 / 4.0));
 		float SM_Z = (TexCol.x + (TexCol.y + (TexCol.z / 256.0f) / 256.0f) / 256.0f);
 
-		// Zo“_‚ªƒVƒƒƒhƒEƒ}ƒbƒv‚ÌZ’l‚æ‚è‚à‘å‚«‚¯‚ê‚Î‰e‚Æ”»’f
-		if (ZValue > SM_Z + 0.0001f) {
-			outCol.rgb = outCol.rgb * 0.8f;
+		// ç®—å‡ºç‚¹ãŒã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®Zå€¤ã‚ˆã‚Šã‚‚å¤§ãã‘ã‚Œã°å½±ã¨åˆ¤æ–­
+		if (ZValue > depth + 0.0001f) {
+			outCol.rgb = outCol.rgb * 0.5f;
 		}
+		outCol.rgb = linearDepth;
 	}
 
 
 	//===============================
-	//			‚‚³ƒtƒHƒO
+	//			é«˜ã•ãƒ•ã‚©ã‚°
 	//===============================
-	float Af = (s_AltiFogStart - inVertex.PosWVP.y) / (s_AltiFogStart - s_AltiFogEnd); //ƒtƒHƒO‚Ì“K‰Š„‡‚ğ‚à‚Æ‚ß‚é
+	float Af = (s_AltiFogStart - inVertex.PosWVP.y) / (s_AltiFogStart - s_AltiFogEnd); //ãƒ•ã‚©ã‚°ã®é©å¿œå‰²åˆã‚’ã‚‚ã¨ã‚ã‚‹
 	Af = clamp(Af, 0.0f, 1.0f);
 	//Af *= -1.f;
 	Af*= s_AltiFogColor.a;
 	outCol.rgb = outCol.rgb * (1.0f-Af)+s_AltiFogColor.rgb * ( Af);
 	//===============================
-	//			ƒtƒHƒO
+	//			ãƒ•ã‚©ã‚°
 	//===============================
 	float d = distance(inVertex.PosWVP.xyz, s_EyePos.xyz);
-	float f = (s_FogFar - d) / (s_FogFar - s_FogNear); //ƒtƒHƒO‚Ì“K‰Š„‡‚ğ‚à‚Æ‚ß‚é
+	float f = (s_FogFar - d) / (s_FogFar - s_FogNear); //ãƒ•ã‚©ã‚°ã®é©å¿œå‰²åˆã‚’ã‚‚ã¨ã‚ã‚‹
 	f = clamp(f, 0.0f, 1.0f);
 	f *= s_FogColor.a;
 	outCol.rgb = outCol.rgb * (f ) + s_FogColor.rgb * (1.0f - f);
 
-	// ƒsƒNƒZƒ‹‚Ì‰æ‚èQÆ’l‚ğİ’è
+	// ãƒ”ã‚¯ã‚»ãƒ«ã®ç¸å–ã‚Šå‚ç…§å€¤ã‚’è¨­å®š
 	outRef = float4(s_fRefEdge, s_fRefEdge, s_fRefEdge, 1.0f);
+
 }
 
 //============================================================
-//	ƒeƒNƒjƒbƒNŠÖ”
+//	ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯é–¢æ•°
 //============================================================
 technique TShader
 {

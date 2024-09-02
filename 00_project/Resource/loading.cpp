@@ -227,6 +227,8 @@ void CLoading::Update(const float fDeltaTime)
 
 				// 何もしない状態にする
 				m_state = LOAD_NONE;
+				CObject::DrawAll_ZShader(CObject::EScene::SCENE_BILLBOARD);
+				CObject::DrawAll_ZShader(CObject::EScene::SCENE_MAIN);
 			}
 
 			break;
@@ -309,7 +311,7 @@ HRESULT CLoading::Set(std::function<HRESULT(bool*)> func)
 
 		// ロードの表示開始状態にする
 		m_state = LOAD_FADEOUT;
-
+	
 		// 成功を返す
 		return S_OK;
 	}
