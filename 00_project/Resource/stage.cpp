@@ -149,6 +149,26 @@ HRESULT CStage::BindStage(const SPass& rPass)
 		return E_FAIL;
 	}
 
+	// アクターのセットアップの読込
+	if (!rPass.sActor.empty())		// パスが指定されている場合
+	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ギミックのセットアップの読込
+	if (!rPass.sGimmick.empty())	// パスが指定されている場合
+	if (FAILED(CGimmick::LoadSetup(rPass.sGimmick.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// 敵のセットアップの読込
 	if (!rPass.sEnemyAtc.empty())	// パスが指定されている場合
 	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
@@ -172,26 +192,6 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	// 神器のセットアップの読込
 	if (!rPass.sGodItem.empty())	// パスが指定されている場合
 	if (FAILED(CGodItem::LoadSetup(rPass.sGodItem.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// アクターのセットアップの読込
-	if (!rPass.sActor.empty())		// パスが指定されている場合
-	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// ギミックのセットアップの読込
-	if (!rPass.sGimmick.empty())	// パスが指定されている場合
-	if (FAILED(CGimmick::LoadSetup(rPass.sGimmick.c_str())))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
@@ -238,9 +238,8 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			return E_FAIL;
 		}
 	}
+	
 
-	CObject::DrawAll_ZShader(CObject::EScene::SCENE_MAIN);
-	CObject::DrawAll_ZShader(CObject::EScene::SCENE_BILLBOARD);
 
 	// 成功を返す
 	return S_OK;

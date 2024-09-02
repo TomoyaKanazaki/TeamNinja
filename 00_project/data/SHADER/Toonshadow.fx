@@ -12,6 +12,7 @@ float4x4 s_mtxView	: VIEW;			// ビューマトリックス
 float4x4 s_mtxProj	: PROJECTION;	// プロジェクションマトリックス
 texture  s_textureToon;				// トゥーンマップテクスチャ
 
+
 float3	 s_dirLight = float3(0.0f, 0.0f, 0.0f);			// 平行光源の方向ベクトル
 float4x4 s_mtxLightView;								// ライトビュー変換行列
 float4x4 s_mtxLightProj;								// 射影変換行列
@@ -32,6 +33,9 @@ float  s_AltiFogEnd	= -500.0f;							// 高さフォグ終了位置
 
 float	s_fRefEdge = 1.0f;								// エッジ生成参照値
 
+
+float NearClip = 5000.0f;
+float FarClip = 10000.0f;
 //************************************************************
 //	サンプラー宣言
 //************************************************************
@@ -119,6 +123,7 @@ VS_OUTPUT VS
 	outVertex.pos = mul(inPos, mat);
 	outVertex.PosWVP = mul(inPos, s_mtxWorld);
 	outVertex.tex = inTex;
+
 	// ライトの目線によるワールドビュー射影変換をする
 	mat = mul(s_mtxWorld, s_mtxLightView);
 	mat = mul(mat, s_mtxLightProj);
@@ -181,7 +186,7 @@ void PS
 	//		シャドウマッピング
 	//===============================
 	// ライト目線によるZ値の再算出
-	float ZValue = ZCalcTex.z / ZCalcTex.w;
+	float ZValue = (ZCalcTex.z - NearClip) / (FarClip - NearClip);
 
 	// テクスチャ座標に変換
 	float2 TransTexCoord;
@@ -190,13 +195,22 @@ void PS
 	if (TransTexCoord.x <= 1.0f && TransTexCoord.x >= 0.0f && TransTexCoord.y <= 1.0f && TransTexCoord.y >= 0.0f)
 	{
 		float4 TexCol = tex2D(ShadowSampler, TransTexCoord);
+
 		// 同じ座標のZ値を抽出
+		float depth = TexCol.x;
+		depth += TexCol.y;
+		depth += TexCol.z;
+		depth += TexCol.w;
+
+		// 各チャンネルから元の深度を復元する
+		float linearDepth = (TexCol.x + sqrt(TexCol.y) + pow(TexCol.z, 1.0 / 3.0) + pow(TexCol.w, 1.0 / 4.0));
 		float SM_Z = (TexCol.x + (TexCol.y + (TexCol.z / 256.0f) / 256.0f) / 256.0f);
 
 		// 算出点がシャドウマップのZ値よりも大きければ影と判断
-		if (ZValue > SM_Z + 0.0001f) {
-			outCol.rgb = outCol.rgb * 0.8f;
+		if (ZValue > depth + 0.0001f) {
+			outCol.rgb = outCol.rgb * 0.5f;
 		}
+		outCol.rgb = linearDepth;
 	}
 
 
@@ -219,6 +233,7 @@ void PS
 
 	// ピクセルの縁取り参照値を設定
 	outRef = float4(s_fRefEdge, s_fRefEdge, s_fRefEdge, 1.0f);
+
 }
 
 //============================================================
