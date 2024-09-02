@@ -43,6 +43,18 @@
 #define KEY_ROTA_LEFT	(DIK_C)	// 左回転キー
 #define NAME_ROTA_LEFT	("C")	// 左回転表示
 
+#define KEY_FAR			(DIK_W)	// 奥移動キー
+#define KEY_NEAR		(DIK_S)	// 手前移動キー
+#define KEY_RIGHT		(DIK_D)	// 右移動キー
+#define KEY_LEFT		(DIK_A)	// 左移動キー
+#define KEY_UP			(DIK_E)	// 上移動キー
+#define KEY_DOWN		(DIK_Q)	// 下移動キー
+
+#define KEY_UP_MOVE		(DIK_UP)	// 移動量上キー
+#define NAME_UP_MOVE	("↑")		// 移動量上表示
+#define KEY_DOWN_MOVE	(DIK_DOWN)	// 移動量下キー
+#define NAME_DOWN_MOVE	("↓")		// 移動量下表示
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -50,7 +62,9 @@ namespace
 {
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_actor.txt";	// セーブテキストパス
 
-	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.1f, 0.1f, 0.1f);		// 拡縮率
+	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.1f, 0.1f, 0.1f);			// 拡縮率
+	const float INIT_MOVE = 25.0f;	// 初期移動量
+	const float CALC_MOVE = 0.5f;	// 計算移動量
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値
 	const int DIGIT_FLOAT = 2;		// 小数点以下の桁数
 
@@ -68,8 +82,9 @@ CEditActor::CEditActor(CEditStage* pEditor) : CEditorObject(pEditor)
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pActor = nullptr;	// アクター情報
-	m_bSave = false;	// 保存状況
+	m_pActor = nullptr;		// アクター情報
+	m_fMove = INIT_MOVE;	// 移動量
+	m_bSave = false;		// 保存状況
 	memset(&m_infoCreate, 0, sizeof(m_infoCreate));	// アクター配置情報
 
 #endif	// _DEBUG
@@ -169,6 +184,9 @@ void CEditActor::Update(void)
 	// 種類の変更
 	ChangeType();
 
+	// 移動量の設定
+	MoveSet();
+
 	// アクターの生成
 	CreateActor();
 
@@ -240,6 +258,7 @@ void CEditActor::DrawDebugControl(void)
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "大きさ：[%s/%s+%s]\n", NAME_UP_SIZE, NAME_DOWN_SIZE, NAME_TRIGGER);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "種類変更：[%s/%s]\n", NAME_UP_TYPE, NAME_DOWN_TYPE);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "移動量変更：[%s/%s]\n", NAME_UP_MOVE, NAME_DOWN_MOVE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "削除：[%s]\n", NAME_RELEASE);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "設置：[%s]\n", NAME_CREATE);
 
@@ -257,6 +276,7 @@ void CEditActor::DrawDebugInfo(void)
 	CEditorObject::DrawDebugInfo();
 
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[種類]\n", m_infoCreate.type);
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%f：[移動量]\n", m_fMove);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%f %f %f：[大きさ]\n", m_infoCreate.scale.x, m_infoCreate.scale.y, m_infoCreate.scale.z);
 
 #endif	// _DEBUG
@@ -267,8 +287,66 @@ void CEditActor::DrawDebugInfo(void)
 //============================================================
 void CEditActor::UpdatePosition(void)
 {
-	// 位置の更新
-	CEditorObject::UpdatePosition();
+	CInputKeyboard* m_pKeyboard = CManager::GetInstance()->GetKeyboard();	// キーボード情報
+	D3DXVECTOR3 pos = GetVec3Position();		// 位置
+
+	if (!m_pKeyboard->IsPress(KEY_TRIGGER))
+	{
+		if (m_pKeyboard->IsPress(KEY_FAR))
+		{
+			pos.z += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_NEAR))
+		{
+			pos.z -= m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_RIGHT))
+		{
+			pos.x += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_LEFT))
+		{
+			pos.x -= m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_UP))
+		{
+			pos.y += m_fMove;
+		}
+		if (m_pKeyboard->IsPress(KEY_DOWN))
+		{
+			pos.y -= m_fMove;
+		}
+	}
+	else
+	{
+		if (m_pKeyboard->IsTrigger(KEY_FAR))
+		{
+			pos.z += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_NEAR))
+		{
+			pos.z -= m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_RIGHT))
+		{
+			pos.x += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_LEFT))
+		{
+			pos.x -= m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_UP))
+		{
+			pos.y += m_fMove;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_DOWN))
+		{
+			pos.y -= m_fMove;
+		}
+	}
+
+	// 位置を反映
+	SetVec3Position(pos);
 
 	// 位置を反映
 	m_pActor->SetVec3Position(GetVec3Position());
@@ -572,6 +650,41 @@ void CEditActor::ChangeType(void)
 
 	// 種類を反映
 	m_pActor->SetType(m_infoCreate.type);
+}
+
+//============================================================
+// 移動量の設定
+//============================================================
+void CEditActor::MoveSet(void)
+{
+	// キーボード情報
+	CInputKeyboard* m_pKeyboard = CManager::GetInstance()->GetKeyboard();
+
+	if (!m_pKeyboard->IsPress(KEY_TRIGGER))
+	{
+		if (m_pKeyboard->IsPress(KEY_UP_MOVE))
+		{
+			m_fMove += CALC_MOVE;
+		}
+		if (m_pKeyboard->IsPress(KEY_DOWN_MOVE))
+		{
+			m_fMove -= CALC_MOVE;
+		}
+	}
+	else
+	{
+		if (m_pKeyboard->IsTrigger(KEY_UP_MOVE))
+		{
+			m_fMove += CALC_MOVE;
+		}
+		if (m_pKeyboard->IsTrigger(KEY_DOWN_MOVE))
+		{
+			m_fMove -= CALC_MOVE;
+		}
+	}
+
+	// 移動量を補正
+	useful::LimitMinNum(m_fMove, 0.0f);
 }
 
 //============================================================
