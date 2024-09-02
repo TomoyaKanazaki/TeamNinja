@@ -1,50 +1,56 @@
 //============================================================
 //
-//	ZƒeƒNƒXƒ`ƒƒ¶¬ [ZTexCreator.fx]
-//	AuthorF’O–ì—³”V‰î
+//	Zãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ [ZTexCreator.fx]
+//	Authorï¼šä¸¹é‡ç«œä¹‹ä»‹
 //
 //============================================================
-float4x4 matWorld : world;		// ƒ[ƒ‹ƒh•ÏŠ·s—ñ
-float4x4 matView : view;		// ƒrƒ…[•ÏŠ·s—ñ
-float4x4 matProj : projection;		// Ë‰e•ÏŠ·s—ñ
+float4x4 matWorld : world;		// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—
+float4x4 matView : view;		// ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+float4x4 matProj : projection;		// å°„å½±å¤‰æ›è¡Œåˆ—
+
+float NearClip = 5000.0f;
+float FarClip = 10000.0f;
 
 struct VS_OUTPUT
 {
-   float4 Pos : POSITION;   // Ë‰e•ÏŠ·À•W
-   float4 ShadowMapTex : TEXCOORD0;   // Zƒoƒbƒtƒ@ƒeƒNƒXƒ`ƒƒ
+   float4 Pos : POSITION;   // å°„å½±å¤‰æ›åº§æ¨™
+   float4 ShadowMapTex : TEXCOORD0;   // Zãƒãƒƒãƒ•ã‚¡ãƒ†ã‚¯ã‚¹ãƒãƒ£
 };
 
-// ’¸“_ƒVƒF[ƒ_
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€
 VS_OUTPUT ZBufferCalc_VS( float4 Pos : POSITION )
 {
    VS_OUTPUT Out = (VS_OUTPUT)0;
 
-   // •’Ê‚Éƒ[ƒ‹ƒhƒrƒ…[Ë‰es—ñ‚ğ‚·‚é
-   float4x4 mat;
-   mat  = mul( matWorld, matView );
-   mat  = mul( mat, matProj );
-   Out.Pos = mul( Pos, mat );
-   
-   // ƒeƒNƒXƒ`ƒƒÀ•W‚ğ’¸“_‚É‡‚í‚¹‚é
-   Out.ShadowMapTex = Out.Pos;
+
+   // ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’è¨ˆç®—
+   float4x4 mat = mul(matWorld, matView);
+
+   // å°„å½±å¤‰æ›
+   Out.Pos = mul(Pos, mul(mat, matProj));
+
+   // ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã§ã®æ·±åº¦è¨ˆç®—
+   float4 viewSpacePos = mul(Pos, mat);
+   Out.ShadowMapTex = viewSpacePos;
 
    return Out;
 }
 
 
-// ƒsƒNƒZƒ‹ƒVƒF[ƒ_
+// ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€
 float4 ZBufferPlot_PS( float4 ShadowMapTex : TEXCOORD0 ) : COLOR
 {
-    // [“xZo
-    float depth = ShadowMapTex.z / ShadowMapTex.w;
-    //[“xî•ñ‚Ì‰¼”•ª‚ğFî•ñ‚É•ª‰ğ
-    float4 unpacked_depth = float4(0, 0, 256.0f, 256.0f);
-    unpacked_depth.g = modf(depth*256.0f, unpacked_depth.r);
-    unpacked_depth.b *= modf(unpacked_depth.g*256.0f, unpacked_depth.g);
-    unpacked_depth /= 256.0f;
-    unpacked_depth.w = depth;
+    // ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã®zå€¤ã‹ã‚‰ãƒªãƒ‹ã‚¢æ·±åº¦ã‚’è¨ˆç®—
+    float linearDepth = (ShadowMapTex.z - NearClip) / (FarClip - NearClip);
+
+    // é«˜ç²¾åº¦ãªæ·±åº¦ãƒ‘ãƒƒã‚­ãƒ³ã‚° (32ãƒ“ãƒƒãƒˆã®ã‚«ãƒ©ãƒ¼ã¨ã—ã¦æ·±åº¦ã‚’æ ¼ç´)
+    float4 packedDepth;
+    packedDepth.x = linearDepth;
+    packedDepth.y = linearDepth * linearDepth;
+    packedDepth.z = linearDepth * linearDepth * linearDepth;
+    packedDepth.w = linearDepth * linearDepth * linearDepth * linearDepth;
     
-    return unpacked_depth;
+    return packedDepth;
 }
 
 technique ZValuePlotTec
