@@ -137,7 +137,8 @@ void CEnemyWolf::Draw(CShader* pShader)
 //============================================================
 void CEnemyWolf::SetData(void)
 {
-
+	// 情報の設定処理
+	CEnemyAttack::SetData();
 }
 
 //============================================================
@@ -206,14 +207,14 @@ CEnemyWolf* CEnemyWolf::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// ナビゲーションを生成
 		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
 
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
@@ -267,14 +268,14 @@ CEnemyWolf* CEnemyWolf::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// ナビゲーションを生成
 		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
 
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;

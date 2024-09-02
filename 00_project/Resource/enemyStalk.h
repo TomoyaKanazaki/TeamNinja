@@ -111,8 +111,6 @@ private:
 	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight) override;	// 元の位置に戻る処理
 	void SetState(const EState state);			// 状態の設定処理
 
-	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit) override;		// アクターの当たり判定処理
-
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	EState m_state;						// 状態
