@@ -112,6 +112,8 @@ private:
 	void SetState(const EState state);			// 状態の設定処理
 	void WalkSound(void);						// 歩行音処理
 
+	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit) override;		// アクターの当たり判定処理
+
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
 	EState m_state;						// 状態
