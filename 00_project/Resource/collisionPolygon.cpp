@@ -267,12 +267,8 @@ bool CCollisionPolygon::RotWarning(const float fRot)
 		}
 	}
 
-	if (bOver)
-	{
-		return true;
-	}
-
-	return false;
+	// ”ÍˆÍŠO”»’è‚ğo‚·
+	return bOver;
 }
 
 #endif
