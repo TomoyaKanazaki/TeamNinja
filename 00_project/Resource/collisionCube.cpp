@@ -144,7 +144,20 @@ CCollisionCube* CCollisionCube::Create
 	pColl->SetOffset(rOffset);
 
 	// 向きによる変換処理
-	pColl->Convert(fWidth, fDepth, fRot);
+	if (pColl->Convert(fWidth, fDepth, fRot))
+	{
+		std::string str;
+
+		str += std::to_string(rPos.x);
+		str += "　　";
+		str += std::to_string(rPos.y);
+		str += "　　";
+		str += std::to_string(rPos.z);
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "キューブの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, str.c_str(), "警告！", MB_ICONWARNING);
+	}
 
 	// 高さを設定
 	pColl->m_fHeight = fHeight;
@@ -177,12 +190,14 @@ CCollisionCube* CCollisionCube::Create
 //============================================================
 // 向きによる変換処理
 //============================================================
-void CCollisionCube::Convert(const float fWidth, const float fDepth, const float fRot)
+bool CCollisionCube::Convert(const float fWidth, const float fDepth, const float fRot)
 {	
+	bool b = false;
+
 #ifdef _DEBUG
 
 	// 向きの警告処理
-	RotWarning(fRot);
+	b = RotWarning(fRot);
 
 #endif // _DEBUG
 
@@ -205,13 +220,15 @@ void CCollisionCube::Convert(const float fWidth, const float fDepth, const float
 		// 奥行を設定
 		m_fDepth = fDepth;
 	}
+
+	return b;
 }
 
 #ifdef _DEBUG
 //============================================================
 // 向きの警告処理
 //============================================================
-void CCollisionCube::RotWarning(const float fRot)
+bool CCollisionCube::RotWarning(const float fRot)
 {
 	bool bOver = false;		// 範囲外の向き
 
@@ -259,11 +276,8 @@ void CCollisionCube::RotWarning(const float fRot)
 		}
 	}
 
-	if (bOver)
-	{
-		// エラーメッセージボックス
-		MessageBox(nullptr, "キューブの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
-	}
+	// 範囲外判定を出す
+	return bOver;
 }
 
 #endif

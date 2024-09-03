@@ -126,6 +126,8 @@ namespace
 		const float	INIT_ROTX = 1.3f;		// 追従カメラの向きX初期値
 		const float CENTER_ROTX = 1.1f;		// 中心線の時のx
 
+		const float CASTLE_DIS = 450.0f;	// 城内のカメラ距離
+
 		const float LIMIT_DIFF = D3DX_PI * 0.2f;		// 回転速度の上限
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
 		const float	LIMIT_ROT_LOW = 1.1f;				// X下回転の制限値
@@ -595,6 +597,12 @@ void CCamera::SetDestAround(void)
 	//----------------------------------------------------
 	// 距離を設定
 	m_aCamera[TYPE_MAIN].fDis = m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+
+	// 城マップの場合目標距離が近くなる
+	if (GET_STAGE->GetInitMapPass().find("CASTLE") != -1)
+	{
+		m_aCamera[TYPE_MAIN].fDestDis = around::CASTLE_DIS;
+	}
 
 	//----------------------------------------------------
 	//	位置の更新
@@ -1922,6 +1930,12 @@ void CCamera::Around(void)
 
 	// 目標距離を設定
 	m_aCamera[TYPE_MAIN].fDestDis = around::INIT_DIS;
+
+	// 城マップの場合目標距離が近くなる
+	if (GET_STAGE->GetInitMapPass().find("CASTLE") != -1)
+	{
+		m_aCamera[TYPE_MAIN].fDestDis = around::CASTLE_DIS;
+	}
 
 	// 差分距離を計算
 	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
