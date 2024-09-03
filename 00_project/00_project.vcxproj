@@ -355,6 +355,7 @@
     <ClInclude Include="Resource\wave.h" />
     <ClInclude Include="Resource\weed.h" />
     <ClInclude Include="Resource\ZTexture.h" />
+    <ClInclude Include="spin_wall.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\balloon.cpp" />
@@ -557,6 +558,7 @@
     <ClCompile Include="Resource\wave.cpp" />
     <ClCompile Include="Resource\weed.cpp" />
     <ClCompile Include="Resource\ZTexture.cpp" />
+    <ClCompile Include="spin_wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc" />
