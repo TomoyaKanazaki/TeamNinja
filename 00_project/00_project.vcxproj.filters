@@ -663,7 +663,7 @@
     <ClInclude Include="Resource\playerSelect.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
-    <ClInclude Include="spin_wall.h">
+    <ClInclude Include="Resource\spin_wall.h">
       <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1253,7 +1253,7 @@
     <ClCompile Include="Resource\playerSelect.cpp">
       <Filter>InGame\Player</Filter>
     </ClCompile>
-    <ClCompile Include="spin_wall.cpp">
+    <ClCompile Include="Resource\spin_wall.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>

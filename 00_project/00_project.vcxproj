@@ -184,6 +184,7 @@
     <ClInclude Include="Resource\scale2D.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
+    <ClInclude Include="Resource\spin_wall.h" />
     <ClInclude Include="Resource\tension.h" />
     <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
@@ -355,7 +356,6 @@
     <ClInclude Include="Resource\wave.h" />
     <ClInclude Include="Resource\weed.h" />
     <ClInclude Include="Resource\ZTexture.h" />
-    <ClInclude Include="spin_wall.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\balloon.cpp" />
@@ -383,6 +383,7 @@
     <ClCompile Include="Resource\scale2D.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />
+    <ClCompile Include="Resource\spin_wall.cpp" />
     <ClCompile Include="Resource\tension.cpp" />
     <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
@@ -558,7 +559,6 @@
     <ClCompile Include="Resource\wave.cpp" />
     <ClCompile Include="Resource\weed.cpp" />
     <ClCompile Include="Resource\ZTexture.cpp" />
-    <ClCompile Include="spin_wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc" />
