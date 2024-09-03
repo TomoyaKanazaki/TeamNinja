@@ -129,7 +129,7 @@ void CWall::Uninit(void)
 void CWall::Update(const float fDeltaTime)
 {
 	// 頂点情報の設定
-	Invisible();
+	//Invisible();
 
 	// オブジェクトメッシュウォールの更新
 	CObjectMeshWall::Update(fDeltaTime);
@@ -308,6 +308,9 @@ void CWall::Invisible()
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
 	SMeshWall meshWall = GetMeshWall();
 
+	// カメラと壁の方向が一致しない場合関数を抜ける
+
+
 	// プレイヤーの座標を取得
 	D3DXVECTOR3 posPlayerScreen = pCamera->CalcPlayerPos();
 	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetCenterPos();
@@ -322,45 +325,43 @@ void CWall::Invisible()
 		(float)texPart.y / (float)part.y
 	);
 
-	if (pVtxBuff != nullptr)
-	{ // 使用中の場合
+	if (pVtxBuff == nullptr) { return; }
 
-		// 頂点バッファをロックし、頂点情報へのポインタを取得
-		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-		for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++)
-		{ // 縦の分割数 +1回繰り返す
+	for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++)
+	{ // 縦の分割数 +1回繰り返す
 
-			for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++)
-			{ // 横の分割数 +1回繰り返す
+		for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++)
+		{ // 横の分割数 +1回繰り返す
 
-				// 頂点座標の設定
-				pVtx[0].pos = D3DXVECTOR3
-				( // 引数
-					nCntWidth * (meshWall.size.x / (float)part.x) - (meshWall.size.x * 0.5f),	// x
-					-(nCntHeight * (meshWall.size.y / (float)part.y)) + meshWall.size.y,		// y
-					0.0f																		// z
-				);
+			// 頂点座標の設定
+			pVtx[0].pos = D3DXVECTOR3
+			( // 引数
+				nCntWidth * (meshWall.size.x / (float)part.x) - (meshWall.size.x * 0.5f),	// x
+				-(nCntHeight * (meshWall.size.y / (float)part.y)) + meshWall.size.y,		// y
+				0.0f																		// z
+			);
 
-				// 法線ベクトルの設定
-				pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+			// 法線ベクトルの設定
+			pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-				// テクスチャ座標の設定
-				pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
+			// テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
 
-				// 頂点カラーの設定
-				D3DXCOLOR col = meshWall.col;
-				col.a = InvisibleVtx(pVtx[0].pos, posPlayerScreen, posPlayerWorld, meshWall, pCamera);
-				pVtx[0].col = col;
+			// 頂点カラーの設定
+			D3DXCOLOR col = meshWall.col;
+			col.a = InvisibleVtx(pVtx[0].pos, posPlayerScreen, posPlayerWorld, meshWall, pCamera);
+			pVtx[0].col = col;
 
-				// 頂点情報を進める
-				pVtx += 1;
-			}
+			// 頂点情報を進める
+			pVtx += 1;
 		}
-
-		// 頂点バッファをアンロックする
-		pVtxBuff->Unlock();
 	}
+
+	// 頂点バッファをアンロックする
+	pVtxBuff->Unlock();
 }
 
 //==========================================
