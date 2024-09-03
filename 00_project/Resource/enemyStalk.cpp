@@ -38,8 +38,8 @@ namespace
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
-	const float SPEED = -290.0f;			// 速度
-	const float ROT_REV = 4.0f;				// 向きの補正係数
+	const float SPEED = -480.0f;			// 速度
+	const float ROT_REV = 7.0f;				// 向きの補正係数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
@@ -152,6 +152,9 @@ void CEnemyStalk::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+
+	// 情報の設定処理
+	CEnemyAttack::SetData();
 }
 
 //============================================================
@@ -220,14 +223,14 @@ CEnemyStalk* CEnemyStalk::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// ナビゲーションを生成
 		pEnemy->m_pNav = CEnemyNavRandom::Create(rPos, fMoveWidth, fMoveDepth);
 
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
@@ -281,14 +284,14 @@ CEnemyStalk* CEnemyStalk::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// ナビゲーションを生成
 		pEnemy->m_pNav = CEnemyNavStreet::Create(route);
 
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
@@ -422,6 +425,17 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case CEnemyStalk::MOTION_WALK:		// 歩行
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+		}
+
 		break;
 
 	case CEnemyStalk::MOTION_FOUND:		// 発見
@@ -557,9 +571,6 @@ void CEnemyStalk::NavMotionSet(EMotion* pMotion)
 		// 移動モーションを設定
 		*pMotion = MOTION_WALK;
 
-		// 歩行音処理
-		WalkSound();
-
 		break;
 
 	default:
@@ -671,9 +682,6 @@ CEnemyStalk::EMotion CEnemyStalk::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, co
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -888,46 +896,6 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 }
 
 //============================================================
-// 当たり判定処理
-//============================================================
-void CEnemyStalk::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
-{
-	// アクターのリスト構造が無ければ抜ける
-	if (CActor::GetList() == nullptr) { return; }
-
-	// リストを取得
-	std::list<CActor*> list = CActor::GetList()->GetList();
-	D3DXVECTOR3 pos = GetPosInit();
-	D3DXVECTOR3 vtxChase = D3DXVECTOR3(GetChaseRange()->GetWidth(), 0.0f, GetChaseRange()->GetDepth());
-	D3DXVECTOR3 move = GetMovePosition();		// 移動量
-	bool bJump = IsJump();						// ジャンプ状況
-
-	for (auto actor : list)
-	{
-		assert(actor != nullptr);
-
-		// モデルが追跡範囲内にない場合、次に進む
-		if (!collision::Box2D(pos, actor->GetVec3Position(), vtxChase, vtxChase, actor->GetModelData().vtxMax, -actor->GetModelData().vtxMin)) { continue; }
-
-		// 当たり判定処理
-		actor->Collision
-		(
-			rPos,				// 位置
-			GetOldPosition(),	// 前回の位置
-			GetRadius(),		// 半径
-			GetHeight(),		// 高さ
-			move,				// 移動量
-			bJump,				// ジャンプ状況
-			bHit				// ヒット状況
-		);
-	}
-
-	// 移動量とジャンプ状況を設定する
-	SetMovePosition(move);
-	SetEnableJump(bJump);
-}
-
-//============================================================
 // 元の位置に戻る処理
 //============================================================
 bool CEnemyStalk::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
@@ -960,15 +928,3 @@ void CEnemyStalk::SetState(const EState state)
 	m_nStateCount = 0;
 }
 
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyStalk::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
-}

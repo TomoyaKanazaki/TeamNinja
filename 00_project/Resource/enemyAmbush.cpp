@@ -31,8 +31,8 @@ namespace
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
-	const float SPEED = -370.0f;			// 速度
-	const float ROT_REV = 4.0f;				// 向きの補正係数
+	const float SPEED = -490.0f;			// 速度
+	const float ROT_REV = 9.0f;				// 向きの補正係数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号
@@ -46,12 +46,10 @@ namespace
 	const int BLANKATTACK_CYCLE_COUNT = 18;		// 空白攻撃状態の回転カウント
 	const int CAUTION_STATE_COUNT = 180;		// 警戒状態のカウント数
 	const int THREAT_STATE_COUNT = 50;			// 威嚇状態のカウント数
-	const int REGRESSION_COUNT = 120;			// 回帰するカウント数
 
 	// 音管理関係
 	namespace sound
 	{
-		const int WALK_COUNT = 32;			// 歩行音を鳴らすカウント数
 		const int FOUND_COUNT = 37;			// 発見音を鳴らすカウント数
 		const int UPSET_COUNT = 200;		// 動揺音を鳴らすカウント数
 	}
@@ -141,6 +139,9 @@ void CEnemyAmbush::SetData(void)
 
 	// 親オブジェクト (持ち手) の設定
 	GetItem()->SetParentObject(GetParts(ITEM_PART_NUMBER));
+
+	// 情報の設定処理
+	CEnemyAttack::SetData();
 }
 
 //============================================================
@@ -207,11 +208,11 @@ CEnemyAmbush* CEnemyAmbush::Create
 		// 初期向きを設定
 		pEnemy->SetRotInit(rRot);
 
-		// 情報の設定処理
-		pEnemy->SetData();
-
 		// 追跡範囲を生成
 		pEnemy->SetChaseRange(CEnemyChaseRange::Create(rPos, fChaseWidth, fChaseDepth));
+
+		// 情報の設定処理
+		pEnemy->SetData();
 
 		// 確保したアドレスを返す
 		return pEnemy;
@@ -341,6 +342,17 @@ void CEnemyAmbush::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case CEnemyAmbush::MOTION_WALK:		// 歩行
+
+		// ブレンド中の場合抜ける
+		if (GetMotionBlendFrame() != 0) { break; }
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
+		}
+
 		break;
 
 	case CEnemyAmbush::MOTION_FOUND:		// 発見
@@ -536,9 +548,6 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, 
 {
 	// 歩行カウントを加算する
 	m_nStateCount++;
-
-	// 歩行音処理
-	WalkSound();
 
 	if (!ShakeOffClone() &&
 		!ShakeOffPlayer())
@@ -777,17 +786,4 @@ void CEnemyAmbush::SetState(const EState state)
 
 	// 状態カウントを0にする
 	m_nStateCount = 0;
-}
-
-//============================================================
-// 歩行音処理
-//============================================================
-void CEnemyAmbush::WalkSound(void)
-{
-	if (m_nStateCount % sound::WALK_COUNT == 0)
-	{ // 一定カウントごとに
-
-		// 歩行音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_STALKWALK_000);
-	}
 }

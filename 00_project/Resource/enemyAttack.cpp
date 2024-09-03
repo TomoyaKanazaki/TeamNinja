@@ -18,6 +18,7 @@
 #include "multiModel.h"
 #include "collision.h"
 #include "enemyChaseRange.h"
+#include "actor.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -114,6 +115,9 @@ void CEnemyAttack::Uninit(void)
 	// 追跡範囲の終了処理
 	SAFE_UNINIT(m_pChaseRange);
 
+	// 消去処理
+	m_actor.clear();
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -151,7 +155,8 @@ void CEnemyAttack::Draw(CShader* pShader)
 //============================================================
 void CEnemyAttack::SetData(void)
 {
-
+	// アクターの登録処理
+	ActorRegist();
 }
 
 //============================================================
@@ -556,18 +561,18 @@ bool CEnemyAttack::ShakeOffClone(void)
 		return false;
 	}
 
-	for (int nCnt = 0; nCnt < CPlayerClone::GetList()->GetNumAll(); nCnt++)
+	for (auto& rClone : CPlayerClone::GetList()->GetList())
 	{
 		// 分身の位置を取得する
-		pos = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+		pos = rClone->GetVec3Position();
 
 		if (!collision::Circle2D(GetVec3Position(), pos, GetRadius(), SHAKEOFF_RANGE)) { continue; }
 
 		// 位置を設定する
-		m_posTarget = (*CPlayerClone::GetList()->GetIndex(nCnt))->GetVec3Position();
+		m_posTarget = pos;
 
 		// 分身の情報を設定する
-		m_pClone = *CPlayerClone::GetList()->GetIndex(nCnt);
+		m_pClone = rClone;
 
 		// 分身を標的にする
 		m_target = TARGET_CLONE;
@@ -594,17 +599,18 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 
 	// ヒット処理
 	D3DXVECTOR3 posPlayer = CScene::GetPlayer()->GetVec3Position();
+	float fRadius = CScene::GetPlayer()->GetRadius();
 	D3DXVECTOR3 sizeUpPlayer =				// プレイヤーの判定(右・上・後)
 	{
-		CScene::GetPlayer()->GetRadius(),
+		fRadius,
 		CScene::GetPlayer()->GetHeight(),
-		CScene::GetPlayer()->GetRadius()
+		fRadius
 	};
 	D3DXVECTOR3 sizeDownPlayer =			// プレイヤーの判定(左・下・前)
 	{
-		CScene::GetPlayer()->GetRadius(),
+		fRadius,
 		0.0f,
-		CScene::GetPlayer()->GetRadius()
+		fRadius
 	};
 
 	// 回避カウントを加算する
@@ -679,7 +685,7 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	}
 
 	// 分身が NULL の場合抜ける
-	if (pClone == nullptr) { return false; }
+	if (pClone == nullptr || pClone->GetAction() != CPlayerClone::ACTION_MOVE) { return false; }
 
 	// ヒット処理
 	D3DXVECTOR3 sizeUpClone =
@@ -744,9 +750,11 @@ D3DXVECTOR3 CEnemyAttack::GetAttackDown()
 //===========================================
 bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
 {
-	if (CManager::GetInstance()->GetCamera()->OnScreen(*pPos) ||
-		CManager::GetInstance()->GetCamera()->OnScreen(D3DXVECTOR3(pPos->x, pPos->y + fHeight, pPos->z)) ||
-		CManager::GetInstance()->GetCamera()->OnScreen(GetPosInit()))
+	CCamera* pCamera = CManager::GetInstance()->GetCamera();
+
+	if (pCamera->OnScreen(*pPos) ||
+		pCamera->OnScreen(D3DXVECTOR3(pPos->x, pPos->y + fHeight, pPos->z)) ||
+		pCamera->OnScreen(GetPosInit()))
 	{ // 画面内にいる場合
 
 		// 回帰カウントをリセットする
@@ -785,4 +793,60 @@ bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const flo
 
 	// true を返す
 	return true;
+}
+
+//===========================================
+// アクターの当たり判定処理
+//===========================================
+void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (m_actor.empty()) { return; }
+
+	D3DXVECTOR3 move = GetMovePosition();
+	bool bJump = IsJump();
+
+	for (auto& actor : m_actor)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,				// 位置
+			GetOldPosition(),	// 前回の位置
+			GetRadius(),		// 半径
+			GetHeight(),		// 高さ
+			move,				// 移動量
+			bJump,				// ジャンプ状況
+			bHit				// ヒット状況
+		);
+	}
+
+	// 移動量とジャンプ状況を反映
+	SetMovePosition(move);
+	SetEnableJump(bJump);
+}
+
+//===========================================
+// アクターの登録処理
+//===========================================
+void CEnemyAttack::ActorRegist(void)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CActor*> list = CActor::GetList()->GetList();
+	D3DXVECTOR3 pos = GetPosInit();
+	D3DXVECTOR3 vtxChase = D3DXVECTOR3(m_pChaseRange->GetWidth(), 0.0f, m_pChaseRange->GetDepth());
+
+	for (auto actor : list)
+	{
+		assert(actor != nullptr);
+
+		// モデルが追跡範囲内にない場合、次に進む
+		if (!collision::Box2D(pos, actor->GetVec3Position(), vtxChase, vtxChase, actor->GetModelData().vtxMax, -actor->GetModelData().vtxMin)) { continue; }
+
+		// アクターを登録する
+		m_actor.push_back(actor);
+	}
 }
