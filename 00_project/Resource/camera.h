@@ -188,7 +188,6 @@ private:
 	void Telephoto();									// 望遠
 	void CollisionWallV();								// 視点と壁の当たり判定
 	void CollisionWallR();								// 注視点と壁の当たり判定
-	void ClearWall();									// 壁の透過処理
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
@@ -196,6 +195,7 @@ private:
 	EState	m_state;	// 状態
 	bool	m_bUpdate;	// 更新状況
 	float	m_fFov;		// 視野角
+	float	m_fDis;	// カメラ距離
 };
 
 #endif	// _CAMERA_H_
