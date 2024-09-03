@@ -31,7 +31,10 @@ public:
 	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader* pShader = nullptr) override;	// 描画
 
-	void SetVec3Position(const D3DXVECTOR3& rPos) override;
+	void SetVec3Scaling(const D3DXVECTOR3& rScale) override;
+
+	// 初期位置の取得処理
+	D3DXVECTOR3 GetDefaultPos(void) const { return m_posDefault; }
 
 #ifdef _DEBUG
 
@@ -67,10 +70,14 @@ private:
 	void Close(const float fDeltaTime);	// 閉扉処理
 	void Open(const float fDeltaTime);	// 開扉状態
 
+	void CollSizeSet(const D3DXVECTOR3& rScale);		// 当たり判定のサイズの設定処理
+
 	// メンバ変数
 	D3DXVECTOR3 m_posDefault;	// 初期位置を保存する変数
 	D3DXVECTOR3 m_offsetMove;	// 移動先のオフセットを保存する変数
 	D3DXVECTOR3 m_move;			// 移動量を保存する変数
+	D3DXVECTOR3 m_collMax;		// 当たり判定の最大値
+	D3DXVECTOR3 m_collMin;		// 当たり判定の最小値
 	EState m_state;				// 状態
 
 };
