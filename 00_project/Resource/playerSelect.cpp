@@ -111,6 +111,12 @@ CPlayer::EMotion CPlayerSelect::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateEnter(fDeltaTime);
 		break;
 
+	case STATE_SELECT_OPEN:
+
+		// 解放状態時の更新
+		currentMotion = UpdateOpen(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -128,19 +134,24 @@ CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 	if (IsMotionFinish())
 	{ // 選択モーションが終了した場合
 
-		// 回り込みカメラに遷移
-		GET_CAMERA->SetState(CCamera::STATE_AROUND);
-
 		// 待機モーションを設定
 		SetMotion(MOTION_IDOL);
 
-		// TODO：ここで解放先があるなら別状態へ
-#if 1
-		// 通常状態を設定
-		SetState(STATE_SELECT_NORMAL);
-#else
+		if (GET_STAGE->GetOpenMapDirectory().empty())
+		{ // 解放したマップがない場合
 
-#endif
+			// 回り込みカメラに遷移
+			GET_CAMERA->SetState(CCamera::STATE_AROUND);
+
+			// 通常状態を設定
+			SetState(STATE_SELECT_NORMAL);
+		}
+		else
+		{ // 解放したマップがある場合
+
+			// 解放カメラに遷移
+			GET_CAMERA->SetState(CCamera::STATE_OPEN);
+		}
 	}
 
 	// 待機モーションを返す
@@ -194,9 +205,9 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 	return currentMotion;
 }
 
-//==========================================
+//============================================================
 //	入場状態時の更新処理
-//==========================================
+//============================================================
 CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 {
 	if (GetMotionWholeCounter() == 30)
@@ -219,9 +230,18 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	return MOTION_IDOL;
 }
 
-//==========================================
+//============================================================
+//	解放状態時の更新処理
+//============================================================
+CPlayer::EMotion CPlayerSelect::UpdateOpen(const float fDeltaTime)
+{
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
 //	ステージ遷移の更新処理
-//==========================================
+//============================================================
 void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 {
 	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
@@ -245,9 +265,9 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 	}
 }
 
-//==========================================
+//============================================================
 //	スポーンの設定処理
-//==========================================
+//============================================================
 void CPlayerSelect::SetSpawn(void)
 {
 	// 情報を初期化
@@ -279,9 +299,9 @@ void CPlayerSelect::SetSpawn(void)
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
 }
 
-//==========================================
+//============================================================
 //	入場の設定処理
-//==========================================
+//============================================================
 void CPlayerSelect::SetEnter(const char* pTransMapPath)
 {
 	// 遷移ポイントのマップパスを保存

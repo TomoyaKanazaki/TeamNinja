@@ -30,6 +30,14 @@ class CBalloonManager;	// 吹き出しマネージャークラス
 class CTransPoint : public CObjectModel
 {
 public:
+	// 状態列挙
+	enum EState
+	{
+		STATE_OPEN = 0,	// 解放状態
+		STATE_NORMAL,	// 通常状態
+		STATE_MAX		// この列挙型の総数
+	};
+
 	// コンストラクタ
 	explicit CTransPoint(const char* pPass);
 
@@ -46,6 +54,8 @@ public:
 	// 静的メンバ関数
 	static CTransPoint *Create(const char* pPass, const D3DXVECTOR3& rPos);			// 生成
 	static CTransPoint *Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
+	static CTransPoint* GetOpenTransPoint(void) { return m_pOpenTransPoint; }		// 解放された遷移ポイント取得
+
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込
@@ -58,6 +68,7 @@ private:
 	// 静的メンバ変数
 	static CListManager<CTransPoint>* m_pList;	// オブジェクトリスト
 	static CBalloonManager* m_pBalloonManager;	// 吹き出しマネージャー情報
+	static CTransPoint* m_pOpenTransPoint;		// 解放された遷移ポイント
 
 	// メンバ関数
 	HRESULT CreateStageTexture(void);	// ステージ情報テクスチャ作成
@@ -67,6 +78,7 @@ private:
 	const std::string m_sTransMapPass;		// 遷移先マップパス
 	CEffekseer::CEffectData* m_pEffectData;	// 保持するエフェクト情報
 	CBalloon* m_pBalloon;	// 吹き出し情報
+	EState m_state;			// 状態
 	bool m_bOpen;			// ステージ解放フラグ
 };
 

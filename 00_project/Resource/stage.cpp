@@ -892,6 +892,21 @@ HRESULT CStage::LoadOpen(const char* pString, FILE *pFile)
 
 		// 解放マップディレクトリを保存
 		m_sOpenMapFolder = &aString[0];
+
+		// 解放マップの解放フラグパスを作成
+		std::filesystem::path fsPath = m_sOpenMapFolder;
+		fsPath.append("open.txt");
+
+		// 解放フラグの取得
+		bool bOpen = false;
+		CTransPoint::LoadOpen(fsPath.string().c_str(), &bOpen);
+
+		if (bOpen)
+		{ // 既に解放済みの場合
+
+			// パスをクリア
+			m_sOpenMapFolder.clear();
+		}
 	}
 
 	// 成功を返す
