@@ -87,6 +87,7 @@ private:
 
 	// メンバ関数
 	virtual void CollisionActor(D3DXVECTOR3& rPos, bool& bHit);		// アクターの当たり判定処理
+	void CollisionPlayer(const D3DXVECTOR3& rPos, const float fRadius, const float fHeight);		// プレイヤーとの当たり判定処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemy>* m_pList;		// オブジェクトリスト
