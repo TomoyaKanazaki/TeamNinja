@@ -151,7 +151,20 @@ CCollisionPolygon* CCollisionPolygon::Create
 	pColl->m_pPolygon->SetLabel(CObject::LABEL_COLLISION);
 
 	// 向きによる変換処理
-	pColl->Convert(rSize.x, rSize.z, rRot.y);
+	if (pColl->Convert(rSize.x, rSize.z, rRot.y))
+	{
+		std::string str;
+
+		str += std::to_string(rPos.x);
+		str += "　　";
+		str += std::to_string(rPos.y);
+		str += "　　";
+		str += std::to_string(rPos.z);
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "ポリゴンの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
+		MessageBox(nullptr, str.c_str(), "警告！", MB_ICONWARNING);
+	}
 
 #ifndef _DEBUG
 
@@ -167,12 +180,14 @@ CCollisionPolygon* CCollisionPolygon::Create
 //============================================================
 // 向きによる変換処理
 //============================================================
-void CCollisionPolygon::Convert(const float fWidth, const float fDepth, const float fRot)
+bool CCollisionPolygon::Convert(const float fWidth, const float fDepth, const float fRot)
 {
+	bool b = false;
+
 #ifdef _DEBUG
 
 	// 向きの警告処理
-	RotWarning(fRot);
+	b = RotWarning(fRot);
 
 #endif // _DEBUG
 
@@ -195,6 +210,8 @@ void CCollisionPolygon::Convert(const float fWidth, const float fDepth, const fl
 		// 奥行を設定
 		m_size.z = fDepth;
 	}
+
+	return b;
 }
 
 
@@ -202,7 +219,7 @@ void CCollisionPolygon::Convert(const float fWidth, const float fDepth, const fl
 //============================================================
 // 向きの警告処理
 //============================================================
-void CCollisionPolygon::RotWarning(const float fRot)
+bool CCollisionPolygon::RotWarning(const float fRot)
 {
 	bool bOver = false;		// 範囲外の向き
 
@@ -250,11 +267,8 @@ void CCollisionPolygon::RotWarning(const float fRot)
 		}
 	}
 
-	if (bOver)
-	{
-		// エラーメッセージボックス
-		MessageBox(nullptr, "ポリゴンの当たり判定あるのに角度おかしいよ。", "警告！", MB_ICONWARNING);
-	}
+	// 範囲外判定を出す
+	return bOver;
 }
 
 #endif
