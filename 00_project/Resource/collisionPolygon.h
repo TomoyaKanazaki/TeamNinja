@@ -57,11 +57,11 @@ public:
 private:
 
 	// ƒƒ“ƒoŠÖ”
-	void Convert(const float fWidth, const float fDepth, const float fRot);		// Œü‚«‚É‚æ‚é•ÏŠ·ˆ—
+	bool Convert(const float fWidth, const float fDepth, const float fRot);		// Œü‚«‚É‚æ‚é•ÏŠ·ˆ—
 
 #ifdef _DEBUG
 
-	void RotWarning(const float fRot);		// Œü‚«‚ÌŒxˆ—
+	bool RotWarning(const float fRot);		// Œü‚«‚ÌŒxˆ—
 
 #endif
 
