@@ -685,7 +685,7 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	}
 
 	// •ªg‚ª NULL ‚Ìê‡”²‚¯‚é
-	if (pClone == nullptr) { return false; }
+	if (pClone == nullptr || pClone->GetAction() != CPlayerClone::ACTION_MOVE) { return false; }
 
 	// ƒqƒbƒgˆ—
 	D3DXVECTOR3 sizeUpClone =
