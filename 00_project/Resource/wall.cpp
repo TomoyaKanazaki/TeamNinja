@@ -53,7 +53,8 @@ CListManager<CWall> *CWall::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CWall::CWall() : CObjectMeshWall(CObject::LABEL_WALL, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_type	(TYPE_SOIL)	// 種類
+	m_type	(TYPE_SOIL),	// 種類
+	m_posVtx(nullptr)
 {
 
 }
@@ -73,6 +74,7 @@ HRESULT CWall::Init(void)
 {
 	// メンバ変数を初期化
 	m_type = TYPE_SOIL;	// 種類
+	m_posVtx = nullptr;
 
 	// オブジェクトメッシュウォールの初期化
 	if (FAILED(CObjectMeshWall::Init()))
@@ -109,6 +111,12 @@ HRESULT CWall::Init(void)
 //============================================================
 void CWall::Uninit(void)
 {
+	// 頂点情報の破棄
+	if (m_posVtx != nullptr)
+	{
+		delete[] m_posVtx;
+	}
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -260,6 +268,9 @@ CWall *CWall::Create
 		// テクスチャ分割数を設定
 		pWall->SetTexPattern(rTexPart);
 
+		// 頂点情報を計算を行う
+		pWall->CalcVtx();
+
 		// 確保したアドレスを返す
 		return pWall;
 	}
@@ -304,59 +315,82 @@ void CWall::Invisible()
 
 	// 自身の情報を取得する
 	POSGRID2 part = GetPattern();
-	POSGRID2 texPart = GetTexPattern();
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
+	if (pVtxBuff == nullptr) { return; }
 	SMeshWall meshWall = GetMeshWall();
+	D3DXCOLOR col = meshWall.col;
+
+	// カメラの情報を取得する
+	D3DXVECTOR3 posV = pCamera->GetPositionV();
+	float fRotCamera = pCamera->GetRotation().y;
 
 	// カメラと壁の方向が一致しない場合関数を抜ける
-
+	EAngle angleCamera = useful::RotToFourDire(fRotCamera);
+	EAngle angleWall = useful::RotToFourDire(meshWall.rot.y);
+	if ((int)angleCamera + (int)angleWall % 2)
+	{
+		return;
+	}
 
 	// プレイヤーの座標を取得
 	D3DXVECTOR3 posPlayerScreen = pCamera->CalcPlayerPos();
 	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetCenterPos();
 
-	// ポインタを宣言
-	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
-
-	// テクスチャ分割数の割合を計算
-	D3DXVECTOR2 texRate = D3DXVECTOR2
-	(
-		(float)texPart.x / (float)part.x,
-		(float)texPart.y / (float)part.y
-	);
-
-	if (pVtxBuff == nullptr) { return; }
+	// 頂点情報へのポインタ宣言
+	VERTEX_3D* pVtx;
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++)
-	{ // 縦の分割数 +1回繰り返す
+	for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++) // 縦
+	{
+		for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++) // 横
+		{
+			// xz平面上における視点との距離を算出
+			D3DXVECTOR3 vecPlayer = posPlayerWorld - posV;
+			D3DXVECTOR3 vecVtx = m_posVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))] - posV;
 
-		for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++)
-		{ // 横の分割数 +1回繰り返す
+			// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
+			if (vecPlayer.x * vecPlayer.x + vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x + vecVtx.z * vecVtx.z)
+			{
+				col.a = 1.0f;
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
+				continue;
+			}
 
-			// 頂点座標の設定
-			pVtx[0].pos = D3DXVECTOR3
-			( // 引数
-				nCntWidth * (meshWall.size.x / (float)part.x) - (meshWall.size.x * 0.5f),	// x
-				-(nCntHeight * (meshWall.size.y / (float)part.y)) + meshWall.size.y,		// y
-				0.0f																		// z
-			);
+			// 頂点のスクリーン座標を算出
+			D3DXVECTOR3 pos = VEC3_ZERO;
+			if (!pCamera->OnScreen(m_posVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))], pos))
+			{
+				// 画面外の場合1.0を返す
+				col.a = 1.0f;
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
+				continue;
+			}
 
-			// 法線ベクトルの設定
-			pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+			// プレイヤーよりも奥に描画される場合1.0を返す
+			if (pos.z >= posPlayerScreen.z)
+			{
+				col.a = 1.0f;
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
+				continue;
+			}
 
-			// テクスチャ座標の設定
-			pVtx[0].tex = D3DXVECTOR2(texRate.x * nCntWidth, texRate.y * nCntHeight);
+			// プレイヤーとの距離^2を算出
+			D3DXVECTOR3 vec = posPlayerScreen - pos;
+			float fLength = sqrtf(vec.x * vec.x + vec.y * vec.y);
 
-			// 頂点カラーの設定
-			D3DXCOLOR col = meshWall.col;
-			col.a = InvisibleVtx(pVtx[0].pos, posPlayerScreen, posPlayerWorld, meshWall, pCamera);
-			pVtx[0].col = col;
+			// プレイヤーとの距離が近い場合は0を返す
+			if (fLength < INVISIBLE_MIN)
+			{
+				col.a = 0.0f;
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
+				continue;
+			}
 
-			// 頂点情報を進める
-			pVtx += 1;
+			// 透過範囲内の割合を算出し返す
+			col.a = (fLength - INVISIBLE_MIN) / (INVISIBLE_MAX - INVISIBLE_MIN);
+			pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
 		}
 	}
 
@@ -365,64 +399,60 @@ void CWall::Invisible()
 }
 
 //==========================================
-//  頂点計算処理
+//  頂点座標の計算処理
 //==========================================
-float CWall::InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, const D3DXVECTOR3& posPlayerWorld, SMeshWall meshWall, CCamera* pCamera)
+void CWall::CalcVtx()
 {
-	// 変数を宣言
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
+	// 自身の情報を取得
+	SMeshWall meshWall = GetMeshWall();
+	POSGRID2 part = GetPattern();
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
+	if (pVtxBuff == nullptr) { return; }
+
+	// 頂点数分のメモリを確保する
+	m_posVtx = new D3DXVECTOR3[(part.x + 1) * (part.y + 1)];
+
+	//  計算用マトリックスの宣言
+	D3DXMATRIX mtxRot, mtxTrans;
+
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;
 
 	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = GET_DEVICE;	// デバイスのポインタ
+	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&meshWall.mtxWorld);
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, meshWall.rot.y, meshWall.rot.x, meshWall.rot.z);
-	D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxRot);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, posVtx.x + meshWall.pos.x, posVtx.y + meshWall.pos.y, posVtx.z + meshWall.pos.z);
-	D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &meshWall.mtxWorld);
-
-	// マトリックスから頂点座標を抽出
-	D3DXVECTOR3 pos = D3DXVECTOR3(meshWall.mtxWorld._41, meshWall.mtxWorld._42, meshWall.mtxWorld._43);
-
-	// xz平面上における視点との距離を算出
-	D3DXVECTOR3 posCameraV = pCamera->GetPositionV();
-	D3DXVECTOR3 vecPlayer = posPlayerWorld - posCameraV;
-	D3DXVECTOR3 vecVtx = pos - posCameraV;
-
-	// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
-	if (vecPlayer.x * vecPlayer.x + vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x + vecVtx.z * vecVtx.z)
+	for (int nCntHeight = 0; nCntHeight < part.y + 1; nCntHeight++) // 縦
 	{
-		return 1.0f;
+		for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++) // 横
+		{ 
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&meshWall.mtxWorld);
+
+			// 向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, meshWall.rot.y, meshWall.rot.x, meshWall.rot.z);
+			D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxRot);
+
+			// 位置を反映
+			D3DXMatrixTranslation
+			(
+				&mtxTrans,
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].pos.x + meshWall.pos.x,
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].pos.y + meshWall.pos.y,
+				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].pos.z + meshWall.pos.z
+			);
+			D3DXMatrixMultiply(&meshWall.mtxWorld, &meshWall.mtxWorld, &mtxTrans);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &meshWall.mtxWorld);
+
+			// マトリックスから頂点座標を抽出
+			m_posVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))] = D3DXVECTOR3(meshWall.mtxWorld._41, meshWall.mtxWorld._42, meshWall.mtxWorld._43);
+		}
 	}
 
-	// 頂点のスクリーン座標を算出
-	if (!pCamera->OnScreen(pos, pos))
-	{
-		// 画面外の場合1.0を返す
-		return 1.0f;
-	}
-
-	// プレイヤーよりも奥に描画される場合1.0を返す
-	if (pos.z >= posPlayer.z)
-	{
-		return 1.0f;
-	}
-
-	// プレイヤーとの距離^2を算出
-	D3DXVECTOR3 vec = posPlayer - pos;
-	float fLength = sqrtf(vec.x * vec.x + vec.y * vec.y);
-
-	// プレイヤーとの距離が近い場合は0を返す
-	if (fLength < INVISIBLE_MIN) { return 0.0f; }
-
-	// 透過範囲内の割合を算出し返す
-	return (fLength - INVISIBLE_MIN) / (INVISIBLE_MAX - INVISIBLE_MIN);
+	// 頂点バッファをアンロックする
+	pVtxBuff->Unlock();
 }

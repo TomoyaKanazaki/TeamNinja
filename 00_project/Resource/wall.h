@@ -84,6 +84,7 @@ private:
 	// メンバ関数
 	void Invisible(); // 透明化処理
 	float InvisibleVtx(const D3DXVECTOR3& posVtx, const D3DXVECTOR3& posPlayer, const D3DXVECTOR3& posPlayerWorld, SMeshWall meshWall, CCamera* pCamera); // 頂点計算処理
+	void CalcVtx();
 
 	// 静的メンバ変数
 	static CListManager<CWall> *m_pList;	// オブジェクトリスト
@@ -91,6 +92,7 @@ private:
 	// メンバ変数
 	CListManager<CWall>::AIterator m_iterator;	// イテレーター
 	EType m_type;	// 種類
+	D3DXVECTOR3* m_posVtx; // 頂点座標
 };
 
 #endif	// _WALL_H_
