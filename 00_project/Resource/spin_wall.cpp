@@ -12,7 +12,7 @@
 //==========================================
 namespace
 {
-	const float MOVE_SPEED = 120.0f; // 移動速度
+	const float ROT_MOVE = 0.04f;	// 向きの移動量
 }
 
 //==========================================
@@ -23,7 +23,9 @@ CSpinWall::CSpinWall(const D3DXVECTOR3& rRot) :
 	m_collMax(VEC3_ZERO),
 	m_collMin(VEC3_ZERO),
 	m_state(STATE_STOP),
-	m_fRotMove(0.0f)
+	m_fRotMove(0.0f),
+	m_fTotalMove(0.0f),
+	m_bFront(true)
 {
 	// Do Nothing
 }
@@ -62,16 +64,11 @@ void CSpinWall::Uninit(void)
 //==========================================
 void CSpinWall::Update(const float fDeltaTime)
 {
+	// 状態処理
+	State();
+
 	// 親クラスの更新処理
 	CActor::Update(fDeltaTime);
-
-	{
-		D3DXVECTOR3 rot = GetVec3Rotation();
-
-		rot.y += m_fRotMove;
-
-		SetVec3Rotation(rot);
-	}
 }
 
 //==========================================
@@ -122,6 +119,155 @@ void CSpinWall::Collision
 	bool& bJump						// ジャンプ状況
 )
 {
+	// 回転中の場合、抜ける
+	if (m_state == STATE_SPIN) { return; }
+
+	// 回転の当たり判定
+	SpinCollision
+	(
+		rPos,		// 位置
+		rPosOld,	// 前回の位置
+		fRadius,	// 半径
+		fHeight		// 高さ
+	);
+
+	// 当たり判定処理
+	CActor::Collision
+	(
+		rPos,		// 位置
+		rPosOld,	// 前回の位置
+		fRadius,	// 半径
+		fHeight,	// 高さ
+		rMove,		// 移動量
+		bJump		// ジャンプ状況
+	);
+}
+
+//==========================================
+// 当たり判定処理(判定を返すオーバーライド)
+//==========================================
+void CSpinWall::Collision
+(
+	D3DXVECTOR3& rPos,				// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight,			// 高さ
+	D3DXVECTOR3& rMove,				// 移動量
+	bool& bJump,					// ジャンプ状況
+	bool& bHit						// 衝突判定
+)
+{
+	// 回転中の場合、抜ける
+	if (m_state == STATE_SPIN) { return; }
+
+	// 回転の当たり判定
+	SpinCollision
+	(
+		rPos,		// 位置
+		rPosOld,	// 前回の位置
+		fRadius,	// 半径
+		fHeight		// 高さ
+	);
+
+	// 当たり判定処理
+	CActor::Collision
+	(
+		rPos,		// 位置
+		rPosOld,	// 前回の位置
+		fRadius,	// 半径
+		fHeight,	// 高さ
+		rMove,		// 移動量
+		bJump,		// ジャンプ状況
+		bHit		// 衝突判定
+	);
+}
+
+//==========================================
+// 状態処理
+//==========================================
+void CSpinWall::State(void)
+{
+	switch (m_state)
+	{
+	case CSpinWall::STATE_STOP:
+
+		// 特に無し
+
+		break;
+
+	case CSpinWall::STATE_SPIN:
+
+		// 回転処理
+		Spin();
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
+	}
+}
+
+//==========================================
+// 回転処理
+//==========================================
+void CSpinWall::Spin(void)
+{
+	// 向きを取得する
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	D3DXVECTOR3 rotOld = GetVec3Rotation();
+
+	// 回転させる
+	rot.y += m_fRotMove;
+	m_fTotalMove += fabsf(m_fRotMove);
+	useful::NormalizeRot(rot.y);
+
+	if (m_fTotalMove >= D3DX_PI)
+	{ // 半回転した場合
+
+		// 停止状態にする
+		m_state = STATE_STOP;
+
+		// 向きの合計値をリセットする
+		m_fTotalMove = 0.0f;
+
+		// 表向き状況を逆転する
+		m_bFront = !m_bFront;
+
+		// 向きを補正する
+		rot.y = m_bFront == true ? m_rotDefault.y : m_rotDefault.y + D3DX_PI;
+	}
+
+	// 向きを正規化する
+	SetVec3Rotation(rot);
+}
+
+//==========================================
+// 回転設定処理
+//==========================================
+void CSpinWall::SetSpin(const float fRotMove)
+{
+	// 回転状態にする
+	m_state = STATE_SPIN;
+
+	// 向きの移動量を設定する
+	m_fRotMove = fRotMove;
+}
+
+//==========================================
+// 回転の当たり判定処理
+//==========================================
+void CSpinWall::SpinCollision
+(
+	const D3DXVECTOR3& rPos,		// 位置
+	const D3DXVECTOR3& rPosOld,		// 前回の位置
+	const float fRadius,			// 半径
+	const float fHeight				// 高さ
+)
+{
 	// 位置を取得
 	D3DXVECTOR3 posWall = GetVec3Position();
 	D3DXVECTOR3 vtxMax = D3DXVECTOR3(fRadius, fHeight, fRadius);
@@ -140,22 +286,18 @@ void CSpinWall::Collision
 				&& rPosOld.x + fRadius <= posWall.x - m_collMin.x)
 			{ // 左からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = 0.02f;
+				// 回転設定処理
+				SetSpin(ROT_MOVE);
 			}
 			else if (rPos.x - fRadius < posWall.x + m_collMax.x
 				&& rPosOld.x - fRadius >= posWall.x + m_collMax.x)
 			{ // 右からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = -0.02f;
+				// 回転設定処理
+				SetSpin(-ROT_MOVE);
 			}
 		}
-		else if(posWall.z - m_collMin.z <= rPos.z + fRadius &&
+		else if (posWall.z - m_collMin.z <= rPos.z + fRadius &&
 			posWall.z >= rPos.z - fRadius)
 		{ // 右側にいた場合
 
@@ -163,19 +305,15 @@ void CSpinWall::Collision
 				&& rPosOld.x + fRadius <= posWall.x - m_collMin.x)
 			{ // 左からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = -0.02f;
+				// 回転設定処理
+				SetSpin(-ROT_MOVE);
 			}
 			else if (rPos.x - fRadius < posWall.x + m_collMax.x
 				&& rPosOld.x - fRadius >= posWall.x + m_collMax.x)
 			{ // 右からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = 0.02f;
+				// 回転設定処理
+				SetSpin(ROT_MOVE);
 			}
 		}
 	}
@@ -190,19 +328,15 @@ void CSpinWall::Collision
 				&& rPosOld.z + fRadius <= posWall.z - m_collMin.z)
 			{ // 左からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = -0.02f;
+				// 回転設定処理
+				SetSpin(-ROT_MOVE);
 			}
 			else if (rPos.z - fRadius < posWall.z + m_collMax.z
 				&& rPosOld.z - fRadius >= posWall.z + m_collMax.z)
 			{ // 右からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = 0.02f;
+				// 回転設定処理
+				SetSpin(ROT_MOVE);
 			}
 		}
 		else if (posWall.x - m_collMin.x <= rPos.x + fRadius &&
@@ -213,90 +347,17 @@ void CSpinWall::Collision
 				&& rPosOld.z + fRadius <= posWall.z - m_collMin.z)
 			{ // 左からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = 0.02f;
+				// 回転設定処理
+				SetSpin(ROT_MOVE);
 			}
 			else if (rPos.z - fRadius < posWall.z + m_collMax.z
 				&& rPosOld.z - fRadius >= posWall.z + m_collMax.z)
 			{ // 右からの当たり判定
 
-				// 回転状態にする
-				m_state = STATE_SPIN;
-
-				m_fRotMove = -0.02f;
+				// 回転設定処理
+				SetSpin(-ROT_MOVE);
 			}
 		}
-	}
-}
-
-//==========================================
-// 当たり判定処理(判定を返すオーバーライド)
-//==========================================
-void CSpinWall::Collision
-(
-	D3DXVECTOR3& rPos,				// 位置
-	const D3DXVECTOR3& rPosOld,		// 前回の位置
-	const float fRadius,			// 半径
-	const float fHeight,			// 高さ
-	D3DXVECTOR3& rMove,				// 移動量
-	bool& bJump,					// ジャンプ状況
-	bool& bHit						// 衝突判定
-)
-{
-	// 位置を取得
-	D3DXVECTOR3 posMash = GetVec3Position();
-	D3DXVECTOR3 rotMash = GetVec3Rotation();
-	D3DXVECTOR3 vtxMax = D3DXVECTOR3(fRadius, fHeight, fRadius);
-	D3DXVECTOR3 vtxMin = D3DXVECTOR3(fRadius, 0.0f, fRadius);
-	D3DXVECTOR3 vtxMashMax = GetModelData().vtxMax;
-	D3DXVECTOR3 vtxMashMin = -GetModelData().vtxMin;
-	EAngle angle = useful::RotToFourDire(GetVec3Rotation().y);
-
-	if (collision::Box3D
-	(
-		rPos,				// 判定位置
-		GetVec3Position(),	// 判定目標位置
-		vtxMax,				// 判定サイズ(右・上・後)
-		vtxMin,				// 判定サイズ(左・下・前)
-		vtxMashMax,			// 判定目標サイズ(右・上・後)
-		vtxMashMin,			// 判定目標サイズ(左・下・前)
-		ANGLE_0,			// 判定方向列挙
-		angle				// 判定目標方向列挙
-	))
-	{ // 回転扉に近づいた場合
-
-		// 回転状態にする
-		m_state = STATE_SPIN;
-	}
-}
-
-//==========================================
-// 状態処理
-//==========================================
-void CSpinWall::State(void)
-{
-	switch (m_state)
-	{
-	case CSpinWall::STATE_STOP:
-
-
-
-		break;
-
-	case CSpinWall::STATE_SPIN:
-
-
-
-		break;
-
-	default:
-
-		// 停止
-		assert(false);
-
-		break;
 	}
 }
 

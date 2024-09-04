@@ -68,6 +68,16 @@ private:
 
 	// メンバ関数
 	void State(void);			// 状態処理
+	void Spin(void);			// 回転処理
+
+	void SetSpin(const float fRotMove);		// 回転設定処理
+	void SpinCollision			// 回転の当たり判定処理
+	(
+		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		const float fRadius,			// 半径
+		const float fHeight				// 高さ
+	);
 
 	void CollSizeSet(const D3DXVECTOR3& rScale);		// 当たり判定のサイズの設定処理
 
@@ -77,5 +87,7 @@ private:
 	D3DXVECTOR3 m_collMin;		// 当たり判定の最小値
 	EState m_state;				// 状態
 	float m_fRotMove;			// 向きの移動量
+	float m_fTotalMove;			// 移動量の合計値
+	bool m_bFront;				// 表向き状況
 
 };
