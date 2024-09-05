@@ -130,7 +130,7 @@ HRESULT CField::Init(void)
 	}
 
 	// セットアップの読込
-	LoadSetup();
+	//LoadSetup();
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合
@@ -343,7 +343,7 @@ void CField::SetType(const EType type)
 		// 橋だった場合描画をオフにする
 		if (type == TYPE_XBRIDGE || type == TYPE_ZBRIDGE)
 		{
-			SetEnableDraw(false);
+			//SetEnableDraw(false);
 		}
 	}
 	else { assert(false); }	// 範囲外

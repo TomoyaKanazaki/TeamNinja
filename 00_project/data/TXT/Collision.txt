@@ -1465,14 +1465,7 @@ ACTOR_TYPE = 31
 STAGE_COLLSET
 
 CUBESET
-	NUM	= 1
-
-	COLLSET
-		OFFSET	= 0.00 0.00 0.00
-		WIDTH	= 23.00
-		HEIGHT	= 58.00
-		DEPTH	= 1.00
-	END_COLLSET
+	NUM	= 0
 END_CUBESET
 
 CYLINDERSET
@@ -2045,6 +2038,36 @@ CYLINDERSET
 		RADIUS	= 6.00
 		HEIGHT	= 52.00
 	END_COLLSET
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+#=================================================================================
+ACTOR_TYPE = 45
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 32.00
+		HEIGHT	= 60.00
+		DEPTH	= 1.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
 END_CYLINDERSET
 
 SPHERESET

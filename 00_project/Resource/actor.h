@@ -80,6 +80,7 @@ public:
 		TYPE_FENCE_01,			// フェンス01
 		TYPE_FENCE_02,			// フェンス02
 		TYPE_FENCE_03,			// フェンス03
+		TYPE_SPIN_WALL,			// 回転扉
 		TYPE_MAX				// この列挙型の総数
 	};
 

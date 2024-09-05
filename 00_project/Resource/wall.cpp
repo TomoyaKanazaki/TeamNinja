@@ -32,8 +32,8 @@ namespace
 	};
 
 	const int PRIORITY = 4;	// 壁の優先順位
-	const float INVISIBLE_MIN = 300.0f; // 透明化最小範囲
-	const float INVISIBLE_MAX = 500.0f; // 透明化最小範囲
+	const float INVISIBLE_MIN = 200.0f; // 透明化最小範囲
+	const float INVISIBLE_MAX = 400.0f; // 透明化最小範囲
 }
 
 //************************************************************
@@ -313,28 +313,31 @@ void CWall::Invisible()
 	// 回り込み状態でなければ関数を抜ける
 	if (pCamera->GetState() != CCamera::STATE_AROUND) { return; }
 
-	// 自身の情報を取得する
-	POSGRID2 part = GetPattern();
-	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
-	if (pVtxBuff == nullptr) { return; }
+	// カメラと壁の向きの情報を取得
 	SMeshWall meshWall = GetMeshWall();
-	D3DXCOLOR col = meshWall.col;
-
-	// カメラの情報を取得する
-	D3DXVECTOR3 posV = pCamera->GetPositionV();
 	float fRotCamera = pCamera->GetRotation().y;
 
 	// カメラと壁の方向が一致しない場合関数を抜ける
+	useful::NormalizeRot(fRotCamera);
 	EAngle angleCamera = useful::RotToFourDire(fRotCamera);
 	EAngle angleWall = useful::RotToFourDire(meshWall.rot.y);
-	if ((int)angleCamera + (int)angleWall % 2)
+	if (angleCamera != angleWall)
 	{
 		return;
 	}
 
+	// 自身の情報を取得する
+	POSGRID2 part = GetPattern();
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
+	if (pVtxBuff == nullptr) { return; }
+	D3DXCOLOR col = meshWall.col;
+
+	// カメラの視点を取得する
+	D3DXVECTOR3 posV = pCamera->GetPositionV();
+
 	// プレイヤーの座標を取得
 	D3DXVECTOR3 posPlayerScreen = pCamera->CalcPlayerPos();
-	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetCenterPos();
+	D3DXVECTOR3 posPlayerWorld = GET_PLAYER->GetVec3Position();
 
 	// 頂点情報へのポインタ宣言
 	VERTEX_3D* pVtx;
@@ -346,18 +349,6 @@ void CWall::Invisible()
 	{
 		for (int nCntWidth = 0; nCntWidth < part.x + 1; nCntWidth++) // 横
 		{
-			// xz平面上における視点との距離を算出
-			D3DXVECTOR3 vecPlayer = posPlayerWorld - posV;
-			D3DXVECTOR3 vecVtx = m_posVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))] - posV;
-
-			// 頂点座標がプレイヤーよりも遠い位置にある場合1.0を返す
-			if (vecPlayer.x * vecPlayer.x + vecPlayer.z * vecPlayer.z < vecVtx.x * vecVtx.x + vecVtx.z * vecVtx.z)
-			{
-				col.a = 1.0f;
-				pVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))].col = col;
-				continue;
-			}
-
 			// 頂点のスクリーン座標を算出
 			D3DXVECTOR3 pos = VEC3_ZERO;
 			if (!pCamera->OnScreen(m_posVtx[nCntHeight + nCntWidth + (nCntHeight * (part.x))], pos))

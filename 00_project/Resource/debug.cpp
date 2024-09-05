@@ -524,7 +524,7 @@ void CDebug::ChangeEnableShader(void)
 //============================================================
 void CDebug::ChangeActorDisp(void)
 {
-	if (GET_INPUTKEY->IsTrigger(KEY_ACTOR_DISP) || GET_INPUTPAD->IsTrigger(CInputPad::KEY_A))
+	if (GET_INPUTKEY->IsTrigger(KEY_ACTOR_DISP) || GET_INPUTPAD->IsTrigger(CInputPad::KEY_B))
 	{
 		// アクターの当たり判定の表示状況を切り替える
 		m_bDispActor = !m_bDispActor;

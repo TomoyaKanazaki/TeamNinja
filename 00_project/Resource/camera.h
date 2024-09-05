@@ -210,7 +210,6 @@ private:
 	void Telephoto();		// 望遠
 	void CollisionWallV();	// 視点と壁の当たり判定
 	void CollisionWallR();	// 注視点と壁の当たり判定
-	void ClearWall();		// 壁の透過処理
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
