@@ -129,6 +129,7 @@ public:
 		{
 			STATE_ROTA_UP = 0,	// 上回転状態
 			STATE_MOVE,			// 移動状態
+			STATE_ROTA_DOWN,	// 下回転状態
 			STATE_MAX			// この列挙型の総数
 		};
 
@@ -197,6 +198,7 @@ private:
 	void Open(void);		// カメラの更新 (解放)
 	void OpenRotUp(void);	// カメラの更新 (解放:上回転)
 	void OpenMove(void);	// カメラの更新 (解放:移動)
+	void OpenRotDown(void);	// カメラの更新 (解放:下回転)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)

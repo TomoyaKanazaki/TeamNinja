@@ -216,7 +216,8 @@ namespace
 		const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 145.0f, 0.0f);	// 位置オフセット
 		const float	INIT_DIS	 = 560.0f;			// カメラの距離
 		const float	INIT_ROTX	 = D3DX_PI * 0.4f;	// カメラの向きX初期値
-		const float REV_DIFF	 = 0.05f;			// 差分の補正係数
+		const float REV_DIFF	 = 0.48f;			// 差分の補正係数
+		const float REV_MOVE	 = 0.08f;			// 移動の補正係数
 	}
 }
 
@@ -1686,6 +1687,12 @@ void CCamera::Open(void)
 		OpenMove();
 		break;
 
+	case SOpen::STATE_ROTA_DOWN:
+
+		// 下回転の更新
+		OpenRotDown();
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -1747,7 +1754,7 @@ void CCamera::OpenRotUp(void)
 	// 視野角を設定
 	m_fFov = basic::VIEW_ANGLE;
 
-	if (fabsf(m_aCamera[TYPE_MAIN].rot.x - 0.01f) <= 0.01f)
+	if (fabsf(m_aCamera[TYPE_MAIN].rot.x - 0.01f) <= 0.012f)
 	{ // 回転しきった場合
 
 		// 向きを補正
@@ -1762,6 +1769,86 @@ void CCamera::OpenRotUp(void)
 //	カメラの更新処理 (解放:移動)
 //============================================================
 void CCamera::OpenMove(void)
+{
+	// 解放遷移ポイント位置の取得
+	D3DXVECTOR3 posTrans = CTransPoint::GetOpenTransPoint()->GetVec3Position();
+
+	//----------------------------------------------------
+	//	向きの更新
+	//----------------------------------------------------
+	// 目標の角度を算出
+	CalcAround(posTrans, VEC3_ONE * 10.0f);
+
+	// 目標向きを設定
+	m_aCamera[TYPE_MAIN].destRot.x = 0.01f;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	// 差分向きを計算
+	D3DXVECTOR3 diffRot = m_aCamera[TYPE_MAIN].destRot - m_aCamera[TYPE_MAIN].rot;
+	useful::NormalizeRot(diffRot);	// 差分向きを正規化
+
+	// 現在向きを計算
+	m_aCamera[TYPE_MAIN].rot += diffRot * open::REV_MOVE;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//----------------------------------------------------
+	//	距離の更新
+	//----------------------------------------------------
+	// 目標距離を設定
+	m_aCamera[TYPE_MAIN].fDestDis = open::INIT_DIS;
+
+	// 差分距離を計算
+	float fDiffDis = m_aCamera[TYPE_MAIN].fDestDis - m_aCamera[TYPE_MAIN].fDis;
+
+	// 現在距離を計算
+	m_aCamera[TYPE_MAIN].fDis += fDiffDis * open::REV_MOVE;
+
+	//----------------------------------------------------
+	//	位置の更新
+	//----------------------------------------------------
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posTrans + open::OFFSET;	// 遷移ポイント位置を基準点にする
+
+	// 注視点の差分位置を計算
+	D3DXVECTOR3 diffPosR = m_aCamera[TYPE_MAIN].destPosR - m_aCamera[TYPE_MAIN].posR;
+
+	// 注視点の現在位置を計算
+	m_aCamera[TYPE_MAIN].posR += diffPosR * open::REV_MOVE;
+
+	// 視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+	// 視野角を設定
+	m_fFov = basic::VIEW_ANGLE;
+
+	if (fabsf(m_aCamera[TYPE_MAIN].rot.x - m_aCamera[TYPE_MAIN].destRot.x) <= 0.008f
+	&&  fabsf(m_aCamera[TYPE_MAIN].rot.y - m_aCamera[TYPE_MAIN].destRot.y) <= 0.008f
+	&&  fabsf(m_aCamera[TYPE_MAIN].posR.x - m_aCamera[TYPE_MAIN].destPosR.x) <= 2.0f
+	&&  fabsf(m_aCamera[TYPE_MAIN].posR.z - m_aCamera[TYPE_MAIN].destPosR.z) <= 2.0f)
+	{ // 移動しきった場合
+
+		// 向きを補正
+		m_aCamera[TYPE_MAIN].rot = m_aCamera[TYPE_MAIN].destRot;
+
+		// 注視点の位置を補正
+		m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = posTrans + open::OFFSET;
+
+		// 視点の位置を補正
+		m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+		m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
+		m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+
+		// 下回転状態にする
+		m_openInfo.state = SOpen::STATE_ROTA_DOWN;
+	}
+}
+
+//============================================================
+//	カメラの更新処理 (下回転)
+//============================================================
+void CCamera::OpenRotDown(void)
 {
 	// 解放遷移ポイント位置の取得
 	D3DXVECTOR3 posTrans = CTransPoint::GetOpenTransPoint()->GetVec3Position();
@@ -1816,22 +1903,14 @@ void CCamera::OpenMove(void)
 	// 視野角を設定
 	m_fFov = basic::VIEW_ANGLE;
 
-	if (fabsf(m_aCamera[TYPE_MAIN].rot.x - m_aCamera[TYPE_MAIN].destRot.x) <= 0.01f
-	&&  fabsf(m_aCamera[TYPE_MAIN].rot.y - m_aCamera[TYPE_MAIN].destRot.y) <= 0.01f
-	&&  fabsf(m_aCamera[TYPE_MAIN].posR.x - m_aCamera[TYPE_MAIN].destPosR.x) <= 0.1f
-	&&  fabsf(m_aCamera[TYPE_MAIN].posR.z - m_aCamera[TYPE_MAIN].destPosR.z) <= 0.1f)
-	{ // 移動しきった場合
+	if (fabsf(m_aCamera[TYPE_MAIN].rot.x - m_aCamera[TYPE_MAIN].destRot.x) <= 0.012f)
+	{ // 回転しきった場合
 
 		// 向きを補正
 		m_aCamera[TYPE_MAIN].rot = m_aCamera[TYPE_MAIN].destRot;
 
-		// 注視点の位置を補正
-		m_aCamera[TYPE_MAIN].posR = m_aCamera[TYPE_MAIN].destPosR = posTrans + open::OFFSET;
-
-		// 視点の位置を補正
-		m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].destPosV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
-		m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].destPosV.y = m_aCamera[TYPE_MAIN].posR.y + ((m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));	// TODO：yだけ+なのきもすぎ
-		m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].destPosV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+		// 状態を初期化
+		m_openInfo.state = SOpen::STATE_ROTA_UP;
 
 		// なにもしない状態にする
 		m_state = STATE_NONE;

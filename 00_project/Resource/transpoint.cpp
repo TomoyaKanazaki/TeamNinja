@@ -46,7 +46,8 @@ CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSP
 	m_pEffectData	(nullptr),		// 保持するエフェクト情報
 	m_pBalloon		(nullptr),		// 吹き出し情報
 	m_state			(STATE_NORMAL),	// 状態
-	m_bOpen			(false)			// ステージ解放フラグ
+	m_bOpen			(false),		// ステージ解放フラグ
+	m_fCurTime		(0.0f)			// 現在の時間
 {
 
 }
@@ -66,9 +67,10 @@ HRESULT CTransPoint::Init(void)
 {
 	// メンバ変数を初期化
 	m_pEffectData = nullptr;	// 保持するエフェクト情報
-	m_pBalloon = nullptr;		// 吹き出し情報
-	m_state = STATE_NORMAL;		// 状態
-	m_bOpen = false;			// ステージ解放フラグ
+	m_pBalloon	= nullptr;		// 吹き出し情報
+	m_state		= STATE_NORMAL;	// 状態
+	m_bOpen		= false;		// ステージ解放フラグ
+	m_fCurTime	= 0.0f;			// 現在の時間
 
 	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
 	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
@@ -99,8 +101,8 @@ HRESULT CTransPoint::Init(void)
 	if (GET_STAGE->GetOpenMapDirectory() == fsPath.parent_path().string())
 	{ // 解放されたマップのディレクトリと一致した場合
 
-		// 解放状態にする
-		m_state = STATE_OPEN;
+		// 何もしない状態にする
+		m_state = STATE_NONE;
 
 		// 解放された遷移ポイントを保存
 		assert(m_pOpenTransPoint == nullptr);
@@ -166,12 +168,14 @@ void CTransPoint::Update(const float fDeltaTime)
 
 	switch (m_state)
 	{ // 状態ごとの処理
-	case STATE_OPEN:
+	case STATE_NONE:
 
-		if (GET_INPUTKEY->IsTrigger(DIK_9))
-		{
+		if (GET_CAMERA->GetState() == CCamera::STATE_NONE)
+		{ // カメラの演出が終わった場合
+
 			if (m_pBalloonManager == nullptr)
-			{
+			{ // 吹き出しマネージャーが未精製の場合
+
 				// ステージ情報テクスチャ作成
 				CreateStageTexture();
 
@@ -180,11 +184,37 @@ void CTransPoint::Update(const float fDeltaTime)
 
 				// 初回演出を開始する
 				m_pBalloonManager->SetFirstStag();
+
+				// カメラ状態にする
+				m_state = STATE_CAMERA;
 			}
 		}
+		break;
 
-		// TODO
-		if (GET_INPUTKEY->IsTrigger(DIK_0))
+	case STATE_CAMERA:
+
+		if (m_pBalloon->IsSizeDisp())
+		{ // カメラ動作が終了した場合
+
+			// 現在の時間を加算
+			m_fCurTime += fDeltaTime;
+			if (m_fCurTime >= 1.0f)
+			{
+				// 現在の時間を初期化
+				m_fCurTime = 0.0f;
+
+				// フェードを開始する
+				GET_MANAGER->GetFade()->SetFade(3.0f, 1.5f, 7, XCOL_AWHITE);
+
+				// フェード状態にする
+				m_state = STATE_FADE;
+			}
+		}
+		break;
+
+	case STATE_FADE:
+
+		if (GET_MANAGER->GetFade()->IsFadeIn())
 		{
 			// 吹き出しマネージャーの終了
 			SAFE_UNINIT(m_pBalloonManager);
@@ -216,7 +246,7 @@ void CTransPoint::Update(const float fDeltaTime)
 	&&  m_pBalloon->IsSizeDisp())
 	{ // 演出の開始タイミングの場合
 
-		if (m_state == STATE_OPEN)
+		if (m_state != STATE_NORMAL)
 		{ // 解放状態の場合
 
 			// 初回演出を開始する

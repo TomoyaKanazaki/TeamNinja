@@ -33,7 +33,9 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_OPEN = 0,	// 解放状態
+		STATE_NONE = 0,	// 何もしない状態
+		STATE_CAMERA,	// カメラ状態
+		STATE_FADE,		// フェード状態
 		STATE_NORMAL,	// 通常状態
 		STATE_MAX		// この列挙型の総数
 	};
@@ -80,6 +82,7 @@ private:
 	CBalloon* m_pBalloon;	// 吹き出し情報
 	EState m_state;			// 状態
 	bool m_bOpen;			// ステージ解放フラグ
+	float m_fCurTime;		// 現在の時間
 };
 
 #endif	// _TRANSPOINT_H_
