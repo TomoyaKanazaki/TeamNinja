@@ -878,11 +878,8 @@ CEnemyStalk::EMotion CEnemyStalk::Stance(void)
 	// 分身の発見処理
 	JudgeClone();
 
-	// プレイヤーの発見処理
-	JudgePlayer();
-
-	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
-	{ // 範囲内に入った場合
+	if (PlayerIngress())
+	{ // プレイヤーが範囲内に入った場合
 
 		// 警告状態にする
 		SetState(STATE_WARNING);
@@ -927,4 +924,3 @@ void CEnemyStalk::SetState(const EState state)
 	// 状態カウントを0にする
 	m_nStateCount = 0;
 }
-

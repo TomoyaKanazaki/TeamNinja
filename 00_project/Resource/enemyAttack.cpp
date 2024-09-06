@@ -585,6 +585,26 @@ bool CEnemyAttack::ShakeOffClone(void)
 	return false;
 }
 
+//============================================================
+// プレイヤー進入処理
+//============================================================
+bool CEnemyAttack::PlayerIngress(void)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;				// 位置
+
+	// プレイヤー情報の取得
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// プレイヤーがいない場合、抜ける
+	if (pPlayer == nullptr) { return false; }
+
+	// 位置を取得する
+	pos = pPlayer->GetVec3Position();
+
+	// 範囲内進入状況を返す
+	return m_pChaseRange->InsideTargetPos(GetPosInit(), pos);
+}
+
 //====================================================================================================================================================================================
 // TODO：ここから下はう〇ちカス判定だから後で修正
 //====================================================================================================================================================================================
@@ -616,7 +636,7 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 	// 回避カウントを加算する
 	m_nAttackCount++;
 
-	if (m_nAttackCount >= DODGE_COUNT)
+	if (m_nAttackCount > DODGE_COUNT)
 	{ // 回避カウントを過ぎた場合
 
 		bool bHit = false;	// ヒット状況
