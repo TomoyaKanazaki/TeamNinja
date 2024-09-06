@@ -133,11 +133,15 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 		// 勾玉の獲得状況を書き出し
 		CGodItem::SavePossess(GET_STAGE->GetCurMapSaveGodItemPass().c_str(), &bCurGet[0]);
 
-		// 遷移先の解放フラグテキストパスを作成
-		std::filesystem::path fsPath(GET_STAGE->GetOpenMapDirectory());	// 遷移先マップパス
-		fsPath.append("open.txt");										// ディレクトリに解放フラグのベースネーム追加
+		if (!GET_STAGE->GetOpenMapDirectory().empty())
+		{ // パスが指定されている場合
 
-		// 解放状況の書き出し
-		CTransPoint::SaveOpen(fsPath.string().c_str(), true);
+			// 遷移先の解放フラグテキストパスを作成
+			std::filesystem::path fsPath(GET_STAGE->GetOpenMapDirectory());	// 遷移先マップパス
+			fsPath.append("open.txt");										// ディレクトリに解放フラグのベースネーム追加
+
+			// 解放状況の書き出し
+			CTransPoint::SaveOpen(fsPath.string().c_str(), true);
+		}
 	}
 }

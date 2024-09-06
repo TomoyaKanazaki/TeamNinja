@@ -38,8 +38,10 @@ namespace
 //	コンストラクタ
 //============================================================
 CBalloon::CBalloon() : CObjectBillboard(CObject::LABEL_UI),
-	m_fScale	 (0.0f),	// 拡大率
-	m_fDestScale (0.0f)		// 目標拡大率
+	m_state		 (STATE_NONE),	// 状態
+	m_fCurTime	 (0.0f),		// 現在時間
+	m_fScale	 (0.0f),		// 拡大率
+	m_fDestScale (0.0f)			// 目標拡大率
 {
 
 }
@@ -58,8 +60,10 @@ CBalloon::~CBalloon()
 HRESULT CBalloon::Init(void)
 {
 	// メンバ変数を初期化
-	m_fScale	 = 0.0f;	// 拡大率
-	m_fDestScale = 0.0f;	// 目標拡大率
+	m_state		 = STATE_NONE;	// 状態
+	m_fCurTime	 = 0.0f;		// 現在時間
+	m_fScale	 = 0.0f;		// 拡大率
+	m_fDestScale = 0.0f;		// 目標拡大率
 
 	// オブジェクトビルボードの初期化
 	if (FAILED(CObjectBillboard::Init()))
@@ -108,14 +112,78 @@ void CBalloon::Uninit(void)
 //============================================================
 void CBalloon::Update(const float fDeltaTime)
 {
-	// 拡大率の差分を計算
-	float fDiffScale = m_fDestScale - m_fScale;
+	switch (m_state)
+	{ // 状態ごとの処理
+	case STATE_NONE:
+		break;
 
-	// 拡大率を計算
-	m_fScale += fDiffScale * REV_SCALE;
+	case STATE_OPEN:
+	{
+		// 現在時間を進める
+		m_fCurTime += fDeltaTime;
+		if (useful::LimitMaxNum(m_fCurTime, 1.0f))
+		{ // 時間が経過しきった場合
 
-	// 大きさを設定
-	SetVec3Sizing(balloon::SIZE * m_fScale);
+			// 終了状態にする
+			m_state = STATE_END;
+		}
+
+		// 時間で割合を求める
+		float fRate = easeing::OutSine(m_fCurTime, 0.0f, 1.0f);
+
+		// 拡大率を計算
+		m_fScale = m_fDestScale * fRate;
+
+		// 大きさを設定
+		SetVec3Sizing(balloon::SIZE * m_fScale);
+		break;
+	}
+	case STATE_NORMAL:
+	{
+		// 拡大率の差分を計算
+		float fDiffScale = m_fDestScale - m_fScale;
+
+		// 拡大率を計算
+		m_fScale += fDiffScale * REV_SCALE;
+		if (fabsf(DISP_SCALE - m_fScale) <= 0.05f)
+		{ // 拡大しきった場合
+
+			// 表示拡大率に補正
+			m_fScale = DISP_SCALE;
+
+			// 終了状態にする
+			m_state = STATE_END;
+		}
+
+		// 大きさを設定
+		SetVec3Sizing(balloon::SIZE * m_fScale);
+		break;
+	}
+	case STATE_END:
+	{
+		// 拡大率の差分を計算
+		float fDiffScale = m_fDestScale - m_fScale;
+
+		// 拡大率を計算
+		m_fScale += fDiffScale * REV_SCALE;
+		if (fabsf(UNDISP_SCALE - m_fScale) <= 0.05f)
+		{ // 拡大しきった場合
+
+			// 非表示拡大率に補正
+			m_fScale = UNDISP_SCALE;
+
+			// 何もしない状態にする
+			m_state = STATE_NONE;
+		}
+
+		// 大きさを設定
+		SetVec3Sizing(balloon::SIZE * m_fScale);
+		break;
+	}
+	default:
+		assert(false);
+		break;
+	}
 
 	// オブジェクトビルボードの更新
 	CObjectBillboard::Update(fDeltaTime);
@@ -172,6 +240,18 @@ CBalloon *CBalloon::Create(const D3DXVECTOR3& rPosParent)
 }
 
 //============================================================
+//	吹き出し初表示の設定処理
+//============================================================
+void CBalloon::SetFirstDisp(void)
+{
+	// 目標拡大率を大きくする
+	m_fDestScale = DISP_SCALE;
+
+	// 解放状態にする
+	m_state = STATE_OPEN;
+}
+
+//============================================================
 //	吹き出し表示の設定処理
 //============================================================
 void CBalloon::SetDisp(const bool bDisp)
@@ -181,12 +261,18 @@ void CBalloon::SetDisp(const bool bDisp)
 
 		// 目標拡大率を大きくする
 		m_fDestScale = DISP_SCALE;
+
+		// 通常状態にする
+		m_state = STATE_NORMAL;
 	}
 	else
 	{ // 表示しない場合
 
 		// 目標拡大率を小さくする
 		m_fDestScale = UNDISP_SCALE;
+
+		// 終了状態にする
+		m_state = STATE_END;
 	}
 }
 
@@ -196,5 +282,5 @@ void CBalloon::SetDisp(const bool bDisp)
 bool CBalloon::IsSizeDisp(void) const
 {
 	// 大きくなっているかを返す
-	return (fabsf(DISP_SCALE - m_fScale) <= 0.05f);
+	return (m_state == STATE_END);
 }

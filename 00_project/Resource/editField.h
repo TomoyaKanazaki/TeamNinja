@@ -55,7 +55,7 @@ private:
 	void UpdateRotation(void) override;	// 向き更新
 
 	// メンバ関数
-	void UpdateSize(void);	// 大きさ更新
+	void UpdateSize(void);		// 大きさ更新
 	void UpdateTexPart(void);	// テクスチャ分割更新
 	void ChangeType(void);		// 種類変更
 	void CreateField(void);		// フィールド生成

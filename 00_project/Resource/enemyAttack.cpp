@@ -18,6 +18,7 @@
 #include "multiModel.h"
 #include "collision.h"
 #include "enemyChaseRange.h"
+#include "actor.h"
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
@@ -114,6 +115,9 @@ void CEnemyAttack::Uninit(void)
 	// 追跡範囲の終了処理
 	SAFE_UNINIT(m_pChaseRange);
 
+	// 消去処理
+	m_actor.clear();
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -151,7 +155,8 @@ void CEnemyAttack::Draw(CShader* pShader)
 //============================================================
 void CEnemyAttack::SetData(void)
 {
-
+	// アクターの登録処理
+	ActorRegist();
 }
 
 //============================================================
@@ -680,7 +685,7 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	}
 
 	// 分身が NULL の場合抜ける
-	if (pClone == nullptr) { return false; }
+	if (pClone == nullptr || pClone->GetAction() != CPlayerClone::ACTION_MOVE) { return false; }
 
 	// ヒット処理
 	D3DXVECTOR3 sizeUpClone =
@@ -788,4 +793,60 @@ bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const flo
 
 	// true を返す
 	return true;
+}
+
+//===========================================
+// アクターの当たり判定処理
+//===========================================
+void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (m_actor.empty()) { return; }
+
+	D3DXVECTOR3 move = GetMovePosition();
+	bool bJump = IsJump();
+
+	for (auto& actor : m_actor)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,				// 位置
+			GetOldPosition(),	// 前回の位置
+			GetRadius(),		// 半径
+			GetHeight(),		// 高さ
+			move,				// 移動量
+			bJump,				// ジャンプ状況
+			bHit				// ヒット状況
+		);
+	}
+
+	// 移動量とジャンプ状況を反映
+	SetMovePosition(move);
+	SetEnableJump(bJump);
+}
+
+//===========================================
+// アクターの登録処理
+//===========================================
+void CEnemyAttack::ActorRegist(void)
+{
+	// アクターのリスト構造が無ければ抜ける
+	if (CActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CActor*> list = CActor::GetList()->GetList();
+	D3DXVECTOR3 pos = GetPosInit();
+	D3DXVECTOR3 vtxChase = D3DXVECTOR3(m_pChaseRange->GetWidth(), 0.0f, m_pChaseRange->GetDepth());
+
+	for (auto actor : list)
+	{
+		assert(actor != nullptr);
+
+		// モデルが追跡範囲内にない場合、次に進む
+		if (!collision::Box2D(pos, actor->GetVec3Position(), vtxChase, vtxChase, actor->GetModelData().vtxMax, -actor->GetModelData().vtxMin)) { continue; }
+
+		// アクターを登録する
+		m_actor.push_back(actor);
+	}
 }

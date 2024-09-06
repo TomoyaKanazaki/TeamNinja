@@ -19,6 +19,7 @@
 #include "collisionSphere.h"
 #include "collisionPolygon.h"
 #include "mash.h"
+#include "spin_wall.h"
 
 //************************************************************
 //	定数宣言
@@ -72,6 +73,7 @@ namespace
 		"data\\MODEL\\FENCE\\fence001.x",				// フェンス01
 		"data\\MODEL\\FENCE\\fence002.x",				// フェンス02
 		"data\\MODEL\\FENCE\\fence003.x",				// フェンス03
+		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// 回転扉(TODO：あとでモデル変更)
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
@@ -208,6 +210,10 @@ CActor* CActor::Create
 	if (type == TYPE_MASH_MOVE) // ふすまだけ子クラスを生成
 	{
 		pActor = new CMash(rPos);
+	}
+	else if (type == TYPE_SPIN_WALL) // 回転扉も子クラスを生成
+	{
+		pActor = new CSpinWall(rRot);
 	}
 	else
 	{

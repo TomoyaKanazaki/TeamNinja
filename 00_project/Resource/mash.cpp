@@ -13,7 +13,8 @@
 //==========================================
 namespace
 {
-	const float MOVE_SPEED = 120.0f; // 移動速度
+	const float MOVE_SPEED = 120.0f;	// 移動速度
+	const float SENSOR_RANGE = 40.0f;	// センサーが反応する範囲
 }
 
 //==========================================
@@ -23,6 +24,8 @@ CMash::CMash(const D3DXVECTOR3& rPos) :
 	m_posDefault(rPos),
 	m_offsetMove(VEC3_ZERO),
 	m_move(VEC3_ZERO),
+	m_collMax(VEC3_ZERO),
+	m_collMin(VEC3_ZERO),
 	m_state(STATE_CLOSE)
 {
 	// Do Nothing
@@ -76,14 +79,15 @@ void CMash::Draw(CShader* pShader)
 }
 
 //==========================================
-//  位置設定のオーバーライド
+//  拡大率設定のオーバーライド
 //==========================================
-void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
+void CMash::SetVec3Scaling(const D3DXVECTOR3& rScale)
 {
-	D3DXVECTOR3 scale = GetVec3Scaling();
+	// 拡大率の設定処理
+	CActor::SetVec3Scaling(rScale);
 
 	// 移動する距離を取得する
-	float offsetMax = (GetModelData().vtxMax.x * scale.x) * 2.0f;
+	float offsetMax = (GetModelData().vtxMax.x * rScale.x) * 2.0f;
 
 	// 向きから移動先オフセットを算出する
 	float fRot = GetVec3Rotation().y + (D3DX_PI * 0.5f);
@@ -97,13 +101,13 @@ void CMash::SetVec3Position(const D3DXVECTOR3& rPos)
 	// 向きから移動量を算出する
 	m_move = D3DXVECTOR3
 	(
-		(MOVE_SPEED * scale.x) * sinf(fRot),
+		(MOVE_SPEED * rScale.x) * sinf(fRot),
 		0.0f,
-		(MOVE_SPEED * scale.x) * cosf(fRot)
+		(MOVE_SPEED * rScale.x) * cosf(fRot)
 	);
 
-	// 親クラスの位置設定
-	CActor::SetVec3Position(rPos);
+	// 当たり判定のサイズ設定
+	CollSizeSet(rScale);
 }
 
 #ifdef _DEBUG
@@ -135,24 +139,8 @@ void CMash::Collision
 {
 	// 位置を取得
 	D3DXVECTOR3 posMash = GetVec3Position();
-	D3DXVECTOR3 rotMash = GetVec3Rotation();
 	D3DXVECTOR3 vtxMax = D3DXVECTOR3(fRadius, fHeight, fRadius);
 	D3DXVECTOR3 vtxMin = D3DXVECTOR3(fRadius, 0.0f, fRadius);
-	D3DXVECTOR3 vtxMashMax = D3DXVECTOR3
-	(
-		GetModelData().vtxMax.x + sinf(rotMash.y) * GetModelData().vtxMax.x,
-		fHeight,
-		GetModelData().vtxMax.z + cosf(rotMash.y) * GetModelData().vtxMax.x
-	);
-	D3DXVECTOR3 vtxMashMin = D3DXVECTOR3
-	(
-		-GetModelData().vtxMin.x + sinf(rotMash.y) * -GetModelData().vtxMin.x,
-		0.0f,
-		-GetModelData().vtxMin.z + cosf(rotMash.y) * -GetModelData().vtxMin.x
-	);
-
-	// 向きの四方向変換
-	useful::RotToFourDire(GetVec3Rotation().y);
 
 	if (collision::Box3D
 	(
@@ -160,8 +148,8 @@ void CMash::Collision
 		m_posDefault,	// 判定目標位置
 		vtxMax,			// 判定サイズ(右・上・後)
 		vtxMin,			// 判定サイズ(左・下・前)
-		vtxMashMax,		// 判定目標サイズ(右・上・後)
-		vtxMashMin		// 判定目標サイズ(左・下・前)
+		m_collMax,		// 判定目標サイズ(右・上・後)
+		m_collMin		// 判定目標サイズ(左・下・前)
 	))
 	{ // ふすまに近づいた場合
 
@@ -203,24 +191,8 @@ void CMash::Collision
 {
 	// 位置を取得
 	D3DXVECTOR3 posMash = GetVec3Position();
-	D3DXVECTOR3 rotMash = GetVec3Rotation();
 	D3DXVECTOR3 vtxMax = D3DXVECTOR3(fRadius, fHeight, fRadius);
 	D3DXVECTOR3 vtxMin = D3DXVECTOR3(fRadius, 0.0f, fRadius);
-	D3DXVECTOR3 vtxMashMax = D3DXVECTOR3
-	(
-		GetModelData().vtxMax.x + sinf(rotMash.y) * GetModelData().vtxMax.x,
-		fHeight,
-		GetModelData().vtxMax.z + cosf(rotMash.y) * GetModelData().vtxMax.x
-	);
-	D3DXVECTOR3 vtxMashMin = D3DXVECTOR3
-	(
-		-GetModelData().vtxMin.x + sinf(rotMash.y) * -GetModelData().vtxMin.x,
-		0.0f,
-		-GetModelData().vtxMin.z + cosf(rotMash.y) * -GetModelData().vtxMin.x
-	);
-
-	// 向きの四方向変換
-	useful::RotToFourDire(GetVec3Rotation().y);
 
 	if (collision::Box3D
 	(
@@ -228,8 +200,8 @@ void CMash::Collision
 		m_posDefault,	// 判定目標位置
 		vtxMax,			// 判定サイズ(右・上・後)
 		vtxMin,			// 判定サイズ(左・下・前)
-		vtxMashMax,		// 判定目標サイズ(右・上・後)
-		vtxMashMin		// 判定目標サイズ(左・下・前)
+		m_collMax,		// 判定目標サイズ(右・上・後)
+		m_collMin		// 判定目標サイズ(左・下・前)
 	))
 	{ // ふすまに近づいた場合
 
@@ -348,4 +320,48 @@ void CMash::Open(const float fDeltaTime)
 
 	// 位置を反映
 	SetVec3Position(pos);
+}
+
+//==========================================
+// 当たり判定のサイズの設定処理
+//==========================================
+void CMash::CollSizeSet(const D3DXVECTOR3& rScale)
+{
+	EAngle angle = useful::RotToFourDire(GetVec3Rotation().y);
+	D3DXVECTOR3 ModelMax = GetModelData().vtxMax;
+	D3DXVECTOR3 ModelMin = GetModelData().vtxMin;
+
+	if (angle == EAngle::ANGLE_90 ||
+		angle == EAngle::ANGLE_270)
+	{ // 90度、270度の場合
+
+		m_collMax = D3DXVECTOR3
+		(
+			ModelMax.z * rScale.z + SENSOR_RANGE,
+			ModelMax.y * rScale.y,
+			ModelMax.x * rScale.x
+		);
+		m_collMin = D3DXVECTOR3
+		(
+			-ModelMin.z * rScale.z + SENSOR_RANGE,
+			-ModelMin.y * rScale.y,
+			-ModelMin.x * rScale.x
+		);
+	}
+	else
+	{ // 上記以外
+
+		m_collMax = D3DXVECTOR3
+		(
+			ModelMax.x * rScale.x,
+			ModelMax.y * rScale.y,
+			ModelMax.z * rScale.z + SENSOR_RANGE
+		);
+		m_collMin = D3DXVECTOR3
+		(
+			-ModelMin.x * rScale.x,
+			-ModelMin.y * rScale.y,
+			-ModelMin.z * rScale.z + SENSOR_RANGE
+		);
+	}
 }

@@ -149,6 +149,26 @@ HRESULT CStage::BindStage(const SPass& rPass)
 		return E_FAIL;
 	}
 
+	// アクターのセットアップの読込
+	if (!rPass.sActor.empty())		// パスが指定されている場合
+	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ギミックのセットアップの読込
+	if (!rPass.sGimmick.empty())	// パスが指定されている場合
+	if (FAILED(CGimmick::LoadSetup(rPass.sGimmick.c_str())))
+	{ // セットアップに失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// 敵のセットアップの読込
 	if (!rPass.sEnemyAtc.empty())	// パスが指定されている場合
 	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
@@ -172,26 +192,6 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	// 神器のセットアップの読込
 	if (!rPass.sGodItem.empty())	// パスが指定されている場合
 	if (FAILED(CGodItem::LoadSetup(rPass.sGodItem.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// アクターのセットアップの読込
-	if (!rPass.sActor.empty())		// パスが指定されている場合
-	if (FAILED(CActor::LoadSetup(rPass.sActor.c_str())))
-	{ // セットアップに失敗した場合
-
-		// 失敗を返す
-		assert(false);
-		return E_FAIL;
-	}
-
-	// ギミックのセットアップの読込
-	if (!rPass.sGimmick.empty())	// パスが指定されている場合
-	if (FAILED(CGimmick::LoadSetup(rPass.sGimmick.c_str())))
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
@@ -891,6 +891,21 @@ HRESULT CStage::LoadOpen(const char* pString, FILE *pFile)
 
 		// 解放マップディレクトリを保存
 		m_sOpenMapFolder = &aString[0];
+
+		// 解放マップの解放フラグパスを作成
+		std::filesystem::path fsPath = m_sOpenMapFolder;
+		fsPath.append("open.txt");
+
+		// 解放フラグの取得
+		bool bOpen = false;
+		CTransPoint::LoadOpen(fsPath.string().c_str(), &bOpen);
+
+		if (bOpen)
+		{ // 既に解放済みの場合
+
+			// パスをクリア
+			m_sOpenMapFolder.clear();
+		}
 	}
 
 	// 成功を返す

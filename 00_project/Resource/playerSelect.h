@@ -40,6 +40,7 @@ private:
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateEnter(const float fDeltaTime);	// 入場状態時の更新
+	EMotion UpdateOpen(const float fDeltaTime);		// 解放状態時の更新
 	void UpdateTrans(D3DXVECTOR3& rPos);			// ステージ遷移の更新
 	void SetEnter(const char* pTransMapPath);		// 入場設定
 };

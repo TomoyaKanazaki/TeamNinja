@@ -49,6 +49,7 @@ public:
 		STATE_GODITEM,		// 神器獲得
 		STATE_RESULT,		// リザルト
 		STATE_SELECT,		// 選択
+		STATE_OPEN,			// 解放
 		STATE_MAX			// この列挙型の総数
 	};
 
@@ -110,14 +111,30 @@ public:
 		// 状態
 		enum EState
 		{
-			STATE_LAND = 0,		// 着地待ち状態
-			STATE_ROUND,		// 回り込み状態
-			STATE_BACK,			// 戻り状態
-			STATE_MAX			// この列挙型の総数
+			STATE_LAND = 0,	// 着地待ち状態
+			STATE_ROUND,	// 回り込み状態
+			STATE_BACK,		// 戻り状態
+			STATE_MAX		// この列挙型の総数
 		};
 
 		int nCount;			// カウント
 		EState state;		// 状態
+	};
+
+	// 解放カメラ構造体
+	struct SOpen
+	{
+		// 状態列挙
+		enum EState
+		{
+			STATE_ROTA_UP = 0,	// 上回転状態
+			STATE_MOVE,			// 移動状態
+			STATE_ROTA_DOWN,	// 下回転状態
+			STATE_MAX			// この列挙型の総数
+		};
+
+		float fCurTime;	// カウント
+		EState state;	// 状態
 	};
 
 	// メンバ関数
@@ -139,6 +156,7 @@ public:
 	void SetDestGodItem(void);		// カメラ目標位置設定 (神器獲得)
 	void SetDestResult(void);		// カメラ目標位置設定 (リザルト)
 	void SetDestSelect(void);		// カメラ目標位置設定 (選択)
+	void SetDestOpen(void);			// カメラ目標位置設定 (解放)
 	void SetPositionV(const D3DXVECTOR3& rPos);	// 視点設定
 	void SetPositionR(const D3DXVECTOR3& rPos);	// 注視点設定
 	void SetRotation(const D3DXVECTOR3& rRot);	// 向き設定
@@ -177,25 +195,29 @@ private:
 	void GodItem(void);		// カメラの更新 (神器獲得)
 	void Result(void);		// カメラの更新 (リザルト)
 	void Select(void);		// カメラの更新 (選択)
+	void Open(void);		// カメラの更新 (解放)
+	void OpenRotUp(void);	// カメラの更新 (解放:上回転)
+	void OpenMove(void);	// カメラの更新 (解放:移動)
+	void OpenRotDown(void);	// カメラの更新 (解放:下回転)
 	void Move(void);		// 位置の更新 (操作)
 	void Distance(void);	// 距離の更新 (操作)
 	void Rotation(void);	// 向きの更新 (操作)
 	void Swing(void);		// カメラ揺れの更新
 
 	// 金崎追加
-	void Around();										// 回り込み
-	void CalcAround(const D3DXVECTOR3& posPlayer);		// 回り込みの計算
-	void Telephoto();									// 望遠
-	void CollisionWallV();								// 視点と壁の当たり判定
-	void CollisionWallR();								// 注視点と壁の当たり判定
-	void ClearWall();									// 壁の透過処理
+	void CalcAround(const D3DXVECTOR3& pos, const D3DXVECTOR3& size);	// 回り込みの計算
+	void Around();			// 回り込み
+	void Telephoto();		// 望遠
+	void CollisionWallV();	// 視点と壁の当たり判定
+	void CollisionWallR();	// 注視点と壁の当たり判定
 
 	// メンバ変数
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
 	SStart	m_startInfo;	// スタートカメラの情報
-	EState	m_state;	// 状態
-	bool	m_bUpdate;	// 更新状況
-	float	m_fFov;		// 視野角
+	SOpen	m_openInfo;		// 解放カメラの情報
+	EState	m_state;		// 状態
+	bool	m_bUpdate;		// 更新状況
+	float	m_fFov;			// 視野角
 };
 
 #endif	// _CAMERA_H_

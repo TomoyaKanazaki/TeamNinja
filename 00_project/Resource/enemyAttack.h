@@ -20,6 +20,7 @@
 //************************************************************
 class CPlayerClone;		// 分身の情報
 class CEnemyChaseRange;	// 敵の追跡範囲
+class CActor;			// アクター
 
 //************************************************************
 //	クラス定義
@@ -111,6 +112,10 @@ private:
 	// オーバーライド関数
 	virtual int  UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override = 0;	// 状態の更新処理
 	virtual void UpdateMotion(int nMotion, const float fDeltaTime) override = 0;	// モーションの更新処理
+	void CollisionActor(D3DXVECTOR3& rPos, bool& bHit) override;					// アクターの当たり判定処理
+
+	// メンバ関数
+	void ActorRegist(void);		// アクターの登録処理
 
 	// 静的メンバ変数
 	static CListManager<CEnemyAttack>* m_pList;		// オブジェクトリスト
@@ -118,6 +123,7 @@ private:
 	// メンバ変数
 	CListManager<CEnemyAttack>::AIterator m_iterator;	// イテレーター
 	CEnemyChaseRange* m_pChaseRange;	// 追跡範囲の情報
+	std::vector<CActor*> m_actor;		// 当たり判定を取るアクターの情報
 	CPlayerClone* m_pClone;		// 分身の情報
 	D3DXVECTOR3 m_posTarget;	// 目標の位置
 	ETarget m_target;			// 標的

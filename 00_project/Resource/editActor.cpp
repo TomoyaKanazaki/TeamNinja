@@ -21,6 +21,7 @@
 #include "collisionPolygon.h"
 #include "collManager.h"
 #include "mash.h"
+#include "spin_wall.h"
 
 //************************************************************
 //	マクロ定義
@@ -198,6 +199,9 @@ void CEditActor::Update(void)
 
 	// ふすまの設定処理
 	SetMash();
+
+	// 回転扉の設定処理
+	SetSpinWall();
 
 #endif	// _DEBUG
 }
@@ -747,6 +751,9 @@ void CEditActor::CreateActor(void)
 		// ふすまの設定処理
 		SetMash();
 
+		// 回転扉の設定処理
+		SetSpinWall();
+
 		// 未保存を設定
 		m_bSave = false;
 
@@ -817,6 +824,21 @@ void CEditActor::SetMash(void)
 
 	// 初期位置を反映する
 	pMash->SetDefaultPos(m_pActor->GetVec3Position());
+}
+
+//============================================================
+// 回転扉の設定処理
+//============================================================
+void CEditActor::SetSpinWall(void)
+{
+	// 回転扉にダイナミックキャスト
+	CSpinWall* pWall = dynamic_cast<CSpinWall*>(m_pActor);
+
+	// 回転扉が NULL の場合、抜ける
+	if (pWall == nullptr) { return; }
+
+	// 初期位置を反映する
+	pWall->SetDefaultRot(m_pActor->GetVec3Rotation());
 }
 
 //============================================================
@@ -993,6 +1015,27 @@ HRESULT CEditActor::Save(void)
 		D3DXVECTOR3 pos = rList->GetVec3Position();		// 位置
 		D3DXVECTOR3 rot = rList->GetVec3Rotation();		// 向き
 		D3DXVECTOR3 scale = rList->GetVec3Scaling();	// 大きさ
+
+		if (typeid(*rList) == typeid(CMash))
+		{ // ふすまの場合
+
+			// ふすまにダイナミックキャスト
+			CMash* pMash = dynamic_cast<CMash*>(rList);
+			if (pMash == nullptr) { assert(false); }
+
+			// 初期位置を取得する
+			pos = pMash->GetDefaultPos();
+		}
+		else if (typeid(*rList) == typeid(CSpinWall))
+		{ // 回転扉の場合
+
+			// ふすまにダイナミックキャスト
+			CSpinWall* pWall = dynamic_cast<CSpinWall*>(rList);
+			if (pWall == nullptr) { assert(false); }
+
+			// 初期向きを取得する
+			rot = pWall->GetDefaultRot();
+		}
 
 		// 向きを360度に変換
 		rot = D3DXToDegree(rot);

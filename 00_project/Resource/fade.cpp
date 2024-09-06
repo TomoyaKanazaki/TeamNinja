@@ -235,6 +235,16 @@ bool CFade::IsFade(void)
 }
 
 //============================================================
+//	フェードイン中かの判定取得処理
+//============================================================
+bool CFade::IsFadeIn(void)
+{
+	// フェード中かの判定を返す
+	assert(m_pState != nullptr);
+	return (typeid(*m_pState) == typeid(CFadeStateIn));
+}
+
+//============================================================
 //	α値減少処理
 //============================================================
 bool CFade::SubAlpha(const float fDeltaTime)
@@ -295,7 +305,8 @@ void CFade::SetFade
 (
 	const float fAddOut,	// アウトのα値増加量
 	const float fSubIn,		// インのα値減少量
-	const int nPriority		// 優先順位
+	const int nPriority,	// 優先順位
+	const D3DXCOLOR& rCol	// 色
 )
 {
 	// フェード中の場合抜ける
@@ -307,6 +318,9 @@ void CFade::SetFade
 
 	// 優先順位を設定
 	SetPriority(nPriority);
+
+	// 色を黒にする
+	SetColor(rCol);
 
 	// モード設定関数ポインタを初期化
 	m_pFuncSetMode = nullptr;
@@ -341,6 +355,9 @@ void CFade::SetModeFade
 
 	// 優先順位を設定
 	SetPriority(PRIORITY);
+
+	// 色を黒にする
+	SetColor(XCOL_ABLACK);
 
 	// ロード画面を挟まないモード設定関数を設定
 	m_pFuncSetMode = std::bind(&CManager::SetMode, GET_MANAGER, std::placeholders::_1);
@@ -385,6 +402,9 @@ void CFade::SetLoadFade
 
 	// 優先順位を設定
 	SetPriority(PRIORITY);
+
+	// 色を黒にする
+	SetColor(XCOL_ABLACK);
 
 	// ロード画面を挟むモード設定関数を設定
 	m_pFuncSetMode = std::bind(&CManager::SetLoadMode, GET_MANAGER, std::placeholders::_1);
