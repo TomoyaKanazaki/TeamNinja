@@ -1281,5 +1281,8 @@
     <FxCompile Include="TexComp.fx">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="data\SHADER\blur.fx">
+      <Filter>シェーダー ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

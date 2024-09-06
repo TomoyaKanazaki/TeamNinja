@@ -16,7 +16,10 @@ struct VS_OUTPUT
    float4 Pos : POSITION;   // 射影変換座標
    float4 ShadowMapTex : TEXCOORD0;   // Zバッファテクスチャ
 };
-
+float CalculateLogDepth(float z, float C, float B)
+{
+    return log(C * (z + B));
+}
 // 頂点シェーダ
 VS_OUTPUT ZBufferCalc_VS( float4 Pos : POSITION )
 {
@@ -41,7 +44,8 @@ VS_OUTPUT ZBufferCalc_VS( float4 Pos : POSITION )
 float4 ZBufferPlot_PS( float4 ShadowMapTex : TEXCOORD0 ) : COLOR
 {
     // ビュー空間のz値からリニア深度を計算
-    float linearDepth = (ShadowMapTex.z - NearClip) / (FarClip - NearClip);
+   // float linearDepth = (ShadowMapTex.z - NearClip) / (FarClip - NearClip);
+     float linearDepth = ShadowMapTex.z / ShadowMapTex.w;
 
     // 高精度な深度パッキング (32ビットのカラーとして深度を格納)
     float4 packedDepth;
