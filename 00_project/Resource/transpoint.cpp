@@ -10,6 +10,9 @@
 #include "transpoint.h"
 #include "collision.h"
 #include "manager.h"
+#include "stage.h"
+#include "player.h"
+#include "camera.h"
 #include "balloon.h"
 #include "balloonManager.h"
 
@@ -28,8 +31,9 @@ namespace
 //************************************************************
 //	静的メンバ変数宣言
 //************************************************************
-CListManager<CTransPoint>* CTransPoint::m_pList = nullptr;	// オブジェクトリスト
-CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャー情報
+CListManager<CTransPoint>* CTransPoint::m_pList	= nullptr;	// オブジェクトリスト
+CBalloonManager* CTransPoint::m_pBalloonManager	= nullptr;	// 吹き出しマネージャー情報
+CTransPoint* CTransPoint::m_pOpenTransPoint		= nullptr;	// 解放された遷移ポイント
 
 //************************************************************
 //	子クラス [CTransPoint] のメンバ関数
@@ -38,10 +42,12 @@ CBalloonManager* CTransPoint::m_pBalloonManager = nullptr;	// 吹き出しマネージャ
 //	コンストラクタ
 //============================================================
 CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_sTransMapPass	(pPass),	// 遷移先マップパス
-	m_pEffectData	(nullptr),	// 保持するエフェクト情報
-	m_pBalloon		(nullptr),	// 吹き出し情報
-	m_bOpen			(false)		// ステージ解放フラグ
+	m_sTransMapPass	(pPass),		// 遷移先マップパス
+	m_pEffectData	(nullptr),		// 保持するエフェクト情報
+	m_pBalloon		(nullptr),		// 吹き出し情報
+	m_state			(STATE_NORMAL),	// 状態
+	m_bOpen			(false),		// ステージ解放フラグ
+	m_fCurTime		(0.0f)			// 現在の時間
 {
 
 }
@@ -61,8 +67,10 @@ HRESULT CTransPoint::Init(void)
 {
 	// メンバ変数を初期化
 	m_pEffectData = nullptr;	// 保持するエフェクト情報
-	m_pBalloon = nullptr;		// 吹き出し情報
-	m_bOpen = false;			// ステージ解放フラグ
+	m_pBalloon	= nullptr;		// 吹き出し情報
+	m_state		= STATE_NORMAL;	// 状態
+	m_bOpen		= false;		// ステージ解放フラグ
+	m_fCurTime	= 0.0f;			// 現在の時間
 
 	std::filesystem::path fsPath(m_sTransMapPass);				// 遷移先マップパス
 	std::filesystem::path fsDirectory(fsPath.parent_path());	// 遷移先マップパスのディレクトリ
@@ -88,6 +96,17 @@ HRESULT CTransPoint::Init(void)
 		// 失敗を返す
 		assert(false);
 		return E_FAIL;
+	}
+
+	if (GET_STAGE->GetOpenMapDirectory() == fsPath.parent_path().string())
+	{ // 解放されたマップのディレクトリと一致した場合
+
+		// 何もしない状態にする
+		m_state = STATE_NONE;
+
+		// 解放された遷移ポイントを保存
+		assert(m_pOpenTransPoint == nullptr);
+		m_pOpenTransPoint = this;
 	}
 
 	if (m_pList == nullptr)
@@ -128,6 +147,9 @@ void CTransPoint::Uninit(void)
 		// 吹き出しマネージャーの終了
 		SAFE_UNINIT(m_pBalloonManager);
 
+		// 解放された遷移ポイントの初期化
+		m_pOpenTransPoint = nullptr;
+
 		// リストマネージャーの破棄
 		m_pList->Release(m_pList);
 	}
@@ -144,15 +166,98 @@ void CTransPoint::Update(const float fDeltaTime)
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 
-	// 触れている遷移ポイントがない場合抜ける
+	switch (m_state)
+	{ // 状態ごとの処理
+	case STATE_NONE:
+
+		if (GET_CAMERA->GetState() == CCamera::STATE_NONE)
+		{ // カメラの演出が終わった場合
+
+			if (m_pBalloonManager == nullptr)
+			{ // 吹き出しマネージャーが未精製の場合
+
+				// ステージ情報テクスチャ作成
+				CreateStageTexture();
+
+				// 吹き出し表示をONにする
+				m_pBalloon->SetFirstDisp();
+
+				// 初回演出を開始する
+				m_pBalloonManager->SetFirstStag();
+
+				// カメラ状態にする
+				m_state = STATE_CAMERA;
+			}
+		}
+		break;
+
+	case STATE_CAMERA:
+
+		if (m_pBalloon->IsSizeDisp())
+		{ // カメラ動作が終了した場合
+
+			// 現在の時間を加算
+			m_fCurTime += fDeltaTime;
+			if (m_fCurTime >= 1.0f)
+			{
+				// 現在の時間を初期化
+				m_fCurTime = 0.0f;
+
+				// フェードを開始する
+				GET_MANAGER->GetFade()->SetFade(3.0f, 1.5f, 7, XCOL_AWHITE);
+
+				// フェード状態にする
+				m_state = STATE_FADE;
+			}
+		}
+		break;
+
+	case STATE_FADE:
+
+		if (GET_MANAGER->GetFade()->IsFadeIn())
+		{
+			// 吹き出しマネージャーの終了
+			SAFE_UNINIT(m_pBalloonManager);
+
+			// 回り込みカメラに遷移
+			GET_CAMERA->SetState(CCamera::STATE_AROUND);
+			GET_CAMERA->SetDestAround();
+
+			// プレイヤーを通常状態にする
+			GET_PLAYER->SetState(CPlayer::STATE_SELECT_NORMAL);
+
+			// 通常状態にする
+			m_state = STATE_NORMAL;
+		}
+		break;
+
+	case STATE_NORMAL:
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 吹き出しが未生成の場合抜ける
 	if (m_pBalloonManager == nullptr) { return; }
 
 	if (m_pBalloonManager->IsNone()
 	&&  m_pBalloon->IsSizeDisp())
 	{ // 演出の開始タイミングの場合
 
-		// 演出を開始する
-		m_pBalloonManager->SetStag();
+		if (m_state != STATE_NORMAL)
+		{ // 解放状態の場合
+
+			// 初回演出を開始する
+			m_pBalloonManager->SetFirstStag();
+		}
+		else
+		{ // 通常状態の場合
+
+			// 演出を開始する
+			m_pBalloonManager->SetStag();
+		}
 	}
 
 	// 遷移ポイントの更新

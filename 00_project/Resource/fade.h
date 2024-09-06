@@ -54,12 +54,14 @@ public:
 	bool AddAlpha(const float fDeltaTime);		// α値増加
 	void TransNextMode(void);	// 次シーン遷移
 	bool IsFade(void);			// フェード中かの判定取得
+	bool IsFadeIn(void);		// フェードイン中かの判定取得
 
 	void SetFade	// フェード開始設定
 	( // 引数
-		const float fAddOut	= LEVEL,	// アウトのα値増加量
-		const float fSubIn	= LEVEL,	// インのα値減少量
-		const int nPriority	= PRIORITY	// 優先順位
+		const float fAddOut	= LEVEL,		// アウトのα値増加量
+		const float fSubIn	= LEVEL,		// インのα値減少量
+		const int nPriority	= PRIORITY,		// 優先順位
+		const D3DXCOLOR& rCol = XCOL_ABLACK	// 色
 	);
 	void SetModeFade	// 次シーン設定 (フェードのみ)
 	( // 引数

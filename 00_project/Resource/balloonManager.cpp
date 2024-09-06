@@ -82,6 +82,7 @@ namespace
 		const float	CHAR_HEIGHT		= 140.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 120.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.017f;	// 文字表示の待機時間
+		const float	WAIT_TIME_NOR_FIRST	= 0.17f;	// 文字表示の待機時間
 
 		const D3DXVECTOR3 POS	 = D3DXVECTOR3(90.0f, 40.0f, 0.0f);	// 位置
 		const D3DXVECTOR3 OFFSET = D3DXVECTOR3(8.0f, 8.0f, 0.0f);	// 影オフセット
@@ -374,12 +375,40 @@ CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
 }
 
 //============================================================
+//	初回演出開始の設定処理
+//============================================================
+void CBalloonManager::SetFirstStag(void)
+{
+	// 文字表示の待機時間設定
+	m_pShadow->SetNextTime(name::WAIT_TIME_NOR_FIRST);	// ステージ名の影
+	m_pName->SetNextTime(name::WAIT_TIME_NOR_FIRST);	// ステージ名
+
+	// 文字送りを開始
+	m_pShadow->SetEnableDraw(true);
+	m_pName->SetEnableDraw(true);
+
+	for (int i = 0; i < CBalloonManager::NUM_STAR; i++)
+	{ // 手裏剣の総数分繰り返す
+
+		// 自動回転をONにする
+		m_apStar[i]->SetRoll(true);
+	}
+
+	// 終了状態にする
+	m_state = STATE_END;
+}
+
+//============================================================
 //	演出開始の設定処理
 //============================================================
 void CBalloonManager::SetStag(void)
 {
 	if (m_bOpen)
 	{ // 解放されている場合
+
+		// 文字表示の待機時間設定
+		m_pShadow->SetNextTime(name::WAIT_TIME_NOR);	// ステージ名の影
+		m_pName->SetNextTime(name::WAIT_TIME_NOR);		// ステージ名
 
 		// 文字送りを開始
 		m_pShadow->SetEnableScroll(true);

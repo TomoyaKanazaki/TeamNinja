@@ -33,7 +33,8 @@ m_ConectPoint(),
 m_vecToWait(VEC3_ZERO),
 m_nIdxWait(0),
 m_pField(nullptr),
-m_fRot(0.0f)
+m_fRot(0.0f),
+m_bMove(false)
 {
 }
 
@@ -203,6 +204,10 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 		if (fRot < -HALF_PI)
 		{
 			fRot = -HALF_PI;
+			m_bMove = true;
+
+			// カメラが揺れる
+			CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
 		}
 
 		// 向きを保存する
@@ -312,106 +317,140 @@ void CGimmickBridge::CalcConectPoint()
 //===========================================
 void CGimmickBridge::Active()
 {
-	//// 自身の方向を取得
-	//EAngle angle = GetAngle();
+	// アクティブの瞬間の処理
+	Moment();
 
-	//// フィールドが存在している場合向きを適用して関数を抜ける
-	//if (m_pField != nullptr)
-	//{
-	//	// 向きを取得
-	//	D3DXVECTOR3 rot = m_pField->GetVec3Rotation();
+	// アクティブ中の処理
+	Movement();
+}
 
-	//	switch (angle)
-	//	{
-	//		// x軸方向
-	//	case ANGLE_90:
-	//	case ANGLE_270:
+//==========================================
+//  アクティブ状態になった瞬間の処理
+//==========================================
+void CGimmickBridge::Moment()
+{
+	// 足場がすでに存在している場合関数を抜ける
+	if (m_pField != nullptr) { return; }
 
-	//		rot.z = m_fRot;
+	// 移動完了フラグをfalseに設定
+	m_bMove = false;
 
-	//		break;
+	// 自身の向きを取得
+	EAngle angle = GetAngle();
 
-	//		// z軸方向
-	//	case ANGLE_0:
-	//	case ANGLE_180:
+	// 足場の座標を設定
+	D3DXVECTOR3 posField = m_ConectPoint[m_nIdxWait];
 
-	//		rot.x = m_fRot;
+	// 足場のサイズ
+	D3DXVECTOR2 sizeField = VEC2_ZERO;
 
-	//		break;
+	// 足場の向き
+	D3DXVECTOR3 rotField = VEC3_ZERO;
 
-	//	default:
-	//		assert(false);
-	//		break;
-	//	}
+	// 足場の向きを決める
+	switch (angle)
+	{
+		// x軸方向に架ける
+	case ANGLE_90:
+	case ANGLE_270:
 
-	//	// 向きを適用
-	//	m_pField->SetVec3Rotation(rot);
+		// 大きさを設定
+		sizeField.x = fabsf(m_ConectPoint[0].x - m_ConectPoint[1].x);
+		sizeField.y = FIELD_SIZE;
 
-	//	// 向きが一定の値を上回っている場合関数を抜ける
-	//	if (m_fRot - -HALF_PI > 0.01f)
-	//	{
-	//		// カメラが揺れる
-	//		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
-	//	}
+		// 位置を設定
+		posField.x += sinf(m_fRot) * sizeField.x * 0.5f;
+		posField.y += cosf(m_fRot) * sizeField.x * 0.5f;
 
-	//	// 関数を抜ける
-	//	return;
-	//}
+		// 向きを設定
+		rotField.z = -HALF_PI + m_nIdxWait * -1.0f * D3DX_PI;
 
-	//// 足場の座標を設定
-	//D3DXVECTOR3 posField = (m_ConectPoint[0] + m_ConectPoint[1]) * 0.5f;
+		// 生成
+		m_pField = CField::Create(CField::TYPE_XBRIDGE, posField, rotField, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
 
-	//// 足場のサイズ
-	//D3DXVECTOR2 sizeField = VEC2_ZERO;
+		break;
 
-	//// 足場の向き
-	//D3DXVECTOR3 rotField = VEC3_ZERO;
+		// z軸方向に架ける
+	case ANGLE_0:
+	case ANGLE_180:
 
-	//// 橋の方向を決める
-	//switch (angle)
-	//{
-	//// x軸方向に架ける
-	//case ANGLE_90:
-	//case ANGLE_270:
+		// 大きさを設定
+		sizeField.x = FIELD_SIZE;
+		sizeField.y = fabsf(m_ConectPoint[0].z - m_ConectPoint[1].z);
 
-	//	// 大きさを設定
-	//	sizeField.x = fabsf(m_ConectPoint[0].x - m_ConectPoint[1].x);
-	//	sizeField.y = FIELD_SIZE;
+		// 位置を設定
+		posField.z += sinf(m_fRot) * sizeField.y * 0.5f;
+		posField.y += cosf(m_fRot) * sizeField.y * 0.5f;
 
-	//	// 位置を設定
-	//	posField.x += sinf(m_fRot) * sizeField.x * 0.5f;
-	//	posField.y += cosf(m_fRot) * sizeField.x * 0.5f;
+		// 向きを設定
+		rotField.x = HALF_PI - m_nIdxWait * -1.0f * D3DX_PI;
 
-	//	// 向きを設定
-	//	rotField.z = HALF_PI;
+		// 生成
+		m_pField = CField::Create(CField::TYPE_ZBRIDGE, posField, rotField, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
 
-	//	// 生成
-	//	m_pField = CField::Create(CField::TYPE_XBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+		break;
 
-	//	break;
+	default:
+		assert(false);
+		break;
+	}
+}
 
-	//// z軸方向に架ける
-	//case ANGLE_0:
-	//case ANGLE_180:
+//==========================================
+//  アクティブ状態中の処理
+//==========================================
+void CGimmickBridge::Movement()
+{
+	// 足場が存在していない場合関数を抜ける
+	if (m_pField == nullptr) { return; }
 
-	//	// 大きさを設定
-	//	sizeField.x = FIELD_SIZE;
-	//	sizeField.y = fabsf(m_ConectPoint[0].z - m_ConectPoint[1].z);
+	// 移動が完了していた場合関数を抜ける
+	if (m_bMove) { return; }
 
-	//	// 位置を設定
-	//	posField.z += sinf(m_fRot) * sizeField.x * 0.5f;
-	//	posField.y += cosf(m_fRot) * sizeField.x * 0.5f;
+	// 自身の向きを取得
+	EAngle angle = GetAngle();
 
-	//	// 向きを設定
-	//	rotField.x = HALF_PI;
+	// 足場の座標を設定
+	D3DXVECTOR3 posField = m_ConectPoint[m_nIdxWait];
 
-	//	// 生成
-	//	m_pField = CField::Create(CField::TYPE_ZBRIDGE, posField, VEC3_ZERO, sizeField, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f), POSGRID2(1, 1), POSGRID2(1, 1));
+	// 足場の向き
+	D3DXVECTOR3 rotField = VEC3_ZERO;
 
-	//	break;
+	// 足場の向きを決める
+	switch (angle)
+	{
+		// x軸方向に架ける
+	case ANGLE_90:
+	case ANGLE_270:
 
-	//default:
-	//	assert(false);
-	//	break;
-	//}
+		// 位置を設定
+		posField.x += sinf(m_fRot) * m_pField->GetVec2Sizing().x * 0.5f;
+		posField.y += cosf(m_fRot) * m_pField->GetVec2Sizing().x * 0.5f;
+
+		// 向きを設定
+		rotField.z = -HALF_PI + m_nIdxWait * -1.0f * D3DX_PI;
+
+		break;
+
+		// z軸方向に架ける
+	case ANGLE_0:
+	case ANGLE_180:
+
+		// 位置を設定
+		posField.z += sinf(m_fRot) * m_pField->GetVec2Sizing().y * 0.5f;
+		posField.y += cosf(m_fRot) * m_pField->GetVec2Sizing().y * 0.5f;
+
+		// 向きを設定
+		rotField.x = HALF_PI - m_nIdxWait * -1.0f * D3DX_PI;
+
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// 位置と向きを設定
+	m_pField->SetVec3Position(posField);
+	m_pField->SetVec3Rotation(rotField);
 }
