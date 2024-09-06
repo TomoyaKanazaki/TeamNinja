@@ -64,6 +64,7 @@ public:
 		LABEL_SE_WOLFUPSET_000,		// ˜T‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
 		LABEL_SE_WOLFSTANCE_000,	// ˜T‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
 		LABEL_SE_CLONEFAIL_000,		// •ªgŽ¸”s‰¹
+		LABEL_SE_WATERDEATH_000,	// ’……‰¹
 		LABEL_MAX					// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

@@ -1272,6 +1272,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DEATH;
+
+			// —Ž…‰¹‚ÌÄ¶
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
 		}
 	}
 
