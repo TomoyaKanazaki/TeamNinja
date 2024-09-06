@@ -186,7 +186,7 @@ void PS
 	//		シャドウマッピング
 	//===============================
 	// ライト目線によるZ値の再算出
-	float ZValue = (ZCalcTex.z - NearClip) / (FarClip - NearClip);
+	float ZValue = ZCalcTex.z / ZCalcTex.w;
 
 	// テクスチャ座標に変換
 	float2 TransTexCoord;
@@ -207,10 +207,10 @@ void PS
 		float SM_Z = (TexCol.x + (TexCol.y + (TexCol.z / 256.0f) / 256.0f) / 256.0f);
 
 		// 算出点がシャドウマップのZ値よりも大きければ影と判断
-		if (ZValue > depth + 0.0001f) {
+		if (ZValue > depth + 0.001f) {
 			outCol.rgb = outCol.rgb * 0.5f;
 		}
-		outCol.rgb = linearDepth;
+		//outCol.rgb = linearDepth;
 	}
 
 

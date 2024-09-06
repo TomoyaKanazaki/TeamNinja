@@ -755,7 +755,7 @@ void CObject::DrawAll(const EScene scene)
 	//	DrawAll_ZShader(scene);
 		DrawAll_ToonShadow(scene);
 		DrawAll_Compensate(scene);
-		CZTexture::GetInstance()->DrawSprite();
+	//	CZTexture::GetInstance()->DrawSprite();
 	
 	}
 	else

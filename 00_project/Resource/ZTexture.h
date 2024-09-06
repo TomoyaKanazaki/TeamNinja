@@ -23,7 +23,7 @@ namespace
 	const UINT ZTEX_WIDTH = SCREEN_WIDTH;								//Zテクスチャの幅
 	const UINT ZTEX_HEIGHT = SCREEN_WIDTH;										//Zテクスチャの高さ
 	const float VIEWING_ANGLE = 45.0f;										//視野角
-	const float NEAR_CLIP = 5000.0f;											//描画最小深度
+	const float NEAR_CLIP = 1000.0f;											//描画最小深度
 	const float FAR_CLIP = 10000.0f;										//描画最大深度
 	const int NUM_TEX = 9;
 	const D3DXVECTOR3 VIEW_POINT = D3DXVECTOR3(1000.0f, 8000.0f, 1000.0f);		//視点
@@ -67,6 +67,8 @@ public:
 
 	void DrawSprite();
 
+	void Blur();
+
 	// 登録されているパラメータ情報をエフェクトにセット
 	bool SetParamToEffect();
 
@@ -91,10 +93,13 @@ private:
 	// メンバ変数
 	IDirect3DTexture9 * m_cpZTex;				// Z値テクスチャ
 	IDirect3DSurface9 * m_cpZTexSurf;			// Z値テクスチャサーフェイス
+	IDirect3DTexture9* m_cpBlurTex;				// ブラーテクスチャ
+	IDirect3DSurface9* m_cpBlurTexSurf;			// ブラーテクスチャサーフェイス
 	IDirect3DSurface9 * m_cpDepthBuff;			// 深度バッファ
 	IDirect3DSurface9 * m_cpDevBuffer;			// デバイスバックバッファ
 	IDirect3DSurface9 * m_cpDevDepth;			// デバイス深度バッファ
 	ID3DXEffect * m_cpEffect;					// Z値プロットエフェクト
+	ID3DXEffect* m_cpBlur;					// Z値プロットエフェクト
 	D3DXMATRIX m_matWorld;						// ワールド変換行列
 	D3DXMATRIX m_matView;						// ビュー変換行列
 	D3DXMATRIX m_matProj;						// 射影変換行列
@@ -102,6 +107,7 @@ private:
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
 	D3DXHANDLE m_hTechnique;					// テクニックへのハンドル
+	D3DXHANDLE m_hTechniqueBlur;					// テクニックへのハンドル
 	ID3DXSprite* m_pSprite;						//シャドウ用スプライト
 
 	bool m_bBegin;
