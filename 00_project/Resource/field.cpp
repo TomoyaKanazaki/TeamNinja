@@ -41,6 +41,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\soil001.png",	// ドブテクスチャ
 		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
 		"data\\TEXTURE\\FIELD\\OldWood001.jpg",	// 木テクスチャ
+		"data\\TEXTURE\\FIELD\\tatami000.jpg",	// 畳テクスチャ
 
 		"data\\TEXTURE\\test.png",				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
 		"data\\TEXTURE\\test.png"				// 橋テクスチャ TODO : 置き換える(必要ない可能性)
@@ -60,6 +61,7 @@ namespace
 		'u',	// ドブ
 		' ',	// 城の漆喰フラグ
 		' ',	// 木フラグ
+		' ',	// 畳フラグ
 
 		'x',	// 橋
 		'z',	// 橋
