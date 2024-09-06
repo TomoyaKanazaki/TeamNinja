@@ -52,6 +52,7 @@ namespace
 		{ "data\\SE\\wolffound000.wav", 0 },	// ˜T‚ª”­Œ©‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\wolfupset000.wav", 0 },	// ˜T‚ª“®—h‚µ‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\wolfstance000.wav", 0 },	// ˜T‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\clonefail000.wav", 0 },	// •ªg¸”s‰¹
 	};
 }
 
