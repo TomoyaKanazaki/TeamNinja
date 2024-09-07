@@ -346,7 +346,7 @@ void CCamera::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 状態 ]：%d\n", m_state);
 
 	// 更新を止めている場合抜ける
-	if (!m_bUpdate) { return; }
+	if (!m_bUpdate) { if (m_state == STATE_CONTROL) { Control(); } return; }
 
 	// 前回の座標情報を保存する
 	m_aCamera[TYPE_MAIN].posOldV = m_aCamera[TYPE_MAIN].posV;

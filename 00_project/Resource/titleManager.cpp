@@ -12,7 +12,7 @@
 #include "sound.h"
 #include "camera.h"
 #include "fade.h"
-#include "object2D.h"
+#include "titleLogo2D.h"
 
 //************************************************************
 //	定数宣言
@@ -20,22 +20,13 @@
 namespace
 {
 	const int PRIORITY = 5;	// タイトルの優先順位
-
-	namespace icon_bg
-	{
-		const float	MOVE_TIME	= 0.68f;	// 移動時間
-		const float	PLUS_TIME	= 0.1f;		// 経過の延長時間
-		const float	WAIT_TIME	= 0.15f;	// アイコン背景待機時間
-		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
-		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
-		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
-		const D3DXCOLOR DEST_COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);		// 目標色
-		const D3DXCOLOR INIT_COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);		// 初期色
-		const D3DXVECTOR3 SPACE		= D3DXVECTOR3(140.0f, 0.0f, 0.0f);				// 空白
-		const D3DXVECTOR3 DEST_POS	= D3DXVECTOR3(865.0f, 585.0f, 0.0f);			// 目標位置
-		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 初期位置
-		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// 差分位置
-	}
+	const D3DXVECTOR3 ABS_INIT_OFFSET	= D3DXVECTOR3(80.0f, 0.0f, 0.0f);	// 生成位置オフセットの絶対値
+	const D3DXVECTOR3 DEST_OFFSET		= D3DXVECTOR3(0.0f, 170.0f, 0.0f);	// 生成位置オフセットの絶対値
+	const D3DXVECTOR3 POS_POLY	= D3DXVECTOR3(640.0f, 95.0f, 0.0f);			// 位置
+	const D3DXVECTOR3 SIZE_POLY	= D3DXVECTOR3(320.0f, 320.0f, 0.0f);		// 大きさ
+	const POSGRID2 TEX_PART = POSGRID2(1, 4);	// テクスチャ分割数
+	const float MOVE_TIME = 1.8f;	// 生成移動時間
+	const float WAIT_TIME = 0.092f;	// 生成待機時間
 }
 
 //************************************************************
@@ -66,18 +57,25 @@ HRESULT CTitleManager::Init(void)
 	// メンバ変数を初期化
 	memset(&m_apLogo[0], 0, sizeof(m_apLogo));	// タイトル情報
 
-#if 0
 	//--------------------------------------------------------
 	//	タイトルの生成・設定
 	//--------------------------------------------------------
 	for (int i = 0; i < NUM_LOGO; i++)
 	{ // ロゴの文字数分繰り返す
 
+		float fSide = (1.0f - ((i % 2) * 2.0f));			// 生成方向係数
+		float fWaitTime = WAIT_TIME * (float)i;				// 待機時間
+		D3DXVECTOR3 destOffset = DEST_OFFSET * (float)i;	// 目標位置
+		D3DXVECTOR3 initOffset = ABS_INIT_OFFSET * fSide;	// 生成位置オフセット
+
 		// タイトルの生成
-		m_apLogo[i] = CObject2D::Create
+		m_apLogo[i] = CTitleLogo2D::Create
 		( // 引数
-			logo::POS,			// 位置
-			logo::INIT_SIZE		// 大きさ
+			POS_POLY + destOffset,	// 位置
+			initOffset,	// オフセット
+			SIZE_POLY,	// 大きさ
+			MOVE_TIME,	// 移動時間
+			fWaitTime	// 待機時間
 		);
 		if (m_apLogo[i] == nullptr)
 		{ // 生成に失敗した場合
@@ -88,18 +86,23 @@ HRESULT CTitleManager::Init(void)
 		}
 
 		// テクスチャを割当
-		m_apLogo[i]->BindTexture("");
+		m_apLogo[i]->BindTexture("data\\TEXTURE\\title_logo000.png");
+
+		// オーラテクスチャを割当
+		m_apLogo[i]->BindAuraTexture("data\\TEXTURE\\title_aura000.png");
+
+		// パターンを設定
+		m_apLogo[i]->SetPattern(i);
+
+		// テクスチャ横分割数を設定
+		m_apLogo[i]->SetWidthPattern(TEX_PART.x);
+
+		// テクスチャ縦分割数を設定
+		m_apLogo[i]->SetHeightPattern(TEX_PART.y);
 
 		// 優先順位を設定
 		m_apLogo[i]->SetPriority(PRIORITY);
-
-		// ラベルを設定
-		m_apLogo[i]->SetLabel(CObject::LABEL_UI);
-
-		// 描画をOFFにする
-		m_apLogo[i]->SetEnableDraw(false);
 	}
-#endif
 
 	// 成功を返す
 	return S_OK;
@@ -123,7 +126,13 @@ void CTitleManager::Uninit(void)
 //============================================================
 void CTitleManager::Update(const float fDeltaTime)
 {
-
+	if (GET_INPUTKEY->IsTrigger(DIK_0))
+	{
+		for (int i = 0; i < NUM_LOGO; i++)
+		{ // ロゴの文字数分繰り返す
+			m_apLogo[i]->SetStag();
+		}
+	}
 }
 
 //============================================================
