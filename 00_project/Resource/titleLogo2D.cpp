@@ -28,7 +28,7 @@ namespace
 	namespace aura
 	{
 		const float WAIT_TIME	 = 0.25f;	// 待機時間
-		const float MOVE_TIME	 = 1.25f;	// 移動時間
+		const float MOVE_TIME	 = 1.0f;	// 移動時間
 		const float	DEST_ALPHA	 = 1.0f;	// 目標透明度
 		const float	INIT_ALPHA	 = 0.0f;	// 初期透明度
 		const D3DXCOLOR DEST_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// 目標色
@@ -109,6 +109,16 @@ HRESULT CTitleLogo2D::Init(void)
 
 	// 色を設定
 	m_pAura->SetColor(XCOL_AWHITE);
+
+	// ブラーの生成
+	m_pBlur = CBlur2D::Create(this, XCOL_WHITE, 0.03f, 40);
+	if (m_pBlur == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
 
 	// 成功を返す
 	return S_OK;
@@ -311,6 +321,9 @@ void CTitleLogo2D::UpdateMoveWait(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
+		// ブラーの開始
+		m_pBlur->SetState(CBlur2D::STATE_NORMAL);
+
 		// 移動状態にする
 		m_state = STATE_MOVE;
 	}
@@ -347,6 +360,9 @@ void CTitleLogo2D::UpdateMove(const float fDeltaTime)
 
 		// 位置を補正
 		SetVec3Position(m_destPos);
+
+		// ブラーの終了
+		m_pBlur->SetState(CBlur2D::STATE_VANISH);
 
 		// オーラ待機状態にする
 		m_state = STATE_AURA_WAIT;

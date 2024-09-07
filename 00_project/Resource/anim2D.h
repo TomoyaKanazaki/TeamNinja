@@ -65,8 +65,10 @@ public:
 	void SetCounter(const int nCntChange);			// カウンターの設定
 	void SetEnableStop(const bool bStop);			// 停止状況の設定
 	void SetEnablePlayBack(const bool bPlayBack);	// 逆再生状況の設定
-	int GetPattern(void) const			{ return m_nPattern; }	// パターンの取得
-	int GetLoopAnimation(void) const	{ return m_nNumLoop; }	// パターン繰り返し数の取得
+	int GetPattern(void) const			{ return m_nPattern; }		// パターンの取得
+	int GetWidthPattern(void) const		{ return m_nWidthPtrn; }	// テクスチャの横分割数の取得
+	int GetHeightPattern(void) const	{ return m_nHeightPtrn; }	// テクスチャの縦分割数の取得
+	int GetLoopAnimation(void) const	{ return m_nNumLoop; }		// パターン繰り返し数の取得
 
 private:
 	// メンバ変数

@@ -14,6 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "anim2D.h"
+#include "blur2D.h"
 
 //************************************************************
 //	クラス定義
@@ -63,6 +64,7 @@ public:
 	// メンバ関数
 	void SetStag(void)		{ m_state = STATE_MOVE_WAIT; }		// 演出開始設定
 	bool IsStag(void) const	{ return (m_state != STATE_NONE); }	// 演出中フラグ取得
+	void SetBlurColor(const D3DXCOLOR& rCol)		{ m_pBlur->SetColor(rCol); }			// ブラー色設定
 	void BindAuraTexture(const char *pTexturePass)	{ m_pAura->BindTexture(pTexturePass); }	// テクスチャ割当 (インデックス)
 	void BindAuraTexture(const int nTextureID)		{ m_pAura->BindTexture(nTextureID); }	// テクスチャ割当 (パス)
 
@@ -75,6 +77,7 @@ private:
 
 	// メンバ変数
 	CAnim2D* m_pAura;		// オーラ情報
+	CBlur2D* m_pBlur;		// ブラー情報
 	EState m_state;			// 状態
 	float m_fMoveTime;		// 移動時間
 	float m_fWaitTime;		// 待機時間
