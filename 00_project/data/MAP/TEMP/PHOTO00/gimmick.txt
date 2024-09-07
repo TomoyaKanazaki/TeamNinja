@@ -1,0 +1,38 @@
+#------------------------------------------------------------------------------
+#	ギミックの配置情報
+#------------------------------------------------------------------------------
+STAGE_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 0.00 0.00 0.00
+		ANGLE	= 0
+		SIZE	= 550.00 0.00 600.00
+		TYPE	= 0
+		NUMACT	= 1
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 550.00 0.00 0.00
+		ANGLE	= 0
+		SIZE	= 550.00 0.00 600.00
+		TYPE	= 1
+		NUMACT	= 1
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 1100.00 0.00 0.00
+		ANGLE	= 0
+		SIZE	= 550.00 0.00 600.00
+		TYPE	= 3
+		NUMACT	= 1
+	END_GIMMICKSET
+
+	GIMMICKSET
+		POS		= 1650.00 0.00 0.00
+		ANGLE	= 0
+		SIZE	= 550.00 0.00 600.00
+		TYPE	= 5
+		NUMACT	= 1
+	END_GIMMICKSET
+
+END_STAGE_GIMMICKSET

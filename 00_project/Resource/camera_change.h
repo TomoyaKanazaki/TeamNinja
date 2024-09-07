@@ -43,7 +43,7 @@ public:
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
-	bool CollChange() const; // ヒット判定の取得
+	bool CollChange(const D3DXVECTOR3& pos, const D3DXVECTOR3& size) const; // ヒット判定の取得
 	float GetDirection() const; // 方向の取得
 	float GetRotation() const; // 角度の取得
 	EDirection GetDir() const { return m_eDir; }

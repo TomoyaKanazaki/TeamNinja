@@ -108,6 +108,7 @@ public:
 		STATE_SELECT_SPAWN,		// ƒXƒ|[ƒ“ó‘Ô
 		STATE_SELECT_NORMAL,	// ˆÚ“®ó‘Ô
 		STATE_SELECT_ENTER,		// “üêó‘Ô
+		STATE_SELECT_OPEN,		// ‰ð•úó‘Ô
 
 		STATE_MAX	// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};

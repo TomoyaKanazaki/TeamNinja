@@ -741,10 +741,7 @@ CEnemyAmbush::EMotion CEnemyAmbush::Stance(void)
 	// 分身の発見処理
 	JudgeClone();
 
-	// プレイヤーの発見処理
-	JudgePlayer();
-
-	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
+	if(PlayerIngress())
 	{ // 範囲内に入った場合
 
 		// 警告状態にする

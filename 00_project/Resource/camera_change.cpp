@@ -141,7 +141,7 @@ void CCameraChanger::Draw(CShader* pShader)
 //===========================================
 //	ヒット判定の取得
 //===========================================
-bool CCameraChanger::CollChange() const
+bool CCameraChanger::CollChange(const D3DXVECTOR3& pos, const D3DXVECTOR3& size) const
 {
 	// プレイヤー情報の取得
 	CPlayer* pPlayer = GET_PLAYER;
@@ -150,13 +150,11 @@ bool CCameraChanger::CollChange() const
 	if (pPlayer == nullptr) { return false; }
 
 	// 各種判定用情報の取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position(); // プレイヤー座標
-	D3DXVECTOR3 sizePlayer = pPlayer->GetVec3Sizing(); // プレイヤーサイズ
 	D3DXVECTOR3 posThis = GetVec3Position(); // 自身の座標
 	D3DXVECTOR3 sizeThis = GetVec3Sizing(); // 自身のサイズ
 
 	// 矩形判定の判定結果を返す
-	return collision::Box3D(posThis, posPlayer, D3DXVECTOR3(sizeThis.x, sizeThis.y * 2.0f, sizeThis.z), D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), sizePlayer, sizePlayer);
+	return collision::Box3D(posThis, pos, D3DXVECTOR3(sizeThis.x, sizeThis.y * 2.0f, sizeThis.z), D3DXVECTOR3(sizeThis.x, 0.0f, sizeThis.z), size, size);
 }
 
 //===========================================

@@ -31,7 +31,7 @@ namespace
 	const int	PRIORITY	 = 6;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
-	const float STOMP_REV	 = 0.05f;	// 踏んだ時の補正係数
+	const float STOMP_REV	 = 0.4f;	// 踏んだ時の補正係数
 	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
 	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
 	const float SWING_REV	 = 0.02f;	// 遷移時の補正係数

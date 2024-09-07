@@ -186,6 +186,7 @@
     <ClInclude Include="Resource\scrollText2D.h" />
     <ClInclude Include="Resource\spin_wall.h" />
     <ClInclude Include="Resource\tension.h" />
+    <ClInclude Include="Resource\titleLogo2D.h" />
     <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
@@ -385,6 +386,7 @@
     <ClCompile Include="Resource\scrollText2D.cpp" />
     <ClCompile Include="Resource\spin_wall.cpp" />
     <ClCompile Include="Resource\tension.cpp" />
+    <ClCompile Include="Resource\titleLogo2D.cpp" />
     <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />
@@ -564,6 +566,10 @@
     <ResourceCompile Include="Resource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="data\SHADER\blur.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="data\SHADER\BrightCheck.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

@@ -39,10 +39,11 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,	// 無し
-		STATE_STAG,		// 演出
-		STATE_END,		// 終了
-		STATE_MAX		// この列挙型の総数
+		STATE_NONE = 0,		// 無し
+		STATE_STAG_FIRST,	// 初回演出
+		STATE_STAG,			// 演出
+		STATE_END,			// 終了
+		STATE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -61,7 +62,8 @@ public:
 	static CBalloonManager *Create(CTransPoint* pParent, const bool bOpen);	// 生成
 
 	// メンバ関数
-	void SetStag(void);	// 演出開始設定
+	void SetFirstStag(void);	// 初回演出開始設定
+	void SetStag(void);			// 演出開始設定
 	bool IsNone(void)	{ return (m_state == STATE_NONE); }	// 演出状況取得
 
 private:

@@ -22,6 +22,16 @@
 class CBalloon : public CObjectBillboard
 {
 public:
+	// 状態列挙
+	enum EState
+	{
+		STATE_NONE = 0,	// 何もしない状態
+		STATE_OPEN ,	// 解放状態
+		STATE_NORMAL,	// 通常状態
+		STATE_END,		// 終了状態
+		STATE_MAX		// この列挙型の総数
+	};
+
 	// コンストラクタ
 	CBalloon();
 
@@ -39,11 +49,14 @@ public:
 	static CBalloon *Create(const D3DXVECTOR3& rPosParent);	// 生成
 
 	// メンバ関数
+	void SetFirstDisp(void);		// 吹き出し初表示設定
 	void SetDisp(const bool bDisp);	// 吹き出し表示設定
 	bool IsSizeDisp(void) const;	// 吹き出し拡大状況
 
 private:
 	// メンバ変数
+	EState m_state;		// 状態
+	float m_fCurTime;	// 現在時間
 	float m_fScale;		// 拡大率
 	float m_fDestScale;	// 目標拡大率
 };

@@ -73,6 +73,9 @@
     <Filter Include="InGame\Gimmick\plant">
       <UniqueIdentifier>{9c95188e-49d2-4662-85fe-cf85e386edb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OutGame">
+      <UniqueIdentifier>{947023b9-9c25-4c20-acdd-6f68a8a8007d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
@@ -666,6 +669,9 @@
     <ClInclude Include="Resource\spin_wall.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\titleLogo2D.h">
+      <Filter>OutGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1256,6 +1262,9 @@
     <ClCompile Include="Resource\spin_wall.cpp">
       <Filter>Map</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\titleLogo2D.cpp">
+      <Filter>OutGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
@@ -1285,6 +1294,9 @@
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="TexComp.fx">
+      <Filter>シェーダー ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="data\SHADER\blur.fx">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
   </ItemGroup>

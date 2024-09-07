@@ -229,7 +229,10 @@ HRESULT CPlayer::Init(void)
 	{
 		CTension::Create();
 	}
+
+#ifndef PHOTO
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+#endif
 
 	// 成功を返す
 	return S_OK;
@@ -252,12 +255,16 @@ void CPlayer::Uninit(void)
 		SAFE_DELETE(m_pEffectdata);
 		m_pEffectdata = nullptr;
 	}
+
+#ifndef PHOTO
 	// エフェクトの削除
 	if (m_pEffectFirefly != nullptr)
 	{
 		SAFE_DELETE(m_pEffectFirefly);
 		m_pEffectFirefly = nullptr;
 	}
+#endif
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -726,7 +733,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -1193,10 +1200,13 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
+
+#ifndef PHOTO
 	if (m_pEffectFirefly != nullptr)
 	{
 		m_pEffectFirefly->m_pos = GetVec3Position();
 	}
+#endif
 
 	// モーションを返す
 	return currentMotion;
@@ -1262,6 +1272,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DEATH;
+
+			// 落水音の再生
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
 		}
 	}
 
@@ -1718,7 +1731,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	}
 
 	// 使用可能な士気力がなかった場合関数を抜ける
-	if (CTension::GetUseNum() <= 0) { return false; }
+	if (CTension::GetUseNum() <= 0) { PLAY_SOUND(CSound::LABEL_SE_CLONEFAIL_000); return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
