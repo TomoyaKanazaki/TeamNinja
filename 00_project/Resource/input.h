@@ -181,10 +181,12 @@ public:
 	enum EType
 	{
 		TYPE_NONE = 0,		// 何もしていない
-		TYPE_DAMAGE,		// ダメージ
-		TYPE_BIG_DAMAGE,	// 大ダメージ
 		TYPE_DEATH,			// 死亡
-		TYPE_WALLDASH,		// 壁走り
+		TYPE_DAMAGE,		// 被弾
+		TYPE_BRIDGE,		// 橋
+		TYPE_JUMP,			// ジャンプ
+		TYPE_BUTTON,		// ボタン
+		TYPE_CLONE,			// 
 		TYPE_MAX			// この列挙型の総数
 	};
 
