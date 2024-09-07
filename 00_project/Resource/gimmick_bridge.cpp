@@ -413,6 +413,8 @@ void CGimmickBridge::Moment()
 		assert(false);
 		break;
 	}
+
+	m_pField->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //==========================================
