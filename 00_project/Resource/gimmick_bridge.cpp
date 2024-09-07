@@ -328,14 +328,15 @@ void CGimmickBridge::Active(const float fDeltaTime)
 	// 移動時間の加算
 	m_fMoveTime += fDeltaTime * ROTATE_SPEED;
 
-	DebugProc::Print(DebugProc::POINT_CENTER, "移動時間 : %f\n", m_fMoveTime);
-	DebugProc::Print(DebugProc::POINT_CENTER, "muki: %f\n", m_fRot);
-
 	// アクティブの瞬間の処理
 	Moment();
 
 	// アクティブ中の処理
 	Movement();
+
+	DebugProc::Print(DebugProc::POINT_CENTER, "移動時間 : %f\n", m_fMoveTime);
+	DebugProc::Print(DebugProc::POINT_CENTER, "muki %f\n", m_pField->GetVec3Rotation().z);
+
 }
 
 //==========================================
@@ -423,7 +424,11 @@ void CGimmickBridge::Movement()
 	if (m_pField == nullptr) { return; }
 
 	// 移動が完了していた場合関数を抜ける
-	if (m_bMove) { return; }
+	if (m_bMove)
+	{
+		m_pField->SetVec3Rotation(VEC3_ZERO);
+		return;
+	}
 
 	// 自身の向きを取得
 	EAngle angle = GetAngle();
@@ -462,11 +467,15 @@ void CGimmickBridge::Movement()
 	case ANGLE_0:
 	case ANGLE_180:
 		posField.z += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
+		rotField.x = HALF_PI + m_fRot * (1.0f - m_nIdxWait * 2.0f);
+		if (m_nIdxWait) { rotField.z -= D3DX_PI; }
 		break;
 
 	case ANGLE_90:
 	case ANGLE_270:
 		posField.x += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
+		rotField.z = HALF_PI - m_fRot * (1.0f - m_nIdxWait * 2.0f);
+		if (!m_nIdxWait) { rotField.z -= D3DX_PI; }
 		break;
 
 	default:
