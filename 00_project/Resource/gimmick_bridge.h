@@ -37,7 +37,7 @@ private:
 	// メンバ関数
 	void CalcConectPoint(); // 橋の端の計算処理
 	void SetWait(int nIdx) { m_nIdxWait = nIdx; } // 待機中心のインデックス設定
-	void Active(); // アクティブ状態の処理
+	void Active(const float fDeltaTime); // アクティブ状態の処理
 	void Moment(); // アクティブ状態になった瞬間の処理
 	void Movement(); // アクティブ状態中の処理
 
@@ -47,5 +47,6 @@ private:
 	int m_nIdxWait; // 待機中心のインデックス
 	CField* m_pField; // アクティブ状態での足場
 	float m_fRot; // 橋の向き
+	float m_fMoveTime; // 移動時間
 	bool m_bMove; // 移動完了フラグ
 };
