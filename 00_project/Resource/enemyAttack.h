@@ -93,6 +93,7 @@ public:
 	bool JudgeClone(void);		// 分身の探索処理
 	bool ShakeOffPlayer(void);	// プレイヤーの振り切り処理
 	bool ShakeOffClone(void);	// 分身の振り切り処理
+	bool PlayerIngress(void);					// プレイヤー進入処理
 
 	// TODO：う〇ちカス判定だから後で修正
 	bool HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理

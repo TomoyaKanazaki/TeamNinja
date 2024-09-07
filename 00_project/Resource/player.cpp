@@ -733,7 +733,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -1272,6 +1272,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DEATH;
+
+			// 落水音の再生
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
 		}
 	}
 
@@ -1728,7 +1731,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	}
 
 	// 使用可能な士気力がなかった場合関数を抜ける
-	if (CTension::GetUseNum() <= 0) { return false; }
+	if (CTension::GetUseNum() <= 0) { PLAY_SOUND(CSound::LABEL_SE_CLONEFAIL_000); return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
