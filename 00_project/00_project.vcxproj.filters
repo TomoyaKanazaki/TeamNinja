@@ -672,6 +672,9 @@
     <ClInclude Include="Resource\titleLogo2D.h">
       <Filter>OutGame</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\blur2D.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1264,6 +1267,9 @@
     </ClCompile>
     <ClCompile Include="Resource\titleLogo2D.cpp">
       <Filter>OutGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\blur2D.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

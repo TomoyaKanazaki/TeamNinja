@@ -27,6 +27,12 @@ namespace
 	const POSGRID2 TEX_PART = POSGRID2(1, 4);	// テクスチャ分割数
 	const float MOVE_TIME = 1.8f;	// 生成移動時間
 	const float WAIT_TIME = 0.092f;	// 生成待機時間
+
+	const D3DXCOLOR COL_BLUR[] =	// ブラー色
+	{
+		D3DCOLOR_RGBA(110, 228, 234, 255),	// 水色
+		D3DCOLOR_RGBA(255, 142, 204, 255),	// 紫色
+	};
 }
 
 //************************************************************
@@ -63,8 +69,10 @@ HRESULT CTitleManager::Init(void)
 	for (int i = 0; i < NUM_LOGO; i++)
 	{ // ロゴの文字数分繰り返す
 
-		float fSide = (1.0f - ((i % 2) * 2.0f));			// 生成方向係数
-		float fWaitTime = WAIT_TIME * (float)i;				// 待機時間
+		int nFlag = (i % 2);					// 数値フラグ
+		float fSide = (1.0f - (nFlag * 2.0f));	// 生成方向係数
+		float fWaitTime = WAIT_TIME * (float)i;	// 待機時間
+		D3DXCOLOR colBlur = COL_BLUR[nFlag];	// 生成位置オフセット
 		D3DXVECTOR3 destOffset = DEST_OFFSET * (float)i;	// 目標位置
 		D3DXVECTOR3 initOffset = ABS_INIT_OFFSET * fSide;	// 生成位置オフセット
 
@@ -90,6 +98,9 @@ HRESULT CTitleManager::Init(void)
 
 		// オーラテクスチャを割当
 		m_apLogo[i]->BindAuraTexture("data\\TEXTURE\\title_aura000.png");
+
+		// ブラー色を設定
+		m_apLogo[i]->SetBlurColor(colBlur);
 
 		// パターンを設定
 		m_apLogo[i]->SetPattern(i);
