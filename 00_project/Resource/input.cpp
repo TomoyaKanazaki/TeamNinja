@@ -22,15 +22,29 @@ namespace
 
 	namespace vibration
 	{
-		const int TIME			= 20;	// バイブの継続時間
-		const int TIME_DEATH	= 100;	// 死亡時のバイブ継続時間
+		// 振動継続時間
+		const int TIME[] =
+		{
+			0, // 何もしない状態
+			100, // 死亡
+			10, // 被弾
+			30, // 橋
+			5, // ジャンプ
+			50, // ボタン
+			1, // 
+		};
 
-		const WORD LEVEL_DAMAGE		= (WORD)(USHRT_MAX * 0.6f);	// ダメージ時の振動レベル
-		const WORD LEVEL_BIG_DAMAGE	= (WORD)(USHRT_MAX * 0.8f);	// 大ダメージ時の振動レベル
-		const WORD LEVEL_DEATH		= (WORD)(USHRT_MAX);		// 死亡時の振動レベル
-		const WORD LEVEL_WALLDASH	= (WORD)(USHRT_MAX * 0.6f);	// 壁走りの振動レベル
-		const WORD LEVEL_FLAILCHAGE	= (WORD)(USHRT_MAX * 0.4f);	// フレイル溜めの振動レベル
-		const WORD LEVEL_FLAILSHOT	= (WORD)(USHRT_MAX * 1.0f);	// フレイル投げの振動レベル
+		// 振動レベル
+		const WORD LEVEL[] =
+		{
+			0, // 何もしない状態
+			(WORD)(USHRT_MAX), // 死亡
+			(WORD)(USHRT_MAX * 0.5f), // 被弾
+			(WORD)(USHRT_MAX), // 橋
+			(WORD)(USHRT_MAX * 0.5f), // ジャンプ
+			(WORD)(USHRT_MAX * 0.7f), // ボタン
+			(WORD)(USHRT_MAX * 0.1f), // 
+		};
 	}
 
 	namespace stick
@@ -39,6 +53,12 @@ namespace
 		const int INIT_VALUE = 1000; // スティック入力の初期値
 	}
 }
+
+//===========================================
+//  静的警告処理
+//===========================================
+static_assert(NUM_ARRAY(vibration::TIME) == CInputPad::TYPE_MAX, "ERROR : Type Count Mismatch");
+static_assert(NUM_ARRAY(vibration::LEVEL) == CInputPad::TYPE_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -798,8 +818,8 @@ void CInputPad::UpdateVibration(SVibration *pVibration, int nPadID)
 			pVibration->nTime--;
 
 			// 振動レベルの設定
-			pVibration->vibration.wLeftMotorSpeed  -= (WORD)(USHRT_MAX / vibration::TIME_DEATH);	// 左
-			pVibration->vibration.wRightMotorSpeed -= (WORD)(USHRT_MAX / vibration::TIME_DEATH);	// 右
+			pVibration->vibration.wLeftMotorSpeed  -= (WORD)(USHRT_MAX / vibration::TIME[TYPE_DEATH]);	// 左
+			pVibration->vibration.wRightMotorSpeed -= (WORD)(USHRT_MAX / vibration::TIME[TYPE_DEATH]);	// 右
 		}
 		else
 		{ // カウンターが 0以下になった場合
@@ -862,60 +882,12 @@ void CInputPad::SetVibration(EType type, int nPadID)
 	// バイブの状態を引数のものに設定
 	m_aVibration[nPadID].type = type;
 
-	switch (m_aVibration[nPadID].type)
-	{ // バイブの種類
-	case TYPE_DAMAGE:	// ダメージ状態
+	// 振動レベルの設定
+	m_aVibration[nPadID].vibration.wLeftMotorSpeed = vibration::LEVEL[type];	// 左
+	m_aVibration[nPadID].vibration.wRightMotorSpeed = vibration::LEVEL[type];	// 右
 
-		// 振動レベルの設定
-		m_aVibration[nPadID].vibration.wLeftMotorSpeed  = vibration::LEVEL_DAMAGE;	// 左
-		m_aVibration[nPadID].vibration.wRightMotorSpeed = vibration::LEVEL_DAMAGE;	// 右
-
-		// 振動時間の設定
-		m_aVibration[nPadID].nTime = vibration::TIME;
-
-		// 処理を抜ける
-		break;
-
-	case TYPE_BIG_DAMAGE:	// 大ダメージ状態
-
-		// 振動レベルの設定
-		m_aVibration[nPadID].vibration.wLeftMotorSpeed  = vibration::LEVEL_BIG_DAMAGE;	// 左
-		m_aVibration[nPadID].vibration.wRightMotorSpeed = vibration::LEVEL_BIG_DAMAGE;	// 右
-
-		// 振動時間の設定
-		m_aVibration[nPadID].nTime = vibration::TIME;
-
-		// 処理を抜ける
-		break;
-
-	case TYPE_DEATH:	// 死亡状態
-
-		// 振動レベルの設定
-		m_aVibration[nPadID].vibration.wLeftMotorSpeed  = vibration::LEVEL_DEATH;	// 左
-		m_aVibration[nPadID].vibration.wRightMotorSpeed = vibration::LEVEL_DEATH;	// 右
-
-		// 振動時間の設定
-		m_aVibration[nPadID].nTime = vibration::TIME_DEATH;
-
-		// 処理を抜ける
-		break;
-
-	case TYPE_WALLDASH:	// 壁走り状態
-
-		// 振動レベルの設定
-		m_aVibration[nPadID].vibration.wLeftMotorSpeed  = vibration::LEVEL_WALLDASH;	// 左
-		m_aVibration[nPadID].vibration.wRightMotorSpeed = vibration::LEVEL_WALLDASH;	// 右
-
-		// 振動時間の設定
-		m_aVibration[nPadID].nTime = 0;
-
-		// 処理を抜ける
-		break;
-
-	default:	// 例外処理
-		assert(false);
-		break;
-	}
+	// 振動時間の設定
+	m_aVibration[nPadID].nTime = vibration::TIME[type];
 
 	// バイブ情報を設定
 	XInputSetState(nPadID, &m_aVibration[nPadID].vibration);

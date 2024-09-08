@@ -1,4 +1,3 @@
-#if 0
 //============================================================
 //
 //	タイトルロゴ2Dヘッダー [titleLogo2D.h]
@@ -14,27 +13,25 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "object2D.h"
+#include "anim2D.h"
+#include "blur2D.h"
 
 //************************************************************
 //	クラス定義
 //************************************************************
 // タイトルロゴ2Dクラス
-class CTitleLogo2D : public CObject2D
+class CTitleLogo2D : public CAnim2D
 {
 public:
-	// 定数
-	static constexpr float ADD_ROT = 2.0f;	// 向きの加算量
-	static constexpr float LEVEL = 1.0f;	// フェードα値加減量
-
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,	// 何もしない
-		STATE_FADEOUT,	// フェードアウト
-		STATE_BLINK,	// 点滅
-		STATE_FADEIN,	// フェードイン
-		STATE_MAX		// この列挙型の総数
+		STATE_NONE = 0,		// 何もしない
+		STATE_MOVE_WAIT,	// 移動待機
+		STATE_MOVE,			// 移動
+		STATE_AURA_WAIT,	// オーラ待機
+		STATE_AURA,			// オーラ
+		STATE_MAX			// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -48,44 +45,46 @@ public:
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
 	void Draw(CShader *pShader = nullptr) override;	// 描画
+	void SetVec3Position(const D3DXVECTOR3& rPos) override;	// 位置設定
+	void SetVec3Sizing(const D3DXVECTOR3& rSize) override;	// 大きさ設定
+	void SetPattern(const int nPattern) override;			// パターンの設定
+	void SetWidthPattern(const int nWidthPtrn) override;	// テクスチャの横分割数の設定
+	void SetHeightPattern(const int nHeightPtrn) override;	// テクスチャの縦分割数の設定
 
 	// 静的メンバ関数
 	static CTitleLogo2D *Create	// 生成
 	( // 引数
 		const D3DXVECTOR3& rPos,		// 位置
+		const D3DXVECTOR3& rOffset,		// オフセット
 		const D3DXVECTOR3& rSize,		// 大きさ
-		const float fMinAlpha = 0.0f,	// 最低透明度
-		const float fMaxAlpha = 1.0f,	// 最大透明度
-		const float fCalcAlpha = ADD_ROT,		// 透明度の加減量
-		const float fSubIn = LEVEL,				// 点滅前のインのα値減少量
-		const float fAddOut = LEVEL,			// 点滅後のアウトのα値増加量
-		const D3DXVECTOR3& rRot = VEC3_ZERO,	// 向き
-		const D3DXCOLOR& rCol = XCOL_AWHITE		// 色
+		const float fMoveTime = 1.0f,	// 移動時間
+		const float fWaitTime = 1.0f	// 待機時間
 	);
 
 	// メンバ関数
-	void SetBlink(const bool bBlink);		// 点滅設定
-	bool IsBlink(void)	{ return (m_state == STATE_BLINK); }	// 点滅取得
-	void SetCalcAlpha(const float fCalc)	{ m_fAddSinRot = fCalc; }	// 透明向きの加算量設定
-	float GetCalcAlpha(void) const			{ return m_fAddSinRot; }	// 透明向きの加算量取得
-	void SetMinAlpha(const float fMin)		{ m_fMinAlpha = fMin; }		// 最低透明度設定
-	float GetMinAlpha(void) const			{ return m_fMinAlpha; }		// 最低透明度取得
-	void SetMaxAlpha(const float fMax)		{ m_fMaxAlpha = fMax; }		// 最大透明度設定
-	float GetMaxAlpha(void) const			{ return m_fMaxAlpha; }		// 最大透明度取得
-	void SetSubIn(const float fLevel)		{ m_fSubIn = fLevel; }		// α値減少量設定
-	float GetSubIn(void) const				{ return m_fSubIn; }		// α値減少量取得
-	void SetAddOut(const float fLevel)		{ m_fAddOut = fLevel; }		// α値増加量設定
-	float GetAddOut(void) const				{ return m_fAddOut; }		// α値増加量取得
+	void SetStag(void)		{ m_state = STATE_MOVE_WAIT; }		// 演出開始設定
+	bool IsStag(void) const	{ return (m_state != STATE_NONE); }	// 演出中フラグ取得
+	void SetBlurColor(const D3DXCOLOR& rCol)		{ m_pBlur->SetColor(rCol); }			// ブラー色設定
+	void BindAuraTexture(const char *pTexturePass)	{ m_pAura->BindTexture(pTexturePass); }	// テクスチャ割当 (インデックス)
+	void BindAuraTexture(const int nTextureID)		{ m_pAura->BindTexture(nTextureID); }	// テクスチャ割当 (パス)
 
 private:
+	// メンバ関数
+	void UpdateMoveWait(const float fDeltaTime);	// 移動待機更新
+	void UpdateMove(const float fDeltaTime);		// 移動更新
+	void UpdateAuraWait(const float fDeltaTime);	// オーラ待機更新
+	void UpdateAura(const float fDeltaTime);		// オーラ更新
+
 	// メンバ変数
-	EState m_state;		// 状態
-	float m_fSinAlpha;	// 透明向き
-	float m_fAddSinRot;	// 透明向きの加算量
-	float m_fMinAlpha;	// 最低透明度
-	float m_fMaxAlpha;	// 最大透明度
-	float m_fSubIn;		// インのα値減少量
-	float m_fAddOut;	// アウトのα値増加量
+	CAnim2D* m_pAura;		// オーラ情報
+	CBlur2D* m_pBlur;		// ブラー情報
+	EState m_state;			// 状態
+	float m_fMoveTime;		// 移動時間
+	float m_fWaitTime;		// 待機時間
+	float m_fCurTime;		// 現在の待機時間
+	D3DXVECTOR3 m_offset;	// 初期位置オフセット
+	D3DXVECTOR3 m_initPos;	// 初期位置
+	D3DXVECTOR3 m_destPos;	// 目標位置
 };
-#endif
+
 #endif	// _TITLE_LOGO2D_H_
