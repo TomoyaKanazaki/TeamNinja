@@ -589,6 +589,9 @@ CPlayerClone* CPlayerClone::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& mo
 	// 自動消滅タイマーを設定
 	pPlayer->m_fDeleteTimer = WALK_TIMER;
 
+	// コントローラのバイブレーション
+	GET_INPUTPAD->SetVibration(CInputPad::TYPE_CLONE);
+
 	// 確保したアドレスを返す
 	return pPlayer->Block();
 }

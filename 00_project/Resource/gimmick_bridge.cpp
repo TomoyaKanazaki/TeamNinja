@@ -216,6 +216,9 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 			// カメラが揺れる
 			CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, SWING);
+
+			// コントローラのバイブレーション
+			GET_INPUTPAD->SetVibration(CInputPad::TYPE_BRIDGE);
 		}
 
 		// 向きを保存する
@@ -333,10 +336,6 @@ void CGimmickBridge::Active(const float fDeltaTime)
 
 	// アクティブ中の処理
 	Movement();
-
-	DebugProc::Print(DebugProc::POINT_CENTER, "移動時間 : %f\n", m_fMoveTime);
-	DebugProc::Print(DebugProc::POINT_CENTER, "muki %f\n", m_pField->GetVec3Rotation().z);
-
 }
 
 //==========================================
@@ -413,6 +412,8 @@ void CGimmickBridge::Moment()
 		assert(false);
 		break;
 	}
+
+	m_pField->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //==========================================

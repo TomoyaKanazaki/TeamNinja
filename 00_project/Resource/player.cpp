@@ -530,6 +530,9 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
+	// コントローラのバイブレーション
+	GET_INPUTPAD->SetVibration(CInputPad::TYPE_DAMAGE);
+
 	// ノックバック方向を向く
 	D3DXVECTOR3 rot = GetVec3Rotation();
 	rot.y = atan2f(rVecKnock.x, rVecKnock.z);
@@ -539,6 +542,9 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
 		m_state = STATE_DEATH;
+
+		// コントローラのバイブレーション
+		GET_INPUTPAD->SetVibration(CInputPad::TYPE_DEATH);
 	}
 
 	// 士気力が減少する
@@ -738,6 +744,9 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// コントローラのバイブレーション
+	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
 
 	return true;
 }

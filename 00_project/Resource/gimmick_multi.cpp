@@ -226,10 +226,13 @@ HRESULT CGimmickMulti::CreateButton(std::vector<SButton> vecButton)
 //===========================================
 void CGimmickMulti::MoveModel(const float fDeltaTime)
 {	
-	// 竹格子が動いた時、カメラを揺らす
+	// 竹格子が動いた時、いろいろ揺らす
 	if (m_bActive != m_bActiveOld)
 	{
 		CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, CAMERA_SWING);
+
+		// コントローラのバイブレーション
+		GET_INPUTPAD->SetVibration(CInputPad::TYPE_BUTTON);
 	}
 
 	// 前回のアクティブフラグを設定する
