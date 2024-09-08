@@ -28,6 +28,7 @@ CBlur2D::CBlur2D() : CObject(CObject::LABEL_BLUR, CObject::SCENE_MAIN, CObject::
 	m_pParent		(nullptr),		// 親オブジェクト
 	m_col			(XCOL_WHITE),	// ブラー反映色
 	m_fStartAlpha	(0.0f),			// ブラーの開始透明度
+	m_nTextureID	(NONE_IDX),		// ブラーテクスチャインデックス
 	m_nMaxLength	(0),			// 保持する親オブジェクトの最大数
 	m_state			(STATE_NONE),	// 状態
 	m_nCounterState	(0)				// 状態管理カウンター
@@ -54,6 +55,7 @@ HRESULT CBlur2D::Init(void)
 	m_pParent		= nullptr;		// 親オブジェクト
 	m_col			= XCOL_WHITE;	// ブラー反映色
 	m_fStartAlpha	= 0.0f;			// ブラーの開始透明度
+	m_nTextureID	= NONE_IDX;		// ブラーテクスチャインデックス
 	m_nMaxLength	= 0;			// 保持する親オブジェクトの最大数
 	m_state			= STATE_NONE;	// 状態
 	m_nCounterState	= 0;			// 状態管理カウンター
@@ -90,49 +92,13 @@ void CBlur2D::Update(const float fDeltaTime)
 	if (m_state == STATE_NORMAL)
 	{ // 通常状態の場合
 
-#if 0
-		// オブジェクト保存用の動的配列を生成
-		std::vector<CObjectModel*> tempBlur2D;
-		tempBlur2D.resize((size_t)m_pParent->GetNumParts());	// パーツ数分配列生成
-
-		int nCntParts = 0;	// パーツインデックス
-		for (auto& rVecParts : tempBlur2D)
-		{ // パーツ数分繰り返す
-
-			// パーツの生成
-			rVecParts = CObjectModel::Create(VEC3_ZERO, VEC3_ZERO);
-			if (rVecParts != nullptr)
-			{ // パーツの生成に成功した場合
-
-				CObjectModel *pBlur2DParts = rVecParts;	// 残像パーツ
-				CMultiModel *pOriginParts = m_pParent->GetParts(nCntParts);		// 原点パーツ
-				D3DXMATRIX mtxParts = pOriginParts->GetMtxWorld();				// 残像生成元のマトリックス
-
-				// 情報を生成元と一致させる
-				pBlur2DParts->BindModel(pOriginParts->GetModelID());	// 同一モデルを割当
-				pBlur2DParts->SetMtxWorld(mtxParts);					// 同一マトリックスを設定
-
-				// 位置・向き・大きさをマトリックスから取得し設定
-				pBlur2DParts->SetVec3Position(useful::GetMatrixPosition(mtxParts));
-				pBlur2DParts->SetVec3Rotation(useful::GetMatrixRotation(mtxParts));
-				pBlur2DParts->SetVec3Scaling(useful::GetMatrixScaling(mtxParts));
-
-				// 加算合成にする
-				pBlur2DParts->GetRenderState()->SetAlphaBlend(CRenderState::BLEND_ADD);
-			}
-
-			// パーツインデックスを進める
-			nCntParts++;
-		}
-#endif
-
 		// アニメーション2D保存用インスタンスを生成
 		CAnim2D* pTempBlur2D = CAnim2D::Create(1, 1, VEC3_ZERO, VEC3_ZERO);
 		if (pTempBlur2D != nullptr)
 		{ // 生成に成功した場合
 
 			// 情報を生成元と一致させる
-			pTempBlur2D->BindTexture(m_pParent->GetTextureIndex());	// 同一テクスチャを割当
+			pTempBlur2D->BindTexture(m_nTextureID);
 
 			// アニメーション情報を取得し設定
 			pTempBlur2D->SetWidthPattern(m_pParent->GetWidthPattern());
@@ -242,7 +208,8 @@ CBlur2D *CBlur2D::Create
 	CAnim2D *pParent,			// 親オブジェクト
 	const D3DXCOLOR& rCol,		// ブラー反映色
 	const float fStartAlpha,	// ブラー開始透明度
-	const int nMaxLength		// 保持オブジェクト最大数
+	const int nMaxLength,		// 保持オブジェクト最大数
+	const int nTextureID		// テクスチャインデックス
 )
 {
 	// ブラー2Dの生成
@@ -275,6 +242,9 @@ CBlur2D *CBlur2D::Create
 
 		// 保持オブジェクトの最大数を設定
 		pBlur2D->SetMaxLength(nMaxLength);
+
+		// テクスチャインデックスを設定
+		pBlur2D->m_nTextureID = nTextureID;
 
 		// 確保したアドレスを返す
 		return pBlur2D;

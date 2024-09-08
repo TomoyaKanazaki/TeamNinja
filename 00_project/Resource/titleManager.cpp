@@ -79,6 +79,7 @@ HRESULT CTitleManager::Init(void)
 		// タイトルの生成
 		m_apLogo[i] = CTitleLogo2D::Create
 		( // 引数
+			"data\\TEXTURE\\title_blur000.png",	// ブラーテクスチャパス
 			POS_POLY + destOffset,	// 位置
 			initOffset,	// オフセット
 			SIZE_POLY,	// 大きさ

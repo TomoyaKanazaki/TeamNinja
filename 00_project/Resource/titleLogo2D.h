@@ -35,7 +35,7 @@ public:
 	};
 
 	// コンストラクタ
-	CTitleLogo2D();
+	CTitleLogo2D(const char* pBlurTexPath);
 
 	// デストラクタ
 	~CTitleLogo2D() override;
@@ -54,6 +54,7 @@ public:
 	// 静的メンバ関数
 	static CTitleLogo2D *Create	// 生成
 	( // 引数
+		const char* pBlurTexPath,		// ブラーテクスチャパス
 		const D3DXVECTOR3& rPos,		// 位置
 		const D3DXVECTOR3& rOffset,		// オフセット
 		const D3DXVECTOR3& rSize,		// 大きさ
@@ -76,6 +77,7 @@ private:
 	void UpdateAura(const float fDeltaTime);		// オーラ更新
 
 	// メンバ変数
+	const char* m_pBlurTexPath;	// ブラーテクスチャパス
 	CAnim2D* m_pAura;		// オーラ情報
 	CBlur2D* m_pBlur;		// ブラー情報
 	EState m_state;			// 状態

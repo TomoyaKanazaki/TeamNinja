@@ -8,6 +8,8 @@
 //	インクルードファイル
 //************************************************************
 #include "titleLogo2D.h"
+#include "manager.h"
+#include "texture.h"
 
 //************************************************************
 //	定数宣言
@@ -43,15 +45,17 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CTitleLogo2D::CTitleLogo2D() : CAnim2D(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
-	m_pAura		(nullptr),		// オーラ情報
-	m_state		(STATE_NONE),	// 状態
-	m_fMoveTime	(0.0f),			// 移動時間
-	m_fWaitTime	(0.0f),			// 待機時間
-	m_fCurTime	(0.0f),			// 現在の待機時間
-	m_offset	(VEC3_ZERO),	// 初期位置オフセット
-	m_initPos	(VEC3_ZERO),	// 初期位置
-	m_destPos	(VEC3_ZERO)		// 目標位置
+CTitleLogo2D::CTitleLogo2D(const char* pBlurTexPath) : CAnim2D(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_2D, PRIORITY),
+	m_pBlurTexPath	(pBlurTexPath),	// ブラーテクスチャパス
+	m_pAura			(nullptr),		// オーラ情報
+	m_pBlur			(nullptr),		// ブラー情報
+	m_state			(STATE_NONE),	// 状態
+	m_fMoveTime		(0.0f),			// 移動時間
+	m_fWaitTime		(0.0f),			// 待機時間
+	m_fCurTime		(0.0f),			// 現在の待機時間
+	m_offset		(VEC3_ZERO),	// 初期位置オフセット
+	m_initPos		(VEC3_ZERO),	// 初期位置
+	m_destPos		(VEC3_ZERO)		// 目標位置
 {
 
 }
@@ -71,6 +75,7 @@ HRESULT CTitleLogo2D::Init(void)
 {
 	// メンバ変数を初期化
 	m_pAura		= nullptr;		// オーラ情報
+	m_pBlur		= nullptr;		// ブラー情報
 	m_state		= STATE_NONE;	// 状態
 	m_fMoveTime	= 0.0f;			// 移動時間
 	m_fWaitTime	= 0.0f;			// 待機時間
@@ -110,8 +115,11 @@ HRESULT CTitleLogo2D::Init(void)
 	// 色を設定
 	m_pAura->SetColor(XCOL_AWHITE);
 
+	// 加算合成にする
+	m_pAura->GetRenderState()->SetAlphaBlend(CRenderState::BLEND_ADD);
+
 	// ブラーの生成
-	m_pBlur = CBlur2D::Create(this, XCOL_WHITE, 0.03f, 40);
+	m_pBlur = CBlur2D::Create(this, XCOL_WHITE, 0.025f, 40, GET_MANAGER->GetTexture()->Regist(m_pBlurTexPath));
 	if (m_pBlur == nullptr)
 	{ // 生成に失敗した場合
 
@@ -256,6 +264,7 @@ void CTitleLogo2D::SetHeightPattern(const int nHeightPtrn)
 //============================================================
 CTitleLogo2D *CTitleLogo2D::Create
 (
+	const char* pBlurTexPath,	// ブラーテクスチャパス
 	const D3DXVECTOR3& rPos,	// 位置
 	const D3DXVECTOR3& rOffset,	// オフセット
 	const D3DXVECTOR3& rSize,	// 大きさ
@@ -264,7 +273,7 @@ CTitleLogo2D *CTitleLogo2D::Create
 )
 {
 	// タイトルロゴ2Dの生成
-	CTitleLogo2D *pTitleLogo2D = new CTitleLogo2D;
+	CTitleLogo2D *pTitleLogo2D = new CTitleLogo2D(pBlurTexPath);
 	if (pTitleLogo2D == nullptr)
 	{ // 生成に失敗した場合
 
