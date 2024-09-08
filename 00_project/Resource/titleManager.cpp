@@ -145,6 +145,11 @@ void CTitleManager::Update(const float fDeltaTime)
 			m_apLogo[i]->SetStag();
 		}
 	}
+
+	if (GET_INPUTKEY->IsTrigger(DIK_F5))
+	{
+		GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+	}
 }
 
 //============================================================

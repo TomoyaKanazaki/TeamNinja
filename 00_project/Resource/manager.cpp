@@ -654,6 +654,9 @@ HRESULT CManager::InitScene(const CScene::EMode mode)
 //============================================================
 HRESULT CManager::SetScene(const CScene::EMode mode)
 {
+	// カメラ更新をオンにする
+	m_pCamera->SetEnableUpdate(true);
+
 	// サウンドを停止
 	assert(m_pSound != nullptr);
 	m_pSound->Stop();
@@ -699,6 +702,9 @@ void CManager::SetFadeScene
 	const float fSubIn			// インのα値減少量
 )
 {
+	// カメラ更新をオンにする
+	m_pCamera->SetEnableUpdate(true);
+
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
@@ -717,6 +723,9 @@ void CManager::SetLoadScene
 	const float fSubIn			// インのα値減少量
 )
 {
+	// カメラ更新をオンにする
+	m_pCamera->SetEnableUpdate(true);
+
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
@@ -729,6 +738,9 @@ void CManager::SetLoadScene
 //============================================================
 HRESULT CManager::SetMode(const CScene::EMode mode)
 {
+	// カメラ更新をオンにする
+	m_pCamera->SetEnableUpdate(true);
+
 	// サウンドの停止
 	assert(m_pSound != nullptr);
 	m_pSound->Stop();
@@ -768,6 +780,9 @@ HRESULT CManager::SetMode(const CScene::EMode mode)
 //============================================================
 HRESULT CManager::SetLoadMode(const CScene::EMode mode)
 {
+	// カメラ更新をオンにする
+	m_pCamera->SetEnableUpdate(true);
+
 	// サウンドの停止
 	assert(m_pSound != nullptr);
 	m_pSound->Stop();
