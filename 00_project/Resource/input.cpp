@@ -31,7 +31,7 @@ namespace
 			30, // 橋
 			5, // ジャンプ
 			50, // ボタン
-			1, // 
+			1, // 分身
 		};
 
 		// 振動レベル
@@ -43,7 +43,7 @@ namespace
 			(WORD)(USHRT_MAX), // 橋
 			(WORD)(USHRT_MAX * 0.5f), // ジャンプ
 			(WORD)(USHRT_MAX * 0.7f), // ボタン
-			(WORD)(USHRT_MAX * 0.1f), // 
+			(WORD)(USHRT_MAX * 0.1f), // 分身
 		};
 	}
 

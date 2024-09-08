@@ -186,7 +186,7 @@ public:
 		TYPE_BRIDGE,		// 橋
 		TYPE_JUMP,			// ジャンプ
 		TYPE_BUTTON,		// ボタン
-		TYPE_CLONE,			// 
+		TYPE_CLONE,			// 分身
 		TYPE_MAX			// この列挙型の総数
 	};
 
