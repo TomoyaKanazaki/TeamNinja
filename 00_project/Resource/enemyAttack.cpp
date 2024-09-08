@@ -38,6 +38,72 @@ namespace
 	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
 	const int REGRESSION_COUNT = 120;			// 回帰するカウント数
+
+	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
+	{
+		59,			// しつこい敵
+		36,			// 狼敵
+		59,			// 待ち伏せ敵
+	};
+	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃状態の遷移カウント
+	{
+		44,			// しつこい敵
+		34,			// 狼敵
+		44,			// 待ち伏せ敵
+	};
+	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の遷移カウント
+	{
+		340,		// しつこい敵
+		340,		// 狼敵
+		340,		// 待ち伏せ敵
+	};
+	const int BLANKATTACK_CYCLE_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の回転カウント
+	{
+		18,		// しつこい敵
+		18,		// 狼敵
+		18,		// 待ち伏せ敵
+	};
+}
+
+// 音関係定数
+namespace sound
+{
+	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =		// 警告音の鳴るカウント
+	{
+		37,			// しつこい敵
+		2,			// 狼敵
+		37,			// 待ち伏せ敵
+	};
+	const CSound::ELabel WARNING_LABEL[CEnemyAttack::TYPE_MAX] =	// 警告音のラベル
+	{
+		CSound::LABEL_SE_STALKFOUND_000,	// しつこい敵
+		CSound::LABEL_SE_WOLFFOUND_000,		// 狼敵
+		CSound::LABEL_SE_STALKFOUND_000,	// 待ち伏せ敵
+	};
+	const CSound::ELabel ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =		// 攻撃音のラベル
+	{
+		CSound::LABEL_SE_STALKATTACK_000,	// しつこい敵
+		CSound::LABEL_SE_WOLFATTACK_000,	// 狼敵
+		CSound::LABEL_SE_STALKATTACK_000,	// 待ち伏せ敵
+	};
+	const CSound::ELabel BLANK_ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =	// 空白攻撃音のラベル
+	{
+		CSound::LABEL_SE_STALKATTACK_001,	// しつこい敵
+		CSound::LABEL_SE_WOLFATTACK_001,	// 狼敵
+		CSound::LABEL_SE_STALKATTACK_001,	// 待ち伏せ敵
+	};
+	const int UPSET_COUNT[CEnemyAttack::TYPE_MAX] =			// 動揺音の鳴るカウント
+	{
+		200,		// しつこい敵
+		80,			// 狼敵
+		200,		// 待ち伏せ敵
+	};
+	const CSound::ELabel UPSET_LABEL[CEnemyAttack::TYPE_MAX] =		// 動揺音のラベル
+	{
+		CSound::LABEL_SE_STALKUPSET_000,	// しつこい敵
+		CSound::LABEL_SE_WOLFUPSET_000,		// 狼敵
+		CSound::LABEL_SE_STALKUPSET_000,	// 待ち伏せ敵
+	};
 }
 
 //************************************************************
@@ -56,6 +122,8 @@ m_pChaseRange(nullptr),		// 追跡範囲の情報
 m_pClone(nullptr),			// 分身の情報
 m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
+m_state(STATE_ORIGIN),		// 状態
+m_nStateCount(0),			// 状態カウント
 m_nAttackCount(0),			// 攻撃カウント
 m_nRegressionCount(0),		// 回帰カウント
 m_type(TYPE_STALK),			// 種類
@@ -844,6 +912,278 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 	// 移動量とジャンプ状況を反映
 	SetMovePosition(move);
 	SetEnableJump(bJump);
+}
+
+//===========================================
+// 警告処理
+//===========================================
+int CEnemyAttack::Warning
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
+{
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount == sound::WARNING_COUNT[m_type])
+	{ // 一定時間経過した場合
+
+		// 発見音を鳴らす
+		PLAY_SOUND(sound::WARNING_LABEL[m_type]);
+	}
+
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 向きの移動処理
+	RotMove(*pRot, fRotRev, fDeltaTime);
+
+	if (m_nStateCount % WARNING_COUNT[m_type] == 0)
+	{ // 一定時間経過した場合
+
+		// 追跡状態にする
+		SetState(STATE_STALK);
+	}
+
+	// 状態を返す(意味なし)
+	return m_state;
+}
+
+//===========================================
+// 追跡処理
+//===========================================
+int CEnemyAttack::Stalk
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot, 		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
+{
+	// 歩行カウントを加算する
+	m_nStateCount++;
+
+	if (!ShakeOffClone() &&
+		!ShakeOffPlayer())
+	{ // 分身かプレイヤーが視界内にいない場合
+
+		// 独自状態にする
+		SetState(STATE_ORIGIN);
+
+		// 標的を未設定にする
+		SetTarget(TARGET_NONE);
+
+		// 独自状態を返す
+		return m_state;
+	}
+
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 回避受付フラグを false にする
+	SetEnableDodge(false);
+
+	// 攻撃カウントをリセットする
+	SetAttackCount(0);
+
+	// 向きの移動処理
+	RotMove(*pRot, fRotRev, fDeltaTime);
+
+	// 移動処理
+	Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+
+	if (Approach(*pPos))
+	{ // 接近した場合
+
+		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
+		{ // 目標がプレイヤーの場合
+
+			// 回避受付フラグを true にする
+			SetEnableDodge(true);
+
+			// 攻撃カウントをリセットする
+			SetAttackCount(0);
+		}
+
+		// 攻撃状態にする
+		SetState(STATE_ATTACK);
+
+		// 攻撃状態を返す
+		return m_state;
+	}
+
+	if (GetChaseRange() != nullptr &&
+		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
+	{ // 追跡範囲から出た場合
+
+		// 構え状態にする
+		SetState(STATE_STANCE);
+
+		// 構え状態を返す
+		return m_state;
+	}
+
+	// 追跡状態を返す
+	return m_state;
+}
+
+//===========================================
+// 攻撃処理
+//===========================================
+int CEnemyAttack::Attack(const D3DXVECTOR3& rPos)
+{
+	switch (GetTarget())
+	{
+	case CEnemyAttack::TARGET_PLAYER:
+
+		if (HitPlayer(rPos))
+		{ // プレイヤーに当たった場合
+
+			// 攻撃音を鳴らす
+			PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
+		}
+
+		// 状態カウントを加算する
+		m_nStateCount++;
+
+		if (m_nStateCount % ATTACK_COUNT[m_type] == 0)
+		{ // 一定カウント経過した場合
+
+			// 独自状態にする
+			SetState(STATE_ORIGIN);
+		}
+
+		// 独自状態を返す
+		return m_state;
+
+	case CEnemyAttack::TARGET_CLONE:
+
+		if (HitClone(rPos))
+		{ // 分身に当たった場合
+
+			// 空白攻撃状態にする
+			SetState(STATE_BLANKATTACK);
+
+			// 分身攻撃音を鳴らす
+			PLAY_SOUND(sound::BLANK_ATTACK_LABEL[m_type]);
+
+			// 空白攻撃状態を返す
+			return m_state;
+		}
+		else
+		{ // 上記以外
+
+			// 独自状態にする
+			SetState(STATE_ORIGIN);
+		}
+
+		// 独自状態を返す
+		return m_state;
+
+	default:		// 例外処理
+		assert(false);
+		break;
+	}
+
+	// 独自状態を返す
+	return m_state;
+}
+
+//===========================================
+// 空白攻撃処理
+//===========================================
+int CEnemyAttack::BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime, const float fRotRev)
+{
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	// 向きの移動処理
+	RotMove(*pRot, fRotRev, fDeltaTime);
+
+	if (m_nStateCount <= BLANKATTACK_COUNT[m_type])
+	{ // 一定カウント以下の場合
+
+		if (m_nStateCount % BLANKATTACK_CYCLE_COUNT[m_type] == 0)
+		{ // 一定カウントごとに
+
+			// 目的の向きを取得
+			D3DXVECTOR3 rotDest = GetDestRotation();
+
+			// 目的の向きを設定する
+			rotDest.y = useful::RandomRot();
+
+			// 目的の向きを適用
+			SetDestRotation(rotDest);
+		}
+	}
+	else
+	{ // 上記以外
+
+		// 動揺状態にする
+		SetState(STATE_UPSET);
+
+		// 動揺状態を返す
+		return m_state;
+	}
+
+	// 空白攻撃状態にする
+	return m_state;
+}
+
+//===========================================
+// 動揺処理
+//===========================================
+int CEnemyAttack::Upset(void)
+{
+	// 状態カウントを加算する
+	m_nStateCount++;
+
+	if (m_nStateCount == sound::UPSET_COUNT[m_type])
+	{ // 状態カウントが一定数になったとき
+
+		// 動揺音を鳴らす
+		PLAY_SOUND(sound::UPSET_LABEL[m_type]);
+	}
+
+	// 動揺状態を返す
+	return m_state;
+}
+
+//===========================================
+// 構え処理
+//===========================================
+int CEnemyAttack::Stance(void)
+{
+	// 分身の発見処理
+	JudgeClone();
+
+	if (PlayerIngress())
+	{ // 範囲内に入った場合
+
+		// 警告状態にする
+		SetState(STATE_WARNING);
+
+		// 警告モーションを返す
+		return m_state;
+	}
+
+	// 構え状態を返す
+	return m_state;
+}
+
+//===========================================
+// 状態の設定処理
+//===========================================
+void CEnemyAttack::SetState(const EState state)
+{
+	// 状態を設定する
+	m_state = state;
+
+	// 状態カウントを0にする
+	m_nStateCount = 0;
 }
 
 //===========================================

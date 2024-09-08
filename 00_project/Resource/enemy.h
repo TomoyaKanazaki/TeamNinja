@@ -62,6 +62,7 @@ public:
 	inline CEnemyItem* GetItem(void) const					{ return m_pItem; }					// “G‚Ì‚¿•¨æ“¾
 	virtual float GetRadius(void) const = 0;			// ”¼Œa‚Ìæ“¾ˆ—
 	virtual float GetHeight(void) const = 0;			// ‚‚³‚Ìæ“¾ˆ—
+	virtual float GetSpeed(void) const = 0;				// ‘¬“x‚Ìæ“¾ˆ—
 
 protected:
 
