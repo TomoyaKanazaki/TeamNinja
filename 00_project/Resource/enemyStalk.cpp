@@ -38,7 +38,7 @@ namespace
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
-	const float SPEED = -480.0f;			// 速度
+	const float SPEED = -540.0f;			// 速度
 	const float ROT_REV = 7.0f;				// 向きの補正係数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
@@ -324,7 +324,7 @@ int CEnemyStalk::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float f
 		case CEnemyStalk::STATE_ATTACK:
 
 			// 攻撃処理
-			nCurMotion = Attack(*pPos);
+			nCurMotion = Attack(pPos, pRot, fDeltaTime, ROT_REV);
 
 			break;
 
@@ -690,9 +690,15 @@ int CEnemyStalk::Stalk
 //============================================================
 // 攻撃処理
 //============================================================
-int CEnemyStalk::Attack(const D3DXVECTOR3& rPos)
+int CEnemyStalk::Attack
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	switch (CEnemyAttack::Attack(rPos))
+	switch (CEnemyAttack::Attack(pPos, pRot, fDeltaTime, fRotRev))
 	{
 	case STATE_ORIGIN:
 

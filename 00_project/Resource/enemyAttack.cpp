@@ -32,12 +32,24 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 20;					// 回避カウント数
-	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
-	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
-	const int REGRESSION_COUNT = 120;			// 回帰するカウント数
+	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(50.0f, 100.0f, 50.0f);	// 攻撃判定(上)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 攻撃判定(下)
+	const int DODGE_COUNT = 20;						// 回避カウント数
+	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 
+	{
+		DODGE_COUNT - 7,	// しつこい敵
+		DODGE_COUNT - 10,	// 狼敵
+		DODGE_COUNT - 7,	// 待ち伏せ敵
+	};
+	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
+	{
+		-320.0f,
+		-480.0f,
+		-320.0f,
+	};
+	const float SHAKEOFF_RANGE = 1000.0f;			// 振り切れる距離
+	const float DIVERSION_EFFECT_SCALE = 18.0f;		// 分身との戦闘エフェクトの大きさ
+	const int REGRESSION_COUNT = 120;				// 回帰するカウント数
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
@@ -1045,13 +1057,36 @@ int CEnemyAttack::Stalk
 //===========================================
 // 攻撃処理
 //===========================================
-int CEnemyAttack::Attack(const D3DXVECTOR3& rPos)
+int CEnemyAttack::Attack
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	switch (GetTarget())
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 向きの移動処理
+	RotMove(*pRot, fRotRev, fDeltaTime);
+
+	if (m_nAttackCount < DODGE_COUNT &&
+		m_nAttackCount > ATTACK_DASH_COUNT[m_type])
+	{ // 回避カウントを過ぎた場合
+
+		// 移動処理
+		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+	}
+
+	switch (m_target)
 	{
 	case CEnemyAttack::TARGET_PLAYER:
 
-		if (HitPlayer(rPos))
+		// プレイヤーの探索処理
+		JudgePlayer();
+
+		if (HitPlayer(*pPos))
 		{ // プレイヤーに当たった場合
 
 			// 攻撃音を鳴らす
@@ -1073,7 +1108,10 @@ int CEnemyAttack::Attack(const D3DXVECTOR3& rPos)
 
 	case CEnemyAttack::TARGET_CLONE:
 
-		if (HitClone(rPos))
+		// クローンの探索処理
+		JudgeClone();
+
+		if (HitClone(*pPos))
 		{ // 分身に当たった場合
 
 			// 空白攻撃状態にする
