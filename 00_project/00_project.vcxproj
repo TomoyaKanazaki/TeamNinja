@@ -162,6 +162,7 @@
     <ClInclude Include="Resource\balloon.h" />
     <ClInclude Include="Resource\balloonManager.h" />
     <ClInclude Include="Resource\blink2D.h" />
+    <ClInclude Include="Resource\blur2D.h" />
     <ClInclude Include="Resource\clearFailManager.h" />
     <ClInclude Include="Resource\clearManager.h" />
     <ClInclude Include="Resource\clearSuccessManager.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\playerSelect.h" />
+    <ClInclude Include="Resource\playerTitle.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="Resource\scrollText2D.h" />
     <ClInclude Include="Resource\spin_wall.h" />
     <ClInclude Include="Resource\tension.h" />
+    <ClInclude Include="Resource\titleLogo2D.h" />
     <ClInclude Include="Resource\ToonShadow.h" />
     <ClInclude Include="Resource\actor.h" />
     <ClInclude Include="Resource\anim2D.h" />
@@ -361,6 +364,7 @@
     <ClCompile Include="Resource\balloon.cpp" />
     <ClCompile Include="Resource\balloonManager.cpp" />
     <ClCompile Include="Resource\blink2D.cpp" />
+    <ClCompile Include="Resource\blur2D.cpp" />
     <ClCompile Include="Resource\clearFailManager.cpp" />
     <ClCompile Include="Resource\clearManager.cpp" />
     <ClCompile Include="Resource\clearSuccessManager.cpp" />
@@ -377,6 +381,7 @@
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\playerSelect.cpp" />
+    <ClCompile Include="Resource\playerTitle.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />
@@ -385,6 +390,7 @@
     <ClCompile Include="Resource\scrollText2D.cpp" />
     <ClCompile Include="Resource\spin_wall.cpp" />
     <ClCompile Include="Resource\tension.cpp" />
+    <ClCompile Include="Resource\titleLogo2D.cpp" />
     <ClCompile Include="Resource\ToonShadow.cpp" />
     <ClCompile Include="Resource\actor.cpp" />
     <ClCompile Include="Resource\anim2D.cpp" />

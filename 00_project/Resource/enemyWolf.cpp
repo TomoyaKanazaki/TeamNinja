@@ -29,10 +29,9 @@ namespace
 	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_TURN	= 20;	// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
-	const float	RADIUS = 70.0f;				// 半径
+	const float	RADIUS = 28.0f;				// 半径
 	const float HEIGHT = 20.0f;				// 身長
-
-	const float SPEED = -500.0f;			// 移動量
+	const float SPEED = -570.0f;			// 移動量
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
 	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
 	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
@@ -40,22 +39,6 @@ namespace
 
 	const float	JUMP_REV = 0.16f;	// 通常状態時の空中の移動量の減衰係数
 	const float	LAND_REV = 0.16f;	// 通常状態時の地上の移動量の減衰係数
-
-	// 状態管理関係
-	const int CAVEAT_STATE_COUNT = 36;		// 発見状態のカウント数
-	const int ATTACK_STATE_COUNT = 34;		// 攻撃状態のカウント数
-	const int BLANKBITE_STATE_COUNT = 340;	// 動揺状態のカウント数
-	const int BLANKBITE_CYCLE_COUNT = 18;	// 動揺状態の回転カウント
-	const int CAUTION_STATE_COUNT = 180;	// 警戒状態のカウント数
-	const int REGRESSION_COUNT = 120;		// 回帰するカウント数
-}
-
-// 音関連
-namespace sound
-{
-	const int WALK_COUNT = 32;		// 歩行音を鳴らすカウント数
-	const int FOUND_COUNT = 2;		// 発見音を鳴らすカウント数
-	const int UPSET_COUNT = 80;		// 動揺音を鳴らすカウント数
 }
 
 //************************************************************
@@ -65,10 +48,7 @@ namespace sound
 //	コンストラクタ
 //============================================================
 CEnemyWolf::CEnemyWolf() : CEnemyAttack(),
-m_pNav(nullptr),		// ナビゲーションの情報
-m_state(STATE_CRAWL),	// 状態
-m_nStateCount(0),		// 状態カウント
-m_nRegressionCount(0)	// 回帰カウント
+m_pNav(nullptr)		// ナビゲーションの情報
 {
 
 }
@@ -157,6 +137,15 @@ float CEnemyWolf::GetHeight(void) const
 {
 	// 身長を返す
 	return HEIGHT;
+}
+
+//============================================================
+// 速度の取得処理
+//============================================================
+float CEnemyWolf::GetSpeed(void) const
+{
+	// 速度を返す
+	return SPEED;
 }
 
 //============================================================
@@ -292,48 +281,48 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 	// 元の位置に戻る処理が true の場合、抜ける
 	if (!BackOriginPos(pPos, pRot, HEIGHT))
 	{
-		switch (m_state)
+		switch (GetState())
 		{ // 状態ごとの処理
-		case STATE_CRAWL:	// 巡回状態
+		case STATE_ORIGIN:	// 独自状態
 
-			// 巡回状態時の更新
-			nCurMotion = UpdateCrawl(pPos, pRot, fDeltaTime);
+			// 独自状態時の更新
+			nCurMotion = Original(pPos, pRot, fDeltaTime);
 			break;
 
-		case STATE_CAVEAT:	// 警告状態
+		case STATE_WARNING:	// 警告状態
 
 			// 警告状態時の更新
-			nCurMotion = UpdateCaveat(pPos, pRot, fDeltaTime);
+			nCurMotion = Warning(pPos, pRot, fDeltaTime, REV_ROTA);
 			break;
 
-		case STATE_FOUND:	// 追跡状態
+		case STATE_STALK:	// 追跡状態
 
 			// 追跡状態時の更新
-			nCurMotion = UpdateFound(pPos, pRot, fDeltaTime);
+			nCurMotion = Stalk(pPos, pRot, fDeltaTime, REV_ROTA);
 			break;
 
 		case STATE_ATTACK:	// 攻撃状態
 
 			// 攻撃状態時の更新
-			nCurMotion = UpdateAttack(*pPos);
+			nCurMotion = Attack(pPos, pRot, fDeltaTime, REV_ROTA_LOOK);
 			break;
 
 		case STATE_BLANKATTACK:
 
 			// 空白攻撃状態の更新
-			nCurMotion = UpdateBlankAttack(pRot, fDeltaTime);
+			nCurMotion = BlankAttack(pRot, fDeltaTime, REV_ROTA_LOOK);
 			break;
 
 		case STATE_UPSET:	// 動揺状態
 
 			// 動揺状態時の更新
-			nCurMotion = UpdateUpset();
+			nCurMotion = Upset();
 			break;
 
 		case STATE_STANCE:	// 構え状態
 
 			// 構え時の更新
-			nCurMotion = UpdateStance();
+			nCurMotion = Stance();
 			break;
 
 		default:	// 例外処理
@@ -441,8 +430,8 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 			// TODO：警戒モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_TURN);
 
-			// 巡回状態にする
-			SetState(STATE_CRAWL);
+			// 独自状態にする
+			SetState(STATE_ORIGIN);
 		}
 
 		break;
@@ -519,13 +508,10 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 }
 
 //============================================================
-//	巡回状態時の更新処理
+// それぞれの独自処理
 //============================================================
-int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+ int CEnemyWolf::Original(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
 {
-	// 状態カウントを加算する
-	m_nStateCount++;
-
 	int motion = MOTION_IDOL;	// モーション
 
 	// 向き更新
@@ -559,7 +545,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		{ // 範囲内に入った場合
 
 			// 警告状態にする
-			SetState(STATE_CAVEAT);
+			SetState(STATE_WARNING);
 
 			// 発見モーションを返す
 			return MOTION_FOUND;
@@ -572,7 +558,7 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		PLAY_SOUND(CSound::LABEL_SE_WOLFSTANCE_000);
 
 		// TODO：構えモーションを返す
-		return MOTION_LANDING;
+		return MOTION_FOUND;
 	}
 
 	// 標的を未設定にする
@@ -585,252 +571,146 @@ int CEnemyWolf::UpdateCrawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 //============================================================
 //	警告状態時の更新処理
 //============================================================
-int CEnemyWolf::UpdateCaveat(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::Warning				// 警告処理
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	// 状態カウントを加算する
-	m_nStateCount++;
-
-	if (m_nStateCount == sound::FOUND_COUNT)
-	{ // 一定時間経過した場合
-
-		// 発見音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_WOLFFOUND_000);
-	}
-
-	// 目標位置の視認処理
-	LookTarget(*pPos);
-
-	// 向きの移動処理
-	RotMove(*pRot, REV_ROTA, fDeltaTime);
-
-	if (m_nStateCount % CAVEAT_STATE_COUNT == 0)
-	{ // 一定時間経過した場合
-
-		// 追跡状態にする
-		SetState(STATE_FOUND);
-	}
+	// 警告処理
+	CEnemyAttack::Warning(pPos, pRot, fDeltaTime, REV_ROTA);
 
 	// 走行モーションを返す
 	return MOTION_RUN;
 }
 
 //============================================================
-//	追跡状態時の更新処理
+// 追跡処理
 //============================================================
-int CEnemyWolf::UpdateFound(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::Stalk
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot, 		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	// 歩行カウントを加算する
-	m_nStateCount++;
+	// 追跡処理
+	switch (CEnemyAttack::Stalk(pPos, pRot, fDeltaTime, REV_ROTA))
+	{
+	case STATE_ORIGIN:
 
-	if (!ShakeOffClone() &&
-		!ShakeOffPlayer())
-	{ // 分身が目に入っていない場合
-
-		// 巡回状態にする
-		SetState(STATE_CRAWL);
-
-		// 標的を未設定にする
-		SetTarget(TARGET_NONE);
-
-		// 動揺モーションにする
+		// 待機モーションを返す
 		return MOTION_IDOL;
-	}
 
-	// 目標向きを目標位置方向にする
-	LookTarget(*pPos);
+		break;
 
-	// 回避受付フラグを false にする
-	SetEnableDodge(false);
-
-	// 攻撃カウントをリセットする
-	SetAttackCount(0);
-
-	// 向きの移動処理
-	RotMove(*pRot, REV_ROTA, fDeltaTime);
-
-	// 移動処理
-	Move(pPos, *pRot, SPEED, fDeltaTime);
-
-	if (Approach(*pPos))
-	{ // 接近した場合
-
-		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
-		{ // 目標がプレイヤーの場合
-
-			// 回避受付フラグを true にする
-			SetEnableDodge(true);
-
-			// 攻撃カウントをリセットする
-			SetAttackCount(0);
-		}
-
-		// 攻撃状態にする
-		SetState(STATE_ATTACK);
+	case STATE_ATTACK:
 
 		// 噛みつきモーションを返す
 		return MOTION_BITE;
-	}
 
-	// 位置更新
-	UpdatePosition(*pPos, fDeltaTime);
+		break;
 
-	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
-	{ // 追跡範囲から出た場合
-
-		// 構え状態にする
-		SetState(STATE_STANCE);
+	case STATE_STANCE:
 
 		// ナビゲーションリセット処理
 		m_pNav->NavReset();
-	}
 
-	// 走行モーションを返す
-	return MOTION_RUN;
+		// 走行モーションを返す
+		return MOTION_RUN;
+
+		break;
+
+	default:
+
+		// 走行モーションを返す
+		return MOTION_RUN;
+
+		break;
+	}
 }
 
 //============================================================
-//	攻撃状態時の更新処理
+// 攻撃処理
 //============================================================
-int CEnemyWolf::UpdateAttack(const D3DXVECTOR3& rPos)
+int CEnemyWolf::Attack
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	switch (GetTarget())
-	{ // ターゲットごとの処理
-	case CEnemyAttack::TARGET_PLAYER:
+	switch (CEnemyAttack::Attack(pPos, pRot, fDeltaTime, fRotRev))
+	{
+	case STATE_ORIGIN:
 
-		// プレイヤーの当たり判定処理
-		if (HitPlayer(rPos))
-		{
-			// 攻撃音を鳴らす
-			PLAY_SOUND(CSound::LABEL_SE_WOLFATTACK_000);
-		}
+		// 待機モーションを返す
+		return MOTION_IDOL;
 
-		// 状態カウントを加算する
-		m_nStateCount++;
+	case STATE_BLANKATTACK:
 
-		if (m_nStateCount % ATTACK_STATE_COUNT == 0)
-		{ // 一定カウント経過した場合
+		// 攻撃モーションを返す
+		return MOTION_BITE;
 
-			// 巡回状態にする
-			SetState(STATE_CRAWL);
-		}
+	default:
 
 		// 待機モーションにする
 		return MOTION_IDOL;
-
-	case CEnemyWolf::TARGET_CLONE:
-
-		if (HitClone(rPos))
-		{ // 分身に当たった場合
-
-			// 空白攻撃状態にする
-			SetState(STATE_BLANKATTACK);
-
-			// 分身攻撃音を鳴らす
-			PLAY_SOUND(CSound::LABEL_SE_WOLFATTACK_001);
-
-			// 噛みつきモーションにする
-			return MOTION_BITE;
-		}
-		else
-		{ // 上記以外
-
-			// 巡回状態にする
-			SetState(STATE_CRAWL);
-		}
-
-		// 動揺モーションにする
-		return MOTION_TURN;
-
-	default:	// 例外処理
-		assert(false);
-		break;
 	}
-
-	// 待機モーションを返す
-	return MOTION_IDOL;
 }
 
 //============================================================
 // 空白攻撃処理
 //============================================================
-int CEnemyWolf::UpdateBlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime)
+int CEnemyWolf::BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime, const float fRotRev)
 {
-	// 状態カウントを加算する
-	m_nStateCount++;
+	switch (CEnemyAttack::BlankAttack(pRot, fDeltaTime, fRotRev))
+	{
+	case STATE_UPSET:
 
-	// 向きの移動処理
-	RotMove(*pRot, REV_ROTA_LOOK, fDeltaTime);
+		// 振り向きモーションにする
+		return MOTION_TURN;
 
-	if (m_nStateCount <= BLANKBITE_STATE_COUNT)
-	{ // 一定カウント以下の場合
+	default:
 
-		if (m_nStateCount % BLANKBITE_CYCLE_COUNT == 0)
-		{ // 一定カウントごとに
-
-			// 目的の向きを取得
-			D3DXVECTOR3 rotDest = GetDestRotation();
-
-			// 目的の向きを設定する
-			rotDest.y = useful::RandomRot();
-
-			// 目的の向きを適用
-			SetDestRotation(rotDest);
-		}
+		// 攻撃モーションにする
+		return MOTION_BITE;
 	}
-	else
-	{ // 上記以外
-
-		// 動揺状態にする
-		SetState(STATE_UPSET);
-	}
-
-	// 攻撃モーションにする
-	return MOTION_BITE;
 }
 
 //============================================================
-//	動揺状態時の更新処理
+// 動揺処理
 //============================================================
-int CEnemyWolf::UpdateUpset(void)
+int CEnemyWolf::Upset(void)
 {
-	// 状態カウントを加算する
-	m_nStateCount++;
+	// 動揺処理
+	CEnemyAttack::Upset();
 
-	if (m_nStateCount == sound::UPSET_COUNT)
-	{ // 状態カウントが一定数になったとき
-
-		// 動揺音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_WOLFUPSET_000);
-	}
-
-	// 動揺モーションにする
+	// 振り向きモーションを返す
 	return MOTION_TURN;
 }
 
 //============================================================
 // 構え処理
 //============================================================
-int CEnemyWolf::UpdateStance(void)
+int CEnemyWolf::Stance(void)
 {
-	// 分身の発見処理
-	JudgeClone();
-
-	// プレイヤーの発見処理
-	JudgePlayer();
-
-	if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
-	{ // 範囲内に入った場合
-
-		// 警告状態にする
-		SetState(STATE_CAVEAT);
+	switch (CEnemyAttack::Stance())
+	{
+	case STATE_WARNING:
 
 		// 発見モーションを返す
 		return MOTION_FOUND;
-	}
 
-	// TODO：構えモーションを返す
-	return MOTION_FALL;
+	default:
+
+		// 構えモーションを返す
+		return MOTION_FOUND;
+	}
 }
 
 //============================================================
@@ -839,56 +719,17 @@ int CEnemyWolf::UpdateStance(void)
 bool CEnemyWolf::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight)
 {
 	// 一定の状態の場合、false を返す
-	if (m_state == STATE_BLANKATTACK || m_state == STATE_UPSET) { SetRegressionCount(0); return false; }
+	if (GetState() == STATE_BLANKATTACK || GetState() == STATE_UPSET) { SetRegressionCount(0); return false; }
 
 	// 初期位置回帰処理に失敗した場合、false を返す
 	if (!CEnemyAttack::BackOriginPos(pPos, pRot, fHeight)) { return false; }
 
-	// 待ち伏せ状態にする
-	SetState(STATE_CRAWL);
+	// 独自状態にする
+	SetState(STATE_ORIGIN);
 
 	// ナビゲーションリセット処理
 	m_pNav->NavReset();
 
 	// true を返す
 	return true;
-}
-
-//============================================================
-// 状態の設定処理
-//============================================================
-void CEnemyWolf::SetState(const EState state)
-{
-	// 状態を設定する
-	m_state = state;
-
-	// 状態カウントを0にする
-	m_nStateCount = 0;
-}
-
-//============================================================
-//	位置の更新処理
-//============================================================
-void CEnemyWolf::UpdatePosition(D3DXVECTOR3& rPos, const float fDeltaTime)
-{
-	D3DXVECTOR3 move = GetMovePosition();	// 移動量
-
-	// 移動量を加算
-	rPos += move * fDeltaTime;
-
-	// 移動量を減衰
-	if (IsJump())
-	{ // 空中の場合
-
-		move.x += (0.0f - move.x) * JUMP_REV;
-		move.z += (0.0f - move.z) * JUMP_REV;
-	}
-	else
-	{ // 地上の場合
-
-		move.x += (0.0f - move.x) * LAND_REV;
-		move.z += (0.0f - move.z) * LAND_REV;
-	}
-
-	SetMovePosition(move);	// 移動量を反映
 }

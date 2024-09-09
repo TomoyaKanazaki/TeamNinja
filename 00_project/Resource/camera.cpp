@@ -57,11 +57,11 @@ namespace
 	// 回転カメラ情報
 	namespace rotate
 	{
-		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 50.0f, 0.0f);	// 回転カメラの注視点の初期値
+		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 回転カメラの注視点の初期値
 		const D3DXVECTOR2 INIT_ROT	= D3DXVECTOR2(1.4f, 0.0f);			// 回転カメラの向き初期値
-
-		const float INIT_DIS	= 150.0f;	// 回転カメラの距離初期値
-		const float ADD_ROTY	= 0.0025f;	// 回転カメラの向き加算量Y
+		const D3DXVECTOR2 DEST_ROT	= D3DXVECTOR2(1.4f, 1.35f);			// 回転カメラの向き目標値
+		const float MOVE_TIME		= 3.8f;		// 回転時間
+		const float INIT_DIS		= 85.0f;	// 回転カメラの距離初期値
 	}
 
 	// 追従カメラ情報
@@ -238,6 +238,7 @@ CCamera::CCamera() :
 	memset(&m_aCamera[0], 0, sizeof(m_aCamera));	// カメラの情報
 	memset(&m_startInfo, 0, sizeof(m_startInfo));	// スタートカメラの情報
 	memset(&m_openInfo, 0, sizeof(m_openInfo));		// 解放カメラの情報
+	memset(&m_rotaInfo, 0, sizeof(m_rotaInfo));		// 回転カメラの情報
 }
 
 //============================================================
@@ -259,9 +260,10 @@ HRESULT CCamera::Init(void)
 	memset(&m_aCamera[0], 0, sizeof(m_aCamera));	// カメラの情報
 	memset(&m_startInfo, 0, sizeof(m_startInfo));	// スタートカメラの情報
 	memset(&m_openInfo, 0, sizeof(m_openInfo));		// 解放カメラの情報
-	m_state		= STATE_AROUND;	// 状態
-	m_bUpdate	= true;			// 更新状況
-	m_fFov = basic::VIEW_ANGLE;
+	memset(&m_rotaInfo, 0, sizeof(m_rotaInfo));		// 回転カメラの情報
+	m_state		= STATE_AROUND;			// 状態
+	m_bUpdate	= true;					// 更新状況
+	m_fFov		= basic::VIEW_ANGLE;	// 視野角
 
 	//--------------------------------------------------------
 	//	メインカメラの初期化
@@ -346,7 +348,7 @@ void CCamera::Update(const float fDeltaTime)
 	DebugProc::Print(DebugProc::POINT_LEFT, "[ 状態 ]：%d\n", m_state);
 
 	// 更新を止めている場合抜ける
-	if (!m_bUpdate) { return; }
+	if (!m_bUpdate) { if (m_state == STATE_CONTROL) { Control(fDeltaTime); } return; }
 
 	// 前回の座標情報を保存する
 	m_aCamera[TYPE_MAIN].posOldV = m_aCamera[TYPE_MAIN].posV;
@@ -371,55 +373,55 @@ void CCamera::Update(const float fDeltaTime)
 	case STATE_CONTROL:	// 操作状態
 
 		// カメラの更新 (操作)
-		Control();
+		Control(fDeltaTime);
 		break;
 
 	case STATE_ROTATE:	// 回転状態
 
 		// カメラの更新 (回転)
-		Rotate();
+		Rotate(fDeltaTime);
 		break;
 
 	case STATE_FOLLOW:	// 追従状態
 
 		// カメラの更新 (追従)
-		Follow();
+		Follow(fDeltaTime);
 		break;
 
 	case STATE_AROUND:	// 回り込み
 
 		// 望遠の更新
-		Around();
+		Around(fDeltaTime);
 		break;
 
 	case STATE_TELEPHOTO:	// 望遠
 
 		// 望遠の更新
-		Telephoto();
+		Telephoto(fDeltaTime);
 		break;
 
 	case STATE_GODITEM:	// 神器獲得
 
 		// 神器獲得の更新
-		GodItem();
+		GodItem(fDeltaTime);
 		break;
 
 	case STATE_RESULT:	// リザルト
 
 		// リザルトの更新
-		Result();
+		Result(fDeltaTime);
 		break;
 
 	case STATE_SELECT:	// 選択
 
 		// 選択の更新
-		Select();
+		Select(fDeltaTime);
 		break;
 
 	case STATE_OPEN:	// 解放
 
 		// 解放の更新
-		Open();
+		Open(fDeltaTime);
 		break;
 
 	default:	// 例外処理
@@ -428,7 +430,7 @@ void CCamera::Update(const float fDeltaTime)
 	}
 
 	// カメラ揺れの更新
-	Swing();
+	Swing(fDeltaTime);
 }
 
 //============================================================
@@ -1464,7 +1466,7 @@ void CCamera::Release(CCamera *&prCamera)
 //============================================================
 //	カメラの更新処理 (神器獲得)
 //============================================================
-void CCamera::GodItem(void)
+void CCamera::GodItem(const float fDeltaTime)
 {
 	// カメラが神器獲得状態以外なら抜ける
 	if (m_state != STATE_GODITEM) { return; }
@@ -1533,7 +1535,7 @@ void CCamera::GodItem(void)
 //============================================================
 //	カメラの更新処理 (リザルト)
 //============================================================
-void CCamera::Result(void)
+void CCamera::Result(const float fDeltaTime)
 {
 	// カメラがリザルト状態以外なら抜ける
 	if (m_state != STATE_RESULT) { return; }
@@ -1607,7 +1609,7 @@ void CCamera::Result(void)
 //============================================================
 //	カメラの更新処理 (選択)
 //============================================================
-void CCamera::Select(void)
+void CCamera::Select(const float fDeltaTime)
 {
 	// カメラが選択状態以外なら抜ける
 	if (m_state != STATE_SELECT) { return; }
@@ -1676,7 +1678,7 @@ void CCamera::Select(void)
 //============================================================
 //	カメラの更新処理 (解放)
 //============================================================
-void CCamera::Open(void)
+void CCamera::Open(const float fDeltaTime)
 {
 	// カメラが解放状態以外なら抜ける
 	if (m_state != STATE_OPEN) { return; }
@@ -1686,19 +1688,19 @@ void CCamera::Open(void)
 	case SOpen::STATE_ROTA_UP:
 
 		// 上回転の更新
-		OpenRotUp();
+		OpenRotUp(fDeltaTime);
 		break;
 
 	case SOpen::STATE_MOVE:
 
 		// 移動の更新
-		OpenMove();
+		OpenMove(fDeltaTime);
 		break;
 
 	case SOpen::STATE_ROTA_DOWN:
 
 		// 下回転の更新
-		OpenRotDown();
+		OpenRotDown(fDeltaTime);
 		break;
 
 	default:
@@ -1710,7 +1712,7 @@ void CCamera::Open(void)
 //============================================================
 //	カメラの更新処理 (解放:上回転)
 //============================================================
-void CCamera::OpenRotUp(void)
+void CCamera::OpenRotUp(const float fDeltaTime)
 {
 	//----------------------------------------------------
 	//	向きの更新
@@ -1776,7 +1778,7 @@ void CCamera::OpenRotUp(void)
 //============================================================
 //	カメラの更新処理 (解放:移動)
 //============================================================
-void CCamera::OpenMove(void)
+void CCamera::OpenMove(const float fDeltaTime)
 {
 	// 解放遷移ポイント位置の取得
 	D3DXVECTOR3 posTrans = CTransPoint::GetOpenTransPoint()->GetVec3Position();
@@ -1856,7 +1858,7 @@ void CCamera::OpenMove(void)
 //============================================================
 //	カメラの更新処理 (下回転)
 //============================================================
-void CCamera::OpenRotDown(void)
+void CCamera::OpenRotDown(const float fDeltaTime)
 {
 	// 解放遷移ポイント位置の取得
 	D3DXVECTOR3 posTrans = CTransPoint::GetOpenTransPoint()->GetVec3Position();
@@ -1928,14 +1930,41 @@ void CCamera::OpenRotDown(void)
 //============================================================
 //	カメラの更新処理 (回転)
 //============================================================
-void CCamera::Rotate(void)
+void CCamera::Rotate(const float fDeltaTime)
 {
+	// カメラが回転状態以外なら抜ける
+	if (m_state != STATE_ROTATE) { return; }
+
+	// 差分位置を計算
+	const float DIFF_ROTY = rotate::DEST_ROT.y - rotate::INIT_ROT.y;
+
+	// タイマーを加算
+	m_rotaInfo.fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InOutQuart(m_rotaInfo.fCurTime, 0.0f, rotate::MOVE_TIME);
+
+	// 向きを反映
+	m_aCamera[TYPE_MAIN].rot.y = (rotate::INIT_ROT.y + (DIFF_ROTY * fRate));
+
+	if (m_rotaInfo.fCurTime >= rotate::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_rotaInfo.fCurTime = 0.0f;
+
+		// 向きを補正
+		m_aCamera[TYPE_MAIN].rot.y = rotate::DEST_ROT.y;
+
+		// なにもしない状態にする
+		m_state = STATE_NONE;
+	}
+
 	//--------------------------------------------------------
 	//	向きの更新
 	//--------------------------------------------------------
 	// 現在向きの更新
 	m_aCamera[TYPE_MAIN].rot.x = rotate::INIT_ROT.x;
-	m_aCamera[TYPE_MAIN].rot.y += rotate::ADD_ROTY;
 	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
 
 	//--------------------------------------------------------
@@ -1958,7 +1987,7 @@ void CCamera::Rotate(void)
 //============================================================
 //	カメラの更新処理 (追従)
 //============================================================
-void CCamera::Follow(void)
+void CCamera::Follow(const float fDeltaTime)
 {
 	CInputPad *pPad = GET_INPUTPAD;	// パッド情報
 	CListManager<CPlayer> *pList = CPlayer::GetList();	// プレイヤーリスト
@@ -2033,22 +2062,22 @@ void CCamera::Follow(void)
 //============================================================
 //	カメラの更新処理 (操作)
 //============================================================
-void CCamera::Control(void)
+void CCamera::Control(const float fDeltaTime)
 {
 	// 位置の更新
-	Move();
+	Move(fDeltaTime);
 
 	// 距離の更新
-	Distance();
+	Distance(fDeltaTime);
 
 	// 向きの更新
-	Rotation();
+	Rotation(fDeltaTime);
 }
 
 //============================================================
 //	位置の更新処理 (操作)
 //============================================================
-void CCamera::Move(void)
+void CCamera::Move(const float fDeltaTime)
 {
 	// ポインタを宣言
 	CInputMouse	*pMouse = GET_INPUTMOUSE;	// マウスの取得
@@ -2077,7 +2106,7 @@ void CCamera::Move(void)
 //============================================================
 //	距離の更新処理 (操作)
 //============================================================
-void CCamera::Distance(void)
+void CCamera::Distance(const float fDeltaTime)
 {
 	// ポインタを宣言
 	CInputMouse	*pMouse = GET_INPUTMOUSE;	// マウスの取得
@@ -2100,7 +2129,7 @@ void CCamera::Distance(void)
 //============================================================
 //	向きの更新処理 (操作)
 //============================================================
-void CCamera::Rotation(void)
+void CCamera::Rotation(const float fDeltaTime)
 {
 	// ポインタを宣言
 	CInputMouse	*pMouse = GET_INPUTMOUSE;	// マウスの取得
@@ -2152,7 +2181,7 @@ void CCamera::Rotation(void)
 //============================================================
 //	カメラ揺れの更新処理
 //============================================================
-void CCamera::Swing(void)
+void CCamera::Swing(const float fDeltaTime)
 {
 	if (m_state == STATE_CONTROL) { return; }	// カメラ操作状態
 
@@ -2208,7 +2237,7 @@ void CCamera::Swing(void)
 //===========================================
 //  回り込み
 //===========================================
-void CCamera::Around(void)
+void CCamera::Around(const float fDeltaTime)
 {
 	// 回り込み状態じゃない場合関数を抜ける
 	if (m_state != STATE_AROUND) { return; }
@@ -2318,7 +2347,7 @@ void CCamera::CalcAround(const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
 //===========================================
 //  望遠処理
 //===========================================
-void CCamera::Telephoto()
+void CCamera::Telephoto(const float fDeltaTime)
 {
 	// ゴール情報を取得
 	CGoal* goal = CGoal::GetGoal();

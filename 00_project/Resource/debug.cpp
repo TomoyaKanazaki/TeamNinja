@@ -48,6 +48,7 @@ namespace
 #define NAME_RESULT_TRANS	("F8")		// リザルト遷移表示
 #define KEY_SHADER_ENABLE	(DIK_F9)	// シェーダー切り替えキー
 #define NAME_SHADER_ENABLE	("F9")		// シェーダー切り替え表示
+
 //************************************************************
 //	親クラス [CDebug] のメンバ関数
 //************************************************************
@@ -255,6 +256,9 @@ void CDebug::UpdateDebugControl(void)
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
+
+		// アクター当たり判定表示変更
+		ChangeActorDisp();
 		break;
 
 	case CScene::MODE_SELECT:
@@ -310,6 +314,8 @@ void CDebug::DrawDebugControl(void)
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
 	case CScene::MODE_TITLE:
+
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
 		break;
 
 	case CScene::MODE_SELECT:

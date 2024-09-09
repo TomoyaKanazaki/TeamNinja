@@ -43,19 +43,6 @@ public:
 		MOTION_MAX			// この列挙型の総数
 	};
 
-	// 状態
-	enum EState
-	{
-		STATE_CRAWL = 0,	// 巡回状態
-		STATE_WARNING,		// 警告状態
-		STATE_STALK,		// 追跡状態
-		STATE_ATTACK,		// 攻撃状態
-		STATE_BLANKATTACK,	// 空白攻撃状態
-		STATE_UPSET,		// 動揺状態
-		STATE_STANCE,		// 構え状態
-		STATE_MAX			// この列挙型の総数
-	};
-
 	// コンストラクタ
 	CEnemyStalk();
 
@@ -72,6 +59,7 @@ public:
 
 	float GetRadius(void) const override;			// 半径の取得処理
 	float GetHeight(void) const override;			// 高さの取得処理
+	float GetSpeed(void) const override;			// 速度の取得処理
 
 	// 静的メンバ関数
 	static CEnemyStalk* Create	// 生成
@@ -101,21 +89,35 @@ private:
 	void NavMotionSet(EMotion* pMotion);			// ナビによるモーションの設定処理
 
 	// メンバ関数
-	EMotion Crawl(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 巡回処理
-	EMotion Warning(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 警告処理
-	EMotion Stalk(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime);	// 追跡処理
-	EMotion Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
-	EMotion BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime);		// 空白攻撃処理
-	EMotion Upset(void);						// 動揺処理
-	EMotion Stance(void);						// 構え処理
-	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight) override;	// 元の位置に戻る処理
-	void SetState(const EState state);			// 状態の設定処理
+	int Original(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fDeltaTime) override;	// それぞれの独自処理
+	int Warning				// 警告処理
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot,		// 向き
+		const float fDeltaTime,	// デルタタイム
+		const float fRotRev		// 向きの補正数
+	) override;
+	int Stalk				// 追跡処理
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot, 		// 向き
+		const float fDeltaTime,	// デルタタイム
+		const float fRotRev		// 向きの補正数
+	) override;
+	int Attack				// 攻撃処理
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot,		// 向き
+		const float fDeltaTime,	// デルタタイム
+		const float fRotRev		// 向きの補正数
+	) override;
+	int BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime, const float fRotRev) override;		// 空白攻撃処理
+	int Upset(void) override;						// 動揺処理
+	int Stance(void) override;						// 構え処理
+	bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight) override;			// 元の位置に戻る処理
 
 	// メンバ変数
 	CEnemyNav* m_pNav;					// ナビゲーションの情報
-	EState m_state;						// 状態
-	int m_nStateCount;					// 状態カウント
-	int m_nRegressionCount;				// 回帰カウント
 };
 
 #endif	// _ENEMY_CHASE_H_

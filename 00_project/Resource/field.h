@@ -44,6 +44,7 @@ public:
 		TYPE_GUTTER,	// ドブ
 		TYPE_PLASTER,	// 城の漆喰テクスチャ
 		TYPE_WOOD,		// 木テクスチャ
+		TYPE_TATAMI,	// 畳テクスチャ
 
 		TYPE_XBRIDGE,	// 橋
 		TYPE_ZBRIDGE,	// 橋

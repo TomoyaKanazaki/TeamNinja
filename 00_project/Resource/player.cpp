@@ -10,6 +10,7 @@
 //	インクルードファイル
 //************************************************************
 #include "player.h"
+#include "playerTitle.h"
 #include "playerSelect.h"
 #include "manager.h"
 #include "sceneGame.h"
@@ -229,7 +230,10 @@ HRESULT CPlayer::Init(void)
 	{
 		CTension::Create();
 	}
+
+#ifndef PHOTO
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+#endif
 
 	// 成功を返す
 	return S_OK;
@@ -252,12 +256,16 @@ void CPlayer::Uninit(void)
 		SAFE_DELETE(m_pEffectdata);
 		m_pEffectdata = nullptr;
 	}
+
+#ifndef PHOTO
 	// エフェクトの削除
 	if (m_pEffectFirefly != nullptr)
 	{
 		SAFE_DELETE(m_pEffectFirefly);
 		m_pEffectFirefly = nullptr;
 	}
+#endif
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -429,6 +437,10 @@ CPlayer *CPlayer::Create
 	CPlayer *pPlayer = nullptr;	// プレイヤー情報
 	switch (type)
 	{ // 種類ごとの処理
+	case TYPE_TITLE:
+		pPlayer = new CPlayerTitle;
+		break;
+
 	case TYPE_SELECT:
 		pPlayer = new CPlayerSelect;
 		break;
@@ -523,6 +535,9 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
+	// コントローラのバイブレーション
+	GET_INPUTPAD->SetVibration(CInputPad::TYPE_DAMAGE);
+
 	// ノックバック方向を向く
 	D3DXVECTOR3 rot = GetVec3Rotation();
 	rot.y = atan2f(rVecKnock.x, rVecKnock.z);
@@ -532,6 +547,9 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
 	{
 		m_state = STATE_DEATH;
+
+		// コントローラのバイブレーション
+		GET_INPUTPAD->SetVibration(CInputPad::TYPE_DEATH);
 	}
 
 	// 士気力が減少する
@@ -598,6 +616,14 @@ void CPlayer::SetSpawn(void)
 
 	// 描画を再開
 	SetEnableDraw(true);
+}
+
+//============================================================
+//	演出開始の設定処理
+//============================================================
+void CPlayer::SetStart(void)
+{
+	assert(false);
 }
 
 //============================================================
@@ -726,11 +752,14 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\Highjump.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// コントローラのバイブレーション
+	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
 
 	return true;
 }
@@ -1025,8 +1054,6 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	// リザルトを呼び出す
 	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAIL);
 
-	DebugProc::Print(DebugProc::POINT_CENTER, "死亡状態\n");
-
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1108,7 +1135,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
-	
+
 	// スティックの傾きから移動量を設定
 	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
 	if (pad::DEAD_ZONE < fSpeed)
@@ -1193,10 +1220,13 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	DebugJumpControl();
 
 #endif
+
+#ifndef PHOTO
 	if (m_pEffectFirefly != nullptr)
 	{
 		m_pEffectFirefly->m_pos = GetVec3Position();
 	}
+#endif
 
 	// モーションを返す
 	return currentMotion;
@@ -1262,6 +1292,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DEATH;
+
+			// 落水音の再生
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
 		}
 	}
 
@@ -1584,6 +1617,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_START:	// スタートモーション
 		break;
 
+	case MOTION_STAND:	// 仁王立ちモーション
+		break;
+
 	case MOTION_SELECT:	// 選択モーション
 		break;
 	}
@@ -1718,7 +1754,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 	}
 
 	// 使用可能な士気力がなかった場合関数を抜ける
-	if (CTension::GetUseNum() <= 0) { return false; }
+	if (CTension::GetUseNum() <= 0) { PLAY_SOUND(CSound::LABEL_SE_CLONEFAIL_000); return false; }
 
 	// ギミックの直接生成ができる場合関数を抜ける
 	if (CreateGimmick(fDeltaTime)) { return false; }
@@ -1879,8 +1915,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// 攻撃範囲を取得
-	D3DXVECTOR3 collisionUp = CEnemyAttack::GetAttackUp();
-	D3DXVECTOR3 collisionDown = CEnemyAttack::GetAttackDown();
+	D3DXVECTOR3 collisionUp = CEnemyAttack::GetDodgeUp();
+	D3DXVECTOR3 collisionDown = CEnemyAttack::GetDodgeDown();
 
 	// 全ての敵を確認する
 	for (CEnemyAttack* enemy : list)
@@ -2078,7 +2114,8 @@ HRESULT CPlayer::LoadSetup(const char* pPass)
 					file >> str;	// 種類を読込
 
 					// 文字列を列挙に変換
-					if		(str == "SELECT")	{ type = TYPE_SELECT; }
+					if		(str == "TITLE")	{ type = TYPE_TITLE; }
+					else if	(str == "SELECT")	{ type = TYPE_SELECT; }
 					else if	(str == "GAME")		{ type = TYPE_GAME; }
 				}
 				else if (str == "POS")
