@@ -1915,8 +1915,8 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 	std::list<CEnemyAttack*> list = CEnemyAttack::GetList()->GetList();
 
 	// UŒ‚”ÍˆÍ‚ğæ“¾
-	D3DXVECTOR3 collisionUp = CEnemyAttack::GetAttackUp();
-	D3DXVECTOR3 collisionDown = CEnemyAttack::GetAttackDown();
+	D3DXVECTOR3 collisionUp = CEnemyAttack::GetDodgeUp();
+	D3DXVECTOR3 collisionDown = CEnemyAttack::GetDodgeDown();
 
 	// ‘S‚Ä‚Ì“G‚ğŠm”F‚·‚é
 	for (CEnemyAttack* enemy : list)

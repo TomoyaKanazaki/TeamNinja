@@ -113,8 +113,8 @@ public:
 	bool HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// 静的メンバ関数
-	static D3DXVECTOR3 GetAttackUp();	// 当たり判定の取得
-	static D3DXVECTOR3 GetAttackDown();	// 当たり判定の取得
+	static D3DXVECTOR3 GetDodgeUp();	// 当たり判定の取得
+	static D3DXVECTOR3 GetDodgeDown();	// 当たり判定の取得
 
 protected:
 

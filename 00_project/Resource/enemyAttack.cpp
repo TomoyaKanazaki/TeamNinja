@@ -830,7 +830,7 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 //===========================================
 //  ‰ñ”ð”»’è‚ÌŽæ“¾
 //===========================================
-D3DXVECTOR3 CEnemyAttack::GetAttackUp()
+D3DXVECTOR3 CEnemyAttack::GetDodgeUp()
 {
 	return DODGE_COLLUP;
 }
@@ -838,7 +838,7 @@ D3DXVECTOR3 CEnemyAttack::GetAttackUp()
 //===========================================
 //  ‰ñ”ð”»’è‚ÌŽæ“¾
 //===========================================
-D3DXVECTOR3 CEnemyAttack::GetAttackDown()
+D3DXVECTOR3 CEnemyAttack::GetDodgeDown()
 {
 	return DODGE_COLLDOWN;
 }
