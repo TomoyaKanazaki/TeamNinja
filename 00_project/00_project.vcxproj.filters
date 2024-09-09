@@ -675,6 +675,9 @@
     <ClInclude Include="Resource\blur2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\playerTitle.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1270,6 +1273,9 @@
     </ClCompile>
     <ClCompile Include="Resource\blur2D.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\playerTitle.cpp">
+      <Filter>InGame\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

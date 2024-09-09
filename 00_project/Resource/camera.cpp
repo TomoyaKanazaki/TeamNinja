@@ -57,11 +57,11 @@ namespace
 	// 回転カメラ情報
 	namespace rotate
 	{
-		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 50.0f, 0.0f);	// 回転カメラの注視点の初期値
+		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 回転カメラの注視点の初期値
 		const D3DXVECTOR2 INIT_ROT	= D3DXVECTOR2(1.4f, 0.0f);			// 回転カメラの向き初期値
-		const D3DXVECTOR2 DEST_ROT	= D3DXVECTOR2(1.4f, 1.4f);			// 回転カメラの向き目標値
+		const D3DXVECTOR2 DEST_ROT	= D3DXVECTOR2(1.4f, 1.35f);			// 回転カメラの向き目標値
 		const float MOVE_TIME		= 3.8f;		// 回転時間
-		const float INIT_DIS		= 150.0f;	// 回転カメラの距離初期値
+		const float INIT_DIS		= 85.0f;	// 回転カメラの距離初期値
 	}
 
 	// 追従カメラ情報
@@ -1935,31 +1935,6 @@ void CCamera::Rotate(const float fDeltaTime)
 	// カメラが回転状態以外なら抜ける
 	if (m_state != STATE_ROTATE) { return; }
 
-	switch (m_rotaInfo.state)
-	{ // 状態ごとの処理
-	case SRota::STATE_ROTA:
-
-		// 回転の更新
-		RotateRota(fDeltaTime);
-		break;
-
-	case SRota::STATE_END:
-
-		// 終了の更新
-		RotateEnd(fDeltaTime);
-		break;
-
-	default:
-		assert(false);
-		break;
-	}
-}
-
-//============================================================
-//	カメラの更新処理 (回転)
-//============================================================
-void CCamera::RotateRota(const float fDeltaTime)
-{
 	// 差分位置を計算
 	const float DIFF_ROTY = rotate::DEST_ROT.y - rotate::INIT_ROT.y;
 
@@ -1981,8 +1956,8 @@ void CCamera::RotateRota(const float fDeltaTime)
 		// 向きを補正
 		m_aCamera[TYPE_MAIN].rot.y = rotate::DEST_ROT.y;
 
-		// 終了状態にする
-		m_rotaInfo.state = SRota::STATE_END;
+		// なにもしない状態にする
+		m_state = STATE_NONE;
 	}
 
 	//--------------------------------------------------------
@@ -2007,14 +1982,6 @@ void CCamera::RotateRota(const float fDeltaTime)
 	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
 	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
 	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
-}
-
-//============================================================
-//	カメラの更新処理 (終了)
-//============================================================
-void CCamera::RotateEnd(const float fDeltaTime)
-{
-
 }
 
 //============================================================

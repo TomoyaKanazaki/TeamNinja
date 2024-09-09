@@ -12,6 +12,7 @@
 #include "sound.h"
 #include "camera.h"
 #include "fade.h"
+#include "player.h"
 #include "titleLogo2D.h"
 
 //************************************************************
@@ -23,7 +24,7 @@ namespace
 	const D3DXVECTOR3 ABS_INIT_OFFSET	= D3DXVECTOR3(80.0f, 0.0f, 0.0f);	// 生成位置オフセットの絶対値
 	const D3DXVECTOR3 DEST_OFFSET		= D3DXVECTOR3(0.0f, 170.0f, 0.0f);	// 生成位置オフセットの絶対値
 	const D3DXVECTOR3 POS_ONE	= D3DXVECTOR3(640.0f, 95.0f, 0.0f);			// 第一目標位置
-	const D3DXVECTOR3 POS_TWO	= D3DXVECTOR3(160.0f, 95.0f, 0.0f);			// 第二目標位置
+	const D3DXVECTOR3 POS_TWO	= D3DXVECTOR3(300.0f, 95.0f, 0.0f);			// 第二目標位置
 	const D3DXVECTOR3 SIZE_POLY	= D3DXVECTOR3(320.0f, 320.0f, 0.0f);		// 大きさ
 	const POSGRID2 TEX_PART = POSGRID2(1, 4);	// テクスチャ分割数
 	const float MOVE_TIME_ONE = 1.8f;	// 生成移動時間
@@ -153,6 +154,12 @@ void CTitleManager::Update(const float fDeltaTime)
 		{ // ロゴの文字数分繰り返す
 			m_apLogo[i]->SetStag();
 		}
+	}
+
+	if (GET_INPUTKEY->IsTrigger(DIK_9))
+	{
+		// 演出開始の設定
+		GET_PLAYER->SetStart();
 	}
 
 	if (GET_INPUTKEY->IsTrigger(DIK_F5))

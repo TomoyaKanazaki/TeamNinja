@@ -179,6 +179,7 @@
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\playerSelect.h" />
+    <ClInclude Include="Resource\playerTitle.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
@@ -380,6 +381,7 @@
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\playerSelect.cpp" />
+    <ClCompile Include="Resource\playerTitle.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />
