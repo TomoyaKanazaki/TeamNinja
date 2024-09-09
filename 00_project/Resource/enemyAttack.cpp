@@ -1169,10 +1169,8 @@ int CEnemyAttack::Upset(void)
 //===========================================
 int CEnemyAttack::Stance(void)
 {
-	// •ªg‚Ì”­Œ©ˆ—
-	JudgeClone();
-
-	if (PlayerIngress())
+	if (PlayerIngress() ||
+		CloneIngress())
 	{ // ”ÍˆÍ“à‚É“ü‚Á‚½ê‡
 
 		// Œxó‘Ô‚É‚·‚é
