@@ -10,6 +10,7 @@
 //	インクルードファイル
 //************************************************************
 #include "player.h"
+#include "playerTitle.h"
 #include "playerSelect.h"
 #include "manager.h"
 #include "sceneGame.h"
@@ -436,6 +437,10 @@ CPlayer *CPlayer::Create
 	CPlayer *pPlayer = nullptr;	// プレイヤー情報
 	switch (type)
 	{ // 種類ごとの処理
+	case TYPE_TITLE:
+		pPlayer = new CPlayerTitle;
+		break;
+
 	case TYPE_SELECT:
 		pPlayer = new CPlayerSelect;
 		break;
@@ -611,6 +616,14 @@ void CPlayer::SetSpawn(void)
 
 	// 描画を再開
 	SetEnableDraw(true);
+}
+
+//============================================================
+//	演出開始の設定処理
+//============================================================
+void CPlayer::SetStart(void)
+{
+	assert(false);
 }
 
 //============================================================
@@ -1604,6 +1617,9 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_START:	// スタートモーション
 		break;
 
+	case MOTION_STAND:	// 仁王立ちモーション
+		break;
+
 	case MOTION_SELECT:	// 選択モーション
 		break;
 	}
@@ -2098,7 +2114,8 @@ HRESULT CPlayer::LoadSetup(const char* pPass)
 					file >> str;	// 種類を読込
 
 					// 文字列を列挙に変換
-					if		(str == "SELECT")	{ type = TYPE_SELECT; }
+					if		(str == "TITLE")	{ type = TYPE_TITLE; }
+					else if	(str == "SELECT")	{ type = TYPE_SELECT; }
 					else if	(str == "GAME")		{ type = TYPE_GAME; }
 				}
 				else if (str == "POS")

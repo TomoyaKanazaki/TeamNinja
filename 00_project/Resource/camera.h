@@ -140,16 +140,7 @@ public:
 	// 回転カメラ構造体
 	struct SRota
 	{
-		// 状態列挙
-		enum EState
-		{
-			STATE_ROTA = 0,	// 回転状態
-			STATE_END,		// 終了状態
-			STATE_MAX		// この列挙型の総数
-		};
-
 		float fCurTime;	// カウント
-		EState state;	// 状態
 	};
 
 	// メンバ関数
@@ -205,8 +196,6 @@ public:
 private:
 	// メンバ関数
 	void Rotate(const float fDeltaTime);		// カメラの更新 (回転)
-	void RotateRota(const float fDeltaTime);	// カメラの更新 (回転:回転)
-	void RotateEnd(const float fDeltaTime);		// カメラの更新 (回転:終了)
 	void Follow(const float fDeltaTime);		// カメラの更新 (追従)
 	void Control(const float fDeltaTime);		// カメラの更新 (操作)
 	void GodItem(const float fDeltaTime);		// カメラの更新 (神器獲得)

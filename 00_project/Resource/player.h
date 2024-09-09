@@ -43,9 +43,10 @@ public:
 	// 種類列挙
 	enum EType
 	{
-		TYPE_SELECT = 0,	// セレクト画面
-		TYPE_GAME,			// ゲーム画面
-		TYPE_MAX			// この列挙型の総数
+		TYPE_TITLE = 0,	// タイトル画面
+		TYPE_SELECT,	// セレクト画面
+		TYPE_GAME,		// ゲーム画面
+		TYPE_MAX		// この列挙型の総数
 	};
 
 	// モデル列挙
@@ -86,6 +87,7 @@ public:
 		MOTION_SAVE,		// チェックポイントモーション
 		MOTION_GET,			// 神器取得モーション
 		MOTION_START,		// スタートモーション
+		MOTION_STAND,		// 仁王立ちモーション
 		MOTION_SELECT,		// 選択モーション
 		MOTION_MAX			// この列挙型の総数
 	};
@@ -95,6 +97,16 @@ public:
 	{
 		STATE_NONE = 0,	// 何もしない状態
 
+		// タイトル画面状態
+		STATE_TITLE_IDOL,	// 仁王立ち状態
+		STATE_TITLE_MOVE,	// 移動状態
+
+		// セレクト画面状態
+		STATE_SELECT_SPAWN,		// スポーン状態
+		STATE_SELECT_NORMAL,	// 移動状態
+		STATE_SELECT_ENTER,		// 入場状態
+		STATE_SELECT_OPEN,		// 解放状態
+
 		// ゲーム画面状態
 		STATE_SPAWN,	// スポーン状態
 		STATE_START,	// スタート状態
@@ -103,12 +115,6 @@ public:
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
-
-		// セレクト画面状態
-		STATE_SELECT_SPAWN,		// スポーン状態
-		STATE_SELECT_NORMAL,	// 移動状態
-		STATE_SELECT_ENTER,		// 入場状態
-		STATE_SELECT_OPEN,		// 解放状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -130,6 +136,7 @@ public:
 	// 仮想関数
 	virtual EMotion UpdateState(const float fDeltaTime);	// 状態更新
 	virtual void SetSpawn(void);	// 出現設定
+	virtual void SetStart(void);	// 演出開始設定
 
 	// 静的メンバ関数
 	static CPlayer *Create	// 生成
