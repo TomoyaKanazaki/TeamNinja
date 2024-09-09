@@ -54,7 +54,8 @@ public:
 		CAnim2D *pParent,			// 親オブジェクト
 		const D3DXCOLOR& rCol,		// ブラー反映色
 		const float fStartAlpha,	// ブラー開始透明度
-		const int nMaxLength		// 保持オブジェクト最大数
+		const int nMaxLength,		// 保持オブジェクト最大数
+		const int nTextureID		// テクスチャインデックス
 	);
 
 	// メンバ関数
@@ -76,6 +77,7 @@ private:
 	CAnim2D *m_pParent;			// 親オブジェクト
 	D3DXCOLOR m_col;			// ブラー反映色
 	float	m_fStartAlpha;		// ブラーの開始透明度
+	int		m_nTextureID;		// ブラーテクスチャインデックス
 	int		m_nMaxLength;		// 保持する親オブジェクトの最大数
 	EState	m_state;			// 状態
 	int		m_nCounterState;	// 状態管理カウンター
