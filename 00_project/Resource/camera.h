@@ -137,6 +137,21 @@ public:
 		EState state;	// 状態
 	};
 
+	// 回転カメラ構造体
+	struct SRota
+	{
+		// 状態列挙
+		enum EState
+		{
+			STATE_ROTA = 0,	// 回転状態
+			STATE_END,		// 終了状態
+			STATE_MAX		// この列挙型の総数
+		};
+
+		float fCurTime;	// カウント
+		EState state;	// 状態
+	};
+
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -189,25 +204,27 @@ public:
 
 private:
 	// メンバ関数
-	void Rotate(void);		// カメラの更新 (回転)
-	void Follow(void);		// カメラの更新 (追従)
-	void Control(void);		// カメラの更新 (操作)
-	void GodItem(void);		// カメラの更新 (神器獲得)
-	void Result(void);		// カメラの更新 (リザルト)
-	void Select(void);		// カメラの更新 (選択)
-	void Open(void);		// カメラの更新 (解放)
-	void OpenRotUp(void);	// カメラの更新 (解放:上回転)
-	void OpenMove(void);	// カメラの更新 (解放:移動)
-	void OpenRotDown(void);	// カメラの更新 (解放:下回転)
-	void Move(void);		// 位置の更新 (操作)
-	void Distance(void);	// 距離の更新 (操作)
-	void Rotation(void);	// 向きの更新 (操作)
-	void Swing(void);		// カメラ揺れの更新
+	void Rotate(const float fDeltaTime);		// カメラの更新 (回転)
+	void RotateRota(const float fDeltaTime);	// カメラの更新 (回転:回転)
+	void RotateEnd(const float fDeltaTime);		// カメラの更新 (回転:終了)
+	void Follow(const float fDeltaTime);		// カメラの更新 (追従)
+	void Control(const float fDeltaTime);		// カメラの更新 (操作)
+	void GodItem(const float fDeltaTime);		// カメラの更新 (神器獲得)
+	void Result(const float fDeltaTime);		// カメラの更新 (リザルト)
+	void Select(const float fDeltaTime);		// カメラの更新 (選択)
+	void Open(const float fDeltaTime);			// カメラの更新 (解放)
+	void OpenRotUp(const float fDeltaTime);		// カメラの更新 (解放:上回転)
+	void OpenMove(const float fDeltaTime);		// カメラの更新 (解放:移動)
+	void OpenRotDown(const float fDeltaTime);	// カメラの更新 (解放:下回転)
+	void Move(const float fDeltaTime);			// 位置の更新 (操作)
+	void Distance(const float fDeltaTime);		// 距離の更新 (操作)
+	void Rotation(const float fDeltaTime);		// 向きの更新 (操作)
+	void Swing(const float fDeltaTime);			// カメラ揺れの更新
 
 	// 金崎追加
 	void CalcAround(const D3DXVECTOR3& pos, const D3DXVECTOR3& size);	// 回り込みの計算
-	void Around();			// 回り込み
-	void Telephoto();		// 望遠
+	void Around(const float fDeltaTime);	// 回り込み
+	void Telephoto(const float fDeltaTime);	// 望遠
 	void CollisionWallV();	// 視点と壁の当たり判定
 	void CollisionWallR();	// 注視点と壁の当たり判定
 
@@ -215,6 +232,7 @@ private:
 	SCamera	m_aCamera[TYPE_MAX];	// カメラの情報
 	SStart	m_startInfo;	// スタートカメラの情報
 	SOpen	m_openInfo;		// 解放カメラの情報
+	SRota	m_rotaInfo;		// 回転カメラの情報
 	EState	m_state;		// 状態
 	bool	m_bUpdate;		// 更新状況
 	float	m_fFov;			// 視野角
