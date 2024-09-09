@@ -102,7 +102,7 @@ public:
 	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理
 	void RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime);	// 向きの移動処理
 	void LookTarget(const D3DXVECTOR3& rPos);	// 目標位置の視認
-	bool Approach(const D3DXVECTOR3& rPos, const float fDis = 55.0f);				// 接近処理
+	bool Approach(const D3DXVECTOR3& rPos, const float fDis);				// 接近処理
 	bool JudgePlayer(void);		// プレイヤーの探索処理
 	bool JudgeClone(void);		// 分身の探索処理
 	bool PlayerIngress(void);	// プレイヤー進入処理
