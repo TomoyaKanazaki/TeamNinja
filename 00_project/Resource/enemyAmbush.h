@@ -89,7 +89,13 @@ private:
 		const float fDeltaTime,	// デルタタイム
 		const float fRotRev		// 向きの補正数
 	) override;
-	int Attack(const D3DXVECTOR3& rPos) override;	// 攻撃処理
+	int Attack				// 攻撃処理
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot,		// 向き
+		const float fDeltaTime,	// デルタタイム
+		const float fRotRev		// 向きの補正数
+	) override;
 	int BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime, const float fRotRev) override;		// 空白攻撃処理
 	int Upset(void) override;						// 動揺処理
 	int Stance(void) override;						// 構え処理
