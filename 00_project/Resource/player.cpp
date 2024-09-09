@@ -1041,8 +1041,6 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 	// リザルトを呼び出す
 	GET_GAMEMANAGER->TransitionResult(CRetentionManager::WIN_FAIL);
 
-	DebugProc::Print(DebugProc::POINT_CENTER, "死亡状態\n");
-
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
@@ -1124,7 +1122,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	// 入力情報の取得
 	CInputPad* pPad = GET_INPUTPAD;
 	D3DXVECTOR3 CameraRot = GET_MANAGER->GetCamera()->GetRotation();
-	
+
 	// スティックの傾きから移動量を設定
 	float fSpeed = pPad->GetPressLStickTilt();	// スティックの傾き量
 	if (pad::DEAD_ZONE < fSpeed)

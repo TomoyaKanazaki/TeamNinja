@@ -298,7 +298,10 @@ void CActor::Collision
 	for (auto polygon : m_polygon)
 	{
 		// ヒット処理
-		polygon->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+		if (!polygon->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 下に重力をかける
+		rMove.y = -50.0f;
 	}
 }
 
@@ -354,6 +357,9 @@ void CActor::Collision
 
 		// 判定をtrueにする
 		bHit = true;
+
+		// 下に重力をかける
+		rMove.y = -50.0f;
 	}
 }
 
