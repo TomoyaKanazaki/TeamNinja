@@ -10,6 +10,7 @@
 #include "titleLogo2D.h"
 #include "manager.h"
 #include "texture.h"
+#include "camera.h"
 
 //************************************************************
 //	定数宣言
@@ -50,12 +51,15 @@ CTitleLogo2D::CTitleLogo2D(const char* pBlurTexPath) : CAnim2D(CObject::LABEL_UI
 	m_pAura			(nullptr),		// オーラ情報
 	m_pBlur			(nullptr),		// ブラー情報
 	m_state			(STATE_NONE),	// 状態
-	m_fMoveTime		(0.0f),			// 移動時間
-	m_fWaitTime		(0.0f),			// 待機時間
+	m_fMoveTimeOne	(0.0f),			// 第一移動時間
+	m_fMoveTimeTwo	(0.0f),			// 第二移動時間
+	m_fWaitTimeOne	(0.0f),			// 第一待機時間
+	m_fWaitTimeTwo	(0.0f),			// 第二待機時間
 	m_fCurTime		(0.0f),			// 現在の待機時間
 	m_offset		(VEC3_ZERO),	// 初期位置オフセット
 	m_initPos		(VEC3_ZERO),	// 初期位置
-	m_destPos		(VEC3_ZERO)		// 目標位置
+	m_destPosOne	(VEC3_ZERO),	// 第一目標位置
+	m_destPosTwo	(VEC3_ZERO)		// 第二目標位置
 {
 
 }
@@ -74,15 +78,18 @@ CTitleLogo2D::~CTitleLogo2D()
 HRESULT CTitleLogo2D::Init(void)
 {
 	// メンバ変数を初期化
-	m_pAura		= nullptr;		// オーラ情報
-	m_pBlur		= nullptr;		// ブラー情報
-	m_state		= STATE_NONE;	// 状態
-	m_fMoveTime	= 0.0f;			// 移動時間
-	m_fWaitTime	= 0.0f;			// 待機時間
-	m_fCurTime	= 0.0f;			// 現在の待機時間
-	m_offset	= VEC3_ZERO;	// 初期位置オフセット
-	m_initPos	= VEC3_ZERO;	// 初期位置
-	m_destPos	= VEC3_ZERO;	// 目標位置
+	m_pAura			= nullptr;		// オーラ情報
+	m_pBlur			= nullptr;		// ブラー情報
+	m_state			= STATE_NONE;	// 状態
+	m_fMoveTimeOne	= 0.0f;			// 第一移動時間
+	m_fMoveTimeTwo	= 0.0f;			// 第二移動時間
+	m_fWaitTimeOne	= 0.0f;			// 第一待機時間
+	m_fWaitTimeTwo	= 0.0f;			// 第二待機時間
+	m_fCurTime		= 0.0f;			// 現在の待機時間
+	m_offset		= VEC3_ZERO;	// 初期位置オフセット
+	m_initPos		= VEC3_ZERO;	// 初期位置
+	m_destPosOne	= VEC3_ZERO;	// 第一目標位置
+	m_destPosTwo	= VEC3_ZERO;	// 第二目標位置
 
 	// アニメーション2Dの初期化
 	if (FAILED(CAnim2D::Init()))
@@ -154,16 +161,28 @@ void CTitleLogo2D::Update(const float fDeltaTime)
 
 	switch (m_state)
 	{ // 状態ごとの処理
-	case STATE_MOVE_WAIT:
+	case STATE_ONE_MOVE_WAIT:
 
-		// 移動待機の更新
-		UpdateMoveWait(fDeltaTime);
+		// 第一移動待機の更新
+		UpdateMoveOneWait(fDeltaTime);
 		break;
 
-	case STATE_MOVE:
+	case STATE_ONE_MOVE:
 
-		// 移動の更新
-		UpdateMove(fDeltaTime);
+		// 第一移動の更新
+		UpdateMoveOne(fDeltaTime);
+		break;
+
+	case STATE_TWO_MOVE_WAIT:
+
+		// 第二移動待機の更新
+		UpdateMoveTwoWait(fDeltaTime);
+		break;
+
+	case STATE_TWO_MOVE:
+
+		// 第二移動の更新
+		UpdateMoveTwo(fDeltaTime);
 		break;
 
 	case STATE_AURA_WAIT:
@@ -264,12 +283,15 @@ void CTitleLogo2D::SetHeightPattern(const int nHeightPtrn)
 //============================================================
 CTitleLogo2D *CTitleLogo2D::Create
 (
-	const char* pBlurTexPath,	// ブラーテクスチャパス
-	const D3DXVECTOR3& rPos,	// 位置
-	const D3DXVECTOR3& rOffset,	// オフセット
-	const D3DXVECTOR3& rSize,	// 大きさ
-	const float fMoveTime,		// 移動時間
-	const float fWaitTime		// 待機時間
+	const char* pBlurTexPath,		// ブラーテクスチャパス
+	const D3DXVECTOR3& rDestPosOne,	// 第一目標位置
+	const D3DXVECTOR3& rDestPosTwo,	// 第二目標位置
+	const D3DXVECTOR3& rOffset,		// オフセット
+	const D3DXVECTOR3& rSize,		// 大きさ
+	const float fMoveTimeOne,		// 第一移動時間
+	const float fMoveTimeTwo,		// 第二移動時間
+	const float fWaitTimeOne,		// 第一待機時間
+	const float fWaitTimeTwo		// 第二待機時間
 )
 {
 	// タイトルロゴ2Dの生成
@@ -295,10 +317,13 @@ CTitleLogo2D *CTitleLogo2D::Create
 		pTitleLogo2D->m_offset = rOffset;
 
 		// 初期位置を設定
-		pTitleLogo2D->m_initPos = rPos + pTitleLogo2D->m_offset;
+		pTitleLogo2D->m_initPos = rDestPosOne + pTitleLogo2D->m_offset;
 
-		// 目標位置を設定
-		pTitleLogo2D->m_destPos = rPos;
+		// 第一目標位置を設定
+		pTitleLogo2D->m_destPosOne = rDestPosOne;
+
+		// 第二目標位置を設定
+		pTitleLogo2D->m_destPosTwo = rDestPosTwo;
 
 		// 開始位置を設定
 		pTitleLogo2D->SetVec3Position(pTitleLogo2D->m_initPos);
@@ -306,11 +331,17 @@ CTitleLogo2D *CTitleLogo2D::Create
 		// 大きさを設定
 		pTitleLogo2D->SetVec3Sizing(rSize);
 
-		// 移動時間を設定
-		pTitleLogo2D->m_fMoveTime = fMoveTime;
+		// 第一移動時間を設定
+		pTitleLogo2D->m_fMoveTimeOne = fMoveTimeOne;
 
-		// 待機時間を設定
-		pTitleLogo2D->m_fWaitTime = fWaitTime;
+		// 第二移動時間を設定
+		pTitleLogo2D->m_fMoveTimeTwo = fMoveTimeTwo;
+
+		// 第一待機時間を設定
+		pTitleLogo2D->m_fWaitTimeOne = fWaitTimeOne;
+
+		// 第二待機時間を設定
+		pTitleLogo2D->m_fWaitTimeTwo = fWaitTimeTwo;
 
 		// 確保したアドレスを返す
 		return pTitleLogo2D;
@@ -320,11 +351,11 @@ CTitleLogo2D *CTitleLogo2D::Create
 //============================================================
 //	移動待機の更新処理
 //============================================================
-void CTitleLogo2D::UpdateMoveWait(const float fDeltaTime)
+void CTitleLogo2D::UpdateMoveOneWait(const float fDeltaTime)
 {
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
-	if (m_fCurTime >= m_fWaitTime)
+	if (m_fCurTime >= m_fWaitTimeOne)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
@@ -334,23 +365,23 @@ void CTitleLogo2D::UpdateMoveWait(const float fDeltaTime)
 		m_pBlur->SetState(CBlur2D::STATE_NORMAL);
 
 		// 移動状態にする
-		m_state = STATE_MOVE;
+		m_state = STATE_ONE_MOVE;
 	}
 }
 
 //============================================================
 //	移動の更新処理
 //============================================================
-void CTitleLogo2D::UpdateMove(const float fDeltaTime)
+void CTitleLogo2D::UpdateMoveOne(const float fDeltaTime)
 {
 	// 差分位置を計算
-	const D3DXVECTOR3 DIFF_POS = m_destPos - m_initPos;
+	const D3DXVECTOR3 DIFF_POS = m_destPosOne - m_initPos;
 
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
 
 	// 経過時刻の割合を計算
-	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, m_fMoveTime);
+	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, m_fMoveTimeOne);
 
 	// 色を反映
 	SetColor(logo::INIT_COL + (logo::DIFF_COL * fRate));
@@ -358,7 +389,7 @@ void CTitleLogo2D::UpdateMove(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(m_initPos + (DIFF_POS * fRate));
 
-	if (m_fCurTime >= m_fMoveTime)
+	if (m_fCurTime >= m_fMoveTimeOne)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
@@ -368,7 +399,59 @@ void CTitleLogo2D::UpdateMove(const float fDeltaTime)
 		SetColor(logo::DEST_COL);
 
 		// 位置を補正
-		SetVec3Position(m_destPos);
+		SetVec3Position(m_destPosOne);
+
+		// 移動待機状態にする
+		m_state = STATE_TWO_MOVE_WAIT;
+	}
+}
+
+//============================================================
+//	第二移動待機の更新処理
+//============================================================
+void CTitleLogo2D::UpdateMoveTwoWait(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+	if (m_fCurTime >= m_fWaitTimeTwo)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// カメラの更新をオンにする
+		GET_CAMERA->SetEnableUpdate(true);
+
+		// 移動状態にする
+		m_state = STATE_TWO_MOVE;
+	}
+}
+
+//============================================================
+//	第二移動の更新処理
+//============================================================
+void CTitleLogo2D::UpdateMoveTwo(const float fDeltaTime)
+{
+	// 差分位置を計算
+	const D3DXVECTOR3 DIFF_POS = m_destPosTwo - m_destPosOne;
+
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InOutQuart(m_fCurTime, 0.0f, m_fMoveTimeTwo);
+
+	// 位置を反映
+	SetVec3Position(m_destPosOne + (DIFF_POS * fRate));
+
+	if (m_fCurTime >= m_fMoveTimeTwo)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// 位置を補正
+		SetVec3Position(m_destPosTwo);
 
 		// ブラーの終了
 		m_pBlur->SetState(CBlur2D::STATE_VANISH);

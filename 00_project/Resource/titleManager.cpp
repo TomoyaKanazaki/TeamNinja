@@ -22,10 +22,12 @@ namespace
 	const int PRIORITY = 5;	// タイトルの優先順位
 	const D3DXVECTOR3 ABS_INIT_OFFSET	= D3DXVECTOR3(80.0f, 0.0f, 0.0f);	// 生成位置オフセットの絶対値
 	const D3DXVECTOR3 DEST_OFFSET		= D3DXVECTOR3(0.0f, 170.0f, 0.0f);	// 生成位置オフセットの絶対値
-	const D3DXVECTOR3 POS_POLY	= D3DXVECTOR3(640.0f, 95.0f, 0.0f);			// 位置
+	const D3DXVECTOR3 POS_ONE	= D3DXVECTOR3(640.0f, 95.0f, 0.0f);			// 第一目標位置
+	const D3DXVECTOR3 POS_TWO	= D3DXVECTOR3(160.0f, 95.0f, 0.0f);			// 第二目標位置
 	const D3DXVECTOR3 SIZE_POLY	= D3DXVECTOR3(320.0f, 320.0f, 0.0f);		// 大きさ
 	const POSGRID2 TEX_PART = POSGRID2(1, 4);	// テクスチャ分割数
-	const float MOVE_TIME = 1.8f;	// 生成移動時間
+	const float MOVE_TIME_ONE = 1.8f;	// 生成移動時間
+	const float MOVE_TIME_TWO = 3.0f;	// 生成移動時間
 	const float WAIT_TIME = 0.092f;	// 生成待機時間
 
 	const D3DXCOLOR COL_BLUR[] =	// ブラー色
@@ -33,6 +35,10 @@ namespace
 		D3DCOLOR_RGBA(110, 228, 234, 255),	// 水色
 		D3DCOLOR_RGBA(255, 142, 204, 255),	// 紫色
 	};
+
+	const char* TEXTURE_BLUR = "data\\TEXTURE\\title_blur000.png";	// ブラーテクスチャ
+	const char* TEXTURE_LOGO = "data\\TEXTURE\\title_logo000.png";	// ロゴテクスチャ
+	const char* TEXTURE_AURA = "data\\TEXTURE\\title_aura000.png";	// オーラテクスチャ
 }
 
 //************************************************************
@@ -79,12 +85,15 @@ HRESULT CTitleManager::Init(void)
 		// タイトルの生成
 		m_apLogo[i] = CTitleLogo2D::Create
 		( // 引数
-			"data\\TEXTURE\\title_blur000.png",	// ブラーテクスチャパス
-			POS_POLY + destOffset,	// 位置
-			initOffset,	// オフセット
-			SIZE_POLY,	// 大きさ
-			MOVE_TIME,	// 移動時間
-			fWaitTime	// 待機時間
+			TEXTURE_BLUR,			// ブラーテクスチャパス
+			POS_ONE + destOffset,	// 第一目標位置
+			POS_TWO + destOffset,	// 第二目標位置
+			initOffset,		// オフセット
+			SIZE_POLY,		// 大きさ
+			MOVE_TIME_ONE,	// 第一移動時間
+			MOVE_TIME_TWO,	// 第二移動時間
+			fWaitTime,		// 第一待機時間
+			fWaitTime		// 第二待機時間
 		);
 		if (m_apLogo[i] == nullptr)
 		{ // 生成に失敗した場合
@@ -95,10 +104,10 @@ HRESULT CTitleManager::Init(void)
 		}
 
 		// テクスチャを割当
-		m_apLogo[i]->BindTexture("data\\TEXTURE\\title_logo000.png");
+		m_apLogo[i]->BindTexture(TEXTURE_LOGO);
 
 		// オーラテクスチャを割当
-		m_apLogo[i]->BindAuraTexture("data\\TEXTURE\\title_aura000.png");
+		m_apLogo[i]->BindAuraTexture(TEXTURE_AURA);
 
 		// ブラー色を設定
 		m_apLogo[i]->SetBlurColor(colBlur);
