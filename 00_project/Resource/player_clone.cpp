@@ -1110,6 +1110,18 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 			// “–‚½‚Á‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
 			m_pOldField->Miss(this);
 		}
+
+		// °‚ª…‚Ìê‡E‚·
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			// €‚Ë
+			Delete(this);
+
+			// —…‰¹‚ÌÄ¶
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
+
+			return;
+		}
 	}
 
 	if (!m_bJump)
