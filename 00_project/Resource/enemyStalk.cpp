@@ -38,8 +38,8 @@ namespace
 	const int	CAUTIOUS_TRANS_LOOP = 7;	// 警戒モーションに遷移する待機ループ数
 	const float	RADIUS = 20.0f;				// 半径
 	const float HEIGHT = 80.0f;				// 身長
-	const float SPEED = -700.0f;			// 速度
-	const float ROT_REV = 8.0f;				// 向きの補正係数
+	const float SPEED = -900.0f;			// 速度
+	const float ROT_REV = 9.0f;				// 向きの補正係数
 	const float FADE_ALPHA_TRANS = 0.02f;	// フェードの透明度の遷移定数
 
 	const int ITEM_PART_NUMBER = 8;			// アイテムを持つパーツの番号

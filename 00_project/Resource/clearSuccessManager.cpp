@@ -26,12 +26,12 @@ namespace
 
 	namespace time
 	{
-		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char		*FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const wchar_t	*STRING	= L"任務遂行時間";	// 文字列
 		const bool	ITALIC		= false;	// イタリック
 		const float	MOVE_TIME	= 0.2f;		// 移動時間
 		const float	WAIT_TIME	= 0.5f;		// タイトル待機時間
-		const float DEST_HEIGHT	= 100.0f;	// 文字目標縦幅
+		const float DEST_HEIGHT	= 80.0f;	// 文字目標縦幅
 		const float INIT_HEIGHT	= DEST_HEIGHT * 14.0f;	// 文字初期縦幅
 		const float DIFF_HEIGHT	= DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
 		const D3DXVECTOR3 POS	= D3DXVECTOR3(540.0f, 292.0f, 0.0f);	// 位置
@@ -59,7 +59,7 @@ namespace
 
 	namespace item
 	{
-		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char		*FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const wchar_t	*STRING	= L"獲得した勾玉";		// 文字列
 		const bool		ITALIC	= false;				// イタリック
 		const float	MOVE_TIME	= time::MOVE_TIME;		// 移動時間

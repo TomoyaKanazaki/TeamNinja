@@ -21,13 +21,13 @@ namespace
 
 	namespace cont
 	{
-		const char		*FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char		*FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const wchar_t	*STRING	= L"任務をやり直す";			// 文字列
 
 		const bool	ITALIC		= false;	// イタリック
 		const float	MOVE_TIME	= 0.2f;		// 移動時間
 		const float	WAIT_TIME	= 0.5f;		// タイトル待機時間
-		const float	DEST_HEIGHT	= 130.0f;	// 文字目標縦幅
+		const float	DEST_HEIGHT	= 110.0f;	// 文字目標縦幅
 		const float	INIT_HEIGHT	= DEST_HEIGHT * 14.0f;			// 文字初期縦幅
 		const float	DIFF_HEIGHT	= DEST_HEIGHT - INIT_HEIGHT;	// 文字差分縦幅
 
@@ -38,13 +38,13 @@ namespace
 	namespace select
 	{
 		const wchar_t *STRING[] = { L"はい", L"いいえ" };	// 文字列
-		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char *FONT = "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 
 		const bool	ITALIC		= false;	// イタリック
 		const float	MOVE_TIME	= 0.68f;	// 移動時間
 		const float	PLUS_TIME	= 0.25f;	// 経過の延長時間
 		const float	WAIT_TIME	= 0.15f;	// 待機時間
-		const float	CHAR_HEIGHT	= 100.0f;	// 文字縦幅
+		const float	CHAR_HEIGHT	= 80.0f;	// 文字縦幅
 		const float	DEST_ALPHA	= 1.0f;		// 目標透明度
 		const float	INIT_ALPHA	= 0.0f;		// 初期透明度
 		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度

@@ -37,8 +37,8 @@ namespace
 		const float INIT_ALPHA	 = 0.0f;	// 初期透明度
 		const float DIFF_ALPHA	 = DEST_ALPHA - INIT_ALPHA;	// 差分透明度
 		const D3DXCOLOR INIT_COL = D3DXCOLOR(0.0f, 0.0f, 0.0f, INIT_ALPHA);		// 初期色
-		const D3DXVECTOR3 SIZE	 = D3DXVECTOR3(SCREEN_SIZE.x, 260.0f, 0.0f);	// 大きさ
-		const D3DXVECTOR3 POS	 = D3DXVECTOR3(SCREEN_CENT.x, 555.0f, 0.0f);	// 位置
+		const D3DXVECTOR3 SIZE	 = D3DXVECTOR3(SCREEN_SIZE.x, 280.0f, 0.0f);	// 大きさ
+		const D3DXVECTOR3 POS	 = D3DXVECTOR3(SCREEN_CENT.x, 548.0f, 0.0f);	// 位置
 		const D3DXVECTOR3 ROT	 = VEC3_ZERO;	// 向き
 	}
 
@@ -66,9 +66,9 @@ namespace
 
 	namespace name
 	{
-		const char *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char *FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const bool	ITALIC	= false;			// イタリック
-		const float	CHAR_HEIGHT		= 70.0f;	// 文字縦幅
+		const float	CHAR_HEIGHT		= 60.0f;	// 文字縦幅
 		const float	WAIT_TIME_NOR	= 0.012f;	// 文字表示の待機時間
 		const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_CENT.x, 640.0f, 0.0f);	// 位置
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_CENTER;		// 横配置
