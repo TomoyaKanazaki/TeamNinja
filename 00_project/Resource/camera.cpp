@@ -179,7 +179,7 @@ namespace
 		const float	INIT_DIS	= 200.0f;	// 追従カメラの距離
 		const float	INIT_ROTX	= HALF_PI;	// 追従カメラの向きX初期値
 		const float	PLUS_ROTY	= 0.28f;	// プレイヤーヨー向きに加算する量
-		const float REV_DIFF	= 0.035f;	// 差分の補正係数
+		const float REV_DIFF	= 0.08f;	// 差分の補正係数
 	}
 
 	// スタートカメラ情報

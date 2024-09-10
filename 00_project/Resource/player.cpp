@@ -399,6 +399,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateGodItem(fDeltaTime);
 		break;
 
+	case STATE_GOAL:
+
+		// ゴール状態の更新
+		currentMotion = UpdateGoal(fDeltaTime);
+		break;
+
 	case STATE_DODGE:
 
 		// 回避状態の更新
@@ -674,7 +680,7 @@ void CPlayer::SetResult()
 	rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
 
 	// 操作を停止させる
-	SetState(CPlayer::STATE_NONE);
+	SetState(CPlayer::STATE_GOAL);
 
 	// 向きをカメラ目線に
 	SetDestRotation(rotDest);
@@ -1011,6 +1017,49 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 
 	// 神器獲得モーションを返す
 	return MOTION_GET;
+}
+
+//===========================================
+//	ゴール状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
+{
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 壁の当たり判定
+	CollisionWall(posPlayer);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(posPlayer, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
+
+	if (m_bJump)
+	{ // 空中にいる場合
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
+
+	// ゴールモーションを返す
+	return MOTION_GOAL;
 }
 
 //===========================================
