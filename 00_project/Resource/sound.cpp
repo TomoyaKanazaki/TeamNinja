@@ -61,6 +61,8 @@ namespace
 		{ "data\\SE\\gimmickbamboo.wav", 0 },	// 竹格子の動く音
 		{ "data\\SE\\dooropen.wav", 0 },		// 重い扉が開く音
 		{ "data\\SE\\doorclose.wav", 0 },		// 重い扉が閉じる音
+		{ "data\\SE\\mash.wav", 0 },			// ふすまの音
+		{ "data\\SE\\mashclose.wav", 0 },		// ふすまが閉じるときの音
 	};
 }
 

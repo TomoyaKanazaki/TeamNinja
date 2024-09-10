@@ -72,6 +72,8 @@ public:
 		LABEL_SE_GIMMICKBAMBOO,		// 竹格子の動く音
 		LABEL_SE_DOOROPEN,			// 重い扉が開く音
 		LABEL_SE_DOORCLOSE,			// 重い扉が閉じる音
+		LABEL_SE_MASH,				// ふすまの音
+		LABEL_SE_MASHCLOSE,			// ふすまが閉じるときの音
 		LABEL_MAX					// この列挙型の総数
 	};
 

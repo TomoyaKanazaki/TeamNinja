@@ -6,7 +6,9 @@
 //
 //==========================================
 #include "mash.h"
+#include "manager.h"
 #include "collision.h"
+#include "sound.h"
 
 //==========================================
 //  ’è”’è‹`
@@ -26,7 +28,8 @@ CMash::CMash(const D3DXVECTOR3& rPos) :
 	m_move(VEC3_ZERO),
 	m_collMax(VEC3_ZERO),
 	m_collMin(VEC3_ZERO),
-	m_state(STATE_CLOSE)
+	m_state(STATE_CLOSE),
+	m_stateOld(m_state)
 {
 	// Do Nothing
 }
@@ -62,6 +65,37 @@ void CMash::Uninit(void)
 //==========================================
 void CMash::Update(const float fDeltaTime)
 {
+	if (m_state != m_stateOld)
+	{ // ó‘Ô‚ª‘O‰ñ‚Æˆá‚¤ê‡
+
+		switch (m_state)
+		{
+		case CMash::STATE_CLOSE:
+
+			// ‚Ó‚·‚Ü‚ª•Â‚¶‚½‚Æ‚«‚Ì‰¹‚ğ–Â‚ç‚·
+			PLAY_SOUND(CSound::LABEL_SE_MASHCLOSE);
+
+			break;
+
+		case CMash::STATE_OPEN:
+
+			// ‚Ó‚·‚Ü‚Ì‰¹‚ğ–Â‚ç‚·
+			PLAY_SOUND(CSound::LABEL_SE_MASH);
+
+			break;
+
+		default:
+
+			// ’â~
+			assert(false);
+
+			break;
+		}
+	}
+
+	// ó‘Ô‚ğİ’è‚·‚é
+	m_stateOld = m_state;
+
 	// ó‘Ôˆ—
 	State(fDeltaTime);
 
