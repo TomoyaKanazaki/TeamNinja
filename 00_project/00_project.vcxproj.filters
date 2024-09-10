@@ -669,9 +669,6 @@
     <ClInclude Include="Resource\playerTitle.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemyState.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1261,9 +1258,6 @@
     </ClCompile>
     <ClCompile Include="Resource\playerTitle.cpp">
       <Filter>InGame\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyState.cpp">
-      <Filter>InGame\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
