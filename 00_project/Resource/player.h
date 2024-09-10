@@ -115,6 +115,7 @@ public:
 		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
 		STATE_GODITEM,	// 神器獲得状態
+		STATE_GOAL,		// ゴール状態
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
@@ -208,6 +209,7 @@ private:
 	EMotion UpdateStart(const float fDeltaTime);	// スタート状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateGodItem(const float fDeltaTime);	// 神器獲得状態時の更新
+	EMotion UpdateGoal(const float fDeltaTime);		// ゴール状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
