@@ -100,10 +100,16 @@ void CEffekseer::AllClear()
 		{
 			delete m_vEffect[i];
 			m_vEffect[i] = NULL;
+		
 		}
 	}
-	m_vEffect.shrink_to_fit();
-
+	for (int i = 0; i < nSize; i++)
+	{
+		if (m_vEffect[i] == NULL)
+		{
+			m_vEffect[i]->Erase();
+		}
+	}
 }
 //======================================================
 //çXêV
