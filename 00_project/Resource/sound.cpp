@@ -63,6 +63,7 @@ namespace
 		{ "data\\SE\\doorclose.wav", 0 },		// d‚¢”à‚ª•Â‚¶‚é‰¹
 		{ "data\\SE\\mash.wav", 0 },			// ‚Ó‚·‚Ü‚Ì‰¹
 		{ "data\\SE\\mashclose.wav", 0 },		// ‚Ó‚·‚Ü‚ª•Â‚¶‚é‚Æ‚«‚Ì‰¹
+		{ "data\\SE\\spinwall.wav", 0 },		// ‰ñ“]”à‚Ì‰¹
 	};
 }
 

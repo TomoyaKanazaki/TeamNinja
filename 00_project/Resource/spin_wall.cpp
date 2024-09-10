@@ -5,7 +5,9 @@
 //
 //==========================================
 #include "spin_wall.h"
+#include "manager.h"
 #include "collision.h"
+#include "sound.h"
 
 //==========================================
 //  ’è”’è‹`
@@ -255,6 +257,9 @@ void CSpinWall::SetSpin(const float fRotMove)
 
 	// Œü‚«‚ÌˆÚ“®—Ê‚ğİ’è‚·‚é
 	m_fRotMove = fRotMove;
+
+	// ‰ñ“]”à‚Ì‰¹‚ğ–Â‚ç‚·
+	PLAY_SOUND(CSound::LABEL_SE_SPINWALL);
 }
 
 //==========================================
