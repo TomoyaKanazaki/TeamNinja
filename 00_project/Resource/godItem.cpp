@@ -18,6 +18,7 @@
 #include "sceneGame.h"
 #include "gameManager.h"
 #include "player.h"
+#include "stage.h"
 
 //************************************************************
 //	定数宣言
@@ -27,7 +28,7 @@ namespace
 	const char* MODEL = "data\\MODEL\\GODITEM\\Magatama.x";		// モデル
 	const char* SETUP_TXT = "data\\TXT\\goditem.txt";			// セットアップテキスト相対パス
 	const int PRIORITY = 4;		// 神器の優先順位
-	const D3DXVECTOR3 EFFECT_OFFSET = D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// エフェクト用オフセット
+	const D3DXVECTOR3 EFFECT_OFFSET = D3DXVECTOR3(0.0f, 36.0f, 0.0f);	// エフェクト用オフセット
 	const float COLLISION_RADIUS = 70.0f;						// 当たり判定用の半径
 
 	const float ADD_ROT = 0.03f;		// 向きの追加量
@@ -47,6 +48,8 @@ bool CGodItem::m_aGet[TYPE_MAX] = {};						// 取得状況
 //	コンストラクタ
 //============================================================
 CGodItem::CGodItem() : CObjectModel(CObject::LABEL_GODITEM, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+m_pEffectBody(nullptr),	// 本体エフェクト情報
+m_pEffectLand(nullptr),	// 着地エフェクト情報
 m_fPosInitY(0.0f),		// 初期位置(Y軸)
 m_type(TYPE_RED),		// 種類
 m_state(STATE_ITEM),	// 状態
@@ -104,6 +107,12 @@ HRESULT CGodItem::Init(void)
 //============================================================
 void CGodItem::Uninit(void)
 {
+	// 本体エフェクトの削除
+	SAFE_DELETE(m_pEffectBody);
+
+	// 着地エフェクトの削除
+	SAFE_DELETE(m_pEffectLand);
+
 	// リストから自身のオブジェクトを削除
 	m_pList->DelList(m_iterator);
 
@@ -145,6 +154,23 @@ void CGodItem::Update(const float fDeltaTime)
 		// 回転移動の更新
 		UpdateRoll(fDeltaTime);
 		break;
+	}
+
+	if (m_pEffectBody != nullptr)
+	{
+		// エフェクト位置を反映
+		m_pEffectBody->m_pos = GetVec3Position() + EFFECT_OFFSET;
+	}
+
+	if (m_pEffectLand != nullptr)
+	{
+		D3DXVECTOR3 posThis = GetVec3Position();
+
+		// 地面の着地位置の取得
+		posThis.y = GET_STAGE->GetFieldDownPositionHeight(posThis);
+
+		// エフェクト位置を反映
+		m_pEffectLand->m_pos = posThis;
 	}
 
 	// オブジェクトモデルの更新
@@ -229,6 +255,14 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 		// 取得状況を false にする
 		m_aGet[pItem->m_type] = false;
 
+		// 本体から発する光のエフェクトを割当
+		pItem->m_pEffectBody = GET_EFFECT->Create("data\\EFFEKSEER\\magatama_light.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+
+		// 地面から発する光のエフェクトを割当
+		D3DXVECTOR3 posThis = rPos;
+		posThis.y = GET_STAGE->GetFieldDownPositionHeight(posThis);	// 地面の着地位置の取得
+		pItem->m_pEffectLand = GET_EFFECT->Create("data\\EFFEKSEER\\aura.efkefc", posThis, VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+
 		// 確保したアドレスを返す
 		return pItem;
 	}
@@ -258,10 +292,16 @@ void CGodItem::SetRollPosition(void)
 	for (auto& item : m_pList->GetList())
 	{
 		if (item->m_state == STATE_ROLL)
-		{ // 買い手にどう状態の場合
+		{ // 回転状態の場合
 
 			// 現在位置を反映
 			item->SetVec3Position(posDest);
+
+			if (item->m_pEffectBody != nullptr)
+			{
+				// エフェクト位置を反映
+				item->m_pEffectBody->m_pos = item->GetVec3Position() + EFFECT_OFFSET;
+			}
 		}
 	}
 }
@@ -284,9 +324,6 @@ bool CGodItem::Collision
 		// 取得状況を true にする
 		m_aGet[m_type] = true;
 
-		// TODO : それっぽいエフェクトにする
-		GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f);
-
 		// 神器取得音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_GETGODITEM_000);
 
@@ -296,6 +333,9 @@ bool CGodItem::Collision
 			// ゲームマネージャーを神器獲得状態にする
 			CSceneGame::GetGameManager()->PossessGodItem(m_type);
 		}
+
+		// 着地エフェクトの削除
+		SAFE_DELETE(m_pEffectLand);
 
 		// 回転移動状態にする
 		m_state = STATE_ROLL;
