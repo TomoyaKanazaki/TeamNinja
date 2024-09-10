@@ -764,6 +764,9 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// コントローラのバイブレーション
 	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
 
+	// ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GIMMICKJUMP);
+
 	return true;
 }
 
