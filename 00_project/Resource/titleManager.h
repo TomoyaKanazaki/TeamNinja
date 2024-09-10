@@ -53,6 +53,10 @@ public:
 	static void Release(CTitleManager *&prTitleManager);	// 破棄
 
 private:
+	// メンバ関数
+	void UpdateSkip(void);	// スキップ操作更新
+	void SkipStaging(void);	// 演出スキップ
+
 	// メンバ変数
 	CTitleLogo2D* m_apLogo[NUM_LOGO];	// タイトル情報
 	CBlink2D* m_pStart;	// 開始操作情報
