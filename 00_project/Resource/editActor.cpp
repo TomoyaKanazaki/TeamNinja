@@ -822,8 +822,10 @@ void CEditActor::SetMash(void)
 	// “®‚­‚Ó‚·‚Ü‚ª NULL ‚Ìê‡A”²‚¯‚é
 	if (pMash == nullptr) { return; }
 
+#ifdef _DEBUG
 	// ‰ŠúˆÊ’u‚ð”½‰f‚·‚é
 	pMash->SetDefaultPos(m_pActor->GetVec3Position());
+#endif
 }
 
 //============================================================
@@ -837,8 +839,10 @@ void CEditActor::SetSpinWall(void)
 	// ‰ñ“]”à‚ª NULL ‚Ìê‡A”²‚¯‚é
 	if (pWall == nullptr) { return; }
 
+#ifdef _DEBUG
 	// ‰ŠúˆÊ’u‚ð”½‰f‚·‚é
 	pWall->SetDefaultRot(m_pActor->GetVec3Rotation());
+#endif
 }
 
 //============================================================
