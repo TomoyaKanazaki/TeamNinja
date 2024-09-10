@@ -37,18 +37,8 @@ namespace
 	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
 	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
 	const int DODGE_COUNT = 20;						// 回避カウント数
-	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
-	{
-		DODGE_COUNT - 7,	// しつこい敵
-		DODGE_COUNT - 12,	// 狼敵
-		DODGE_COUNT - 7,	// 待ち伏せ敵
-	};
-	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
-	{
-		-320.0f,
-		-480.0f,
-		-320.0f,
-	};
+	const int ATTACK_DASH_COUNT = DODGE_COUNT - 12;	// 攻撃時のダッシュのカウント
+	const float ADD_ATTACK_DASH = -480.0f;			// 攻撃ダッシュ時の速度の追加量
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
 		60.0f,
@@ -144,7 +134,6 @@ m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
 m_state(STATE_ORIGIN),		// 状態
 m_nStateCount(0),			// 状態カウント
-m_nAttackCount(0),			// 攻撃カウント
 m_nRegressionCount(0),		// 回帰カウント
 m_type(TYPE_STALK),			// 種類
 m_bDodge(false)				// 回避受付フラグ
@@ -711,10 +700,7 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		fRadius
 	};
 
-	// 回避カウントを加算する
-	m_nAttackCount++;
-
-	if (m_nAttackCount > DODGE_COUNT)
+	if (m_nStateCount > DODGE_COUNT)
 	{ // 回避カウントを過ぎた場合
 
 		bool bHit = false;	// ヒット状況
@@ -729,16 +715,17 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			sizeUpPlayer,		// 判定目標サイズ(右・上・後)
 			sizeDownPlayer		// 判定目標サイズ(左・下・前)
 		))
-		{ // 当たってなかった場合
-
-			// 回避カウントを初期化する
-			m_nAttackCount = 0;
+		{ // 当たっていた場合
 
 			// 自身とプレイヤーを結ぶベクトルを算出
 			D3DXVECTOR3 vec = posPlayer - rPos;
 
-			// ヒット処理
-			CScene::GetPlayer()->HitKnockBack(500, vec);
+			if (CScene::GetPlayer()->HitKnockBack(500, vec))
+			{ // 攻撃が当たった場合
+
+				// 攻撃音を鳴らす
+				PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
+			}
 
 			// ヒット状況を true にする
 			bHit = true;
@@ -887,7 +874,7 @@ bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const flo
 	SetMovePosition(VEC3_ZERO);
 
 	// ターゲットを無対象にする
-	SetTarget(TARGET_NONE);
+	m_target = TARGET_NONE;
 
 	// true を返す
 	return true;
@@ -1006,7 +993,7 @@ int CEnemyAttack::Stalk
 		SetState(STATE_ORIGIN);
 
 		// 標的を未設定にする
-		SetTarget(TARGET_NONE);
+		m_target = TARGET_NONE;
 
 		// 独自状態を返す
 		return m_state;
@@ -1016,10 +1003,7 @@ int CEnemyAttack::Stalk
 	LookTarget(*pPos);
 
 	// 回避受付フラグを false にする
-	SetEnableDodge(false);
-
-	// 攻撃カウントをリセットする
-	SetAttackCount(0);
+	m_bDodge = false;
 
 	// 向きの移動処理
 	RotMove(*pRot, fRotRev, fDeltaTime);
@@ -1034,10 +1018,7 @@ int CEnemyAttack::Stalk
 		{ // 目標がプレイヤーの場合
 
 			// 回避受付フラグを true にする
-			SetEnableDodge(true);
-
-			// 攻撃カウントをリセットする
-			SetAttackCount(0);
+			m_bDodge = true;
 		}
 
 		// 攻撃状態にする
@@ -1047,8 +1028,8 @@ int CEnemyAttack::Stalk
 		return m_state;
 	}
 
-	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
+	if (m_pChaseRange != nullptr &&
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// 構え状態にする
@@ -1079,12 +1060,19 @@ int CEnemyAttack::Attack
 	// 向きの移動処理
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
-	if (m_nAttackCount < DODGE_COUNT &&
-		m_nAttackCount > ATTACK_DASH_COUNT[m_type])
+	if (m_nStateCount < DODGE_COUNT &&
+		m_nStateCount > ATTACK_DASH_COUNT)
 	{ // 回避カウントを過ぎた場合
 
 		// 移動処理
-		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH, fDeltaTime);
+	}
+
+	if (m_pChaseRange != nullptr)
+	{ // 追跡範囲が NULL じゃない場合
+
+		// 追跡範囲の補正処理
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos);
 	}
 
 	switch (m_target)
@@ -1094,12 +1082,8 @@ int CEnemyAttack::Attack
 		// プレイヤーの探索処理
 		JudgePlayer();
 
-		if (HitPlayer(*pPos))
-		{ // プレイヤーに当たった場合
-
-			// 攻撃音を鳴らす
-			PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
-		}
+		// プレイヤーの当たり判定
+		HitPlayer(*pPos);
 
 		// 状態カウントを加算する
 		m_nStateCount++;

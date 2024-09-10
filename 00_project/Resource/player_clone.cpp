@@ -404,6 +404,13 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミックで所持する最大数を超えていた場合関数を抜ける
 	if (gimmick->GetNumActive() <= gimmick->GetNumClone()) { return; }
 
+	if (gimmick->GetType() == CGimmick::TYPE_POST)
+	{ // ボタンだった場合
+
+		// ボタンを押した音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GIMMICKBUTTON);
+	}
+
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 
@@ -1109,6 +1116,18 @@ void CPlayerClone::UpdateLanding(D3DXVECTOR3& rPos, EMotion* pCurMotion)
 
 			// 当たっていない状態にする
 			m_pOldField->Miss(this);
+		}
+
+		// 床が水の場合殺す
+		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			// 死ね
+			Delete(this);
+
+			// 落水音の再生
+			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
+
+			return;
 		}
 	}
 

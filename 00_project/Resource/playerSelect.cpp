@@ -223,11 +223,25 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
 	}
 
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
 	// 向きを反映
 	SetVec3Rotation(GetDestRotation());
 
 	// 待機モーションを返す
-	return MOTION_IDOL;
+	return MOTION_SELECT;
 }
 
 //============================================================

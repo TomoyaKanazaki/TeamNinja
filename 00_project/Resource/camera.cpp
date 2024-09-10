@@ -59,9 +59,11 @@ namespace
 	{
 		const D3DXVECTOR3 INIT_POSR	= D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// 回転カメラの注視点の初期値
 		const D3DXVECTOR2 INIT_ROT	= D3DXVECTOR2(1.4f, 0.0f);			// 回転カメラの向き初期値
-		const D3DXVECTOR2 DEST_ROT	= D3DXVECTOR2(1.4f, 1.35f);			// 回転カメラの向き目標値
-		const float MOVE_TIME		= 3.8f;		// 回転時間
+		const D3DXVECTOR2 DEST_ROT	= D3DXVECTOR2(1.4f, 1.5f);			// 回転カメラの向き目標値
+		const float ROTA_MOVE_TIME	= 3.8f;		// 回転時間
 		const float INIT_DIS		= 85.0f;	// 回転カメラの距離初期値
+		const float PLUS_SIDE		= 100.0f;	// プレイヤー横ずれ量
+		const float RUN_MOVE_TIME	= 0.8f;		// 移動時間
 	}
 
 	// 追従カメラ情報
@@ -530,6 +532,54 @@ void CCamera::SetDestRotate(void)
 
 	// 視野角を設定
 	m_fFov = basic::VIEW_ANGLE;
+}
+
+//============================================================
+//	カメラ目標位置の設定処理 (回転:待機)
+//============================================================
+void CCamera::SetDestRotateWait(void)
+{
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();	// プレイヤー向き
+	float fRotSide = rotPlayer.y + HALF_PI;	// プレイヤー横方向向き
+
+	// タイマーを初期化
+	m_rotaInfo.fCurTime = 0.0f;
+
+	// 待機状態にする
+	m_rotaInfo.state = SRota::STATE_WAIT;
+
+	// 目標向きを計算
+	m_aCamera[TYPE_MAIN].destRot.y = rotPlayer.y + D3DX_PI;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;
+	m_aCamera[TYPE_MAIN].destPosR += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * rotate::PLUS_SIDE;
+
+	//--------------------------------------------------------
+	//	向きの更新
+	//--------------------------------------------------------
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot.x = rotate::INIT_ROT.x;
+	m_aCamera[TYPE_MAIN].rot.y = rotate::DEST_ROT.y;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//--------------------------------------------------------
+	//	距離の更新
+	//--------------------------------------------------------
+	m_aCamera[TYPE_MAIN].fDis = rotate::INIT_DIS;
+
+	//--------------------------------------------------------
+	//	位置の更新
+	//--------------------------------------------------------
+	// 注視点の更新
+	m_aCamera[TYPE_MAIN].posR = rotate::INIT_POSR;
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
 }
 
 //============================================================
@@ -1935,6 +1985,37 @@ void CCamera::Rotate(const float fDeltaTime)
 	// カメラが回転状態以外なら抜ける
 	if (m_state != STATE_ROTATE) { return; }
 
+	switch (m_rotaInfo.state)
+	{ // 状態ごとの処理
+	case SRota::STATE_ROTA:
+
+		// 回転の更新
+		RotateRota(fDeltaTime);
+		break;
+
+	case SRota::STATE_WAIT:
+
+		// 待機の更新
+		RotateWait(fDeltaTime);
+		break;
+
+	case SRota::STATE_RUN:
+
+		// 移動の更新
+		RotateMove(fDeltaTime);
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+}
+
+//============================================================
+//	カメラの更新処理 (回転)
+//============================================================
+void CCamera::RotateRota(const float fDeltaTime)
+{
 	// 差分位置を計算
 	const float DIFF_ROTY = rotate::DEST_ROT.y - rotate::INIT_ROT.y;
 
@@ -1942,12 +2023,12 @@ void CCamera::Rotate(const float fDeltaTime)
 	m_rotaInfo.fCurTime += fDeltaTime;
 
 	// 経過時刻の割合を計算
-	float fRate = easeing::InOutQuart(m_rotaInfo.fCurTime, 0.0f, rotate::MOVE_TIME);
+	float fRate = easeing::InOutQuart(m_rotaInfo.fCurTime, 0.0f, rotate::ROTA_MOVE_TIME);
 
 	// 向きを反映
 	m_aCamera[TYPE_MAIN].rot.y = (rotate::INIT_ROT.y + (DIFF_ROTY * fRate));
 
-	if (m_rotaInfo.fCurTime >= rotate::MOVE_TIME)
+	if (m_rotaInfo.fCurTime >= rotate::ROTA_MOVE_TIME)
 	{ // 待機が終了した場合
 
 		// タイマーを初期化
@@ -1955,6 +2036,86 @@ void CCamera::Rotate(const float fDeltaTime)
 
 		// 向きを補正
 		m_aCamera[TYPE_MAIN].rot.y = rotate::DEST_ROT.y;
+
+		// 待機状態にする
+		m_rotaInfo.state = SRota::STATE_WAIT;
+
+		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+		D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();	// プレイヤー向き
+		float fRotSide = rotPlayer.y + HALF_PI;	// プレイヤー横方向向き
+
+		// 目標向きを計算
+		m_aCamera[TYPE_MAIN].destRot.y = rotPlayer.y + D3DX_PI;
+		useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+		// 注視点の目標位置を計算
+		m_aCamera[TYPE_MAIN].destPosR = posPlayer;
+		m_aCamera[TYPE_MAIN].destPosR += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * rotate::PLUS_SIDE;
+	}
+
+	//--------------------------------------------------------
+	//	向きの更新
+	//--------------------------------------------------------
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot.x = rotate::INIT_ROT.x;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//--------------------------------------------------------
+	//	距離の更新
+	//--------------------------------------------------------
+	m_aCamera[TYPE_MAIN].fDis = rotate::INIT_DIS;
+
+	//--------------------------------------------------------
+	//	位置の更新
+	//--------------------------------------------------------
+	// 注視点の更新
+	m_aCamera[TYPE_MAIN].posR = rotate::INIT_POSR;
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+}
+
+//============================================================
+//	カメラの更新処理 (待機)
+//============================================================
+void CCamera::RotateWait(const float fDeltaTime)
+{
+
+}
+
+//============================================================
+//	カメラの更新処理 (移動)
+//============================================================
+void CCamera::RotateMove(const float fDeltaTime)
+{
+	float fDestRotY = GET_PLAYER->GetVec3Rotation().y - D3DX_PI;
+	useful::NormalizeRot(fDestRotY);
+
+	// 差分位置を計算
+	const float DIFF_ROTY = fDestRotY - rotate::DEST_ROT.y;
+
+	// タイマーを加算
+	m_rotaInfo.fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::OutQuart(m_rotaInfo.fCurTime, 0.0f, rotate::RUN_MOVE_TIME);
+
+	// 向きを反映
+	m_aCamera[TYPE_MAIN].rot.y = (rotate::DEST_ROT.y + (DIFF_ROTY * fRate));
+
+	if (m_rotaInfo.fCurTime >= rotate::RUN_MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_rotaInfo.fCurTime = 0.0f;
+
+		// 向きを補正
+		m_aCamera[TYPE_MAIN].rot.y = fDestRotY;
+
+		// 回転状態にする
+		m_rotaInfo.state = SRota::STATE_ROTA;
 
 		// なにもしない状態にする
 		m_state = STATE_NONE;

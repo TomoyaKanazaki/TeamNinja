@@ -226,9 +226,12 @@ HRESULT CPlayer::Init(void)
 	m_iterator = m_pList->AddList(this);
 
 	// 士気力ゲージの生成
-	for (int i = 0; i < INIT_CLONE; ++i)
+	if (GET_MANAGER->GetMode() == CScene::MODE_GAME) // ゲーム画面でのみ生成する
 	{
-		CTension::Create();
+		for (int i = 0; i < INIT_CLONE; ++i)
+		{
+			CTension::Create();
+		}
 	}
 
 #ifndef PHOTO
@@ -760,6 +763,9 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 
 	// コントローラのバイブレーション
 	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
+
+	// ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GIMMICKJUMP);
 
 	return true;
 }
@@ -1338,6 +1344,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 				// 着地音(小)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
+
+			// 回避状態なら待機状態に変更する
+			if (m_state == STATE_DODGE || m_state == STATE_DAMAGE) { m_state = STATE_NONE; }
 		}
 	}
 	else

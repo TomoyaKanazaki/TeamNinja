@@ -140,7 +140,17 @@ public:
 	// 回転カメラ構造体
 	struct SRota
 	{
+		// 状態列挙
+		enum EState
+		{
+			STATE_ROTA = 0,	// 回転状態
+			STATE_WAIT,		// 待機状態
+			STATE_RUN,		// 移動状態
+			STATE_MAX		// この列挙型の総数
+		};
+
 		float fCurTime;	// カウント
+		EState state;	// 状態
 	};
 
 	// メンバ関数
@@ -154,8 +164,10 @@ public:
 	EState GetState(void) const;			// カメラ状態取得
 	void SetSwing(const EType type, const SSwing swing);	// カメラ揺れ設定
 	void SetEnableUpdate(const bool bUpdate);				// 更新状況設定
+	void SetRotateRun(void) { m_rotaInfo.state = SRota::STATE_RUN; }	// カメラの走り状態設定
 
 	void SetDestRotate(void);		// カメラ目標位置設定 (回転)
+	void SetDestRotateWait(void);	// カメラ目標位置設定 (回転:待機)
 	void SetDestFollow(void);		// カメラ目標位置設定 (追従)
 	void SetDestAround(void);		// カメラ目標位置設定 (回り込み)
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)
@@ -196,6 +208,9 @@ public:
 private:
 	// メンバ関数
 	void Rotate(const float fDeltaTime);		// カメラの更新 (回転)
+	void RotateRota(const float fDeltaTime);	// カメラの更新 (回転:回転)
+	void RotateWait(const float fDeltaTime);	// カメラの更新 (回転:待機)
+	void RotateMove(const float fDeltaTime);	// カメラの更新 (回転:移動)
 	void Follow(const float fDeltaTime);		// カメラの更新 (追従)
 	void Control(const float fDeltaTime);		// カメラの更新 (操作)
 	void GodItem(const float fDeltaTime);		// カメラの更新 (神器獲得)
