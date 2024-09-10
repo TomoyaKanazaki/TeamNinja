@@ -34,8 +34,8 @@ namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(60.0f, 100.0f, 60.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
-	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
-	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
+	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(90.0f, 100.0f, 90.0f);		// 回避判定(上)
+	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(90.0f, 0.0f, 90.0f);		// 回避判定(下)
 	const int DODGE_COUNT = 20;								// 回避カウント数
 	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
 	{
@@ -61,9 +61,9 @@ namespace
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
-		59,			// しつこい敵
+		44,			// しつこい敵
 		36,			// 狼敵
-		59,			// 待ち伏せ敵
+		44,			// 待ち伏せ敵
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃状態の遷移カウント
 	{
