@@ -102,41 +102,46 @@ public:
 	void Move(D3DXVECTOR3* pPos, const D3DXVECTOR3& rRot, const float fSpeed, const float fDeltaTime);			// 移動処理
 	void RotMove(D3DXVECTOR3& rRot, const float fRevRota, const float fDeltaTime);	// 向きの移動処理
 	void LookTarget(const D3DXVECTOR3& rPos);	// 目標位置の視認
-	bool Approach(const D3DXVECTOR3& rPos, const float fDis = 50.0f);				// 接近処理
+	bool Approach(const D3DXVECTOR3& rPos, const float fDis);				// 接近処理
 	bool JudgePlayer(void);		// プレイヤーの探索処理
 	bool JudgeClone(void);		// 分身の探索処理
-	bool ShakeOffPlayer(void);	// プレイヤーの振り切り処理
-	bool ShakeOffClone(void);	// 分身の振り切り処理
 	bool PlayerIngress(void);	// プレイヤー進入処理
+	bool CloneIngress(void);	// 分身進入処理
 
 	// TODO：う〇ちカス判定だから後で修正
 	bool HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
 	bool HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
 	// 静的メンバ関数
-	static D3DXVECTOR3 GetAttackUp();	// 当たり判定の取得
-	static D3DXVECTOR3 GetAttackDown();	// 当たり判定の取得
+	static D3DXVECTOR3 GetDodgeUp();	// 当たり判定の取得
+	static D3DXVECTOR3 GetDodgeDown();	// 当たり判定の取得
 
 protected:
 
 	// オーバーライド関数
 	virtual bool BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fHeight);		// 元の位置に戻る処理
 
-	virtual int Warning				// 警告処理
+	virtual int Warning		// 警告処理
 	(
 		D3DXVECTOR3* pPos,		// 位置
 		D3DXVECTOR3* pRot,		// 向き
 		const float fDeltaTime,	// デルタタイム
 		const float fRotRev		// 向きの補正数
 	);
-	virtual int Stalk				// 追跡処理
+	virtual int Stalk		// 追跡処理
 	(
 		D3DXVECTOR3* pPos,		// 位置
 		D3DXVECTOR3* pRot, 		// 向き
 		const float fDeltaTime,	// デルタタイム
 		const float fRotRev		// 向きの補正数
 	);
-	virtual int Attack(const D3DXVECTOR3& rPos);	// 攻撃処理
+	virtual int Attack		// 攻撃処理
+	(
+		D3DXVECTOR3* pPos,		// 位置
+		D3DXVECTOR3* pRot,		// 向き
+		const float fDeltaTime,	// デルタタイム
+		const float fRotRev		// 向きの補正数
+	);
 	virtual int BlankAttack(D3DXVECTOR3* pRot, const float fDeltaTime, const float fRotRev);		// 空白攻撃処理
 	virtual int Upset(void);						// 動揺処理
 	virtual int Stance(void);						// 構え処理

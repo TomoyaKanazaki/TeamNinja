@@ -32,12 +32,32 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(30.0f, 100.0f, 30.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(30.0f, 0.0f, 30.0f);	// 攻撃判定(下)
-	const int DODGE_COUNT = 20;					// 回避カウント数
-	const float SHAKEOFF_RANGE = 1000.0f;		// 振り切れる距離
-	const float DIVERSION_EFFECT_SCALE = 18.0f;	// 分身との戦闘エフェクトの大きさ
-	const int REGRESSION_COUNT = 120;			// 回帰するカウント数
+	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(50.0f, 100.0f, 50.0f);	// 攻撃判定(上)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 攻撃判定(下)
+	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
+	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
+	const int DODGE_COUNT = 20;						// 回避カウント数
+	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
+	{
+		DODGE_COUNT - 7,	// しつこい敵
+		DODGE_COUNT - 12,	// 狼敵
+		DODGE_COUNT - 7,	// 待ち伏せ敵
+	};
+	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
+	{
+		-320.0f,
+		-480.0f,
+		-320.0f,
+	};
+	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
+	{
+		60.0f,
+		90.0f,
+		60.0f,
+	};
+	const float SHAKEOFF_RANGE = 1000.0f;			// 振り切れる距離
+	const float DIVERSION_EFFECT_SCALE = 18.0f;		// 分身との戦闘エフェクトの大きさ
+	const int REGRESSION_COUNT = 120;				// 回帰するカウント数
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
@@ -592,68 +612,6 @@ bool CEnemyAttack::JudgeClone(void)
 }
 
 //============================================================
-// プレイヤーの振り切り処理
-//============================================================
-bool CEnemyAttack::ShakeOffPlayer(void)
-{
-	// 位置を取得する
-	m_posTarget = CScene::GetPlayer()->GetVec3Position();
-
-	if (collision::Circle2D(GetVec3Position(), m_posTarget, GetRadius(), SHAKEOFF_RANGE) == true)
-	{ // 範囲内に入っている場合
-
-		// プレイヤーを標的にする
-		m_target = TARGET_PLAYER;
-
-		// true を返す
-		return true;
-	}
-
-	// false を返す
-	return false;
-}
-
-//============================================================
-// 分身の振り切り処理
-//============================================================
-bool CEnemyAttack::ShakeOffClone(void)
-{
-	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
-	D3DXVECTOR3 posEnemy = GetVec3Position();		// 敵の位置
-
-	if (CPlayerClone::GetList() == nullptr ||
-		*CPlayerClone::GetList()->GetBegin() == nullptr)
-	{ // 分身のリストが無い場合
-
-		// falseを返す
-		return false;
-	}
-
-	for (auto& rClone : CPlayerClone::GetList()->GetList())
-	{
-		// 分身の位置を取得する
-		pos = rClone->GetVec3Position();
-
-		if (!collision::Circle2D(GetVec3Position(), pos, GetRadius(), SHAKEOFF_RANGE)) { continue; }
-
-		// 位置を設定する
-		m_posTarget = pos;
-
-		// 分身の情報を設定する
-		m_pClone = rClone;
-
-		// 分身を標的にする
-		m_target = TARGET_CLONE;
-
-		// true を返す
-		return true;
-	}
-
-	// false を返す
-	return false;
-}
-
-//============================================================
 // プレイヤー進入処理
 //============================================================
 bool CEnemyAttack::PlayerIngress(void)
@@ -669,8 +627,60 @@ bool CEnemyAttack::PlayerIngress(void)
 	// 位置を取得する
 	pos = pPlayer->GetVec3Position();
 
-	// 範囲内進入状況を返す
-	return m_pChaseRange->InsideTargetPos(GetPosInit(), pos);
+	// 範囲内にいなかった場合、false を返す
+	if (!m_pChaseRange->InsideTargetPos(GetPosInit(), pos)) { return false; }
+
+	// 目的をプレイヤーにする
+	m_target = TARGET_PLAYER;
+
+	// 目的の位置を設定する
+	m_posTarget = pos;
+
+	// true を返す
+	return true;
+}
+
+//============================================================
+// 分身進入処理
+//============================================================
+bool CEnemyAttack::CloneIngress(void)
+{
+	D3DXVECTOR3 pos = VEC3_ZERO;					// 位置
+
+	if (CPlayerClone::GetList() == nullptr ||
+		*CPlayerClone::GetList()->GetBegin() == nullptr)
+	{ // 分身のリストが無い場合
+
+		// falseを返す
+		return false;
+	}
+
+	for (auto& clone : CPlayerClone::GetList()->GetList())
+	{
+		// 歩行状態じゃない場合、次に進む
+		if (clone->GetAction() != CPlayerClone::ACTION_MOVE) { continue; }
+
+		// 分身の位置を取得する
+		pos = clone->GetVec3Position();
+
+		// 範囲内進入状況を返す
+		if (!m_pChaseRange->InsideTargetPos(GetPosInit(), pos)) { continue; }
+
+		// 分身の情報を設定する
+		m_pClone = clone;
+
+		// 目的を分身にする
+		m_target = TARGET_CLONE;
+
+		// 目的の位置を設定する
+		m_posTarget = pos;
+
+		// true を返す
+		return true;
+	}
+
+	// false を返す
+	return false;
 }
 
 //====================================================================================================================================================================================
@@ -818,19 +828,19 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 }
 
 //===========================================
-//  当たり判定の取得
+//  回避判定の取得
 //===========================================
-D3DXVECTOR3 CEnemyAttack::GetAttackUp()
+D3DXVECTOR3 CEnemyAttack::GetDodgeUp()
 {
-	return ATTACK_COLLUP;
+	return DODGE_COLLUP;
 }
 
 //===========================================
-//  当たり判定の取得
+//  回避判定の取得
 //===========================================
-D3DXVECTOR3 CEnemyAttack::GetAttackDown()
+D3DXVECTOR3 CEnemyAttack::GetDodgeDown()
 {
-	return ATTACK_COLLDOWN;
+	return DODGE_COLLDOWN;
 }
 
 //===========================================
@@ -925,6 +935,28 @@ int CEnemyAttack::Warning
 	const float fRotRev		// 向きの補正数
 )
 {
+	switch (m_target)
+	{
+	case CEnemyAttack::TARGET_PLAYER:
+
+		// プレイヤーの探索処理
+		JudgePlayer();
+
+		break;
+
+	case CEnemyAttack::TARGET_CLONE:
+
+		// クローンの探索処理
+		JudgeClone();
+
+		break;
+
+	default:
+		// 停止
+		assert(false);
+		break;
+	}
+
 	// 状態カウントを加算する
 	m_nStateCount++;
 
@@ -966,9 +998,9 @@ int CEnemyAttack::Stalk
 	// 歩行カウントを加算する
 	m_nStateCount++;
 
-	if (!ShakeOffClone() &&
-		!ShakeOffPlayer())
-	{ // 分身かプレイヤーが視界内にいない場合
+	if (!CloneIngress() &&
+		!PlayerIngress())
+	{ // 分身もプレイヤーも範囲内にいない場合
 
 		// 独自状態にする
 		SetState(STATE_ORIGIN);
@@ -995,7 +1027,7 @@ int CEnemyAttack::Stalk
 	// 移動処理
 	Move(pPos, *pRot, GetSpeed(), fDeltaTime);
 
-	if (Approach(*pPos))
+	if (Approach(*pPos, ATTACK_DISTANCE[m_type]))
 	{ // 接近した場合
 
 		if (GetTarget() == CEnemyAttack::TARGET_PLAYER)
@@ -1033,13 +1065,36 @@ int CEnemyAttack::Stalk
 //===========================================
 // 攻撃処理
 //===========================================
-int CEnemyAttack::Attack(const D3DXVECTOR3& rPos)
+int CEnemyAttack::Attack
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	switch (GetTarget())
+	// 目標位置の視認処理
+	LookTarget(*pPos);
+
+	// 向きの移動処理
+	RotMove(*pRot, fRotRev, fDeltaTime);
+
+	if (m_nAttackCount < DODGE_COUNT &&
+		m_nAttackCount > ATTACK_DASH_COUNT[m_type])
+	{ // 回避カウントを過ぎた場合
+
+		// 移動処理
+		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+	}
+
+	switch (m_target)
 	{
 	case CEnemyAttack::TARGET_PLAYER:
 
-		if (HitPlayer(rPos))
+		// プレイヤーの探索処理
+		JudgePlayer();
+
+		if (HitPlayer(*pPos))
 		{ // プレイヤーに当たった場合
 
 			// 攻撃音を鳴らす
@@ -1061,7 +1116,10 @@ int CEnemyAttack::Attack(const D3DXVECTOR3& rPos)
 
 	case CEnemyAttack::TARGET_CLONE:
 
-		if (HitClone(rPos))
+		// クローンの探索処理
+		JudgeClone();
+
+		if (HitClone(*pPos))
 		{ // 分身に当たった場合
 
 			// 空白攻撃状態にする
@@ -1157,10 +1215,8 @@ int CEnemyAttack::Upset(void)
 //===========================================
 int CEnemyAttack::Stance(void)
 {
-	// 分身の発見処理
-	JudgeClone();
-
-	if (PlayerIngress())
+	if (PlayerIngress() ||
+		CloneIngress())
 	{ // 範囲内に入った場合
 
 		// 警告状態にする

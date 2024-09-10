@@ -29,9 +29,9 @@ namespace
 	const int	BLEND_FRAME_OTHER	= 5;	// モーションの基本的なブレンドフレーム
 	const int	BLEND_FRAME_TURN	= 20;	// モーション動揺のブレンドフレーム
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
-	const float	RADIUS = 70.0f;				// 半径
+	const float	RADIUS = 28.0f;				// 半径
 	const float HEIGHT = 20.0f;				// 身長
-	const float SPEED = -500.0f;			// 移動量
+	const float SPEED = -570.0f;			// 移動量
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
 	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
 	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
@@ -304,7 +304,7 @@ int CEnemyWolf::UpdateState(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const float fD
 		case STATE_ATTACK:	// 攻撃状態
 
 			// 攻撃状態時の更新
-			nCurMotion = Attack(*pPos);
+			nCurMotion = Attack(pPos, pRot, fDeltaTime, REV_ROTA_LOOK);
 			break;
 
 		case STATE_BLANKATTACK:
@@ -544,8 +544,8 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 		if (GetChaseRange()->InsideTargetPos(GetPosInit(), GetTargetPos()))
 		{ // 範囲内に入った場合
 
-			// 独自状態にする
-			SetState(STATE_ORIGIN);
+			// 警告状態にする
+			SetState(STATE_WARNING);
 
 			// 発見モーションを返す
 			return MOTION_FOUND;
@@ -636,9 +636,15 @@ int CEnemyWolf::Stalk
 //============================================================
 // 攻撃処理
 //============================================================
-int CEnemyWolf::Attack(const D3DXVECTOR3& rPos)
+int CEnemyWolf::Attack
+(
+	D3DXVECTOR3* pPos,		// 位置
+	D3DXVECTOR3* pRot,		// 向き
+	const float fDeltaTime,	// デルタタイム
+	const float fRotRev		// 向きの補正数
+)
 {
-	switch (CEnemyAttack::Attack(rPos))
+	switch (CEnemyAttack::Attack(pPos, pRot, fDeltaTime, fRotRev))
 	{
 	case STATE_ORIGIN:
 

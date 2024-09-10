@@ -26,12 +26,14 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,		// 何もしない
-		STATE_MOVE_WAIT,	// 移動待機
-		STATE_MOVE,			// 移動
-		STATE_AURA_WAIT,	// オーラ待機
-		STATE_AURA,			// オーラ
-		STATE_MAX			// この列挙型の総数
+		STATE_NONE = 0,			// 何もしない
+		STATE_ONE_MOVE_WAIT,	// 第一移動待機
+		STATE_ONE_MOVE,			// 第一移動
+		STATE_TWO_MOVE_WAIT,	// 第二移動待機
+		STATE_TWO_MOVE,			// 第二移動
+		STATE_AURA_WAIT,		// オーラ待機
+		STATE_AURA,				// オーラ
+		STATE_MAX				// この列挙型の総数
 	};
 
 	// コンストラクタ
@@ -54,16 +56,19 @@ public:
 	// 静的メンバ関数
 	static CTitleLogo2D *Create	// 生成
 	( // 引数
-		const char* pBlurTexPath,		// ブラーテクスチャパス
-		const D3DXVECTOR3& rPos,		// 位置
-		const D3DXVECTOR3& rOffset,		// オフセット
-		const D3DXVECTOR3& rSize,		// 大きさ
-		const float fMoveTime = 1.0f,	// 移動時間
-		const float fWaitTime = 1.0f	// 待機時間
+		const char* pBlurTexPath,			// ブラーテクスチャパス
+		const D3DXVECTOR3& rDestPosOne,		// 第一目標位置
+		const D3DXVECTOR3& rDestPosTwo,		// 第二目標位置
+		const D3DXVECTOR3& rOffset,			// オフセット
+		const D3DXVECTOR3& rSize,			// 大きさ
+		const float fMoveTimeOne = 1.0f,	// 第一移動時間
+		const float fMoveTimeTwo = 1.0f,	// 第二移動時間
+		const float fWaitTimeOne = 1.0f,	// 第一待機時間
+		const float fWaitTimeTwo = 1.0f		// 第二待機時間
 	);
 
 	// メンバ関数
-	void SetStag(void)		{ m_state = STATE_MOVE_WAIT; }		// 演出開始設定
+	void SetStag(void)		{ m_state = STATE_ONE_MOVE_WAIT; }	// 演出開始設定
 	bool IsStag(void) const	{ return (m_state != STATE_NONE); }	// 演出中フラグ取得
 	void SetBlurColor(const D3DXCOLOR& rCol)		{ m_pBlur->SetColor(rCol); }			// ブラー色設定
 	void BindAuraTexture(const char *pTexturePass)	{ m_pAura->BindTexture(pTexturePass); }	// テクスチャ割当 (インデックス)
@@ -71,22 +76,27 @@ public:
 
 private:
 	// メンバ関数
-	void UpdateMoveWait(const float fDeltaTime);	// 移動待機更新
-	void UpdateMove(const float fDeltaTime);		// 移動更新
+	void UpdateMoveOneWait(const float fDeltaTime);	// 第一移動待機更新
+	void UpdateMoveOne(const float fDeltaTime);		// 第一移動更新
+	void UpdateMoveTwoWait(const float fDeltaTime);	// 第二移動待機更新
+	void UpdateMoveTwo(const float fDeltaTime);		// 第二移動更新
 	void UpdateAuraWait(const float fDeltaTime);	// オーラ待機更新
 	void UpdateAura(const float fDeltaTime);		// オーラ更新
 
 	// メンバ変数
 	const char* m_pBlurTexPath;	// ブラーテクスチャパス
-	CAnim2D* m_pAura;		// オーラ情報
-	CBlur2D* m_pBlur;		// ブラー情報
-	EState m_state;			// 状態
-	float m_fMoveTime;		// 移動時間
-	float m_fWaitTime;		// 待機時間
-	float m_fCurTime;		// 現在の待機時間
-	D3DXVECTOR3 m_offset;	// 初期位置オフセット
-	D3DXVECTOR3 m_initPos;	// 初期位置
-	D3DXVECTOR3 m_destPos;	// 目標位置
+	CAnim2D* m_pAura;			// オーラ情報
+	CBlur2D* m_pBlur;			// ブラー情報
+	EState m_state;				// 状態
+	float m_fMoveTimeOne;		// 第一移動時間
+	float m_fMoveTimeTwo;		// 第二移動時間
+	float m_fWaitTimeOne;		// 第一待機時間
+	float m_fWaitTimeTwo;		// 第二待機時間
+	float m_fCurTime;			// 現在の待機時間
+	D3DXVECTOR3 m_offset;		// 初期位置オフセット
+	D3DXVECTOR3 m_initPos;		// 初期位置
+	D3DXVECTOR3 m_destPosOne;	// 第一目標位置
+	D3DXVECTOR3 m_destPosTwo;	// 第二目標位置
 };
 
 #endif	// _TITLE_LOGO2D_H_

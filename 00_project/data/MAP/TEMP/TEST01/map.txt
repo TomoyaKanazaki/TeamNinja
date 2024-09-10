@@ -7,6 +7,7 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS	= data\MAP\TEMP\TEST01\stage.txt	# ステージ情報パス
-POINT_PASS	= data\MAP\TEMP\TEST01\point.txt	# ポイント情報パス
-ACTOR_PASS	= data\MAP\TEMP\TEST01\actor.txt	# アクター情報パス
+STAGE_PASS			= data\MAP\TEMP\TEST01\stage.txt		# ステージ情報パス
+POINT_PASS			= data\MAP\TEMP\TEST01\point.txt		# ポイント情報パス
+ACTOR_PASS			= data\MAP\TEMP\TEST01\actor.txt		# アクター情報パス
+ENEMYATTACK_PASS	= data\MAP\TEMP\TEST01\enemyAttack.txt	# 攻撃敵情報パス

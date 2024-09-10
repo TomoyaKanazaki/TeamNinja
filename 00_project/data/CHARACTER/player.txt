@@ -153,4 +153,5 @@ MOTIONPASS = data\MOTION\PLAYER\damage.txt		# ダメージモーション
 MOTIONPASS = data\MOTION\PLAYER\save.txt		# セーブモーション
 MOTIONPASS = data\MOTION\PLAYER\get.txt			# 神器取得モーション
 MOTIONPASS = data\MOTION\PLAYER\start.txt		# スタートモーション
+MOTIONPASS = data\MOTION\PLAYER\stand.txt		# 仁王立ちモーション
 MOTIONPASS = data\MOTION\PLAYER\select.txt		# 選択モーション
