@@ -32,18 +32,28 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(50.0f, 100.0f, 50.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 攻撃判定(下)
+	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(60.0f, 100.0f, 60.0f);	// 攻撃判定(上)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
 	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
 	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
-	const int DODGE_COUNT = 20;						// 回避カウント数
-	const int ATTACK_DASH_COUNT = DODGE_COUNT - 12;	// 攻撃時のダッシュのカウント
-	const float ADD_ATTACK_DASH = -480.0f;			// 攻撃ダッシュ時の速度の追加量
+	const int DODGE_COUNT = 20;								// 回避カウント数
+	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
+	{
+		DODGE_COUNT - 10,	// しつこい敵
+		DODGE_COUNT - 12,	// 狼敵
+		DODGE_COUNT - 10,	// 待ち伏せ敵
+	};
+	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
+	{
+		-600.0f,			// しつこい敵
+		-500.0f,			// 狼敵
+		-600.0f,			// 待ち伏せ敵
+	};
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
-		60.0f,
-		90.0f,
-		60.0f,
+		100.0f,		// しつこい敵
+		90.0f,		// 狼敵
+		100.0f,		// 待ち伏せ敵
 	};
 	const float SHAKEOFF_RANGE = 1000.0f;			// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;		// 分身との戦闘エフェクトの大きさ
@@ -1061,11 +1071,11 @@ int CEnemyAttack::Attack
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
 	if (m_nStateCount < DODGE_COUNT &&
-		m_nStateCount > ATTACK_DASH_COUNT)
+		m_nStateCount > ATTACK_DASH_COUNT[m_type])
 	{ // 回避カウントを過ぎた場合
 
 		// 移動処理
-		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH, fDeltaTime);
+		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
 	}
 
 	if (m_pChaseRange != nullptr)

@@ -74,6 +74,7 @@ public:
 		LABEL_SE_DOORCLOSE,			// d‚¢”à‚ª•Â‚¶‚é‰¹
 		LABEL_SE_MASH,				// ‚Ó‚·‚Ü‚Ì‰¹
 		LABEL_SE_MASHCLOSE,			// ‚Ó‚·‚Ü‚ª•Â‚¶‚é‚Æ‚«‚Ì‰¹
+		LABEL_SE_SPINWALL,			// ‰ñ“]”à‚Ì‰¹
 		LABEL_MAX					// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

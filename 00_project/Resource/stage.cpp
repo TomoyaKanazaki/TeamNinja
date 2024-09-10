@@ -590,6 +590,51 @@ float CStage::GetFieldPositionHeight(const D3DXVECTOR3& rPos)
 }
 
 //============================================================
+//	メッシュの着地位置の取得処理 (現在位置よりは下)
+//============================================================
+float CStage::GetFieldDownPositionHeight(const D3DXVECTOR3& rPos)
+{
+	CListManager<CField> *pListManager = CField::GetList();	// フィールドリストマネージャー
+	if (pListManager == nullptr) { return false; }			// リスト未使用の場合抜ける
+	std::list<CField*> listField = pListManager->GetList();	// フィールドリスト情報
+	CField *pCurField = nullptr;	// 着地予定の地面
+	float fCurPos = m_limit.fField;	// 着地予定のY座標
+
+	for (auto& rList : listField)
+	{ // 地面の総数分繰り返す
+
+		assert(rList != nullptr);
+		if (rList->IsPositionRange(rPos))
+		{ // 地面の範囲内の場合
+
+			float fPosHeight = rList->GetPositionHeight(rPos);	// 着地Y座標
+			if (fCurPos <= fPosHeight && rPos.y >= fPosHeight)
+			{ // 現在の着地予定Y座標より高い位置にある場合
+
+				// 着地予定の地面を更新
+				pCurField = rList;
+
+				// 着地予定のY座標を更新
+				fCurPos = fPosHeight;
+			}
+		}
+	}
+
+	if (pCurField != nullptr)
+	{ // 着地予定の地面が存在する場合
+
+		// 着地位置を返す
+		return fCurPos;
+	}
+	else
+	{ // 着地予定の地面が存在しない場合
+
+		// 引数位置を返す
+		return rPos.y;
+	}
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CStage *CStage::Create(void)
