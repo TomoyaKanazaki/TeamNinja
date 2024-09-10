@@ -13,6 +13,7 @@
 #include "player.h"
 #include "player_clone.h"
 #include "collision.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -281,9 +282,6 @@ bool CWeed::Collision(const D3DXVECTOR3& rPosTarg, const float fRadTarg)
 			m_fCurLength * cosf(m_fCurAngle)
 		);
 
-		// 踏んづけたので遷移フラグオン
-		m_bChange = true;
-
 		return true;
 	}
 
@@ -303,7 +301,21 @@ bool CWeed::CollisionPlayer(void)
 	// プレイヤーとの接触判定
 	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();	// プレイヤー位置
 	float fRadPlayer = pPlayer->GetRadius();			// プレイヤー半径
-	return Collision(posPlayer, fRadPlayer);			// 当たり判定
+
+	// 当たっていない場合、false を返す
+	if (!Collision(posPlayer, fRadPlayer)) { return false; }
+
+	// 既に踏んでいた場合、true を返す
+	if (m_bChange) { return true; }
+
+	// 踏んづけたので遷移フラグオン
+	m_bChange = true;
+
+	// 草踏んだ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GRASS_000);
+
+	// true を返す
+	return true;
 }
 
 //============================================================
