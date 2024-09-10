@@ -54,6 +54,7 @@ namespace
 		{ "data\\SE\\wolfstance000.wav", 0 },	// ˜T‚ª\‚¦‚½‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\clonefail000.wav", 0 },	// •ªg¸”s‰¹
 		{ "data\\SE\\waterdeath000.wav", 0 },	// ’……‰¹
+		{ "data\\SE\\grass000.wav", 0 },		// ‘“¥‚ñ‚¾‰¹
 	};
 }
 

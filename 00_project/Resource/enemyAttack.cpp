@@ -37,18 +37,8 @@ namespace
 	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
 	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
 	const int DODGE_COUNT = 20;						// 回避カウント数
-	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
-	{
-		DODGE_COUNT - 7,	// しつこい敵
-		DODGE_COUNT - 12,	// 狼敵
-		DODGE_COUNT - 7,	// 待ち伏せ敵
-	};
-	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
-	{
-		-320.0f,
-		-480.0f,
-		-320.0f,
-	};
+	const int ATTACK_DASH_COUNT = DODGE_COUNT - 12;	// 攻撃時のダッシュのカウント
+	const float ADD_ATTACK_DASH = -480.0f;			// 攻撃ダッシュ時の速度の追加量
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
 		60.0f,
@@ -1047,8 +1037,8 @@ int CEnemyAttack::Stalk
 		return m_state;
 	}
 
-	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
+	if (m_pChaseRange != nullptr &&
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// 構え状態にする
@@ -1080,11 +1070,18 @@ int CEnemyAttack::Attack
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
 	if (m_nAttackCount < DODGE_COUNT &&
-		m_nAttackCount > ATTACK_DASH_COUNT[m_type])
+		m_nAttackCount > ATTACK_DASH_COUNT)
 	{ // 回避カウントを過ぎた場合
 
 		// 移動処理
-		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH, fDeltaTime);
+	}
+
+	if (m_pChaseRange != nullptr)
+	{ // 追跡範囲が NULL じゃない場合
+
+		// 追跡範囲の補正処理
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos);
 	}
 
 	switch (m_target)
