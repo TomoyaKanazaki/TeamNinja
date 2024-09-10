@@ -31,7 +31,7 @@ namespace
 	const int	BLEND_FRAME_LAND	= 15;	// モーション着地のブレンドフレーム
 	const float	RADIUS = 28.0f;				// 半径
 	const float HEIGHT = 20.0f;				// 身長
-	const float SPEED = -570.0f;			// 移動量
+	const float SPEED = -620.0f;			// 移動量
 	const float	REV_ROTA		= 4.5f;		// 向き変更の補正係数
 	const float	REV_ROTA_LOOK	= 9.0f;		// ガウガウしてる時の向き変更の補正係数
 	const float ATTACK_DISTANCE	= 50.0f;	// 攻撃判定に入る距離
