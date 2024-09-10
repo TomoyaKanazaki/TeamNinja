@@ -66,6 +66,10 @@ public:
 		LABEL_SE_CLONEFAIL_000,		// 分身失敗音
 		LABEL_SE_WATERDEATH_000,	// 着水音
 		LABEL_SE_GRASS_000,			// 草踏んだ音
+		LABEL_SE_GIMMICKJUMP,		// ギミックジャンプ音
+		LABEL_SE_GIMMICKBRIDGE,		// 橋完成音
+		LABEL_SE_GIMMICKBUTTON,		// ボタンを押した音
+		LABEL_SE_GIMMICKBAMBOO,		// 竹格子の動く音
 		LABEL_MAX					// この列挙型の総数
 	};
 

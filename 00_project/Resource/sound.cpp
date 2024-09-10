@@ -55,6 +55,10 @@ namespace
 		{ "data\\SE\\clonefail000.wav", 0 },	// 分身失敗音
 		{ "data\\SE\\waterdeath000.wav", 0 },	// 着水音
 		{ "data\\SE\\grass000.wav", 0 },		// 草踏んだ音
+		{ "data\\SE\\gimmickjump.wav", 0 },		// ギミックジャンプ音
+		{ "data\\SE\\gimmickbridge.wav", 0 },	// 橋完成音
+		{ "data\\SE\\gimmickbutton.wav", 0 },	// ボタンを押した音
+		{ "data\\SE\\gimmickbamboo.wav", 0 },	// 竹格子の動く音
 	};
 }
 
