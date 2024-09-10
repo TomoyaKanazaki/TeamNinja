@@ -209,17 +209,15 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 {
 	D3DXVECTOR3 posPlayer		= GetVec3Position();	// プレイヤー位置
 	D3DXVECTOR3 oldPosPlayer	= GetOldPosition();		// プレイヤー過去位置
-	D3DXVECTOR3 movePlayer		= GetMove();			// プレイヤー移動量
 	CStage *pStage	= GET_STAGE;	// ステージ情報
 	bool	bLand	= false;		// 着地フラグ
-
-	// 横移動量を初期化
-	movePlayer.x = movePlayer.z = 0.0f;
 
 	// 重力の更新
 	UpdateGravity(fDeltaTime);
 
 	// 重力を与える
+	D3DXVECTOR3 movePlayer = GetMove();	// プレイヤー移動量
+	movePlayer.x = movePlayer.z = 0.0f;	// 横移動量を初期化
 	posPlayer += movePlayer * fDeltaTime;
 
 	// アクターとの当たり判定

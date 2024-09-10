@@ -35,7 +35,7 @@ namespace
 
 		const char* TEXTURE		= "data\\TEXTURE\\resultFade000.png";	// フェードテクスチャ
 		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(800.0f, 1770.0f, 0.0f);	// フェード大きさ
-		const D3DXCOLOR	  COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);	// フェード色
+		const D3DXCOLOR	  COL	= D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.8f);	// フェード色
 		const D3DXVECTOR3 UP_POS	= D3DXVECTOR3(FADE_CENT, -900.0f, 0.0f);		// フェード上位置
 		const D3DXVECTOR3 CENT_POS	= D3DXVECTOR3(FADE_CENT, SCREEN_CENT.y, 0.0f);	// フェード中央位置
 		const D3DXVECTOR3 DOWN_POS	= D3DXVECTOR3(FADE_CENT, SCREEN_HEIGHT + 900.0f, 0.0f);			// フェード下位置
@@ -45,10 +45,10 @@ namespace
 
 	namespace title
 	{
-		const char *FONT	= "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char *FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const bool	ITALIC	= false;			// イタリック
 		const float	WAIT_TIME		= 0.5f;		// タイトル待機時間
-		const float	CHAR_HEIGHT		= 100.0f;	// 文字縦幅
+		const float	CHAR_HEIGHT		= 80.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 80.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.08f;	// 文字表示の待機時間
 		const D3DXVECTOR3 POS = D3DXVECTOR3(540.0f, 40.0f, 0.0f);	// テキスト位置
