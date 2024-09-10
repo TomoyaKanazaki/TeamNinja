@@ -689,7 +689,7 @@ void CPlayer::SetResult()
 		SetMotion(MOTION_DEATH);
 		break;
 	case CRetentionManager::WIN_SUCCESS:
-		SetMotion(MOTION_IDOL);
+		SetMotion(MOTION_GOAL);
 		break;
 	}
 }
@@ -1629,7 +1629,16 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_STAND:	// 仁王立ちモーション
 		break;
 
-	case MOTION_SELECT:	// 選択モーション
+	case MOTION_GOAL:	// ゴールモーション
+		break;
+
+	case MOTION_SELECT_IN:	// セレクト開始モーション
+		break;
+
+	case MOTION_SELECT_OUT:	// セレクト終了モーション
+		break;
+
+	case MOTION_DROWNING:	// 水没モーション
 		break;
 	}
 }
