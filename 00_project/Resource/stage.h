@@ -94,6 +94,7 @@ public:
 	bool CollisionKillY(const D3DXVECTOR3& rPos);				// キルY座標との当たり判定
 	bool IsFieldPositionRange(const D3DXVECTOR3& rPos);			// メッシュの範囲内取得
 	float GetFieldPositionHeight(const D3DXVECTOR3& rPos);		// メッシュの着地位置取得
+	float GetFieldDownPositionHeight(const D3DXVECTOR3& rPos);	// メッシュの着地位置取得 (現在位置よりは下)
 
 	// 静的メンバ関数
 	static CStage *Create(void);			// 生成
