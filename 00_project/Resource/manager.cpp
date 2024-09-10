@@ -25,6 +25,8 @@
 #include "retentionManager.h"
 #include "debug.h"
 #include "debugproc.h"
+#include "ZTexture.h"
+#include "ToonShadow.h"
 
 //************************************************************
 //	静的メンバ変数宣言
@@ -399,6 +401,15 @@ void CManager::Uninit(void)
 	SAFE_REF_RELEASE(m_pLoading);
 
 	//--------------------------------------------------------
+	//	シェーダーの破棄
+	//--------------------------------------------------------
+	// トゥーンシェーダーの破棄
+	CToonShadow::GetInstance()->Release();
+
+	// Zテクスチャの破棄
+	CZTexture::GetInstance()->Release();
+
+	//--------------------------------------------------------
 	//	システムの破棄
 	//--------------------------------------------------------
 	// データ保存マネージャーの破棄
@@ -460,7 +471,7 @@ void CManager::Uninit(void)
 
 	// エフェクシアの破棄
 	m_pEffekseer->Uninit();
-	SAFE_DELETE(m_pEffekseer)
+	SAFE_DELETE(m_pEffekseer);
 
 	// 例外処理
 	assert(CObject::GetNumAll() == 0);	// 破棄の失敗

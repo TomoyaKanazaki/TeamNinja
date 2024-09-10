@@ -13,6 +13,7 @@
 #include "ZTexture.h"
 #include "ToonShadow.h"
 #include "debug.h"
+
 //************************************************************
 //	Ã“Iƒƒ“ƒo•Ï”éŒ¾
 //************************************************************
@@ -680,8 +681,6 @@ void CObject::ReleaseAll(void)
 			}
 		}
 	}
-
-	CZTexture::GetInstance()->Release();
 
 	// ‘S€–Sˆ—
 	DeathAll();
