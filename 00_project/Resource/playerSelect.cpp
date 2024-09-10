@@ -241,7 +241,7 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	SetVec3Rotation(GetDestRotation());
 
 	// ‘Ò‹@ƒ‚[ƒVƒ‡ƒ“‚ğ•Ô‚·
-	return MOTION_IDOL;
+	return MOTION_SELECT;
 }
 
 //============================================================
