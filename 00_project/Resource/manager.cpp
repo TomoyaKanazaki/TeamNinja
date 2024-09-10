@@ -20,6 +20,7 @@
 #include "font.h"
 #include "character.h"
 #include "stage.h"
+#include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "retentionManager.h"
 #include "debug.h"
@@ -667,6 +668,9 @@ HRESULT CManager::SetScene(const CScene::EMode mode)
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
 
+	// エフェクトの全破棄
+	GET_EFFECT->AllClear();
+
 	// シーンの生成
 	assert(m_pScene == nullptr);
 	m_pScene = CScene::Create(mode);
@@ -702,9 +706,6 @@ void CManager::SetFadeScene
 	const float fSubIn			// インのα値減少量
 )
 {
-	// カメラ更新をオンにする
-	m_pCamera->SetEnableUpdate(true);
-
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
@@ -723,9 +724,6 @@ void CManager::SetLoadScene
 	const float fSubIn			// インのα値減少量
 )
 {
-	// カメラ更新をオンにする
-	m_pCamera->SetEnableUpdate(true);
-
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
@@ -750,6 +748,9 @@ HRESULT CManager::SetMode(const CScene::EMode mode)
 
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
+
+	// エフェクトの全破棄
+	GET_EFFECT->AllClear();
 
 	// シーンの生成
 	assert(m_pScene == nullptr);
@@ -792,6 +793,9 @@ HRESULT CManager::SetLoadMode(const CScene::EMode mode)
 
 	// オブジェクトの全破棄
 	CObject::ReleaseAll();
+
+	// エフェクトの全破棄
+	GET_EFFECT->AllClear();
 
 	// シーンの生成
 	assert(m_pScene == nullptr);

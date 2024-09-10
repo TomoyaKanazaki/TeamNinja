@@ -39,6 +39,8 @@ public:
 	void Draw();
 
 	void Uninit();
+
+	void AllClear();
 	Effekseer::EffectRef Loading(std::string path);
 	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false, bool bAutoDelete = true);
 	static CEffekseer* GetInstance() {

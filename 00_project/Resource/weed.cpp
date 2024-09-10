@@ -35,7 +35,7 @@ namespace
 	const float STOMP_REV	 = 0.4f;	// 踏んだ時の補正係数
 	const float SWING_OFFSET = 45.0f;	// 風揺れオフセット
 	const float SWING_ANGLE	 = D3DX_PI;	// 風向き
-	const float SWING_REV	 = 0.02f;	// 遷移時の補正係数
+	const float SWING_REV	 = 0.012f;	// 遷移時の補正係数
 	const float STOMP_MAX_ADD_OFFSET = 45.0f;	// ずらす先端の最高加算距離
 	const float STOMP_MIN_OFFSET	 = 30.0f;	// ずらす先端の最低距離
 }

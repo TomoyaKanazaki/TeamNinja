@@ -288,3 +288,21 @@ HRESULT CGoal::LoadSetup(const char* pPass)
 	// 成功を返す
 	return S_OK;
 }
+
+//============================================================
+//	全破棄処理
+//============================================================
+void CGoal::UninitAll(void)
+{
+	// リストなかったら抜ける
+	if (m_pList == nullptr) { return; }
+
+	// 内部リスト取得
+	std::list<CGoal*> list = m_pList->GetList();
+	for (auto& rList : list)
+	{ // 全要素数分繰り返す
+
+		// 終了
+		SAFE_UNINIT(rList);
+	}
+}
