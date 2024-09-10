@@ -15,7 +15,10 @@
 //************************************************************
 namespace
 {
-
+	const int	NUM_CLONE	= 2;		// 生成する分身数
+	const float	MOVE_VALUE	= 500.0f;	// 移動スカラー
+	const float	OFFSET_SIDE	= 100.0f;	// 分身生成横オフセット
+	const float	OFFSET_BACK	= 100.0f;	// 分身生成後ろオフセット
 }
 
 //************************************************************
@@ -161,17 +164,22 @@ void CPlayerTitle::SetStart(void)
 {
 	const D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
 	const D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
-	const D3DXVECTOR3 moveChara = D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -300.0f;	// キャラ移動量
+	const D3DXVECTOR3 moveChara = D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -MOVE_VALUE;	// キャラ移動量
 
 	// 情報を初期化
 	SetState(STATE_TITLE_MOVE);	// 移動状態の設定
 	SetMotion(MOTION_DASH);		// 移動モーションを設定
 
-	for (int i = 0; i < 2; i++)
-	{
-		D3DXVECTOR3 posClone = posPlayer;
+	for (int i = 0; i < NUM_CLONE; i++)
+	{ // 生成する分身数分繰り返す
 
-		posClone += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * 100.0f;
+		D3DXVECTOR3 posClone = posPlayer;			// 分身生成位置
+		float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向向き
+		float fSide = (1.0f - ((i % 2) * 2.0f));	// 生成方向係数
+
+		// 生成位置をずらす
+		posClone += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * OFFSET_SIDE * fSide;	// 横にずらす
+		posClone += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * OFFSET_BACK;		// 後ろにずらす
 
 		// 分身の生成
 		CPlayerClone::Create(posClone, moveChara);
