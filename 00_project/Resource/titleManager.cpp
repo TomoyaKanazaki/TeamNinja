@@ -228,9 +228,19 @@ void CTitleManager::Update(const float fDeltaTime)
 	}
 	case STATE_WAIT:	// 操作待機
 	{
-		if (GET_INPUTKEY->IsAnyTrigger()
-		||  GET_INPUTPAD->IsAnyTrigger())
+		CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
+		CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
+		if (pKey->IsTrigger(DIK_SPACE)
+		||  pKey->IsTrigger(DIK_RETURN)
+		||  pPad->IsTrigger(CInputPad::KEY_A)
+		||  pPad->IsTrigger(CInputPad::KEY_B)
+		||  pPad->IsTrigger(CInputPad::KEY_X)
+		||  pPad->IsTrigger(CInputPad::KEY_Y))
 		{
+			// 入力情報を初期化
+			pKey->InitTrigger();
+			pPad->InitTrigger();
+
 			// カメラの走り状態設定
 			GET_CAMERA->SetRotateRun();
 
@@ -266,13 +276,8 @@ void CTitleManager::Update(const float fDeltaTime)
 		break;
 	}
 
-	// TODO：デバッグ
-#ifdef _DEBUG
-	if (GET_INPUTKEY->IsTrigger(DIK_F5))
-	{
-		GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
-	}
-#endif
+	// スキップ操作の更新
+	UpdateSkip();
 }
 
 //============================================================
@@ -315,4 +320,55 @@ void CTitleManager::Release(CTitleManager *&prTitleManager)
 
 	// メモリ開放
 	SAFE_DELETE(prTitleManager);
+}
+
+//============================================================
+//	スキップ操作の更新処理
+//============================================================
+void CTitleManager::UpdateSkip(void)
+{
+	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
+	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
+	if (pKey->IsTrigger(DIK_SPACE)
+	||  pKey->IsTrigger(DIK_RETURN)
+	||  pPad->IsTrigger(CInputPad::KEY_A)
+	||  pPad->IsTrigger(CInputPad::KEY_B)
+	||  pPad->IsTrigger(CInputPad::KEY_X)
+	||  pPad->IsTrigger(CInputPad::KEY_Y))
+	{
+		if (m_state < STATE_WAIT)
+		{ // 演出スキップが可能な場合
+
+			// 演出のスキップ
+			SkipStaging();
+		}
+		else
+		{ // スキップ後の場合
+
+			// セレクト画面に遷移
+			GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);
+		}
+	}
+}
+
+//============================================================
+//	演出のスキップ処理
+//============================================================
+void CTitleManager::SkipStaging(void)
+{
+	for (int i = 0; i < NUM_LOGO; i++)
+	{ // ロゴの文字数分繰り返す
+
+		// タイトルの演出終了
+		m_apLogo[i]->EndStag();
+
+		// 開始操作の点灯を開始する
+		m_pStart->SetBlink(true);
+
+		// カメラ回転後の目標位置を設定
+		GET_CAMERA->SetDestRotateWait();
+
+		// 操作待機状態にする
+		m_state = STATE_WAIT;
+	}
 }

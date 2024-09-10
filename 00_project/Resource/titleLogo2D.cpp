@@ -41,6 +41,11 @@ namespace
 }
 
 //************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CTitleLogo2D> *CTitleLogo2D::m_pList = nullptr;	// オブジェクトリスト
+
+//************************************************************
 //	親クラス [CTitleLogo2D] のメンバ関数
 //************************************************************
 //============================================================
@@ -56,6 +61,7 @@ CTitleLogo2D::CTitleLogo2D(const char* pBlurTexPath) : CAnim2D(CObject::LABEL_UI
 	m_fWaitTimeOne	(0.0f),			// 第一待機時間
 	m_fWaitTimeTwo	(0.0f),			// 第二待機時間
 	m_fCurTime		(0.0f),			// 現在の待機時間
+	m_fSinAlpha		(0.0f),			// 透明向き
 	m_offset		(VEC3_ZERO),	// 初期位置オフセット
 	m_initPos		(VEC3_ZERO),	// 初期位置
 	m_destPosOne	(VEC3_ZERO),	// 第一目標位置
@@ -86,6 +92,7 @@ HRESULT CTitleLogo2D::Init(void)
 	m_fWaitTimeOne	= 0.0f;			// 第一待機時間
 	m_fWaitTimeTwo	= 0.0f;			// 第二待機時間
 	m_fCurTime		= 0.0f;			// 現在の待機時間
+	m_fSinAlpha		= -HALF_PI;		// 透明向き
 	m_offset		= VEC3_ZERO;	// 初期位置オフセット
 	m_initPos		= VEC3_ZERO;	// 初期位置
 	m_destPosOne	= VEC3_ZERO;	// 第一目標位置
@@ -135,6 +142,23 @@ HRESULT CTitleLogo2D::Init(void)
 		return E_FAIL;
 	}
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CTitleLogo2D>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 成功を返す
 	return S_OK;
 }
@@ -146,6 +170,16 @@ void CTitleLogo2D::Uninit(void)
 {
 	// オーラの終了
 	SAFE_UNINIT(m_pAura);
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
 
 	// アニメーション2Dの終了
 	CAnim2D::Uninit();
@@ -195,6 +229,12 @@ void CTitleLogo2D::Update(const float fDeltaTime)
 
 		// オーラの更新
 		UpdateAura(fDeltaTime);
+		break;
+
+	case STATE_END:
+
+		// オーラ点滅の更新
+		UpdateBlinkAura(fDeltaTime);
 		break;
 
 	default:
@@ -346,6 +386,33 @@ CTitleLogo2D *CTitleLogo2D::Create
 		// 確保したアドレスを返す
 		return pTitleLogo2D;
 	}
+}
+
+//============================================================
+//	演出スキップ処理
+//============================================================
+void CTitleLogo2D::EndStag(void)
+{
+	// タイマーを初期化
+	m_fCurTime = 0.0f;
+
+	// カメラの更新をオンにする
+	GET_CAMERA->SetEnableUpdate(true);
+
+	// ブラーの終了
+	m_pBlur->SetState(CBlur2D::STATE_NONE);
+
+	// 位置を補正
+	SetVec3Position(m_destPosTwo);
+
+	// 色を補正
+	SetColor(logo::DEST_COL);
+
+	// オーラ色を補正
+	m_pAura->SetColor(aura::DEST_COL);
+
+	// 終了状態にする
+	m_state = STATE_END;
 }
 
 //============================================================
@@ -502,7 +569,51 @@ void CTitleLogo2D::UpdateAura(const float fDeltaTime)
 		// 色を補正
 		m_pAura->SetColor(aura::DEST_COL);
 
-		// 何もしない状態にする
-		m_state = STATE_NONE;
+		// 終了状態にする
+		m_state = STATE_END;
+	}
+}
+
+//============================================================
+//	全終了判定処理
+//============================================================
+bool CTitleLogo2D::IsAllEnd(void)
+{
+	// リストがない場合抜ける
+	if (m_pList == nullptr) { return false; }	// 始まってすらない
+
+	std::list< CTitleLogo2D*> list = m_pList->GetList();	// 内部リスト
+	for (const auto& rList : list)
+	{ // リスト要素数分繰り返す
+
+		// 終了状態以外の場合抜ける
+		if (rList->m_state != STATE_END) { return false; }	// 終了していない
+	}
+
+	// ここまで来たら全部終了している
+	return true;
+}
+
+//============================================================
+//	オーラ点滅の更新処理
+//============================================================
+void CTitleLogo2D::UpdateBlinkAura(const float fDeltaTime)
+{
+	const float m_fAddSinRot	= 3.0f;		// 透明向きの加算量
+	const float m_fMinAlpha		= 0.25f;	// 最低透明度
+	const float m_fMaxAlpha		= 1.0f;		// 最大透明度
+
+	if (CTitleLogo2D::IsAllEnd())
+	{ // 全タイトルロゴが演出終了している場合
+
+		// サインカーブ向きを回転
+		m_fSinAlpha += m_fAddSinRot * fDeltaTime;
+		useful::NormalizeRot(m_fSinAlpha);	// 向き正規化
+
+		// 透明度加算量を計算
+		float fAddAlpha = ((m_fMaxAlpha - m_fMinAlpha) * 0.5f) * (sinf(m_fSinAlpha) - 1.0f) * -1.0f;
+
+		// 透明度を設定
+		m_pAura->SetAlpha(m_fMinAlpha + fAddAlpha);
 	}
 }

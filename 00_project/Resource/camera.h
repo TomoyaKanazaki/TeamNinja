@@ -167,6 +167,7 @@ public:
 	void SetRotateRun(void) { m_rotaInfo.state = SRota::STATE_RUN; }	// カメラの走り状態設定
 
 	void SetDestRotate(void);		// カメラ目標位置設定 (回転)
+	void SetDestRotateWait(void);	// カメラ目標位置設定 (回転:待機)
 	void SetDestFollow(void);		// カメラ目標位置設定 (追従)
 	void SetDestAround(void);		// カメラ目標位置設定 (回り込み)
 	void SetDestTelephoto(void);	// カメラ目標位置設定 (望遠)

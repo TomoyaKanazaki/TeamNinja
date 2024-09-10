@@ -142,6 +142,17 @@ void CBlur2D::Update(const float fDeltaTime)
 		switch (m_state)
 		{ // 状態ごとの処理
 		case STATE_NONE:
+
+			// 削除条件を指定 (全ての残像を削除)
+			for (auto& rVec : m_oldObject)
+			{ // 保存オブジェクト数分繰り返す
+
+				// 残像の終了
+				SAFE_UNINIT(rVec);
+			}
+
+			// 全て終了したので要素をクリア
+			m_oldObject.clear();
 			break;
 
 		case STATE_NORMAL:
@@ -169,8 +180,6 @@ void CBlur2D::Update(const float fDeltaTime)
 			
 				// 何もしない状態にする
 				m_state = STATE_NONE;
-
-				// 処理を抜ける
 				return;
 			}
 

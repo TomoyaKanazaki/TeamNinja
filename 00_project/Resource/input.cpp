@@ -256,6 +256,33 @@ void CInputKeyboard::Update(void)
 }
 
 //============================================================
+//	プレス初期化処理
+//============================================================
+void CInputKeyboard::InitPress(void)
+{
+	// メモリをクリア
+	memset(&m_aKeyStatePress, 0, sizeof(m_aKeyStatePress));
+}
+
+//============================================================
+//	トリガー初期化処理
+//============================================================
+void CInputKeyboard::InitTrigger(void)
+{
+	// メモリをクリア
+	memset(&m_aKeyStateTrigger, 0, sizeof(m_aKeyStateTrigger));
+}
+
+//============================================================
+//	リリース初期化処理
+//============================================================
+void CInputKeyboard::InitRelease(void)
+{
+	// メモリをクリア
+	memset(&m_aKeyStateRelease, 0, sizeof(m_aKeyStateRelease));
+}
+
+//============================================================
 //	プレス取得処理
 //============================================================
 bool CInputKeyboard::IsPress(int nKey)

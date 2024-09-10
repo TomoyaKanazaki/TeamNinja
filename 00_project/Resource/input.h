@@ -73,6 +73,9 @@ public:
 	static void Release(CInputKeyboard *&pKeyboard);				// 破棄
 
 	// メンバ関数
+	void InitPress(void);		// プレス初期化
+	void InitTrigger(void);		// トリガー初期化
+	void InitRelease(void);		// リリース初期化
 	bool IsPress(int nKey);		// プレス取得
 	bool IsTrigger(int nKey);	// トリガー取得
 	bool IsRelease(int nKey);	// リリース取得

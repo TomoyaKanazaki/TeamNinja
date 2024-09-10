@@ -535,6 +535,54 @@ void CCamera::SetDestRotate(void)
 }
 
 //============================================================
+//	カメラ目標位置の設定処理 (回転:待機)
+//============================================================
+void CCamera::SetDestRotateWait(void)
+{
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GET_PLAYER->GetVec3Rotation();	// プレイヤー向き
+	float fRotSide = rotPlayer.y + HALF_PI;	// プレイヤー横方向向き
+
+	// タイマーを初期化
+	m_rotaInfo.fCurTime = 0.0f;
+
+	// 待機状態にする
+	m_rotaInfo.state = SRota::STATE_WAIT;
+
+	// 目標向きを計算
+	m_aCamera[TYPE_MAIN].destRot.y = rotPlayer.y + D3DX_PI;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].destRot);	// 目標向きを正規化
+
+	// 注視点の目標位置を計算
+	m_aCamera[TYPE_MAIN].destPosR = posPlayer;
+	m_aCamera[TYPE_MAIN].destPosR += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * rotate::PLUS_SIDE;
+
+	//--------------------------------------------------------
+	//	向きの更新
+	//--------------------------------------------------------
+	// 現在向きの更新
+	m_aCamera[TYPE_MAIN].rot.x = rotate::INIT_ROT.x;
+	m_aCamera[TYPE_MAIN].rot.y = rotate::DEST_ROT.y;
+	useful::NormalizeRot(m_aCamera[TYPE_MAIN].rot);	// 現在向きを正規化
+
+	//--------------------------------------------------------
+	//	距離の更新
+	//--------------------------------------------------------
+	m_aCamera[TYPE_MAIN].fDis = rotate::INIT_DIS;
+
+	//--------------------------------------------------------
+	//	位置の更新
+	//--------------------------------------------------------
+	// 注視点の更新
+	m_aCamera[TYPE_MAIN].posR = rotate::INIT_POSR;
+
+	// 視点の更新
+	m_aCamera[TYPE_MAIN].posV.x = m_aCamera[TYPE_MAIN].posR.x + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * sinf(m_aCamera[TYPE_MAIN].rot.y));
+	m_aCamera[TYPE_MAIN].posV.y = m_aCamera[TYPE_MAIN].posR.y + ((-m_aCamera[TYPE_MAIN].fDis * cosf(m_aCamera[TYPE_MAIN].rot.x)));
+	m_aCamera[TYPE_MAIN].posV.z = m_aCamera[TYPE_MAIN].posR.z + ((-m_aCamera[TYPE_MAIN].fDis * sinf(m_aCamera[TYPE_MAIN].rot.x)) * cosf(m_aCamera[TYPE_MAIN].rot.y));
+}
+
+//============================================================
 //	カメラの目標位置の設定処理 (追従)
 //============================================================
 void CCamera::SetDestFollow(void)
