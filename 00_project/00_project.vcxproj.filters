@@ -76,6 +76,9 @@
     <Filter Include="OutGame">
       <UniqueIdentifier>{947023b9-9c25-4c20-acdd-6f68a8a8007d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InGame\Tutorial">
+      <UniqueIdentifier>{0539af88-3f05-4dd0-b08d-69cea6038f9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
@@ -669,6 +672,9 @@
     <ClInclude Include="Resource\playerTitle.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\tutorial.h">
+      <Filter>InGame\Tutorial</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1258,6 +1264,9 @@
     </ClCompile>
     <ClCompile Include="Resource\playerTitle.cpp">
       <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\tutorial.cpp">
+      <Filter>InGame\Tutorial</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

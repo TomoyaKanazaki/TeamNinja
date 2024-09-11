@@ -79,7 +79,7 @@ public:
 	// メンバ関数
 	CRenderState *GetRenderState(void);			// レンダーステート情報取得
 	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
-	void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
+	virtual void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
 	void SetOrigin(const EOrigin origin);		// 原点設定
 	void SetRotate(const ERotate rotate);		// 回転設定
