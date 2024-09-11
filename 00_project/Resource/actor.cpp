@@ -280,18 +280,18 @@ void CActor::Collision
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 
-	// キューブ判定
-	for (auto cube : m_cube)
-	{
-		// ヒット処理
-		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
-	}
-
 	// シリンダー判定
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
+
+	// キューブ判定
+	for (auto cube : m_cube)
+	{
+		// ヒット処理
+		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 
 	// ポリゴン判定
@@ -329,21 +329,21 @@ void CActor::Collision
 		bHit = true;
 	}
 
-	// キューブ判定
-	for (auto cube : m_cube)
-	{
-		// ヒット処理
-		if (!cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
-
-		// 判定をtrueにする
-		bHit = true;
-	}
-
 	// シリンダー判定
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		if (!cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 判定をtrueにする
+		bHit = true;
+	}
+
+	// キューブ判定
+	for (auto cube : m_cube)
+	{
+		// ヒット処理
+		if (!cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
 
 		// 判定をtrueにする
 		bHit = true;
