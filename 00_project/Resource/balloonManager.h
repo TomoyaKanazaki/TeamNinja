@@ -59,12 +59,12 @@ public:
 	void Draw(CShader *pShader = nullptr) override;	// 描画
 
 	// 静的メンバ関数
-	static CBalloonManager *Create(CTransPoint* pParent, const bool bOpen);	// 生成
+	static CBalloonManager *Create(CTransPoint* pParent, const char* pTexPath, const bool bOpen);	// 生成
 
 	// メンバ関数
 	void SetFirstStag(void);	// 初回演出開始設定
 	void SetStag(void);			// 演出開始設定
-	bool IsNone(void)	{ return (m_state == STATE_NONE); }	// 演出状況取得
+	bool IsNone(void) { return (m_state == STATE_NONE); }	// 演出状況取得
 
 private:
 	// オーバーライド関数
