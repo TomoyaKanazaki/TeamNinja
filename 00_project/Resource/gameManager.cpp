@@ -112,6 +112,9 @@ HRESULT CGameManager::Init(void)
 		CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
 		CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
 
+		// タイマーの計測を開始する
+		CSceneGame::GetTimerUI()->Start();
+
 		// 通常状態にする
 		m_state = STATE_NORMAL;
 

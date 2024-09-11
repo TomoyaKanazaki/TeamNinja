@@ -20,6 +20,8 @@
 #include "player.h"
 #include "stage.h"
 
+#include "goditemUI.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -256,7 +258,7 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 		m_aGet[pItem->m_type] = false;
 
 		// 本体から発する光のエフェクトを割当
-		pItem->m_pEffectBody = GET_EFFECT->Create("data\\EFFEKSEER\\magatama_light.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+		pItem->m_pEffectBody = GET_EFFECT->Create("data\\EFFEKSEER\\magatama_light.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f, false, false);
 
 		// 地面から発する光のエフェクトを割当
 		D3DXVECTOR3 posThis = rPos;
@@ -332,6 +334,9 @@ bool CGodItem::Collision
 
 			// ゲームマネージャーを神器獲得状態にする
 			CSceneGame::GetGameManager()->PossessGodItem(m_type);
+
+			// 取得処理
+			(*CGodItemUI::GetList()->GetBegin())->Get(m_type);
 		}
 
 		// 着地エフェクトの削除
@@ -446,13 +451,17 @@ HRESULT CGodItem::LoadSetup(const char* pPass)
 						}
 					} while (str != "END_GODITEMSET");	// END_GODITEMSETを読み込むまでループ
 
-					// 神器オブジェクトの生成
-					if (CGodItem::Create(pos, (EType)type) == nullptr)
-					{ // 確保に失敗した場合
+					if (!m_aGet[type])
+					{ // 勾玉を取得していない場合
 
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
+						// 神器オブジェクトの生成
+						if (CGodItem::Create(pos, (EType)type) == nullptr)
+						{ // 確保に失敗した場合
+
+							// 失敗を返す
+							assert(false);
+							return E_FAIL;
+						}
 					}
 				}
 			} while (str != "END_STAGE_GODITEMSET");	// END_STAGE_GODITEMSETを読み込むまでループ

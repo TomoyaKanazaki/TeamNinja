@@ -26,23 +26,28 @@ public:
 	CTutorial();
 	~CTutorial();
 
-	virtual HRESULT Init(void) override; // 初期化処理
-	virtual void Uninit(void) override; // 終了処理
-	virtual void Update(const float fDeltaTime) override; // 更新処理
-	virtual void Draw(CShader* pShader = nullptr) override; // 描画処理
-	void BindTexture(const char* pTexturePass) override;	// テクスチャ割当 (パス)
+	HRESULT Init(void) override; // 初期化処理
+	void Uninit(void) override; // 終了処理
+	void Update(const float fDeltaTime) override; // 更新処理
+	void Draw(CShader* pShader = nullptr) override; // 描画処理
 
 	// 静的メンバ関数
 	static CTutorial* Create(const D3DXVECTOR3& rPos, const EType type);
-	static CListManager<CTutorial>* GetList(void); // リスト取得
+	static CListManager<CTutorial>* GetList(); // リスト取得
 
 private:
 
 	// 静的メンバ変数
 	static CListManager<CTutorial>* m_pList; // オブジェクトリスト
 
+	// メンバ関数
+	void BindTexture(const char* pTexturePass) override; // テクスチャ割当 (パス)
+	void Scaling(const float fDeltaTime); // スケーリング変更処理
+
 	// メンバ変数
 	CListManager<CTutorial>::AIterator m_iterator; // イテレーター
-	float m_fGapRate; // 揺れの範囲
+	D3DXVECTOR3 m_sizeDefault; // 初期サイズ
+	bool m_bIn; // 内部判定
+	float m_fTime; // 移動時間
 
 };

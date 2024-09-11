@@ -42,6 +42,9 @@
 #include "enemyAttack.h"
 #include "tension.h"
 #include "retentionManager.h"
+#include "goditemUI.h"
+
+#include "tutorial.h"
 
 //************************************************************
 //	定数宣言
@@ -232,11 +235,16 @@ HRESULT CPlayer::Init(void)
 		{
 			CTension::Create();
 		}
+
+		// 神器UIの生成
+		CGodItemUI::Create();
 	}
 
 #ifndef PHOTO
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
 #endif
+
+	CTutorial::Create(VEC3_ZERO, CTutorial::TYPE_MOVE);
 
 	// 成功を返す
 	return S_OK;
@@ -1694,12 +1702,43 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0 && GetMotionKey() != 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_STAND:	// 仁王立ちモーション
 		break;
 
 	case MOTION_GOAL:	// ゴールモーション
+
+		if (GetMotionWholeCounter() == 1)
+		{
+			D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+			D3DXVECTOR3 rotPlayer = GetDestRotation();	// プレイヤー向き
+			float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向
+			useful::NormalizeRot(fRotSide);				// 横方向の正規化
+
+			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;
+			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;
+			posPlayer.y += 49.0f;
+
+			rotPlayer.x = D3DX_PI * 0.75f;
+
+			// 巻物エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\gole.efkefc", posPlayer, rotPlayer, VEC3_ZERO, 25.0f);
+		}
 		break;
 
 	case MOTION_SELECT_IN:	// セレクト開始モーション
@@ -2054,6 +2093,9 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 //===========================================
 void CPlayer::FloorEdgeJump()
 {
+	// 回避中もしくはノックバック中の場合関数を抜ける
+	if (m_state == STATE_DAMAGE || m_state == STATE_DODGE) { return; }
+
 	// 上移動量を与える
 	m_move.y = JUMP_MOVE;
 
@@ -2121,16 +2163,13 @@ void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
 	for (auto enemy : list)
 	{
 		// 当たり判定処理
-		enemy->Collision
+		enemy->CollisionToPlayer
 		(
 			pos,		// 位置
 			RADIUS,		// 半径
 			HEIGHT		// 高さ
 		);
 	}
-
-	// 位置を適用
-	SetVec3Position(pos);
 }
 
 //==========================================

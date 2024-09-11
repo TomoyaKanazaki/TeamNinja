@@ -14,6 +14,8 @@
 #include "stage.h"
 #include "selectManager.h"
 #include "editManager.h"
+#include "retentionManager.h"
+#include "godItem.h"
 
 //************************************************************
 //	定数宣言
@@ -64,6 +66,12 @@ HRESULT CSceneSelect::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// セーブポイントの初期化
+	GET_RETENTION->InitSave();
+
+	// 神器取得状況の初期化
+	CGodItem::InitGet();
 
 	// セレクトマネージャーの生成
 	m_pSelectManager = CSelectManager::Create();

@@ -62,6 +62,8 @@ public:
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込
 	static HRESULT SaveOpen(const char* pPass, const bool bOpen);	// 解放フラグ保存
+	static HRESULT LoadScreenShot(const char* pPass, std::string* pStrPath);	// スクショパス読込
+	static HRESULT SaveScreenShot(const char* pPass);							// スクショパス保存
 
 	// メンバ関数
 	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
@@ -78,6 +80,7 @@ private:
 	// メンバ変数
 	CListManager<CTransPoint>::AIterator m_iterator;	// イテレーター
 	const std::string m_sTransMapPass;		// 遷移先マップパス
+	std::string m_sScreenShotPass;			// スクショパス
 	CEffekseer::CEffectData* m_pEffectData;	// 保持するエフェクト情報
 	CBalloon* m_pBalloon;	// 吹き出し情報
 	EState m_state;			// 状態

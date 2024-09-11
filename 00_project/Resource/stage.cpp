@@ -238,8 +238,6 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			return E_FAIL;
 		}
 	}
-	
-
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
