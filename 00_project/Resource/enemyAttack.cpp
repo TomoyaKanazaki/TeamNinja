@@ -33,19 +33,9 @@ namespace
 {
 	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(60.0f, 100.0f, 60.0f);	// 攻撃判定(上)
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
-	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(90.0f, 100.0f, 90.0f);		// 回避判定(上)
-	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(90.0f, 0.0f, 90.0f);		// 回避判定(下)
-	const int DODGE_COUNT = 20;								// 回避カウント数
-	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
-	{
-		DODGE_COUNT - 10,	// しつこい敵
-		DODGE_COUNT - 12,	// 狼敵
-	};
-	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
-	{
-		-600.0f,			// しつこい敵
-		-500.0f,			// 狼敵
-	};
+	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(80.0f, 100.0f, 80.0f);		// 回避判定(上)
+	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(80.0f, 0.0f, 80.0f);		// 回避判定(下)
+	const int DODGE_COUNT = 20;			// 回避カウント数
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
 		100.0f,		// しつこい敵
@@ -57,7 +47,7 @@ namespace
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
-		44,			// しつこい敵
+		23,			// しつこい敵
 		36,			// 狼敵
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃状態の遷移カウント
@@ -991,8 +981,12 @@ int CEnemyAttack::Stalk
 	// 向きの移動処理
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
-	// 移動処理
-	Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+	if (!IsHitToPlayer())
+	{ // プレイヤーに当たっていない場合
+
+		// 移動処理
+		Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+	}
 
 	if (Approach(*pPos, ATTACK_DISTANCE[m_type]))
 	{ // 接近した場合
@@ -1044,11 +1038,11 @@ int CEnemyAttack::Attack
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
 	if (m_nStateCount < DODGE_COUNT &&
-		m_nStateCount > ATTACK_DASH_COUNT[m_type])
-	{ // 回避カウントを過ぎた場合
+		!IsHitToPlayer())
+	{ // 回避カウント以内の場合
 
 		// 移動処理
-		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+		Move(pPos, *pRot, GetSpeed(), fDeltaTime);
 	}
 
 	if (m_pChaseRange != nullptr)

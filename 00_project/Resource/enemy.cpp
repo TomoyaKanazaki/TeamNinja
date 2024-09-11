@@ -50,7 +50,8 @@ m_destRot(VEC3_ZERO),		// 目的の向き
 m_move(VEC3_ZERO),			// 移動量
 m_rotInit(VEC3_ZERO),		// 初期向き
 m_bJump(false),				// 着地状況
-m_bVanish(false)			// 消滅状況
+m_bVanish(false),			// 消滅状況
+m_bHitToPlayer(false)		// プレイヤーとの衝突判定
 {
 
 }
@@ -398,14 +399,17 @@ void CEnemy::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 //============================================================
 // プレイヤーとの当たり判定処理
 //============================================================
-void CEnemy::Collision(D3DXVECTOR3& rPos, const float fRadius, const float fHeight)
+void CEnemy::CollisionToPlayer(D3DXVECTOR3& rPos, const float fRadius, const float fHeight)
 {
 	D3DXVECTOR3 pos = GetVec3Position();
 	float fHeightEnemy = GetHeight();
 
 	// 高さがあっていない場合、抜ける
-	if (pos.y + fHeightEnemy < rPos.y || pos.y > rPos.y + fHeight) { return; }
+	if (pos.y + fHeightEnemy < rPos.y || pos.y > rPos.y + fHeight) { m_bHitToPlayer = false; return; }
 
-	// 円柱の衝突判定
-	collision::CirclePillar(rPos, pos, fRadius, GetRadius());
+	// 敵に当たっていない場合、抜ける
+	if (!collision::CirclePillar(rPos, pos, fRadius, GetRadius())) { m_bHitToPlayer = false; return; }
+
+	// プレイヤーとの衝突判定を true にする
+	m_bHitToPlayer = true;
 }

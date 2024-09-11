@@ -6,6 +6,8 @@
 //==========================================
 #include "tutorial.h"
 #include "manager.h"
+#include "player.h"
+#include "collision.h"
 
 //==========================================
 //  定数定義
@@ -19,8 +21,8 @@ namespace
 		"data\\TEXTURE\\tutorial002.png"
 	};
 
-	const float WIDTH = 250.0f; // ポリゴンの横幅
-	const D3DXVECTOR3 HIT_BOX = D3DXVECTOR3(250.0f, 250.0f, 250.0f); // 判定範囲
+	const float WIDTH = 500.0f; // ポリゴンの横幅
+	const D3DXVECTOR3 HIT_BOX = D3DXVECTOR3(250.0f, 250.0f, 250.0f); // 判定距離
 }
 
 //==========================================
@@ -36,7 +38,8 @@ CListManager<CTutorial>* CTutorial::m_pList = nullptr; // オブジェクトリスト
 //==========================================
 //  コンストラクタ
 //==========================================
-CTutorial::CTutorial()
+CTutorial::CTutorial() : CObjectBillboard(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_3D, 7),
+	m_sizeDefault(VEC3_ZERO)
 {
 }
 
@@ -52,7 +55,7 @@ CTutorial::~CTutorial()
 //==========================================
 HRESULT CTutorial::Init(void)
 {
-	// オブジェクト3Dの初期化
+	// 親クラスの初期化
 	if (FAILED(CObjectBillboard::Init()))
 	{ // 初期化に失敗した場合
 
@@ -77,6 +80,9 @@ HRESULT CTutorial::Init(void)
 
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
+
+	// ラベルを設定
+	SetLabel(LABEL_UI);
 
 	// 成功を返す
 	return S_OK;
@@ -106,6 +112,14 @@ void CTutorial::Uninit(void)
 //==========================================
 void CTutorial::Update(const float fDeltaTime)
 {
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	SetEnableDraw(bFar);
+	if (!bFar) { return; }
+
+	// プレイヤー距離の判定
+	MeasureDistance();
+
 	// 親クラスの更新
 	CObjectBillboard::Update(fDeltaTime);
 }
@@ -127,8 +141,35 @@ void CTutorial::BindTexture(const char* pTexturePass)
 	// テクスチャを割り当て
 	CObjectBillboard::BindTexture(pTexturePass);
 
-	// 割り当てたテクスチャからアスペクト比を取得
-	SetVec3Sizing(useful::GetTexAspect(GET_MANAGER->GetTexture()->Regist(pTexturePass)) * WIDTH);
+	// アスペクト比から初期サイズを設定
+	m_sizeDefault = D3DXVECTOR3
+	(
+		WIDTH,
+		useful::GetTexHeightFromAspect(WIDTH, GET_MANAGER->GetTexture()->Regist(pTexturePass)),
+		0.0f
+	);
+}
+
+//==========================================
+//  プレイヤーとの距離を測る処理
+//==========================================
+void CTutorial::MeasureDistance()
+{
+	// プレイヤー情報を取得
+	CPlayer* pPlayer = GET_PLAYER;
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+	D3DXVECTOR3 sizePlayer = D3DXVECTOR3(pPlayer->GetRadius(), pPlayer->GetHeight(), pPlayer->GetRadius());
+
+	// 当たり判定
+	if (collision::Box3D
+	(
+		GetVec3Position(), posPlayer,
+		HIT_BOX, HIT_BOX,
+		sizePlayer, sizePlayer
+	))
+	{
+		m_bMove = true;
+	}
 }
 
 //==========================================
@@ -152,7 +193,9 @@ CTutorial* CTutorial::Create(const D3DXVECTOR3& rPos, const EType type)
 	}
 
 	// 座標を設定
-	pTutorial->SetVec3Position(rPos);
+	D3DXVECTOR3 pos = rPos;
+	pos.y += 100.0f;
+	pTutorial->SetVec3Position(pos);
 
 	// 種類に合わせたテクスチャを割り当て
 	pTutorial->BindTexture(TEXTURE_PASS[type]);
@@ -166,5 +209,14 @@ CTutorial* CTutorial::Create(const D3DXVECTOR3& rPos, const EType type)
 //==========================================
 CListManager<CTutorial>* CTutorial::GetList(void)
 {
-	return nullptr;
+	return m_pList;
+}
+
+//==========================================
+//  拡縮処理
+//==========================================
+void CTutorial::Scaling(const float fDeltaTime)
+{
+	// 移動フラグがoffの場合関数を抜ける
+	if (!m_bMove) { return; }
 }

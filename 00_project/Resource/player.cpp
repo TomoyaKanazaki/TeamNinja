@@ -43,6 +43,8 @@
 #include "tension.h"
 #include "retentionManager.h"
 
+#include "tutorial.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -237,6 +239,8 @@ HRESULT CPlayer::Init(void)
 #ifndef PHOTO
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
 #endif
+
+	CTutorial::Create(VEC3_ZERO, CTutorial::TYPE_MOVE);
 
 	// 成功を返す
 	return S_OK;
@@ -2054,6 +2058,9 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 //===========================================
 void CPlayer::FloorEdgeJump()
 {
+	// 回避中もしくはノックバック中の場合関数を抜ける
+	if (m_state == STATE_DAMAGE || m_state == STATE_DODGE) { return; }
+
 	// 上移動量を与える
 	m_move.y = JUMP_MOVE;
 
@@ -2121,16 +2128,13 @@ void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
 	for (auto enemy : list)
 	{
 		// 当たり判定処理
-		enemy->Collision
+		enemy->CollisionToPlayer
 		(
 			pos,		// 位置
 			RADIUS,		// 半径
 			HEIGHT		// 高さ
 		);
 	}
-
-	// 位置を適用
-	SetVec3Position(pos);
 }
 
 //==========================================

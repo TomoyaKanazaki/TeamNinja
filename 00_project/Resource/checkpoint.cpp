@@ -31,7 +31,6 @@ namespace
 //==========================================
 //  静的メンバ変数宣言
 //==========================================
-int CCheckPoint::m_nNumAll = 0;
 CListManager<CCheckPoint>* CCheckPoint::m_pList = nullptr;	// オブジェクトリスト
 
 //==========================================
@@ -43,8 +42,6 @@ CCheckPoint::CCheckPoint():
 	m_nSaveTension(0)
 {
 	m_pEffectdata = NULL;
-	// 総数を加算
-	++m_nNumAll;
 }
 
 //==========================================
@@ -52,8 +49,6 @@ CCheckPoint::CCheckPoint():
 //==========================================
 CCheckPoint::~CCheckPoint()
 {
-	// 総数を減算
-	--m_nNumAll;
 }
 
 //==========================================
