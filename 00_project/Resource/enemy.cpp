@@ -130,10 +130,6 @@ void CEnemy::Uninit(void)
 //============================================================
 void CEnemy::Update(const float fDeltaTime)
 {
-	// 遠距離判定
-	bool bFar = useful::IsNearPosR(GetVec3Position());
-	if (!bFar) { return; }
-
 	// 透明度を取得
 	float fAlpha = GetAlpha();
 
@@ -177,6 +173,10 @@ void CEnemy::Update(const float fDeltaTime)
 
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
+
+	// 遠距離判定
+	bool bFar = useful::IsNearPosR(GetVec3Position());
+	if (!bFar) { return; }
 
 	// モーション・オブジェクトキャラクター更新
 	UpdateMotion(nCurMotion, fDeltaTime);
