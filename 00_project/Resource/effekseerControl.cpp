@@ -103,7 +103,7 @@ void CEffekseer::AllClear()
 		
 		}
 	}
-	for (int i = 0; i < nSize; i++)
+	for (int i = nSize - 1; i >= 0; i--)	// 後ろから回さないとeraseで総数変わるから壊れるぞ！おバカ！
 	{
 		if (m_vEffect[i] == NULL)
 		{

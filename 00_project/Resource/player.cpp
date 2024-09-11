@@ -1700,6 +1700,23 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_GOAL:	// ゴールモーション
+
+		if (GetMotionWholeCounter() == 1)
+		{
+			D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+			D3DXVECTOR3 rotPlayer = GetDestRotation();	// プレイヤー向き
+			float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向
+			useful::NormalizeRot(fRotSide);				// 横方向の正規化
+
+			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;
+			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;
+			posPlayer.y += 49.0f;
+
+			rotPlayer.x = D3DX_PI * 0.75f;
+
+			// 巻物エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\gole.efkefc", posPlayer, rotPlayer, VEC3_ZERO, 25.0f);
+		}
 		break;
 
 	case MOTION_SELECT_IN:	// セレクト開始モーション

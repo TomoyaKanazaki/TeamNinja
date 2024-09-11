@@ -446,13 +446,17 @@ HRESULT CGodItem::LoadSetup(const char* pPass)
 						}
 					} while (str != "END_GODITEMSET");	// END_GODITEMSETを読み込むまでループ
 
-					// 神器オブジェクトの生成
-					if (CGodItem::Create(pos, (EType)type) == nullptr)
-					{ // 確保に失敗した場合
+					if (!m_aGet[type])
+					{ // 勾玉を取得していない場合
 
-						// 失敗を返す
-						assert(false);
-						return E_FAIL;
+						// 神器オブジェクトの生成
+						if (CGodItem::Create(pos, (EType)type) == nullptr)
+						{ // 確保に失敗した場合
+
+							// 失敗を返す
+							assert(false);
+							return E_FAIL;
+						}
 					}
 				}
 			} while (str != "END_STAGE_GODITEMSET");	// END_STAGE_GODITEMSETを読み込むまでループ
