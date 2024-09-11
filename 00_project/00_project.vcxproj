@@ -348,6 +348,7 @@
     <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
     <ClInclude Include="Resource\transpoint.h" />
+    <ClInclude Include="Resource\tutorial.h" />
     <ClInclude Include="Resource\useful.h" />
     <ClInclude Include="Resource\value.h" />
     <ClInclude Include="Resource\valueUI.h" />
@@ -550,6 +551,7 @@
     <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />
     <ClCompile Include="Resource\transpoint.cpp" />
+    <ClCompile Include="Resource\tutorial.cpp" />
     <ClCompile Include="Resource\useful.cpp" />
     <ClCompile Include="Resource\value.cpp" />
     <ClCompile Include="Resource\valueUI.cpp" />
