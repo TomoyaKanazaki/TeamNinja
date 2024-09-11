@@ -522,9 +522,6 @@
     <ClInclude Include="Resource\editEnemyAttack.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemyAmbush.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\resultManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -1111,9 +1108,6 @@
     </ClCompile>
     <ClCompile Include="Resource\editEnemyAttack.cpp">
       <Filter>Map\Editter</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyAmbush.cpp">
-      <Filter>InGame\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Resource\resultManager.cpp">
       <Filter>Scene</Filter>
