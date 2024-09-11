@@ -18,7 +18,8 @@
 //************************************************************
 //	前方宣言
 //************************************************************
-class CAnim2D;	// アニメ2Dクラス
+class CAnim2D;		// アニメ2Dクラス
+class CGodItemMark;	// 神器マーク
 
 //************************************************************
 //	クラス定義
@@ -27,13 +28,6 @@ class CAnim2D;	// アニメ2Dクラス
 class CGodItemUI : public CObject
 {
 public:
-
-	// 勾玉マークの情報
-	struct SBody
-	{
-		CAnim2D* pMark;	// 勾玉本体の情報
-		bool bGet;			// 取得状況
-	};
 
 	// コンストラクタ
 	CGodItemUI();
@@ -60,8 +54,8 @@ private:
 	// メンバ変数
 	CListManager<CGodItemUI>::AIterator m_iterator;	// イテレーター
 
-	CAnim2D* m_apGround[CGodItem::TYPE_MAX];	// 下地の情報
-	SBody m_aBody[CGodItem::TYPE_MAX];			// 本体の情報
+	CAnim2D* m_apGround[CGodItem::TYPE_MAX];		// 下地の情報
+	CGodItemMark* m_apMark[CGodItem::TYPE_MAX];		// 本体の情報
 
 	// 静的メンバ変数
 	static CListManager<CGodItemUI>* m_pList;	// オブジェクトリスト
