@@ -2128,16 +2128,13 @@ void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
 	for (auto enemy : list)
 	{
 		// 当たり判定処理
-		enemy->Collision
+		enemy->CollisionToPlayer
 		(
 			pos,		// 位置
 			RADIUS,		// 半径
 			HEIGHT		// 高さ
 		);
 	}
-
-	// 位置を適用
-	SetVec3Position(pos);
 }
 
 //==========================================
