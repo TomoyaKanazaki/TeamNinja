@@ -42,6 +42,7 @@
 #include "enemyAttack.h"
 #include "tension.h"
 #include "retentionManager.h"
+#include "goditemUI.h"
 
 #include "tutorial.h"
 
@@ -234,6 +235,9 @@ HRESULT CPlayer::Init(void)
 		{
 			CTension::Create();
 		}
+
+		// ê_äÌUIÇÃê∂ê¨
+		CGodItemUI::Create();
 	}
 
 #ifndef PHOTO
