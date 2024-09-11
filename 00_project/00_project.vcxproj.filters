@@ -672,7 +672,7 @@
     <ClInclude Include="Resource\tutorial.h">
       <Filter>InGame\Tutorial</Filter>
     </ClInclude>
-    <ClInclude Include="goditemUI.h">
+    <ClInclude Include="Resource\goditemUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1265,7 +1265,7 @@
     <ClCompile Include="Resource\tutorial.cpp">
       <Filter>InGame\Tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="goditemUI.cpp">
+    <ClCompile Include="Resource\goditemUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

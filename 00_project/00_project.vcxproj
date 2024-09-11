@@ -159,7 +159,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="goditemUI.h" />
     <ClInclude Include="Resource\balloon.h" />
     <ClInclude Include="Resource\balloonManager.h" />
     <ClInclude Include="Resource\blink2D.h" />
@@ -176,6 +175,7 @@
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
     <ClInclude Include="Resource\godItemManager.h" />
+    <ClInclude Include="Resource\goditemUI.h" />
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\playerSelect.h" />
@@ -359,7 +359,6 @@
     <ClInclude Include="Resource\ZTexture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="goditemUI.cpp" />
     <ClCompile Include="Resource\balloon.cpp" />
     <ClCompile Include="Resource\balloonManager.cpp" />
     <ClCompile Include="Resource\blink2D.cpp" />
@@ -376,6 +375,7 @@
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
     <ClCompile Include="Resource\godItemManager.cpp" />
+    <ClCompile Include="Resource\goditemUI.cpp" />
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\playerSelect.cpp" />
