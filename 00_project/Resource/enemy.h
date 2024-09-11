@@ -49,7 +49,7 @@ public:
 	static CListManager<CEnemy>* GetList(void);			// リスト取得
 	static void VanishAll(void);						// 全敵の消滅処理
 
-	void Collision(D3DXVECTOR3& rPos, const float fRadius, const float fHeight);		// プレイヤーとの当たり判定処理
+	void CollisionToPlayer(D3DXVECTOR3& rPos, const float fRadius, const float fHeight);		// プレイヤーとの当たり判定処理
 
 	// メンバ関数
 	inline void SetOldPosition(const D3DXVECTOR3& rPosOld)	{ m_oldPos = rPosOld; }				// 過去位置設定
@@ -85,6 +85,7 @@ protected:
 	inline void SetRotInit(const D3DXVECTOR3& rRotInit) { m_rotInit = rRotInit; }	// 初期向き設定(生成時のみ設定)
 	inline void SetEnableJump(const bool bJump)			{ m_bJump = bJump; }		// ジャンプ状況設定
 	inline bool IsJump(void)							{ return m_bJump; }			// ジャンプ状況取得
+	inline bool IsHitToPlayer(void) const				{ return m_bHitToPlayer; }	// プレイヤーとの衝突判定取得
 
 private:
 
@@ -104,6 +105,7 @@ private:
 	D3DXVECTOR3 m_rotInit;			// 初期向き
 	bool m_bJump;					// ジャンプ状況
 	bool m_bVanish;					// 消滅状況
+	bool m_bHitToPlayer;			// プレイヤーとの衝突判定
 };
 
 #endif	// _ENEMY_H_
