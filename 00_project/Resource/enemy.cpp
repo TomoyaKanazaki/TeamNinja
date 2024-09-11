@@ -178,9 +178,6 @@ void CEnemy::Update(const float fDeltaTime)
 	SetVec3Position(posEnemy);	// 位置を反映
 	SetVec3Rotation(rotEnemy);	// 向きを反映
 
-	// プレイヤーとの当たり判定
-	CollisionPlayer(posEnemy, GetRadius(), GetHeight());
-
 	// モーション・オブジェクトキャラクター更新
 	UpdateMotion(nCurMotion, fDeltaTime);
 
@@ -401,23 +398,14 @@ void CEnemy::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 //============================================================
 // プレイヤーとの当たり判定処理
 //============================================================
-void CEnemy::CollisionPlayer(const D3DXVECTOR3& rPos, const float fRadius, const float fHeight)
+void CEnemy::Collision(D3DXVECTOR3& rPos, const float fRadius, const float fHeight)
 {
-	// プレイヤー情報の取得
-	CPlayer* pPlayer = GET_PLAYER;
-
-	// プレイヤーがいない場合、抜ける
-	if (pPlayer == nullptr) { return; }
-
-	D3DXVECTOR3 pos = pPlayer->GetVec3Position();
-	float fHeightPlayer = pPlayer->GetHeight();
+	D3DXVECTOR3 pos = GetVec3Position();
+	float fHeightEnemy = GetHeight();
 
 	// 高さがあっていない場合、抜ける
-	if (pos.y + fHeightPlayer < rPos.y || pos.y > rPos.y + fHeight) { return; }
+	if (pos.y + fHeightEnemy < rPos.y || pos.y > rPos.y + fHeight) { return; }
 
 	// 円柱の衝突判定
-	collision::CirclePillar(pos, rPos, fRadius, GetRadius());
-
-	// 位置を反映
-	pPlayer->SetVec3Position(pos);
+	collision::CirclePillar(rPos, pos, fRadius, GetRadius());
 }

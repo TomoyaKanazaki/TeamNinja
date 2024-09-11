@@ -873,6 +873,9 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -930,6 +933,9 @@ CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
 
@@ -963,6 +969,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
 
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
@@ -1033,6 +1042,9 @@ CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -1086,6 +1098,9 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
 
@@ -1117,6 +1132,9 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1154,6 +1172,9 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -2085,6 +2106,31 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 		// ジャンプ状況を false にする
 		m_bJump = false;
 	}
+}
+
+//==========================================
+// 敵の当たり判定
+//==========================================
+void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
+{
+	// 敵のリスト構造が無ければ、抜ける
+	if (CEnemy::GetList() == nullptr) { return; }
+
+	std::list<CEnemy*> list = CEnemy::GetList()->GetList();	// リストを取得
+
+	for (auto enemy : list)
+	{
+		// 当たり判定処理
+		enemy->Collision
+		(
+			pos,		// 位置
+			RADIUS,		// 半径
+			HEIGHT		// 高さ
+		);
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
 }
 
 //==========================================
