@@ -2072,6 +2072,9 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 //===========================================
 void CPlayer::FloorEdgeJump()
 {
+	// 回避中もしくはノックバック中の場合関数を抜ける
+	if (m_state == STATE_DAMAGE || m_state == STATE_DODGE) { return; }
+
 	// 上移動量を与える
 	m_move.y = JUMP_MOVE;
 
