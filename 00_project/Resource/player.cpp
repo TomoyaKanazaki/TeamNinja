@@ -1698,12 +1698,43 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0 && GetMotionKey() != 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_STAND:	// 仁王立ちモーション
 		break;
 
 	case MOTION_GOAL:	// ゴールモーション
+
+		if (GetMotionWholeCounter() == 1)
+		{
+			D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+			D3DXVECTOR3 rotPlayer = GetDestRotation();	// プレイヤー向き
+			float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向
+			useful::NormalizeRot(fRotSide);				// 横方向の正規化
+
+			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;
+			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;
+			posPlayer.y += 49.0f;
+
+			rotPlayer.x = D3DX_PI * 0.75f;
+
+			// 巻物エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\gole.efkefc", posPlayer, rotPlayer, VEC3_ZERO, 25.0f);
+		}
 		break;
 
 	case MOTION_SELECT_IN:	// セレクト開始モーション

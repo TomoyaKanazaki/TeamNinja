@@ -175,6 +175,7 @@
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
     <ClInclude Include="Resource\godItemManager.h" />
+    <ClInclude Include="Resource\goditemUI.h" />
     <ClInclude Include="Resource\loadtext.h" />
     <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\playerSelect.h" />
@@ -374,6 +375,7 @@
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
     <ClCompile Include="Resource\godItemManager.cpp" />
+    <ClCompile Include="Resource\goditemUI.cpp" />
     <ClCompile Include="Resource\loadtext.cpp" />
     <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\playerSelect.cpp" />
