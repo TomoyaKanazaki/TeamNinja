@@ -153,9 +153,8 @@ HRESULT CBalloonManager::Init(void)
 	if (m_pStage == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 	// 情報の設定
-	m_pStage->BindTexture("data\\TEXTURE\\stage000.png");	// ステージ画面のテクスチャ割当	// TODO：固定になってるよ
-	m_pStage->SetScene(CObject::SCENE_BILLBOARD);			// オブジェクトシーンをビルボードに
-	m_pStage->SetLabel(CObject::LABEL_UI);					// 自動更新/自動破棄するように
+	m_pStage->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+	m_pStage->SetLabel(CObject::LABEL_UI);			// 自動更新/自動破棄するように
 
 	//--------------------------------------------------------
 	//	フレームポリゴンの生成 / 設定
@@ -348,7 +347,7 @@ void CBalloonManager::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
+CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const char* pTexPath, const bool bOpen)
 {
 	// 吹き出しマネージャーの生成
 	CBalloonManager *pBalloonManager = new CBalloonManager(pParent, bOpen);
@@ -368,6 +367,9 @@ CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
 			SAFE_DELETE(pBalloonManager);
 			return nullptr;
 		}
+
+		// ステージ画面のテクスチャ割当
+		pBalloonManager->m_pStage->BindTexture(pTexPath);
 
 		// 確保したアドレスを返す
 		return pBalloonManager;
