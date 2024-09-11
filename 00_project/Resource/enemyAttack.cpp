@@ -22,7 +22,6 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
-#include "enemyAmbush.h"
 #include "effekseerControl.h"
 #include "enemyNavigation.h"
 #include "camera.h"
@@ -41,19 +40,16 @@ namespace
 	{
 		DODGE_COUNT - 10,	// ‚µ‚Â‚±‚¢“G
 		DODGE_COUNT - 12,	// ˜T“G
-		DODGE_COUNT - 10,	// ‘Ò‚¿•š‚¹“G
 	};
 	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// UŒ‚ƒ_ƒbƒVƒ…‚Ì‘¬“x‚Ì’Ç‰Á—Ê
 	{
 		-600.0f,			// ‚µ‚Â‚±‚¢“G
 		-500.0f,			// ˜T“G
-		-600.0f,			// ‘Ò‚¿•š‚¹“G
 	};
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// UŒ‚‚ª’Ê‚é‹——£
 	{
 		100.0f,		// ‚µ‚Â‚±‚¢“G
 		90.0f,		// ˜T“G
-		100.0f,		// ‘Ò‚¿•š‚¹“G
 	};
 	const float SHAKEOFF_RANGE = 1000.0f;			// U‚èØ‚ê‚é‹——£
 	const float DIVERSION_EFFECT_SCALE = 18.0f;		// •ªg‚Æ‚Ìí“¬ƒGƒtƒFƒNƒg‚Ì‘å‚«‚³
@@ -63,25 +59,21 @@ namespace
 	{
 		44,			// ‚µ‚Â‚±‚¢“G
 		36,			// ˜T“G
-		44,			// ‘Ò‚¿•š‚¹“G
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// UŒ‚ó‘Ô‚Ì‘JˆÚƒJƒEƒ“ƒg
 	{
 		44,			// ‚µ‚Â‚±‚¢“G
 		34,			// ˜T“G
-		44,			// ‘Ò‚¿•š‚¹“G
 	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// ‹ó”’UŒ‚ó‘Ô‚Ì‘JˆÚƒJƒEƒ“ƒg
 	{
 		340,		// ‚µ‚Â‚±‚¢“G
 		340,		// ˜T“G
-		340,		// ‘Ò‚¿•š‚¹“G
 	};
 	const int BLANKATTACK_CYCLE_COUNT[CEnemyAttack::TYPE_MAX] =		// ‹ó”’UŒ‚ó‘Ô‚Ì‰ñ“]ƒJƒEƒ“ƒg
 	{
 		18,		// ‚µ‚Â‚±‚¢“G
 		18,		// ˜T“G
-		18,		// ‘Ò‚¿•š‚¹“G
 	};
 }
 
@@ -92,37 +84,31 @@ namespace sound
 	{
 		37,			// ‚µ‚Â‚±‚¢“G
 		2,			// ˜T“G
-		37,			// ‘Ò‚¿•š‚¹“G
 	};
 	const CSound::ELabel WARNING_LABEL[CEnemyAttack::TYPE_MAX] =	// Œx‰¹‚Ìƒ‰ƒxƒ‹
 	{
 		CSound::LABEL_SE_STALKFOUND_000,	// ‚µ‚Â‚±‚¢“G
 		CSound::LABEL_SE_WOLFFOUND_000,		// ˜T“G
-		CSound::LABEL_SE_STALKFOUND_000,	// ‘Ò‚¿•š‚¹“G
 	};
 	const CSound::ELabel ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =		// UŒ‚‰¹‚Ìƒ‰ƒxƒ‹
 	{
 		CSound::LABEL_SE_STALKATTACK_000,	// ‚µ‚Â‚±‚¢“G
 		CSound::LABEL_SE_WOLFATTACK_000,	// ˜T“G
-		CSound::LABEL_SE_STALKATTACK_000,	// ‘Ò‚¿•š‚¹“G
 	};
 	const CSound::ELabel BLANK_ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =	// ‹ó”’UŒ‚‰¹‚Ìƒ‰ƒxƒ‹
 	{
 		CSound::LABEL_SE_STALKATTACK_001,	// ‚µ‚Â‚±‚¢“G
 		CSound::LABEL_SE_WOLFATTACK_001,	// ˜T“G
-		CSound::LABEL_SE_STALKATTACK_001,	// ‘Ò‚¿•š‚¹“G
 	};
 	const int UPSET_COUNT[CEnemyAttack::TYPE_MAX] =			// “®—h‰¹‚Ì–Â‚éƒJƒEƒ“ƒg
 	{
 		200,		// ‚µ‚Â‚±‚¢“G
 		80,			// ˜T“G
-		200,		// ‘Ò‚¿•š‚¹“G
 	};
 	const CSound::ELabel UPSET_LABEL[CEnemyAttack::TYPE_MAX] =		// “®—h‰¹‚Ìƒ‰ƒxƒ‹
 	{
 		CSound::LABEL_SE_STALKUPSET_000,	// ‚µ‚Â‚±‚¢“G
 		CSound::LABEL_SE_WOLFUPSET_000,		// ˜T“G
-		CSound::LABEL_SE_STALKUPSET_000,	// ‘Ò‚¿•š‚¹“G
 	};
 }
 
@@ -476,19 +462,6 @@ HRESULT CEnemyAttack::LoadSetup(const char* pPass)
 
 							break;
 						}
-
-						break;
-
-					case CEnemyAttack::TYPE_AMBUSH:
-
-						// ‘Ò‚¿•š‚¹“G‚Ì¶¬
-						CEnemyAmbush::Create
-						(
-							pos,			// ˆÊ’u
-							rot,			// Œü‚«
-							fChaseWidth,	// ’ÇÕ•
-							fChaseDepth		// ’ÇÕ‰œs
-						);
 
 						break;
 
