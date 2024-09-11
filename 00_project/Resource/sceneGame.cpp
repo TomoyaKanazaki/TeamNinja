@@ -199,10 +199,6 @@ void CSceneGame::Uninit(void)
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
 
-
-
-	//シェーダーの破棄
-	CToonShadow::Release();
 #if _DEBUG
 
 	// エディットマネージャーの破棄

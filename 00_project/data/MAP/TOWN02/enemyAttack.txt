@@ -37,7 +37,7 @@ STAGE_ENEMYSET
 	//後半敵
 	//<==============================================
 	ENEMYSET
-		TYPE		= 2
+		TYPE		= 0
 		NAVTYPE	 	= 0
 		POS			= 8630.00 1550.00 160.00
 		ROT			= 0.00 90.00 0.00
@@ -55,7 +55,7 @@ STAGE_ENEMYSET
 	END_ENEMYSET
 	
 	ENEMYSET
-		TYPE		= 2
+		TYPE		= 0
 		NAVTYPE	 	= 0
 		POS			= 8630.00 1550.00 -160.00
 		ROT			= 0.00 90.00 0.00
