@@ -279,16 +279,7 @@
     <ClInclude Include="Resource\enemy_katana.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemy_lantern.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemyAttack.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyCaveat.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyOther.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemyStalk.h">
@@ -878,16 +869,7 @@
     <ClCompile Include="Resource\enemy_katana.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\enemy_lantern.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemyAttack.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyCaveat.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyOther.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemyStalk.cpp">

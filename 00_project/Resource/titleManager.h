@@ -14,6 +14,7 @@
 //	前方宣言
 //************************************************************
 class CTitleLogo2D;	// タイトルロゴ2Dクラス
+class CBlink2D;		// 点滅オブジェクト2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -24,6 +25,17 @@ class CTitleManager
 public:
 	// 定数
 	static constexpr int NUM_LOGO = 4;	// 文字数
+
+	// 状態列挙
+	enum EState
+	{
+		STATE_NONE = 0,	// 何もしない
+		STATE_LOGO,		// ロゴ表示
+		STATE_WAIT,		// 操作待機
+		STATE_RUN,		// 忍者疾走
+		STATE_END,		// 終了
+		STATE_MAX		// この列挙型の総数
+	};
 
 	// コンストラクタ
 	CTitleManager();
@@ -42,10 +54,14 @@ public:
 
 private:
 	// メンバ関数
-
+	void UpdateSkip(void);	// スキップ操作更新
+	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
 	CTitleLogo2D* m_apLogo[NUM_LOGO];	// タイトル情報
+	CBlink2D* m_pStart;	// 開始操作情報
+	EState m_state;		// 状態
+	float m_fCurTime;	// 現在の経過時間
 };
 
 #endif	// _TITLEMANAGER_H_

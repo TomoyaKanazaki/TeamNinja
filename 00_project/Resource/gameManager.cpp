@@ -286,6 +286,9 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 	// ヒットストップの設定
 	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME, funcEndHitStop);
 
+	// ゴールの全破棄
+	CGoal::UninitAll();
+
 	// リザルト状態にする
 	m_state = STATE_RESULT;
 

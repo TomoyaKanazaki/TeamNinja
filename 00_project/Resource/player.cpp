@@ -399,6 +399,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateGodItem(fDeltaTime);
 		break;
 
+	case STATE_GOAL:
+
+		// ゴール状態の更新
+		currentMotion = UpdateGoal(fDeltaTime);
+		break;
+
 	case STATE_DODGE:
 
 		// 回避状態の更新
@@ -674,7 +680,7 @@ void CPlayer::SetResult()
 	rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
 
 	// 操作を停止させる
-	SetState(CPlayer::STATE_NONE);
+	SetState(CPlayer::STATE_GOAL);
 
 	// 向きをカメラ目線に
 	SetDestRotation(rotDest);
@@ -689,7 +695,7 @@ void CPlayer::SetResult()
 		SetMotion(MOTION_DEATH);
 		break;
 	case CRetentionManager::WIN_SUCCESS:
-		SetMotion(MOTION_IDOL);
+		SetMotion(MOTION_GOAL);
 		break;
 	}
 }
@@ -763,6 +769,9 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 
 	// コントローラのバイブレーション
 	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
+
+	// ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GIMMICKJUMP);
 
 	return true;
 }
@@ -864,6 +873,9 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -921,6 +933,9 @@ CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
 
@@ -954,6 +969,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
 
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
@@ -1011,6 +1029,52 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 }
 
 //===========================================
+//	ゴール状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
+{
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 壁の当たり判定
+	CollisionWall(posPlayer);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(posPlayer, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
+
+	if (m_bJump)
+	{ // 空中にいる場合
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
+
+	// ゴールモーションを返す
+	return MOTION_GOAL;
+}
+
+//===========================================
 //  回避状態時の更新処理
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
@@ -1033,6 +1097,9 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1065,6 +1132,9 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1102,6 +1172,9 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1626,7 +1699,16 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_STAND:	// 仁王立ちモーション
 		break;
 
-	case MOTION_SELECT:	// 選択モーション
+	case MOTION_GOAL:	// ゴールモーション
+		break;
+
+	case MOTION_SELECT_IN:	// セレクト開始モーション
+		break;
+
+	case MOTION_SELECT_OUT:	// セレクト終了モーション
+		break;
+
+	case MOTION_DROWNING:	// 水没モーション
 		break;
 	}
 }
@@ -2024,6 +2106,31 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 		// ジャンプ状況を false にする
 		m_bJump = false;
 	}
+}
+
+//==========================================
+// 敵の当たり判定
+//==========================================
+void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
+{
+	// 敵のリスト構造が無ければ、抜ける
+	if (CEnemy::GetList() == nullptr) { return; }
+
+	std::list<CEnemy*> list = CEnemy::GetList()->GetList();	// リストを取得
+
+	for (auto enemy : list)
+	{
+		// 当たり判定処理
+		enemy->Collision
+		(
+			pos,		// 位置
+			RADIUS,		// 半径
+			HEIGHT		// 高さ
+		);
+	}
+
+	// 位置を適用
+	SetVec3Position(pos);
 }
 
 //==========================================

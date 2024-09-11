@@ -15,6 +15,8 @@
 //	インクルードファイル
 //************************************************************
 #include "objectModel.h"
+#include "effekseerControl.h"
+#include "effekseerManager.h"
 
 //************************************************************
 //	クラス定義
@@ -85,17 +87,19 @@ private:
 
 	// メンバ変数
 	CListManager<CGodItem>::AIterator m_iterator;	// イテレーター
-	float m_fPosInitY;								// 初期位置(Y軸)
-	EType m_type;									// 種類
-	EState m_state;									// 状態
-	float m_fHeightRot;								// 高さの向き
+	CEffekseer::CEffectData* m_pEffectBody;			// 本体エフェクト情報
+	CEffekseer::CEffectData* m_pEffectLand;			// 着地エフェクト情報
+	float m_fPosInitY;	// 初期位置(Y軸)
+	EType m_type;		// 種類
+	EState m_state;		// 状態
+	float m_fHeightRot;	// 高さの向き
 
 	// 静的メンバ関数
-	static bool DuplicationCheck(const EType type);		// 重複チェック処理
+	static bool DuplicationCheck(const EType type);	// 重複チェック処理
 
 	// 静的メンバ変数
-	static CListManager<CGodItem>* m_pList;			// リスト構造
-	static bool m_aGet[TYPE_MAX];					// 取得状況
+	static CListManager<CGodItem>* m_pList;	// リスト構造
+	static bool m_aGet[TYPE_MAX];			// 取得状況
 };
 
 #endif	// _COIN_H_

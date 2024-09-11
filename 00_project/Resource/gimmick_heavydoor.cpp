@@ -21,6 +21,7 @@
 #include "debugproc.h"
 #include "actor.h"
 #include "multi_plant.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -161,6 +162,9 @@ void CGimmickHeavyDoor::Update(const float fDeltaTime)
 
 			// カメラ揺れを設定する
 			CManager::GetInstance()->GetCamera()->SetSwing(CCamera::TYPE_MAIN, OPEN_SWING);
+
+			// ドアが開く音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_DOOROPEN);
 		}
 
 		break;
@@ -457,5 +461,8 @@ void CGimmickHeavyDoor::CloseTheDoor(D3DXVECTOR3& rPos)
 	{
 		m_move = VEC3_ZERO;		// 移動量
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
+
+		// ドアが閉じる音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_DOORCLOSE);
 	}
 }

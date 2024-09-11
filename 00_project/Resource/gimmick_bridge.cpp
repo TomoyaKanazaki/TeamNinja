@@ -10,6 +10,7 @@
 #include "player_clone.h"
 #include "field.h"
 #include "multi_plant.h"
+#include "sound.h"
 
 #include "camera.h"
 
@@ -219,6 +220,9 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 			// コントローラのバイブレーション
 			GET_INPUTPAD->SetVibration(CInputPad::TYPE_BRIDGE);
+
+			// 橋完成音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_GIMMICKBRIDGE);
 		}
 
 		// 向きを保存する

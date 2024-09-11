@@ -87,6 +87,31 @@ void CEffekseer::Uninit()
 	pInstance = NULL;
 }
 //======================================================
+//エフェクト全削除
+//======================================================
+void CEffekseer::AllClear()
+{
+	m_EfkManager->StopAllEffects();
+	m_vEffect.shrink_to_fit();
+	int nSize = (int)m_vEffect.size();
+	for (int i = 0; i < nSize; i++)
+	{
+		if (m_vEffect[i]->m_bAutoDelete && m_vEffect[i] != NULL)
+		{
+			delete m_vEffect[i];
+			m_vEffect[i] = NULL;
+		
+		}
+	}
+	for (int i = 0; i < nSize; i++)
+	{
+		if (m_vEffect[i] == NULL)
+		{
+			m_vEffect[i]->Erase();
+		}
+	}
+}
+//======================================================
 //更新
 //======================================================
 void CEffekseer::Update()

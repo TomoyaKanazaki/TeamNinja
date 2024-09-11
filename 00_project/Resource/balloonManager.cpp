@@ -77,9 +77,9 @@ namespace
 
 	namespace name
 	{
-		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char *FONT = "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const bool	ITALIC			= true;		// イタリック
-		const float	CHAR_HEIGHT		= 140.0f;	// 文字縦幅
+		const float	CHAR_HEIGHT		= 120.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 120.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.017f;	// 文字表示の待機時間
 		const float	WAIT_TIME_NOR_FIRST	= 0.17f;	// 文字表示の待機時間

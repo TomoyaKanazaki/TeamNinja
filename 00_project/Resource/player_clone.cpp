@@ -404,6 +404,16 @@ void CPlayerClone::SetGimmick(CGimmickAction* gimmick)
 	// ギミックで所持する最大数を超えていた場合関数を抜ける
 	if (gimmick->GetNumActive() <= gimmick->GetNumClone()) { return; }
 
+	if (gimmick->GetType() == CGimmick::TYPE_POST)
+	{ // ボタンだった場合
+
+		// ボタンを押した音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GIMMICKBUTTON);
+
+		// ボタン押した時のエフェクトを生成する
+		GET_EFFECT->Create("data\\EFFEKSEER\\ring.efkefc", gimmick->GetVec3Position(), gimmick->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	}
+
 	// 引数をポインタに設定する
 	m_pGimmick = gimmick;
 

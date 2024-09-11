@@ -79,5 +79,6 @@ private:
 	D3DXVECTOR3 m_collMax;		// “–‚½‚è”»’è‚ÌÅ‘å’l
 	D3DXVECTOR3 m_collMin;		// “–‚½‚è”»’è‚ÌÅ¬’l
 	EState m_state;				// ó‘Ô
+	EState m_stateOld;			// ‘O‰ñ‚Ìó‘Ô
 
 };

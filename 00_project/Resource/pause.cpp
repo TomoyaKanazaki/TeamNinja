@@ -379,7 +379,7 @@ void CPause::Select(void)
 		case SELECT_EXIT:	// 終了
 		{
 			// シーンの設定
-			GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);	// タイトル画面
+			GET_MANAGER->SetLoadScene(CScene::MODE_SELECT);	// セレクト画面
 
 			break;
 		}
