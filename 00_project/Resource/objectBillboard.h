@@ -81,6 +81,7 @@ public:
 	void BindTexture(const int nTextureID);		// テクスチャ割当 (インデックス)
 	virtual void BindTexture(const char *pTexturePass);	// テクスチャ割当 (パス)
 	void SetColor(const D3DXCOLOR& rCol);		// 色設定
+	void SetAlpha(const float& fAlpha);			// α値設定
 	void SetOrigin(const EOrigin origin);		// 原点設定
 	void SetRotate(const ERotate rotate);		// 回転設定
 	int GetTextureIndex(void) const	{ return m_nTextureID; }	// テクスチャインデックス取得

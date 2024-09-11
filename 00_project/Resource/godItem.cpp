@@ -256,7 +256,7 @@ CGodItem* CGodItem::Create(const D3DXVECTOR3& rPos, const EType type)
 		m_aGet[pItem->m_type] = false;
 
 		// 本体から発する光のエフェクトを割当
-		pItem->m_pEffectBody = GET_EFFECT->Create("data\\EFFEKSEER\\magatama_light.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
+		pItem->m_pEffectBody = GET_EFFECT->Create("data\\EFFEKSEER\\magatama_light.efkefc", rPos + EFFECT_OFFSET, VEC3_ZERO, VEC3_ZERO, 30.0f, false, false);
 
 		// 地面から発する光のエフェクトを割当
 		D3DXVECTOR3 posThis = rPos;
