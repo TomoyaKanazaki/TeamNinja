@@ -35,7 +35,6 @@ public:
 	{
 		TYPE_STALK = 0,		// ‚µ‚Â‚±‚¢“G
 		TYPE_WOLF,			// ˜T“G
-		TYPE_AMBUSH,		// ‘Ò‚¿•š‚¹“G
 		TYPE_MAX			// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

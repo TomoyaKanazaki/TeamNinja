@@ -24,9 +24,6 @@
 #include "enemy.h"
 #include "sound.h"
 
-#include "enemyStalk.h"
-#include "enemyWolf.h"
-#include "enemyAmbush.h"
 #include "checkpoint.h"
 #include "popupUI.h"
 #include "goal.h"

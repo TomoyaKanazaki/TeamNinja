@@ -170,8 +170,6 @@
     <ClInclude Include="Resource\editCoin.h" />
     <ClInclude Include="Resource\editGodItem.h" />
     <ClInclude Include="Resource\editWeed.h" />
-    <ClInclude Include="Resource\enemyAmbush.h" />
-    <ClInclude Include="Resource\enemyState.h" />
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\fog.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
@@ -350,6 +348,7 @@
     <ClInclude Include="Resource\timeUI.h" />
     <ClInclude Include="Resource\titleManager.h" />
     <ClInclude Include="Resource\transpoint.h" />
+    <ClInclude Include="Resource\tutorial.h" />
     <ClInclude Include="Resource\useful.h" />
     <ClInclude Include="Resource\value.h" />
     <ClInclude Include="Resource\valueUI.h" />
@@ -370,8 +369,6 @@
     <ClCompile Include="Resource\editCoin.cpp" />
     <ClCompile Include="Resource\editGodItem.cpp" />
     <ClCompile Include="Resource\editWeed.cpp" />
-    <ClCompile Include="Resource\enemyAmbush.cpp" />
-    <ClCompile Include="Resource\enemyState.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\fog.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
@@ -554,6 +551,7 @@
     <ClCompile Include="Resource\timeUI.cpp" />
     <ClCompile Include="Resource\titleManager.cpp" />
     <ClCompile Include="Resource\transpoint.cpp" />
+    <ClCompile Include="Resource\tutorial.cpp" />
     <ClCompile Include="Resource\useful.cpp" />
     <ClCompile Include="Resource\value.cpp" />
     <ClCompile Include="Resource\valueUI.cpp" />

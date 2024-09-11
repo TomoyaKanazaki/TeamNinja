@@ -106,6 +106,9 @@ HRESULT CSceneGame::Init(void)
 		return E_FAIL;
 	}
 
+	// タイマーUIの優先順位を設定
+	m_pTimerUI->SetPriority(5);
+
 	// シネマスコープの生成
 	m_pCinemaScope = CCinemaScope::Create();
 	if (m_pCinemaScope == nullptr)
@@ -196,10 +199,6 @@ void CSceneGame::Uninit(void)
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
 
-
-
-	//シェーダーの破棄
-	CToonShadow::Release();
 #if _DEBUG
 
 	// エディットマネージャーの破棄
