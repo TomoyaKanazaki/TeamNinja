@@ -106,6 +106,9 @@ HRESULT CSceneGame::Init(void)
 		return E_FAIL;
 	}
 
+	// タイマーUIの優先順位を設定
+	m_pTimerUI->SetPriority(5);
+
 	// シネマスコープの生成
 	m_pCinemaScope = CCinemaScope::Create();
 	if (m_pCinemaScope == nullptr)
