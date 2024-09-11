@@ -23,6 +23,7 @@ namespace
 
 	const float WIDTH = 500.0f; // ポリゴンの横幅
 	const D3DXVECTOR3 HIT_BOX = D3DXVECTOR3(250.0f, 250.0f, 250.0f); // 判定距離
+	const float POP_TIME = 3.0f; // 移動時間
 }
 
 //==========================================
@@ -39,7 +40,9 @@ CListManager<CTutorial>* CTutorial::m_pList = nullptr; // オブジェクトリスト
 //  コンストラクタ
 //==========================================
 CTutorial::CTutorial() : CObjectBillboard(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_3D, 7),
-	m_sizeDefault(VEC3_ZERO)
+	m_sizeDefault(VEC3_ZERO),
+	m_bIn(false),
+	m_fTime(0.0f)
 {
 }
 
@@ -117,8 +120,7 @@ void CTutorial::Update(const float fDeltaTime)
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
-	// プレイヤー距離の判定
-	MeasureDistance();
+	Scaling(fDeltaTime);
 
 	// 親クラスの更新
 	CObjectBillboard::Update(fDeltaTime);
@@ -151,25 +153,42 @@ void CTutorial::BindTexture(const char* pTexturePass)
 }
 
 //==========================================
-//  プレイヤーとの距離を測る処理
+//  スケーリング処理
 //==========================================
-void CTutorial::MeasureDistance()
+void CTutorial::Scaling(const float fDeltaTime)
 {
-	// プレイヤー情報を取得
+	// 一定時間が経過していたら関数を抜ける
+	if (m_fTime >= HALF_PI) { return; }
+
+	// プレイヤー情報の取得
 	CPlayer* pPlayer = GET_PLAYER;
 	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
 	D3DXVECTOR3 sizePlayer = D3DXVECTOR3(pPlayer->GetRadius(), pPlayer->GetHeight(), pPlayer->GetRadius());
 
 	// 当たり判定
-	if (collision::Box3D
-	(
-		GetVec3Position(), posPlayer,
-		HIT_BOX, HIT_BOX,
-		sizePlayer, sizePlayer
-	))
+	if (!m_bIn)
 	{
-		m_bMove = true;
+		m_bIn = collision::Box3D
+		(
+			GetVec3Position(), posPlayer,
+			HIT_BOX, HIT_BOX,
+			sizePlayer, sizePlayer
+		);
+
+		return;
 	}
+
+	// 経過時間を加算する
+	m_fTime += fDeltaTime * HALF_PI;
+
+	// 経過時間を補正
+	if (m_fTime > HALF_PI)
+	{
+		m_fTime = HALF_PI;
+	}
+
+	// サイズを補正する
+	SetVec3Sizing(m_sizeDefault * sinf(m_fTime));
 }
 
 //==========================================
@@ -210,13 +229,4 @@ CTutorial* CTutorial::Create(const D3DXVECTOR3& rPos, const EType type)
 CListManager<CTutorial>* CTutorial::GetList(void)
 {
 	return m_pList;
-}
-
-//==========================================
-//  拡縮処理
-//==========================================
-void CTutorial::Scaling(const float fDeltaTime)
-{
-	// 移動フラグがoffの場合関数を抜ける
-	if (!m_bMove) { return; }
 }
