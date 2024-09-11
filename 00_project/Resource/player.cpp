@@ -1698,6 +1698,20 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0 && GetMotionKey() != 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_STAND:	// 仁王立ちモーション
