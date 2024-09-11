@@ -116,6 +116,7 @@ public:
 		LABEL_GODITEM,		// 神器
 		LABEL_WEED,			// 草
 		LABEL_DEBUG,		// デバッグ
+		LABEL_GODITEMUI,	// 神器UI
 		LABEL_MAX			// この列挙型の総数
 	};
 
