@@ -30,8 +30,6 @@ public:
 	void Uninit(void) override; // 終了処理
 	void Update(const float fDeltaTime) override; // 更新処理
 	void Draw(CShader* pShader = nullptr) override; // 描画処理
-	void BindTexture(const char* pTexturePass) override; // テクスチャ割当 (パス)
-	void MeasureDistance(); // プレイヤーとの距離を測る処理
 
 	// 静的メンバ関数
 	static CTutorial* Create(const D3DXVECTOR3& rPos, const EType type);
@@ -43,11 +41,13 @@ private:
 	static CListManager<CTutorial>* m_pList; // オブジェクトリスト
 
 	// メンバ関数
-	void Scaling(const float fDeltaTime); // 拡縮処理
+	void BindTexture(const char* pTexturePass) override; // テクスチャ割当 (パス)
+	void Scaling(const float fDeltaTime); // スケーリング変更処理
 
 	// メンバ変数
 	CListManager<CTutorial>::AIterator m_iterator; // イテレーター
 	D3DXVECTOR3 m_sizeDefault; // 初期サイズ
-	bool m_bMove; // 移動フラグ
+	bool m_bIn; // 内部判定
+	float m_fTime; // 移動時間
 
 };
