@@ -12,6 +12,7 @@
 #include "stage.h"
 #include "camera.h"
 #include "transpoint.h"
+#include "sound.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -348,4 +349,7 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// ƒJƒƒ‰Œü‚«
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
+
+	// Ú”ª‰¹‚ÌÄ¶
+	PLAY_SOUND(CSound::LABEL_SE_SYAKUHATI);
 }
