@@ -219,7 +219,7 @@ private:
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
-	void CheckPointBack(void);						// チェックポイント回帰処理
+	void CheckPointBack(const float fDeltaTime);	// チェックポイント回帰処理
 
 	// メンバ関数 (金崎追加)
 	void DelelteClone();		// 分身を呼び戻す処理
@@ -258,6 +258,7 @@ private:
 	bool		m_bGimmickClone;		// ギミッククローンの生成フラグ
 	float		m_fGimmickTimer;		// ギミッククローンの生成タイマー
 	float		m_fTempStick;			// スティックの入力角を保存する変数
+	float		m_fBackTime;			// 回帰時間
 
 	// メンバ変数 (金崎追加)
 	D3DXVECTOR3 m_posCenter;				// 中心座標
@@ -269,8 +270,8 @@ private:
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
 	CField* m_pLastField;					// 最後に着地していた地面
-	CEffekseer::CEffectData* m_pEffectdata;	//エフェクト情報
-	CEffekseer::CEffectData* m_pEffectFirefly;	//エフェクト情報
+	CEffekseer::CEffectData* m_pEffectdata;	// エフェクト情報
+	CEffekseer::CEffectData* m_pEffectFirefly;	// エフェクト情報
 
 
 };
