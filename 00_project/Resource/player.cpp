@@ -129,11 +129,11 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
+	m_posInit		(VEC3_ZERO),	// 初期位置
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
 	m_nWalkCount	(0),			// 歩行音カウント
-	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
 	m_bGimmickClone	(false),		// ギミッククローンの生成フラグ
@@ -172,7 +172,6 @@ HRESULT CPlayer::Init(void)
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
 	m_nWalkCount	= 0;			// 歩行音カウント
-	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
 	m_bGimmickClone	= false;		// ギミッククローンの生成フラグ
@@ -327,6 +326,9 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// チェックポイント回帰処理
+	CheckPointBack();
 
 #ifdef _DEBUG
 
@@ -499,6 +501,8 @@ CPlayer *CPlayer::Create
 		// 位置を設定
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
+			// 初期位置を設定する
+			pPlayer->m_posInit = rPos;
 			pPlayer->SetVec3Position(rPos);
 
 			if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
@@ -1805,6 +1809,37 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 	case MOTION_DROWNING:	// 水没モーション
 		break;
 	}
+}
+
+//============================================================
+// チェックポイント回帰処理
+//============================================================
+void CPlayer::CheckPointBack(void)
+{
+	// ボタンを押されてない場合関数を抜ける
+	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_LB) && !GET_INPUTPAD->IsTrigger(CInputPad::KEY_RB)) { return; }
+
+	// 待機状態に戻す
+	m_state = STATE_NORMAL;
+
+	// セーブ情報を取得
+	const int nSave = GET_GAMEMANAGER->GetSave();
+
+	// 位置を設定
+	if (nSave != -1 && CCheckPoint::GetList() != nullptr)
+	{
+		// チェックポイントのリストを取得
+		CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
+
+		// チェックポイントの座標を設定する
+		SetVec3Position(point->GetVec3Position());
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 初期位置に座標を移す
+	SetVec3Position(m_posInit);
 }
 
 //============================================================

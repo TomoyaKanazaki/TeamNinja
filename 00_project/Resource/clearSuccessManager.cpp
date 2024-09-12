@@ -89,6 +89,7 @@ namespace
 		const float	DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// 差分透明度
 		const D3DXCOLOR DEST_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// 目標色
 		const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// 初期色
+		const float SOUND_ALPHA = 0.95f;	// 音を鳴らす透明度
 	}
 
 	namespace icon_bg
@@ -767,7 +768,7 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 		m_apGodItemIcon[i]->SetColor(colCur);
 
 		if (!m_aGodItemSound[i] &&
-			m_apGodItemIcon[i]->GetColor().a >= 0.95f)
+			m_apGodItemIcon[i]->GetColor().a >= icon_item::SOUND_ALPHA)
 		{ // 大きさが目的の透明度に近づいた場合
 
 			// 一度だけ三味線の音を鳴らす
