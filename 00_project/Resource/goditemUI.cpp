@@ -10,6 +10,7 @@
 #include "goditemUI.h"
 
 #include "anim2D.h"
+#include "goditem_mark.h"
 
 //************************************************************
 //	定数宣言
@@ -18,24 +19,20 @@ namespace
 {
 	const int PRIORITY = 0;	// タイマーの優先順位
 
-	namespace ui
+	const D3DXVECTOR3 POS[CGodItem::TYPE_MAX] =		// 位置
 	{
-		const D3DXVECTOR3 POS[CGodItem::TYPE_MAX] =		// 位置
-		{
-			D3DXVECTOR3(640.0f, 30.0f, 0.0f),	// 赤
-			D3DXVECTOR3(615.0f, 70.0f, 0.0f),	// 緑
-			D3DXVECTOR3(665.0f, 70.0f, 0.0f)	// 青
-		};
-		const D3DXVECTOR3 ROT[CGodItem::TYPE_MAX] =		// 向き
-		{
-			D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.3f),	// 赤
-			D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.6f),	// 緑
-			D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.9f)	// 青
-		};
-		const D3DXVECTOR3 GROUND_SIZE = D3DXVECTOR3(50.0f, 50.0f, 0.0f);	// 下地のサイズ
-		const D3DXVECTOR3 BODY_SIZE = D3DXVECTOR3(100.0f, 100.0f, 0.0f);		// 本体のサイズ
-		const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";		// テクスチャ
-	}
+		D3DXVECTOR3(640.0f, 30.0f, 0.0f),	// 赤
+		D3DXVECTOR3(615.0f, 75.0f, 0.0f),	// 緑
+		D3DXVECTOR3(665.0f, 75.0f, 0.0f)	// 青
+	};
+	const D3DXVECTOR3 ROT[CGodItem::TYPE_MAX] =		// 向き
+	{
+		D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.3f),	// 赤
+		D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.6f),	// 緑
+		D3DXVECTOR3(0.0f, 0.0f, (D3DX_PI * 2.0f) * 0.9f)	// 青
+	};
+	const D3DXVECTOR3 GROUND_SIZE = D3DXVECTOR3(60.0f, 60.0f, 0.0f);	// 下地のサイズ
+	const char* TEXTURE = "data\\TEXTURE\\itemGod000.png";		// テクスチャ
 }
 
 //************************************************************
@@ -53,7 +50,7 @@ CGodItemUI::CGodItemUI() : CObject(CObject::LABEL_GODITEMUI, CObject::SCENE_MAIN
 {
 	// メンバ変数をクリア
 	memset(&m_apGround[0], 0, sizeof(m_apGround));	// 下地の情報
-	memset(&m_aBody[0], 0, sizeof(m_aBody));		// 本体の情報
+	memset(&m_apMark[0], 0, sizeof(m_apMark));		// マークの情報
 }
 
 //============================================================
@@ -78,16 +75,16 @@ HRESULT CGodItemUI::Init(void)
 		// 下地を生成する
 		m_apGround[nCntGround] = CAnim2D::Create
 		(
-			CGodItem::TYPE_MAX,		// テクスチャの横の分割数
-			1,						// テクスチャの縦の分割数
-			ui::POS[nCntGround],	// 位置
-			ui::GROUND_SIZE,		// サイズ
-			ui::ROT[nCntGround],	// 向き
-			XCOL_BLACK				// 色
+			CGodItem::TYPE_MAX,	// テクスチャの横の分割数
+			1,					// テクスチャの縦の分割数
+			POS[nCntGround],	// 位置
+			GROUND_SIZE,		// サイズ
+			ROT[nCntGround],	// 向き
+			XCOL_BLACK			// 色
 		);
 
 		// テクスチャを割り当てる
-		m_apGround[nCntGround]->BindTexture(ui::TEXTURE);
+		m_apGround[nCntGround]->BindTexture(TEXTURE);
 
 		// 優先順位を設定
 		m_apGround[nCntGround]->SetPriority(PRIORITY);
@@ -103,36 +100,19 @@ HRESULT CGodItemUI::Init(void)
 	}
 
 	// メンバ変数を初期化
-	for (int nCntBody = 0; nCntBody < CGodItem::TYPE_MAX; nCntBody++)
+	for (int nCntMark = 0; nCntMark < CGodItem::TYPE_MAX; nCntMark++)
 	{
-		// 本体が NULL の場合、次に進む
-		if (m_aBody[nCntBody].pMark != nullptr) { assert(false); continue; }
+		// マークが NULL の場合、次に進む
+		if (m_apMark[nCntMark] != nullptr) { assert(false); continue; }
 
-		// 本体を生成する
-		m_aBody[nCntBody].pMark = CAnim2D::Create
+		// 生成処理
+		m_apMark[nCntMark] = CGodItemMark::Create
 		(
-			CGodItem::TYPE_MAX,	// テクスチャの横の分割数
-			1,					// テクスチャの縦の分割数
-			ui::POS[nCntBody],	// 色
-			ui::BODY_SIZE,		// サイズ
-			ui::ROT[nCntBody],	// 向き
-			XCOL_AWHITE			// 色
+			POS[nCntMark],
+			ROT[nCntMark],
+			nCntMark,
+			PRIORITY
 		);
-
-		// テクスチャを割り当てる
-		m_aBody[nCntBody].pMark->BindTexture(ui::TEXTURE);
-
-		// 優先順位を設定
-		m_aBody[nCntBody].pMark->SetPriority(PRIORITY);
-
-		// カウンターを設定する
-		m_aBody[nCntBody].pMark->SetCounter(0);
-
-		// パターンを設定する
-		m_aBody[nCntBody].pMark->SetPattern(nCntBody);
-
-		// 停止状況を設定
-		m_aBody[nCntBody].pMark->SetEnableStop(false);
 	}
 
 	if (m_pList == nullptr)
@@ -165,7 +145,7 @@ void CGodItemUI::Uninit(void)
 	{
 		// 下地と本体を破棄する
 		SAFE_UNINIT(m_apGround[nCnt]);
-		SAFE_UNINIT(m_aBody[nCnt].pMark);
+		SAFE_UNINIT(m_apMark[nCnt]);
 	}
 
 	// リストから自身のオブジェクトを削除
@@ -196,11 +176,11 @@ void CGodItemUI::Update(const float fDeltaTime)
 			m_apGround[nCnt]->Update(fDeltaTime);
 		}
 
-		if (m_aBody[nCnt].pMark != nullptr)
+		if (m_apMark[nCnt] != nullptr)
 		{ // 本体が NULL じゃない場合
 
 			// 更新処理
-			m_aBody[nCnt].pMark->Update(fDeltaTime);
+			m_apMark[nCnt]->Update(fDeltaTime);
 		}
 	}
 }
@@ -219,13 +199,13 @@ void CGodItemUI::Draw(CShader* /*pShader*/)
 		m_apGround[nCntGround]->Draw();
 	}
 
-	for (int nCntBody = 0; nCntBody < CGodItem::TYPE_MAX; nCntBody++)
+	for (int nCntMark = 0; nCntMark < CGodItem::TYPE_MAX; nCntMark++)
 	{
 		// 本体が NULL じゃない場合、次に進む
-		if (m_aBody[nCntBody].pMark == nullptr) { continue; }
+		if (m_apMark[nCntMark] == nullptr) { continue; }
 
 		// 描画処理
-		m_aBody[nCntBody].pMark->Draw();
+		m_apMark[nCntMark]->Draw();
 	}
 }
 
@@ -234,14 +214,11 @@ void CGodItemUI::Draw(CShader* /*pShader*/)
 //============================================================
 void CGodItemUI::Get(const CGodItem::EType type)
 {
-	// 取得していた場合、停止
-	if (m_aBody[type].bGet) { assert(false); return; }
+	// 既に取得していた場合、停止
+	if (m_apMark[type]->GetState() != CGodItemMark::STATE_NONE) { assert(false); return; }
 
-	// 取得状況を true にする
-	m_aBody[type].bGet = true;
-
-	// 出現させる
-	m_aBody[type].pMark->SetAlpha(1.0f);
+	// 拡縮状態にする
+	m_apMark[type]->SetState(CGodItemMark::STATE_SCALING);
 }
 
 //============================================================
@@ -251,6 +228,7 @@ CGodItemUI* CGodItemUI::Create(void)
 {
 	// タイマーの生成
 	CGodItemUI* pTimer = new CGodItemUI;
+
 	if (pTimer == nullptr)
 	{ // 生成に失敗した場合
 

@@ -769,7 +769,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
