@@ -512,6 +512,9 @@ void CClearSuccessManager::UpdateTimeTitle(const float fDeltaTime)
 		// 遂行時間タイトルの大きさを補正
 		m_pTime->SetCharHeight(time::DEST_HEIGHT);
 
+		// 文字送りの音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_RESULTTEXT);
+
 		// 遂行時間待機状態にする
 		m_state = STATE_TIME_VALUE_WAIT;
 	}
@@ -615,6 +618,9 @@ void CClearSuccessManager::UpdateItemTitle(const float fDeltaTime)
 
 		// 神器タイトルの大きさを補正
 		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
+
+		// 文字送りの音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_RESULTTEXT);
 
 		// 神器アイコン背景待機状態にする
 		m_state = STATE_ITEM_BG_WAIT;
@@ -757,6 +763,9 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 
 		// 神器アイコンの色を反映
 		m_apGodItemIcon[i]->SetColor(colCur);
+
+		// 琴の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 	}
 
 	// アイコンのサイズ変更補正
@@ -801,5 +810,8 @@ void CClearSuccessManager::UpdateWait(const float fDeltaTime)
 	{
 		// 終了状態にする
 		m_state = STATE_END;
+
+		// 太鼓の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 	}
 }

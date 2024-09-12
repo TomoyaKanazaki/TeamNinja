@@ -72,6 +72,8 @@ namespace
 		{ "data\\SE\\syakuhati.wav", 0 },		// 尺八音
 		{ "data\\SE\\reflect.wav", 0 },			// カキン音
 		{ "data\\SE\\in000.wav", 0 },			// イン結び
+		{ "data\\SE\\resulttext.wav", 0 },		// リザルトテキスト
+		{ "data\\SE\\resulttitle.wav", 0 },		// リザルトタイトル
 	};
 }
 
