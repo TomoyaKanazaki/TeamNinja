@@ -1825,7 +1825,7 @@ void CCamera::OpenRotUp(const float fDeltaTime)
 		m_openInfo.state = SOpen::STATE_MOVE;
 
 		// 着地音の再生
-		PLAY_SOUND(CSound::LABEL_SE_WIND);
+		PLAY_SOUND(CSound::LABEL_SE_WIND_000);
 	}
 }
 

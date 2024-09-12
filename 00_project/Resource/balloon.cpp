@@ -126,7 +126,7 @@ void CBalloon::Update(const float fDeltaTime)
 		{ // ŠÔ‚ªŒo‰ß‚µ‚«‚Á‚½ê‡
 
 			// Œˆ’è‰¹‚ÌÄ¶
-			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
+			PLAY_SOUND(CSound::LABEL_SE_SELECT_001);
 
 			// I—¹ó‘Ô‚É‚·‚é
 			m_state = STATE_END;

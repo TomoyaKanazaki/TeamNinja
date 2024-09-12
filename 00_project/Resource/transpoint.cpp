@@ -391,7 +391,7 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 				}
 
 				// íÖínâπÇÃçƒê∂
-				PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
+				PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
 			}
 		}
 		else

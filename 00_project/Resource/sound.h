@@ -77,8 +77,12 @@ public:
 		LABEL_SE_MASH,				// ‚Ó‚·‚Ü‚Ì‰¹
 		LABEL_SE_MASHCLOSE,			// ‚Ó‚·‚Ü‚ª•Â‚¶‚é‚Æ‚«‚Ì‰¹
 		LABEL_SE_SPINWALL,			// ‰ñ“]”à‚Ì‰¹
-		LABEL_SE_WIND,				// •—Ø‚è‰¹
+		LABEL_SE_WIND_000,			// •—Ø‚è‰¹00
+		LABEL_SE_WIND_001,			// •—Ø‚è‰¹01
+		LABEL_SE_WIND_002,			// •—Ø‚è‰¹02
 		LABEL_SE_SYAKUHATI,			// ŽÚ”ª‰¹
+		LABEL_SE_REFLECT,			// ƒJƒLƒ“‰¹
+		LABEL_SE_IN,				// ƒCƒ“Œ‹‚Ñ
 		LABEL_MAX					// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 

@@ -1751,6 +1751,12 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_SELECT_OUT:	// セレクト終了モーション
+
+		if (GetMotionWholeCounter() == 8)
+		{
+			// イン結び音の再生
+			PLAY_SOUND(CSound::LABEL_SE_IN);
+		}
 		break;
 
 	case MOTION_DROWNING:	// 水没モーション
