@@ -43,7 +43,7 @@
 #include "tension.h"
 #include "retentionManager.h"
 #include "goditemUI.h"
-
+#include "hitstop.h"
 #include "tutorial.h"
 
 //************************************************************
@@ -111,6 +111,18 @@ namespace
 	{
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
+	}
+
+	namespace dodge
+	{
+		const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);	// カメラ揺れの値
+		const float STOP_TIME = 0.2f;	// ヒットストップ時間
+	}
+
+	namespace hit
+	{
+		const CCamera::SSwing SWING = CCamera::SSwing(14.0f, 2.0f, 1.0f);	// カメラ揺れの値
+		const float STOP_TIME = 0.4f;	// ヒットストップ時間
 	}
 }
 
@@ -577,6 +589,15 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	// 士気力が減少する
 	CTension::Vanish();
 
+	// ヒットストップさせる
+	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);
+
+	// カメラ揺れを与える
+	GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, hit::SWING);
+
+	// ダメージモーションにする
+	SetMotion(MOTION_DAMAGE);
+
 	return true;
 }
 
@@ -602,6 +623,12 @@ bool CPlayer::Hit(const int nDamage)
 
 	// 士気力が減少する
 	CTension::Vanish();
+
+	// ヒットストップさせる
+	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);
+
+	// カメラ揺れを与える
+	GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, hit::SWING);
 
 	return true;
 }
@@ -1924,11 +1951,20 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 			m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f, false, false);
 		}
 
+		// ヒットストップさせる
+		CSceneGame::GetHitStop()->SetStop(dodge::STOP_TIME);
+
+		// カメラ揺れを与える
+		GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, dodge::SWING);
+
 		// 回避音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_PLAYERSTEP_000);
 
 		// 士気力を増やす
 		CTension::Create();
+
+		// 回避モーションにする
+		SetMotion(MOTION_DODGE);
 
 		// 回避状態に変更
 		m_state = STATE_DODGE;

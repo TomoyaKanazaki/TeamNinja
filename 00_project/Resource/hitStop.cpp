@@ -18,7 +18,7 @@
 CHitStop::CHitStop() :
 	m_funcEndStop	(nullptr),	// 停止終了関数ポインタ
 	m_bStop			(false),	// 停止状況
-	m_nCounter		(0)			// 停止時間
+	m_fCurTime		(0.0f)		// 停止時間
 {
 
 }
@@ -39,7 +39,7 @@ HRESULT CHitStop::Init(void)
 	// メンバ変数を初期化
 	m_funcEndStop	= nullptr;	// 停止終了関数ポインタ
 	m_bStop			= false;	// 停止状況
-	m_nCounter		= 0;		// 停止時間
+	m_fCurTime		= 0.0f;		// 停止時間
 
 	// 成功を返す
 	return S_OK;
@@ -62,8 +62,8 @@ void CHitStop::Update(const float fDeltaTime)
 	if (!m_bStop) { return; }
 
 	// カウンター減算
-	m_nCounter--;
-	if (m_nCounter <= 0)
+	m_fCurTime -= fDeltaTime;
+	if (m_fCurTime <= 0)
 	{ // 計測終了した場合
 
 		// ヒットストップを解除
@@ -89,13 +89,13 @@ void CHitStop::Draw(void)
 //============================================================
 //	停止状況の設定処理
 //============================================================
-void CHitStop::SetStop(const int nCounter, std::function<void(void)> funcEnd)
+void CHitStop::SetStop(const float fCurTime, std::function<void(void)> funcEnd)
 {
 	// 停止フラグをONにする
 	m_bStop = true;
 
 	// 停止時間を設定
-	m_nCounter = nCounter;
+	m_fCurTime = fCurTime;
 
 	// ヒットストップ解除時に呼び出される関数の設定
 	m_funcEndStop = funcEnd;
