@@ -106,6 +106,7 @@ namespace
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
+	const float BACK_TIME = 1.2f;		// 回帰までにかかる時間
 
 	// ブラーの情報
 	namespace blurInfo
@@ -155,6 +156,7 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
+	m_fBackTime		(0.0f),			// 回帰時間
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
@@ -341,7 +343,7 @@ void CPlayer::Update(const float fDeltaTime)
 	UpdateMotion(currentMotion, fDeltaTime);
 
 	// チェックポイント回帰処理
-	CheckPointBack();
+	CheckPointBack(fDeltaTime);
 
 #ifdef _DEBUG
 
@@ -1842,10 +1844,19 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 //============================================================
 // チェックポイント回帰処理
 //============================================================
-void CPlayer::CheckPointBack(void)
+void CPlayer::CheckPointBack(const float fDeltaTime)
 {
 	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { return; }
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_fBackTime = 0.0f; return; }
+
+	// 回帰時間を加算する
+	m_fBackTime += fDeltaTime;
+
+	// 回帰時間が一定数以下の場合、抜ける
+	if (m_fBackTime <= BACK_TIME) { return; }
+
+	// 回帰時間を 0.0f にする
+	m_fBackTime = 0.0f;
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
