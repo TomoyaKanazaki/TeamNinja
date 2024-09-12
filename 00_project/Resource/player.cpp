@@ -100,6 +100,7 @@ namespace
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
+	const int CHECKPOINT_CLONE = 5; // チェックポイントに戻ったときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
@@ -1817,10 +1818,19 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 void CPlayer::CheckPointBack(void)
 {
 	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_LB) && !GET_INPUTPAD->IsTrigger(CInputPad::KEY_RB)) { return; }
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { return; }
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の更新
+		if (m_apOrbit[nCnt] == nullptr) { return; }
+
+		// 軌跡を消す
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+	}
 
 	// セーブ情報を取得
 	const int nSave = GET_GAMEMANAGER->GetSave();
@@ -1833,6 +1843,13 @@ void CPlayer::CheckPointBack(void)
 
 		// チェックポイントの座標を設定する
 		SetVec3Position(point->GetVec3Position());
+
+		while (CTension::GetUseNum() < CHECKPOINT_CLONE)
+		{ // 最低保証以下の場合
+
+			// 分身数を上げる
+			CTension::Create();
+		}
 
 		// 関数を抜ける
 		return;
