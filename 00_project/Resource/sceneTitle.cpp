@@ -81,7 +81,7 @@ HRESULT CSceneTitle::Init(void)
 	pCamera->SetEnableUpdate(false);				// XV‚ğ’â~
 
 	// BGM‚ÌÄ¶
-	PLAY_SOUND(CSound::LABEL_BGM_GENERAL);
+	PLAY_SOUND(CSound::LABEL_BGM_TITLE);
 
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;

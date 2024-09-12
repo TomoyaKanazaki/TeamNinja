@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "texture.h"
 #include "camera.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -486,8 +487,15 @@ void CTitleLogo2D::UpdateMoveTwoWait(const float fDeltaTime)
 		// タイマーを初期化
 		m_fCurTime = 0.0f;
 
-		// カメラの更新をオンにする
-		GET_CAMERA->SetEnableUpdate(true);
+		if (!GET_CAMERA->IsUpdate())
+		{ // カメラの更新が開始前の場合
+
+			// 決定音を再生
+			//PLAY_SOUND(CSound::LABEL_SE_WIND);	// TODO：音いるかも？
+
+			// カメラの更新をオンにする
+			GET_CAMERA->SetEnableUpdate(true);
+		}
 
 		// 移動状態にする
 		m_state = STATE_TWO_MOVE;

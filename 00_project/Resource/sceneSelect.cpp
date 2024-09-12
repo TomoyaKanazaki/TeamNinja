@@ -97,7 +97,7 @@ HRESULT CSceneSelect::Init(void)
 #endif	// _DEBUG
 
 	// BGMÇÃçƒê∂
-	PLAY_SOUND(CSound::LABEL_BGM_GENERAL);
+	PLAY_SOUND(CSound::LABEL_BGM_SELECT);
 
 	// ê¨å˜Çï‘Ç∑
 	return S_OK;

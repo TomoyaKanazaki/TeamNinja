@@ -21,8 +21,8 @@
 //************************************************************
 namespace
 {
-	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\checkpoint_blue.efkefc";	// G‚ê‚Ä‚¢‚éÛ‚ÌƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹
-	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\checkpoint_red.efkefc";		// G‚ê‚Ä‚¢‚È‚¢Û‚ÌƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹
+	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\stage_active.efkefc";	// G‚ê‚Ä‚¢‚éÛ‚ÌƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹
+	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\stage_standby.efkefc";	// G‚ê‚Ä‚¢‚È‚¢Û‚ÌƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);	// ƒGƒtƒFƒNƒg—pƒIƒtƒZƒbƒg
 	const int	PRIORITY	 = 2;		// ‘JˆÚƒ|ƒCƒ“ƒg‚Ì—Dæ‡ˆÊ
 	const float	RADIUS		 = 120.0f;	// ‘JˆÚƒ|ƒCƒ“ƒg‚ÉG‚ê‚ç‚ê‚é”¼Œa
@@ -42,12 +42,13 @@ CTransPoint* CTransPoint::m_pOpenTransPoint		= nullptr;	// ‰ğ•ú‚³‚ê‚½‘JˆÚƒ|ƒCƒ“ƒ
 //	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //============================================================
 CTransPoint::CTransPoint(const char* pPass) : CObjectModel(CObject::LABEL_TRANSPOINT, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_sTransMapPass	(pPass),		// ‘JˆÚæƒ}ƒbƒvƒpƒX
-	m_pEffectData	(nullptr),		// •Û‚·‚éƒGƒtƒFƒNƒgî•ñ
-	m_pBalloon		(nullptr),		// ‚«o‚µî•ñ
-	m_state			(STATE_NORMAL),	// ó‘Ô
-	m_bOpen			(false),		// ƒXƒe[ƒW‰ğ•úƒtƒ‰ƒO
-	m_fCurTime		(0.0f)			// Œ»İ‚ÌŠÔ
+	m_sTransMapPass		(pPass),		// ‘JˆÚæƒ}ƒbƒvƒpƒX
+	m_sScreenShotPass	(""),			// ƒXƒNƒVƒ‡ƒpƒX
+	m_pEffectData		(nullptr),		// •Û‚·‚éƒGƒtƒFƒNƒgî•ñ
+	m_pBalloon			(nullptr),		// ‚«o‚µî•ñ
+	m_state				(STATE_NORMAL),	// ó‘Ô
+	m_bOpen				(false),		// ƒXƒe[ƒW‰ğ•úƒtƒ‰ƒO
+	m_fCurTime			(0.0f)			// Œ»İ‚ÌŠÔ
 {
 
 }
@@ -66,6 +67,7 @@ CTransPoint::~CTransPoint()
 HRESULT CTransPoint::Init(void)
 {
 	// ƒƒ“ƒo•Ï”‚ğ‰Šú‰»
+	m_sScreenShotPass = "";		// ƒXƒNƒVƒ‡ƒpƒX
 	m_pEffectData = nullptr;	// •Û‚·‚éƒGƒtƒFƒNƒgî•ñ
 	m_pBalloon	= nullptr;		// ‚«o‚µî•ñ
 	m_state		= STATE_NORMAL;	// ó‘Ô
@@ -73,11 +75,16 @@ HRESULT CTransPoint::Init(void)
 	m_fCurTime	= 0.0f;			// Œ»İ‚ÌŠÔ
 
 	std::filesystem::path fsPath(m_sTransMapPass);				// ‘JˆÚæƒ}ƒbƒvƒpƒX
-	std::filesystem::path fsDirectory(fsPath.parent_path());	// ‘JˆÚæƒ}ƒbƒvƒpƒX‚ÌƒfƒBƒŒƒNƒgƒŠ
-	fsDirectory.append("open.txt");								// ƒfƒBƒŒƒNƒgƒŠ‚É‰ğ•úƒtƒ‰ƒO‚Ìƒx[ƒXƒl[ƒ€’Ç‰Á
+	std::filesystem::path fsOpen(fsPath.parent_path());			// ‰ğ•úƒpƒX‚ÌƒfƒBƒŒƒNƒgƒŠ
+	fsOpen.append("open.txt");									// ƒfƒBƒŒƒNƒgƒŠ‚É‰ğ•úƒtƒ‰ƒO‚Ìƒx[ƒXƒl[ƒ€’Ç‰Á
+	std::filesystem::path fsScreenShot(fsPath.parent_path());	// ƒXƒNƒVƒ‡‚ÌƒfƒBƒŒƒNƒgƒŠ
+	fsScreenShot.append("screenshot.txt");						// ƒfƒBƒŒƒNƒgƒŠ‚ÉƒXƒNƒVƒ‡‚Ìƒx[ƒXƒl[ƒ€’Ç‰Á
 
 	// ‰ğ•úó‹µ‚Ì“Ç
-	LoadOpen(fsDirectory.string().c_str(), &m_bOpen);
+	LoadOpen(fsOpen.string().c_str(), &m_bOpen);
+
+	// ƒXƒNƒVƒ‡ƒpƒX‚Ì“Ç
+	LoadScreenShot(fsScreenShot.string().c_str(), &m_sScreenShotPass);
 
 	// ƒIƒuƒWƒFƒNƒgƒ‚ƒfƒ‹‚Ì‰Šú‰»
 	if (FAILED(CObjectModel::Init()))
@@ -432,7 +439,7 @@ HRESULT CTransPoint::CreateStageTexture(void)
 	SAFE_UNINIT(m_pBalloonManager);
 
 	// ‚«o‚µƒ}ƒl[ƒWƒƒ[‚Ì¶¬
-	m_pBalloonManager = CBalloonManager::Create(this, m_bOpen);
+	m_pBalloonManager = CBalloonManager::Create(this, m_sScreenShotPass.c_str(), m_bOpen);
 	if (m_pBalloonManager == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -615,6 +622,89 @@ HRESULT CTransPoint::SaveOpen(const char* pPass, const bool bOpen)
 	// ƒtƒ‰ƒO‚ğ‘‚«o‚µ
 	std::string sFlag = (bOpen) ? "TRUE" : "FALSE";	// ƒtƒ‰ƒO•¶š—ñ
 	file << "FLAG = " << sFlag << std::endl;
+
+	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	file.close();
+
+	// ¬Œ÷‚ğ•Ô‚·
+	return S_OK;
+}
+
+//============================================================
+//	ƒXƒNƒVƒ‡ƒpƒX‚Ì“Çˆ—
+//============================================================
+HRESULT CTransPoint::LoadScreenShot(const char* pPass, std::string* pStrPath)
+{
+	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	std::ifstream file(pPass);	// ƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€
+	if (file.fail())
+	{ // ƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½ê‡
+
+		// ƒGƒ‰[ƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+		MessageBox(nullptr, "ƒXƒNƒVƒ‡ƒpƒX‚Ì“Ç‚İ‚İ‚É¸”sI", "ŒxI", MB_ICONWARNING);
+
+		// ƒXƒNƒVƒ‡ƒpƒX‚Ì•Û‘¶
+		if (FAILED(SaveScreenShot(pPass)))
+		{ // •Û‘¶‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			return E_FAIL;
+		}
+	}
+
+	// ƒtƒ@ƒCƒ‹‚ğ“Ç
+	std::string sStr;	// “Ç•¶š—ñ
+	while (file >> sStr)
+	{ // ƒtƒ@ƒCƒ‹‚ÌI’[‚Å‚Í‚È‚¢ê‡ƒ‹[ƒv
+
+		if (sStr.front() == '#')
+		{ // ƒRƒƒ“ƒgƒAƒEƒg‚³‚ê‚Ä‚¢‚éê‡
+
+			// ˆês‘S‚Ä“Ç‚İ‚Ş
+			std::getline(file, sStr);
+		}
+		else if (sStr == "SCREENSHOT_PATH")
+		{
+			file >> sStr;		// ‚ğ“Ç
+			file >> *pStrPath;	// ƒpƒX‚ğ“Ç
+		}
+	}
+
+	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	file.close();
+
+	// ¬Œ÷‚ğ•Ô‚·
+	return S_OK;
+}
+
+//============================================================
+//	ƒXƒNƒVƒ‡ƒpƒX‚Ì•Û‘¶ˆ—
+//============================================================
+HRESULT CTransPoint::SaveScreenShot(const char* pPass)
+{
+	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	std::ofstream file(pPass);	// ƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€
+	if (file.fail())
+	{ // ƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½ê‡
+
+		// ƒGƒ‰[ƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+		MessageBox(nullptr, "ƒXƒNƒVƒ‡ƒpƒX‚Ì‘‚«o‚µ‚É¸”sI", "ŒxI", MB_ICONWARNING);
+
+		// ¸”s‚ğ•Ô‚·
+		return E_FAIL;
+	}
+
+	// Œ©o‚µ‚ğ‘‚«o‚µ
+	file << "#==============================================================================" << std::endl;
+	file << "#" << std::endl;
+	file << "#	ƒXƒe[ƒWƒXƒNƒVƒ‡‚ÌƒZƒbƒgƒAƒbƒv [screenshot.txt]" << std::endl;
+	file << "#	Author : “¡“c —Eˆê" << std::endl;
+	file << "#" << std::endl;
+	file << "#==============================================================================" << std::endl;
+	file << "#------------------------------------------------------------------------------" << std::endl;
+	file << "#	ƒXƒe[ƒWƒXƒNƒVƒ‡ƒpƒX" << std::endl;
+	file << "#------------------------------------------------------------------------------" << std::endl;
+	file << "SCREENSHOT_PATH = data\\TEXTURE\\stage000.png" << std::endl;
 
 	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
 	file.close();

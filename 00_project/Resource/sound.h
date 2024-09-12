@@ -29,6 +29,8 @@ public:
 		LABEL_NONE = NONE_IDX,		// ラベル無し
 		LABEL_BGM_GENERAL,			// BGM (汎用)
 		LABEL_BGM_FOREST,			// BGM (森)
+		LABEL_BGM_TITLE,			// BGM (タイトル)
+		LABEL_BGM_SELECT,			// BGM (セレクト)
 		LABEL_BGM_RESULT,			// BGM (リザルト)
 		LABEL_BGM_GAMEOVER,			// BGM (ゲームオーバー)
 
@@ -75,6 +77,8 @@ public:
 		LABEL_SE_MASH,				// ふすまの音
 		LABEL_SE_MASHCLOSE,			// ふすまが閉じるときの音
 		LABEL_SE_SPINWALL,			// 回転扉の音
+		LABEL_SE_WIND,				// 風切り音
+		LABEL_SE_SYAKUHATI,			// 尺八音
 		LABEL_MAX					// この列挙型の総数
 	};
 

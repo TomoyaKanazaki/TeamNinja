@@ -42,6 +42,7 @@
 #include "enemyAttack.h"
 #include "tension.h"
 #include "retentionManager.h"
+#include "goditemUI.h"
 
 #include "tutorial.h"
 
@@ -234,6 +235,9 @@ HRESULT CPlayer::Init(void)
 		{
 			CTension::Create();
 		}
+
+		// 神器UIの生成
+		CGodItemUI::Create();
 	}
 
 #ifndef PHOTO
@@ -763,7 +767,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -1724,10 +1728,12 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 			float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向
 			useful::NormalizeRot(fRotSide);				// 横方向の正規化
 
-			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;
-			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;
-			posPlayer.y += 49.0f;
+			// プレイヤー位置にオフセットを与える
+			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;	// 前にオフセットを与える
+			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;			// 横にオフセットを与える
+			posPlayer.y += 49.0f;	// 縦にオフセットを与える
 
+			// プレイヤー向きにオフセットを与える
 			rotPlayer.x = D3DX_PI * 0.75f;
 
 			// 巻物エフェクトを出す
@@ -1736,6 +1742,12 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_SELECT_IN:	// セレクト開始モーション
+
+		if (GetMotionWholeCounter() == 8)
+		{
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
 		break;
 
 	case MOTION_SELECT_OUT:	// セレクト終了モーション
