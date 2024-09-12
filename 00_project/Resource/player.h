@@ -219,6 +219,7 @@ private:
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
+	void CheckPointBack(void);						// チェックポイント回帰処理
 
 	// メンバ関数 (金崎追加)
 	void DelelteClone();		// 分身を呼び戻す処理
@@ -248,6 +249,7 @@ private:
 	D3DXVECTOR3	m_oldPos;				// 過去位置
 	D3DXVECTOR3	m_move;					// 移動量
 	D3DXVECTOR3	m_destRot;				// 目標向き
+	D3DXVECTOR3	m_posInit;				// 初期位置
 	EState		m_state;				// 状態
 	int			m_nCounterState;		// 状態管理カウンター
 	int			m_nWalkCount;			// 歩行音カウント
@@ -258,7 +260,6 @@ private:
 	float		m_fTempStick;			// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
-	CCheckPoint* m_pCheckPoint;				// セーブしたチェックポイント
 	D3DXVECTOR3 m_posCenter;				// 中心座標
 	bool m_bClone;							// 分身操作可能フラグ
 	bool m_bGetCamera;						// カメラの取得

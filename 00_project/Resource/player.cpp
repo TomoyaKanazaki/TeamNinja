@@ -43,7 +43,7 @@
 #include "tension.h"
 #include "retentionManager.h"
 #include "goditemUI.h"
-
+#include "hitstop.h"
 #include "tutorial.h"
 
 //************************************************************
@@ -100,6 +100,7 @@ namespace
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
+	const int CHECKPOINT_CLONE = 5; // チェックポイントに戻ったときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
@@ -111,6 +112,18 @@ namespace
 	{
 		const float	START_ALPHA = 0.4f;	// ブラー開始透明度
 		const int	MAX_LENGTH = 15;	// 保持オブジェクト最大数
+	}
+
+	namespace dodge
+	{
+		const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);	// カメラ揺れの値
+		const float STOP_TIME = 0.2f;	// ヒットストップ時間
+	}
+
+	namespace hit
+	{
+		const CCamera::SSwing SWING = CCamera::SSwing(14.0f, 2.0f, 1.0f);	// カメラ揺れの値
+		const float STOP_TIME = 0.4f;	// ヒットストップ時間
 	}
 }
 
@@ -129,11 +142,11 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
+	m_posInit		(VEC3_ZERO),	// 初期位置
 	m_state			(STATE_NONE),	// 状態
 	m_bJump			(false),		// ジャンプ状況
 	m_nCounterState	(0),			// 状態管理カウンター
 	m_nWalkCount	(0),			// 歩行音カウント
-	m_pCheckPoint	(nullptr),		// セーブしたチェックポイント
 	m_fScalar		(0.0f),			// 移動量
 	m_bClone		(true),			// 分身操作可能フラグ
 	m_bGimmickClone	(false),		// ギミッククローンの生成フラグ
@@ -172,7 +185,6 @@ HRESULT CPlayer::Init(void)
 	m_bJump			= true;			// ジャンプ状況
 	m_nCounterState	= 0;			// 状態管理カウンター
 	m_nWalkCount	= 0;			// 歩行音カウント
-	m_pCheckPoint	= nullptr;		// セーブしたチェックポイント
 	m_fScalar		= 0.0f;			// 移動量
 	m_bClone		= true;			// 分身操作可能フラグ
 	m_bGimmickClone	= false;		// ギミッククローンの生成フラグ
@@ -327,6 +339,9 @@ void CPlayer::Update(const float fDeltaTime)
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// チェックポイント回帰処理
+	CheckPointBack();
 
 #ifdef _DEBUG
 
@@ -499,6 +514,8 @@ CPlayer *CPlayer::Create
 		// 位置を設定
 		if (nSave == -1 || CCheckPoint::GetList() == nullptr)
 		{
+			// 初期位置を設定する
+			pPlayer->m_posInit = rPos;
 			pPlayer->SetVec3Position(rPos);
 
 			if (CManager::GetInstance()->GetScene()->GetMode() == CScene::MODE_GAME)
@@ -577,6 +594,15 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	// 士気力が減少する
 	CTension::Vanish();
 
+	// ヒットストップさせる
+	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);
+
+	// カメラ揺れを与える
+	GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, hit::SWING);
+
+	// ダメージモーションにする
+	SetMotion(MOTION_DAMAGE);
+
 	return true;
 }
 
@@ -602,6 +628,12 @@ bool CPlayer::Hit(const int nDamage)
 
 	// 士気力が減少する
 	CTension::Vanish();
+
+	// ヒットストップさせる
+	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);
+
+	// カメラ揺れを与える
+	GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, hit::SWING);
 
 	return true;
 }
@@ -1808,6 +1840,53 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 }
 
 //============================================================
+// チェックポイント回帰処理
+//============================================================
+void CPlayer::CheckPointBack(void)
+{
+	// ボタンを押されてない場合関数を抜ける
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { return; }
+
+	// 待機状態に戻す
+	m_state = STATE_NORMAL;
+
+	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	{
+		// 軌跡の更新
+		if (m_apOrbit[nCnt] == nullptr) { return; }
+
+		// 軌跡を消す
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+	}
+
+	// セーブ情報を取得
+	const int nSave = GET_GAMEMANAGER->GetSave();
+
+	// 位置を設定
+	if (nSave != -1 && CCheckPoint::GetList() != nullptr)
+	{
+		// チェックポイントのリストを取得
+		CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
+
+		// チェックポイントの座標を設定する
+		SetVec3Position(point->GetVec3Position());
+
+		while (CTension::GetUseNum() < CHECKPOINT_CLONE)
+		{ // 最低保証以下の場合
+
+			// 分身数を上げる
+			CTension::Create();
+		}
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 初期位置に座標を移す
+	SetVec3Position(m_posInit);
+}
+
+//============================================================
 //	フェードアウト状態時の更新処理
 //============================================================
 bool CPlayer::UpdateFadeOut(const float fAdd)
@@ -1924,11 +2003,20 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 			m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f, false, false);
 		}
 
+		// ヒットストップさせる
+		CSceneGame::GetHitStop()->SetStop(dodge::STOP_TIME);
+
+		// カメラ揺れを与える
+		GET_CAMERA->SetSwing(CCamera::TYPE_MAIN, dodge::SWING);
+
 		// 回避音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_PLAYERSTEP_000);
 
 		// 士気力を増やす
 		CTension::Create();
+
+		// 回避モーションにする
+		SetMotion(MOTION_DODGE);
 
 		// 回避状態に変更
 		m_state = STATE_DODGE;
