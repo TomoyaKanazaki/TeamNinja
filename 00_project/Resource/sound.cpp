@@ -74,6 +74,7 @@ namespace
 		{ "data\\SE\\in000.wav", 0 },			// イン結び
 		{ "data\\SE\\resulttext.wav", 0 },		// リザルトテキスト
 		{ "data\\SE\\resulttitle.wav", 0 },		// リザルトタイトル
+		{ "data\\SE\\resultgoditem.wav", 0 },	// リザルトの神器
 	};
 }
 

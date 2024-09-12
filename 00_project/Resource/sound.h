@@ -85,6 +85,7 @@ public:
 		LABEL_SE_IN,				// イン結び
 		LABEL_SE_RESULTTEXT,		// リザルトテキスト
 		LABEL_SE_RESULTTITLE,		// リザルトタイトル
+		LABEL_SE_RESULTGODITEM,		// リザルトの神器
 		LABEL_MAX					// この列挙型の総数
 	};
 

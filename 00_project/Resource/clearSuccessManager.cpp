@@ -156,6 +156,7 @@ CClearSuccessManager::CClearSuccessManager() :
 	// メンバ変数をクリア
 	memset(&m_apGodItemBG[0],   0, sizeof(m_apGodItemBG));		// 神器アイコン背景情報
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
+	memset(&m_aGodItemSound[0], false, sizeof(m_aGodItemSound));// 神器アイコンの音状況
 
 	// スタティックアサート
 	static_assert(NUM_ARRAY(m_aFuncUpdateState) == CClearSuccessManager::STATE_MAX, "ERROR : State Count Mismatch");
@@ -177,6 +178,7 @@ HRESULT CClearSuccessManager::Init(void)
 	// メンバ変数を初期化
 	memset(&m_apGodItemBG[0], 0, sizeof(m_apGodItemBG));		// 神器アイコン背景情報
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
+	memset(&m_aGodItemSound[0], false, sizeof(m_aGodItemSound));// 神器アイコンの音状況
 	m_state = STATE_TIME_TITLE_WAIT;	// 状態
 	m_pTime		= nullptr;	// 遂行時間タイトル情報
 	m_pTimeVal	= nullptr;	// 遂行時間情報
@@ -764,8 +766,14 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 		// 神器アイコンの色を反映
 		m_apGodItemIcon[i]->SetColor(colCur);
 
-		// 琴の音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
+		if (!m_aGodItemSound[i] &&
+			m_apGodItemIcon[i]->GetColor().a >= 0.95f)
+		{ // 大きさが目的の透明度に近づいた場合
+
+			// 一度だけ三味線の音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_RESULTGODITEM);
+			m_aGodItemSound[i] = true;
+		}
 	}
 
 	// アイコンのサイズ変更補正
@@ -784,6 +792,9 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 			// 神器アイコンの色を補正
 			m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);
 		}
+
+		// 琴の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 
 		// 操作の自動描画をONにする
 		m_pControl->SetEnableDraw(true);
