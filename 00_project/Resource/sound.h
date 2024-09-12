@@ -29,6 +29,8 @@ public:
 		LABEL_NONE = NONE_IDX,		// ラベル無し
 		LABEL_BGM_GENERAL,			// BGM (汎用)
 		LABEL_BGM_FOREST,			// BGM (森)
+		LABEL_BGM_TITLE,			// BGM (タイトル)
+		LABEL_BGM_SELECT,			// BGM (セレクト)
 		LABEL_BGM_RESULT,			// BGM (リザルト)
 		LABEL_BGM_GAMEOVER,			// BGM (ゲームオーバー)
 
@@ -65,6 +67,22 @@ public:
 		LABEL_SE_WOLFSTANCE_000,	// 狼が構えたときの音
 		LABEL_SE_CLONEFAIL_000,		// 分身失敗音
 		LABEL_SE_WATERDEATH_000,	// 着水音
+		LABEL_SE_GRASS_000,			// 草踏んだ音
+		LABEL_SE_GIMMICKJUMP,		// ギミックジャンプ音
+		LABEL_SE_GIMMICKBRIDGE,		// 橋完成音
+		LABEL_SE_GIMMICKBUTTON,		// ボタンを押した音
+		LABEL_SE_GIMMICKBAMBOO,		// 竹格子の動く音
+		LABEL_SE_DOOROPEN,			// 重い扉が開く音
+		LABEL_SE_DOORCLOSE,			// 重い扉が閉じる音
+		LABEL_SE_MASH,				// ふすまの音
+		LABEL_SE_MASHCLOSE,			// ふすまが閉じるときの音
+		LABEL_SE_SPINWALL,			// 回転扉の音
+		LABEL_SE_WIND_000,			// 風切り音00
+		LABEL_SE_WIND_001,			// 風切り音01
+		LABEL_SE_WIND_002,			// 風切り音02
+		LABEL_SE_SYAKUHATI,			// 尺八音
+		LABEL_SE_REFLECT,			// カキン音
+		LABEL_SE_IN,				// イン結び
 		LABEL_MAX					// この列挙型の総数
 	};
 

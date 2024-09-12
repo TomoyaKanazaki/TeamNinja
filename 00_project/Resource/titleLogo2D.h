@@ -33,6 +33,7 @@ public:
 		STATE_TWO_MOVE,			// 第二移動
 		STATE_AURA_WAIT,		// オーラ待機
 		STATE_AURA,				// オーラ
+		STATE_END,				// 終了
 		STATE_MAX				// この列挙型の総数
 	};
 
@@ -68,13 +69,17 @@ public:
 	);
 
 	// メンバ関数
+	void EndStag(void);		// 演出スキップ
 	void SetStag(void)		{ m_state = STATE_ONE_MOVE_WAIT; }	// 演出開始設定
-	bool IsStag(void) const	{ return (m_state != STATE_NONE); }	// 演出中フラグ取得
+	bool IsStag(void) const	{ return (m_state != STATE_NONE && m_state != STATE_END); }		// 演出中フラグ取得
 	void SetBlurColor(const D3DXCOLOR& rCol)		{ m_pBlur->SetColor(rCol); }			// ブラー色設定
 	void BindAuraTexture(const char *pTexturePass)	{ m_pAura->BindTexture(pTexturePass); }	// テクスチャ割当 (インデックス)
 	void BindAuraTexture(const int nTextureID)		{ m_pAura->BindTexture(nTextureID); }	// テクスチャ割当 (パス)
 
 private:
+	// 静的メンバ関数
+	bool IsAllEnd(void);	// 全終了判定
+
 	// メンバ関数
 	void UpdateMoveOneWait(const float fDeltaTime);	// 第一移動待機更新
 	void UpdateMoveOne(const float fDeltaTime);		// 第一移動更新
@@ -82,8 +87,13 @@ private:
 	void UpdateMoveTwo(const float fDeltaTime);		// 第二移動更新
 	void UpdateAuraWait(const float fDeltaTime);	// オーラ待機更新
 	void UpdateAura(const float fDeltaTime);		// オーラ更新
+	void UpdateBlinkAura(const float fDeltaTime);	// オーラ点滅更新
+
+	// 静的メンバ変数
+	static CListManager<CTitleLogo2D> *m_pList;	// オブジェクトリスト
 
 	// メンバ変数
+	CListManager<CTitleLogo2D>::AIterator m_iterator;	// イテレーター
 	const char* m_pBlurTexPath;	// ブラーテクスチャパス
 	CAnim2D* m_pAura;			// オーラ情報
 	CBlur2D* m_pBlur;			// ブラー情報
@@ -93,6 +103,7 @@ private:
 	float m_fWaitTimeOne;		// 第一待機時間
 	float m_fWaitTimeTwo;		// 第二待機時間
 	float m_fCurTime;			// 現在の待機時間
+	float m_fSinAlpha;			// 透明向き
 	D3DXVECTOR3 m_offset;		// 初期位置オフセット
 	D3DXVECTOR3 m_initPos;		// 初期位置
 	D3DXVECTOR3 m_destPosOne;	// 第一目標位置

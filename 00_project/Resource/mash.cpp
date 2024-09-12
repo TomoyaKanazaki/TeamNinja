@@ -6,7 +6,9 @@
 //
 //==========================================
 #include "mash.h"
+#include "manager.h"
 #include "collision.h"
+#include "sound.h"
 
 //==========================================
 //  定数定義
@@ -26,7 +28,8 @@ CMash::CMash(const D3DXVECTOR3& rPos) :
 	m_move(VEC3_ZERO),
 	m_collMax(VEC3_ZERO),
 	m_collMin(VEC3_ZERO),
-	m_state(STATE_CLOSE)
+	m_state(STATE_CLOSE),
+	m_stateOld(m_state)
 {
 	// Do Nothing
 }
@@ -62,6 +65,37 @@ void CMash::Uninit(void)
 //==========================================
 void CMash::Update(const float fDeltaTime)
 {
+	if (m_state != m_stateOld)
+	{ // 状態が前回と違う場合
+
+		switch (m_state)
+		{
+		case CMash::STATE_CLOSE:
+
+			// ふすまが閉じたときの音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_MASHCLOSE);
+
+			break;
+
+		case CMash::STATE_OPEN:
+
+			// ふすまの音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_MASH);
+
+			break;
+
+		default:
+
+			// 停止
+			assert(false);
+
+			break;
+		}
+	}
+
+	// 状態を設定する
+	m_stateOld = m_state;
+
 	// 状態処理
 	State(fDeltaTime);
 
@@ -178,7 +212,7 @@ void CMash::Collision
 //==========================================
 // 当たり判定処理(判定を返すオーバーライド)
 //==========================================
-void CMash::Collision
+bool CMash::Collision
 (
 	D3DXVECTOR3& rPos,				// 位置
 	const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -186,7 +220,8 @@ void CMash::Collision
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
 	bool& bJump,					// ジャンプ状況
-	bool& bHit						// 衝突判定
+	bool& bHit,						// 衝突判定
+	const bool bDelete				// 消去状態
 )
 {
 	// 位置を取得
@@ -216,7 +251,7 @@ void CMash::Collision
 	}
 
 	// アクターの当たり判定
-	CActor::Collision
+	return CActor::Collision
 	(
 		rPos,		// 位置
 		rPosOld,	// 前回の位置
@@ -224,7 +259,8 @@ void CMash::Collision
 		fHeight,	// 高さ
 		rMove,		// 移動量
 		bJump,		// ジャンプ状況
-		bHit		// 衝突判定
+		bHit,		// 衝突判定
+		bDelete		// 消去状態
 	);
 }
 

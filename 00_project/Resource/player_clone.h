@@ -189,6 +189,9 @@ private:
 	D3DXVECTOR3	m_oldPos;	// 過去位置
 	D3DXVECTOR3	m_destRot;	// 目標向き
 	bool m_bJump;			// ジャンプ状況
+
+	// メンバ変数（小原追加）
+	bool m_bActorDelete;	// アクターの消去
 };
 
 #endif	// _PLAYER_CLONE_H_

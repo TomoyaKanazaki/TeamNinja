@@ -76,6 +76,9 @@
     <Filter Include="OutGame">
       <UniqueIdentifier>{947023b9-9c25-4c20-acdd-6f68a8a8007d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InGame\Tutorial">
+      <UniqueIdentifier>{0539af88-3f05-4dd0-b08d-69cea6038f9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\renderState.h">
@@ -279,16 +282,7 @@
     <ClInclude Include="Resource\enemy_katana.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemy_lantern.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\enemyAttack.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyCaveat.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\enemyOther.h">
       <Filter>InGame\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Resource\enemyStalk.h">
@@ -531,9 +525,6 @@
     <ClInclude Include="Resource\editEnemyAttack.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\enemyAmbush.h">
-      <Filter>InGame\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\resultManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -677,6 +668,15 @@
     </ClInclude>
     <ClInclude Include="Resource\playerTitle.h">
       <Filter>InGame\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\tutorial.h">
+      <Filter>InGame\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goditemUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\goditem_mark.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -878,16 +878,7 @@
     <ClCompile Include="Resource\enemy_katana.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\enemy_lantern.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\enemyAttack.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyCaveat.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\enemyOther.cpp">
       <Filter>InGame\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Resource\enemyStalk.cpp">
@@ -1130,9 +1121,6 @@
     <ClCompile Include="Resource\editEnemyAttack.cpp">
       <Filter>Map\Editter</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\enemyAmbush.cpp">
-      <Filter>InGame\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\resultManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -1276,6 +1264,15 @@
     </ClCompile>
     <ClCompile Include="Resource\playerTitle.cpp">
       <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\tutorial.cpp">
+      <Filter>InGame\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\goditemUI.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\goditem_mark.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

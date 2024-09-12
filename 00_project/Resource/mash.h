@@ -54,7 +54,7 @@ private:
 		D3DXVECTOR3& rMove,				// 移動量
 		bool& bJump						// ジャンプ状況
 	) override;
-	void Collision						// 当たり判定処理(判定を返すオーバーライド)
+	bool Collision						// 当たり判定処理(判定を返すオーバーライド)
 	(
 		D3DXVECTOR3& rPos,				// 位置
 		const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -62,7 +62,8 @@ private:
 		const float fHeight,			// 高さ
 		D3DXVECTOR3& rMove,				// 移動量
 		bool& bJump,					// ジャンプ状況
-		bool& bHit						// 衝突判定
+		bool& bHit,						// 衝突判定
+		const bool bDelete = false		// 消去状態
 	) override;
 
 	// メンバ関数
@@ -79,5 +80,6 @@ private:
 	D3DXVECTOR3 m_collMax;		// 当たり判定の最大値
 	D3DXVECTOR3 m_collMin;		// 当たり判定の最小値
 	EState m_state;				// 状態
+	EState m_stateOld;			// 前回の状態
 
 };

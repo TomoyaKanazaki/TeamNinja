@@ -12,6 +12,7 @@
 #include "stage.h"
 #include "camera.h"
 #include "transpoint.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -53,9 +54,6 @@ HRESULT CPlayerSelect::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// スポーンの設定
-	SetSpawn();
 
 	// 成功を返す
 	return S_OK;
@@ -210,10 +208,50 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 //============================================================
 CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 {
-	if (GetMotionWholeCounter() == 30)
+	D3DXVECTOR3 posPlayer		= GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 oldPosPlayer	= GetOldPosition();		// プレイヤー過去位置
+	CStage *pStage	= GET_STAGE;	// ステージ情報
+	bool	bLand	= false;		// 着地フラグ
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 重力を与える
+	D3DXVECTOR3 movePlayer = GetMove();	// プレイヤー移動量
+	movePlayer.x = movePlayer.z = 0.0f;	// 横移動量を初期化
+	posPlayer += movePlayer * fDeltaTime;
+
+	// アクターとの当たり判定
+	CollisionActor(posPlayer, bLand);
+
+	// 地面・制限位置・アクターの着地判定
+	if (pStage->LandFieldPosition(posPlayer, oldPosPlayer, movePlayer)
+	||  pStage->LandLimitPosition(posPlayer, movePlayer, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// 着地している状態にする
+		bLand = true;
+
+		// ジャンプしていない状態にする
+		SetJump(false);
+	}
+
+	// 重力を反映
+	SetMove(movePlayer);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(GetDestRotation());
+
+	if (GetMotionWholeCounter() == 58)
 	{
 		// TODO：開始エフェクトを生成
-		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
+		GET_EFFECT->Create("data\\EFFEKSEER\\toonsmoke.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 17.0f);
+
+		// 煙音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
 	}
 
 	if (IsMotionFinish())
@@ -223,11 +261,8 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
 	}
 
-	// 向きを反映
-	SetVec3Rotation(GetDestRotation());
-
-	// 待機モーションを返す
-	return MOTION_IDOL;
+	// セレクト開始モーションを返す
+	return MOTION_SELECT_IN;
 }
 
 //============================================================
@@ -272,7 +307,7 @@ void CPlayerSelect::SetSpawn(void)
 {
 	// 情報を初期化
 	SetState(STATE_SELECT_SPAWN);	// スポーン状態の設定
-	SetMotion(MOTION_SELECT);		// 選択モーションを設定
+	SetMotion(MOTION_SELECT_IN);	// セレクト開始モーションを設定
 
 	// 移動量を初期化
 	SetMove(VEC3_ZERO);
@@ -294,9 +329,6 @@ void CPlayerSelect::SetSpawn(void)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
-
-	// TODO：開始エフェクトを生成
-	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_zitu_2.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 45.0f);
 }
 
 //============================================================
@@ -307,8 +339,8 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 	// 遷移ポイントのマップパスを保存
 	GET_STAGE->SetInitMapPass(pTransMapPath);
 
-	// 選択モーションにする
-	SetMotion(MOTION_SELECT);
+	// セレクト終了モーションにする
+	SetMotion(MOTION_SELECT_OUT);
 
 	// 入場状態にする
 	SetState(STATE_SELECT_ENTER);
@@ -320,4 +352,7 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
+
+	// 尺八音の再生
+	PLAY_SOUND(CSound::LABEL_SE_SYAKUHATI);
 }

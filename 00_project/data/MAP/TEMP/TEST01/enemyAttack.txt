@@ -7,7 +7,7 @@
 STAGE_ENEMYSET
 
 	ENEMYSET
-		TYPE		= 1
+		TYPE		= 0
 		NAVTYPE	 	= 0
 		POS			= 1000.00 39.0784 0.0
 		ROT			= 0.00 0.00 0.00

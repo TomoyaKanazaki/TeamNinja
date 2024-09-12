@@ -345,7 +345,7 @@ void CField::SetType(const EType type)
 		// ‹´‚¾‚Á‚½ê‡•`‰æ‚ğƒIƒt‚É‚·‚é
 		if (type == TYPE_XBRIDGE || type == TYPE_ZBRIDGE)
 		{
-			//SetEnableDraw(false);
+			SetEnableDraw(false);
 		}
 	}
 	else { assert(false); }	// ”ÍˆÍŠO

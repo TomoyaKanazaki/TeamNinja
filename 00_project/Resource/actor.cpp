@@ -280,18 +280,18 @@ void CActor::Collision
 		sphere->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 
-	// キューブ判定
-	for (auto cube : m_cube)
-	{
-		// ヒット処理
-		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
-	}
-
 	// シリンダー判定
 	for (auto cylinder : m_cylinder)
 	{
 		// ヒット処理
 		cylinder->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
+	}
+
+	// キューブ判定
+	for (auto cube : m_cube)
+	{
+		// ヒット処理
+		cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump);
 	}
 
 	// ポリゴン判定
@@ -308,7 +308,7 @@ void CActor::Collision
 //==========================================
 //  判定を返すことのできる当たり判定
 //==========================================
-void CActor::Collision
+bool CActor::Collision
 (
 	D3DXVECTOR3& rPos,				// 位置
 	const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -316,9 +316,13 @@ void CActor::Collision
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
 	bool& bJump,					// ジャンプ状況
-	bool& bHit						// 衝突判定
+	bool& bHit,						// 衝突判定
+	const bool bDelete				// 消去状態
 )
 {
+	// 消去専用のヒット状況
+	bool bDeleteHit = false;
+
 	// スフィア判定
 	for (auto sphere : m_sphere)
 	{
@@ -327,16 +331,7 @@ void CActor::Collision
 
 		// 判定をtrueにする
 		bHit = true;
-	}
-
-	// キューブ判定
-	for (auto cube : m_cube)
-	{
-		// ヒット処理
-		if (!cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
-
-		// 判定をtrueにする
-		bHit = true;
+		bDeleteHit = true;
 	}
 
 	// シリンダー判定
@@ -347,6 +342,18 @@ void CActor::Collision
 
 		// 判定をtrueにする
 		bHit = true;
+		bDeleteHit = true;
+	}
+
+	// キューブ判定
+	for (auto cube : m_cube)
+	{
+		// ヒット処理
+		if (!cube->Hit(rPos, rPosOld, fRadius, fHeight, rMove, bJump)) { continue; }
+
+		// 判定をtrueにする
+		bHit = true;
+		bDeleteHit = true;
 	}
 
 	// ポリゴン判定
@@ -357,10 +364,22 @@ void CActor::Collision
 
 		// 判定をtrueにする
 		bHit = true;
+		bDeleteHit = true;
 
 		// 下に重力をかける
 		rMove.y = -50.0f;
 	}
+
+	// 消去しない場合、抜ける
+	if (!bDeleteHit || !bDelete || m_type != TYPE_SHRUB) { return false; }
+
+	// 当たり判定・更新・描画の消去
+	ClearCollision();
+	SetEnableUpdate(false);
+	SetEnableDraw(false);
+
+	// true を返す
+	return true;
 }
 
 //============================================================

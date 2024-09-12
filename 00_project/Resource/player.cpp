@@ -42,6 +42,9 @@
 #include "enemyAttack.h"
 #include "tension.h"
 #include "retentionManager.h"
+#include "goditemUI.h"
+
+#include "tutorial.h"
 
 //************************************************************
 //	定数宣言
@@ -142,7 +145,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
-	m_pEffectdata	(nullptr)		// エフェクト情報
+	m_pEffectdata	(nullptr),		// エフェクト情報
+	m_pLastField	(nullptr)		// 最後に立っていた地面
 {
 }
 
@@ -232,6 +236,9 @@ HRESULT CPlayer::Init(void)
 		{
 			CTension::Create();
 		}
+
+		// 神器UIの生成
+		CGodItemUI::Create();
 	}
 
 #ifndef PHOTO
@@ -399,6 +406,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateGodItem(fDeltaTime);
 		break;
 
+	case STATE_GOAL:
+
+		// ゴール状態の更新
+		currentMotion = UpdateGoal(fDeltaTime);
+		break;
+
 	case STATE_DODGE:
 
 		// 回避状態の更新
@@ -415,6 +428,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 
 		// ダメージ状態の更新
 		currentMotion = UpdateDamage(fDeltaTime);
+		break;
+	
+	case STATE_DROWN:
+
+		// 溺死状態の更新
+		currentMotion = UpdateDrown(fDeltaTime);
 		break;
 
 	default:
@@ -674,7 +693,7 @@ void CPlayer::SetResult()
 	rotDest.y = GET_MANAGER->GetCamera()->GetDestRotation().y;	// ヨーはカメラ向きに
 
 	// 操作を停止させる
-	SetState(CPlayer::STATE_NONE);
+	SetState(CPlayer::STATE_GOAL);
 
 	// 向きをカメラ目線に
 	SetDestRotation(rotDest);
@@ -689,7 +708,7 @@ void CPlayer::SetResult()
 		SetMotion(MOTION_DEATH);
 		break;
 	case CRetentionManager::WIN_SUCCESS:
-		SetMotion(MOTION_IDOL);
+		SetMotion(MOTION_GOAL);
 		break;
 	}
 }
@@ -755,7 +774,7 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
 	{
 		// 表示する
-		//m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -763,6 +782,9 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 
 	// コントローラのバイブレーション
 	GET_INPUTPAD->SetVibration(CInputPad::TYPE_JUMP);
+
+	// ジャンプ音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_GIMMICKJUMP);
 
 	return true;
 }
@@ -864,6 +886,9 @@ CPlayer::EMotion CPlayer::UpdateNone(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
 
@@ -921,6 +946,9 @@ CPlayer::EMotion CPlayer::UpdateStart(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
 
@@ -954,6 +982,9 @@ CPlayer::EMotion CPlayer::UpdateNormal(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
 
 	// 着地判定
 	UpdateLanding(posPlayer, fDeltaTime);
@@ -1011,6 +1042,52 @@ CPlayer::EMotion CPlayer::UpdateGodItem(const float fDeltaTime)
 }
 
 //===========================================
+//	ゴール状態時の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
+{
+	D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(posPlayer, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(posPlayer);
+
+	// 着地判定
+	UpdateLanding(posPlayer, fDeltaTime);
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 壁の当たり判定
+	CollisionWall(posPlayer);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(posPlayer, RADIUS);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
+
+	if (m_bJump)
+	{ // 空中にいる場合
+
+		// 待機モーションを返す
+		return MOTION_IDOL;
+	}
+
+	// ゴールモーションを返す
+	return MOTION_GOAL;
+}
+
+//===========================================
 //  回避状態時の更新処理
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
@@ -1033,6 +1110,9 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1065,6 +1145,9 @@ CPlayer::EMotion CPlayer::UpdateDeath(const float fDeltaTime)
 
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
 
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
@@ -1103,6 +1186,9 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	// 位置更新
 	UpdatePosition(pos, fDeltaTime);
 
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
 	// 着地判定
 	UpdateLanding(pos, fDeltaTime);
 
@@ -1119,6 +1205,21 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	return MOTION_DAMAGE;
 }
 
+//===========================================
+//  溺死状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
+{
+	// 移動量を0にする
+	m_move = VEC3_ZERO;
+
+	// スタックのリセット
+	ResetStack();
+
+	// 溺死モーション
+	return MOTION_DROWNING;
+}
+
 //============================================================
 //	過去位置の更新処理
 //============================================================
@@ -1126,6 +1227,21 @@ void CPlayer::UpdateOldPosition(void)
 {
 	// 過去位置を更新
 	m_oldPos = GetVec3Position();
+}
+
+//==========================================
+//  スタック状態のリセット
+//==========================================
+void CPlayer::ResetStack()
+{
+	// ボタンを押されてない場合関数を抜ける
+	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_A)) { return; }
+
+	// 前の地面に座標を移す
+	SetVec3Position(m_pLastField->GetVec3Position());
+
+	// 待機状態に戻す
+	m_state = STATE_NORMAL;
 }
 
 //============================================================
@@ -1279,6 +1395,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 		// 当たっている状態にする
 		m_pCurField->Hit(this);
+
+		// 水でなければ最後に乗った地面として保存する
+		if (m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_pLastField = m_pCurField;
+		}
 	}
 
 	if (m_pCurField != m_pOldField)
@@ -1294,7 +1416,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		// 床が水の場合殺す
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
-			m_state = STATE_DEATH;
+			m_state = STATE_DROWN;
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
@@ -1621,12 +1743,66 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 		break;
 
 	case MOTION_START:	// スタートモーション
+
+		if (GetMotionKey() % 2 == 0 && GetMotionKeyCounter() == 0 && GetMotionKey() != 0)
+		{ // 足がついたタイミングの場合
+
+			// 歩行音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_PLAYERWALK_000);
+
+			// TODO：歩行エフェクト
+#if 0
+			// エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\walk.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 250.0f);
+#endif
+		}
+
 		break;
 
 	case MOTION_STAND:	// 仁王立ちモーション
 		break;
 
-	case MOTION_SELECT:	// 選択モーション
+	case MOTION_GOAL:	// ゴールモーション
+
+		if (GetMotionWholeCounter() == 1)
+		{
+			D3DXVECTOR3 posPlayer = GetVec3Position();	// プレイヤー位置
+			D3DXVECTOR3 rotPlayer = GetDestRotation();	// プレイヤー向き
+			float fRotSide = rotPlayer.y + HALF_PI;		// プレイヤー横方向
+			useful::NormalizeRot(fRotSide);				// 横方向の正規化
+
+			// プレイヤー位置にオフセットを与える
+			posPlayer += D3DXVECTOR3(sinf(rotPlayer.y), 0.0f, cosf(rotPlayer.y)) * -18.0f;	// 前にオフセットを与える
+			posPlayer += D3DXVECTOR3(sinf(fRotSide), 0.0f, cosf(fRotSide)) * 9.0f;			// 横にオフセットを与える
+			posPlayer.y += 49.0f;	// 縦にオフセットを与える
+
+			// プレイヤー向きにオフセットを与える
+			rotPlayer.x = D3DX_PI * 0.75f;
+
+			// 巻物エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\gole.efkefc", posPlayer, rotPlayer, VEC3_ZERO, 25.0f);
+		}
+		break;
+
+	case MOTION_SELECT_IN:	// セレクト開始モーション
+
+		if (GetMotionWholeCounter() == 8)
+		{
+			// 着地音の再生
+			PLAY_SOUND(CSound::LABEL_SE_LAND_S);
+		}
+		break;
+
+	case MOTION_SELECT_OUT:	// セレクト終了モーション
+
+		if (GetMotionWholeCounter() == 8)
+		{
+			// イン結び音の再生
+			PLAY_SOUND(CSound::LABEL_SE_IN);
+		}
+		break;
+
+	case MOTION_DROWNING:	// 水没モーション
 		break;
 	}
 }
@@ -1972,6 +2148,9 @@ bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 //===========================================
 void CPlayer::FloorEdgeJump()
 {
+	// 回避中もしくはノックバック中の場合関数を抜ける
+	if (m_state == STATE_DAMAGE || m_state == STATE_DODGE) { return; }
+
 	// 上移動量を与える
 	m_move.y = JUMP_MOVE;
 
@@ -2023,6 +2202,28 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 
 		// ジャンプ状況を false にする
 		m_bJump = false;
+	}
+}
+
+//==========================================
+// 敵の当たり判定
+//==========================================
+void CPlayer::CollisionEnemy(D3DXVECTOR3& pos)
+{
+	// 敵のリスト構造が無ければ、抜ける
+	if (CEnemy::GetList() == nullptr) { return; }
+
+	std::list<CEnemy*> list = CEnemy::GetList()->GetList();	// リストを取得
+
+	for (auto enemy : list)
+	{
+		// 当たり判定処理
+		enemy->CollisionToPlayer
+		(
+			pos,		// 位置
+			RADIUS,		// 半径
+			HEIGHT		// 高さ
+		);
 	}
 }
 

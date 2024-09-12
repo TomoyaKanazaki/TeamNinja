@@ -22,7 +22,6 @@
 
 #include "enemyStalk.h"
 #include "enemyWolf.h"
-#include "enemyAmbush.h"
 #include "effekseerControl.h"
 #include "enemyNavigation.h"
 #include "camera.h"
@@ -32,28 +31,15 @@
 //************************************************************
 namespace
 {
-	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(50.0f, 100.0f, 50.0f);	// 攻撃判定(上)
-	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(50.0f, 0.0f, 50.0f);	// 攻撃判定(下)
-	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(130.0f, 100.0f, 130.0f);	// 回避判定(上)
-	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(130.0f, 0.0f, 130.0f);	// 回避判定(下)
-	const int DODGE_COUNT = 20;						// 回避カウント数
-	const int ATTACK_DASH_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃時のダッシュのカウント
-	{
-		DODGE_COUNT - 7,	// しつこい敵
-		DODGE_COUNT - 12,	// 狼敵
-		DODGE_COUNT - 7,	// 待ち伏せ敵
-	};
-	const float ADD_ATTACK_DASH[CEnemyAttack::TYPE_MAX] =	// 攻撃ダッシュ時の速度の追加量
-	{
-		-320.0f,
-		-480.0f,
-		-320.0f,
-	};
+	const D3DXVECTOR3 ATTACK_COLLUP = D3DXVECTOR3(60.0f, 100.0f, 60.0f);	// 攻撃判定(上)
+	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
+	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(80.0f, 100.0f, 80.0f);		// 回避判定(上)
+	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(80.0f, 0.0f, 80.0f);		// 回避判定(下)
+	const int DODGE_COUNT = 20;			// 回避カウント数
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
-		60.0f,
-		90.0f,
-		60.0f,
+		100.0f,		// しつこい敵
+		90.0f,		// 狼敵
 	};
 	const float SHAKEOFF_RANGE = 1000.0f;			// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;		// 分身との戦闘エフェクトの大きさ
@@ -61,27 +47,23 @@ namespace
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
-		59,			// しつこい敵
+		23,			// しつこい敵
 		36,			// 狼敵
-		59,			// 待ち伏せ敵
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃状態の遷移カウント
 	{
 		44,			// しつこい敵
 		34,			// 狼敵
-		44,			// 待ち伏せ敵
 	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の遷移カウント
 	{
 		340,		// しつこい敵
 		340,		// 狼敵
-		340,		// 待ち伏せ敵
 	};
 	const int BLANKATTACK_CYCLE_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の回転カウント
 	{
 		18,		// しつこい敵
 		18,		// 狼敵
-		18,		// 待ち伏せ敵
 	};
 }
 
@@ -92,37 +74,31 @@ namespace sound
 	{
 		37,			// しつこい敵
 		2,			// 狼敵
-		37,			// 待ち伏せ敵
 	};
 	const CSound::ELabel WARNING_LABEL[CEnemyAttack::TYPE_MAX] =	// 警告音のラベル
 	{
 		CSound::LABEL_SE_STALKFOUND_000,	// しつこい敵
 		CSound::LABEL_SE_WOLFFOUND_000,		// 狼敵
-		CSound::LABEL_SE_STALKFOUND_000,	// 待ち伏せ敵
 	};
 	const CSound::ELabel ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =		// 攻撃音のラベル
 	{
 		CSound::LABEL_SE_STALKATTACK_000,	// しつこい敵
 		CSound::LABEL_SE_WOLFATTACK_000,	// 狼敵
-		CSound::LABEL_SE_STALKATTACK_000,	// 待ち伏せ敵
 	};
 	const CSound::ELabel BLANK_ATTACK_LABEL[CEnemyAttack::TYPE_MAX] =	// 空白攻撃音のラベル
 	{
 		CSound::LABEL_SE_STALKATTACK_001,	// しつこい敵
 		CSound::LABEL_SE_WOLFATTACK_001,	// 狼敵
-		CSound::LABEL_SE_STALKATTACK_001,	// 待ち伏せ敵
 	};
 	const int UPSET_COUNT[CEnemyAttack::TYPE_MAX] =			// 動揺音の鳴るカウント
 	{
 		200,		// しつこい敵
 		80,			// 狼敵
-		200,		// 待ち伏せ敵
 	};
 	const CSound::ELabel UPSET_LABEL[CEnemyAttack::TYPE_MAX] =		// 動揺音のラベル
 	{
 		CSound::LABEL_SE_STALKUPSET_000,	// しつこい敵
 		CSound::LABEL_SE_WOLFUPSET_000,		// 狼敵
-		CSound::LABEL_SE_STALKUPSET_000,	// 待ち伏せ敵
 	};
 }
 
@@ -144,7 +120,6 @@ m_posTarget(VEC3_ZERO),		// 目標の位置
 m_target(TARGET_NONE),		// 標的
 m_state(STATE_ORIGIN),		// 状態
 m_nStateCount(0),			// 状態カウント
-m_nAttackCount(0),			// 攻撃カウント
 m_nRegressionCount(0),		// 回帰カウント
 m_type(TYPE_STALK),			// 種類
 m_bDodge(false)				// 回避受付フラグ
@@ -480,19 +455,6 @@ HRESULT CEnemyAttack::LoadSetup(const char* pPass)
 
 						break;
 
-					case CEnemyAttack::TYPE_AMBUSH:
-
-						// 待ち伏せ敵の生成
-						CEnemyAmbush::Create
-						(
-							pos,			// 位置
-							rot,			// 向き
-							fChaseWidth,	// 追跡幅
-							fChaseDepth		// 追跡奥行
-						);
-
-						break;
-
 					default:
 
 						// 停止
@@ -711,10 +673,7 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		fRadius
 	};
 
-	// 回避カウントを加算する
-	m_nAttackCount++;
-
-	if (m_nAttackCount > DODGE_COUNT)
+	if (m_nStateCount > DODGE_COUNT)
 	{ // 回避カウントを過ぎた場合
 
 		bool bHit = false;	// ヒット状況
@@ -729,16 +688,17 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 			sizeUpPlayer,		// 判定目標サイズ(右・上・後)
 			sizeDownPlayer		// 判定目標サイズ(左・下・前)
 		))
-		{ // 当たってなかった場合
-
-			// 回避カウントを初期化する
-			m_nAttackCount = 0;
+		{ // 当たっていた場合
 
 			// 自身とプレイヤーを結ぶベクトルを算出
 			D3DXVECTOR3 vec = posPlayer - rPos;
 
-			// ヒット処理
-			CScene::GetPlayer()->HitKnockBack(500, vec);
+			if (CScene::GetPlayer()->HitKnockBack(500, vec))
+			{ // 攻撃が当たった場合
+
+				// 攻撃音を鳴らす
+				PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
+			}
 
 			// ヒット状況を true にする
 			bHit = true;
@@ -887,7 +847,7 @@ bool CEnemyAttack::BackOriginPos(D3DXVECTOR3* pPos, D3DXVECTOR3* pRot, const flo
 	SetMovePosition(VEC3_ZERO);
 
 	// ターゲットを無対象にする
-	SetTarget(TARGET_NONE);
+	m_target = TARGET_NONE;
 
 	// true を返す
 	return true;
@@ -915,7 +875,8 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 			GetHeight(),		// 高さ
 			move,				// 移動量
 			bJump,				// ジャンプ状況
-			bHit				// ヒット状況
+			bHit,				// ヒット状況
+			false				// 消去状態
 		);
 	}
 
@@ -1006,7 +967,7 @@ int CEnemyAttack::Stalk
 		SetState(STATE_ORIGIN);
 
 		// 標的を未設定にする
-		SetTarget(TARGET_NONE);
+		m_target = TARGET_NONE;
 
 		// 独自状態を返す
 		return m_state;
@@ -1016,16 +977,17 @@ int CEnemyAttack::Stalk
 	LookTarget(*pPos);
 
 	// 回避受付フラグを false にする
-	SetEnableDodge(false);
-
-	// 攻撃カウントをリセットする
-	SetAttackCount(0);
+	m_bDodge = false;
 
 	// 向きの移動処理
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
-	// 移動処理
-	Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+	if (!IsHitToPlayer())
+	{ // プレイヤーに当たっていない場合
+
+		// 移動処理
+		Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+	}
 
 	if (Approach(*pPos, ATTACK_DISTANCE[m_type]))
 	{ // 接近した場合
@@ -1034,10 +996,7 @@ int CEnemyAttack::Stalk
 		{ // 目標がプレイヤーの場合
 
 			// 回避受付フラグを true にする
-			SetEnableDodge(true);
-
-			// 攻撃カウントをリセットする
-			SetAttackCount(0);
+			m_bDodge = true;
 		}
 
 		// 攻撃状態にする
@@ -1047,8 +1006,8 @@ int CEnemyAttack::Stalk
 		return m_state;
 	}
 
-	if (GetChaseRange() != nullptr &&
-		GetChaseRange()->ChaseRange(GetPosInit(), pPos))
+	if (m_pChaseRange != nullptr &&
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos))
 	{ // 追跡範囲から出た場合
 
 		// 構え状態にする
@@ -1079,12 +1038,19 @@ int CEnemyAttack::Attack
 	// 向きの移動処理
 	RotMove(*pRot, fRotRev, fDeltaTime);
 
-	if (m_nAttackCount < DODGE_COUNT &&
-		m_nAttackCount > ATTACK_DASH_COUNT[m_type])
-	{ // 回避カウントを過ぎた場合
+	if (m_nStateCount < DODGE_COUNT &&
+		!IsHitToPlayer())
+	{ // 回避カウント以内の場合
 
 		// 移動処理
-		Move(pPos, *pRot, GetSpeed() + ADD_ATTACK_DASH[m_type], fDeltaTime);
+		Move(pPos, *pRot, GetSpeed(), fDeltaTime);
+	}
+
+	if (m_pChaseRange != nullptr)
+	{ // 追跡範囲が NULL じゃない場合
+
+		// 追跡範囲の補正処理
+		m_pChaseRange->ChaseRange(GetPosInit(), pPos);
 	}
 
 	switch (m_target)
@@ -1094,12 +1060,8 @@ int CEnemyAttack::Attack
 		// プレイヤーの探索処理
 		JudgePlayer();
 
-		if (HitPlayer(*pPos))
-		{ // プレイヤーに当たった場合
-
-			// 攻撃音を鳴らす
-			PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
-		}
+		// プレイヤーの当たり判定
+		HitPlayer(*pPos);
 
 		// 状態カウントを加算する
 		m_nStateCount++;

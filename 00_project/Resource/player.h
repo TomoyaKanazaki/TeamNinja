@@ -88,7 +88,10 @@ public:
 		MOTION_GET,			// 神器取得モーション
 		MOTION_START,		// スタートモーション
 		MOTION_STAND,		// 仁王立ちモーション
-		MOTION_SELECT,		// 選択モーション
+		MOTION_GOAL,		// ゴールモーション
+		MOTION_SELECT_IN,	// セレクト開始モーション
+		MOTION_SELECT_OUT,	// セレクト終了モーション
+		MOTION_DROWNING,	// 水没モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 
@@ -112,9 +115,11 @@ public:
 		STATE_START,	// スタート状態
 		STATE_NORMAL,	// 通常状態
 		STATE_GODITEM,	// 神器獲得状態
+		STATE_GOAL,		// ゴール状態
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
+		STATE_DROWN,	// 溺死状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -191,9 +196,15 @@ protected:
 	bool UpdateFadeOut(const float fAdd);	// フェードアウト状態時の更新
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
+	void SetJump(const bool bJump) { m_bJump = bJump; }	// ジャンプ状況設定
+	void ResetStack();									// スタック状態のリセット
 
 	// メンバ関数 (金崎追加)
 	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
+
+	// メンバ関数 (小原追加)
+	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);		// アクターの当たり判定
+	void CollisionEnemy(D3DXVECTOR3& pos);					// 敵の当たり判定
 
 private:
 	// メンバ関数
@@ -201,9 +212,11 @@ private:
 	EMotion UpdateStart(const float fDeltaTime);	// スタート状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
 	EMotion UpdateGodItem(const float fDeltaTime);	// 神器獲得状態時の更新
+	EMotion UpdateGoal(const float fDeltaTime);		// ゴール状態時の更新
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
+	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 
@@ -214,7 +227,6 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionActor(D3DXVECTOR3& pos, bool& rLand);		// アクターの当たり判定
 	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
 	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
 
@@ -255,8 +267,10 @@ private:
 	std::string m_sFrags;					// ギミックフラグの文字列
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
+	CField* m_pLastField;					// 最後に着地していた地面
 	CEffekseer::CEffectData* m_pEffectdata;	//エフェクト情報
 	CEffekseer::CEffectData* m_pEffectFirefly;	//エフェクト情報
+
 
 };
 

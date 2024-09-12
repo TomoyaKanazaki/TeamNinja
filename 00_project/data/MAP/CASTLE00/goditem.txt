@@ -6,4 +6,13 @@
 #==============================================================================
 STAGE_GODITEMSET
 
+	GODITEMSET
+		POS		= -2450.00 450.00 2425.00
+		TYPE	= 0
+		
+		TEXT_0
+			STR = ‚±‚ê‚ª0‚Â–Ú‚ÌŒù‹Ê
+		END_TEXT
+	END_GODITEMSET
+
 END_STAGE_GODITEMSET

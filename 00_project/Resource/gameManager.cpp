@@ -24,9 +24,6 @@
 #include "enemy.h"
 #include "sound.h"
 
-#include "enemyStalk.h"
-#include "enemyWolf.h"
-#include "enemyAmbush.h"
 #include "checkpoint.h"
 #include "popupUI.h"
 #include "goal.h"
@@ -114,6 +111,9 @@ HRESULT CGameManager::Init(void)
 		// プレイヤーを通常状態にする
 		CPlayer::GetList()->GetList().front()->SetState(CPlayer::EState::STATE_NORMAL);
 		CPlayer::GetList()->GetList().front()->SetAlpha(1.0f);
+
+		// タイマーの計測を開始する
+		CSceneGame::GetTimerUI()->Start();
 
 		// 通常状態にする
 		m_state = STATE_NORMAL;
@@ -285,6 +285,9 @@ void CGameManager::TransitionResult(const CRetentionManager::EWin win)
 
 	// ヒットストップの設定
 	CSceneGame::GetHitStop()->SetStop(HITSTOP_TIME, funcEndHitStop);
+
+	// ゴールの全破棄
+	CGoal::UninitAll();
 
 	// リザルト状態にする
 	m_state = STATE_RESULT;

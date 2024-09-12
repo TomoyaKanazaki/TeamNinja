@@ -77,9 +77,9 @@ namespace
 
 	namespace name
 	{
-		const char *FONT = "data\\FONT\\零ゴシック.otf";	// フォントパス
+		const char *FONT = "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 		const bool	ITALIC			= true;		// イタリック
-		const float	CHAR_HEIGHT		= 140.0f;	// 文字縦幅
+		const float	CHAR_HEIGHT		= 120.0f;	// 文字縦幅
 		const float	LINE_HEIGHT		= 120.0f;	// 行間縦幅
 		const float	WAIT_TIME_NOR	= 0.017f;	// 文字表示の待機時間
 		const float	WAIT_TIME_NOR_FIRST	= 0.17f;	// 文字表示の待機時間
@@ -153,9 +153,8 @@ HRESULT CBalloonManager::Init(void)
 	if (m_pStage == nullptr) { assert(false); return E_FAIL; }	// 失敗した場合抜ける
 
 	// 情報の設定
-	m_pStage->BindTexture("data\\TEXTURE\\stage000.png");	// ステージ画面のテクスチャ割当	// TODO：固定になってるよ
-	m_pStage->SetScene(CObject::SCENE_BILLBOARD);			// オブジェクトシーンをビルボードに
-	m_pStage->SetLabel(CObject::LABEL_UI);					// 自動更新/自動破棄するように
+	m_pStage->SetScene(CObject::SCENE_BILLBOARD);	// オブジェクトシーンをビルボードに
+	m_pStage->SetLabel(CObject::LABEL_UI);			// 自動更新/自動破棄するように
 
 	//--------------------------------------------------------
 	//	フレームポリゴンの生成 / 設定
@@ -348,7 +347,7 @@ void CBalloonManager::Draw(CShader * /*pShader*/)
 //============================================================
 //	生成処理
 //============================================================
-CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
+CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const char* pTexPath, const bool bOpen)
 {
 	// 吹き出しマネージャーの生成
 	CBalloonManager *pBalloonManager = new CBalloonManager(pParent, bOpen);
@@ -368,6 +367,9 @@ CBalloonManager *CBalloonManager::Create(CTransPoint* pParent, const bool bOpen)
 			SAFE_DELETE(pBalloonManager);
 			return nullptr;
 		}
+
+		// ステージ画面のテクスチャ割当
+		pBalloonManager->m_pStage->BindTexture(pTexPath);
 
 		// 確保したアドレスを返す
 		return pBalloonManager;

@@ -14,6 +14,8 @@
 #include "stage.h"
 #include "selectManager.h"
 #include "editManager.h"
+#include "retentionManager.h"
+#include "godItem.h"
 
 //************************************************************
 //	定数宣言
@@ -65,6 +67,12 @@ HRESULT CSceneSelect::Init(void)
 		return E_FAIL;
 	}
 
+	// セーブポイントの初期化
+	GET_RETENTION->InitSave();
+
+	// 神器取得状況の初期化
+	CGodItem::InitGet();
+
 	// セレクトマネージャーの生成
 	m_pSelectManager = CSelectManager::Create();
 	if (m_pSelectManager == nullptr)
@@ -89,7 +97,7 @@ HRESULT CSceneSelect::Init(void)
 #endif	// _DEBUG
 
 	// BGMの再生
-	PLAY_SOUND(CSound::LABEL_BGM_GENERAL);
+	PLAY_SOUND(CSound::LABEL_BGM_SELECT);
 
 	// 成功を返す
 	return S_OK;

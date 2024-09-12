@@ -58,6 +58,8 @@ public:
 	D3DXVECTOR3 GetActionPoint() const { return m_posAction; }	// 発動判定位置の取得
 
 	void SetVec3Sizing(const D3DXVECTOR3& rSize) override; // サイズ設定
+	CEffekseer::CEffectData* GetEffect() { return m_pEffect; }
+	void SetEffect(CEffekseer::CEffectData* pEffect) { m_pEffect = pEffect; }
 
 	// 静的メンバ関数
 	static CListManager<CGimmickAction>* GetList(void);			// リスト取得

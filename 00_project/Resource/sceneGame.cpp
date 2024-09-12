@@ -34,7 +34,7 @@ namespace
 	{
 		const float TIME_START			= 0.0f;	// 開始時間
 		const D3DXVECTOR3 POS			= D3DXVECTOR3(1270.0f, 47.5f, 0.0f);			// タイマー位置
-		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(46.8f, 62.4f, 0.0f) * 1.2f;		// タイマー数字大きさ
+		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(52.8f, 62.4f, 0.0f) * 1.4f;		// タイマー数字大きさ
 		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(27.3f, 62.4f, 0.0f) * 1.2f;		// タイマー区切り大きさ
 		const D3DXVECTOR3 BG_SIZE		= D3DXVECTOR3(397.5f, 33.5f, 0.0f) * 1.2f;		// タイマー背景大きさ
 		const D3DXVECTOR3 VAL_SPACE		= D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);	// タイマー数字空白
@@ -105,6 +105,9 @@ HRESULT CSceneGame::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// タイマーUIの優先順位を設定
+	m_pTimerUI->SetPriority(5);
 
 	// シネマスコープの生成
 	m_pCinemaScope = CCinemaScope::Create();
@@ -196,10 +199,6 @@ void CSceneGame::Uninit(void)
 	// フラッシュの破棄
 	SAFE_REF_RELEASE(m_pFlash);
 
-
-
-	//シェーダーの破棄
-	CToonShadow::Release();
 #if _DEBUG
 
 	// エディットマネージャーの破棄

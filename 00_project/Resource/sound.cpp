@@ -16,10 +16,12 @@ namespace
 {
 	const CSound::SSoundInfo SOUND_FILE[] =	// サウンドファイル
 	{
-		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM
+		{ "data\\BGM\\bgm_general.wav", -1 },		// BGM
 		{ "data\\BGM\\bgm_game_forest.wav", -1 },	// BGM(森)
-		{ "data\\BGM\\bgm_result.wav", -1 },	// BGM(リザルト)
-		{ "data\\BGM\\bgm_gameover.wav", -0 },	// BGM(ゲームオーバー)
+		{ "data\\BGM\\bgm_title.wav", -1 },			// BGM (タイトル)
+		{ "data\\BGM\\bgm_select.wav", -1 },		// BGM (セレクト)
+		{ "data\\BGM\\bgm_result.wav", -1 },		// BGM(リザルト)
+		{ "data\\BGM\\bgm_gameover.wav", -0 },		// BGM(ゲームオーバー)
 
 		{ "data\\SE\\select000.wav", 0 },		// 選択操作音00
 		{ "data\\SE\\select001.wav", 0 },		// 選択操作音01
@@ -54,6 +56,22 @@ namespace
 		{ "data\\SE\\wolfstance000.wav", 0 },	// 狼が構えたときの音
 		{ "data\\SE\\clonefail000.wav", 0 },	// 分身失敗音
 		{ "data\\SE\\waterdeath000.wav", 0 },	// 着水音
+		{ "data\\SE\\grass000.wav", 0 },		// 草踏んだ音
+		{ "data\\SE\\gimmickjump.wav", 0 },		// ギミックジャンプ音
+		{ "data\\SE\\gimmickbridge.wav", 0 },	// 橋完成音
+		{ "data\\SE\\gimmickbutton.wav", 0 },	// ボタンを押した音
+		{ "data\\SE\\gimmickbamboo.wav", 0 },	// 竹格子の動く音
+		{ "data\\SE\\dooropen.wav", 0 },		// 重い扉が開く音
+		{ "data\\SE\\doorclose.wav", 0 },		// 重い扉が閉じる音
+		{ "data\\SE\\mash.wav", 0 },			// ふすまの音
+		{ "data\\SE\\mashclose.wav", 0 },		// ふすまが閉じるときの音
+		{ "data\\SE\\spinwall.wav", 0 },		// 回転扉の音
+		{ "data\\SE\\wind000.wav", 0 },			// 風切り音00
+		{ "data\\SE\\wind001.wav", 0 },			// 風切り音01
+		{ "data\\SE\\wind002.wav", 0 },			// 風切り音02
+		{ "data\\SE\\syakuhati.wav", 0 },		// 尺八音
+		{ "data\\SE\\reflect.wav", 0 },			// カキン音
+		{ "data\\SE\\in000.wav", 0 },			// イン結び
 	};
 }
 

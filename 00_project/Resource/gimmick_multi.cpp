@@ -12,6 +12,7 @@
 #include "actor.h"
 
 #include "camera.h"
+#include "sound.h"
 
 //===========================================
 //  定数定義
@@ -233,6 +234,9 @@ void CGimmickMulti::MoveModel(const float fDeltaTime)
 
 		// コントローラのバイブレーション
 		GET_INPUTPAD->SetVibration(CInputPad::TYPE_BUTTON);
+
+		// 竹格子の動く音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GIMMICKBAMBOO);
 	}
 
 	// 前回のアクティブフラグを設定する

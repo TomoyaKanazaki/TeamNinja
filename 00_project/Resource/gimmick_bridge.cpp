@@ -10,6 +10,7 @@
 #include "player_clone.h"
 #include "field.h"
 #include "multi_plant.h"
+#include "sound.h"
 
 #include "camera.h"
 
@@ -160,8 +161,17 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitPoint(const int Idx, const CPlayerClone* pCl
 		D3DXVec3Normalize(&m_vecToWait, &vecToWait);
 	}
 
-	// 待機位置を返す
-	return m_ConectPoint[m_nIdxWait] + (m_vecToWait * DISTANCE * (float)Idx) + D3DXVECTOR3(0.0f, ACTIVE_UP * (float)IsActive(), 0.0f);	// ギミック発動中なら少し上にずらす
+	// 待機位置を算出する
+	D3DXVECTOR3 pos = m_ConectPoint[m_nIdxWait] + D3DXVECTOR3(0.0f, ACTIVE_UP * (float)IsActive(), 0.0f);
+
+	// 待機位置にエフェクトを移動する
+	CEffekseer::CEffectData* pEffect = GetEffect();
+	if (pEffect != nullptr) { pEffect->m_pos = pos; }
+
+	// 分身のインデックスに合わせて座標をずらす
+	pos += m_vecToWait * DISTANCE * (float)Idx;
+
+	return pos;	// ギミック発動中なら少し上にずらす
 }
 
 //===========================================
@@ -219,6 +229,9 @@ D3DXVECTOR3 CGimmickBridge::CalcWaitRotation(const int Idx, const CPlayerClone* 
 
 			// コントローラのバイブレーション
 			GET_INPUTPAD->SetVibration(CInputPad::TYPE_BRIDGE);
+
+			// 橋完成音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_GIMMICKBRIDGE);
 		}
 
 		// 向きを保存する

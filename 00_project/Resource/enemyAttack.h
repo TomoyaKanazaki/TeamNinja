@@ -35,7 +35,6 @@ public:
 	{
 		TYPE_STALK = 0,		// しつこい敵
 		TYPE_WOLF,			// 狼敵
-		TYPE_AMBUSH,		// 待ち伏せ敵
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -91,8 +90,6 @@ public:
 	D3DXVECTOR3 GetTargetPos(void) const			{ return m_posTarget; }				// 目標の位置取得
 	void SetTarget(const ETarget target)			{ m_target = target; }				// 標的設定
 	ETarget GetTarget(void) const					{ return m_target; }				// 標的取得
-	void SetAttackCount(const int nCount)			{ m_nAttackCount = nCount; }		// 攻撃カウント設定
-	int GetAttackCount(void) const					{ return m_nAttackCount; }			// 攻撃カウント取得
 	void SetRegressionCount(const int nCount)		{ m_nRegressionCount = nCount; }	// 回帰カウント設定
 	int GetRegressionCount(void) const				{ return m_nRegressionCount; }		// 回帰カウント取得
 	void SetEnableDodge(const bool bAttack)			{ m_bDodge = bAttack; }				// 回避受付フラグ設定
@@ -173,7 +170,6 @@ private:
 	EType m_type;				// 種類
 	EState m_state;				// 状態
 	int m_nStateCount;			// 状態カウント
-	int m_nAttackCount;			// 攻撃カウント
 	int m_nRegressionCount;		// 回帰カウント
 	bool m_bDodge;				// 回避受付フラグ
 };

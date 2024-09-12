@@ -52,6 +52,5 @@ private:
 	CEffekseer::CEffectData* m_pEffectdata; //保持するエフェクト情報
 
 	// 静的メンバ変数
-	static int m_nNumAll;
 	static CListManager<CCheckPoint>* m_pList;	// オブジェクトリスト
 };
