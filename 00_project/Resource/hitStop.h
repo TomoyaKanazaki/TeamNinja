@@ -29,7 +29,7 @@ public:
 	void Update(const float fDeltaTime);	// XV
 	void Draw(void);						// •`‰æ
 
-	void SetStop(const int nCounter, std::function<void(void)> funcEnd = nullptr);	// ’â~ó‹µİ’è
+	void SetStop(const float fCurTime, std::function<void(void)> funcEnd = nullptr);	// ’â~ó‹µİ’è
 	bool IsStop(void) const	{ return m_bStop; }	// ’â~ó‹µæ“¾
 
 	// Ã“Iƒƒ“ƒoŠÖ”
@@ -39,8 +39,8 @@ public:
 private:
 	// ƒƒ“ƒo•Ï”
 	std::function<void(void)> m_funcEndStop;	// ’â~I—¹ŠÖ”ƒ|ƒCƒ“ƒ^
-	bool m_bStop;	// ’â~ó‹µ
-	int m_nCounter;	// ’â~ŠÔ
+	bool m_bStop;		// ’â~ó‹µ
+	float m_fCurTime;	// ’â~ŠÔ
 };
 
 #endif	// _HITSTOP_H_
