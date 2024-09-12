@@ -43,6 +43,7 @@
 #include "tension.h"
 #include "retentionManager.h"
 #include "goditemUI.h"
+#include "playerbackUI.h"
 #include "hitstop.h"
 #include "tutorial.h"
 
@@ -106,7 +107,6 @@ namespace
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
-	const float BACK_TIME = 1.2f;		// 回帰までにかかる時間
 
 	// ブラーの情報
 	namespace blurInfo
@@ -140,6 +140,7 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+	m_pBackUI		(nullptr),		// 回帰UIの情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
@@ -156,7 +157,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_fBackTime		(0.0f),			// 回帰時間
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
@@ -253,6 +253,9 @@ HRESULT CPlayer::Init(void)
 
 		// 神器UIの生成
 		CGodItemUI::Create();
+
+		// 回帰UIの生成処理
+		m_pBackUI = CPlayerBackUI::Create();
 	}
 
 #ifndef PHOTO
@@ -272,6 +275,13 @@ void CPlayer::Uninit(void)
 	{
 		// 軌跡の終了
 		SAFE_UNINIT(m_apOrbit[nCnt]);
+	}
+
+	// 回帰UIの削除
+	if (m_pBackUI != nullptr)
+	{
+		SAFE_UNINIT(m_pBackUI);
+		m_pBackUI = nullptr;
 	}
 
 	// エフェクトの削除
@@ -342,8 +352,15 @@ void CPlayer::Update(const float fDeltaTime)
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 
-	// チェックポイント回帰処理
-	CheckPointBack(fDeltaTime);
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
+
+		// チェックポイント回帰処理
+		CheckPointBack(fDeltaTime);
+
+		// 更新処理
+		m_pBackUI->Update(fDeltaTime);
+	}
 
 #ifdef _DEBUG
 
@@ -1847,16 +1864,16 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 void CPlayer::CheckPointBack(const float fDeltaTime)
 {
 	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_fBackTime = 0.0f; return; }
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_pBackUI->SetState(CPlayerBackUI::STATE_SUB); return; }
 
-	// 回帰時間を加算する
-	m_fBackTime += fDeltaTime;
+	// 加算状態にする
+	m_pBackUI->SetState(CPlayerBackUI::STATE_ADD);
 
 	// 回帰時間が一定数以下の場合、抜ける
-	if (m_fBackTime <= BACK_TIME) { return; }
+	if (m_pBackUI->GetAlpha() < 1.0f) { return; }
 
-	// 回帰時間を 0.0f にする
-	m_fBackTime = 0.0f;
+	// 通常状態にする
+	m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
