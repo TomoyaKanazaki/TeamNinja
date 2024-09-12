@@ -221,6 +221,9 @@ void CTitleManager::Update(const float fDeltaTime)
 			// 開始操作の点灯を開始する
 			m_pStart->SetBlink(true);
 
+			// 決定音を再生
+			PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
+
 			// 操作待機状態にする
 			m_state = STATE_WAIT;
 		}
@@ -249,6 +252,9 @@ void CTitleManager::Update(const float fDeltaTime)
 
 			// 開始操作の点灯を終了する
 			m_pStart->SetBlink(false);
+
+			// 決定音を再生
+			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 
 			// 忍者疾走状態にする
 			m_state = STATE_RUN;
@@ -361,14 +367,17 @@ void CTitleManager::SkipStaging(void)
 
 		// タイトルの演出終了
 		m_apLogo[i]->EndStag();
-
-		// 開始操作の点灯を開始する
-		m_pStart->SetBlink(true);
-
-		// カメラ回転後の目標位置を設定
-		GET_CAMERA->SetDestRotateWait();
-
-		// 操作待機状態にする
-		m_state = STATE_WAIT;
 	}
+
+	// 開始操作の点灯を開始する
+	m_pStart->SetBlink(true);
+
+	// カメラ回転後の目標位置を設定
+	GET_CAMERA->SetDestRotateWait();
+
+	// 決定音を再生
+	PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
+
+	// 操作待機状態にする
+	m_state = STATE_WAIT;
 }

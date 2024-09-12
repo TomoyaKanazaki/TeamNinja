@@ -16,10 +16,12 @@ namespace
 {
 	const CSound::SSoundInfo SOUND_FILE[] =	// サウンドファイル
 	{
-		{ "data\\BGM\\bgm_general.wav", -1 },	// BGM
+		{ "data\\BGM\\bgm_general.wav", -1 },		// BGM
 		{ "data\\BGM\\bgm_game_forest.wav", -1 },	// BGM(森)
-		{ "data\\BGM\\bgm_result.wav", -1 },	// BGM(リザルト)
-		{ "data\\BGM\\bgm_gameover.wav", -0 },	// BGM(ゲームオーバー)
+		{ "data\\BGM\\bgm_title.wav", -1 },			// BGM (タイトル)
+		{ "data\\BGM\\bgm_select.wav", -1 },		// BGM (セレクト)
+		{ "data\\BGM\\bgm_result.wav", -1 },		// BGM(リザルト)
+		{ "data\\BGM\\bgm_gameover.wav", -0 },		// BGM(ゲームオーバー)
 
 		{ "data\\SE\\select000.wav", 0 },		// 選択操作音00
 		{ "data\\SE\\select001.wav", 0 },		// 選択操作音01
@@ -64,6 +66,8 @@ namespace
 		{ "data\\SE\\mash.wav", 0 },			// ふすまの音
 		{ "data\\SE\\mashclose.wav", 0 },		// ふすまが閉じるときの音
 		{ "data\\SE\\spinwall.wav", 0 },		// 回転扉の音
+		{ "data\\SE\\wind000.wav", 0 },			// 風切り音
+		{ "data\\SE\\syakuhati.wav", 0 },		// 尺八音
 	};
 }
 
