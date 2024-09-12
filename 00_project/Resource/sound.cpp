@@ -68,6 +68,7 @@ namespace
 		{ "data\\SE\\spinwall.wav", 0 },		// ‰ñ“]”à‚Ì‰¹
 		{ "data\\SE\\wind000.wav", 0 },			// •—Ø‚è‰¹
 		{ "data\\SE\\syakuhati.wav", 0 },		// Ú”ª‰¹
+		{ "data\\SE\\reflect.wav", 0 },		// Ú”ª‰¹
 	};
 }
 

@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "sceneSelect.h"
 #include "selectManager.h"
+#include "sound.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -123,6 +124,9 @@ void CBalloon::Update(const float fDeltaTime)
 		m_fCurTime += fDeltaTime;
 		if (useful::LimitMaxNum(m_fCurTime, 1.0f))
 		{ // ŠÔ‚ªŒo‰ß‚µ‚«‚Á‚½ê‡
+
+			// Œˆ’è‰¹‚ÌÄ¶
+			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 
 			// I—¹ó‘Ô‚É‚·‚é
 			m_state = STATE_END;
