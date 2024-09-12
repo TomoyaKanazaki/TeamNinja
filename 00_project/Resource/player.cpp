@@ -145,7 +145,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
-	m_pEffectdata	(nullptr)		// エフェクト情報
+	m_pEffectdata	(nullptr),		// エフェクト情報
+	m_pLastField	(nullptr)		// 最後に立っていた地面
 {
 }
 
@@ -427,6 +428,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 
 		// ダメージ状態の更新
 		currentMotion = UpdateDamage(fDeltaTime);
+		break;
+	
+	case STATE_DROWN:
+
+		// 溺死状態の更新
+		currentMotion = UpdateDrown(fDeltaTime);
 		break;
 
 	default:
@@ -1198,6 +1205,15 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	return MOTION_DAMAGE;
 }
 
+//===========================================
+//  溺死状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
+{
+	// ダメージモーション
+	return MOTION_DROWNING;
+}
+
 //============================================================
 //	過去位置の更新処理
 //============================================================
@@ -1377,6 +1393,11 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
+		}
+		else
+		{
+			// 着地している地面を保存する
+			m_pLastField = m_pCurField;
 		}
 	}
 

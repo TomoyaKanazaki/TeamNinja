@@ -119,6 +119,7 @@ public:
 		STATE_DODGE,	// 回避状態
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
+		STATE_DROWN,	// 溺死状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -214,6 +215,7 @@ private:
 	EMotion UpdateDodge(const float fDeltaTime);	// 回避状態時の更新
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
+	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 
@@ -264,8 +266,10 @@ private:
 	std::string m_sFrags;					// ギミックフラグの文字列
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
+	CField* m_pLastField;					// 最後に着地していた地面
 	CEffekseer::CEffectData* m_pEffectdata;	//エフェクト情報
 	CEffekseer::CEffectData* m_pEffectFirefly;	//エフェクト情報
+
 
 };
 
