@@ -102,7 +102,8 @@ CPlayerClone::CPlayerClone() : CObjectChara(CObject::LABEL_CLONE, CObject::SCENE
 	m_bJump			(false),			// ジャンプ状況
 	m_fFallStart	(0.0f),				// 落とし穴の落ちる前の高さ
 	m_size			(VEC3_ZERO),		// サイズ
-	m_pField		(nullptr)			// フィールドギミック
+	m_pField		(nullptr),			// フィールドギミック
+	m_bActorDelete	(false)				// アクターの消去
 {
 
 }
@@ -221,7 +222,7 @@ void CPlayerClone::Update(const float fDeltaTime)
 	EMotion currentMotion = MOTION_IDOL;	// 現在のモーション
 
 	if (m_OldAction == ACTION_BRIDGE
-	&&  m_Action != ACTION_BRIDGE)
+		&& m_Action != ACTION_BRIDGE)
 	{
 		// 腰の親モデルを初期化
 		GetParts(MODEL_WAIST)->SetParentModel(nullptr);
@@ -338,6 +339,13 @@ void CPlayerClone::Update(const float fDeltaTime)
 
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
+
+	// アクターを消去していない場合、抜ける
+	if (!m_bActorDelete) { return; }
+
+	// 終了処理
+	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, 25.0f);
+	Uninit();
 }
 
 //============================================================
@@ -1494,7 +1502,7 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 	for (CActor* actor : list)
 	{
 		// 当たり判定処理
-		actor->Collision
+		if (actor->Collision
 		(
 			pos,		// 位置
 			m_oldPos,	// 前回の位置
@@ -1502,8 +1510,14 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 			HEIGHT,		// 高さ
 			m_move,		// 移動量
 			bJump,		// ジャンプ状況
-			bHit
-		);
+			bHit,		// ヒット状況
+			true		// 消去状況
+		))
+		{ // アクターを破壊した場合
+
+			// アクター消去状況を true にする
+			m_bActorDelete = true;
+		}
 	}
 
 	// 位置を適用

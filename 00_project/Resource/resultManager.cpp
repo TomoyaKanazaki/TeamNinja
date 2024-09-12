@@ -402,6 +402,9 @@ void CResultManager::UpdateStageWait(const float fDeltaTime)
 		// ステージタイトルの文字送りを開始する
 		m_pTitle->SetEnableScroll(true);
 
+		// タイトル音を設定する
+		m_pTitle->SetScrollSE(CSound::LABEL_SE_RESULTTITLE);
+
 		// ステージタイトル状態にする
 		m_state = STATE_STAGE_TITLE;
 	}
@@ -428,6 +431,9 @@ void CResultManager::UpdateStageTitle(const float fDeltaTime)
 
 		// クリアごとのハンコテクスチャを割当
 		m_pStamp->BindTexture(stamp::TEXTURE[GET_RETENTION->GetWin()]);
+
+		// 太鼓の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 
 		// ハンコ押し状態にする
 		m_state = STATE_STAMP;
@@ -618,6 +624,9 @@ void CResultManager::UpdateSkip(void)
 		{
 			// 演出のスキップ
 			SkipStaging();
+
+			// 太鼓の音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 		}
 	}
 }
