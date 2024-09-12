@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "balloon.h"
 #include "balloonManager.h"
+#include "sound.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -388,6 +389,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 					assert(false);
 					return nullptr;
 				}
+
+				// ’…’n‰¹‚ÌÄ¶
+				PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
 			}
 		}
 		else

@@ -66,8 +66,12 @@ namespace
 		{ "data\\SE\\mash.wav", 0 },			// ‚Ó‚·‚Ü‚Ì‰¹
 		{ "data\\SE\\mashclose.wav", 0 },		// ‚Ó‚·‚Ü‚ª•Â‚¶‚é‚Æ‚«‚Ì‰¹
 		{ "data\\SE\\spinwall.wav", 0 },		// ‰ñ“]”à‚Ì‰¹
-		{ "data\\SE\\wind000.wav", 0 },			// •—Ø‚è‰¹
+		{ "data\\SE\\wind000.wav", 0 },			// •—Ø‚è‰¹00
+		{ "data\\SE\\wind001.wav", 0 },			// •—Ø‚è‰¹01
+		{ "data\\SE\\wind002.wav", 0 },			// •—Ø‚è‰¹02
 		{ "data\\SE\\syakuhati.wav", 0 },		// Ú”ª‰¹
+		{ "data\\SE\\reflect.wav", 0 },			// ƒJƒLƒ“‰¹
+		{ "data\\SE\\in000.wav", 0 },			// ƒCƒ“Œ‹‚Ñ
 	};
 }
 

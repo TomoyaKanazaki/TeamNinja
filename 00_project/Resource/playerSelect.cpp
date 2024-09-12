@@ -245,10 +245,13 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	// 向きを反映
 	SetVec3Rotation(GetDestRotation());
 
-	if (GetMotionWholeCounter() == 56)
+	if (GetMotionWholeCounter() == 58)
 	{
 		// TODO：開始エフェクトを生成
 		GET_EFFECT->Create("data\\EFFEKSEER\\toonsmoke.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 17.0f);
+
+		// 煙音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
 	}
 
 	if (IsMotionFinish())
