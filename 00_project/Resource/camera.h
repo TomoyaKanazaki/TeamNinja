@@ -164,7 +164,8 @@ public:
 	EState GetState(void) const;			// カメラ状態取得
 	void SetSwing(const EType type, const SSwing swing);	// カメラ揺れ設定
 	void SetEnableUpdate(const bool bUpdate);				// 更新状況設定
-	void SetRotateRun(void) { m_rotaInfo.state = SRota::STATE_RUN; }	// カメラの走り状態設定
+	bool IsUpdate(void) const	{ return m_bUpdate; }		// 更新状況取得
+	void SetRotateRun(void)		{ m_rotaInfo.state = SRota::STATE_RUN; }	// カメラの走り状態設定
 
 	void SetDestRotate(void);		// カメラ目標位置設定 (回転)
 	void SetDestRotateWait(void);	// カメラ目標位置設定 (回転:待機)

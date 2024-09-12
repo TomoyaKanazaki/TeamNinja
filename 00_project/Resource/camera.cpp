@@ -26,6 +26,7 @@
 #include "cinemaScope.h"
 #include "wall.h"
 #include "transpoint.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -1822,6 +1823,9 @@ void CCamera::OpenRotUp(const float fDeltaTime)
 
 		// 移動状態にする
 		m_openInfo.state = SOpen::STATE_MOVE;
+
+		// 着地音の再生
+		PLAY_SOUND(CSound::LABEL_SE_WIND_000);
 	}
 }
 

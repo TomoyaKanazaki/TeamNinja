@@ -875,7 +875,8 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 			GetHeight(),		// 高さ
 			move,				// 移動量
 			bJump,				// ジャンプ状況
-			bHit				// ヒット状況
+			bHit,				// ヒット状況
+			false				// 消去状態
 		);
 	}
 

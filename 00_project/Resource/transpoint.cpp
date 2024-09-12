@@ -15,14 +15,15 @@
 #include "camera.h"
 #include "balloon.h"
 #include "balloonManager.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\checkpoint_blue.efkefc";	// 触れている際のエフェクトファイル
-	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\checkpoint_red.efkefc";		// 触れていない際のエフェクトファイル
+	const char*	HIT_EFFECT_PASS		= "data\\EFFEKSEER\\stage_active.efkefc";	// 触れている際のエフェクトファイル
+	const char*	UNHIT_EFFECT_PASS	= "data\\EFFEKSEER\\stage_standby.efkefc";	// 触れていない際のエフェクトファイル
 	const D3DXVECTOR3 OFFSET = D3DXVECTOR3(0.0f, 5.0f, 0.0f);	// エフェクト用オフセット
 	const int	PRIORITY	 = 2;		// 遷移ポイントの優先順位
 	const float	RADIUS		 = 120.0f;	// 遷移ポイントに触れられる半径
@@ -388,6 +389,9 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 					assert(false);
 					return nullptr;
 				}
+
+				// 着地音の再生
+				PLAY_SOUND(CSound::LABEL_SE_DECISION_000);
 			}
 		}
 		else

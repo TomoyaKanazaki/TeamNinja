@@ -12,6 +12,7 @@
 #include "stage.h"
 #include "camera.h"
 #include "transpoint.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -244,10 +245,13 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	// 向きを反映
 	SetVec3Rotation(GetDestRotation());
 
-	if (GetMotionWholeCounter() == 56)
+	if (GetMotionWholeCounter() == 58)
 	{
 		// TODO：開始エフェクトを生成
 		GET_EFFECT->Create("data\\EFFEKSEER\\toonsmoke.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 17.0f);
+
+		// 煙音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_CLONELOST_000);
 	}
 
 	if (IsMotionFinish())
@@ -348,4 +352,7 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
+
+	// 尺八音の再生
+	PLAY_SOUND(CSound::LABEL_SE_SYAKUHATI);
 }

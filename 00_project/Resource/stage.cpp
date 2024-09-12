@@ -29,13 +29,14 @@
 #include "goal.h"
 #include "transpoint.h"
 #include "weed.h"
+#include "tutorial.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const char* INIT_MAPPASS = "data\\MAP\\FOREST00\\map.txt";	// 初期マップパス
+	const char* INIT_MAPPASS = "data\\MAP\\SELECT00\\map.txt";	// 初期マップパス
 }
 
 //************************************************************
@@ -236,6 +237,14 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			// 失敗を返す
 			assert(false);
 			return E_FAIL;
+		}
+
+		// チュートリアルの生成
+		if (rPass.sMap.find("FOREST00") != std::string::npos)
+		{
+			CTutorial::Create(D3DXVECTOR3(-400.0f, 0.0f, -300.0f), CTutorial::TYPE_MOVE);
+			CTutorial::Create(D3DXVECTOR3(2500.0f, 0.0f, -300.0f), CTutorial::TYPE_CLONE);
+			CTutorial::Create(D3DXVECTOR3(4000.0f, 0.0f, -300.0f), CTutorial::TYPE_GIMMICK);
 		}
 	}
 

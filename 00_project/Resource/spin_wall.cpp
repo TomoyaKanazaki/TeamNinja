@@ -148,7 +148,7 @@ void CSpinWall::Collision
 //==========================================
 // 当たり判定処理(判定を返すオーバーライド)
 //==========================================
-void CSpinWall::Collision
+bool CSpinWall::Collision
 (
 	D3DXVECTOR3& rPos,				// 位置
 	const D3DXVECTOR3& rPosOld,		// 前回の位置
@@ -156,11 +156,12 @@ void CSpinWall::Collision
 	const float fHeight,			// 高さ
 	D3DXVECTOR3& rMove,				// 移動量
 	bool& bJump,					// ジャンプ状況
-	bool& bHit						// 衝突判定
+	bool& bHit,						// 衝突判定
+	const bool bDelete				// 消去状態
 )
 {
 	// 回転中の場合、抜ける
-	if (m_state == STATE_SPIN) { return; }
+	if (m_state == STATE_SPIN) { return false; }
 
 	// 回転の当たり判定
 	SpinCollision
@@ -172,7 +173,7 @@ void CSpinWall::Collision
 	);
 
 	// 当たり判定処理
-	CActor::Collision
+	return CActor::Collision
 	(
 		rPos,		// 位置
 		rPosOld,	// 前回の位置
@@ -180,7 +181,8 @@ void CSpinWall::Collision
 		fHeight,	// 高さ
 		rMove,		// 移動量
 		bJump,		// ジャンプ状況
-		bHit		// 衝突判定
+		bHit,		// 衝突判定
+		bDelete		// 消去状態
 	);
 }
 

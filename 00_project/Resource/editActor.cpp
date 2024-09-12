@@ -63,7 +63,7 @@ namespace
 {
 	const char* SAVE_PASS = "Debug\\DEBUG_SAVE\\save_actor.txt";	// セーブテキストパス
 
-	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.1f, 0.1f, 0.1f);			// 拡縮率
+	const D3DXVECTOR3 SCALING = D3DXVECTOR3(0.05f, 0.05f, 0.05f);	// 拡縮率
 	const float INIT_MOVE = 25.0f;	// 初期移動量
 	const float CALC_MOVE = 0.5f;	// 計算移動量
 	const float	INIT_ALPHA = 0.5f;	// 配置前のα値

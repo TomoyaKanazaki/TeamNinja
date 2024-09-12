@@ -156,6 +156,7 @@ CClearSuccessManager::CClearSuccessManager() :
 	// メンバ変数をクリア
 	memset(&m_apGodItemBG[0],   0, sizeof(m_apGodItemBG));		// 神器アイコン背景情報
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
+	memset(&m_aGodItemSound[0], false, sizeof(m_aGodItemSound));// 神器アイコンの音状況
 
 	// スタティックアサート
 	static_assert(NUM_ARRAY(m_aFuncUpdateState) == CClearSuccessManager::STATE_MAX, "ERROR : State Count Mismatch");
@@ -177,6 +178,7 @@ HRESULT CClearSuccessManager::Init(void)
 	// メンバ変数を初期化
 	memset(&m_apGodItemBG[0], 0, sizeof(m_apGodItemBG));		// 神器アイコン背景情報
 	memset(&m_apGodItemIcon[0], 0, sizeof(m_apGodItemIcon));	// 神器アイコン情報
+	memset(&m_aGodItemSound[0], false, sizeof(m_aGodItemSound));// 神器アイコンの音状況
 	m_state = STATE_TIME_TITLE_WAIT;	// 状態
 	m_pTime		= nullptr;	// 遂行時間タイトル情報
 	m_pTimeVal	= nullptr;	// 遂行時間情報
@@ -512,6 +514,9 @@ void CClearSuccessManager::UpdateTimeTitle(const float fDeltaTime)
 		// 遂行時間タイトルの大きさを補正
 		m_pTime->SetCharHeight(time::DEST_HEIGHT);
 
+		// 文字送りの音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_RESULTTEXT);
+
 		// 遂行時間待機状態にする
 		m_state = STATE_TIME_VALUE_WAIT;
 	}
@@ -615,6 +620,9 @@ void CClearSuccessManager::UpdateItemTitle(const float fDeltaTime)
 
 		// 神器タイトルの大きさを補正
 		m_pGodItem->SetCharHeight(item::DEST_HEIGHT);
+
+		// 文字送りの音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_RESULTTEXT);
 
 		// 神器アイコン背景待機状態にする
 		m_state = STATE_ITEM_BG_WAIT;
@@ -757,6 +765,15 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 
 		// 神器アイコンの色を反映
 		m_apGodItemIcon[i]->SetColor(colCur);
+
+		if (!m_aGodItemSound[i] &&
+			m_apGodItemIcon[i]->GetColor().a >= 0.95f)
+		{ // 大きさが目的の透明度に近づいた場合
+
+			// 一度だけ三味線の音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_RESULTGODITEM);
+			m_aGodItemSound[i] = true;
+		}
 	}
 
 	// アイコンのサイズ変更補正
@@ -775,6 +792,9 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 			// 神器アイコンの色を補正
 			m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);
 		}
+
+		// 琴の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
 
 		// 操作の自動描画をONにする
 		m_pControl->SetEnableDraw(true);
@@ -801,5 +821,8 @@ void CClearSuccessManager::UpdateWait(const float fDeltaTime)
 	{
 		// 終了状態にする
 		m_state = STATE_END;
+
+		// 太鼓の音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
 	}
 }

@@ -95,6 +95,7 @@ private:
 	CBlink2D* m_pControl;	// 操作情報
 	EState m_state;			// 状態
 	float m_fCurTime;		// 現在の待機時間
+	bool m_aGodItemSound[CGodItem::TYPE_MAX];		// 神器アイコンの音状況
 };
 
 #endif	// _CLEAR_SUCCESS_MANAGER_H_
