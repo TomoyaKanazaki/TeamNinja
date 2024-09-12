@@ -9,63 +9,76 @@
 #------------------------------------------------------------------------------
 STAGE_PLAYERSET
 	TYPE = SELECT
-	POS = 0.00 0.00 -300.00
-	ROT = 0.00 180.00 0.00
+	POS = 0.00 0.00 -900.00
+	ROT = 0.00 0.00 0.00
 END_STAGE_PLAYERSET
 
 #------------------------------------------------------------------------------
 #	ëJà⁄É|ÉCÉìÉgÇÃèÓïÒ
 #------------------------------------------------------------------------------
 STAGE_TRANSSET
-
-	TRANSSET
-		TRANS_PASS = data\MAP\CASTLE00\map.txt
-		POS = -1500 0 0
-	END_TRANSSET
 	
-	TRANSSET
-		TRANS_PASS = data\MAP\TOWN02\map.txt
-		POS = -1250 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\TOWN01\map.txt
-		POS = -1000 0 0
-	END_TRANSSET
-	
-	TRANSSET
-		TRANS_PASS = data\MAP\TOWN00\map.txt
-		POS = -750 0 0
-	END_TRANSSET
-
-	TRANSSET
-		TRANS_PASS = data\MAP\FOREST02\map.txt
-		POS = -500 0 0
-	END_TRANSSET
-	
+	# êX00
 	TRANSSET
 		TRANS_PASS = data\MAP\FOREST00\map.txt
-		POS = -250 0 0
+		POS = 385 150 -265
 	END_TRANSSET
+	
+	# êX02
+	TRANSSET
+		TRANS_PASS = data\MAP\FOREST02\map.txt
+		POS = -385 150 -50
+	END_TRANSSET
+	
+	# èÈâ∫í¨00
+	TRANSSET
+		TRANS_PASS = data\MAP\TOWN00\map.txt
+		POS = 300 300 460
+	END_TRANSSET
+	
+	# èÈâ∫í¨01
+	TRANSSET
+		TRANS_PASS = data\MAP\TOWN01\map.txt
+		POS = -220 300 790
+	END_TRANSSET
+	
+	# èÈâ∫í¨02
+	TRANSSET
+		TRANS_PASS = data\MAP\TOWN02\map.txt
+		POS = 60 450 1530
+	END_TRANSSET
+	
+	# èÈ00
+	TRANSSET
+		TRANS_PASS = data\MAP\CASTLE00\map.txt
+		POS = -275 600 2350
+	END_TRANSSET
+	
+	
+	
+	
+	
+	
+	
 	
 	TRANSSET
 		TRANS_PASS = data\MAP\TEMP\TEST00\map.txt
-		POS = 0 0 0
+		POS = 500 0 -1100
 	END_TRANSSET
 	
 	TRANSSET
 		TRANS_PASS = data\MAP\TEMP\TEST01\map.txt
-		POS = 250 0 0
+		POS = 250 0 -1100
 	END_TRANSSET
 	
 	TRANSSET
 		TRANS_PASS = data\MAP\TEMP\TEST02\map.txt
-		POS = 500 0 0
+		POS = -250 0 -1100
 	END_TRANSSET
 	
 	TRANSSET
 		TRANS_PASS = data\MAP\TEMP\PHOTO00\map.txt
-		POS = 750 0 0
+		POS = -500 0 -1100
 	END_TRANSSET
 
 END_STAGE_TRANSSET
