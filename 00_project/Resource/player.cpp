@@ -145,7 +145,8 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
-	m_pEffectdata	(nullptr)		// エフェクト情報
+	m_pEffectdata	(nullptr),		// エフェクト情報
+	m_pLastField	(nullptr)		// 最後に立っていた地面
 {
 }
 
@@ -427,6 +428,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 
 		// ダメージ状態の更新
 		currentMotion = UpdateDamage(fDeltaTime);
+		break;
+	
+	case STATE_DROWN:
+
+		// 溺死状態の更新
+		currentMotion = UpdateDrown(fDeltaTime);
 		break;
 
 	default:
@@ -1198,6 +1205,21 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 	return MOTION_DAMAGE;
 }
 
+//===========================================
+//  溺死状態の更新処理
+//===========================================
+CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
+{
+	// 移動量を0にする
+	m_move = VEC3_ZERO;
+
+	// スタックのリセット
+	ResetStack();
+
+	// 溺死モーション
+	return MOTION_DROWNING;
+}
+
 //============================================================
 //	過去位置の更新処理
 //============================================================
@@ -1205,6 +1227,21 @@ void CPlayer::UpdateOldPosition(void)
 {
 	// 過去位置を更新
 	m_oldPos = GetVec3Position();
+}
+
+//==========================================
+//  スタック状態のリセット
+//==========================================
+void CPlayer::ResetStack()
+{
+	// ボタンを押されてない場合関数を抜ける
+	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_A)) { return; }
+
+	// 前の地面に座標を移す
+	SetVec3Position(m_pLastField->GetVec3Position());
+
+	// 待機状態に戻す
+	m_state = STATE_NORMAL;
 }
 
 //============================================================
@@ -1358,6 +1395,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 		// 当たっている状態にする
 		m_pCurField->Hit(this);
+
+		// 水でなければ最後に乗った地面として保存する
+		if (m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_pLastField = m_pCurField;
+		}
 	}
 
 	if (m_pCurField != m_pOldField)
@@ -1373,7 +1416,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		// 床が水の場合殺す
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
-			m_state = STATE_DEATH;
+			m_state = STATE_DROWN;
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
