@@ -244,8 +244,6 @@ HRESULT CPlayer::Init(void)
 	m_pEffectFirefly = GET_EFFECT->Create("data\\EFFEKSEER\\firefly.efkefc", GetCenterPos(), VEC3_ZERO, VEC3_ZERO, 50.0f, false, false);
 #endif
 
-	CTutorial::Create(VEC3_ZERO, CTutorial::TYPE_MOVE);
-
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
 }

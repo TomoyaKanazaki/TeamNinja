@@ -8,6 +8,9 @@
 #include "manager.h"
 #include "player.h"
 #include "collision.h"
+#include "scene.h"
+#include "sceneGame.h"
+#include "gameManager.h"
 
 //==========================================
 //  定数定義
@@ -120,6 +123,9 @@ void CTutorial::Update(const float fDeltaTime)
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
+	// ゲーム中じゃない場合関数を抜ける
+	if (GET_GAMEMANAGER->GetState() != CGameManager::STATE_NORMAL) { return; }
+
 	Scaling(fDeltaTime);
 
 	// 親クラスの更新
@@ -195,7 +201,7 @@ void CTutorial::Scaling(const float fDeltaTime)
 //  生成処理
 //==========================================
 CTutorial* CTutorial::Create(const D3DXVECTOR3& rPos, const EType type)
-{
+{	 
 	// メモリを確保
 	CTutorial* pTutorial = new CTutorial;
 
