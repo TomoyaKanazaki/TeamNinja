@@ -197,6 +197,7 @@ protected:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
 	void SetJump(const bool bJump) { m_bJump = bJump; }	// ジャンプ状況設定
+	void ResetStack();									// スタック状態のリセット
 
 	// メンバ関数 (金崎追加)
 	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
