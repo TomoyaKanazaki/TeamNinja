@@ -52,6 +52,7 @@ public:
 	void SetState(const EState state)	{ m_state = state; }	// 状態設定
 	EState GetState(void) const			{ return m_state; }		// 状態取得
 	void SetSave(const int nSave)		{ m_nSave = nSave; }	// セーブ設定
+	int GetSave(void) const				{ return m_nSave; }		// セーブ取得
 	void PossessGodItem(const CGodItem::EType typeID);			// 勾玉獲得
 	void TransitionResult(const CRetentionManager::EWin win);	// リザルト画面遷移
 
