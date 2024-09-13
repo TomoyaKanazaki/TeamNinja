@@ -73,10 +73,15 @@ void DebugProc::Update(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボードのポインタ
 
+#ifdef _DEBUG
+
+
 	if(pKeyboard->IsTrigger(DIK_F1) == true)
 	{//F1キーが押されたとき
 		m_bDisp = m_bDisp ? false : true;
 	}
+
+#endif // _DEBUG
 }
 
 //==========================================================
