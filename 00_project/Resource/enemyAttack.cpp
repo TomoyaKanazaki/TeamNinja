@@ -47,23 +47,28 @@ namespace
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// Œxó‘Ô‚Ì‘JˆÚƒJƒEƒ“ƒg
 	{
-		23,			// ‚µ‚Â‚±‚¢“G
-		36,			// ˜T“G
+		23,		// ‚µ‚Â‚±‚¢“G
+		36,		// ˜T“G
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// UŒ‚ó‘Ô‚Ì‘JˆÚƒJƒEƒ“ƒg
 	{
-		44,			// ‚µ‚Â‚±‚¢“G
-		34,			// ˜T“G
+		44,		// ‚µ‚Â‚±‚¢“G
+		34,		// ˜T“G
 	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// ‹ó”’UŒ‚ó‘Ô‚Ì‘JˆÚƒJƒEƒ“ƒg
 	{
-		340,		// ‚µ‚Â‚±‚¢“G
-		340,		// ˜T“G
+		340,	// ‚µ‚Â‚±‚¢“G
+		340,	// ˜T“G
 	};
 	const int BLANKATTACK_CYCLE_COUNT[CEnemyAttack::TYPE_MAX] =		// ‹ó”’UŒ‚ó‘Ô‚Ì‰ñ“]ƒJƒEƒ“ƒg
 	{
 		18,		// ‚µ‚Â‚±‚¢“G
 		18,		// ˜T“G
+	};
+	const int ACTOR_DELETE_COUNT[CEnemyAttack::TYPE_MAX] =		// ƒAƒNƒ^[‚ğíœ‚·‚éƒJƒEƒ“ƒg
+	{
+		36,		// ‚µ‚Â‚±‚¢“G
+		28		// ˜T“G
 	};
 }
 
@@ -863,6 +868,10 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 
 	D3DXVECTOR3 move = GetMovePosition();
 	bool bJump = IsJump();
+	bool bDelete = false;
+
+	// UŒ‚‚µ‚½uŠÔAÁ‹ó‹µ‚ğON‚É‚·‚é
+	if (GetState() == STATE_ATTACK && m_nStateCount == ACTOR_DELETE_COUNT[m_type]) { bDelete = true; }
 
 	for (auto& actor : m_actor)
 	{
@@ -876,7 +885,7 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 			move,				// ˆÚ“®—Ê
 			bJump,				// ƒWƒƒƒ“ƒvó‹µ
 			bHit,				// ƒqƒbƒgó‹µ
-			false				// Á‹ó‘Ô
+			bDelete				// Á‹ó‘Ô
 		);
 	}
 
