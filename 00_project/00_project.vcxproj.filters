@@ -684,9 +684,6 @@
     <ClInclude Include="Resource\logoManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\sceneLogo.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\fog_change.h">
       <Filter>Map</Filter>
     </ClInclude>
@@ -1290,9 +1287,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Resource\logoManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\sceneLogo.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Resource\fog_change.cpp">

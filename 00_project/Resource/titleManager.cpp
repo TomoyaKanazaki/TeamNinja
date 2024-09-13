@@ -15,6 +15,7 @@
 #include "player.h"
 #include "titleLogo2D.h"
 #include "blink2D.h"
+#include "logoManager.h"
 
 //************************************************************
 //	定数宣言
@@ -64,9 +65,10 @@ namespace
 //============================================================
 
 CTitleManager::CTitleManager() :
-	m_pStart	(nullptr),		// 開始操作情報
-	m_state		(STATE_NONE),	// 状態
-	m_fCurTime	(0.0f)			// 現在の経過時間
+	m_pLogoManager	(nullptr),		// ロゴマネージャー
+	m_pStart		(nullptr),		// 開始操作情報
+	m_state			(STATE_LOGO),	// 状態
+	m_fCurTime		(0.0f)			// 現在の経過時間
 {
 	// メンバ変数をクリア
 	memset(&m_apLogo[0], 0, sizeof(m_apLogo));	// タイトル情報
@@ -87,9 +89,10 @@ HRESULT CTitleManager::Init(void)
 {
 	// メンバ変数を初期化
 	memset(&m_apLogo[0], 0, sizeof(m_apLogo));	// タイトル情報
-	m_pStart	= nullptr;		// 開始操作情報
-	m_state		= STATE_NONE;	// 状態
-	m_fCurTime	= 0.0f;			// 現在の経過時間
+	m_pLogoManager	= nullptr;		// ロゴマネージャー
+	m_pStart		= nullptr;		// 開始操作情報
+	m_state			= STATE_LOGO;	// 状態
+	m_fCurTime		= 0.0f;			// 現在の経過時間
 
 	//--------------------------------------------------------
 	//	タイトルの生成・設定
@@ -172,6 +175,9 @@ HRESULT CTitleManager::Init(void)
 	// 優先順位を設定
 	m_pStart->SetPriority(PRIORITY);
 
+	// ロゴマネージャーの生成処理
+	m_pLogoManager = CLogoManager::Create();
+
 	// 成功を返す
 	return S_OK;
 }
@@ -187,6 +193,9 @@ void CTitleManager::Uninit(void)
 		// タイトル情報の終了
 		SAFE_UNINIT(m_apLogo[i]);
 	}
+
+	// ロゴマネージャーの終了
+	SAFE_UNINIT(m_pLogoManager);
 }
 
 //============================================================
@@ -196,10 +205,19 @@ void CTitleManager::Update(const float fDeltaTime)
 {
 	switch (m_state)
 	{ // 状態ごとの処理
-	case STATE_NONE:	// 何もしない
+	case STATE_LOGO:	// ロゴ表示状態
 	{
 		// フェード中なら抜ける
 		if (GET_MANAGER->GetFade()->IsFade()) { break; }
+
+		// 更新処理
+		m_pLogoManager->Update(fDeltaTime);
+
+		// 消滅していなかった場合抜ける
+		if (!m_pLogoManager->IsDisappear()) { break; }
+
+		// タイトル表示状態にする
+		m_state = STATE_TITLE;
 
 		for (int i = 0; i < NUM_LOGO; i++)
 		{ // ロゴの文字数分繰り返す
@@ -207,12 +225,9 @@ void CTitleManager::Update(const float fDeltaTime)
 			// 演出を開始する
 			m_apLogo[i]->SetStag();
 		}
-
-		// ロゴ表示状態にする
-		m_state = STATE_LOGO;
 		break;
 	}
-	case STATE_LOGO:	// ロゴ表示
+	case STATE_TITLE:	// タイトル表示
 	{
 		int nCurIdx = NUM_LOGO - 1;	// 最後尾インデックス
 		if (!m_apLogo[nCurIdx]->IsStag())
@@ -333,6 +348,9 @@ void CTitleManager::Release(CTitleManager *&prTitleManager)
 //============================================================
 void CTitleManager::UpdateSkip(void)
 {
+	// ロゴ状態の場合、関数を抜ける
+	if (m_state == STATE_LOGO) { return; }
+
 	CInputKeyboard*	pKey = GET_INPUTKEY;	// キーボード情報
 	CInputPad*		pPad = GET_INPUTPAD;	// パッド情報
 	if (pKey->IsTrigger(DIK_SPACE)
