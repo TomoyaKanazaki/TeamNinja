@@ -777,6 +777,8 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 		}
 	}
 
+	bool bGet = false;		// 取得状況
+
 	// アイコンのサイズ変更補正
 	if (m_fCurTime >= icon_item::MOVE_TIME + icon_item::PLUS_TIME * (CGodItem::TYPE_MAX - 1))
 	{ // 全アイコンの待機が終了した場合
@@ -792,10 +794,13 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 
 			// 神器アイコンの色を補正
 			m_apGodItemIcon[i]->SetColor(icon_item::DEST_COL);
+
+			// 取得状況を true にする
+			bGet = true;
 		}
 
-		// 琴の音を鳴らす
-		PLAY_SOUND(CSound::LABEL_SE_SAVE_000);
+		// 取得していた場合、琴の音を鳴らす
+		if (bGet) { PLAY_SOUND(CSound::LABEL_SE_SAVE_000); }
 
 		// 操作の自動描画をONにする
 		m_pControl->SetEnableDraw(true);
