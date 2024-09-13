@@ -75,6 +75,7 @@ namespace
 		{ "data\\SE\\resulttext.wav", 0 },		// リザルトテキスト
 		{ "data\\SE\\resulttitle.wav", 0 },		// リザルトタイトル
 		{ "data\\SE\\resultgoditem.wav", 0 },	// リザルトの神器
+		{ "data\\SE\\goditemUI.wav", 0 },		// 神器UI
 	};
 }
 

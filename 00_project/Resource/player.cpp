@@ -43,6 +43,7 @@
 #include "tension.h"
 #include "retentionManager.h"
 #include "goditemUI.h"
+#include "playerbackUI.h"
 #include "hitstop.h"
 #include "tutorial.h"
 
@@ -93,8 +94,8 @@ namespace
 	};
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE = 480;	// 通常の移動量
+	const float	STEALTH_MOVE = 0.3f;	// 忍び足の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
@@ -103,10 +104,10 @@ namespace
 	const int CHECKPOINT_CLONE = 5; // チェックポイントに戻ったときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
+	const int DROWN_COUNT = 70; // 溺死状態のカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
-	const float BACK_TIME = 1.2f;		// 回帰までにかかる時間
 
 	// ブラーの情報
 	namespace blurInfo
@@ -124,7 +125,7 @@ namespace
 	namespace hit
 	{
 		const CCamera::SSwing SWING = CCamera::SSwing(14.0f, 2.0f, 1.0f);	// カメラ揺れの値
-		const float STOP_TIME = 0.4f;	// ヒットストップ時間
+		const float STOP_TIME = 0.3f;	// ヒットストップ時間
 	}
 }
 
@@ -140,6 +141,7 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+	m_pBackUI		(nullptr),		// 回帰UIの情報
 	m_oldPos		(VEC3_ZERO),	// 過去位置
 	m_move			(VEC3_ZERO),	// 移動量
 	m_destRot		(VEC3_ZERO),	// 目標向き
@@ -156,7 +158,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_bGetCamera	(false),		// カメラ取得フラグ
 	m_fCameraRot	(0.0f),			// カメラの角度
 	m_fStickRot		(0.0f),			// スティックの角度
-	m_fBackTime		(0.0f),			// 回帰時間
 	m_sFrags		({}),			// フィールドフラグ
 	m_pCurField		(nullptr),		// 現在乗ってる地面
 	m_pOldField		(nullptr),		// 前回乗ってた地面
@@ -253,6 +254,9 @@ HRESULT CPlayer::Init(void)
 
 		// 神器UIの生成
 		CGodItemUI::Create();
+
+		// 回帰UIの生成処理
+		m_pBackUI = CPlayerBackUI::Create();
 	}
 
 #ifndef PHOTO
@@ -272,6 +276,13 @@ void CPlayer::Uninit(void)
 	{
 		// 軌跡の終了
 		SAFE_UNINIT(m_apOrbit[nCnt]);
+	}
+
+	// 回帰UIの削除
+	if (m_pBackUI != nullptr)
+	{
+		SAFE_UNINIT(m_pBackUI);
+		m_pBackUI = nullptr;
 	}
 
 	// エフェクトの削除
@@ -342,8 +353,15 @@ void CPlayer::Update(const float fDeltaTime)
 	// モーション・オブジェクトキャラクターの更新
 	UpdateMotion(currentMotion, fDeltaTime);
 
-	// チェックポイント回帰処理
-	CheckPointBack(fDeltaTime);
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
+
+		// チェックポイント回帰処理
+		CheckPointBack(fDeltaTime);
+
+		// 更新処理
+		m_pBackUI->Update(fDeltaTime);
+	}
 
 #ifdef _DEBUG
 
@@ -1268,14 +1286,20 @@ void CPlayer::UpdateOldPosition(void)
 //==========================================
 void CPlayer::ResetStack()
 {
-	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_A)) { return; }
+	// 状態カウントを加算する
+	m_nCounterState++;
+
+	// 状態カウントが一定数未満の場合、関数を抜ける
+	if (m_nCounterState < DROWN_COUNT) { return; }
 
 	// 前の地面に座標を移す
 	SetVec3Position(m_pLastField->GetVec3Position());
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
+
+	// 状態カウントを0にする
+	m_nCounterState = 0;
 }
 
 //============================================================
@@ -1348,18 +1372,26 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		// 歩行モーションにする
 		currentMotion = MOTION_DASH;
 
-		// 移動量をスカラー値に変換する
-		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-
-		// 移動量が一定未満の場合忍び足モーションになる
-		if (m_fScalar <= STEALTH_MOVE)
+		// ガード中であれば移動を遅くする
+		if (pPad->IsPress(CInputPad::KEY_RB))
 		{
+			// 移動量を小さくする
+			m_move.x *= STEALTH_MOVE;
+			m_move.z *= STEALTH_MOVE;
+
 			// 忍び足モーションにする
 			currentMotion = MOTION_STEALTHWALK;
 		}
+
+		// 移動量をスカラー値に変換する
+		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 	}
 	else
 	{
+		// 回避待機
+		if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB))
+		{ currentMotion = MOTION_DROWNING; }
+
 		// フラグを折る
 		m_bGetCamera = false;
 	}
@@ -1847,16 +1879,16 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 void CPlayer::CheckPointBack(const float fDeltaTime)
 {
 	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_fBackTime = 0.0f; return; }
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_pBackUI->SetState(CPlayerBackUI::STATE_SUB); return; }
 
-	// 回帰時間を加算する
-	m_fBackTime += fDeltaTime;
+	// 加算状態にする
+	m_pBackUI->SetState(CPlayerBackUI::STATE_ADD);
 
 	// 回帰時間が一定数以下の場合、抜ける
-	if (m_fBackTime <= BACK_TIME) { return; }
+	if (m_pBackUI->GetAlpha() < 1.0f) { return; }
 
-	// 回帰時間を 0.0f にする
-	m_fBackTime = 0.0f;
+	// 通常状態にする
+	m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
@@ -2034,6 +2066,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		return true;
 	}
 
+	// ボタンが押されていたら関数を抜ける
+	if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB)) { return false; }
+
 	// 使用可能な士気力がなかった場合関数を抜ける
 	if (CTension::GetUseNum() <= 0) { PLAY_SOUND(CSound::LABEL_SE_CLONEFAIL_000); return false; }
 
@@ -2189,6 +2224,9 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
+	// ボタン入力がなかった場合falseを返す
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_RB)) { return false; }
+
 	// リストがnullの場合falseを返す
 	if (CEnemyAttack::GetList() == nullptr) { return false; }
 

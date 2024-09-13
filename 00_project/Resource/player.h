@@ -26,6 +26,7 @@
 class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
 class CCheckPoint;		// チェックポイントクラス
+class CPlayerBackUI;	// プレイヤー回帰UI
 class CField;			// フィールドクラス
 class CObject2D;		// オブジェクト2D
 
@@ -197,7 +198,6 @@ protected:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
 	void SetJump(const bool bJump) { m_bJump = bJump; }	// ジャンプ状況設定
-	void ResetStack();									// スタック状態のリセット
 
 	// メンバ関数 (金崎追加)
 	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
@@ -219,6 +219,7 @@ private:
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
+	void ResetStack();								// スタック状態のリセット
 	void CheckPointBack(const float fDeltaTime);	// チェックポイント回帰処理
 
 	// メンバ関数 (金崎追加)
@@ -245,20 +246,20 @@ private:
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 
-	COrbit		*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
-	D3DXVECTOR3	m_oldPos;				// 過去位置
-	D3DXVECTOR3	m_move;					// 移動量
-	D3DXVECTOR3	m_destRot;				// 目標向き
-	D3DXVECTOR3	m_posInit;				// 初期位置
-	EState		m_state;				// 状態
-	int			m_nCounterState;		// 状態管理カウンター
-	int			m_nWalkCount;			// 歩行音カウント
-	bool		m_bJump;				// ジャンプ状況
-	float		m_fScalar;				// 移動量
-	bool		m_bGimmickClone;		// ギミッククローンの生成フラグ
-	float		m_fGimmickTimer;		// ギミッククローンの生成タイマー
-	float		m_fTempStick;			// スティックの入力角を保存する変数
-	float		m_fBackTime;			// 回帰時間
+	COrbit			*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
+	CPlayerBackUI	*m_pBackUI;				// 回帰UIの情報
+	D3DXVECTOR3		m_oldPos;				// 過去位置
+	D3DXVECTOR3		m_move;					// 移動量
+	D3DXVECTOR3		m_destRot;				// 目標向き
+	D3DXVECTOR3		m_posInit;				// 初期位置
+	EState			m_state;				// 状態
+	int				m_nCounterState;		// 状態管理カウンター
+	int				m_nWalkCount;			// 歩行音カウント
+	bool			m_bJump;				// ジャンプ状況
+	float			m_fScalar;				// 移動量
+	bool			m_bGimmickClone;		// ギミッククローンの生成フラグ
+	float			m_fGimmickTimer;		// ギミッククローンの生成タイマー
+	float			m_fTempStick;			// スティックの入力角を保存する変数
 
 	// メンバ変数 (金崎追加)
 	D3DXVECTOR3 m_posCenter;				// 中心座標

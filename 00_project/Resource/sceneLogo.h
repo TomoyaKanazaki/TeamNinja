@@ -1,63 +1,50 @@
 //============================================================
 //
-// プレイヤー回帰UIヘッダー [playerbackUI.h]
-// Author：小原立暉
+//	ロゴ画面ヘッダー [sceneGame.h]
+//	Author：小原立暉
 //
 //============================================================
 //************************************************************
 //	二重インクルード防止
 //************************************************************
-#ifndef _PLAYERBACKUI_H_
-#define _PLAYERBACKUI_H_
+#ifndef _SCENE_LOGO_H_
+#define _SCENE_LOGO_H_
 
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "object2D.h"
+#include "scene.h"
+
+//************************************************************
+//	前方宣言
+//************************************************************
+class CLogoManager;	// ロゴマネージャークラス
 
 //************************************************************
 //	クラス定義
 //************************************************************
-// CPlayerBackUIクラス
-class CPlayerBackUI : public CObject2D
+// ロゴ画面クラス
+class CSceneLogo : public CScene
 {
 public:
-
-	// 状態
-	enum EState
-	{
-		STATE_NONE = 0,		// 通常状態
-		STATE_ADD,			// 加算状態
-		STATE_SUB,			// 減算状態
-		STATE_MAX			// この列挙型の総数
-	};
-
 	// コンストラクタ
-	CPlayerBackUI();
+	explicit CSceneLogo(const EMode mode);
 
 	// デストラクタ
-	~CPlayerBackUI() override;
+	~CSceneLogo() override;
 
 	// オーバーライド関数
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
-	void Draw(CShader* pShader = nullptr) override;	// 描画
-
-	// セット・ゲット関係
-	void SetState(const EState state)	{ m_state = state; }		// 状態設定処理
 
 	// 静的メンバ関数
-	static CPlayerBackUI* Create(void);	// 生成
+	static CLogoManager* GetLogoManager(void);	// ロゴマネージャー取得
 
 private:
 
-	// メンバ関数
-	void AddFunc(const float fDeltaTime);	// 加算状態処理
-	void SubFunc(const float fDeltaTime);	// 減算状態処理
-
-	// メンバ変数
-	EState m_state;		// 状態
+	// 静的メンバ変数
+	static CLogoManager* m_pLogoManager;		// ロゴマネージャー
 };
 
-#endif	// _EFFECT2D_H_
+#endif	// _SCENE_LOGO_H_

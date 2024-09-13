@@ -172,12 +172,14 @@
     <ClInclude Include="Resource\editWeed.h" />
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\fog.h" />
+    <ClInclude Include="Resource\fog_change.h" />
     <ClInclude Include="Resource\gimmick_multi.h" />
     <ClInclude Include="Resource\godItem.h" />
     <ClInclude Include="Resource\godItemManager.h" />
     <ClInclude Include="Resource\goditemUI.h" />
     <ClInclude Include="Resource\goditem_mark.h" />
     <ClInclude Include="Resource\loadtext.h" />
+    <ClInclude Include="Resource\logoManager.h" />
     <ClInclude Include="Resource\mash.h" />
     <ClInclude Include="Resource\playerbackUI.h" />
     <ClInclude Include="Resource\playerSelect.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
     <ClInclude Include="Resource\scale2D.h" />
+    <ClInclude Include="Resource\sceneLogo.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
     <ClInclude Include="Resource\spin_wall.h" />
@@ -374,12 +377,14 @@
     <ClCompile Include="Resource\editWeed.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\fog.cpp" />
+    <ClCompile Include="Resource\fog_change.cpp" />
     <ClCompile Include="Resource\gimmick_multi.cpp" />
     <ClCompile Include="Resource\godItem.cpp" />
     <ClCompile Include="Resource\godItemManager.cpp" />
     <ClCompile Include="Resource\goditemUI.cpp" />
     <ClCompile Include="Resource\goditem_mark.cpp" />
     <ClCompile Include="Resource\loadtext.cpp" />
+    <ClCompile Include="Resource\logoManager.cpp" />
     <ClCompile Include="Resource\mash.cpp" />
     <ClCompile Include="Resource\playerbackUI.cpp" />
     <ClCompile Include="Resource\playerSelect.cpp" />
@@ -388,6 +393,7 @@
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />
     <ClCompile Include="Resource\scale2D.cpp" />
+    <ClCompile Include="Resource\sceneLogo.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />
     <ClCompile Include="Resource\spin_wall.cpp" />

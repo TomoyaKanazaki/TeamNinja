@@ -35,7 +35,8 @@ namespace
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
 	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(80.0f, 100.0f, 80.0f);		// 回避判定(上)
 	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(80.0f, 0.0f, 80.0f);		// 回避判定(下)
-	const int DODGE_COUNT = 20;			// 回避カウント数
+	const int DODGE_COUNT = 20;				// 回避カウント数
+	const float DODGE_EFFECT_SCALE = 40.0f;	// 回避可能エフェクトの拡大率
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
 		100.0f,		// しつこい敵
@@ -47,23 +48,28 @@ namespace
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
-		23,			// しつこい敵
-		36,			// 狼敵
+		23,		// しつこい敵
+		36,		// 狼敵
 	};
 	const int ATTACK_COUNT[CEnemyAttack::TYPE_MAX] =	// 攻撃状態の遷移カウント
 	{
-		44,			// しつこい敵
-		34,			// 狼敵
+		44,		// しつこい敵
+		34,		// 狼敵
 	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の遷移カウント
 	{
-		340,		// しつこい敵
-		340,		// 狼敵
+		340,	// しつこい敵
+		340,	// 狼敵
 	};
 	const int BLANKATTACK_CYCLE_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の回転カウント
 	{
 		18,		// しつこい敵
 		18,		// 狼敵
+	};
+	const int ACTOR_DELETE_COUNT[CEnemyAttack::TYPE_MAX] =		// アクターを削除するカウント
+	{
+		36,		// しつこい敵
+		28		// 狼敵
 	};
 }
 
@@ -711,6 +717,9 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		return bHit;
 	}
 
+	// 回避可能エフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\redcross.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DODGE_EFFECT_SCALE, false);
+
 	// false を返す
 	return false;
 }
@@ -863,6 +872,10 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 
 	D3DXVECTOR3 move = GetMovePosition();
 	bool bJump = IsJump();
+	bool bDelete = false;
+
+	// 攻撃した瞬間、消去状況をONにする
+	if (GetState() == STATE_ATTACK && m_nStateCount == ACTOR_DELETE_COUNT[m_type]) { bDelete = true; }
 
 	for (auto& actor : m_actor)
 	{
@@ -876,7 +889,7 @@ void CEnemyAttack::CollisionActor(D3DXVECTOR3& rPos, bool& bHit)
 			move,				// 移動量
 			bJump,				// ジャンプ状況
 			bHit,				// ヒット状況
-			false				// 消去状態
+			bDelete				// 消去状態
 		);
 	}
 
