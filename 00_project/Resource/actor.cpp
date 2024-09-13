@@ -79,7 +79,7 @@ namespace
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
 	const int PRIORITY = 4;	// アクターの優先順位
-	const float DELETE_EFFECT_SCALE = 150.0f;		// 消去エフェクトの拡大率
+	const float DELETE_EFFECT_SCALE = 80.0f;		// 消去エフェクトの拡大率
 }
 
 //************************************************************
@@ -381,7 +381,7 @@ bool CActor::Collision
 	SetEnableDraw(false);
 
 	// 消去エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\grass.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DELETE_EFFECT_SCALE, false);
+	GET_EFFECT->Create("data\\EFFEKSEER\\grass.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DELETE_EFFECT_SCALE * GetVec3Scaling().x, false);
 
 	// true を返す
 	return true;
