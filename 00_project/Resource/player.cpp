@@ -122,7 +122,7 @@ namespace
 	namespace hit
 	{
 		const CCamera::SSwing SWING = CCamera::SSwing(14.0f, 2.0f, 1.0f);	// カメラ揺れの値
-		const float STOP_TIME = 0.4f;	// ヒットストップ時間
+		const float STOP_TIME = 0.3f;	// ヒットストップ時間
 	}
 }
 
