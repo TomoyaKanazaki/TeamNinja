@@ -15,6 +15,7 @@
 //************************************************************
 class CTitleLogo2D;	// タイトルロゴ2Dクラス
 class CBlink2D;		// 点滅オブジェクト2Dクラス
+class CLogoManager;	// ロゴマネージャー
 
 //************************************************************
 //	クラス定義
@@ -29,8 +30,8 @@ public:
 	// 状態列挙
 	enum EState
 	{
-		STATE_NONE = 0,	// 何もしない
-		STATE_LOGO,		// ロゴ表示
+		STATE_LOGO = 0,	// ロゴ表示
+		STATE_TITLE,	// タイトル表示
 		STATE_WAIT,		// 操作待機
 		STATE_RUN,		// 忍者疾走
 		STATE_END,		// 終了
@@ -58,6 +59,7 @@ private:
 	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
+	CLogoManager* m_pLogoManager;		// ロゴマネージャー
 	CTitleLogo2D* m_apLogo[NUM_LOGO];	// タイトル情報
 	CBlink2D* m_pStart;	// 開始操作情報
 	EState m_state;		// 状態

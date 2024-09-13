@@ -26,8 +26,7 @@ public:
 	// モード列挙
 	enum EMode
 	{
-		MODE_LOGO = 0,	// ロゴ画面
-		MODE_TITLE,	// タイトル画面
+		MODE_TITLE = 0,	// タイトル画面
 		MODE_SELECT,	// セレクト画面
 		MODE_GAME,		// ゲーム画面
 		MODE_MAX		// この列挙型の総数
