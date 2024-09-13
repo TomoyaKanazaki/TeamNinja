@@ -15445,7 +15445,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\school\\Git\\team\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\HOUSE\\House004.png";
+    "data\\TEXTURE\\MODEL\\HOUSE\\House004.png";
    }
   }
  }
