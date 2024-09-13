@@ -1303,6 +1303,12 @@ void CPlayer::ResetStack()
 	// 前の地面に座標を移す
 	SetVec3Position(m_posTeleport);
 
+	// モーションの設定処理
+	SetMotion(MOTION_IDOL);
+
+	// カメラ目標位置設定
+	CManager::GetInstance()->GetCamera()->SetDestAround();
+
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
 
@@ -1894,8 +1900,12 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 	// ボタンを押されてない場合関数を抜ける
 	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_LB)) { m_pBackUI->SetState(CPlayerBackUI::STATE_SUB); return; }
 
-	// 加算状態にする
-	m_pBackUI->SetState(CPlayerBackUI::STATE_ADD);
+	if (m_pBackUI->GetState() != CPlayerBackUI::STATE_ADD)
+	{ // 加算状態じゃない場合
+
+		// 加算状態にする
+		m_pBackUI->SetState(CPlayerBackUI::STATE_ADD);
+	}
 
 	// 回帰時間が一定数以下の場合、抜ける
 	if (m_pBackUI->GetAlpha() < 1.0f) { return; }
