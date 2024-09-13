@@ -45,7 +45,8 @@ public:
 	void Draw(CShader* pShader = nullptr) override;	// 描画
 
 	// セット・ゲット関係
-	void SetState(const EState state)	{ m_state = state; }		// 状態設定処理
+	void SetState(const EState state);							// 状態設定処理
+	EState GetState(void) const			{ return m_state; }		// 状態取得処理
 
 	// 静的メンバ関数
 	static CPlayerBackUI* Create(void);	// 生成
