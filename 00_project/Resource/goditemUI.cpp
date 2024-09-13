@@ -21,7 +21,7 @@ namespace
 
 	const D3DXVECTOR3 POS[CGodItem::TYPE_MAX] =		// ˆÊ’u
 	{
-		D3DXVECTOR3(640.0f, 30.0f, 0.0f),	// Ô
+		D3DXVECTOR3(SCREEN_CENT.x, 30.0f, 0.0f),	// Ô
 		D3DXVECTOR3(615.0f, 75.0f, 0.0f),	// —Î
 		D3DXVECTOR3(665.0f, 75.0f, 0.0f)	// Â
 	};
@@ -167,6 +167,9 @@ void CGodItemUI::Uninit(void)
 //============================================================
 void CGodItemUI::Update(const float fDeltaTime)
 {
+	// ‘”‚ª1–¢–ž‚Ìê‡A’âŽ~
+	if (m_pList->GetNumAll() > 1) { assert(false); }
+
 	for (int nCnt = 0; nCnt < CGodItem::TYPE_MAX; nCnt++)
 	{
 		if (m_apGround[nCnt] != nullptr)
