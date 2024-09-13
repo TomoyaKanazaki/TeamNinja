@@ -30,6 +30,7 @@
 #include "transpoint.h"
 #include "weed.h"
 #include "tutorial.h"
+#include "fog_change.h"
 
 //************************************************************
 //	定数宣言
@@ -245,6 +246,12 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			CTutorial::Create(D3DXVECTOR3(-400.0f, 0.0f, -300.0f), CTutorial::TYPE_MOVE);
 			CTutorial::Create(D3DXVECTOR3(2500.0f, 0.0f, -300.0f), CTutorial::TYPE_CLONE);
 			CTutorial::Create(D3DXVECTOR3(4000.0f, 0.0f, -300.0f), CTutorial::TYPE_GIMMICK);
+		}
+
+		// フォグ変更点の生成
+		if (rPass.sMap.find("FOREST02") != std::string::npos)
+		{
+			CFogChanger::Create();
 		}
 	}
 

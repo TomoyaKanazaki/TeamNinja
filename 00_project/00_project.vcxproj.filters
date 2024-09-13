@@ -687,6 +687,9 @@
     <ClInclude Include="Resource\sceneLogo.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\fog_change.h">
+      <Filter>Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1291,6 +1294,9 @@
     </ClCompile>
     <ClCompile Include="Resource\sceneLogo.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\fog_change.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
