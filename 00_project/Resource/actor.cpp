@@ -21,6 +21,7 @@
 #include "mash.h"
 #include "spin_wall.h"
 #include "effekseerControl.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -382,6 +383,9 @@ bool CActor::Collision
 
 	// 消去エフェクトを出す
 	GET_EFFECT->Create("data\\EFFEKSEER\\grass.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DELETE_EFFECT_SCALE * GetVec3Scaling().x, false);
+
+	// 低木消滅音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_SHRUBDELETE);
 
 	// true を返す
 	return true;

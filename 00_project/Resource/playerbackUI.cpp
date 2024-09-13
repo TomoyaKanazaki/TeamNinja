@@ -17,12 +17,13 @@
 namespace
 {
 	const int PRIORITY = 2;									// スタートUIの優先順位
-	const char* TEXTURE = "data\\TEXTURE\\alcohol.png";		// テクスチャ
-	const D3DXVECTOR3 POS = D3DXVECTOR3(1100.0f, 600.0f, 0.0f);			// 位置
-	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(200.0f, 200.0f, 0.0f);		// 通常サイズ
+	const char* TEXTURE = "data\\TEXTURE\\back_mahouzin.png";		// テクスチャ
+	const D3DXVECTOR3 POS = D3DXVECTOR3(1100.0f, 680.0f, 0.0f);		// 位置
+	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(250.0f, 45.0f, 0.0f);	// 通常サイズ
 
-	const float ADD_MAGNI = 0.9f;		// 加算の倍率
-	const float SUB_MAGNI = 1.4f;		// 減算の倍率
+	const float INIT_ALPHA = 0.5f;		// 初期透明度
+	const float ADD_MAGNI = 0.6f;		// 加算の倍率
+	const float SUB_MAGNI = 1.0f;		// 減算の倍率
 }
 
 //************************************************************
@@ -82,7 +83,7 @@ void CPlayerBackUI::Update(const float fDeltaTime)
 	case CPlayerBackUI::STATE_NONE:
 
 		// 透明度を0.0fに設定
-		SetAlpha(0.0f);
+		SetAlpha(INIT_ALPHA);
 
 		break;
 
@@ -144,7 +145,7 @@ CPlayerBackUI* CPlayerBackUI::Create(void)
 		pStartUI->SetVec3Position(POS);			// 位置
 		pStartUI->SetVec3Rotation(VEC3_ZERO);	// 向き
 		pStartUI->SetVec3Sizing(RADIUS);		// 大きさ
-		pStartUI->SetAlpha(0.0f);				// 透明度
+		pStartUI->SetAlpha(INIT_ALPHA);			// 透明度
 
 		// テクスチャの割り当て
 		pStartUI->BindTexture(GET_MANAGER->GetTexture()->Regist(TEXTURE));
@@ -187,11 +188,11 @@ void CPlayerBackUI::SubFunc(const float fDeltaTime)
 	// 透明度を加算する
 	fAlpha -= (fDeltaTime * SUB_MAGNI);
 
-	if (fAlpha < 0.0f)
+	if (fAlpha < INIT_ALPHA)
 	{ // 透明度が0.0f未満の場合
 
 		// 透明度を補正
-		fAlpha = 0.0f;
+		fAlpha = INIT_ALPHA;
 
 		// 減算状態にする
 		m_state = STATE_NONE;

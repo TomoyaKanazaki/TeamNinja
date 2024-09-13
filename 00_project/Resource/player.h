@@ -93,6 +93,7 @@ public:
 		MOTION_SELECT_IN,	// セレクト開始モーション
 		MOTION_SELECT_OUT,	// セレクト終了モーション
 		MOTION_DROWNING,	// 水没モーション
+		MOTION_SNEAK,		// 忍び足待機モーション
 		MOTION_MAX			// この列挙型の総数
 	};
 

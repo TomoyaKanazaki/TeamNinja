@@ -158,3 +158,4 @@ MOTIONPASS = data\MOTION\PLAYER\goal.txt			# ゴールモーション
 MOTIONPASS = data\MOTION\PLAYER\select.txt			# セレクト開始モーション
 MOTIONPASS = data\MOTION\PLAYER\select_end.txt		# セレクト終了モーション
 MOTIONPASS = data\MOTION\PLAYER\drowning.txt		# 水没モーション
+MOTIONPASS = data\MOTION\PLAYER\sneak.txt			# 忍び足待機モーション
