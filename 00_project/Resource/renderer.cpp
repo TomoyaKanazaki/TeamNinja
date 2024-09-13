@@ -140,6 +140,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1,	D3DTA_TEXTURE);
 	m_pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAARG2,	D3DTA_CURRENT);
 
+	// ƒtƒHƒO‚Ì‰Šúİ’è
+	Fog::Init();
+
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
 }
