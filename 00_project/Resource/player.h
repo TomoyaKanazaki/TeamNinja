@@ -270,11 +270,12 @@ private:
 	std::string m_sFrags;					// ギミックフラグの文字列
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
-	CField* m_pLastField;					// 最後に着地していた地面
 	CEffekseer::CEffectData* m_pEffectdata;	// エフェクト情報
 	CEffekseer::CEffectData* m_pEffectFirefly;	// エフェクト情報
 
-
+	// メンバ変数（小原追加）
+	D3DXVECTOR3 m_posTeleport;	// テレポート位置
+	int m_nCounterTeleport;		// テレポートカウント
 };
 
 #endif	// _PLAYER_H_
