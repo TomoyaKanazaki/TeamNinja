@@ -53,6 +53,7 @@ public:
 	void SetTransIdx(const int nIdx) { m_nTransIdx = nIdx; }	// 遷移ポイントインデックス設定
 	int GetTransIdx(void) const		 { return m_nTransIdx; }	// 遷移ポイントインデックス取得
 	EWin GetWin(void) const		{ return m_result.win; }		// 勝利状況取得
+	void InitWin(void)			{ m_result.win = WIN_NONE; }	// 勝利状況初期化
 	float GetTime(void) const	{ return m_result.fTime; }		// 経過タイム取得
 	int GetSave(void) const		{ return m_result.nSave; }		// セーブポイント取得
 	void InitSave(void)			{ m_result.nSave = NONE_IDX; }	// セーブポイント初期化

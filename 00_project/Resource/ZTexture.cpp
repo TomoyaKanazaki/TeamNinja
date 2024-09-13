@@ -255,7 +255,7 @@ CZTexture* CZTexture::Create(void)
 	{ // ¶¬‚É¬Œ÷‚µ‚½ê‡
 
 		// ‰Šú‰»
-		if (FAILED(m_pShader->Init()))
+		if (!m_pShader->Init())
 		{ // ‰Šú‰»‚ÉŽ¸”s‚µ‚½ê‡
 
 			// ”jŠü

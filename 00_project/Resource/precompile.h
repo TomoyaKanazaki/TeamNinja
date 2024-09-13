@@ -51,6 +51,9 @@
 #include "input.h"			// 入力検知
 #include "debugproc.h"		// デバッグ表示
 
+#pragma warning(disable : 26812)	// enumclass警告の削除
+#pragma warning(disable : 6031)		// 返り値無視警告の削除
+
 // エフェクシア
 #ifndef _DEBUG
 #pragma comment(lib, "Effekseer.lib")
