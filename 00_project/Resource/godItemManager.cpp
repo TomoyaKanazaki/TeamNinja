@@ -21,6 +21,7 @@
 #include "gameManager.h"
 #include "timerUI.h"
 #include "player.h"
+#include "goditemUI.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -510,6 +511,16 @@ void CGodItemManager::UpdateFadeIn(const float fDeltaTime)
 
 		// UIÁŽ¸ó‘Ô‚É‚·‚é
 		m_state = STATE_FALL;
+
+		if (GET_MANAGER->GetMode() != CScene::MODE_GAME ||
+			CGodItemUI::GetList() == nullptr ||
+			(*CGodItemUI::GetList()->GetBegin()) == nullptr)
+		{ // _ŠíUI‚ª NULL ‚Ìê‡AŠÖ”‚ð”²‚¯‚é
+			return;
+		}
+
+		// Žæ“¾ˆ—
+		(*CGodItemUI::GetList()->GetBegin())->Get(m_typeID);
 	}
 }
 
