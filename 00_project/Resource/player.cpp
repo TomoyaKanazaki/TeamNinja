@@ -359,8 +359,12 @@ void CPlayer::Update(const float fDeltaTime)
 	if (m_pBackUI != nullptr)
 	{ // 回帰UIが NULL じゃない場合
 
-		// チェックポイント回帰処理
-		CheckPointBack(fDeltaTime);
+		if (m_state != STATE_GODITEM)
+		{ // 神器取得状態以外の場合
+
+			// チェックポイント回帰処理
+			CheckPointBack(fDeltaTime);
+		}
 
 		// 更新処理
 		m_pBackUI->Update(fDeltaTime);
@@ -1970,6 +1974,9 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 
 	// カメラ目標位置設定
 	CManager::GetInstance()->GetCamera()->SetDestAround();
+
+	// テレポート音を鳴らす
+	PLAY_SOUND(CSound::LABEL_SE_TELEPORT);
 }
 
 //============================================================
@@ -2071,7 +2078,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 #endif
 
 	// 分身を削除
-	DelelteClone();
+	DeleteClone();
 
 	// 右スティックの入力がない場合関数を抜ける
 	if (!pPad->GetTriggerRStick()) { return false; }
@@ -2161,7 +2168,7 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 //==========================================
 //  分身を呼び戻す
 //==========================================
-void CPlayer::DelelteClone()
+void CPlayer::DeleteClone()
 {
 	// パッドの入力情報を取得する
 	CInputPad* pPad = GET_INPUTPAD;

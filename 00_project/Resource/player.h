@@ -224,7 +224,7 @@ private:
 	void CheckPointBack(const float fDeltaTime);	// チェックポイント回帰処理
 
 	// メンバ関数 (金崎追加)
-	void DelelteClone();		// 分身を呼び戻す処理
+	void DeleteClone();		// 分身を呼び戻す処理
 	bool CreateGimmick(const float fDeltaTime);	// 直接ギミックを生成する処理
 	bool Dodge(D3DXVECTOR3& rPos, CInputPad* pPad);	// 回避処理
 	void FloorEdgeJump(); // 床際のジャンプ処理
