@@ -104,6 +104,7 @@ namespace
 	const int CHECKPOINT_CLONE = 5; // チェックポイントに戻ったときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
+	const int DROWN_COUNT = 70; // 溺死状態のカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
@@ -1285,14 +1286,20 @@ void CPlayer::UpdateOldPosition(void)
 //==========================================
 void CPlayer::ResetStack()
 {
-	// ボタンを押されてない場合関数を抜ける
-	if (!GET_INPUTPAD->IsTrigger(CInputPad::KEY_A)) { return; }
+	// 状態カウントを加算する
+	m_nCounterState++;
+
+	// 状態カウントが一定数未満の場合、関数を抜ける
+	if (m_nCounterState < DROWN_COUNT) { return; }
 
 	// 前の地面に座標を移す
 	SetVec3Position(m_pLastField->GetVec3Position());
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
+
+	// 状態カウントを0にする
+	m_nCounterState = 0;
 }
 
 //============================================================
