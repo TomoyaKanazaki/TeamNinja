@@ -13,6 +13,7 @@
 #include "light.h"
 #include "camera.h"
 #include "effekseerManager.h"
+#include "sceneLogo.h"
 #include "sceneTitle.h"
 #include "sceneSelect.h"
 #include "sceneGame.h"
@@ -114,6 +115,10 @@ CScene *CScene::Create(EMode mode)
 	CScene *pScene = nullptr;	// シーン情報
 	switch (mode)
 	{ // モードごとの処理
+	case MODE_LOGO:
+		pScene = new CSceneLogo(mode);
+		break;
+
 	case MODE_TITLE:
 		pScene = new CSceneTitle(mode);
 		break;
