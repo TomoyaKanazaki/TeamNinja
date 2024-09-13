@@ -15,10 +15,26 @@
 //==========================================
 namespace
 {
-	bool m_bUse = true;
-	float m_fStart = 1500.0f;
-	float m_fEnd = 3000.0f;
-	D3DXCOLOR m_col = D3DXCOLOR(0.15f, 0.15f, 0.35f, 0.0f);
+	const float START = 1500.0f;
+	const float END = 3000.0f;
+	const D3DXCOLOR COL = D3DXCOLOR(0.15f, 0.15f, 0.35f, 0.0f);
+	
+	// メンバ変数
+	bool m_bUse;
+	float m_fStart;
+	float m_fEnd;
+	D3DXCOLOR m_col;
+}
+
+//==========================================
+//  初期設定
+//==========================================
+void Fog::Init()
+{
+	m_bUse = true;
+	m_fStart = START;
+	m_fEnd = END;
+	m_col = COL;
 }
 
 //==========================================
@@ -42,54 +58,12 @@ bool Fog::Get()
 //==========================================
 void Fog::Draw()
 {
-	//デバッグ表示
-	if (m_bUse)
-	{
-		DebugProc::Print(DebugProc::POINT_RIGHT, "フォグ 【 ON 】F\n");
-		DebugProc::Print
-		(
-			DebugProc::POINT_RIGHT,
-			"フォグ手前 : %f\n"
-			"フォグの奥 : %f\n"
-			"フォグの色 : %f, %f, %f, %f\n",
-			m_fStart,
-			m_fEnd,
-			m_col.r, m_col.g, m_col.b, m_col.a
-		);
-	}
-	else
-	{
-		DebugProc::Print(DebugProc::POINT_RIGHT, "\n\nフォグ 【 OFF 】F\n");
-	}
-
 	//デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	if (m_bUse)
-	{
-		//霧を有効化
-		pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
-
-		//霧の色を設定
-		pDevice->SetRenderState(D3DRS_FOGCOLOR, m_col);
-
-		//霧の状態を設定
-		pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);
-		pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
-
-		//霧の発生範囲を設定
-		pDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&m_fStart));
-		pDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&m_fEnd));
-	}
-	else
-	{
-		//霧を無効化
-		pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
-	}
-
 	// デバッグ機能
 #ifdef _DEBUG
-	
+
 		// 入力情報を受け取るポインタ
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;
 
@@ -114,7 +88,7 @@ void Fog::Draw()
 	}
 	if (pKeyboard->IsPress(DIK_RIGHT))
 	{
-		m_fEnd-= 1.0f;
+		m_fEnd -= 1.0f;
 	}
 
 	// rの調整
@@ -158,7 +132,7 @@ void Fog::Draw()
 	{
 		m_col.b = 0.0f;
 	}
-	
+
 	// 限界値の設定
 	if (m_fStart < 0.0f)
 	{
@@ -194,6 +168,43 @@ void Fog::Draw()
 	}
 
 #endif
+
+	if(!m_bUse)
+	{
+		// 霧を無効化
+		pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+
+		// デバッグ表示
+		DebugProc::Print(DebugProc::POINT_RIGHT, "フォグ 【 OFF 】F\n");
+
+		return;
+	}
+
+	//霧を有効化
+	pDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+
+	//霧の色を設定
+	pDevice->SetRenderState(D3DRS_FOGCOLOR, m_col);
+
+	//霧の状態を設定
+	pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);
+	pDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
+
+	//霧の発生範囲を設定
+	pDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&m_fStart));
+	pDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&m_fEnd));
+
+	DebugProc::Print(DebugProc::POINT_RIGHT, "フォグ 【 ON 】F\n");
+	DebugProc::Print
+	(
+		DebugProc::POINT_RIGHT,
+		"フォグ手前 : %f\n"
+		"フォグの奥 : %f\n"
+		"フォグの色 : %f, %f, %f, %f\n",
+		m_fStart,
+		m_fEnd,
+		m_col.r, m_col.g, m_col.b, m_col.a
+	);
 }
 
 //==========================================
@@ -205,7 +216,7 @@ void Fog::SetCol(D3DXCOLOR col)
 }
 
 //==========================================
-//  最大距離の設定
+//  始点の設定
 //==========================================
 void Fog::SetStart(float fStart)
 {
@@ -213,7 +224,7 @@ void Fog::SetStart(float fStart)
 }
 
 //==========================================
-//  最低距離の設定
+//  終点の設定
 //==========================================
 void Fog::SetEnd(float fEnd)
 {
@@ -223,23 +234,47 @@ void Fog::SetEnd(float fEnd)
 //==========================================
 //  色の取得
 //==========================================
-D3DXCOLOR Fog::GetCol(void)
+D3DXCOLOR Fog::GetCol()
 {
 	return m_col;
 }
 
 //==========================================
-//  最大距離の取得
+//  始点の取得
 //==========================================
-float Fog::GetStart(void)
+float Fog::GetStart()
 {
 	return m_fStart;
 }
 
 //==========================================
-//  最低距離の取得
+//  終点の取得
 //==========================================
-float Fog::GetEnd(void)
+float Fog::GetEnd()
 {
 	return m_fEnd;
+}
+
+//==========================================
+//  初期カラーの取得
+//==========================================
+D3DXCOLOR Fog::GetInitCol()
+{
+	return COL;
+}
+
+//==========================================
+//  初期始点の取得
+//==========================================
+float Fog::GetInitStart()
+{
+	return START;
+}
+
+//==========================================
+//  初期終点の取得
+//==========================================
+float Fog::GetInitEnd()
+{
+	return END;
 }
