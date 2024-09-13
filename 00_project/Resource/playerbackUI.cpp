@@ -18,12 +18,12 @@ namespace
 {
 	const int PRIORITY = 2;									// スタートUIの優先順位
 	const char* TEXTURE = "data\\TEXTURE\\back_mahouzin.png";		// テクスチャ
-	const D3DXVECTOR3 POS = D3DXVECTOR3(1100.0f, 680.0f, 0.0f);		// 位置
-	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(250.0f, 45.0f, 0.0f);	// 通常サイズ
+	const D3DXVECTOR3 POS = D3DXVECTOR3(1000.0f, 675.0f, 0.0f);		// 位置
+	const D3DXVECTOR3 RADIUS = D3DXVECTOR3(500.0f, 90.0f, 0.0f);	// 通常サイズ
 
 	const float INIT_ALPHA = 0.0f;		// 初期透明度
 	const float PUSH_ALPHA = 0.5f;		// 押し始め透明度
-	const float ADD_MAGNI = 0.6f;		// 加算の倍率
+	const float ADD_MAGNI = 0.4f;		// 加算の倍率
 	const float SUB_MAGNI = 1.0f;		// 減算の倍率
 }
 
