@@ -11,14 +11,14 @@
 #include "manager.h"
 #include "fade.h"
 #include "scene.h"
-#include "sceneLogo.h"
 
 //************************************************************
 //	定数宣言
 //************************************************************
 namespace
 {
-	const float APPEAR_ADD_ALPHA = 0.1f;		// 出現状態の透明度の加算数
+	const float APPEAR_ADD_ALPHA = 0.04f;		// 出現状態の透明度の加算数
+	const float DISAPPEAR_SUB_ALPHA = 0.05f;	// 消滅状態の透明度の減算数
 	const int WAIT_COUNT = 120;					// 待機状態のカウント数
 
 	namespace logo
@@ -49,7 +49,8 @@ namespace
 //============================================================
 CLogoManager::CLogoManager() :
 	m_state(STATE_APPEAR),		// 状態
-	m_nStateCount(0)			// 状態カウント
+	m_nStateCount(0),			// 状態カウント
+	m_bDisappear(false)			// 消滅状況
 {
 	memset(&m_apLogo[0], 0, sizeof(m_apLogo));
 }
@@ -101,6 +102,9 @@ void CLogoManager::Uninit(void)
 		// ロゴマネージャーの破棄
 		SAFE_UNINIT(m_apLogo[nCnt]);
 	}
+
+	// 自身を消す
+	delete this;
 }
 
 //============================================================
@@ -129,8 +133,8 @@ void CLogoManager::Update(const float fDeltaTime)
 
 	case CLogoManager::STATE_DISAPPEAR:
 
-		// シーンの設定
-		GET_MANAGER->SetLoadScene(CScene::MODE_TITLE);	// セレクト画面
+		// 消滅処理
+		UpdateDisappear();
 
 		break;
 
@@ -223,6 +227,45 @@ void CLogoManager::UpdateWait(void)
 
 	// 消滅状態にする
 	m_state = STATE_DISAPPEAR;
+}
+
+//============================================================
+// 消滅状態処理
+//============================================================
+void CLogoManager::UpdateDisappear(void)
+{
+	// 透明度を0に設定する
+	float fAlpha = m_apLogo[POLYGON_LOGO]->GetAlpha();
+
+	if (fAlpha >= 0.0f)
+	{ // 透明度が0.0f以上の場合
+
+		// 透明度を減算させる
+		fAlpha -= DISAPPEAR_SUB_ALPHA;
+		m_apLogo[POLYGON_LOGO]->SetAlpha(fAlpha);
+
+		// 関数を抜ける
+		return;
+	}
+
+	// 透明度を取得
+	fAlpha = m_apLogo[POLYGON_BACK]->GetAlpha();
+
+	// 透明度を減算する
+	fAlpha -= DISAPPEAR_SUB_ALPHA;
+
+	if (fAlpha <= 0.0f)
+	{ // 透明度が0.0f以下の場合
+
+		// 透明度を補正する
+		fAlpha = 0.0f;
+
+		// 消滅状況を true にする
+		m_bDisappear = true;
+	}
+
+	// 透明度を設定
+	m_apLogo[POLYGON_BACK]->SetAlpha(fAlpha);
 }
 
 //============================================================

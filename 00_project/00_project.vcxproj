@@ -188,7 +188,6 @@
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
     <ClInclude Include="Resource\scale2D.h" />
-    <ClInclude Include="Resource\sceneLogo.h" />
     <ClInclude Include="Resource\scrollString2D.h" />
     <ClInclude Include="Resource\scrollText2D.h" />
     <ClInclude Include="Resource\spin_wall.h" />
@@ -393,7 +392,6 @@
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />
     <ClCompile Include="Resource\scale2D.cpp" />
-    <ClCompile Include="Resource\sceneLogo.cpp" />
     <ClCompile Include="Resource\scrollString2D.cpp" />
     <ClCompile Include="Resource\scrollText2D.cpp" />
     <ClCompile Include="Resource\spin_wall.cpp" />
