@@ -1964,6 +1964,12 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 
 	// 初期位置に座標を移す
 	SetVec3Position(m_posInit);
+
+	// モーションの設定処理
+	SetMotion(MOTION_IDOL);
+
+	// カメラ目標位置設定
+	CManager::GetInstance()->GetCamera()->SetDestAround();
 }
 
 //============================================================
