@@ -9,6 +9,9 @@
 //************************************************************
 #include "goditem_mark.h"
 #include "godItem.h"
+#include "manager.h"
+
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -217,6 +220,9 @@ void CGodItemMark::UpdateScaling(void)
 
 		// 停止状態にする
 		m_state = STATE_STOP;
+
+		// 神器UIの音を鳴らす
+		PLAY_SOUND(CSound::LABEL_SE_GODITEMUI);
 	}
 
 	// サイズを反映

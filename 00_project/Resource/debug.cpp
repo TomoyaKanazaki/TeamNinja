@@ -255,6 +255,12 @@ void CDebug::UpdateDebugControl(void)
 
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
+	case CScene::MODE_LOGO:
+
+		// アクター当たり判定表示変更
+		ChangeActorDisp();
+		break;
+
 	case CScene::MODE_TITLE:
 
 		// アクター当たり判定表示変更
@@ -313,6 +319,11 @@ void CDebug::DrawDebugControl(void)
 
 	switch (GET_MANAGER->GetMode())
 	{ // モードごとの処理
+	case CScene::MODE_LOGO:
+
+		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
+		break;
+
 	case CScene::MODE_TITLE:
 
 		DebugProc::Print(DebugProc::POINT_LEFT, "[%s]：アクターの当たり判定表示変更\n", NAME_ACTOR_TRANS);
