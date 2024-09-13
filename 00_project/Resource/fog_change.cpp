@@ -22,7 +22,7 @@ namespace
 
 	const float MOVE_SPEED = 0.01f; // 移動していく時間
 	const float TARGET_START = 0.0f; // 始点の移動先
-	const float TARGET_END = 0.0f; // 終点の移動先
+	const float TARGET_END = 10000.0f; // 終点の移動先
 }
 
 //===========================================
