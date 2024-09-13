@@ -881,32 +881,42 @@ void CEditActor::DeleteCollisionActor(const bool bRelase)
 		if (rList == m_pActor) { continue; }
 
 		D3DXVECTOR3 posOther = rList->GetVec3Position();	// 対象の地面位置
-		D3DXVECTOR3 scaleThis = VEC3_ZERO;	// 自身の大きさ
-		D3DXVECTOR3 scaleOther = VEC3_ZERO;	// 対象の大きさ
+		D3DXVECTOR3 thisMax = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 thisMin = VEC3_ZERO;	// 自身の大きさ
+		D3DXVECTOR3 otherMax = VEC3_ZERO;	// 対象の大きさ
+		D3DXVECTOR3 otherMin = VEC3_ZERO;	// 対象の大きさ
 
 		// 自身の大きさを設定
 		D3DXVECTOR3 scaleThisActor = m_pActor->GetVec3Scaling();	// 自身の地面の大きさ
-		scaleThis.x = scaleThisActor.x;	// 判定サイズXを設定
-		scaleThis.y = scaleThisActor.y;	// 判定サイズYを設定
-		scaleThis.z = scaleThisActor.z;	// 判定サイズZを設定
-		scaleThis *= 0.5f;				// 判定サイズを半分に
+		D3DXVECTOR3 MaxThisActor = m_pActor->GetModelData().vtxMax;	// 自身の地面の大きさ
+		D3DXVECTOR3 MinThisActor = m_pActor->GetModelData().vtxMin;	// 自身の地面の大きさ
+		thisMax.x = scaleThisActor.x * MaxThisActor.x;
+		thisMax.y = scaleThisActor.y * MaxThisActor.y;
+		thisMax.z = scaleThisActor.z * MaxThisActor.z;
+		thisMin.x = scaleThisActor.x * -MinThisActor.x;
+		thisMin.y = scaleThisActor.y * -MinThisActor.y;
+		thisMin.z = scaleThisActor.z * -MinThisActor.z;
 
 		// 対象の大きさを設定
 		D3DXVECTOR3 scaleOtherActor = rList->GetVec3Scaling();		// 対象の地面の大きさ
-		scaleOther.x = scaleOtherActor.x;	// 判定サイズXを設定
-		scaleOther.y = scaleOtherActor.y;	// 判定サイズYを設定
-		scaleOther.z = scaleOtherActor.z;	// 判定サイズZを設定
-		scaleOther *= 0.5f;				// 判定サイズを半分に
+		D3DXVECTOR3 MaxOtherActor = rList->GetModelData().vtxMax;	// 対象の地面の大きさ
+		D3DXVECTOR3 MinOtherActor = rList->GetModelData().vtxMin;	// 対象の地面の大きさ
+		otherMax.x = scaleOtherActor.x * MaxOtherActor.x;
+		otherMax.y = scaleOtherActor.y * MaxOtherActor.y;
+		otherMax.z = scaleOtherActor.z * MaxOtherActor.z;
+		otherMin.x = scaleOtherActor.x * -MinOtherActor.x;
+		otherMin.y = scaleOtherActor.y * -MinOtherActor.y;
+		otherMin.z = scaleOtherActor.z * -MinOtherActor.z;
 
 		// 矩形の当たり判定
 		if (collision::Box3D
 		( // 引数
 			posEdit,	// 判定位置
 			posOther,	// 判定目標位置
-			scaleThis,	// 判定サイズ(右・上・後)
-			scaleThis,	// 判定サイズ(左・下・前)
-			scaleOther,	// 判定目標サイズ(右・上・後)
-			scaleOther	// 判定目標サイズ(左・下・前)
+			thisMax,	// 判定サイズ(右・上・後)
+			thisMin,	// 判定サイズ(左・下・前)
+			otherMax,	// 判定目標サイズ(右・上・後)
+			otherMin	// 判定目標サイズ(左・下・前)
 		))
 		{ // 判定内だった場合
 

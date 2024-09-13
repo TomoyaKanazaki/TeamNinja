@@ -101,10 +101,11 @@ namespace
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
 
 	const int INIT_CLONE = 5; // 最初に使える分身の数
-	const int CHECKPOINT_CLONE = 5; // チェックポイントに戻ったときの最低保障分身数
+	const int TELEPORT_CLONE = 5; // 回帰したときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const int DROWN_COUNT = 70; // 溺死状態のカウント数
+	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
 	const float STICK_ERROR = D3DX_PI * 0.875f; // スティックの入力誤差許容範囲
@@ -141,28 +142,29 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //	コンストラクタ
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-	m_pBackUI		(nullptr),		// 回帰UIの情報
-	m_oldPos		(VEC3_ZERO),	// 過去位置
-	m_move			(VEC3_ZERO),	// 移動量
-	m_destRot		(VEC3_ZERO),	// 目標向き
-	m_posInit		(VEC3_ZERO),	// 初期位置
-	m_state			(STATE_NONE),	// 状態
-	m_bJump			(false),		// ジャンプ状況
-	m_nCounterState	(0),			// 状態管理カウンター
-	m_nWalkCount	(0),			// 歩行音カウント
-	m_fScalar		(0.0f),			// 移動量
-	m_bClone		(true),			// 分身操作可能フラグ
-	m_bGimmickClone	(false),		// ギミッククローンの生成フラグ
-	m_fGimmickTimer	(0.0f),			// ギミッククローンの生成タイマー
-	m_fTempStick	(0.0f),			// スティックの入力角を保存する変数
-	m_bGetCamera	(false),		// カメラ取得フラグ
-	m_fCameraRot	(0.0f),			// カメラの角度
-	m_fStickRot		(0.0f),			// スティックの角度
-	m_sFrags		({}),			// フィールドフラグ
-	m_pCurField		(nullptr),		// 現在乗ってる地面
-	m_pOldField		(nullptr),		// 前回乗ってた地面
-	m_pEffectdata	(nullptr),		// エフェクト情報
-	m_pLastField	(nullptr)		// 最後に立っていた地面
+	m_pBackUI			(nullptr),		// 回帰UIの情報
+	m_oldPos			(VEC3_ZERO),	// 過去位置
+	m_move				(VEC3_ZERO),	// 移動量
+	m_destRot			(VEC3_ZERO),	// 目標向き
+	m_posInit			(VEC3_ZERO),	// 初期位置
+	m_state				(STATE_NONE),	// 状態
+	m_bJump				(false),		// ジャンプ状況
+	m_nCounterState		(0),			// 状態管理カウンター
+	m_nWalkCount		(0),			// 歩行音カウント
+	m_fScalar			(0.0f),			// 移動量
+	m_bClone			(true),			// 分身操作可能フラグ
+	m_bGimmickClone		(false),		// ギミッククローンの生成フラグ
+	m_fGimmickTimer		(0.0f),			// ギミッククローンの生成タイマー
+	m_fTempStick		(0.0f),			// スティックの入力角を保存する変数
+	m_bGetCamera		(false),		// カメラ取得フラグ
+	m_fCameraRot		(0.0f),			// カメラの角度
+	m_fStickRot			(0.0f),			// スティックの角度
+	m_sFrags			({}),			// フィールドフラグ
+	m_pCurField			(nullptr),		// 現在乗ってる地面
+	m_pOldField			(nullptr),		// 前回乗ってた地面
+	m_pEffectdata		(nullptr),		// エフェクト情報
+	m_posTeleport		(VEC3_ZERO),	// テレポート位置
+	m_nCounterTeleport	(0)				// テレポートカウント
 {
 }
 
@@ -1293,7 +1295,7 @@ void CPlayer::ResetStack()
 	if (m_nCounterState < DROWN_COUNT) { return; }
 
 	// 前の地面に座標を移す
-	SetVec3Position(m_pLastField->GetVec3Position());
+	SetVec3Position(m_posTeleport);
 
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
@@ -1446,7 +1448,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 	// 地面・制限位置・アクターの着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
-	|| pStage->LandLimitPosition(rPos, m_move, 0.0f))
+		|| pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
@@ -1454,6 +1456,18 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 		// ジャンプしていない状態にする
 		m_bJump = false;
+
+		// テレポートカウントを加算
+		m_nCounterTeleport++;
+
+		// 水でなければ回帰する位置として設定する
+		if (m_nCounterTeleport % TELEPORT_POS_COUNT == 0 &&
+			m_pCurField != nullptr &&
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
+		{
+			m_posTeleport = rPos;
+			m_nCounterTeleport = 0;
+		}
 	}
 
 	if (m_pCurField != nullptr)
@@ -1461,12 +1475,6 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 		// 当たっている状態にする
 		m_pCurField->Hit(this);
-
-		// 水でなければ最後に乗った地面として保存する
-		if (m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
-		{
-			m_pLastField = m_pCurField;
-		}
 	}
 
 	if (m_pCurField != m_pOldField)
@@ -1511,21 +1519,21 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 			if (move.y < LANDING_SPEED_L)
 			{
 				// 着地(大)エフェクトを出す
-				GET_EFFECT->Create("data\\EFFEKSEER\\landing_big.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 90.0f);
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_big.efkefc", rPos, GetVec3Rotation(), VEC3_ZERO, 60.0f);
 				// 着地音(大)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_B);
 			}
 			else if (move.y < LANDING_SPEED_M)
 			{
 				// 着地(中)エフェクトを出す
-				GET_EFFECT->Create("data\\EFFEKSEER\\landing_mid.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 60.0f);
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_mid.efkefc", rPos, GetVec3Rotation(), VEC3_ZERO, 45.0f);
 				// 着地音(大)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_B);
 			}
 			else
 			{
 				// 着地(小)エフェクトを出す
-				GET_EFFECT->Create("data\\EFFEKSEER\\landing_small.efkefc", GetVec3Position() + move, GetVec3Rotation(), VEC3_ZERO, 90.0f);
+				GET_EFFECT->Create("data\\EFFEKSEER\\landing_small.efkefc", rPos, GetVec3Rotation(), VEC3_ZERO, 30.0f);
 				// 着地音(小)の再生
 				PLAY_SOUND(CSound::LABEL_SE_LAND_S);
 			}
@@ -1902,6 +1910,13 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 		m_apOrbit[nCnt]->SetState(COrbit::STATE_NONE);
 	}
 
+	while (CTension::GetUseNum() < TELEPORT_CLONE)
+	{ // 最低保証以下の場合
+
+		// 分身数を上げる
+		CTension::Create();
+	}
+
 	// セーブ情報を取得
 	const int nSave = GET_GAMEMANAGER->GetSave();
 
@@ -1913,13 +1928,6 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 
 		// チェックポイントの座標を設定する
 		SetVec3Position(point->GetVec3Position());
-
-		while (CTension::GetUseNum() < CHECKPOINT_CLONE)
-		{ // 最低保証以下の場合
-
-			// 分身数を上げる
-			CTension::Create();
-		}
 
 		// 関数を抜ける
 		return;
