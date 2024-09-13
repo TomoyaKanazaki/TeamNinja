@@ -60,9 +60,7 @@ private:
 	// メンバ関数
 	void UpdateAppear(void);	// 出現状態処理
 	void UpdateWait(void);		// 待機状態処理
-	void UpdateDisappear(void);	// 消滅状態処理
 	void UpdateSkip(void);		// スキップ操作更新
-	void SkipStaging(void);		// 演出スキップ
 
 	// メンバ変数
 	CObject2D* m_apLogo[POLYGON_MAX];	// ロゴ情報
