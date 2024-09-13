@@ -71,6 +71,12 @@ namespace
 		36,		// しつこい敵
 		28		// 狼敵
 	};
+
+	const char* ATTACK_EFFECT[CEnemyAttack::TYPE_MAX] =		// 攻撃エフェクト
+	{
+		"data\\EFFEKSEER\\diversion.efkefc",		// しつこい敵
+		"data\\EFFEKSEER\\diversion_wolf.efkefc",	// 狼敵
+	};
 }
 
 // 音関係定数
@@ -787,7 +793,7 @@ bool CEnemyAttack::HitClone(const D3DXVECTOR3& rPos)
 	pClone->Hit(20);
 
 	// 分身との戦闘エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\diversion.efkefc", GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
+	GET_EFFECT->Create(ATTACK_EFFECT[m_type], GetVec3Position(), GetVec3Rotation(), VEC3_ZERO, DIVERSION_EFFECT_SCALE);
 
 	// 回避受付フラグを false にする
 	m_bDodge = false;
