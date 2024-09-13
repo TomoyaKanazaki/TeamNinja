@@ -94,8 +94,8 @@ namespace
 	};
 	const int ORBIT_PART = 15;	// 分割数
 
-	const float	STEALTH_MOVE	= 300.0f;	// 忍び足の移動量
 	const float	NORMAL_MOVE = 480;	// 通常の移動量
+	const float	STEALTH_MOVE = 0.3f;	// 忍び足の移動量
 	const float	DODGE_MOVE = 800.0f;	// 回避の移動量
 	const float	DAMAGE_MOVE = 400.0f;	// ノックバックの移動量
 	const float CLONE_MOVE = NORMAL_MOVE * 1.1f; // 分身の移動量
@@ -1365,18 +1365,26 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 		// 歩行モーションにする
 		currentMotion = MOTION_DASH;
 
-		// 移動量をスカラー値に変換する
-		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
-
-		// 移動量が一定未満の場合忍び足モーションになる
-		if (m_fScalar <= STEALTH_MOVE)
+		// ガード中であれば移動を遅くする
+		if (pPad->IsPress(CInputPad::KEY_RB))
 		{
+			// 移動量を小さくする
+			m_move.x *= STEALTH_MOVE;
+			m_move.z *= STEALTH_MOVE;
+
 			// 忍び足モーションにする
 			currentMotion = MOTION_STEALTHWALK;
 		}
+
+		// 移動量をスカラー値に変換する
+		m_fScalar = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
 	}
 	else
 	{
+		// 回避待機
+		if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB))
+		{ currentMotion = MOTION_DROWNING; }
+
 		// フラグを折る
 		m_bGetCamera = false;
 	}
@@ -2051,6 +2059,9 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		return true;
 	}
 
+	// ボタンが押されていたら関数を抜ける
+	if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB)) { return false; }
+
 	// 使用可能な士気力がなかった場合関数を抜ける
 	if (CTension::GetUseNum() <= 0) { PLAY_SOUND(CSound::LABEL_SE_CLONEFAIL_000); return false; }
 
@@ -2206,6 +2217,9 @@ bool CPlayer::CreateGimmick(const float fDeltaTime)
 //===========================================
 bool CPlayer::Dodge(D3DXVECTOR3& rPos, CInputPad* pPad)
 {
+	// ボタン入力がなかった場合falseを返す
+	if (!GET_INPUTPAD->IsPress(CInputPad::KEY_RB)) { return false; }
+
 	// リストがnullの場合falseを返す
 	if (CEnemyAttack::GetList() == nullptr) { return false; }
 
