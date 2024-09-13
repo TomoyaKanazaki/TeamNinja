@@ -21,11 +21,11 @@ namespace
 {
 #ifdef _DEBUG
 
-	const CScene::EMode INIT_SCENE = CScene::MODE_TITLE;	// 初期シーン
+	const CScene::EMode INIT_SCENE = CScene::MODE_LOGO;	// 初期シーン
 
 #else	// NDEBUG
 
-	const CScene::EMode INIT_SCENE = CScene::MODE_TITLE;	// 初期シーン
+	const CScene::EMode INIT_SCENE = CScene::MODE_LOGO;	// 初期シーン
 
 #endif	// _DEBUG
 

@@ -35,7 +35,8 @@ namespace
 	const D3DXVECTOR3 ATTACK_COLLDOWN = D3DXVECTOR3(60.0f, 0.0f, 60.0f);	// 攻撃判定(下)
 	const D3DXVECTOR3 DODGE_COLLUP = D3DXVECTOR3(80.0f, 100.0f, 80.0f);		// 回避判定(上)
 	const D3DXVECTOR3 DODGE_COLLDOWN = D3DXVECTOR3(80.0f, 0.0f, 80.0f);		// 回避判定(下)
-	const int DODGE_COUNT = 20;			// 回避カウント数
+	const int DODGE_COUNT = 20;				// 回避カウント数
+	const float DODGE_EFFECT_SCALE = 40.0f;	// 回避可能エフェクトの拡大率
 	const float ATTACK_DISTANCE[CEnemyAttack::TYPE_MAX] =	// 攻撃が通る距離
 	{
 		100.0f,		// しつこい敵
@@ -715,6 +716,9 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		// ヒット状況 を返す
 		return bHit;
 	}
+
+	// 回避可能エフェクトを出す
+	GET_EFFECT->Create("data\\EFFEKSEER\\redcross.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DODGE_EFFECT_SCALE, false);
 
 	// false を返す
 	return false;

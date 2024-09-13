@@ -681,6 +681,12 @@
     <ClInclude Include="Resource\playerbackUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\logoManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\sceneLogo.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1279,6 +1285,12 @@
     </ClCompile>
     <ClCompile Include="Resource\playerbackUI.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\logoManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\sceneLogo.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
