@@ -105,6 +105,7 @@ namespace
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const int DROWN_COUNT = 70; // 溺死状態のカウント数
+	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -1137,8 +1138,22 @@ CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
 		return MOTION_IDOL;
 	}
 
-	// ゴールモーションを返す
-	return MOTION_GOAL;
+	switch (GET_RETENTION->GetWin())
+	{
+	case CRetentionManager::WIN_FAIL:
+
+		// 死亡モーションを返す
+		return MOTION_DEATH;
+
+	case CRetentionManager::WIN_SUCCESS:
+
+		// ゴールモーションを返す
+		return MOTION_GOAL;
+
+	default:
+		assert(false);
+		return MOTION_IDOL;
+	}
 }
 
 //===========================================
@@ -1267,6 +1282,11 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 	// 移動量を0にする
 	m_move = VEC3_ZERO;
 
+	// 沈める
+	D3DXVECTOR3 pos = GetVec3Position();
+	pos.y -= SINK_SPEED;
+	SetVec3Position(pos);
+
 	// スタックのリセット
 	ResetStack();
 
@@ -1391,8 +1411,7 @@ CPlayer::EMotion CPlayer::UpdateMove(void)
 	else
 	{
 		// 回避待機
-		if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB))
-		{ currentMotion = MOTION_DROWNING; }
+		if (GET_INPUTPAD->IsPress(CInputPad::KEY_RB)){currentMotion = MOTION_SNEAK;}
 
 		// フラグを折る
 		m_bGetCamera = false;
