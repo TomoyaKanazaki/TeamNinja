@@ -1138,8 +1138,22 @@ CPlayer::EMotion CPlayer::UpdateGoal(const float fDeltaTime)
 		return MOTION_IDOL;
 	}
 
-	// ゴールモーションを返す
-	return MOTION_GOAL;
+	switch (GET_RETENTION->GetWin())
+	{
+	case CRetentionManager::WIN_FAIL:
+
+		// 死亡モーションを返す
+		return MOTION_DEATH;
+
+	case CRetentionManager::WIN_SUCCESS:
+
+		// ゴールモーションを返す
+		return MOTION_GOAL;
+
+	default:
+		assert(false);
+		return MOTION_IDOL;
+	}
 }
 
 //===========================================
