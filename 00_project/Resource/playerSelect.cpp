@@ -135,7 +135,14 @@ CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 		// 待機モーションを設定
 		SetMotion(MOTION_IDOL);
 
-		if (GET_STAGE->GetOpenMapDirectory().empty())
+		if (!GET_STAGE->GetOpenMapDirectory().empty()
+		&&  GET_RETENTION->GetWin() == CRetentionManager::WIN_SUCCESS)
+		{ // 解放したマップがある場合
+
+			// 解放カメラに遷移
+			GET_CAMERA->SetState(CCamera::STATE_OPEN);
+		}
+		else
 		{ // 解放したマップがない場合
 
 			// 回り込みカメラに遷移
@@ -143,12 +150,6 @@ CPlayer::EMotion CPlayerSelect::UpdateSpawn(const float fDeltaTime)
 
 			// 通常状態を設定
 			SetState(STATE_SELECT_NORMAL);
-		}
-		else
-		{ // 解放したマップがある場合
-
-			// 解放カメラに遷移
-			GET_CAMERA->SetState(CCamera::STATE_OPEN);
 		}
 	}
 

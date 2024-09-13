@@ -85,6 +85,9 @@ HRESULT CSceneGame::Init(void)
 	// シーンの初期化
 	CScene::Init();	// ステージ・プレイヤーの生成
 
+	// 勝利状況の初期化
+	GET_RETENTION->InitWin();
+
 	// タイマーUIの生成
 	m_pTimerUI = CTimerUI::Create
 	( // 引数
