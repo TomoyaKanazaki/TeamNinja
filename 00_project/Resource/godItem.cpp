@@ -20,8 +20,6 @@
 #include "player.h"
 #include "stage.h"
 
-#include "goditemUI.h"
-
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -334,9 +332,6 @@ bool CGodItem::Collision
 
 			// ゲームマネージャーを神器獲得状態にする
 			CSceneGame::GetGameManager()->PossessGodItem(m_type);
-
-			// 取得処理
-			(*CGodItemUI::GetList()->GetBegin())->Get(m_type);
 		}
 
 		// 着地エフェクトの削除
