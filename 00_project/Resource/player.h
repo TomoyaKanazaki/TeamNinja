@@ -198,7 +198,6 @@ protected:
 	bool UpdateFadeIn(const float fSub);	// フェードイン状態時の更新
 	bool CollisionWall(D3DXVECTOR3& rPos);	// 壁との当たり判定
 	void SetJump(const bool bJump) { m_bJump = bJump; }	// ジャンプ状況設定
-	void ResetStack();									// スタック状態のリセット
 
 	// メンバ関数 (金崎追加)
 	bool ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDeltaTime);	// 分身の処理
@@ -220,6 +219,7 @@ private:
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
+	void ResetStack();								// スタック状態のリセット
 	void CheckPointBack(const float fDeltaTime);	// チェックポイント回帰処理
 
 	// メンバ関数 (金崎追加)
