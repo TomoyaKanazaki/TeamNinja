@@ -87,6 +87,7 @@ public:
 		LABEL_SE_RESULTTITLE,		// リザルトタイトル
 		LABEL_SE_RESULTGODITEM,		// リザルトの神器
 		LABEL_SE_GODITEMUI,			// 神器UI
+		LABEL_SE_SHRUBDELETE,		// 低木消滅音
 		LABEL_MAX					// この列挙型の総数
 	};
 
