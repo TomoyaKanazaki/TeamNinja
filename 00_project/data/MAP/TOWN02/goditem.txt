@@ -11,7 +11,7 @@ STAGE_GODITEMSET
 		TYPE	= 0
 		
 		TEXT_0
-			STR = WOW!!YOU'RE REAL JAPANESE NINJA!!(*^Å§^*)
+			STR = âeÇÊÇËàÏÇÍèoÇÈåı
 		END_TEXT
 	END_GODITEMSET
 
@@ -20,7 +20,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = SEEK PRO NINJA!!(*^Å§^*)/
+			STR = ê˙ÇΩÇÍÇΩïóåä
 		END_TEXT
 	END_GODITEMSET
 
@@ -29,7 +29,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR =  EXCELENT WORK!! By WK(/ÅEÉ÷ÅE)/
+			STR =  ñ∞ÇËÇÊÇËÇ‡ê[Ç≠
 		END_TEXT
 	END_GODITEMSET
 
