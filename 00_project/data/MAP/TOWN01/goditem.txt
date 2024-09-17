@@ -7,11 +7,11 @@
 STAGE_GODITEMSET
 
 	GODITEMSET
-		POS		= 2950.00 0.00 0.00
+		POS		= 2676.00 0.00 714.00
 		TYPE	= 0
 		
 		TEXT_0
-			STR = YOU'RE STILL Newcomer Ninja 
+			STR = ínëwÇ©ÇÁî`Ç≠é“
 		END_TEXT
 	END_GODITEMSET
 
@@ -20,7 +20,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = MAGATAMA IN THE SKY
+			STR = ä·â∫Ç…çLÇ™ÇÈâcÇ›ÇÊ
 		END_TEXT
 	END_GODITEMSET
 
@@ -29,7 +29,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR = THE SECOND CHARACTER CONTROL
+			STR = ä¢Çñ¬ÇÁÇ∑ÇÕñÈÇÃël
 		END_TEXT
 	END_GODITEMSET
 

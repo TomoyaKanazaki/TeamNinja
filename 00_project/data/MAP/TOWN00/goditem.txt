@@ -13,7 +13,7 @@ STAGE_GODITEMSET
 		TYPE	= 0
 		
 		TEXT_0
-			STR = The Newcomer Ninja
+			STR = í¨êlÇÃé∏Ç≠Çµï®
 		END_TEXT
 	END_GODITEMSET
 
@@ -22,7 +22,7 @@ STAGE_GODITEMSET
 		TYPE	= 1
 		
 		TEXT_1
-			STR = THE FIRST CHARACTER CONTROL
+			STR = ééÇ≥ÇÍÇÈåyãZ
 		END_TEXT
 	END_GODITEMSET
 
@@ -31,7 +31,7 @@ STAGE_GODITEMSET
 		TYPE	= 2
 		
 		TEXT_2
-			STR = DANGER AREA IN MAGATAMA
+			STR = äÛñ]ÇÕéûÇ…íÍÇÊÇËèoÇ≈ÇÈ
 		END_TEXT
 	END_GODITEMSET
 
