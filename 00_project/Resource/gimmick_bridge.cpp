@@ -21,7 +21,7 @@ namespace
 {
 	const float DISTANCE = 30.0f; // 待機位置との距離
 	const float ACTIVE_UP = 10.0f; // 橋がかけられた際のY位置上昇量
-	const float FIELD_SIZE = 55.0f; // 橋の幅
+	const float FIELD_SIZE = 110.0f; // 橋の幅
 	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
 	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// カメラ揺れの値
 	const float ROTATE_SPEED = 0.05f; // 橋がかかるまでにかかる時間
@@ -440,7 +440,9 @@ void CGimmickBridge::Movement()
 	// 移動が完了していた場合関数を抜ける
 	if (m_bMove)
 	{
-		m_pField->SetVec3Rotation(VEC3_ZERO);
+		D3DXVECTOR3 rot = VEC3_ZERO;
+		rot.z = HALF_PI * 0.5f;
+		m_pField->SetVec3Rotation(rot);
 		return;
 	}
 
@@ -482,7 +484,7 @@ void CGimmickBridge::Movement()
 	case ANGLE_180:
 		posField.z += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
 		rotField.x = HALF_PI + m_fRot * (1.0f - m_nIdxWait * 2.0f);
-		if (m_nIdxWait) { rotField.z -= D3DX_PI; }
+		if (m_nIdxWait) { rotField.x -= D3DX_PI; }
 		break;
 
 	case ANGLE_90:

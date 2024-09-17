@@ -181,8 +181,8 @@ public:
 	// メンバ関数 (金崎朋弥)
 	void RecoverCheckPoint();	// チェックポイントでの回復処理
 	void RecoverItem();			// アイテムでの回復処理
-	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }					// プレイヤーの中心座標を取得
-	void SetClone(bool bClone) { m_bClone = bClone; }							// 分身操作可能フラグの設定
+	D3DXVECTOR3 GetCenterPos() const	{ return m_posCenter; }	// プレイヤーの中心座標を取得
+	void SetClone(bool bClone) { m_bClone = bClone; }			// 分身操作可能フラグの設定
 	void AddFrags(const char cFrag);							// 文字列(フラグ)の追加
 	void SabFrags(const char cFrag);							// 文字列(フラグ)の削除
 	D3DXVECTOR3 GetOldPosition() const { return m_oldPos; }		// 過去位置の取得

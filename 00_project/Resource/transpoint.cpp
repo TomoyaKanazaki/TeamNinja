@@ -212,7 +212,7 @@ void CTransPoint::Update(const float fDeltaTime)
 				m_fCurTime = 0.0f;
 
 				// フェードを開始する
-				GET_MANAGER->GetFade()->SetFade(3.0f, 1.5f, 7, XCOL_AWHITE);
+				GET_MANAGER->GetFade()->SetIrisFade(nullptr, 0.6f, 0.4f, 7);
 
 				// フェード状態にする
 				m_state = STATE_FADE;

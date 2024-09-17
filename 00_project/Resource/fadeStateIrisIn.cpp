@@ -9,6 +9,8 @@
 //************************************************************
 #include "fadeStateIrisIn.h"
 #include "fade.h"
+#include "manager.h"
+#include "loading.h"
 
 //************************************************************
 //	子クラス [CFadeStateIrisIn] のメンバ関数
@@ -59,6 +61,9 @@ void CFadeStateIrisIn::Uninit(void)
 //============================================================
 void CFadeStateIrisIn::Update(const float fDeltaTime)
 {
+	// ロードが完了していない場合抜ける
+	if (GET_MANAGER->GetLoading()->GetState() != CLoading::LOAD_NONE) { return; }
+
 	D3DXVECTOR3 posIris = (m_pFuncPos == nullptr) ? SCREEN_CENT : m_pFuncPos();	// 切り抜き型位置
 	m_pContext->SetCropPosition(posIris);	// 切り抜き型の位置を設定
 
