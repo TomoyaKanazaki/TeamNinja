@@ -79,10 +79,11 @@ namespace
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
+	const char* BODY_ORBIT_TEXTURE = "data\\TEXTURE\\orbit001.png";		// 体の軌跡のテクスチャパス
 	const COrbit::SOffset BODYORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// 体の軌跡のオフセット情報
 	{
-		COrbit::SOffset(D3DXVECTOR3(0.0f, 17.0f, 0.0f), D3DXVECTOR3(0.0f, -7.0f, 0.0f), XCOL_WHITE),
-		COrbit::SOffset(D3DXVECTOR3(12.0f, 5.0f, 0.0f), D3DXVECTOR3(-12.0f, 5.0f, 0.0f), XCOL_WHITE),
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 40.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), XCOL_WHITE),
+		COrbit::SOffset(D3DXVECTOR3(20.0f, 20.0f, 0.0f), D3DXVECTOR3(-20.0f, 20.0f, 0.0f), XCOL_WHITE),
 	};
 	const COrbit::SOffset JUMPORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// ジャンプ軌跡のオフセット情報
 	{
@@ -99,7 +100,7 @@ namespace
 		CPlayer::MODEL_FOOTL,
 		CPlayer::MODEL_FOOTR
 	};
-	const int BODYORBIT_PART = 10;	// 分割数
+	const int BODYORBIT_PART = 20;	// 分割数
 	const int JUMPORBIT_PART = 15;	// 分割数
 
 	const float	NORMAL_MOVE = 480;	// 通常の移動量
@@ -222,6 +223,8 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
+#if 0
+
 	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の生成
@@ -229,7 +232,9 @@ HRESULT CPlayer::Init(void)
 		( // 引数
 			GetParts(BODYORBIT_PART_NUMBER)->GetPtrMtxWorld(),	// 親マトリックス
 			BODYORBIT_OFFSET[nCntBody],	// オフセット情報
-			BODYORBIT_PART				// 分割数
+			BODYORBIT_PART,				// 分割数
+			10,							// テクスチャの分割数
+			false						// 加算合成状況
 		);
 		if (m_apBodyOrbit[nCntBody] == nullptr)
 		{ // 非使用中の場合
@@ -239,9 +244,14 @@ HRESULT CPlayer::Init(void)
 			return E_FAIL;
 		}
 
+		// テクスチャを割り当て
+		m_apBodyOrbit[nCntBody]->BindTexture(BODY_ORBIT_TEXTURE);
+
 		// 表示する
 		m_apBodyOrbit[nCntBody]->SetState(COrbit::STATE_NORMAL);
 	}
+
+#endif // 0
 
 	for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
 	{
@@ -395,7 +405,7 @@ void CPlayer::Update(const float fDeltaTime)
 	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の更新
-		if (m_apBodyOrbit[nCntBody] == nullptr) { return; }
+		if (m_apBodyOrbit[nCntBody] == nullptr) { continue; }
 
 		// 更新処理
 		m_apBodyOrbit[nCntBody]->Update(fDeltaTime);
@@ -408,7 +418,7 @@ void CPlayer::Update(const float fDeltaTime)
 		for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
 		{
 			// 軌跡の更新
-			if (m_apJumpOrbit[nCntJump] == nullptr) { return; }
+			if (m_apJumpOrbit[nCntJump] == nullptr) { continue; }
 
 			// ハイジャンプ中の場合、表示する
 			if (nMotion != MOTION_JUMP_HIGH) { m_apJumpOrbit[nCntJump]->SetState(COrbit::STATE_VANISH); }
