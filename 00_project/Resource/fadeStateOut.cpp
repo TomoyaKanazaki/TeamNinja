@@ -16,7 +16,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CFadeStateOut::CFadeStateOut()
+CFadeStateOut::CFadeStateOut() : m_fCurTime(0.0f)	// 現在の経過時間
 {
 
 }
@@ -34,6 +34,9 @@ CFadeStateOut::~CFadeStateOut()
 //============================================================
 HRESULT CFadeStateOut::Init(void)
 {
+	// メンバ変数を初期化
+	m_fCurTime = 0.0f;	// 現在の経過時間
+
 	// 成功を返す
 	return S_OK;
 }
@@ -52,12 +55,23 @@ void CFadeStateOut::Uninit(void)
 //============================================================
 void CFadeStateOut::Update(const float fDeltaTime)
 {
-	// 不透明にしていく
-	if (m_pContext->AddAlpha(fDeltaTime))
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	const float fOutTime = m_pContext->GetOutTime();	// アウト時間
+	const float fDiffAlpha = 1.0f - 0.0f;				// 透明度差分
+	float fRate = easeing::OutQuad(m_fCurTime, 0.0f, fOutTime);	// 経過時刻の割合を計算
+
+	// 透明度を反映
+	m_pContext->SetAlpha(0.0f + (fDiffAlpha * fRate));
+	if (m_fCurTime >= fOutTime)
 	{ // 不透明になった場合
 
 		// 次シーンへ遷移する
 		m_pContext->TransNextMode();
+
+		// 透明度を反映
+		m_pContext->SetAlpha(1.0f);
 
 		// フェードイン状態にする
 		m_pContext->ChangeState(new CFadeStateIn);

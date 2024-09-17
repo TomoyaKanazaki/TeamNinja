@@ -713,15 +713,15 @@ void CManager::SetFadeScene
 (
 	const CScene::EMode mode,	// 次シーン
 	const float fWaitTime,		// 余韻時間
-	const float fAddOut,		// アウトのα値増加量
-	const float fSubIn			// インのα値減少量
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
 )
 {
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
 	// 次のシーンを設定
-	m_pFade->SetModeFade(mode, fWaitTime, fAddOut, fSubIn);
+	m_pFade->SetModeFade(mode, fWaitTime, fInTime, fOutTime);
 }
 
 //============================================================
@@ -731,15 +731,53 @@ void CManager::SetLoadScene
 (
 	const CScene::EMode mode,	// 次シーン
 	const float fWaitTime,		// 余韻時間
-	const float fAddOut,		// アウトのα値増加量
-	const float fSubIn			// インのα値減少量
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
 )
 {
 	// インスタンス未使用
 	assert(m_pFade != nullptr);
 
 	// 次のシーンを設定
-	m_pFade->SetLoadFade(mode, fWaitTime, fAddOut, fSubIn);
+	m_pFade->SetLoadFade(mode, fWaitTime, fInTime, fOutTime);
+}
+
+//============================================================
+//	シーンの設定処理 (アイリスフェード：ON, ロード：OFF)
+//============================================================
+void CManager::SetIrisFadeScene
+(
+	const CScene::EMode mode,	// 次シーン
+	CFade::AGetPos pFuncPos,	// 位置取得関数
+	const float fWaitTime,		// 余韻時間
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
+)
+{
+	// インスタンス未使用
+	assert(m_pFade != nullptr);
+
+	// 次のシーンを設定
+	m_pFade->SetModeIrisFade(mode, pFuncPos, fWaitTime, fInTime, fOutTime);
+}
+
+//============================================================
+//	シーンの設定処理 (アイリスフェード･ロード：ON)
+//============================================================
+void CManager::SetIrisLoadScene
+(
+	const CScene::EMode mode,	// 次シーン
+	CFade::AGetPos pFuncPos,	// 位置取得関数
+	const float fWaitTime,		// 余韻時間
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
+)
+{
+	// インスタンス未使用
+	assert(m_pFade != nullptr);
+
+	// 次のシーンを設定
+	m_pFade->SetLoadIrisFade(mode, pFuncPos, fWaitTime, fInTime, fOutTime);
 }
 
 //============================================================

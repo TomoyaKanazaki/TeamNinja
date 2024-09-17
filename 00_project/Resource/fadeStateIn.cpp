@@ -18,7 +18,7 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CFadeStateIn::CFadeStateIn()
+CFadeStateIn::CFadeStateIn() : m_fCurTime(0.0f)	// 現在の経過時間
 {
 
 }
@@ -36,6 +36,9 @@ CFadeStateIn::~CFadeStateIn()
 //============================================================
 HRESULT CFadeStateIn::Init(void)
 {
+	// メンバ変数を初期化
+	m_fCurTime = 0.0f;	// 現在の経過時間
+
 	// 成功を返す
 	return S_OK;
 }
@@ -57,9 +60,20 @@ void CFadeStateIn::Update(const float fDeltaTime)
 	// ロードが完了していない場合抜ける
 	if (GET_MANAGER->GetLoading()->GetState() != CLoading::LOAD_NONE) { return; }
 
-	// 透明にしていく
-	if (m_pContext->SubAlpha(fDeltaTime))
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	const float fInTime = m_pContext->GetInTime();	// イン時間
+	const float fDiffAlpha = 0.0f - 1.0f;			// 透明度差分
+	float fRate = easeing::OutQuad(m_fCurTime, 0.0f, fInTime);	// 経過時刻の割合を計算
+
+	// 透明度を反映
+	m_pContext->SetAlpha(1.0f + (fDiffAlpha * fRate));
+	if (m_fCurTime >= fInTime)
 	{ // 透明になった場合
+
+		// 透明度を反映
+		m_pContext->SetAlpha(0.0f);
 
 		// 何もしない状態にする
 		m_pContext->ChangeState(new CFadeStateNone);

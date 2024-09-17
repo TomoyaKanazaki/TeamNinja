@@ -71,15 +71,31 @@ public:
 	( // 引数
 		const CScene::EMode mode,				// 次シーン
 		const float fWaitTime	= 0.0f,			// 余韻時間
-		const float fAddOut		= CFade::LEVEL,	// アウトのα値増加量
-		const float fSubIn		= CFade::LEVEL	// インのα値減少量
+		const float fInTime		= CFade::TIME,	// イン時間
+		const float fOutTime	= CFade::TIME	// アウト時間
 	);
 	void SetLoadScene	// シーン設定 (フェード･ロード：ON)
 	( // 引数
 		const CScene::EMode mode,				// 次シーン
 		const float fWaitTime	= 0.0f,			// 余韻時間
-		const float fAddOut		= CFade::LEVEL,	// アウトのα値増加量
-		const float fSubIn		= CFade::LEVEL	// インのα値減少量
+		const float fInTime		= CFade::TIME,	// イン時間
+		const float fOutTime	= CFade::TIME	// アウト時間
+	);
+	void SetIrisFadeScene	// シーン設定 (アイリスフェード：ON, ロード：OFF)
+	( // 引数
+		const CScene::EMode mode,				// 次シーン
+		CFade::AGetPos pFuncPos	= nullptr,		// 位置取得関数
+		const float fWaitTime	= 0.0f,			// 余韻時間
+		const float fInTime		= CFade::TIME,	// イン時間
+		const float fOutTime	= CFade::TIME	// アウト時間
+	);
+	void SetIrisLoadScene	// シーン設定 (アイリスフェード･ロード：ON)
+	( // 引数
+		const CScene::EMode mode,				// 次シーン
+		CFade::AGetPos pFuncPos	= nullptr,		// 位置取得関数
+		const float fWaitTime	= 0.0f,			// 余韻時間
+		const float fInTime		= CFade::TIME,	// イン時間
+		const float fOutTime	= CFade::TIME	// アウト時間
 	);
 
 	HRESULT SetMode(const CScene::EMode mode);		// モード設定 (ロード：OFF)

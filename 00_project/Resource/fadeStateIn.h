@@ -32,6 +32,10 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
+
+private:
+	// メンバ変数
+	float m_fCurTime;	// 現在の経過時間
 };
 
 #endif	// _FADE_STATE_IN_H_
