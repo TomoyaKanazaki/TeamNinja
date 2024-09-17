@@ -27,6 +27,7 @@ class CShadow;			// 影クラス
 class COrbit;			// 軌跡クラス
 class CCheckPoint;		// チェックポイントクラス
 class CPlayerBackUI;	// プレイヤー回帰UI
+class CPlayerDodge;		// プレイヤー回避エフェクト
 class CField;			// フィールドクラス
 class CObject2D;		// オブジェクト2D
 
@@ -249,6 +250,7 @@ private:
 
 	COrbit			*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
 	CPlayerBackUI	*m_pBackUI;				// 回帰UIの情報
+	CPlayerDodge	*m_pDodge;				// 回避エフェクトの情報
 	D3DXVECTOR3		m_oldPos;				// 過去位置
 	D3DXVECTOR3		m_move;					// 移動量
 	D3DXVECTOR3		m_destRot;				// 目標向き
@@ -271,7 +273,6 @@ private:
 	std::string m_sFrags;					// ギミックフラグの文字列
 	CField* m_pCurField;					// 現在の地面
 	CField* m_pOldField;					// 過去の地面
-	CEffekseer::CEffectData* m_pEffectdata;	// エフェクト情報
 	CEffekseer::CEffectData* m_pEffectFirefly;	// エフェクト情報
 
 	// メンバ変数（小原追加）

@@ -44,6 +44,7 @@
 #include "retentionManager.h"
 #include "goditemUI.h"
 #include "playerbackUI.h"
+#include "player_dodge.h"
 #include "hitstop.h"
 #include "tutorial.h"
 
@@ -144,6 +145,7 @@ CListManager<CPlayer> *CPlayer::m_pList = nullptr;	// オブジェクトリスト
 //============================================================
 CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_pBackUI			(nullptr),		// 回帰UIの情報
+	m_pDodge			(nullptr),		// 回避エフェクトの情報
 	m_oldPos			(VEC3_ZERO),	// 過去位置
 	m_move				(VEC3_ZERO),	// 移動量
 	m_destRot			(VEC3_ZERO),	// 目標向き
@@ -163,7 +165,6 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_sFrags			({}),			// フィールドフラグ
 	m_pCurField			(nullptr),		// 現在乗ってる地面
 	m_pOldField			(nullptr),		// 前回乗ってた地面
-	m_pEffectdata		(nullptr),		// エフェクト情報
 	m_posTeleport		(VEC3_ZERO),	// テレポート位置
 	m_nCounterTeleport	(0)				// テレポートカウント
 {
@@ -247,6 +248,20 @@ HRESULT CPlayer::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	if (m_pDodge == nullptr)
+	{ // 回避エフェクト情報が NULL の場合
+
+		// 回避エフェクトの生成処理
+		m_pDodge = CPlayerDodge::Create();
+		if (m_pDodge == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
 	// 士気力ゲージの生成
 	if (GET_MANAGER->GetMode() == CScene::MODE_GAME) // ゲーム画面でのみ生成する
 	{
@@ -288,11 +303,11 @@ void CPlayer::Uninit(void)
 		m_pBackUI = nullptr;
 	}
 
-	// エフェクトの削除
-	if (m_pEffectdata != nullptr)
+	// 回避エフェクトの削除
+	if (m_pDodge != nullptr)
 	{
-		SAFE_DELETE(m_pEffectdata);
-		m_pEffectdata = nullptr;
+		SAFE_UNINIT(m_pDodge);
+		m_pDodge = nullptr;
 	}
 
 #ifndef PHOTO
@@ -332,11 +347,10 @@ void CPlayer::Update(const float fDeltaTime)
 	// 状態の更新
 	EMotion currentMotion = UpdateState(fDeltaTime);
 
-	// エフェクトの削除
-	if (m_pEffectdata != nullptr && !m_pEffectdata->GetExist())
+	// 回避エフェクトの更新
+	if (m_pDodge != nullptr)
 	{
-		SAFE_DELETE(m_pEffectdata);
-		m_pEffectdata = nullptr;
+		m_pDodge->Update(GetVec3Position());
 	}
 
 	int nMotion = GetMotionType();
@@ -619,7 +633,10 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	}
 
 	// 士気力が減少する
-	CTension::Vanish();
+	for (int i = 0; i < nDamage; ++i)
+	{
+		CTension::Vanish();
+	}
 
 	// ヒットストップさせる
 	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);
@@ -1175,9 +1192,6 @@ CPlayer::EMotion CPlayer::UpdateDodge(const float fDeltaTime)
 	// 位置の取得
 	D3DXVECTOR3 pos = GetVec3Position();
 
-	// エフェクトの位置を設定する
-	if (m_pEffectdata != nullptr) { m_pEffectdata->m_pos = GetCenterPos(); }
-
 	// 重力の更新
 	UpdateGravity(fDeltaTime);
 
@@ -1317,6 +1331,13 @@ void CPlayer::ResetStack()
 
 	// 状態カウントが一定数未満の場合、関数を抜ける
 	if (m_nCounterState < DROWN_COUNT) { return; }
+
+	while (CTension::GetUseNum() < TELEPORT_CLONE)
+	{ // 最低保証以下の場合
+
+		// 分身数を上げる
+		CTension::Create();
+	}
 
 	// 前の地面に座標を移す
 	SetVec3Position(m_posTeleport);
@@ -2090,10 +2111,10 @@ bool CPlayer::ControlClone(D3DXVECTOR3& rPos, D3DXVECTOR3& rRot, const float fDe
 		m_move.x = sinf(rRot.y) * DODGE_MOVE;
 		m_move.z = cosf(rRot.y) * DODGE_MOVE;
 
-		// TOOD エフェクトを出す
-		if (m_pEffectdata == nullptr)
+		if (m_pDodge != nullptr)
 		{
-			m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f, false, false);
+			// エフェクトを登録する
+			m_pDodge->Regist(GET_EFFECT->Create("data\\EFFEKSEER\\dodge.efkefc", GetCenterPos(), rRot, VEC3_ZERO, 25.0f, false, false));
 		}
 
 		// ヒットストップさせる
