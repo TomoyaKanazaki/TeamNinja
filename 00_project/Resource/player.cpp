@@ -676,9 +676,6 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	if (IsDeath()) { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
 
-	// ヒットエフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
-
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
 
@@ -1675,7 +1672,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		// 水でなければ回帰する位置として設定する
 		if (m_nCounterTeleport % TELEPORT_POS_COUNT == 0 &&
 			m_pCurField != nullptr &&
-			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER) &&
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_XBRIDGE) &&
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_ZBRIDGE))
 		{
 			m_posTeleport = rPos;
 			m_nCounterTeleport = 0;
@@ -1703,6 +1702,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DROWN;
+
+			// 状態カウントを0にする
+			m_nCounterState = 0;
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
