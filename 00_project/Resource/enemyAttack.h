@@ -105,7 +105,6 @@ public:
 	bool PlayerIngress(void);	// プレイヤー進入処理
 	bool CloneIngress(void);	// 分身進入処理
 
-	// TODO：う〇ちカス判定だから後で修正
 	bool HitPlayer(const D3DXVECTOR3& rPos);		// プレイヤーのヒット処理
 	bool HitClone(const D3DXVECTOR3& rPos);			// 分身のヒット処理
 
