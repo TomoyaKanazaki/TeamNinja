@@ -332,11 +332,10 @@ HRESULT CSound::Play(ELabel label)
 	if (xa2state.BuffersQueued != 0)
 	{ // 再生中
 
-		// 一時停止
-		m_apSourceVoice[label]->Stop(0);
+		// 再生に失敗したら、停止
+		if (FAILED(m_apSourceVoice[label]->Start(0))) { assert(false); }
 
-		// オーディオバッファの削除
-		m_apSourceVoice[label]->FlushSourceBuffers();
+		return E_FAIL;
 	}
 
 	// オーディオバッファの登録
