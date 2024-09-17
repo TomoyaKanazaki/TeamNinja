@@ -113,7 +113,7 @@ namespace
 	const int TELEPORT_CLONE = 5; // 回帰したときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
-	const int DROWN_IRIS_COUNT = 17; // 溺死状態でアイリスアウトするカウント数
+	const int IRIS_COUNT = 17; // 溺死状態でアイリスアウトするカウント数
 	const int DROWN_COUNT = 70; // 溺死状態のカウント数
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
@@ -551,6 +551,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 
 		// 溺死状態の更新
 		currentMotion = UpdateDrown(fDeltaTime);
+		break;
+
+	case STATE_BACKWAIT:
+
+		// チェックポイントリセット待機の更新
+		currentMotion = UpdateBackWait(fDeltaTime);
 		break;
 
 	default:
@@ -1374,6 +1380,94 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 }
 
 //============================================================
+// チェックポイントリセット待機時の更新
+//============================================================
+CPlayer::EMotion CPlayer::UpdateBackWait(const float fDeltaTime)
+{
+	// 変数を宣言
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 状態カウントを加算する
+	m_nCounterState++;
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	CollisionWall(pos);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
+
+		// 通常状態にする
+		m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
+	}
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	if (m_nCounterState == IRIS_COUNT)
+	{ // カウントが一定数に達した場合
+
+		// 待機状態に戻す
+		m_state = STATE_NORMAL;
+
+		for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
+		{
+			// 軌跡の更新
+			if (m_apJumpOrbit[nCnt] == nullptr) { continue; }
+
+			// 軌跡を消す
+			m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+		}
+
+		while (CTension::GetUseNum() < TELEPORT_CLONE)
+		{ // 最低保証以下の場合
+
+			// 分身数を上げる
+			CTension::Create();
+		}
+
+		// セーブ情報を取得
+		const int nSave = GET_GAMEMANAGER->GetSave();
+
+		// 位置を設定
+		if (nSave != -1 && CCheckPoint::GetList() != nullptr)
+		{
+			// チェックポイントのリストを取得
+			CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
+
+			// チェックポイントの座標を設定する
+			SetVec3Position(point->GetVec3Position());
+		}
+		else
+		{ // 上記以外
+
+			// 初期位置に座標を移す
+			SetVec3Position(m_posInit);
+		}
+
+		// カメラ目標位置設定
+		CManager::GetInstance()->GetCamera()->SetDestAround();
+	}
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
 //	過去位置の更新処理
 //============================================================
 void CPlayer::UpdateOldPosition(void)
@@ -1390,7 +1484,7 @@ void CPlayer::ResetStack()
 	// 状態カウントを加算する
 	m_nCounterState++;
 
-	if (m_nCounterState == DROWN_IRIS_COUNT)
+	if (m_nCounterState == IRIS_COUNT)
 	{ // 状態カウントが一定値になった場合
 
 		// アイリスアウトでフェードする
@@ -2017,55 +2111,24 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 	// 回帰時間が一定数以下の場合、抜ける
 	if (m_pBackUI->GetAlpha() < 1.0f) { return; }
 
-	// 通常状態にする
-	m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
 
-	// 待機状態に戻す
-	m_state = STATE_NORMAL;
-
-	for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
-	{
-		// 軌跡の更新
-		if (m_apJumpOrbit[nCnt] == nullptr) { return; }
-
-		// 軌跡を消す
-		m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+		// 通常状態にする
+		m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
 	}
 
-	while (CTension::GetUseNum() < TELEPORT_CLONE)
-	{ // 最低保証以下の場合
-
-		// 分身数を上げる
-		CTension::Create();
-	}
-
-	// セーブ情報を取得
-	const int nSave = GET_GAMEMANAGER->GetSave();
-
-	// 位置を設定
-	if (nSave != -1 && CCheckPoint::GetList() != nullptr)
-	{
-		// チェックポイントのリストを取得
-		CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
-
-		// チェックポイントの座標を設定する
-		SetVec3Position(point->GetVec3Position());
-
-		// 関数を抜ける
-		return;
-	}
-
-	// 初期位置に座標を移す
-	SetVec3Position(m_posInit);
-
-	// モーションの設定処理
-	SetMotion(MOTION_IDOL);
-
-	// カメラ目標位置設定
-	CManager::GetInstance()->GetCamera()->SetDestAround();
+	// フェードを開始する
+	GET_MANAGER->GetFade()->SetIrisFade(nullptr, 0.6f, 0.4f, 7);
 
 	// テレポート音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_TELEPORT);
+
+	// チェックポイントリセット待機状態にする
+	SetState(STATE_BACKWAIT);
+
+	// 状態カウントをリセットする
+	m_nCounterState = 0;
 }
 
 //============================================================
