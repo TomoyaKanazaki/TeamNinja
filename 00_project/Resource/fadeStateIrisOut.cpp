@@ -76,13 +76,13 @@ void CFadeStateIrisOut::Update(const float fDeltaTime)
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
 
-	const float fDiffRad = 0.0f - m_fInitRad;	// 半径差分
-	float fRate = easeing::OutQuad(m_fCurTime, 0.0f, 1.0f);	// 経過時刻の割合を計算
+	const float fOutTime = m_pContext->GetOutTime();	// アウト時間
+	const float fDiffRad = 0.0f - m_fInitRad;			// 半径差分
+	float fRate = easeing::OutQuad(m_fCurTime, 0.0f, fOutTime);	// 経過時刻の割合を計算
 
 	// 半径を反映
 	m_pContext->SetCropRadius(m_fInitRad + (fDiffRad * fRate));
-
-	if (m_fCurTime >= 1.0f)
+	if (m_fCurTime >= fOutTime)
 	{ // 小さくなりきった場合
 
 		// 次シーンへ遷移する

@@ -52,8 +52,8 @@ CFade::CFade() :
 	m_pCrop			(nullptr),		// 切り抜き型情報
 	m_pState		(nullptr),		// 状態
 	m_modeNext		(INIT_SCENE),	// 次シーン
-	m_fSubIn		(LEVEL),		// インのα値減少量
-	m_fAddOut		(LEVEL)			// アウトのα値増加量
+	m_fInTime		(LEVEL),		// イン時間
+	m_fOutTime		(LEVEL)			// アウト時間
 {
 
 }
@@ -76,8 +76,8 @@ HRESULT CFade::Init(void)
 	m_pCrop			= nullptr;		// 切り抜き型情報
 	m_pState		= nullptr;		// 状態
 	m_modeNext		= INIT_SCENE;	// 次シーン
-	m_fSubIn		= LEVEL;		// インのα値減少量
-	m_fAddOut		= LEVEL;		// アウトのα値増加量
+	m_fInTime		= LEVEL;		// イン時間
+	m_fOutTime		= LEVEL;		// アウト時間
 
 	// フェードイン状態にする
 	ChangeState(new CFadeStateIn);
@@ -247,61 +247,7 @@ bool CFade::IsFadeIn(void)
 {
 	// フェード中かの判定を返す
 	assert(m_pState != nullptr);
-	return (typeid(*m_pState) == typeid(CFadeStateIn));
-}
-
-//============================================================
-//	α値減少処理
-//============================================================
-bool CFade::SubAlpha(const float fDeltaTime)
-{
-	D3DXCOLOR colFade = GetColor();	// フェード色
-	bool bComplete = false;	// 完了状況
-
-	// 透明にしていく
-	colFade.a -= m_fSubIn * fDeltaTime;
-	if (colFade.a <= 0.0f)
-	{ // 透明になった場合
-
-		// α値を補正
-		colFade.a = 0.0f;
-
-		// フェード完了を保存
-		bComplete = true;
-	}
-
-	// 色を反映
-	SetColor(colFade);
-
-	// フェード完了状況を返す
-	return bComplete;
-}
-
-//============================================================
-//	α値増加処理
-//============================================================
-bool CFade::AddAlpha(const float fDeltaTime)
-{
-	D3DXCOLOR colFade = GetColor();	// フェード色
-	bool bComplete = false;	// 完了状況
-
-	// 不透明にしていく
-	colFade.a += m_fAddOut * fDeltaTime;
-	if (colFade.a >= 1.0f)
-	{ // 不透明になった場合
-
-		// α値を補正
-		colFade.a = 1.0f;
-
-		// フェード完了を保存
-		bComplete = true;
-	}
-
-	// 色を反映
-	SetColor(colFade);
-
-	// フェード完了状況を返す
-	return bComplete;
+	return (typeid(*m_pState) == typeid(CFadeStateIn) || typeid(*m_pState) == typeid(CFadeStateIrisIn));
 }
 
 //============================================================
@@ -309,8 +255,8 @@ bool CFade::AddAlpha(const float fDeltaTime)
 //============================================================
 void CFade::SetFade
 (
-	const float fAddOut,	// アウトのα値増加量
-	const float fSubIn,		// インのα値減少量
+	const float fInTime,	// イン時間
+	const float fOutTime,	// アウト時間
 	const int nPriority,	// 優先順位
 	const D3DXCOLOR& rCol	// 色
 )
@@ -318,9 +264,9 @@ void CFade::SetFade
 	// フェード中の場合抜ける
 	if (IsFade()) { return; }
 
-	// α値加減量を設定
-	m_fSubIn  = fSubIn;
-	m_fAddOut = fAddOut;
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
 
 	// 優先順位を設定
 	SetPriority(nPriority);
@@ -332,7 +278,7 @@ void CFade::SetFade
 	m_pFuncSetMode = nullptr;
 
 	// フェードアウト状態にする
-	ChangeState(new CFadeStateIrisOut(nullptr));	// あとで修正！
+	ChangeState(new CFadeStateOut);
 }
 
 //============================================================
@@ -342,8 +288,8 @@ void CFade::SetModeFade
 (
 	const CScene::EMode mode,	// 次シーン
 	const float fWaitTime,		// 余韻時間
-	const float fAddOut,		// アウトのα値増加量
-	const float fSubIn			// インのα値減少量
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
 )
 {
 	// フェード中の場合抜ける
@@ -355,9 +301,9 @@ void CFade::SetModeFade
 	// 引数のモードを設定
 	m_modeNext = mode;
 
-	// α値加減量を設定
-	m_fSubIn  = fSubIn;
-	m_fAddOut = fAddOut;
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
 
 	// 優先順位を設定
 	SetPriority(PRIORITY);
@@ -389,8 +335,8 @@ void CFade::SetLoadFade
 (
 	const CScene::EMode mode,	// 次シーン
 	const float fWaitTime,		// 余韻時間
-	const float fAddOut,		// アウトのα値増加量
-	const float fSubIn			// インのα値減少量
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
 )
 {
 	// フェード中の場合抜ける
@@ -402,9 +348,9 @@ void CFade::SetLoadFade
 	// 引数のモードを設定
 	m_modeNext = mode;
 
-	// α値加減量を設定
-	m_fSubIn  = fSubIn;
-	m_fAddOut = fAddOut;
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
 
 	// 優先順位を設定
 	SetPriority(PRIORITY);
@@ -426,6 +372,134 @@ void CFade::SetLoadFade
 
 		// フェード余韻状態にする
 		ChangeState(new CFadeStateWait(fWaitTime, new CFadeStateOut));
+	}
+}
+
+//============================================================
+//	アイリスフェードの開始処理
+//============================================================
+void CFade::SetIrisFade
+(
+	AGetPos pFuncPos,		// 位置取得関数
+	const float fInTime,	// イン時間
+	const float fOutTime,	// アウト時間
+	const int nPriority,	// 優先順位
+	const D3DXCOLOR& rCol	// 色
+)
+{
+	// フェード中の場合抜ける
+	if (IsFade()) { return; }
+
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
+
+	// 優先順位を設定
+	SetPriority(nPriority);
+
+	// 色を黒にする
+	SetColor(rCol);
+
+	// モード設定関数ポインタを初期化
+	m_pFuncSetMode = nullptr;
+
+	// アイリスフェードアウト状態にする
+	ChangeState(new CFadeStateIrisOut(pFuncPos));
+}
+
+//============================================================
+//	次シーンの設定処理 (アイリスフェードのみ)
+//============================================================
+void CFade::SetModeIrisFade
+(
+	const CScene::EMode mode,	// 次シーン
+	AGetPos pFuncPos,			// 位置取得関数
+	const float fWaitTime,		// 余韻時間
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
+)
+{
+	// フェード中の場合抜ける
+	if (IsFade()) { return; }
+
+	// 余韻フレームオーバー
+	assert(fWaitTime >= 0.0f);
+
+	// 引数のモードを設定
+	m_modeNext = mode;
+
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
+
+	// 優先順位を設定
+	SetPriority(PRIORITY);
+
+	// 色を黒にする
+	SetColor(XCOL_ABLACK);
+
+	// ロード画面を挟まないモード設定関数を設定
+	m_pFuncSetMode = std::bind(&CManager::SetMode, GET_MANAGER, std::placeholders::_1);
+
+	if (fWaitTime <= 0.0f)
+	{ // カウンターが未設定の場合
+
+		// アイリスフェードアウト状態にする
+		ChangeState(new CFadeStateIrisOut(pFuncPos));
+	}
+	else
+	{ // カウンターが設定された場合
+
+		// フェード余韻状態にする
+		ChangeState(new CFadeStateWait(fWaitTime, new CFadeStateIrisOut(pFuncPos)));
+	}
+}
+
+//============================================================
+//	次シーンの設定処理 (ロード画面付きアイリスフェード)
+//============================================================
+void CFade::SetLoadIrisFade
+(
+	const CScene::EMode mode,	// 次シーン
+	AGetPos pFuncPos,			// 位置取得関数
+	const float fWaitTime,		// 余韻時間
+	const float fInTime,		// イン時間
+	const float fOutTime		// アウト時間
+)
+{
+	// フェード中の場合抜ける
+	if (IsFade()) { return; }
+
+	// 余韻フレームオーバー
+	assert(fWaitTime >= 0.0f);
+
+	// 引数のモードを設定
+	m_modeNext = mode;
+
+	// α値加減時間を設定
+	m_fInTime	= fInTime;
+	m_fOutTime	= fOutTime;
+
+	// 優先順位を設定
+	SetPriority(PRIORITY);
+
+	// 色を黒にする
+	SetColor(XCOL_ABLACK);
+
+	// ロード画面を挟むモード設定関数を設定
+	m_pFuncSetMode = std::bind(&CManager::SetLoadMode, GET_MANAGER, std::placeholders::_1);
+
+	if (fWaitTime <= 0.0f)
+	{ // カウンターが未設定の場合
+
+		// アイリスフェードアウト状態にする
+		ChangeState(new CFadeStateIrisOut(pFuncPos));
+	}
+	else
+	{ // カウンターが設定された場合
+
+		// フェード余韻状態にする
+		ChangeState(new CFadeStateWait(fWaitTime, new CFadeStateIrisOut(pFuncPos)));
 	}
 }
 

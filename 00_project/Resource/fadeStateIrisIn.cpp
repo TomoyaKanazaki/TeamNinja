@@ -65,14 +65,14 @@ void CFadeStateIrisIn::Update(const float fDeltaTime)
 	// タイマーを加算
 	m_fCurTime += fDeltaTime;
 
-	float fEndRadius = m_pContext->CalcCropRadius(posIris);	// 切り抜き最大半径
-	const float fDiffRad = fEndRadius - m_fInitRad;			// 半径差分
-	float fRate = easeing::InQuad(m_fCurTime, 0.0f, 1.0f);	// 経過時刻の割合を計算
+	const float fInTime = m_pContext->GetInTime();					// イン時間
+	const float fEndRadius = m_pContext->CalcCropRadius(posIris);	// 切り抜き最大半径
+	const float fDiffRad = fEndRadius - m_fInitRad;					// 半径差分
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, fInTime);		// 経過時刻の割合を計算
 
 	// 半径を反映
 	m_pContext->SetCropRadius(m_fInitRad + (fDiffRad * fRate));
-
-	if (m_fCurTime >= 1.0f)
+	if (m_fCurTime >= fInTime)
 	{ // 大きくなきった場合
 
 		// 半径を補正

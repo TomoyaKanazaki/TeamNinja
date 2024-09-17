@@ -21,7 +21,9 @@ namespace
 	{
 		"data\\TEXTURE\\tutorial000.png",
 		"data\\TEXTURE\\tutorial001.png",
-		"data\\TEXTURE\\tutorial002.png"
+		"data\\TEXTURE\\tutorial002.png",
+		"data\\TEXTURE\\tutorial003.png",
+		"data\\TEXTURE\\tutorial004.png"
 	};
 
 	const float WIDTH = 500.0f; // É|ÉäÉSÉìÇÃâ°ïù
