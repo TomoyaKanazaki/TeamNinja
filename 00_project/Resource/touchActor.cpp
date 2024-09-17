@@ -11,6 +11,7 @@
 #include "touchActor.h"
 
 #include "touchActorCan.h"
+#include "touchActorBird.h"
 
 //************************************************************
 //	定数宣言
@@ -19,8 +20,8 @@ namespace
 {
 	const char* MODEL[] =	// モデルのパス
 	{
-		"data\\MODEL\\Rock\\Rock000.x",		// 缶
-		"data\\MODEL\\Rock\\Rock001.x",		// 鳥
+		"data\\MODEL\\Rock\\Rock000.x",			// 缶
+		"data\\MODEL\\LilyPad\\LilyPad000.x",	// 鳥
 	};
 	const int PRIORITY = 4;	// アクターの優先順位
 }
@@ -182,7 +183,7 @@ CTouchActor* CTouchActor::Create
 
 	case CTouchActor::TYPE_BIRD:
 
-		//pActor = new CTouchActor;
+		pActor = new CTouchBird;
 
 		break;
 	default:
