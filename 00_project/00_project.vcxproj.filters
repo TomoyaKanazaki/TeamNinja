@@ -690,6 +690,15 @@
     <ClInclude Include="Resource\player_dodge.h">
       <Filter>InGame\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\touchActor.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\touchActorCan.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\touchActorBird.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1297,6 +1306,15 @@
     </ClCompile>
     <ClCompile Include="Resource\player_dodge.cpp">
       <Filter>InGame\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActor.cpp">
+      <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorCan.cpp">
+      <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorBird.cpp">
+      <Filter>InGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
