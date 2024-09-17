@@ -109,6 +109,7 @@ public:
 		// セレクト画面状態
 		STATE_SELECT_SPAWN,		// スポーン状態
 		STATE_SELECT_NORMAL,	// 移動状態
+		STATE_SELECT_WAIT,		// 待機状態
 		STATE_SELECT_ENTER,		// 入場状態
 		STATE_SELECT_OPEN,		// 解放状態
 
