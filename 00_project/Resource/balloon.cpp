@@ -19,7 +19,7 @@
 //************************************************************
 namespace
 {
-	const int	PRIORITY	 = 0;		// 吹き出しの優先順位
+	const int	PRIORITY	 = 6;		// 吹き出しの優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float	REV_SCALE	 = 0.4f;	// 拡大率の補正係数
 	const float	DISP_SCALE	 = 1.4f;	// 表示する際の拡大率
@@ -38,7 +38,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CBalloon::CBalloon() : CObjectBillboard(CObject::LABEL_UI),
+CBalloon::CBalloon() : CObjectBillboard(CObject::LABEL_UI, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
 	m_state		 (STATE_NONE),	// 状態
 	m_fCurTime	 (0.0f),		// 現在時間
 	m_fScale	 (0.0f),		// 拡大率
