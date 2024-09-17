@@ -125,6 +125,7 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
 		STATE_DROWN,	// 溺死状態
+		STATE_BACKWAIT,	// チェックポイントリセット待機状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -221,6 +222,7 @@ private:
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
+	EMotion UpdateBackWait(const float fDeltaTime);	// チェックポイントリセット待機時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 	void ResetStack();								// スタック状態のリセット
