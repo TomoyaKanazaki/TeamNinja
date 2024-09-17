@@ -217,8 +217,15 @@ HRESULT CCharacter::SearchFolderAll(std::string sFolderPath)
 		else
 		{ // ファイルだった場合
 
-			// テクスチャを登録
-			Regist(sFullPath.c_str());
+			std::filesystem::path fsFullPath = sFullPath.c_str();		// ファイルパス
+			std::filesystem::path fsExtension = fsFullPath.extension();	// 拡張子
+
+			if (fsExtension == ".txt")
+			{ // 拡張子がテキスト形式である場合
+
+				// テクスチャを登録
+				Regist(sFullPath.c_str());
+			}
 		}
 
 	} while (FindNextFile(hFile, &findFileData));	// 次のファイルを検索

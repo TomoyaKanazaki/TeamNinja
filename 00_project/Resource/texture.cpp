@@ -216,6 +216,11 @@ int CTexture::Regist(std::string sFilePass)
 	if (FAILED(hr))
 	{ // テクスチャの読込に失敗した場合
 
+		// エラーメッセージボックス
+		std::string sError = "テクスチャの読込に失敗！　パス：";
+		sError.append(sFilePass.c_str());
+		MessageBox(nullptr, sError.c_str(), "警告！", MB_ICONWARNING);
+
 		// 失敗を返す
 		assert(false);
 		return NONE_IDX;
@@ -394,8 +399,20 @@ HRESULT CTexture::SearchFolderAll(std::string sFolderPath)
 		else
 		{ // ファイルだった場合
 
-			// テクスチャを登録
-			Regist(sFullPath.c_str());
+			std::filesystem::path fsFullPath = sFullPath.c_str();		// ファイルパス
+			std::filesystem::path fsExtension = fsFullPath.extension();	// 拡張子
+
+			if (fsExtension == ".png"
+			||  fsExtension == ".jpg"
+			||  fsExtension == ".tga"
+			||  fsExtension == ".PNG"
+			||  fsExtension == ".JPG"
+			||  fsExtension == ".TGA")
+			{ // 拡張子が画像形式である場合
+
+				// テクスチャを登録
+				Regist(sFullPath.c_str());
+			}
 		}
 
 	} while (FindNextFile(hFile, &findFileData));	// 次のファイルを検索

@@ -1234,6 +1234,12 @@ void CPlayerClone::UpdateMotion(int nMotion, const float fDeltaTime)
 			// 現在のモーションの設定
 			SetMotion(nMotion, BLEND_FRAME_OTHER);
 		}
+
+		if (m_Action == ACTION_BRIDGE)
+		{
+			// 現在のモーションの設定
+			SetMotion(nMotion, BLEND_FRAME_OTHER);
+		}
 		break;
 
 	case MOTION_LANDING:	// 着地モーション
