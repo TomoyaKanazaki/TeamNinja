@@ -19,6 +19,8 @@ public:
 		TYPE_MOVE = 0, // 歩行
 		TYPE_CLONE, // 分身
 		TYPE_GIMMICK, // ギミック
+		TYPE_GUARD, // ガード
+		TYPE_DOGDE, // 回避
 		TYPE_MAX, // 最大数
 	};
 
