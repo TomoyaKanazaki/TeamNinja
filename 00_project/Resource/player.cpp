@@ -36,6 +36,7 @@
 #include "actor.h"
 #include "coin.h"
 #include "godItem.h"
+#include "touchActor.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
@@ -1652,6 +1653,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// アクターとの当たり判定
 	CollisionActor(rPos, bLand);
 
+	// タッチアクターとの当たり判定
+	CollisionTouchActor(rPos);
+
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
 
@@ -2613,6 +2617,30 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 			// 回復
 			RecoverItem();
 		}
+	}
+}
+
+//============================================================
+// タッチアクターとの当たり判定
+//============================================================
+void CPlayer::CollisionTouchActor(const D3DXVECTOR3& rPos)
+{
+	// タッチアクターのリスト構造が無ければ抜ける
+	if (CTouchActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CTouchActor*> list = CTouchActor::GetList()->GetList();
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,				// 位置
+			GetOldPosition(),	// 前回の位置
+			RADIUS,				// 半径
+			HEIGHT				// 高さ
+		);
 	}
 }
 

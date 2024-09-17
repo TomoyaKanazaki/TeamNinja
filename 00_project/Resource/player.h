@@ -235,8 +235,9 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
-	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
+	void CollisionCoin(const D3DXVECTOR3& rPos);			// コインとの当たり判定
+	void CollisionGodItem(const D3DXVECTOR3& rPos);			// 神器との当たり判定
+	void CollisionTouchActor(const D3DXVECTOR3& rPos);		// タッチアクターとの当たり判定
 
 #ifdef _DEBUG
 

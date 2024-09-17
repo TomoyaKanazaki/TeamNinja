@@ -24,6 +24,14 @@ class CTouchActor : public CObjectModel
 {
 public:
 
+	// 状態
+	enum EState
+	{
+		STATE_NONE = 0,		// 通常状態
+		STATE_ACT,			// アクション状態
+		STATE_MAX			// この列挙型の総数
+	};
+
 	// 種類列挙
 	enum EType
 	{
@@ -47,15 +55,17 @@ public:
 	// メンバ関数
 	virtual bool Collision		// 当たり判定
 	(
-		D3DXVECTOR3& rPos,
+		const D3DXVECTOR3& rPos,
 		const D3DXVECTOR3& rPosOld,
 		const float fRadius,
 		const float fHeight
 	) = 0;
 
 	// セット・ゲット関数
-	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
-	EType GetType(void) const { return m_type; }			// 種類の取得処理
+	void SetType(const EType type)		{ m_type = type; }		// 種類の設定処理
+	EType GetType(void) const			{ return m_type; }		// 種類の取得処理
+	void SetState(const EState state)	{ m_state = state; }	// 状態の設定処理
+	EState GetState(void) const			{ return m_state; }		// 状態の取得処理
 
 	// 静的メンバ関数
 	static CTouchActor* Create	// 生成
@@ -69,13 +79,18 @@ public:
 
 private:
 
-	// 静的メンバ変数
-	static CListManager<CTouchActor>* m_pList;			// リスト構造
+	// オーバーライド関数
+	virtual void UpdateNone(const float fDeltaTime) = 0;	// 通常状態更新処理
+	virtual void UpdateAct(const float fDeltaTime) = 0;		// アクション状態更新処理
 
 	// メンバ変数
 	CListManager<CTouchActor>::AIterator m_iterator;	// イテレーター
 
 	EType m_type;	// 種類
+	EState m_state;	// 状態
+
+	// 静的メンバ変数
+	static CListManager<CTouchActor>* m_pList;			// リスト構造
 };
 
-#endif	// _ACTOR_H_
+#endif	// _TOUCH_ACTOR_H_

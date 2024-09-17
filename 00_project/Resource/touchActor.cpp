@@ -9,8 +9,8 @@
 //************************************************************
 #include "manager.h"
 #include "touchActor.h"
-#include "renderer.h"
-#include "model.h"
+
+#include "touchActorCan.h"
 
 //************************************************************
 //	定数宣言
@@ -41,8 +41,9 @@ CListManager<CTouchActor>* CTouchActor::m_pList = nullptr;		// リスト構造
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_ACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
-m_type(TYPE_CAN)		// 種類
+CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_TOUCHACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+m_type(TYPE_CAN),		// 種類
+m_state(STATE_NONE)		// 状態
 {
 
 }
@@ -60,6 +61,9 @@ CTouchActor::~CTouchActor()
 //============================================================
 HRESULT CTouchActor::Init(void)
 {
+	// 値を初期化
+	m_state = STATE_NONE;		// 状態
+
 	// オブジェクトモデルの初期化
 	if (FAILED(CObjectModel::Init()))
 	{ // 初期化に失敗した場合
@@ -120,6 +124,27 @@ void CTouchActor::Update(const float fDeltaTime)
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
+	switch (m_state)
+	{
+	case CTouchActor::STATE_NONE:
+
+		// 通常状態更新処理
+		UpdateNone(fDeltaTime);
+
+		break;
+
+	case CTouchActor::STATE_ACT:
+
+		// アクション状態更新処理
+		UpdateAct(fDeltaTime);
+
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
 	// オブジェクトモデルの更新
 	CObjectModel::Update(fDeltaTime);
 }
@@ -147,23 +172,23 @@ CTouchActor* CTouchActor::Create
 	// モデルUIの生成
 	CTouchActor* pActor = nullptr;
 
-	//switch (type)
-	//{
-	//case CTouchActor::TYPE_CAN:
+	switch (type)
+	{
+	case CTouchActor::TYPE_CAN:
 
-	//	pActor = new CTouchActor;
+		pActor = new CTouchCan;
 
-	//	break;
+		break;
 
-	//case CTouchActor::TYPE_BIRD:
+	case CTouchActor::TYPE_BIRD:
 
-	//	pActor = new CTouchActor;
+		//pActor = new CTouchActor;
 
-	//	break;
-	//default:
-	//	assert(false);
-	//	break;
-	//}
+		break;
+	default:
+		assert(false);
+		break;
+	}
 
 	// アクターの初期化
 	if (FAILED(pActor->Init()))
