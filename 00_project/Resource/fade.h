@@ -15,12 +15,12 @@
 //************************************************************
 #include "scene.h"
 #include "object2D.h"
+#include "objectCircle2D.h"
 
 //************************************************************
 //	前方宣言
 //************************************************************
-class CObjectCircle2D;	// オブジェクトサークル2Dクラス
-class CFadeState;		// フェード状態クラス
+class CFadeState;	// フェード状態クラス
 
 //************************************************************
 //	クラス定義
@@ -78,7 +78,13 @@ public:
 		const float fSubIn		= LEVEL		// インのα値減少量
 	);
 
-//private:	// TODO
+	void SetCropPosition(const D3DXVECTOR3& rPos)	{ m_pCrop->SetVec3Position(rPos); }		// 切り抜き型位置設定
+	D3DXVECTOR3 GetCropPosition(void) const			{ return m_pCrop->GetVec3Position(); }	// 切り抜き型位置取得
+	void SetCropRadius(const float fRadius)			{ m_pCrop->SetRadius(fRadius); }		// 切り抜き型半径設定
+	float GetCropRadius(void)						{ return m_pCrop->GetRadius(); }		// 切り抜き型半径取得
+	float CalcCropRadius(const D3DXVECTOR3& rPos);	// 切り抜き半径計算
+
+private:
 	// メンバ変数
 	std::function<HRESULT(CScene::EMode)> m_pFuncSetMode;	// モード設定関数ポインタ
 	CObjectCircle2D *m_pCrop;	// 切り抜き型情報

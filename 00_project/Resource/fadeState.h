@@ -33,8 +33,8 @@ public:
 	virtual void Uninit(void)	= 0;	// 終了
 	virtual void Update(const float fDeltaTime) = 0;	// 更新
 
-	// 仮想関数
-	virtual void SetContext(CFade* pContext) { m_pContext = pContext; }	// コンテキスト設定
+	// メンバ関数
+	void SetContext(CFade* pContext) { m_pContext = pContext; }	// コンテキスト設定
 
 protected:
 	// メンバ変数

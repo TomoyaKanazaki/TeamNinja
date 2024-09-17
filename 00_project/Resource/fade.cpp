@@ -11,7 +11,6 @@
 #include "manager.h"
 #include "renderer.h"
 #include "loading.h"
-#include "objectCircle2D.h"
 #include "fadeState.h"
 
 //************************************************************
@@ -21,7 +20,7 @@ namespace
 {
 #ifdef _DEBUG
 
-	const CScene::EMode INIT_SCENE = CScene::MODE_TITLE;	// 初期シーン
+	const CScene::EMode INIT_SCENE = CScene::MODE_SELECT;	// 初期シーン
 
 #else	// NDEBUG
 
@@ -33,6 +32,13 @@ namespace
 	const float	LEVEL	 = 5.0f;	// フェードのα値加減量
 
 	const POSGRID2 PART_CIRCLE = POSGRID2(64, 2);	// 切り抜き型の分割数
+	const D3DXVECTOR3 SCREEN_EDGE[] =	// 四つ角の頂点
+	{
+		VEC3_ZERO,								// 左上
+		D3DXVECTOR3(SCREEN_SIZE.x, 0.0f, 0.0f),	// 右上
+		D3DXVECTOR3(0.0f, SCREEN_SIZE.y, 0.0f),	// 左下
+		SCREEN_SIZE,							// 右下
+	};
 }
 
 //************************************************************
@@ -326,7 +332,7 @@ void CFade::SetFade
 	m_pFuncSetMode = nullptr;
 
 	// フェードアウト状態にする
-	ChangeState(new CFadeStateOut);
+	ChangeState(new CFadeStateIrisOut(nullptr));	// あとで修正！
 }
 
 //============================================================
@@ -424,6 +430,30 @@ void CFade::SetLoadFade
 }
 
 //============================================================
+//	切り抜き半径の計算処理
+//============================================================
+float CFade::CalcCropRadius(const D3DXVECTOR3& rPos)
+{
+	float fMaxLength = 0.0f;	// 最大距離
+	for (int i = 0; i < 4; i++)
+	{ // 四頂点分繰り返す
+
+		// 四つ角までの距離を求める
+		D3DXVECTOR3 length = SCREEN_EDGE[i] - rPos;	// 二点間の距離
+		float fLen = fabsf(sqrtf(length.x * length.x + length.y * length.y));	// 距離の絶対値
+		if (fMaxLength < fLen)
+		{ // より遠い距離感の場合
+
+			// 最大距離を更新
+			fMaxLength = fLen;
+		}
+	}
+
+	// 最大距離を返す
+	return fMaxLength;
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CFade *CFade::Create(void)
@@ -467,6 +497,9 @@ HRESULT CFade::ChangeState(CFadeState *pState)
 	assert(m_pState == nullptr);
 	m_pState = pState;
 
+	// 状態にコンテキストを設定
+	m_pState->SetContext(this);
+
 	// 状態インスタンスを初期化
 	if (FAILED(m_pState->Init()))
 	{ // 初期化に失敗した場合
@@ -475,9 +508,6 @@ HRESULT CFade::ChangeState(CFadeState *pState)
 		assert(false);
 		return E_FAIL;
 	}
-
-	// 状態にコンテキストを設定
-	m_pState->SetContext(this);
 
 	// 成功を返す
 	return S_OK;
