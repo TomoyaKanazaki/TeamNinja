@@ -619,7 +619,10 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	}
 
 	// 士気力が減少する
-	CTension::Vanish();
+	for (int i = 0; i < nDamage; ++i)
+	{
+		CTension::Vanish();
+	}
 
 	// ヒットストップさせる
 	CSceneGame::GetHitStop()->SetStop(hit::STOP_TIME);

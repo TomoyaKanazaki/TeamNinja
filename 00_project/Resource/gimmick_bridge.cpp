@@ -440,9 +440,7 @@ void CGimmickBridge::Movement()
 	// ˆÚ“®‚ªŠ®—¹‚µ‚Ä‚¢‚½ê‡ŠÖ”‚ð”²‚¯‚é
 	if (m_bMove)
 	{
-		D3DXVECTOR3 rot = VEC3_ZERO;
-		rot.z = HALF_PI * 0.5f;
-		m_pField->SetVec3Rotation(rot);
+		m_pField->SetVec3Rotation(VEC3_ZERO);
 		return;
 	}
 
