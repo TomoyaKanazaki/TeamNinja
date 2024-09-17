@@ -28,9 +28,7 @@ namespace
 
 #endif	// _DEBUG
 
-	const int	PRIORITY = 7;		// フェードの優先順位
-	const float	LEVEL	 = 5.0f;	// フェードのα値加減量
-
+	const int PRIORITY = 7;	// フェードの優先順位
 	const POSGRID2 PART_CIRCLE = POSGRID2(64, 2);	// 切り抜き型の分割数
 	const D3DXVECTOR3 SCREEN_EDGE[] =	// 四つ角の頂点
 	{
@@ -52,8 +50,8 @@ CFade::CFade() :
 	m_pCrop			(nullptr),		// 切り抜き型情報
 	m_pState		(nullptr),		// 状態
 	m_modeNext		(INIT_SCENE),	// 次シーン
-	m_fInTime		(LEVEL),		// イン時間
-	m_fOutTime		(LEVEL)			// アウト時間
+	m_fInTime		(0.0f),			// イン時間
+	m_fOutTime		(0.0f)			// アウト時間
 {
 
 }
@@ -76,8 +74,8 @@ HRESULT CFade::Init(void)
 	m_pCrop			= nullptr;		// 切り抜き型情報
 	m_pState		= nullptr;		// 状態
 	m_modeNext		= INIT_SCENE;	// 次シーン
-	m_fInTime		= LEVEL;		// イン時間
-	m_fOutTime		= LEVEL;		// アウト時間
+	m_fInTime		= 0.0f;			// イン時間
+	m_fOutTime		= 0.0f;			// アウト時間
 
 	// フェードイン状態にする
 	ChangeState(new CFadeStateIn);

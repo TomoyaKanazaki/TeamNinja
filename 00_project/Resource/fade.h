@@ -85,7 +85,7 @@ public:
 		const float fInTime		= TIME,			// イン時間
 		const float fOutTime	= TIME,			// アウト時間
 		const int nPriority		= PRIORITY,		// 優先順位
-		const D3DXCOLOR& rCol	= XCOL_ABLACK	// 色
+		const D3DXCOLOR& rCol	= XCOL_BLACK	// 色
 	);
 	void SetModeIrisFade	// 次シーン設定 (アイリスフェードのみ)
 	( // 引数

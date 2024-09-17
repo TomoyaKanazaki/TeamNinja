@@ -258,8 +258,31 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 	if (IsMotionFinish())
 	{ // 選択モーションが終了した場合
 
+		// ラムダ式の作成
+		auto func = [](void) -> D3DXVECTOR3
+		{
+			CPlayer* pPlayer = GET_PLAYER;	// プレイヤー情報
+			CCamera* pCamera = GET_CAMERA;	// カメラ情報
+
+			if (pPlayer == nullptr || pCamera == nullptr)
+			{ // プレイヤーかカメラがない場合
+
+				return SCREEN_CENT;
+			}
+
+			if (!pCamera->OnScreen(pPlayer->GetVec3Position()))
+			{ // プレイヤーが画面外の場合
+
+				return SCREEN_CENT;
+			}
+
+			D3DXVECTOR3 posScreen = pCamera->CalcPlayerPos();	// プレイヤー画面座標
+			posScreen.z = 0.0f;	// Z値の値を消す
+			return posScreen;
+		};
+
 		// 設定済みマップパスに遷移
-		GET_MANAGER->SetLoadScene(CScene::MODE_GAME);
+		GET_MANAGER->SetIrisLoadScene(CScene::MODE_GAME, std::bind(func), 0.0f, 0.6f, 1.2f);
 	}
 
 	// セレクト開始モーションを返す
@@ -290,8 +313,7 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 	if (pHitTrans == nullptr) { return; }
 
 	if (pKey->IsTrigger(DIK_RETURN)
-	||  pPad->IsTrigger(CInputPad::KEY_A)
-	||  pPad->IsTrigger(CInputPad::KEY_B))
+	||  pPad->IsTrigger(CInputPad::KEY_A))
 	{
 		// 遷移ポイントインデックスを保存
 		GET_RETENTION->SetTransIdx(CTransPoint::GetList()->GetIndex(pHitTrans));

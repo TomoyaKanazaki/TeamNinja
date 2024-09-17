@@ -1053,8 +1053,11 @@ void CCamera::SetEnableUpdate(const bool bUpdate)
 //==========================================
 D3DXVECTOR3 CCamera::CalcPlayerPos()
 {
+	CPlayer* pPlayer = GET_PLAYER;
+	if (pPlayer == nullptr) { return SCREEN_CENT; }
+
 	// プレイヤー座標を取得
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetCenterPos();
+	D3DXVECTOR3 posPlayer = pPlayer->GetCenterPos();
 
 	//ビューポートの設定
 	D3DVIEWPORT9 vp = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f };
