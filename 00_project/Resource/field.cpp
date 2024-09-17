@@ -83,14 +83,12 @@ namespace
 //************************************************************
 CListManager<CField> *CField::m_pList = nullptr;	// オブジェクトリスト
 CField::STerrainInfo CField::m_aTerrainInfo[TERRAIN_MAX] = {};	// 地形情報
-CField::EZ CField::m_eNear = CField::Z_MIDDLE;	// 最も近い基準線
 
 //************************************************************
 //	スタティックアサート
 //************************************************************
 static_assert(NUM_ARRAY(TEXTURE_FILE) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
 static_assert(NUM_ARRAY(FLAG) == CField::TYPE_MAX, "ERROR : Type Count Mismatch");
-static_assert(NUM_ARRAY(ZLINE) == CField::Z_MAX, "ERROR : Type Count Mismatch");
 
 //************************************************************
 //	子クラス [CField] のメンバ関数
@@ -345,7 +343,7 @@ void CField::SetType(const EType type)
 		// 橋だった場合描画をオフにする
 		if (type == TYPE_XBRIDGE || type == TYPE_ZBRIDGE)
 		{
-			SetEnableDraw(false);
+			//SetEnableDraw(false);
 		}
 	}
 	else { assert(false); }	// 範囲外
@@ -385,29 +383,6 @@ void CField::Miss(CPlayer* pPlayer)
 const char CField::GetFlag() const
 {
 	return FLAG[m_type];
-}
-
-//=========================================
-//  プレイヤーに最も近い基準線を算出
-//===========================================
-CField::EZ CField::CalcNearLine()
-{
-	// プレイヤーのz座標を取得
-	float fPlayerZ = GET_PLAYER->GetVec3Position().z;
-
-	// 中心との距離を比較
-	float fDistance = fPlayerZ - ZLINE[Z_MIDDLE];
-
-	// 返り値を保存する変数
-	EZ eTemp = Z_MIDDLE;
-
-	// 中心との距離が手前に近い場合変数を書き換え
-	if (fDistance > ZLINE[Z_FRONT] * 0.5f) { eTemp = Z_FRONT; }
-
-	// 中心との距離が奥に近い場合変数を書き換え
-	if (fDistance < ZLINE[Z_BACK] * 0.5f) { eTemp = Z_BACK; }
-
-	return eTemp;
 }
 
 //===========================================
