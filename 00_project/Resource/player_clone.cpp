@@ -122,7 +122,6 @@ CPlayerClone::~CPlayerClone()
 HRESULT CPlayerClone::Init(void)
 {
 	// メンバ変数を初期化
-
 	m_pOrbit		= nullptr;			// 軌跡の情報
 	m_move			= VEC3_ZERO;		// 移動量
 	m_Action		= ACTION_MOVE;		// 現在行動
@@ -152,21 +151,8 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-
-	// 軌跡の生成
-	//m_pOrbit = COrbit::Create
-	//( // 引数
-	//	GetParts(MODEL_BODY)->GetPtrMtxWorld(),	// 親マトリックス
-	//	ORBIT_OFFSET,	// オフセット情報
-	//	ORBIT_PART		// 分割数
-	//);
-	//if (m_pOrbit == nullptr)
-	//{ // 非使用中の場合
-
-	//	// 失敗を返す
-	//	assert(false);
-	//	return E_FAIL;
-	//}
+	// 全マテリアルをグレーにする
+	SetAllMaterial(material::Gray());
 
 	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());
