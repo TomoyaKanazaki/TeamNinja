@@ -768,6 +768,7 @@ void CClearSuccessManager::UpdateItemIcon(const float fDeltaTime)
 		m_apGodItemIcon[i]->SetColor(colCur);
 
 		if (!m_aGodItemSound[i] &&
+			m_apGodItemIcon[i]->IsDraw() &&
 			m_apGodItemIcon[i]->GetColor().a >= icon_item::SOUND_ALPHA)
 		{ // ‘å‚«‚³‚ª–Ú“I‚Ì“§–¾“x‚É‹ß‚Ã‚¢‚½ê‡
 
