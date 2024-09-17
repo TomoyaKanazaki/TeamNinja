@@ -685,46 +685,54 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		fRadius
 	};
 
-	if (m_nStateCount > DODGE_COUNT)
-	{ // 回避カウントを過ぎた場合
+	if (m_nStateCount <= DODGE_COUNT) 
+	{ // 回避できる状況の場合
 
-		bool bHit = false;	// ヒット状況
+		// 回避状態を true にする
+		m_bDodge = true;
+	}
+	else 
+	{ // 上記以外
 
-		// ボックスの当たり判定
-		if (collision::Box3D
-		(
-			rPos,				// 判定位置
-			posPlayer,			// 判定目標位置
-			ATTACK_COLLUP,		// 判定サイズ(右・上・後)
-			ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
-			sizeUpPlayer,		// 判定目標サイズ(右・上・後)
-			sizeDownPlayer		// 判定目標サイズ(左・下・前)
-		))
-		{ // 当たっていた場合
-
-			// 自身とプレイヤーを結ぶベクトルを算出
-			D3DXVECTOR3 vec = posPlayer - rPos;
-
-			if (CScene::GetPlayer()->HitKnockBack(500, vec))
-			{ // 攻撃が当たった場合
-
-				// 攻撃音を鳴らす
-				PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
-			}
-
-			// ヒット状況を true にする
-			bHit = true;
-		}
-
-		// 回避受付フラグを false にする
+		// 回避状態を false にする
 		m_bDodge = false;
-
-		// ヒット状況 を返す
-		return bHit;
 	}
 
-	// 回避可能エフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\redcross.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DODGE_EFFECT_SCALE, false);
+	// ボックスの当たり判定
+	if (collision::Box3D
+	(
+		rPos,				// 判定位置
+		posPlayer,			// 判定目標位置
+		ATTACK_COLLUP,		// 判定サイズ(右・上・後)
+		ATTACK_COLLDOWN,	// 判定サイズ(左・下・前)
+		sizeUpPlayer,		// 判定目標サイズ(右・上・後)
+		sizeDownPlayer		// 判定目標サイズ(左・下・前)
+	))
+	{ // 当たっていた場合
+
+		if (m_bDodge)
+		{ // 回避出来る場合
+
+			// 回避可能エフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\redcross.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, DODGE_EFFECT_SCALE, false);
+
+			// false を返す
+			return false;
+		}
+
+		// 自身とプレイヤーを結ぶベクトルを算出
+		D3DXVECTOR3 vec = posPlayer - rPos;
+
+		if (CScene::GetPlayer()->HitKnockBack(500, vec))
+		{ // 攻撃が当たった場合
+
+			// 攻撃音を鳴らす
+			PLAY_SOUND(sound::ATTACK_LABEL[m_type]);
+		}
+
+		// true を返す
+		return true;
+	}
 
 	// false を返す
 	return false;
