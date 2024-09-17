@@ -56,6 +56,11 @@ namespace
 		44,		// しつこい敵
 		34,		// 狼敵
 	};
+	const int DAMAGE[CEnemyAttack::TYPE_MAX] =			// ダメージ
+	{
+		2,	// しつこい敵
+		1,	// 狼敵
+	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の遷移カウント
 	{
 		340,	// しつこい敵
@@ -719,7 +724,7 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		// 自身とプレイヤーを結ぶベクトルを算出
 		D3DXVECTOR3 vec = posPlayer - rPos;
 
-		if (CScene::GetPlayer()->HitKnockBack(500, vec))
+		if (CScene::GetPlayer()->HitKnockBack(DAMAGE[m_type], vec))
 		{ // 攻撃が当たった場合
 
 			// 攻撃音を鳴らす

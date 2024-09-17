@@ -71,7 +71,6 @@ bool CCollisionPolygon::Hit
 	if (m_pPolygon->GetInside(rPos))
 	{ // “à‘¤‚É‚¢‚éê‡
 
-		// TODOF‚±‚Ì•³”»’è‚Ç‚¤‚É‚©‚µ‚½•û‚ª‚¢‚¢
 		if (fPosY > rPos.y &&
 			fPosY < rPos.y + fHeight)
 		{ // Œ»Ý’n‚ªƒ|ƒŠƒSƒ“‚æ‚è‚‚©‚Á‚½ê‡

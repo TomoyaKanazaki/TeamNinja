@@ -79,21 +79,28 @@ namespace
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
-	const COrbit::SOffset ORBIT_OFFSET[CPlayer::MAX_ORBIT] =			// 軌跡のオフセット情報
+	const COrbit::SOffset BODYORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// 体の軌跡のオフセット情報
+	{
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 17.0f, 0.0f), D3DXVECTOR3(0.0f, -7.0f, 0.0f), XCOL_WHITE),
+		COrbit::SOffset(D3DXVECTOR3(12.0f, 5.0f, 0.0f), D3DXVECTOR3(-12.0f, 5.0f, 0.0f), XCOL_WHITE),
+	};
+	const COrbit::SOffset JUMPORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// ジャンプ軌跡のオフセット情報
 	{
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 	};
-	const int ORBIT_PART_NUMBER[CPlayer::MAX_ORBIT] =		// 軌跡のパーツの番号
+	const int BODYORBIT_PART_NUMBER = CPlayer::MODEL_BODY;			// 体の軌跡のパーツの番号
+	const int JUMPORBIT_PART_NUMBER[CPlayer::MAX_JUMPORBIT] =	// ジャンプ軌跡のパーツの番号
 	{
 		CPlayer::MODEL_HANDL,
 		CPlayer::MODEL_HANDR,
 		CPlayer::MODEL_FOOTL,
 		CPlayer::MODEL_FOOTR
 	};
-	const int ORBIT_PART = 15;	// 分割数
+	const int BODYORBIT_PART = 10;	// 分割数
+	const int JUMPORBIT_PART = 15;	// 分割数
 
 	const float	NORMAL_MOVE = 480;	// 通常の移動量
 	const float	STEALTH_MOVE = 0.3f;	// 忍び足の移動量
@@ -169,6 +176,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_posTeleport		(VEC3_ZERO),	// テレポート位置
 	m_nCounterTeleport	(0)				// テレポートカウント
 {
+	// 軌跡のメモリセット
+	memset(&m_apBodyOrbit[0], 0, sizeof(m_apBodyOrbit));
+	memset(&m_apJumpOrbit[0], 0, sizeof(m_apJumpOrbit));
 }
 
 //============================================================
@@ -185,7 +195,8 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_apOrbit[0], 0, sizeof(m_apOrbit));		// 軌跡の情報
+	memset(&m_apBodyOrbit[0], 0, sizeof(m_apBodyOrbit));		// 体の軌跡の情報
+	memset(&m_apJumpOrbit[0], 0, sizeof(m_apJumpOrbit));		// ジャンプ軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
 	m_destRot		= VEC3_ZERO;	// 目標向き
@@ -211,16 +222,37 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の生成
-		m_apOrbit[nCnt] = COrbit::Create
+		m_apBodyOrbit[nCntBody] = COrbit::Create
 		( // 引数
-			GetParts(ORBIT_PART_NUMBER[nCnt])->GetPtrMtxWorld(),	// 親マトリックス
-			ORBIT_OFFSET[nCnt],	// オフセット情報
-			ORBIT_PART		// 分割数
+			GetParts(BODYORBIT_PART_NUMBER)->GetPtrMtxWorld(),	// 親マトリックス
+			BODYORBIT_OFFSET[nCntBody],	// オフセット情報
+			BODYORBIT_PART				// 分割数
 		);
-		if (m_apOrbit[nCnt] == nullptr)
+		if (m_apBodyOrbit[nCntBody] == nullptr)
+		{ // 非使用中の場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// 表示する
+		m_apBodyOrbit[nCntBody]->SetState(COrbit::STATE_NORMAL);
+	}
+
+	for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+	{
+		// 軌跡の生成
+		m_apJumpOrbit[nCntJump] = COrbit::Create
+		( // 引数
+			GetParts(JUMPORBIT_PART_NUMBER[nCntJump])->GetPtrMtxWorld(),	// 親マトリックス
+			JUMPORBIT_OFFSET[nCntJump],	// オフセット情報
+			JUMPORBIT_PART			// 分割数
+		);
+		if (m_apJumpOrbit[nCntJump] == nullptr)
 		{ // 非使用中の場合
 
 			// 失敗を返す
@@ -229,7 +261,7 @@ HRESULT CPlayer::Init(void)
 		}
 
 		// 表示しない
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH);
+		m_apJumpOrbit[nCntJump]->SetState(COrbit::STATE_VANISH);
 	}
 
 	if (m_pList == nullptr)
@@ -291,10 +323,16 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の終了
-		SAFE_UNINIT(m_apOrbit[nCnt]);
+		SAFE_UNINIT(m_apBodyOrbit[nCntBody]);
+	}
+
+	for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+	{
+		// 軌跡の終了
+		SAFE_UNINIT(m_apJumpOrbit[nCntJump]);
 	}
 
 	// 回帰UIの削除
@@ -354,18 +392,30 @@ void CPlayer::Update(const float fDeltaTime)
 		m_pDodge->Update(GetVec3Position());
 	}
 
-	int nMotion = GetMotionType();
-
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の更新
-		if (m_apOrbit[nCnt] == nullptr) { return; }
-
-		// ハイジャンプ中の場合、表示する
-		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
+		if (m_apBodyOrbit[nCntBody] == nullptr) { return; }
 
 		// 更新処理
-		m_apOrbit[nCnt]->Update(fDeltaTime);
+		m_apBodyOrbit[nCntBody]->Update(fDeltaTime);
+	}
+
+	{ // 軌跡の更新
+
+		int nMotion = GetMotionType();
+
+		for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+		{
+			// 軌跡の更新
+			if (m_apJumpOrbit[nCntJump] == nullptr) { return; }
+
+			// ハイジャンプ中の場合、表示する
+			if (nMotion != MOTION_JUMP_HIGH) { m_apJumpOrbit[nCntJump]->SetState(COrbit::STATE_VANISH); }
+
+			// 更新処理
+			m_apJumpOrbit[nCntJump]->Update(fDeltaTime);
+		}
 	}
 
 	// モーション・オブジェクトキャラクターの更新
@@ -848,10 +898,10 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// モーションの設定
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
 	{
 		// 表示する
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -1963,13 +2013,13 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 	// 待機状態に戻す
 	m_state = STATE_NORMAL;
 
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
 	{
 		// 軌跡の更新
-		if (m_apOrbit[nCnt] == nullptr) { return; }
+		if (m_apJumpOrbit[nCnt] == nullptr) { return; }
 
 		// 軌跡を消す
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+		m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NONE);
 	}
 
 	while (CTension::GetUseNum() < TELEPORT_CLONE)

@@ -40,7 +40,8 @@ class CPlayer : public CObjectChara
 public:
 
 	// 静的メンバ変数宣言
-	static constexpr int MAX_ORBIT = 4;		// 軌跡の総数
+	static constexpr int MAX_BODYORBIT = 2;		// 体の軌跡の総数
+	static constexpr int MAX_JUMPORBIT = 4;		// ジャンプ軌跡の総数
 
 	// 種類列挙
 	enum EType
@@ -248,7 +249,8 @@ private:
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 
-	COrbit			*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
+	COrbit			*m_apBodyOrbit[MAX_BODYORBIT];	// 体の軌跡の情報
+	COrbit			*m_apJumpOrbit[MAX_JUMPORBIT];	// ジャンプ時の軌跡の情報
 	CPlayerBackUI	*m_pBackUI;				// 回帰UIの情報
 	CPlayerDodge	*m_pDodge;				// 回避エフェクトの情報
 	D3DXVECTOR3		m_oldPos;				// 過去位置

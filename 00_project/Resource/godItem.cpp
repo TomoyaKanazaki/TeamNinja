@@ -33,6 +33,8 @@ namespace
 
 	const float ADD_ROT = 0.03f;		// 向きの追加量
 	const float ADD_HEIGHT = 25.0f;		// 高さの追加量
+	const D3DXVECTOR3 ROLL_DEST_POS = D3DXVECTOR3(0.0f, 100.0f, 0.0f);	// 回転状態の移動目標位置
+	const D3DXVECTOR3 ROLL_ROT = D3DXVECTOR3(0.0f, 4.5f, 0.0f);			// 回転状態の向き
 }
 
 //************************************************************
@@ -285,9 +287,8 @@ void CGodItem::SetRollPosition(void)
 	// 総数が全種類以上の場合エラー
 	if (m_pList->GetNumAll() > TYPE_MAX) { assert(false); }
 
-	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();				// プレイヤー位置
-	D3DXVECTOR3 posDest = posPlayer + D3DXVECTOR3(0.0f, 100.0f, 0.0f);	// 移動目標位置
-	// TODO：定数化
+	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 posDest = posPlayer + ROLL_DEST_POS;		// 移動目標位置
 
 	for (auto& item : m_pList->GetList())
 	{
@@ -691,7 +692,5 @@ void CGodItem::UpdateRoll(const float fDeltaTime)
 	//	向きの設定
 	//--------------------------------------------------------
 	// 向きを回転
-	SetVec3Rotation(GetVec3Rotation() + D3DXVECTOR3(0.0f, 4.5f, 0.0f) * fDeltaTime);
-
-	// TODO：定数化
+	SetVec3Rotation(GetVec3Rotation() + ROLL_ROT * fDeltaTime);
 }

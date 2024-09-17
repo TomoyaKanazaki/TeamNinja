@@ -455,7 +455,7 @@ void CEnemyStalk::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// TODO：警戒モーションの設定
+			// 待機モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
 			// 独自状態にする

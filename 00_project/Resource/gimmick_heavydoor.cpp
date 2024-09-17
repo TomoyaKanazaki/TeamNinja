@@ -457,7 +457,7 @@ void CGimmickHeavyDoor::CloseTheDoor(D3DXVECTOR3& rPos)
 	m_move.y -= GRAVITY;
 
 	// 範囲外の着地判定
-	if (pStage->LandFieldPosition(rPos, m_oldPosDoor, m_move))	// TODO：バウンドさせよう
+	if (pStage->LandFieldPosition(rPos, m_oldPosDoor, m_move))
 	{
 		m_move = VEC3_ZERO;		// 移動量
 		m_state = STATE_CLOSE;	// 扉閉じてる状態
