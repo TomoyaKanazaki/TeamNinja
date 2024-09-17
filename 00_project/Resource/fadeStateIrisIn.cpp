@@ -16,7 +16,10 @@
 //============================================================
 //	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //============================================================
-CFadeStateIrisIn::CFadeStateIrisIn()
+CFadeStateIrisIn::CFadeStateIrisIn(std::function<D3DXVECTOR3(void)> pFuncPos) :
+	m_pFuncPos	(pFuncPos),	// Ø‚è”²‚«Œ^ˆÊ’uŠÖ”ƒ|ƒCƒ“ƒ^
+	m_fInitRad	(0.0f),		// ‰Šú”¼Œa
+	m_fCurTime	(0.0f)		// Œ»Ý‚ÌŒo‰ßŽžŠÔ
 {
 
 }
@@ -34,6 +37,10 @@ CFadeStateIrisIn::~CFadeStateIrisIn()
 //============================================================
 HRESULT CFadeStateIrisIn::Init(void)
 {
+	// ƒƒ“ƒo•Ï”‚ð‰Šú‰»
+	m_fInitRad	= 0.0f;	// ‰Šú”¼Œa
+	m_fCurTime	= 0.0f;	// Œ»Ý‚ÌŒo‰ßŽžŠÔ
+
 	// ¬Œ÷‚ð•Ô‚·
 	return S_OK;
 }
@@ -52,5 +59,29 @@ void CFadeStateIrisIn::Uninit(void)
 //============================================================
 void CFadeStateIrisIn::Update(const float fDeltaTime)
 {
+	D3DXVECTOR3 posIris = (m_pFuncPos == nullptr) ? SCREEN_CENT : m_pFuncPos();	// Ø‚è”²‚«Œ^ˆÊ’u
+	m_pContext->SetCropPosition(posIris);	// Ø‚è”²‚«Œ^‚ÌˆÊ’u‚ðÝ’è
 
+	// ƒ^ƒCƒ}[‚ð‰ÁŽZ
+	m_fCurTime += fDeltaTime;
+
+	float fEndRadius = m_pContext->CalcCropRadius(posIris);	// Ø‚è”²‚«Å‘å”¼Œa
+	const float fDiffRad = fEndRadius - m_fInitRad;			// ”¼Œa·•ª
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, 1.0f);	// Œo‰ßŽž‚ÌŠ„‡‚ðŒvŽZ
+
+	// ”¼Œa‚ð”½‰f
+	m_pContext->SetCropRadius(m_fInitRad + (fDiffRad * fRate));
+
+	if (m_fCurTime >= 1.0f)
+	{ // ‘å‚«‚­‚È‚«‚Á‚½ê‡
+
+		// ”¼Œa‚ð•â³
+		m_pContext->SetCropRadius(fEndRadius);
+
+		// Ø‚è”²‚«æ‚Ìƒ|ƒŠƒSƒ“‚ð“§–¾‚É‚·‚é
+		m_pContext->SetAlpha(0.0f);
+
+		// ‰½‚à‚µ‚È‚¢ó‘Ô‚É‚·‚é
+		m_pContext->ChangeState(new CFadeStateNone);
+	}
 }

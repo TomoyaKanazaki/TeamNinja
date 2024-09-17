@@ -359,13 +359,21 @@ HRESULT CFont::SearchFolderAll(const std::string &rFolderPath)
 		else
 		{ // ファイルだった場合
 
-			// フォントを読込
-			if (FAILED(Load(sFullPath.c_str())))
-			{ // 登録に失敗した場合
+			std::filesystem::path fsFullPath = sFullPath.c_str();		// ファイルパス
+			std::filesystem::path fsExtension = fsFullPath.extension();	// 拡張子
 
-				// 失敗を返す
-				assert(false);
-				return E_FAIL;
+			if (fsExtension == ".ttf"
+			||  fsExtension == ".otf")
+			{ // 拡張子がフォント形式である場合
+
+				// フォントを読込
+				if (FAILED(Load(sFullPath.c_str())))
+				{ // 登録に失敗した場合
+
+					// 失敗を返す
+					assert(false);
+					return E_FAIL;
+				}
 			}
 		}
 

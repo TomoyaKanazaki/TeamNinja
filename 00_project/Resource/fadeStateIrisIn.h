@@ -23,7 +23,7 @@ class CFadeStateIrisIn : public CFadeState
 {
 public:
 	// コンストラクタ
-	CFadeStateIrisIn();
+	CFadeStateIrisIn(std::function<D3DXVECTOR3(void)> pFuncPos);
 
 	// デストラクタ
 	~CFadeStateIrisIn() override;
@@ -32,6 +32,12 @@ public:
 	HRESULT Init(void) override;	// 初期化
 	void Uninit(void) override;		// 終了
 	void Update(const float fDeltaTime) override;	// 更新
+
+private:
+	// メンバ変数
+	std::function<D3DXVECTOR3(void)> m_pFuncPos;	// 切り抜き型位置関数ポインタ
+	float m_fInitRad;	// 初期半径
+	float m_fCurTime;	// 現在の経過時間
 };
 
 #endif	// _FADE_STATE_IRISIN_H_
