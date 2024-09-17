@@ -687,6 +687,9 @@
     <ClInclude Include="Resource\fog_change.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\player_dodge.h">
+      <Filter>InGame\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1291,6 +1294,9 @@
     </ClCompile>
     <ClCompile Include="Resource\fog_change.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\player_dodge.cpp">
+      <Filter>InGame\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

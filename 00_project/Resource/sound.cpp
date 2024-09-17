@@ -332,10 +332,20 @@ HRESULT CSound::Play(ELabel label)
 	if (xa2state.BuffersQueued != 0)
 	{ // 再生中
 
-		// 再生に失敗したら、停止
-		if (FAILED(m_apSourceVoice[label]->Start(0))) { assert(false); }
+		if (label == LABEL_SE_GRASS_000)
+		{ // 草の音の場合
 
-		return E_FAIL;
+			// 重ねて再生
+			if (FAILED(m_apSourceVoice[label]->Start(0))) { assert(false); }
+
+			return E_FAIL;
+		}
+
+		// 一時停止
+		m_apSourceVoice[label]->Stop(0);
+
+		// オーディオバッファの削除
+		m_apSourceVoice[label]->FlushSourceBuffers();
 	}
 
 	// オーディオバッファの登録
