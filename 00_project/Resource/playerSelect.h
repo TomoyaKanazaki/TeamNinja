@@ -34,15 +34,20 @@ public:
 	void Update(const float fDeltaTime) override;			// 更新
 	EMotion UpdateState(const float fDeltaTime) override;	// 状態更新
 	void SetSpawn(void) override;	// スポーン設定
+	void SetEnter(void) override;	// 入場設定
 
 private:
 	// メンバ関数
 	EMotion UpdateSpawn(const float fDeltaTime);	// スポーン状態時の更新
 	EMotion UpdateNormal(const float fDeltaTime);	// 通常状態時の更新
+	EMotion UpdateWait(const float fDeltaTime);		// 待機状態時の更新
 	EMotion UpdateEnter(const float fDeltaTime);	// 入場状態時の更新
 	EMotion UpdateOpen(const float fDeltaTime);		// 解放状態時の更新
 	void UpdateTrans(D3DXVECTOR3& rPos);			// ステージ遷移の更新
-	void SetEnter(const char* pTransMapPath);		// 入場設定
+	void SetWait(const char* pTransMapPath);		// 待機設定
+
+	// メンバ変数
+	std::string m_sSelectPath;	// 選択中の遷移先マップパス
 };
 
 #endif	// _PLAYER_SELECT_H_

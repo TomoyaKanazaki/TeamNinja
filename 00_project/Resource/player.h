@@ -146,8 +146,9 @@ public:
 
 	// 仮想関数
 	virtual EMotion UpdateState(const float fDeltaTime);	// 状態更新
-	virtual void SetSpawn(void);	// 出現設定
-	virtual void SetStart(void);	// 演出開始設定
+	virtual void SetSpawn(void);					// 出現設定
+	virtual void SetStart(void) { assert(false); }	// 演出開始設定
+	virtual void SetEnter(void) { assert(false); }	// 入場設定
 
 	// 静的メンバ関数
 	static CPlayer *Create	// 生成
