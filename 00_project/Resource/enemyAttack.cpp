@@ -45,6 +45,7 @@ namespace
 	const float SHAKEOFF_RANGE = 1000.0f;			// 振り切れる距離
 	const float DIVERSION_EFFECT_SCALE = 18.0f;		// 分身との戦闘エフェクトの大きさ
 	const int REGRESSION_COUNT = 120;				// 回帰するカウント数
+	const D3DXVECTOR3 HIT_EFFECT_SHIFT = D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// ヒットエフェクトのずらす幅
 
 	const int WARNING_COUNT[CEnemyAttack::TYPE_MAX] =	// 警告状態の遷移カウント
 	{
@@ -55,6 +56,11 @@ namespace
 	{
 		44,		// しつこい敵
 		34,		// 狼敵
+	};
+	const int DAMAGE[CEnemyAttack::TYPE_MAX] =			// ダメージ
+	{
+		2,	// しつこい敵
+		1,	// 狼敵
 	};
 	const int BLANKATTACK_COUNT[CEnemyAttack::TYPE_MAX] =		// 空白攻撃状態の遷移カウント
 	{
@@ -70,6 +76,17 @@ namespace
 	{
 		36,		// しつこい敵
 		28		// 狼敵
+	};
+
+	const char* HIT_EFFECT[CEnemyAttack::TYPE_MAX] =		// ヒットエフェクト
+	{
+		"data\\EFFEKSEER\\hit.efkefc",				// しつこい敵
+		"data\\EFFEKSEER\\hit_wolf.efkefc",			// 狼敵
+	};
+	const float HIT_EFFECT_SCALE[CEnemyAttack::TYPE_MAX] =	// ヒットエフェクトの拡大率
+	{
+		250.0f,		// しつこい敵
+		160.0f,		// 狼敵
 	};
 
 	const char* ATTACK_EFFECT[CEnemyAttack::TYPE_MAX] =		// 攻撃エフェクト
@@ -719,8 +736,11 @@ bool CEnemyAttack::HitPlayer(const D3DXVECTOR3& rPos)
 		// 自身とプレイヤーを結ぶベクトルを算出
 		D3DXVECTOR3 vec = posPlayer - rPos;
 
-		if (CScene::GetPlayer()->HitKnockBack(500, vec))
+		if (CScene::GetPlayer()->HitKnockBack(DAMAGE[m_type], vec))
 		{ // 攻撃が当たった場合
+
+			// ヒットエフェクトを出す
+			GET_EFFECT->Create(HIT_EFFECT[m_type], GetVec3Position() + HIT_EFFECT_SHIFT, CScene::GetPlayer()->GetVec3Rotation(), VEC3_ZERO, HIT_EFFECT_SCALE[m_type]);
 
 			// 攻撃音を鳴らす
 			PLAY_SOUND(sound::ATTACK_LABEL[m_type]);

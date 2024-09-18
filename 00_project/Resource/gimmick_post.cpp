@@ -217,8 +217,6 @@ D3DXVECTOR3 CGimmickPost::CalcWaitRotation(const int Idx, const CPlayerClone* pC
 	// 受け取ったインデックスが最大値を超えている場合警告
 	if (Idx > GetNumActive()) { assert(false); }
 
-	// TODO：向き計算どうしよ
-
 	// プレイヤーの位置を取得
 	D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
 

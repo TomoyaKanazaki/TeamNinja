@@ -29,6 +29,7 @@ namespace
 		"data\\TEXTURE\\grass004.png",
 	};
 
+	const D3DXVECTOR3 SIZING = D3DXVECTOR3(45.0f, 80.0f, 0.0f);		// サイズ
 	const int	PRIORITY	 = 6;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
@@ -115,7 +116,7 @@ HRESULT CWeed::Init(void)
 	pRenderState->SetLighting(false);
 
 	// 大きさを設定
-	SetVec3Sizing(D3DXVECTOR3(45.0f, 80.0f, 0.0f));	// TODO
+	SetVec3Sizing(SIZING);
 
 	if (m_pList == nullptr)
 	{ // リストマネージャーが存在しない場合

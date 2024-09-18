@@ -427,7 +427,7 @@ void CEnemyWolf::UpdateMotion(int nMotion, const float fDeltaTime)
 		if (IsMotionFinish())
 		{ // モーションが再生終了した場合
 
-			// TODO：警戒モーションの設定
+			// 待機モーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_TURN);
 
 			// 独自状態にする
@@ -471,7 +471,6 @@ void CEnemyWolf::UpdateLanding(D3DXVECTOR3* pPos)
 	if (!IsJump())
 	{ // 空中にいない場合
 
-		//  TODO：なぜかここで待機モーションになってる→ループモーションだからだ
 		if (GetMotionType() == MOTION_FALL)
 		{ // モーションが落下中の場合
 
@@ -557,7 +556,7 @@ void CEnemyWolf::NavMoitonSet(int* pMotion)
 		// 構えた音を鳴らす
 		PLAY_SOUND(CSound::LABEL_SE_WOLFSTANCE_000);
 
-		// TODO：構えモーションを返す
+		// 吠えているモーションを返す
 		return MOTION_FOUND;
 	}
 

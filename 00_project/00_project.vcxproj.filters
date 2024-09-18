@@ -693,6 +693,15 @@
     <ClInclude Include="Resource\rankingManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\touchActor.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\touchActorCan.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\touchActorBird.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1303,6 +1312,15 @@
     </ClCompile>
     <ClCompile Include="Resource\rankingManager.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActor.cpp">
+      <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorCan.cpp">
+      <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorBird.cpp">
+      <Filter>InGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

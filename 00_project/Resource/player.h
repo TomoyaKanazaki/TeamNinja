@@ -40,7 +40,8 @@ class CPlayer : public CObjectChara
 public:
 
 	// 静的メンバ変数宣言
-	static constexpr int MAX_ORBIT = 4;		// 軌跡の総数
+	static constexpr int MAX_BODYORBIT = 2;		// 体の軌跡の総数
+	static constexpr int MAX_JUMPORBIT = 4;		// ジャンプ軌跡の総数
 
 	// 種類列挙
 	enum EType
@@ -124,6 +125,7 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_DAMAGE,	// ダメージ状態
 		STATE_DROWN,	// 溺死状態
+		STATE_BACKWAIT,	// チェックポイントリセット待機状態
 
 		STATE_MAX	// この列挙型の総数
 	};
@@ -221,6 +223,7 @@ private:
 	EMotion UpdateDeath(const float fDeltaTime);	// 死亡状態時の更新
 	EMotion UpdateDamage(const float fDeltaTime);	// ダメージ状態時の更新
 	EMotion UpdateDrown(const float fDeltaTime);	// 溺死状態時の更新
+	EMotion UpdateBackWait(const float fDeltaTime);	// チェックポイントリセット待機時の更新
 	void UpdateOldPosition(void);					// 過去位置の更新
 	void UpdateMotion(int nMotion, const float fDeltaTime);	// モーション・キャラクターの更新
 	void ResetStack();								// スタック状態のリセット
@@ -233,8 +236,9 @@ private:
 	void FloorEdgeJump(); // 床際のジャンプ処理
 
 	// メンバ関数 (小原追加)
-	void CollisionCoin(const D3DXVECTOR3& pos);				// コインとの当たり判定
-	void CollisionGodItem(const D3DXVECTOR3& pos);			// 神器との当たり判定
+	void CollisionCoin(const D3DXVECTOR3& rPos);			// コインとの当たり判定
+	void CollisionGodItem(const D3DXVECTOR3& rPos);			// 神器との当たり判定
+	void CollisionTouchActor(const D3DXVECTOR3& rPos);		// タッチアクターとの当たり判定
 
 #ifdef _DEBUG
 
@@ -250,7 +254,8 @@ private:
 	// メンバ変数
 	CListManager<CPlayer>::AIterator m_iterator;	// イテレーター
 
-	COrbit			*m_apOrbit[MAX_ORBIT];	// 軌跡の情報
+	COrbit			*m_apBodyOrbit[MAX_BODYORBIT];	// 体の軌跡の情報
+	COrbit			*m_apJumpOrbit[MAX_JUMPORBIT];	// ジャンプ時の軌跡の情報
 	CPlayerBackUI	*m_pBackUI;				// 回帰UIの情報
 	CPlayerDodge	*m_pDodge;				// 回避エフェクトの情報
 	D3DXVECTOR3		m_oldPos;				// 過去位置

@@ -273,7 +273,7 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 
 	if (GetMotionWholeCounter() == 58)
 	{
-		// TODO：開始エフェクトを生成
+		// 開始エフェクトを生成
 		GET_EFFECT->Create("data\\EFFEKSEER\\toonsmoke.efkefc", GetVec3Position(), VEC3_ZERO, VEC3_ZERO, 17.0f);
 
 		// 煙音を鳴らす

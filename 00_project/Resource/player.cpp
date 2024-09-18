@@ -36,6 +36,7 @@
 #include "actor.h"
 #include "coin.h"
 #include "godItem.h"
+#include "touchActor.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
@@ -79,21 +80,29 @@ namespace
 	const D3DXVECTOR3 OFFSET_JUMP	= D3DXVECTOR3(0.0f, 80.0f, 0.0f);	// 大ジャンプエフェクトの発生位置オフセット
 	const float SPAWN_ADD_HEIGHT = 5000.0f;		// スポーン状態で上げる高さ
 
-	const COrbit::SOffset ORBIT_OFFSET[CPlayer::MAX_ORBIT] =			// 軌跡のオフセット情報
+	const char* BODY_ORBIT_TEXTURE = "data\\TEXTURE\\orbit001.png";		// 体の軌跡のテクスチャパス
+	const COrbit::SOffset BODYORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// 体の軌跡のオフセット情報
+	{
+		COrbit::SOffset(D3DXVECTOR3(0.0f, 40.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), XCOL_WHITE),
+		COrbit::SOffset(D3DXVECTOR3(20.0f, 20.0f, 0.0f), D3DXVECTOR3(-20.0f, 20.0f, 0.0f), XCOL_WHITE),
+	};
+	const COrbit::SOffset JUMPORBIT_OFFSET[CPlayer::MAX_JUMPORBIT] =	// ジャンプ軌跡のオフセット情報
 	{
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 		COrbit::SOffset(D3DXVECTOR3(0.0f, 5.0f, 0.0f), D3DXVECTOR3(0.0f, -5.0f, 0.0f), XCOL_CYAN),
 	};
-	const int ORBIT_PART_NUMBER[CPlayer::MAX_ORBIT] =		// 軌跡のパーツの番号
+	const int BODYORBIT_PART_NUMBER = CPlayer::MODEL_BODY;			// 体の軌跡のパーツの番号
+	const int JUMPORBIT_PART_NUMBER[CPlayer::MAX_JUMPORBIT] =	// ジャンプ軌跡のパーツの番号
 	{
 		CPlayer::MODEL_HANDL,
 		CPlayer::MODEL_HANDR,
 		CPlayer::MODEL_FOOTL,
 		CPlayer::MODEL_FOOTR
 	};
-	const int ORBIT_PART = 15;	// 分割数
+	const int BODYORBIT_PART = 20;	// 分割数
+	const int JUMPORBIT_PART = 15;	// 分割数
 
 	const float	NORMAL_MOVE = 480;	// 通常の移動量
 	const float	STEALTH_MOVE = 0.3f;	// 忍び足の移動量
@@ -105,7 +114,7 @@ namespace
 	const int TELEPORT_CLONE = 5; // 回帰したときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
-	const int DROWN_IRIS_COUNT = 17; // 溺死状態でアイリスアウトするカウント数
+	const int IRIS_COUNT = 17; // 溺死状態でアイリスアウトするカウント数
 	const int DROWN_COUNT = 70; // 溺死状態のカウント数
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
@@ -169,6 +178,9 @@ CPlayer::CPlayer() : CObjectChara(CObject::LABEL_PLAYER, CObject::SCENE_MAIN, CO
 	m_posTeleport		(VEC3_ZERO),	// テレポート位置
 	m_nCounterTeleport	(0)				// テレポートカウント
 {
+	// 軌跡のメモリセット
+	memset(&m_apBodyOrbit[0], 0, sizeof(m_apBodyOrbit));
+	memset(&m_apJumpOrbit[0], 0, sizeof(m_apJumpOrbit));
 }
 
 //============================================================
@@ -185,7 +197,8 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// メンバ変数を初期化
-	memset(&m_apOrbit[0], 0, sizeof(m_apOrbit));		// 軌跡の情報
+	memset(&m_apBodyOrbit[0], 0, sizeof(m_apBodyOrbit));		// 体の軌跡の情報
+	memset(&m_apJumpOrbit[0], 0, sizeof(m_apJumpOrbit));		// ジャンプ軌跡の情報
 	m_oldPos		= VEC3_ZERO;	// 過去位置
 	m_move			= VEC3_ZERO;	// 移動量
 	m_destRot		= VEC3_ZERO;	// 目標向き
@@ -211,16 +224,46 @@ HRESULT CPlayer::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+#if 0
+
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の生成
-		m_apOrbit[nCnt] = COrbit::Create
+		m_apBodyOrbit[nCntBody] = COrbit::Create
 		( // 引数
-			GetParts(ORBIT_PART_NUMBER[nCnt])->GetPtrMtxWorld(),	// 親マトリックス
-			ORBIT_OFFSET[nCnt],	// オフセット情報
-			ORBIT_PART		// 分割数
+			GetParts(BODYORBIT_PART_NUMBER)->GetPtrMtxWorld(),	// 親マトリックス
+			BODYORBIT_OFFSET[nCntBody],	// オフセット情報
+			BODYORBIT_PART,				// 分割数
+			10,							// テクスチャの分割数
+			false						// 加算合成状況
 		);
-		if (m_apOrbit[nCnt] == nullptr)
+		if (m_apBodyOrbit[nCntBody] == nullptr)
+		{ // 非使用中の場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+
+		// テクスチャを割り当て
+		m_apBodyOrbit[nCntBody]->BindTexture(BODY_ORBIT_TEXTURE);
+
+		// 表示する
+		m_apBodyOrbit[nCntBody]->SetState(COrbit::STATE_NORMAL);
+	}
+
+#endif // 0
+
+	for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+	{
+		// 軌跡の生成
+		m_apJumpOrbit[nCntJump] = COrbit::Create
+		( // 引数
+			GetParts(JUMPORBIT_PART_NUMBER[nCntJump])->GetPtrMtxWorld(),	// 親マトリックス
+			JUMPORBIT_OFFSET[nCntJump],	// オフセット情報
+			JUMPORBIT_PART			// 分割数
+		);
+		if (m_apJumpOrbit[nCntJump] == nullptr)
 		{ // 非使用中の場合
 
 			// 失敗を返す
@@ -229,7 +272,7 @@ HRESULT CPlayer::Init(void)
 		}
 
 		// 表示しない
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH);
+		m_apJumpOrbit[nCntJump]->SetState(COrbit::STATE_VANISH);
 	}
 
 	if (m_pList == nullptr)
@@ -291,10 +334,16 @@ HRESULT CPlayer::Init(void)
 //============================================================
 void CPlayer::Uninit(void)
 {
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の終了
-		SAFE_UNINIT(m_apOrbit[nCnt]);
+		SAFE_UNINIT(m_apBodyOrbit[nCntBody]);
+	}
+
+	for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+	{
+		// 軌跡の終了
+		SAFE_UNINIT(m_apJumpOrbit[nCntJump]);
 	}
 
 	// 回帰UIの削除
@@ -354,18 +403,30 @@ void CPlayer::Update(const float fDeltaTime)
 		m_pDodge->Update(GetVec3Position());
 	}
 
-	int nMotion = GetMotionType();
-
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCntBody = 0; nCntBody < MAX_BODYORBIT; nCntBody++)
 	{
 		// 軌跡の更新
-		if (m_apOrbit[nCnt] == nullptr) { return; }
-
-		// ハイジャンプ中の場合、表示する
-		if (nMotion != MOTION_JUMP_HIGH) { m_apOrbit[nCnt]->SetState(COrbit::STATE_VANISH); }
+		if (m_apBodyOrbit[nCntBody] == nullptr) { continue; }
 
 		// 更新処理
-		m_apOrbit[nCnt]->Update(fDeltaTime);
+		m_apBodyOrbit[nCntBody]->Update(fDeltaTime);
+	}
+
+	{ // 軌跡の更新
+
+		int nMotion = GetMotionType();
+
+		for (int nCntJump = 0; nCntJump < MAX_JUMPORBIT; nCntJump++)
+		{
+			// 軌跡の更新
+			if (m_apJumpOrbit[nCntJump] == nullptr) { continue; }
+
+			// ハイジャンプ中の場合、表示する
+			if (nMotion != MOTION_JUMP_HIGH) { m_apJumpOrbit[nCntJump]->SetState(COrbit::STATE_VANISH); }
+
+			// 更新処理
+			m_apJumpOrbit[nCntJump]->Update(fDeltaTime);
+		}
 	}
 
 	// モーション・オブジェクトキャラクターの更新
@@ -493,6 +554,12 @@ CPlayer::EMotion CPlayer::UpdateState(const float fDeltaTime)
 		currentMotion = UpdateDrown(fDeltaTime);
 		break;
 
+	case STATE_BACKWAIT:
+
+		// チェックポイントリセット待機の更新
+		currentMotion = UpdateBackWait(fDeltaTime);
+		break;
+
 	default:
 		assert(false);
 		break;
@@ -609,9 +676,6 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 {
 	if (IsDeath()) { return false; }	// 死亡済み
 	if (m_state != STATE_NORMAL) { return false; }	// 通常状態以外
-
-	// ヒットエフェクトを出す
-	GET_EFFECT->Create("data\\EFFEKSEER\\hit.efkefc", GetVec3Position() + OFFSET_JUMP, GetVec3Rotation(), VEC3_ZERO, 250.0f);
 
 	// ダメージ状態に変更
 	m_state = STATE_DAMAGE;
@@ -840,10 +904,10 @@ bool CPlayer::GimmickHighJump(const int nNumClone)
 	// モーションの設定
 	SetMotion(MOTION_JUMP_HIGH, BLEND_FRAME_OTHER);
 
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
+	for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
 	{
 		// 表示する
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
+		m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NORMAL);
 	}
 
 	// ジャンプエフェクトを出す
@@ -1306,6 +1370,94 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 }
 
 //============================================================
+// チェックポイントリセット待機時の更新
+//============================================================
+CPlayer::EMotion CPlayer::UpdateBackWait(const float fDeltaTime)
+{
+	// 変数を宣言
+	D3DXVECTOR3 pos = GetVec3Position();	// 位置を取得
+
+	// 状態カウントを加算する
+	m_nCounterState++;
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 位置更新
+	UpdatePosition(pos, fDeltaTime);
+
+	// 敵の当たり判定
+	CollisionEnemy(pos);
+
+	// 着地判定
+	UpdateLanding(pos, fDeltaTime);
+
+	// 壁の当たり判定
+	CollisionWall(pos);
+
+	// 大人の壁の判定
+	GET_STAGE->LimitPosition(pos, RADIUS);
+
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
+
+		// 通常状態にする
+		m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
+	}
+
+	// 位置を反映
+	SetVec3Position(pos);
+
+	if (m_nCounterState == IRIS_COUNT)
+	{ // カウントが一定数に達した場合
+
+		// 待機状態に戻す
+		m_state = STATE_NORMAL;
+
+		for (int nCnt = 0; nCnt < MAX_JUMPORBIT; nCnt++)
+		{
+			// 軌跡の更新
+			if (m_apJumpOrbit[nCnt] == nullptr) { continue; }
+
+			// 軌跡を消す
+			m_apJumpOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+		}
+
+		while (CTension::GetUseNum() < TELEPORT_CLONE)
+		{ // 最低保証以下の場合
+
+			// 分身数を上げる
+			CTension::Create();
+		}
+
+		// セーブ情報を取得
+		const int nSave = GET_GAMEMANAGER->GetSave();
+
+		// 位置を設定
+		if (nSave != -1 && CCheckPoint::GetList() != nullptr)
+		{
+			// チェックポイントのリストを取得
+			CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
+
+			// チェックポイントの座標を設定する
+			SetVec3Position(point->GetVec3Position());
+		}
+		else
+		{ // 上記以外
+
+			// 初期位置に座標を移す
+			SetVec3Position(m_posInit);
+		}
+
+		// カメラ目標位置設定
+		CManager::GetInstance()->GetCamera()->SetDestAround();
+	}
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
+}
+
+//============================================================
 //	過去位置の更新処理
 //============================================================
 void CPlayer::UpdateOldPosition(void)
@@ -1322,7 +1474,7 @@ void CPlayer::ResetStack()
 	// 状態カウントを加算する
 	m_nCounterState++;
 
-	if (m_nCounterState == DROWN_IRIS_COUNT)
+	if (m_nCounterState == IRIS_COUNT)
 	{ // 状態カウントが一定値になった場合
 
 		// アイリスアウトでフェードする
@@ -1493,6 +1645,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 	// アクターとの当たり判定
 	CollisionActor(rPos, bLand);
 
+	// タッチアクターとの当たり判定
+	CollisionTouchActor(rPos);
+
 	// 前回の着地地面を保存
 	m_pOldField = m_pCurField;
 
@@ -1513,7 +1668,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		// 水でなければ回帰する位置として設定する
 		if (m_nCounterTeleport % TELEPORT_POS_COUNT == 0 &&
 			m_pCurField != nullptr &&
-			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER))
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_WATER) &&
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_XBRIDGE) &&
+			m_pCurField->GetFlag() != m_pCurField->GetFlag(CField::TYPE_ZBRIDGE))
 		{
 			m_posTeleport = rPos;
 			m_nCounterTeleport = 0;
@@ -1541,6 +1698,9 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
 			m_state = STATE_DROWN;
+
+			// 状態カウントを0にする
+			m_nCounterState = 0;
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
@@ -1949,55 +2109,24 @@ void CPlayer::CheckPointBack(const float fDeltaTime)
 	// 回帰時間が一定数以下の場合、抜ける
 	if (m_pBackUI->GetAlpha() < 1.0f) { return; }
 
-	// 通常状態にする
-	m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
+	if (m_pBackUI != nullptr)
+	{ // 回帰UIが NULL じゃない場合
 
-	// 待機状態に戻す
-	m_state = STATE_NORMAL;
-
-	for (int nCnt = 0; nCnt < MAX_ORBIT; nCnt++)
-	{
-		// 軌跡の更新
-		if (m_apOrbit[nCnt] == nullptr) { return; }
-
-		// 軌跡を消す
-		m_apOrbit[nCnt]->SetState(COrbit::STATE_NONE);
+		// 通常状態にする
+		m_pBackUI->SetState(CPlayerBackUI::STATE_NONE);
 	}
 
-	while (CTension::GetUseNum() < TELEPORT_CLONE)
-	{ // 最低保証以下の場合
-
-		// 分身数を上げる
-		CTension::Create();
-	}
-
-	// セーブ情報を取得
-	const int nSave = GET_GAMEMANAGER->GetSave();
-
-	// 位置を設定
-	if (nSave != -1 && CCheckPoint::GetList() != nullptr)
-	{
-		// チェックポイントのリストを取得
-		CCheckPoint* point = *CCheckPoint::GetList()->GetIndex(nSave);
-
-		// チェックポイントの座標を設定する
-		SetVec3Position(point->GetVec3Position());
-
-		// 関数を抜ける
-		return;
-	}
-
-	// 初期位置に座標を移す
-	SetVec3Position(m_posInit);
-
-	// モーションの設定処理
-	SetMotion(MOTION_IDOL);
-
-	// カメラ目標位置設定
-	CManager::GetInstance()->GetCamera()->SetDestAround();
+	// フェードを開始する
+	GET_MANAGER->GetFade()->SetIrisFade(nullptr, 0.6f, 0.4f, 7);
 
 	// テレポート音を鳴らす
 	PLAY_SOUND(CSound::LABEL_SE_TELEPORT);
+
+	// チェックポイントリセット待機状態にする
+	SetState(STATE_BACKWAIT);
+
+	// 状態カウントをリセットする
+	m_nCounterState = 0;
 }
 
 //============================================================
@@ -2480,6 +2609,30 @@ void CPlayer::CollisionGodItem(const D3DXVECTOR3& pos)
 			// 回復
 			RecoverItem();
 		}
+	}
+}
+
+//============================================================
+// タッチアクターとの当たり判定
+//============================================================
+void CPlayer::CollisionTouchActor(const D3DXVECTOR3& rPos)
+{
+	// タッチアクターのリスト構造が無ければ抜ける
+	if (CTouchActor::GetList() == nullptr) { return; }
+
+	// リストを取得
+	std::list<CTouchActor*> list = CTouchActor::GetList()->GetList();
+
+	for (auto actor : list)
+	{
+		// 当たり判定処理
+		actor->Collision
+		(
+			rPos,				// 位置
+			GetOldPosition(),	// 前回の位置
+			RADIUS,				// 半径
+			HEIGHT				// 高さ
+		);
 	}
 }
 
