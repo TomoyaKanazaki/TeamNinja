@@ -80,11 +80,13 @@ public:
 		const bool bItalic = false		// イタリック
 	);
 	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	void SetAlpha(const float fAlpha);				// 透明度設定
 	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
 	float GetStrWidth(void) const;					// 文字列の横幅取得
 	CChar2D *GetChar2D(const int nCharID) const;	// 文字の取得
 	D3DXCOLOR GetColor(void) const	{ return m_col; }				// 色取得
+	float GetAlpha(void) const		{ return m_col.a; }				// 透明度取得
 	float GetCharHeight(void) const	{ return m_fCharHeight; }		// 文字の縦幅取得
 	EAlignX GetAlignX(void) const	{ return m_alignX; }			// 横配置取得
 	int GetNumChar(void) const		{ return (int)m_wsStr.size(); }	// 文字数取得

@@ -13,6 +13,8 @@
 #include "camera.h"
 #include "transpoint.h"
 #include "sound.h"
+#include "sceneSelect.h"
+#include "selectManager.h"
 
 //************************************************************
 //	定数宣言
@@ -101,6 +103,12 @@ CPlayer::EMotion CPlayerSelect::UpdateState(const float fDeltaTime)
 
 		// 通常状態時の更新
 		currentMotion = UpdateNormal(fDeltaTime);
+		break;
+
+	case STATE_SELECT_WAIT:
+
+		// 待機状態時の更新
+		currentMotion = UpdateWait(fDeltaTime);
 		break;
 
 	case STATE_SELECT_ENTER:
@@ -202,6 +210,23 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 
 	// 現在のモーションを返す
 	return currentMotion;
+}
+
+//============================================================
+//	待機状態時の更新処理
+//============================================================
+CPlayer::EMotion CPlayerSelect::UpdateWait(const float fDeltaTime)
+{
+	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+
+	// 向き更新
+	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 向きを反映
+	SetVec3Rotation(rotPlayer);
+
+	// 待機モーションを返す
+	return MOTION_IDOL;
 }
 
 //============================================================
@@ -318,8 +343,8 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 		// 遷移ポイントインデックスを保存
 		GET_RETENTION->SetTransIdx(CTransPoint::GetList()->GetIndex(pHitTrans));
 
-		// 入場の設定
-		SetEnter(pHitTrans->GetTransMapPass().c_str());
+		// 待機の設定
+		SetWait(pHitTrans->GetTransMapPass().c_str());
 	}
 }
 
@@ -354,13 +379,36 @@ void CPlayerSelect::SetSpawn(void)
 	SetDestRotation(rotCamera);
 }
 
+//===========================================================
+//	待機の設定処理
+//===========================================================
+void CPlayerSelect::SetWait(const char* pTransMapPath)
+{
+	// 待機状態にする
+	SetState(STATE_SELECT_WAIT);
+
+	// ランキング表示をONにする
+	CSceneSelect::GetSelectManager()->SetDispRanking();
+
+	// 選択中の遷移先のマップパスを保存
+	m_sSelectPath = pTransMapPath;
+
+	// 移動量を初期化
+	SetMove(VEC3_ZERO);
+
+	// プレイヤーの向きをカメラ方向に設定
+	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
+	SetVec3Rotation(rotCamera);
+	SetDestRotation(rotCamera);
+}
+
 //============================================================
 //	入場の設定処理
 //============================================================
-void CPlayerSelect::SetEnter(const char* pTransMapPath)
+void CPlayerSelect::SetEnter(void)
 {
 	// 遷移ポイントのマップパスを保存
-	GET_STAGE->SetInitMapPass(pTransMapPath);
+	GET_STAGE->SetInitMapPass(m_sSelectPath.c_str());
 
 	// セレクト終了モーションにする
 	SetMotion(MOTION_SELECT_OUT);
@@ -370,11 +418,6 @@ void CPlayerSelect::SetEnter(const char* pTransMapPath)
 
 	// 選択カメラにする
 	GET_CAMERA->SetState(CCamera::STATE_SELECT);
-
-	// プレイヤーの向きをカメラ方向に設定
-	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
-	SetVec3Rotation(rotCamera);
-	SetDestRotation(rotCamera);
 
 	// 尺八音の再生
 	PLAY_SOUND(CSound::LABEL_SE_SYAKUHATI);

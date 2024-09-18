@@ -83,6 +83,7 @@ public:
 		const bool bItalic = false		// イタリック
 	);
 	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	void SetAlpha(const float fAlpha);				// 透明度設定
 	void SetCharHeight(const float fHeight);		// 文字の縦幅設定
 	void SetLineHeight(const float fHeight);		// 行間の縦幅設定
 	void SetAlignX(const CString2D::EAlignX align);	// 横配置設定
@@ -90,6 +91,7 @@ public:
 	float GetTextHeight(void) const;				// テキストの縦幅取得
 	CString2D *GetString2D(const int nStrID) const;	// 文字列の取得
 	D3DXCOLOR GetColor(void) const				{ return m_col; }			// 色取得
+	float GetAlpha(void) const					{ return m_col.a; }			// 透明度取得
 	float GetCharHeight(void) const				{ return m_fCharHeight; }	// 文字の縦幅取得
 	float GetLineHeight(void) const				{ return m_fLineHeight; }	// 行間の縦幅取得
 	CString2D::EAlignX GetAlignX(void) const	{ return m_alignX; }		// 横配置取得

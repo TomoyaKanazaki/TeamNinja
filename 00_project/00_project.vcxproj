@@ -185,6 +185,7 @@
     <ClInclude Include="Resource\playerSelect.h" />
     <ClInclude Include="Resource\playerTitle.h" />
     <ClInclude Include="Resource\player_dodge.h" />
+    <ClInclude Include="Resource\rankingManager.h" />
     <ClInclude Include="Resource\renderTexture.h" />
     <ClInclude Include="Resource\resultManager.h" />
     <ClInclude Include="Resource\roll2D.h" />
@@ -390,6 +391,7 @@
     <ClCompile Include="Resource\playerSelect.cpp" />
     <ClCompile Include="Resource\playerTitle.cpp" />
     <ClCompile Include="Resource\player_dodge.cpp" />
+    <ClCompile Include="Resource\rankingManager.cpp" />
     <ClCompile Include="Resource\renderTexture.cpp" />
     <ClCompile Include="Resource\resultManager.cpp" />
     <ClCompile Include="Resource\roll2D.cpp" />

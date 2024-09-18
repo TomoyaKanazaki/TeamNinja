@@ -15,6 +15,7 @@
 #include "sceneSelect.h"
 #include "player.h"
 #include "transpoint.h"
+#include "rankingManager.h"
 
 //************************************************************
 //	親クラス [CSelectManager] のメンバ関数
@@ -23,7 +24,8 @@
 //	コンストラクタ
 //============================================================
 CSelectManager::CSelectManager() :
-	m_state	(STATE_NONE)	// 状態
+	m_pRanking	(nullptr),		// ランキングマネージャー
+	m_state		(STATE_NONE)	// 状態
 {
 
 }
@@ -42,7 +44,8 @@ CSelectManager::~CSelectManager()
 HRESULT CSelectManager::Init(void)
 {
 	// メンバ変数を初期化
-	m_state = STATE_NORMAL;	// 状態
+	m_pRanking	= nullptr;		// ランキングマネージャー
+	m_state		= STATE_NORMAL;	// 状態
 
 	int nTransIdx = GET_RETENTION->GetTransIdx();	// 遷移ポイントインデックス
 	if (nTransIdx != NONE_IDX)
@@ -73,7 +76,8 @@ HRESULT CSelectManager::Init(void)
 //============================================================
 void CSelectManager::Uninit(void)
 {
-
+	// ランキングマネージャーの破棄
+	SAFE_REF_RELEASE(m_pRanking);
 }
 
 //============================================================
@@ -84,7 +88,21 @@ void CSelectManager::Update(const float fDeltaTime)
 	switch (m_state)
 	{ // 状態ごとの処理
 	case STATE_NONE:
+		break;
+
 	case STATE_NORMAL:
+
+		if (m_pRanking != nullptr)
+		{
+			// ランキングマネージャーの更新
+			m_pRanking->Update(fDeltaTime);
+			if (m_pRanking->IsEnd())
+			{ // ランキング表示が終了した場合
+
+				// ランキングマネージャーの破棄
+				SAFE_REF_RELEASE(m_pRanking);
+			}
+		}
 		break;
 
 	default:	// 例外処理
@@ -109,6 +127,28 @@ CSelectManager::EState CSelectManager::GetState(void) const
 {
 	// 状態を返す
 	return m_state;
+}
+
+//============================================================
+//	ランキング表示の設定処理
+//============================================================
+HRESULT CSelectManager::SetDispRanking(void)
+{
+	// ランキングが生成済みの場合抜ける
+	if (m_pRanking != nullptr) { assert(false); return E_FAIL; }
+
+	// ランキングマネージャーの生成
+	m_pRanking = CRankingManager::Create();
+	if (m_pRanking == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
 }
 
 //============================================================

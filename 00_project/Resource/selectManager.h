@@ -11,6 +11,11 @@
 #define _SELECTMANAGER_H_
 
 //************************************************************
+//	前方宣言
+//************************************************************
+class CRankingManager;	// ランキングマネージャークラス
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // セレクトマネージャークラス
@@ -37,13 +42,15 @@ public:
 	void Update(const float fDeltaTime);	// 更新
 	void SetState(const EState state);		// 状態設定
 	EState GetState(void) const;			// 状態取得
+	HRESULT SetDispRanking(void);			// ランキング表示設定
 
 	// 静的メンバ関数
 	static CSelectManager *Create(void);	// 生成
-	static void Release(CSelectManager *&prSelectManager);		// 破棄
+	static void Release(CSelectManager *&prSelectManager);	// 破棄
 
 private:
 	// メンバ変数
+	CRankingManager* m_pRanking;	// ランキングマネージャー
 	EState m_state;	// 状態
 };
 
