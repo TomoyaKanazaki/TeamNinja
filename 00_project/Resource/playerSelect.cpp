@@ -217,10 +217,43 @@ CPlayer::EMotion CPlayerSelect::UpdateNormal(const float fDeltaTime)
 //============================================================
 CPlayer::EMotion CPlayerSelect::UpdateWait(const float fDeltaTime)
 {
-	D3DXVECTOR3 rotPlayer = GetVec3Rotation();	// プレイヤー向き
+	D3DXVECTOR3 posPlayer		= GetVec3Position();	// プレイヤー位置
+	D3DXVECTOR3 oldPosPlayer	= GetOldPosition();		// プレイヤー過去位置
+	D3DXVECTOR3 rotPlayer		= GetVec3Rotation();	// プレイヤー向き
+	CStage *pStage	= GET_STAGE;	// ステージ情報
+	bool	bLand	= false;		// 着地フラグ
+
+	// 重力の更新
+	UpdateGravity(fDeltaTime);
+
+	// 重力を与える
+	D3DXVECTOR3 movePlayer = GetMove();	// プレイヤー移動量
+	movePlayer.x = movePlayer.z = 0.0f;	// 横移動量を初期化
+	posPlayer += movePlayer * fDeltaTime;
+
+	// アクターとの当たり判定
+	CollisionActor(posPlayer, bLand);
+
+	// 地面・制限位置・アクターの着地判定
+	if (pStage->LandFieldPosition(posPlayer, oldPosPlayer, movePlayer)
+	||  pStage->LandLimitPosition(posPlayer, movePlayer, 0.0f))
+	{ // プレイヤーが着地していた場合
+
+		// 着地している状態にする
+		bLand = true;
+
+		// ジャンプしていない状態にする
+		SetJump(false);
+	}
 
 	// 向き更新
 	UpdateRotation(rotPlayer, fDeltaTime);
+
+	// 重力を反映
+	SetMove(movePlayer);
+
+	// 位置を反映
+	SetVec3Position(posPlayer);
 
 	// 向きを反映
 	SetVec3Rotation(rotPlayer);
@@ -394,7 +427,9 @@ void CPlayerSelect::SetWait(const char* pTransMapPath)
 	m_sSelectPath = pTransMapPath;
 
 	// 移動量を初期化
-	SetMove(VEC3_ZERO);
+	D3DXVECTOR3 move = GetMove();	// 移動量
+	move.x = move.z = 0.0f;	// 横移動量を初期化
+	SetMove(move);
 
 	// プレイヤーの向きをカメラ方向に設定
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
