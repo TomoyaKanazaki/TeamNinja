@@ -52,6 +52,14 @@ public:
 	virtual void Update(const float fDeltaTime) override;	// 更新
 	virtual void Draw(CShader* pShader = nullptr) override;	// 描画
 
+	virtual void SetData				// 情報の設定処理
+	(
+		const EType type,			// 種類
+		const D3DXVECTOR3& rPos,	// 位置
+		const D3DXVECTOR3& rRot,	// 向き
+		const D3DXVECTOR3& rScale	// 拡大率
+	);
+
 	// メンバ関数
 	virtual bool Collision		// 当たり判定
 	(

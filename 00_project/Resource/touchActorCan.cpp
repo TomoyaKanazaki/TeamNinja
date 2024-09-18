@@ -18,10 +18,11 @@
 //************************************************************
 namespace
 {
-	const float FLY_SPEED = 300.0f;		// 飛んでいく速度
-	const float FLY_HEIGHT = 100.0f;	// 飛んでいく高さ
-	const float GRAVITY = 100.0f;		// 重力
-	const float CYCLE_SPEED = 0.2f;		// 回転速度
+	const float FLY_SPEED = 900.0f;		// 飛んでいく速度
+	const float FLY_HEIGHT = 300.0f;	// 飛んでいく高さ
+	const float GRAVITY = 900.0f;		// 重力
+	const float CYCLE_Y = 8.8f;			// Y軸の回転速度
+	const float CYCLE_Z = 11.1f;		// Z軸の回転速度
 }
 
 //************************************************************
@@ -105,6 +106,26 @@ void CTouchCan::Draw(CShader* pShader)
 }
 
 //============================================================
+// 情報の設定処理
+//============================================================
+void CTouchCan::SetData
+(
+	const EType type,			// 種類
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot,	// 向き
+	const D3DXVECTOR3& rScale	// 拡大率
+)
+{
+	// 情報を設定する
+	CTouchActor::SetData(type, rPos, rRot, rScale);
+
+	// 下がっている分だけ上げる
+	D3DXVECTOR3 pos = rPos;
+	pos.y -= GetModelData().vtxMin.y;
+	SetVec3Position(pos);
+}
+
+//============================================================
 // 当たり判定処理
 //============================================================
 bool CTouchCan::Collision
@@ -164,6 +185,9 @@ void CTouchCan::UpdateNone(const float /*fDeltaTime*/)
 	// フィールドとの当たり判定
 	GET_STAGE->LandFieldPosition(pos, m_posOld, m_move);
 
+	// 下の分を足す
+	pos.y -= GetModelData().vtxMin.y;
+
 	// 位置を反映
 	SetVec3Position(pos);
 }
@@ -183,7 +207,8 @@ void CTouchCan::UpdateAct(const float fDeltaTime)
 	m_move.y -= GRAVITY * fDeltaTime;
 
 	// 向きを加算する
-	rot.z += CYCLE_SPEED;
+	rot.y += CYCLE_Y * fDeltaTime;
+	rot.z += CYCLE_Z * fDeltaTime;
 
 	// フィールドとの当たり判定
 	m_bDelete = GET_STAGE->LandFieldPosition(pos, m_posOld, m_move);
