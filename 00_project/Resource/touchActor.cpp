@@ -20,8 +20,8 @@ namespace
 {
 	const char* MODEL[] =	// モデルのパス
 	{
-		"data\\MODEL\\Rock\\Rock000.x",			// 缶
-		"data\\MODEL\\LilyPad\\LilyPad000.x",	// 鳥
+		"data\\MODEL\\TouchActor\\TouchCan.x",		// 缶
+		"data\\MODEL\\LilyPad\\LilyPad000.x",		// 鳥
 	};
 	const int PRIORITY = 4;	// アクターの優先順位
 }
@@ -160,6 +160,27 @@ void CTouchActor::Draw(CShader* pShader)
 }
 
 //============================================================
+// 情報の設定処理
+//============================================================
+void CTouchActor::SetData
+(
+	const EType type,			// 種類
+	const D3DXVECTOR3& rPos,	// 位置
+	const D3DXVECTOR3& rRot,	// 向き
+	const D3DXVECTOR3& rScale	// 拡大率
+)
+{
+	// 情報の設定
+	SetVec3Position(rPos);		// 位置
+	SetVec3Rotation(rRot);		// 向き
+	SetVec3Scaling(rScale);		// 拡大率
+	m_type = type;				// 種類
+
+	// モデルの割り当て処理
+	BindModel(MODEL[type]);
+}
+
+//============================================================
 //	生成処理
 //============================================================
 CTouchActor* CTouchActor::Create
@@ -200,20 +221,14 @@ CTouchActor* CTouchActor::Create
 		return nullptr;
 	}
 
-	// モデルの割り当て処理
-	pActor->BindModel(MODEL[type]);
-
-	// 向きを設定
-	pActor->SetVec3Rotation(rRot);
-
-	// 位置を設定
-	pActor->SetVec3Position(rPos);
-
-	// 拡大率を設定
-	pActor->SetVec3Scaling(rScale);
-
-	// 種類を設定
-	pActor->m_type = type;
+	// 情報の設定処理
+	pActor->SetData
+	(
+		type,
+		rPos,
+		rRot,
+		rScale
+	);
 
 	// 確保したアドレスを返す
 	return pActor;
