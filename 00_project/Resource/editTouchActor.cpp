@@ -117,7 +117,7 @@ void CEditTouchActor::Uninit(void)
 	CEditorObject::Uninit();
 
 	// タッチアクターの色の全初期化
-	InitAllColorCoin();
+	InitAllColorTouchActor();
 
 	// タッチアクターの終了
 	SAFE_UNINIT(m_pActor);
@@ -139,10 +139,10 @@ void CEditTouchActor::Update(void)
 	CEditorObject::Update();
 
 	// タッチアクターの生成
-	CreateCoin();
+	CreateTouchActor();
 
 	// タッチアクターの破棄
-	ReleaseCoin();
+	ReleaseTouchActor();
 
 	// 位置を反映
 	m_pActor->SetVec3Position(GetVec3Position());
@@ -255,7 +255,7 @@ void CEditTouchActor::ChangeType(void)
 //============================================================
 //	タッチアクターの生成処理
 //============================================================
-void CEditTouchActor::CreateCoin(void)
+void CEditTouchActor::CreateTouchActor(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 
@@ -294,7 +294,7 @@ void CEditTouchActor::CreateCoin(void)
 //============================================================
 //	タッチアクターの破棄処理
 //============================================================
-void CEditTouchActor::ReleaseCoin(void)
+void CEditTouchActor::ReleaseTouchActor(void)
 {
 	CInputKeyboard* pKeyboard = GET_INPUTKEY;	// キーボード情報
 	bool bRelease = false;	// 破棄状況
@@ -307,20 +307,20 @@ void CEditTouchActor::ReleaseCoin(void)
 	}
 
 	// タッチアクターの削除判定
-	DeleteCollisionCoin(bRelease);
+	DeleteCollisionTouchActor(bRelease);
 }
 
 //============================================================
 //	タッチアクターの削除判定
 //============================================================
-void CEditTouchActor::DeleteCollisionCoin(const bool bRelase)
+void CEditTouchActor::DeleteCollisionTouchActor(const bool bRelase)
 {
 	CListManager<CTouchActor>* pListManager = CTouchActor::GetList();	// タッチアクターリストマネージャー
 	if (pListManager == nullptr) { return; }							// リスト未使用の場合抜ける
-	std::list<CTouchActor*> listCoin = pListManager->GetList();			// タッチアクターリスト情報
+	std::list<CTouchActor*> listTouchActor = pListManager->GetList();			// タッチアクターリスト情報
 
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
-	for (auto& rList : listCoin)
+	for (auto& rList : listTouchActor)
 	{ // タッチアクター数分繰り返す
 
 		// 同じアドレスだった場合次へ
@@ -372,13 +372,13 @@ void CEditTouchActor::DeleteCollisionCoin(const bool bRelase)
 //============================================================
 //	タッチアクターの色の全初期化処理
 //============================================================
-void CEditTouchActor::InitAllColorCoin(void)
+void CEditTouchActor::InitAllColorTouchActor(void)
 {
 	CListManager<CTouchActor>* pListManager = CTouchActor::GetList();	// タッチアクターリストマネージャー
 	if (pListManager == nullptr) { return; }				// リスト未使用の場合抜ける
-	std::list<CTouchActor*> listCoin = pListManager->GetList();	// タッチアクターリスト情報
+	std::list<CTouchActor*> listTouchActor = pListManager->GetList();	// タッチアクターリスト情報
 
-	for (auto& rList : listCoin)
+	for (auto& rList : listTouchActor)
 	{ // タッチアクター数分繰り返す
 
 		// 同じアドレスだった場合次へ
@@ -398,12 +398,12 @@ HRESULT CEditTouchActor::Save(void)
 
 	// 神器のリストを取得
 	CListManager<CTouchActor>* pListManager = CTouchActor::GetList();	// リストマネージャー
-	std::list<CTouchActor*> listCoin;	// 地面リスト
+	std::list<CTouchActor*> listTouchActor;	// 地面リスト
 	if (pListManager != nullptr)
 	{ // リストマネージャーが生成されている場合
 
 		// リストを取得
-		listCoin = pListManager->GetList();
+		listTouchActor = pListManager->GetList();
 	}
 
 	// ファイルを開く
@@ -421,14 +421,14 @@ HRESULT CEditTouchActor::Save(void)
 	// 見出しを書き出し
 	file << "#==============================================================================" << std::endl;
 	file << "#" << std::endl;
-	file << "#	タッチアクター配置のセーブデータ [save_coin.txt]" << std::endl;
+	file << "#	タッチアクター配置のセーブデータ [save_touchactor.txt]" << std::endl;
 	file << "#	Author : 藤田 勇一" << std::endl;
 	file << "#" << std::endl;
 	file << "#==============================================================================" << std::endl;
-	file << "# この行から下をコピーし [coin.txt] に張り付け\n" << std::endl;
+	file << "# この行から下をコピーし [touchactor.txt] に張り付け\n" << std::endl;
 
 	// タッチアクターの色の全初期化
-	InitAllColorCoin();
+	InitAllColorTouchActor();
 
 	// 小数点書き出しの方法を指定
 	file << std::fixed << std::setprecision(DIGIT_FLOAT);
@@ -436,7 +436,7 @@ HRESULT CEditTouchActor::Save(void)
 	// 読み込み開始文字列を書き出し
 	file << "STAGE_TOUCH_ACTORSET\n" << std::endl;
 
-	for (const auto& rList : listCoin)
+	for (const auto& rList : listTouchActor)
 	{ // 地面の総数分繰り返す
 
 		// 同じアドレスだった場合次へ
@@ -457,7 +457,7 @@ HRESULT CEditTouchActor::Save(void)
 	file << "END_STAGE_TOUCH_ACTORSET" << std::endl;
 
 	// タッチアクターの削除判定
-	DeleteCollisionCoin(false);
+	DeleteCollisionTouchActor(false);
 
 	// 保存済みにする
 	m_bSave = true;

@@ -46,10 +46,10 @@ private:
 
 	// メンバ関数
 	void ChangeType(void);		// 種類変更
-	void CreateCoin(void);		// コイン生成
-	void ReleaseCoin(void);		// コイン破棄
-	void DeleteCollisionCoin(const bool bRelase);	// コインの削除判定
-	void InitAllColorCoin(void);					// コインの色全初期化
+	void CreateTouchActor(void);		// コイン生成
+	void ReleaseTouchActor(void);		// コイン破棄
+	void DeleteCollisionTouchActor(const bool bRelase);	// コインの削除判定
+	void InitAllColorTouchActor(void);					// コインの色全初期化
 
 	// メンバ変数
 	CTouchActor* m_pActor;		// コイン情報
