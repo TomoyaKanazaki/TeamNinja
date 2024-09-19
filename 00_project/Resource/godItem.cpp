@@ -481,8 +481,10 @@ HRESULT CGodItem::LoadPossess(const char* pPass, bool* pGet)
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
+#ifdef _DEBUG
 		// エラーメッセージボックス
 		MessageBox(nullptr, "神器獲得状況の読み込みに失敗！", "警告！", MB_ICONWARNING);
+#endif
 
 		// 獲得状況の保存
 		bool aGet[TYPE_MAX] = {};

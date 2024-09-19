@@ -641,12 +641,13 @@ HRESULT CRankingManager::LoadRank(const char* pPath, float* pRankArray)
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
-		float aRank[MAX_RANK];	// ランキング生成用
-
+#ifdef _DEBUG
 		// エラーメッセージボックス
 		MessageBox(nullptr, "ランキングの読み込みに失敗！", "警告！", MB_ICONWARNING);
+#endif
 
 		// 値をすべて最大タイムにする
+		float aRank[MAX_RANK];	// ランキング生成用
 		for (int i = 0; i < MAX_RANK; i++)
 		{ aRank[i] = RANK_TIME[i]; }
 
