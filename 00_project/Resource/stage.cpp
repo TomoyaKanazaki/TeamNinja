@@ -258,7 +258,7 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			CTutorial::Create(D3DXVECTOR3(2500.0f, 0.0f, -300.0f), CTutorial::TYPE_CLONE);
 			CTutorial::Create(D3DXVECTOR3(4000.0f, 0.0f, -300.0f), CTutorial::TYPE_GIMMICK);
 			CTutorial::Create(D3DXVECTOR3(12300.0f, 650.0f, -150.0f), CTutorial::TYPE_GUARD);
-			CTutorial::Create(D3DXVECTOR3(12900.0f, 650.0f, -150.0f), CTutorial::TYPE_DOGDE);
+			//CTutorial::Create(D3DXVECTOR3(12900.0f, 650.0f, -150.0f), CTutorial::TYPE_DOGDE);
 		}
 
 		// フォグ変更点の生成
