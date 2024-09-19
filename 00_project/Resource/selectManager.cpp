@@ -132,13 +132,13 @@ CSelectManager::EState CSelectManager::GetState(void) const
 //============================================================
 //	ランキング表示の設定処理
 //============================================================
-HRESULT CSelectManager::SetDispRanking(void)
+HRESULT CSelectManager::SetDispRanking(CTransPoint* pHit)
 {
 	// ランキングが生成済みの場合抜ける
 	if (m_pRanking != nullptr) { assert(false); return E_FAIL; }
 
 	// ランキングマネージャーの生成
-	m_pRanking = CRankingManager::Create();
+	m_pRanking = CRankingManager::Create(pHit);
 	if (m_pRanking == nullptr)
 	{ // 生成に失敗した場合
 

@@ -16,6 +16,11 @@
 #include "player.h"
 
 //************************************************************
+//	前方宣言
+//************************************************************
+class CTransPoint;	// 遷移ポイントクラス
+
+//************************************************************
 //	クラス定義
 //************************************************************
 // セレクト画面プレイヤークラス
@@ -44,7 +49,7 @@ private:
 	EMotion UpdateEnter(const float fDeltaTime);	// 入場状態時の更新
 	EMotion UpdateOpen(const float fDeltaTime);		// 解放状態時の更新
 	void UpdateTrans(D3DXVECTOR3& rPos);			// ステージ遷移の更新
-	void SetWait(const char* pTransMapPath);		// 待機設定
+	void SetWait(CTransPoint* pHit);				// 待機設定
 
 	// メンバ変数
 	std::string m_sSelectPath;	// 選択中の遷移先マップパス

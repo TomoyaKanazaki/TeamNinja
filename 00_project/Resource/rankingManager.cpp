@@ -20,6 +20,8 @@
 #include "string2D.h"
 #include "timeUI.h"
 #include "anim2D.h"
+#include "timer.h"
+#include "transpoint.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -28,6 +30,7 @@ namespace
 {
 	const int PRIO_BG = 5;	// ”wŒi‚Ì—Dæ‡ˆÊ
 	const int PRIO_UI = 6;	// UI‚Ì—Dæ‡ˆÊ
+	const float RANK_TIME[CRankingManager::MAX_RANK] = { 150.0f, 180.0f, 225.0f };	// ‰Šúƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒ€
 
 	namespace fade
 	{
@@ -164,12 +167,13 @@ CRankingManager::AFuncUpdateState CRankingManager::m_aFuncUpdateState[] =	// ó‘
 //============================================================
 //	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //============================================================
-CRankingManager::CRankingManager() :
+CRankingManager::CRankingManager(CTransPoint* pParent) :
 	m_pFade		 (nullptr),		// ƒtƒF[ƒhî•ñ
 	m_pTitle	 (nullptr),		// ƒ^ƒCƒgƒ‹î•ñ
 	m_pBalloon	 (nullptr),		// ‚«o‚µî•ñ
 	m_pShadow	 (nullptr),		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‚Ì‰eî•ñ
 	m_pName		 (nullptr),		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ
+	m_pParent	 (pParent),		// ‘JˆÚƒ|ƒCƒ“ƒgî•ñ
 	m_state		 (STATE_NONE),	// ó‘Ô
 	m_fCurTime	 (0.0f),		// Œ»İ‚Ì‘Ò‹@ŠÔ
 	m_nCurSelect (0),			// Œ»İ‚Ì‘I‘ğˆ
@@ -347,6 +351,27 @@ HRESULT CRankingManager::Init(void)
 	//--------------------------------------------------------
 	//	ƒ‰ƒ“ƒLƒ“ƒO‚Ì¶¬ / ‰Šúİ’è
 	//--------------------------------------------------------
+	float aRank[MAX_RANK] = {};	// ƒ‰ƒ“ƒLƒ“ƒO”z—ñ
+
+	// ƒ‰ƒ“ƒLƒ“ƒOƒpƒX‚ğì¬
+	std::filesystem::path path = m_pParent->GetTransMapPass();	// ƒ}ƒbƒvƒfƒBƒŒƒNƒgƒŠ
+	path = path.parent_path();	// ƒ}ƒbƒvƒfƒBƒŒƒNƒgƒŠ‚É‚·‚é
+	path.append("ranking.bin");	// ƒ‰ƒ“ƒLƒ“ƒOƒpƒX‚ğ’Ç‰Á
+
+	// ƒ‰ƒ“ƒLƒ“ƒO“Ç
+	if (FAILED(LoadRank(path.string().c_str(), &aRank[0])))
+	{ // “Ç‚É¸”s‚µ‚½ê‡
+
+		// ƒ‰ƒ“ƒLƒ“ƒO‚ÌÄ“Ç
+		if (FAILED(LoadRank(path.string().c_str(), &aRank[0])))
+		{ // Ä“Ç‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
 	for (int i = 0; i < MAX_RANK; i++)
 	{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
 
@@ -395,7 +420,7 @@ HRESULT CRankingManager::Init(void)
 		// ƒ‰ƒ“ƒLƒ“ƒOŠÔ‚Ì¶¬
 		m_apRankTime[i] = CTimeUI::Create
 		( // ˆø”
-			0.0f,					// •\¦ŠÔ
+			aRank[i],				// •\¦ŠÔ
 			posTime,				// ˆÊ’u
 			time::VAL_SIZE,			// ”š‚Ì‘å‚«‚³
 			time::PART_SIZE,		// ‹æØ‚è‚Ì‘å‚«‚³
@@ -484,10 +509,10 @@ void CRankingManager::Update(const float fDeltaTime)
 //============================================================
 //	¶¬ˆ—
 //============================================================
-CRankingManager *CRankingManager::Create(void)
+CRankingManager *CRankingManager::Create(CTransPoint* pParent)
 {
 	// ƒ‰ƒ“ƒLƒ“ƒOƒ}ƒl[ƒWƒƒ[‚Ì¶¬
-	CRankingManager *pRankingManager = new CRankingManager;
+	CRankingManager *pRankingManager = new CRankingManager(pParent);
 	if (pRankingManager == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -521,6 +546,152 @@ void CRankingManager::Release(CRankingManager *&prRankingManager)
 
 	// ƒƒ‚ƒŠŠJ•ú
 	SAFE_DELETE(prRankingManager);
+}
+
+//============================================================
+//	ƒ‰ƒ“ƒLƒ“ƒO‚Ìİ’èˆ—
+//============================================================
+int CRankingManager::SetRank(const float fNewTime)
+{
+	int nLowIdx = MAX_RANK - 1;	// Å‰ºˆÊƒCƒ“ƒfƒbƒNƒX
+	int nUpdateIdx = NONE_IDX;	// XV‡ˆÊƒCƒ“ƒfƒbƒNƒX
+	float aRank[MAX_RANK];		// ƒ‰ƒ“ƒLƒ“ƒOŠÔ
+
+	// ƒ‰ƒ“ƒLƒ“ƒO‚Ì“Ç
+	if (FAILED(LoadRank(GET_STAGE->GetCurMapSaveRankPass().c_str(), &aRank[0])))
+	{ // “Ç‚É¸”s‚µ‚½ê‡
+
+		// ƒ‰ƒ“ƒLƒ“ƒO‚ÌÄ“Ç
+		if (FAILED(LoadRank(GET_STAGE->GetCurMapSaveRankPass().c_str(), &aRank[0])))
+		{ // Ä“Ç‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			assert(false);
+			return NONE_IDX;
+		}
+	}
+
+	if (fNewTime < aRank[nLowIdx])
+	{ // Å‰ºˆÊ‚ÌŠÔ‚æ‚è‘¬‚¢ê‡
+
+		// ƒ‰ƒ“ƒLƒ“ƒO‚Ìƒ\[ƒg
+		nUpdateIdx = SortRank(fNewTime, &aRank[0]);
+
+		// ƒ‰ƒ“ƒLƒ“ƒO‚Ì•Û‘¶
+		SaveRank(GET_STAGE->GetCurMapSaveRankPass().c_str(), &aRank[0]);
+	}
+
+	// ‡ˆÊ‚ªXV‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
+	return nUpdateIdx;
+}
+
+//============================================================
+//	ƒ‰ƒ“ƒLƒ“ƒO‚Ìƒ\[ƒgˆ—
+//============================================================
+int CRankingManager::SortRank(const float fNewTime, float* pRankArray)
+{
+	int nLowIdx = MAX_RANK - 1;	// Å‰ºˆÊƒCƒ“ƒfƒbƒNƒX
+	int nUpdateIdx = NONE_IDX;	// XV‡ˆÊƒCƒ“ƒfƒbƒNƒX
+	int	nCurMinIdx;				// Å¬’l‚ÌƒCƒ“ƒfƒbƒNƒX
+
+	// Œ»İ‚ÌÅ‰ºˆÊ‚Ìî•ñ‚Æ‘‚«Š·‚¦
+	pRankArray[nLowIdx] = fNewTime;
+
+	for (int nCntKeep = 0; nCntKeep < nLowIdx; nCntKeep++)
+	{ // “ü‚ê‘Ö‚¦‚é’l‚Ì‘” -1‰ñ•ªŒJ‚è•Ô‚·
+
+		// Œ»İ‚ÌŒJ‚è•Ô‚µ”‚ğ‘ã“ü (—v‘f1‚Æ‚·‚é)
+		nCurMinIdx = nCntKeep;
+
+		for (int nCntSort = nCntKeep + 1; nCntSort < MAX_RANK; nCntSort++)
+		{ // “ü‚ê‘Ö‚¦‚é’l‚Ì‘” -nCntKeep•ªŒJ‚è•Ô‚·
+
+			if (pRankArray[nCurMinIdx] > pRankArray[nCntSort])
+			{ // Å¬’l‚Éİ’è‚³‚ê‚Ä‚¢‚é’l‚æ‚èAŒ»İ‚Ì’l‚Ì‚Ù‚¤‚ª¬‚³‚¢ê‡
+
+				// Œ»İ‚Ì—v‘f”Ô†‚ğÅ¬’l‚Éİ’è
+				nCurMinIdx = nCntSort;
+			}
+		}
+
+		if (nCntKeep != nCurMinIdx)
+		{ // Å¬’l‚Ì—v‘f”Ô†‚É•Ï“®‚ª‚ ‚Á‚½ê‡
+
+			// —v‘f‚Ì“ü‚ê‘Ö‚¦
+			float fKeepNum			= pRankArray[nCntKeep];
+			pRankArray[nCntKeep]	= pRankArray[nCurMinIdx];
+			pRankArray[nCurMinIdx]	= fKeepNum;
+
+			// XV‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ğ•Û‘¶
+			nUpdateIdx = nCntKeep;
+		}
+	}
+
+	// ‡ˆÊ‚ªXV‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·
+	return nUpdateIdx;
+}
+
+//============================================================
+//	ƒ‰ƒ“ƒLƒ“ƒO‚Ì“Çˆ—
+//============================================================
+HRESULT CRankingManager::LoadRank(const char* pPath, float* pRankArray)
+{
+	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	std::ifstream file(pPath, std::ios_base::binary);	// ƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€
+	if (file.fail())
+	{ // ƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½ê‡
+
+		float aRank[MAX_RANK];	// ƒ‰ƒ“ƒLƒ“ƒO¶¬—p
+
+		// ƒGƒ‰[ƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+		MessageBox(nullptr, "ƒ‰ƒ“ƒLƒ“ƒO‚Ì“Ç‚İ‚İ‚É¸”sI", "ŒxI", MB_ICONWARNING);
+
+		// ’l‚ğ‚·‚×‚ÄÅ‘åƒ^ƒCƒ€‚É‚·‚é
+		for (int i = 0; i < MAX_RANK; i++)
+		{ aRank[i] = RANK_TIME[i]; }
+
+		// ƒNƒŠƒAƒ^ƒCƒ€‚Ì•Û‘¶
+		SaveRank(pPath, &aRank[0]);
+
+		// ¸”s‚ğ•Ô‚·
+		return E_FAIL;
+	}
+
+	// ˆø”‚ÌŠl“¾ó‹µ‚ğ“Ç‚İ‚İ
+	file.read((char*)pRankArray, sizeof(float) * MAX_RANK);
+
+	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	file.close();
+
+	// ¬Œ÷‚ğ•Ô‚·
+	return S_OK;
+}
+
+//============================================================
+//	ƒ‰ƒ“ƒLƒ“ƒO‚Ì•Û‘¶ˆ—
+//============================================================
+HRESULT CRankingManager::SaveRank(const char* pPath, float* pRankArray)
+{
+	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	std::ofstream file(pPath, std::ios_base::binary);	// ƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€
+	if (file.fail())
+	{ // ƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½ê‡
+
+		// ƒGƒ‰[ƒƒbƒZ[ƒWƒ{ƒbƒNƒX
+		MessageBox(nullptr, "ƒ‰ƒ“ƒLƒ“ƒO‚Ì‘‚«o‚µ‚É¸”sI", "ŒxI", MB_ICONWARNING);
+
+		// ¸”s‚ğ•Ô‚·
+		return E_FAIL;
+	}
+
+	// ˆø”‚ÌŠl“¾ó‹µ‚ğ‘‚«o‚µ
+	file.write((char*)pRankArray, sizeof(float) * MAX_RANK);
+
+	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	file.close();
+
+	// ¬Œ÷‚ğ•Ô‚·
+	return S_OK;
 }
 
 //============================================================

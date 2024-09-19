@@ -295,6 +295,17 @@ std::string CStage::GetCurMapSaveGodItemPass(void) const
 }
 
 //============================================================
+//	現在マップのランキング保存パス取得処理
+//============================================================
+std::string CStage::GetCurMapSaveRankPass(void) const
+{
+	// マップディレクトリにランキング保存パスを追加し返す
+	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ
+	path.append("ranking.bin");	// ランキング保存パスを追加
+	return path.string();		// 文字列化して返す
+}
+
+//============================================================
 //	範囲外の着地処理
 //============================================================
 bool CStage::LandLimitPosition(D3DXVECTOR3& rPos, D3DXVECTOR3& rMove, const float fHeight)

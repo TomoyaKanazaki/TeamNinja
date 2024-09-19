@@ -377,7 +377,7 @@ void CPlayerSelect::UpdateTrans(D3DXVECTOR3& rPos)
 		GET_RETENTION->SetTransIdx(CTransPoint::GetList()->GetIndex(pHitTrans));
 
 		// 待機の設定
-		SetWait(pHitTrans->GetTransMapPass().c_str());
+		SetWait(pHitTrans);
 	}
 }
 
@@ -415,16 +415,16 @@ void CPlayerSelect::SetSpawn(void)
 //===========================================================
 //	待機の設定処理
 //===========================================================
-void CPlayerSelect::SetWait(const char* pTransMapPath)
+void CPlayerSelect::SetWait(CTransPoint* pHit)
 {
 	// 待機状態にする
 	SetState(STATE_SELECT_WAIT);
 
 	// ランキング表示をONにする
-	CSceneSelect::GetSelectManager()->SetDispRanking();
+	CSceneSelect::GetSelectManager()->SetDispRanking(pHit);
 
 	// 選択中の遷移先のマップパスを保存
-	m_sSelectPath = pTransMapPath;
+	m_sSelectPath = pHit->GetTransMapPass().c_str();
 
 	// 移動量を初期化
 	D3DXVECTOR3 move = GetMove();	// 移動量

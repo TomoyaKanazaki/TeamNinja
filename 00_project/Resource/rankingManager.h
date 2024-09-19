@@ -13,6 +13,7 @@
 //************************************************************
 //	前方宣言
 //************************************************************
+class CTransPoint;	// 遷移ポイントクラス
 class CObject2D;	// オブジェクト2Dクラス
 class CString2D;	// 文字列2Dクラス
 class CTimeUI;		// タイムUIクラス
@@ -42,7 +43,7 @@ public:
 	};
 
 	// コンストラクタ
-	CRankingManager();
+	CRankingManager(CTransPoint* pParent);
 
 	// デストラクタ
 	~CRankingManager();
@@ -56,8 +57,9 @@ public:
 	bool IsEnd(void) const	{ return (m_state == STATE_END); }		// 演出終了フラグ取得
 
 	// 静的メンバ関数
-	static CRankingManager *Create(void);	// 生成
+	static CRankingManager *Create(CTransPoint* pParent);		// 生成
 	static void Release(CRankingManager *&prRankingManager);	// 破棄
+	static int SetRank(const float fNewTime);	// ランキング設定
 
 private:
 	// 選択列挙
@@ -71,8 +73,10 @@ private:
 	// 状態更新の関数ポインタ型エイリアス定義
 	typedef void (CRankingManager::*AFuncUpdateState)(const float fDeltaTime);
 
-	// 静的メンバ変数
-	static AFuncUpdateState m_aFuncUpdateState[];	// 状態更新関数
+	// 静的メンバ関数
+	static int SortRank(const float fNewTime, float* pRankArray);	// ランキングソート
+	static HRESULT LoadRank(const char* pPath, float* pRankArray);	// ランキング読込
+	static HRESULT SaveRank(const char* pPath, float* pRankArray);	// ランキング保存
 
 	// メンバ関数
 	void UpdateFadeOut(const float fDeltaTime);	// フェードアウト更新
@@ -84,6 +88,9 @@ private:
 	void UpdateSkip(void);	// スキップ操作更新
 	void SkipStaging(void);	// 演出スキップ
 
+	// 静的メンバ変数
+	static AFuncUpdateState m_aFuncUpdateState[];	// 状態更新関数
+
 	// メンバ変数
 	CAnim2D* m_apRankValue[MAX_RANK];	// ランキング順位情報
 	CTimeUI* m_apRankTime[MAX_RANK];	// ランキング時間情報
@@ -93,6 +100,7 @@ private:
 	CObject2D* m_pBalloon;	// 吹き出し情報
 	CString2D* m_pShadow;	// ランキングタイトルの影情報
 	CString2D* m_pName;		// ランキングタイトル情報
+	CTransPoint* m_pParent;	// 遷移ポイント情報
 	EState m_state;			// 状態
 	float m_fCurTime;		// 現在の待機時間
 	int m_nCurSelect;		// 現在の選択肢
