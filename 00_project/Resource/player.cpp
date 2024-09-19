@@ -114,8 +114,7 @@ namespace
 	const int TELEPORT_CLONE = 5; // 回帰したときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
-	const int IRIS_COUNT = 22; // 溺死状態でアイリスアウトするカウント数
-	const int DROWN_COUNT = 70; // 溺死状態のカウント数
+	const int IRIS_COUNT = 20; // 溺死状態でアイリスアウトするカウント数
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
@@ -1354,6 +1353,9 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 {
+	// 状態カウントを加算する
+	m_nCounterState++;
+
 	// 移動量を0にする
 	m_move = VEC3_ZERO;
 
@@ -1362,8 +1364,26 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 	pos.y -= SINK_SPEED;
 	SetVec3Position(pos);
 
-	// スタックのリセット
-	ResetStack();
+	// フェードが終わった時、ゲームを再開する
+	if (m_nCounterState > IRIS_COUNT && 
+		CManager::GetInstance()->GetFade()->IsFadeIn()) 
+	{
+		// スタックのリセット
+		ResetStack();
+
+		// 待機モーション
+		return MOTION_IDOL;
+	}
+
+	if (m_nCounterState != IRIS_COUNT)
+	{ // 状態カウントが一定値になった場合
+
+		// この関数を抜ける
+		return MOTION_DROWNING;
+	}
+
+	// アイリスアウトでフェードする
+	CManager::GetInstance()->GetFade()->SetIrisFade(nullptr, 0.4f, 1.2f);
 
 	// 溺死モーション
 	return MOTION_DROWNING;
@@ -1408,7 +1428,7 @@ CPlayer::EMotion CPlayer::UpdateBackWait(const float fDeltaTime)
 	// 位置を反映
 	SetVec3Position(pos);
 
-	if (m_nCounterState == IRIS_COUNT)
+	if (CManager::GetInstance()->GetFade()->IsFadeIn())
 	{ // カウントが一定数に達した場合
 
 		// 待機状態に戻す
@@ -1471,19 +1491,6 @@ void CPlayer::UpdateOldPosition(void)
 //==========================================
 void CPlayer::ResetStack()
 {
-	// 状態カウントを加算する
-	m_nCounterState++;
-
-	if (m_nCounterState == IRIS_COUNT)
-	{ // 状態カウントが一定値になった場合
-
-		// アイリスアウトでフェードする
-		CManager::GetInstance()->GetFade()->SetIrisFade(nullptr, 0.5f, 0.4f);
-	}
-
-	// 状態カウントが一定数未満の場合、関数を抜ける
-	if (m_nCounterState < DROWN_COUNT) { return; }
-
 	while (CTension::GetUseNum() < TELEPORT_CLONE)
 	{ // 最低保証以下の場合
 
