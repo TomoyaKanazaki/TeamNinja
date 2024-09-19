@@ -7,9 +7,12 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
+#include "manager.h"
 #include "touchActorBird.h"
 
 #include "collision.h"
+#include "scene.h"
+#include "player.h"
 
 //************************************************************
 //	定数宣言
@@ -18,9 +21,9 @@ namespace
 {
 	const int NONE_MOVE_COUNT = 90;				// 通常状態の移動カウント数
 	const float COLLISION_RADIUS = 150.0f;		// 当たり判定の半径
-	const float NONE_SPEED = 100.0f;			// 通常時の移動量
+	const float NONE_SPEED = 200.0f;			// 通常時の移動量
 	const float NONE_HEIGHT = 80.0f;			// 通常時の高さ
-	const float NONE_GRAVITY = 150.0f;			// 通常時の重力
+	const float NONE_GRAVITY = 500.0f;			// 通常時の重力
 	const float FLY_SPEED = 700.0f;				// 飛んでいく速度
 	const float FLY_HEIGHT = 300.0f;			// 飛んでいく高さ
 	const float FLY_GRAVITY = 200.0f;			// 飛行時の重力
@@ -127,8 +130,9 @@ bool CTouchBird::Collision
 		move.y = FLY_HEIGHT;
 		move.z = cosf(rot.y) * FLY_SPEED;
 
-		// 向きを反映
+		// 向きと移動量を反映
 		SetVec3Rotation(rot);
+		SetVec3Move(move);
 
 		// true を返す
 		return true;
@@ -148,16 +152,16 @@ void CTouchBird::UpdateNone(const float fDeltaTime)
 	D3DXVECTOR3 move = GetVec3Move();
 
 	// 重力をかける
-	pos.y -= NONE_GRAVITY * fDeltaTime;
-
-	// 移動する
-	pos += move * fDeltaTime;
+	move.y -= NONE_GRAVITY * fDeltaTime;
 
 	if (GetStateCount() % NONE_MOVE_COUNT == 0)
 	{ // 一定カウントごとに
 
+		// プレイヤーの位置を取得する
+		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+
 		// 向きをランダムで設定
-		rot.y = useful::RandomRot();
+		rot.y = atan2f(pos.x - posPlayer.x, pos.z - posPlayer.z) + (float)(rand() % 315 - 157) * 0.01f;
 
 		// 移動量を設定する
 		move.x = sinf(rot.y) * NONE_SPEED;
@@ -165,8 +169,15 @@ void CTouchBird::UpdateNone(const float fDeltaTime)
 		move.z = cosf(rot.y) * NONE_SPEED;
 	}
 
+	// 移動する
+	pos += move * fDeltaTime;
+
 	// 床との当たり判定
-	CollisionFieid(pos);
+	if (CollisionFieid(pos))
+	{
+		// 移動量を0にする
+		move = VEC3_ZERO;
+	}
 
 	// 位置と向きと移動量を反映
 	SetVec3Position(pos);
@@ -188,7 +199,7 @@ void CTouchBird::UpdateAct(const float fDeltaTime)
 	// 重力をかける
 	move.y -= FLY_GRAVITY * fDeltaTime;
 
-	// 移動量が 0.0f 以下になった場合0に補正する
+	// 移動量が 0.0f 以下になった場合、0に補正する
 	if (move.y <= 0.0f) { move.y = 0.0f; }
 
 	// 位置と移動量を反映

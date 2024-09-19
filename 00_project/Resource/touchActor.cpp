@@ -45,6 +45,7 @@ CListManager<CTouchActor>* CTouchActor::m_pList = nullptr;		// リスト構造
 //	コンストラクタ
 //============================================================
 CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_TOUCHACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+m_posInit(VEC3_ZERO),	// 初期位置
 m_posOld(VEC3_ZERO),	// 前回の位置
 m_move(VEC3_ZERO),		// 移動量
 m_type(TYPE_CAN),		// 種類
@@ -133,8 +134,8 @@ void CTouchActor::Update(const float fDeltaTime)
 	// 前回の位置を保存する
 	m_posOld = GetVec3Position();
 
-	// 状態カウントを0にする
-	m_nStateCount = 0;
+	// 状態カウントを加算する
+	m_nStateCount++;
 
 	switch (m_state)
 	{
@@ -186,6 +187,7 @@ void CTouchActor::SetData
 	SetVec3Rotation(rRot);		// 向き
 	SetVec3Scaling(rScale);		// 拡大率
 	m_type = type;				// 種類
+	m_posInit = rPos;			// 初期位置
 
 	// モデルの割り当て処理
 	BindModel(MODEL[type]);
