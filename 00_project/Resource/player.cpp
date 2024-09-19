@@ -114,7 +114,7 @@ namespace
 	const int TELEPORT_CLONE = 5; // 回帰したときの最低保障分身数
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
-	const int IRIS_COUNT = 17; // 溺死状態でアイリスアウトするカウント数
+	const int IRIS_COUNT = 15; // 溺死状態でアイリスアウトするカウント数
 	const int DROWN_COUNT = 70; // 溺死状態のカウント数
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
@@ -1478,7 +1478,7 @@ void CPlayer::ResetStack()
 	{ // 状態カウントが一定値になった場合
 
 		// アイリスアウトでフェードする
-		CManager::GetInstance()->GetFade()->SetIrisFade(nullptr, CFade::TIME, 0.6f);
+		CManager::GetInstance()->GetFade()->SetIrisFade(nullptr, 0.5f);
 	}
 
 	// 状態カウントが一定数未満の場合、関数を抜ける
