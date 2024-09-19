@@ -351,6 +351,7 @@ HRESULT CRankingManager::Init(void)
 	//--------------------------------------------------------
 	//	ランキングの生成 / 初期設定
 	//--------------------------------------------------------
+	CRetentionManager::SUpdateRank update = GET_RETENTION->GetUpdateRank();	// ランキング更新情報
 	float aRank[MAX_RANK] = {};	// ランキング配列
 
 	// ランキングパスを作成
@@ -381,7 +382,7 @@ HRESULT CRankingManager::Init(void)
 		// 生成位置を計算
 		D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);	// 生成位置
 
-		// ランキング時間の生成
+		// ランキング順位の生成
 		m_apRankValue[i] = CAnim2D::Create
 		( // 引数
 			rank::PART.x,	// テクスチャ横分割数
@@ -416,6 +417,15 @@ HRESULT CRankingManager::Init(void)
 		//----------------------------------------------------
 		// 生成位置を計算
 		D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);	// 生成位置
+		D3DXCOLOR colTime = XCOL_AWHITE;	// 生成色
+
+		if (update.sTransPath == m_pParent->GetTransMapPass()
+		&&  update.nRank == i)
+		{ // 遷移先パス、更新した順位が同じ場合
+
+			// 黄色にして強調表示する
+			colTime = XCOL_AYELLOW;
+		}
 
 		// ランキング時間の生成
 		m_apRankTime[i] = CTimeUI::Create
@@ -430,7 +440,7 @@ HRESULT CRankingManager::Init(void)
 			time::ALIGN_X,			// 横配置
 			CTimeUI::YALIGN_CENTER,	// 縦配置
 			VEC3_ZERO,				// 向き
-			XCOL_AWHITE				// 色
+			colTime					// 色
 		);
 		if (m_apRankTime[i] == nullptr)
 		{ // 生成に失敗した場合
@@ -591,8 +601,11 @@ int CRankingManager::SetRank(const float fNewTime)
 int CRankingManager::SortRank(const float fNewTime, float* pRankArray)
 {
 	int nLowIdx = MAX_RANK - 1;	// 最下位インデックス
-	int nUpdateIdx = NONE_IDX;	// 更新順位インデックス
-	int	nCurMinIdx;				// 最小値のインデックス
+	int	nCurMinIdx;	// 最小値のインデックス
+
+	std::vector<int> idxRank;	// ランキングインデックス
+	for (int i = 0; i < MAX_RANK; i++)
+	{ idxRank.push_back(i); }	// 自身の要素番号を保存
 
 	// 現在の最下位の情報と書き換え
 	pRankArray[nLowIdx] = fNewTime;
@@ -622,13 +635,18 @@ int CRankingManager::SortRank(const float fNewTime, float* pRankArray)
 			pRankArray[nCntKeep]	= pRankArray[nCurMinIdx];
 			pRankArray[nCurMinIdx]	= fKeepNum;
 
-			// 更新されたインデックスを保存
-			nUpdateIdx = nCntKeep;
+			// 要素の入れ替え
+			int nKeepNum		= idxRank[nCntKeep];
+			idxRank[nCntKeep]	= idxRank[nCurMinIdx];
+			idxRank[nCurMinIdx]	= nKeepNum;
 		}
 	}
 
+	// 最下位インデックスを検索
+	auto itr = std::find(idxRank.begin(), idxRank.end(), nLowIdx);
+
 	// 順位が更新されたインデックスを返す
-	return nUpdateIdx;
+	return std::distance(idxRank.begin(), itr);
 }
 
 //============================================================
@@ -641,12 +659,13 @@ HRESULT CRankingManager::LoadRank(const char* pPath, float* pRankArray)
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
-		float aRank[MAX_RANK];	// ランキング生成用
-
+#ifdef _DEBUG
 		// エラーメッセージボックス
 		MessageBox(nullptr, "ランキングの読み込みに失敗！", "警告！", MB_ICONWARNING);
+#endif
 
 		// 値をすべて最大タイムにする
+		float aRank[MAX_RANK];	// ランキング生成用
 		for (int i = 0; i < MAX_RANK; i++)
 		{ aRank[i] = RANK_TIME[i]; }
 
@@ -753,14 +772,14 @@ void CRankingManager::UpdateSpawn(const float fDeltaTime)
 	for (int i = 0; i < MAX_RANK; i++)
 	{ // ランキング表示数分繰り返す
 
-		// ランキング時間情報の反映
+		// ランキング順位情報の反映
 		const D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);		// 生成位置
 		m_apRankValue[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// 色を反映
 		m_apRankValue[i]->SetVec3Position(posRank + (((posRank + fall::OFFSET_POS) - posRank) * fRate));	// 位置を反映
 
 		// ランキング時間情報の反映
-		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);		// 生成位置
-		m_apRankTime[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// 色を反映
+		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);			// 生成位置
+		m_apRankTime[i]->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// 透明度を反映
 		m_apRankTime[i]->SetVec3Position(posTime + (((posTime + fall::OFFSET_POS) - posTime) * fRate));		// 位置を反映
 	}
 
@@ -796,11 +815,11 @@ void CRankingManager::UpdateSpawn(const float fDeltaTime)
 		for (int i = 0; i < MAX_RANK; i++)
 		{ // ランキング表示数分繰り返す
 
-			// ランキング時間情報の色を補正
+			// ランキング順位情報の色を補正
 			m_apRankValue[i]->SetColor(fall::INIT_COL);
 
-			// ランキング時間情報の色を補正
-			m_apRankTime[i]->SetColor(fall::INIT_COL);
+			// ランキング時間情報の透明度を補正
+			m_apRankTime[i]->SetAlpha(fall::INIT_ALPHA);
 		}
 
 		for (int i = 0; i < SELECT_MAX; i++)
@@ -923,14 +942,14 @@ void CRankingManager::UpdateFall(const float fDeltaTime)
 	for (int i = 0; i < MAX_RANK; i++)
 	{ // ランキング表示数分繰り返す
 
-		// ランキング時間情報の反映
+		// ランキング順位情報の反映
 		const D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);		// 生成位置
 		m_apRankValue[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// 色を反映
 		m_apRankValue[i]->SetVec3Position(posRank + (((posRank + fall::OFFSET_POS) - posRank) * fRate));	// 位置を反映
 
 		// ランキング時間情報の反映
-		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);		// 生成位置
-		m_apRankTime[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// 色を反映
+		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);			// 生成位置
+		m_apRankTime[i]->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// 透明度を反映
 		m_apRankTime[i]->SetVec3Position(posTime + (((posTime + fall::OFFSET_POS) - posTime) * fRate));		// 位置を反映
 	}
 
@@ -966,11 +985,11 @@ void CRankingManager::UpdateFall(const float fDeltaTime)
 		for (int i = 0; i < MAX_RANK; i++)
 		{ // ランキング表示数分繰り返す
 
-			// ランキング時間情報の色を補正
+			// ランキング順位情報の色を補正
 			m_apRankValue[i]->SetColor(fall::DEST_COL);
 
-			// ランキング時間情報の色を補正
-			m_apRankTime[i]->SetColor(fall::DEST_COL);
+			// ランキング時間情報の透明度を補正
+			m_apRankTime[i]->SetAlpha(fall::DEST_ALPHA);
 		}
 
 		for (int i = 0; i < SELECT_MAX; i++)
@@ -1046,19 +1065,39 @@ void CRankingManager::SkipStaging(void)
 	// フェードの透明度を補正
 	m_pFade->SetAlpha(fade::DEST_ALPHA);
 
-	// タイトルの色を補正
+	// タイトルの色/位置を補正
 	m_pTitle->SetColor(title::DEST_COL);
-
-	// タイトルの位置を補正
 	m_pTitle->SetVec3Position(title::DEST_POS);
+
+	// 吹き出し情報の色を補正
+	m_pBalloon->SetColor(balloon::DEST_COL);
+	m_pBalloon->SetVec3Position(balloon::DEST_POS);
+
+	// ランキングタイトル影情報の透明度/位置を補正
+	m_pShadow->SetAlpha(1.0f);
+	m_pShadow->SetVec3Position(name::POS + name::OFFSET);
+
+	// ランキングタイトル情報の透明度/位置を補正
+	m_pName->SetAlpha(1.0f);
+	m_pName->SetVec3Position(name::POS);
+
+	for (int i = 0; i < MAX_RANK; i++)
+	{ // ランキング表示数分繰り返す
+
+		// ランキング順位情報の色/位置を補正
+		m_apRankValue[i]->SetColor(XCOL_WHITE);
+		m_apRankValue[i]->SetVec3Position(rank::POS + (rank::SPACE * (float)i));
+
+		// ランキング時間情報の透明度/位置を補正
+		m_apRankTime[i]->SetAlpha(1.0f);
+		m_apRankTime[i]->SetVec3Position(time::POS + (time::SPACE * (float)i));
+	}
 
 	for (int i = 0; i < SELECT_MAX; i++)
 	{ // 選択肢の総数分繰り返す
 
-		// 選択肢の色を補正
+		// 選択肢の色/位置を補正
 		m_apSelect[i]->SetColor(select::DEST_COL);
-
-		// 選択肢の位置を補正
 		m_apSelect[i]->SetVec3Position(select::DEST_POS + (select::SPACE * (float)i));
 	}
 }

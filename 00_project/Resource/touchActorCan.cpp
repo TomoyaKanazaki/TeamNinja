@@ -29,8 +29,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchCan::CTouchCan() : CTouchActor(),
-m_bDelete(false)		// 消去状況
+CTouchCan::CTouchCan() : CTouchActor()
 {
 
 }
@@ -77,16 +76,6 @@ void CTouchCan::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
 	CTouchActor::Update(fDeltaTime);
-
-	if (m_bDelete)
-	{ // 消去状況が true の場合
-
-		// 終了処理
-		Uninit();
-
-		// 関数を抜ける
-		return;
-	}
 }
 
 //============================================================
@@ -207,7 +196,19 @@ void CTouchCan::UpdateAct(const float fDeltaTime)
 	rot.z += CYCLE_Z * fDeltaTime;
 
 	// フィールドとの当たり判定
-	m_bDelete = CollisionFieid(pos);
+	if (CollisionFieid(pos))
+	{ // フィールドに当たった場合
+
+		// 半径分上げる
+		pos.y += GetModelData().fRadius;
+
+		// 移動量を重力以外0にする
+		move.x = 0.0f;
+		move.z = 0.0f;
+
+		// 向きを横にする
+		rot.z = D3DX_PI * 0.5f;
+	}
 
 	// 位置と向きと移動量を反映
 	SetVec3Position(pos);

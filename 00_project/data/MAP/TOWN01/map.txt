@@ -7,9 +7,10 @@
 #------------------------------------------------------------------------------
 #	パスの情報
 #------------------------------------------------------------------------------
-STAGE_PASS = data\MAP\TOWN01\stage.txt	# ステージ情報パス
-ACTOR_PASS = data\MAP\TOWN01\actor.txt	# アクター情報パス
+STAGE_PASS 			= data\MAP\TOWN01\stage.txt			# ステージ情報パス
+ACTOR_PASS 			= data\MAP\TOWN01\actor.txt			# アクター情報パス
 ENEMYATTACK_PASS	= data\MAP\TOWN01\enemyAttack.txt	# 敵情報パス
-GODITEM_PASS = data\MAP\TOWN01\goditem.txt		# 神器情報パス
-POINT_PASS = data\MAP\TOWN01\point.txt	# ポイント情報パス
-GIMMICK_PASS = data\MAP\\TOWN01\gimmick.txt
+GODITEM_PASS 		= data\MAP\TOWN01\goditem.txt		# 神器情報パス
+POINT_PASS 			= data\MAP\TOWN01\point.txt			# ポイント情報パス
+GIMMICK_PASS 		= data\MAP\\TOWN01\gimmick.txt		# ギミック情報パス
+TOUCH_ACTOR_PASS 	= data\MAP\\TOWN01\touchactor.txt	# タッチアクター情報パス

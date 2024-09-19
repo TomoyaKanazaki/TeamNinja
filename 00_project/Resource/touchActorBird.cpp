@@ -24,9 +24,9 @@ namespace
 	const float NONE_SPEED = 200.0f;			// 通常時の移動量
 	const float NONE_HEIGHT = 80.0f;			// 通常時の高さ
 	const float NONE_GRAVITY = 500.0f;			// 通常時の重力
-	const float FLY_SPEED = 700.0f;				// 飛んでいく速度
-	const float FLY_HEIGHT = 300.0f;			// 飛んでいく高さ
-	const float FLY_GRAVITY = 200.0f;			// 飛行時の重力
+	const float FLY_SPEED = 900.0f;				// 飛んでいく速度
+	const float FLY_HEIGHT = 400.0f;			// 飛んでいく高さ
+	const float FLY_GRAVITY = 250.0f;			// 飛行時の重力
 }
 
 //************************************************************
@@ -35,7 +35,8 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchBird::CTouchBird() : CTouchActor()
+CTouchBird::CTouchBird() : CTouchActor(),
+m_bArrival(false)		// 帰着状況
 {
 
 }
@@ -157,16 +158,34 @@ void CTouchBird::UpdateNone(const float fDeltaTime)
 	if (GetStateCount() % NONE_MOVE_COUNT == 0)
 	{ // 一定カウントごとに
 
-		// プレイヤーの位置を取得する
-		D3DXVECTOR3 posPlayer = GET_PLAYER->GetVec3Position();
+		D3DXVECTOR3 posDest = VEC3_ZERO;
 
-		// 向きをランダムで設定
-		rot.y = atan2f(pos.x - posPlayer.x, pos.z - posPlayer.z) + (float)(rand() % 315 - 157) * 0.01f;
+		if (m_bArrival)
+		{ // 帰着状況が true の場合
+
+			// 初期位置を設定する
+			posDest = GetVec3PosInit();
+
+			// 向きをランダムで設定
+			rot.y = atan2f(posDest.x - pos.x, posDest.z - pos.z);
+		}
+		else
+		{ // 上記以外
+
+			// プレイヤーの位置を設定する
+			posDest = GET_PLAYER->GetVec3Position();
+
+			// 向きをランダムで設定
+			rot.y = atan2f(pos.x - posDest.x, pos.z - posDest.z) + (float)(rand() % 315 - 157) * 0.01f;
+		}
 
 		// 移動量を設定する
 		move.x = sinf(rot.y) * NONE_SPEED;
 		move.y = NONE_HEIGHT;
 		move.z = cosf(rot.y) * NONE_SPEED;
+
+		// 帰着状況を切り替える
+		m_bArrival = !m_bArrival;
 	}
 
 	// 移動する

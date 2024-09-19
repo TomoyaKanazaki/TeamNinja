@@ -102,6 +102,7 @@ private:
 	// オーバーライド関数
 	virtual void UpdateNone(const float fDeltaTime) = 0;	// 通常状態更新処理
 	virtual void UpdateAct(const float fDeltaTime) = 0;		// アクション状態更新処理
+	bool Fade(const float fDeltaTime);						// フェード処理
 
 	// メンバ変数
 	CListManager<CTouchActor>::AIterator m_iterator;	// イテレーター

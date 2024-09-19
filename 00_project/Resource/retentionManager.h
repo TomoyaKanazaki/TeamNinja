@@ -40,6 +40,13 @@ public:
 		int nSave;		// 最後のセーブポイント
 	};
 
+	// ランキング更新情報構造体
+	struct SUpdateRank
+	{
+		std::string sTransPath;	// 更新した遷移パス
+		int nRank;				// 更新した順位
+	};
+
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -50,19 +57,27 @@ public:
 
 	// メンバ関数
 	void SetResult(const EWin win, const float fTime, const int nSave);	// リザルト情報設定
-	void SetTransIdx(const int nIdx) { m_nTransIdx = nIdx; }	// 遷移ポイントインデックス設定
-	int GetTransIdx(void) const		 { return m_nTransIdx; }	// 遷移ポイントインデックス取得
+	void InitUpdateRank(void);											// ランキング更新情報初期化
+	void SetUpdateRank(const char* pTransPath, const int nRank);		// ランキング更新情報設定
+	SUpdateRank GetUpdateRank(void) const	{ return m_updateRank; }	// ランキング更新情報取得
+	void SetTransIdx(const int nIdx)		{ m_nTransIdx = nIdx; }		// 遷移ポイントインデックス設定
+	int GetTransIdx(void) const				{ return m_nTransIdx; }		// 遷移ポイントインデックス取得
 	EWin GetWin(void) const		{ return m_result.win; }		// 勝利状況取得
 	void InitWin(void)			{ m_result.win = WIN_NONE; }	// 勝利状況初期化
 	float GetTime(void) const	{ return m_result.fTime; }		// 経過タイム取得
 	int GetSave(void) const		{ return m_result.nSave; }		// セーブポイント取得
 	void InitSave(void)			{ m_result.nSave = NONE_IDX; }	// セーブポイント初期化
 
+	void SetEnableSaveStart(void)	{ m_bSaveStart = (m_result.nSave != NONE_IDX); }	// セーブからの開始フラグ設定
+	bool IsSaveStart(void) const	{ return m_bSaveStart; }	// セーブからの開始フラグ取得
+
 private:
 	
 	// メンバ変数
-	SResult m_result;	// リザルト情報
-	int m_nTransIdx;	// 遷移ポイントインデックス
+	SResult m_result;			// リザルト情報
+	SUpdateRank m_updateRank;	// ランキング更新情報
+	int m_nTransIdx;			// 遷移ポイントインデックス
+	bool m_bSaveStart;			// セーブからの開始フラグ
 
 };
 

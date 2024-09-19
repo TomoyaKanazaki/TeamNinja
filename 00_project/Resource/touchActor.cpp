@@ -25,7 +25,8 @@ namespace
 		"data\\MODEL\\TouchActor\\TouchCan.x",		// 缶
 		"data\\MODEL\\TouchActor\\TouchBird.x",		// 鳥
 	};
-	const int PRIORITY = 4;	// アクターの優先順位
+	const int PRIORITY = 4;			// アクターの優先順位
+	const float SUB_ALPHA = 1.0f;	// 透明度の減算量
 }
 
 //************************************************************
@@ -151,6 +152,16 @@ void CTouchActor::Update(const float fDeltaTime)
 		// アクション状態更新処理
 		UpdateAct(fDeltaTime);
 
+		if (Fade(fDeltaTime))
+		{ // 透明になったら
+
+			// 終了処理
+			Uninit();
+
+			// この関数を抜ける
+			return;
+		}
+
 		break;
 
 	default:
@@ -263,6 +274,31 @@ bool CTouchActor::CollisionFieid(D3DXVECTOR3& rPos)
 {
 	// フィールドとの当たり判定
 	return GET_STAGE->LandFieldPosition(rPos, m_posOld, m_move);
+}
+
+//============================================================
+// フェード処理
+//============================================================
+bool CTouchActor::Fade(const float fDeltaTime)
+{
+	float fAlpha = GetAlpha();	// 透明度
+	bool bDelete = false;		// 消去状況
+
+	// 透明度を下げる
+	fAlpha -= SUB_ALPHA * fDeltaTime;
+
+	if (fAlpha <= 0.0f)
+	{ // 透明になったら
+
+		// 消去状況を true にする
+		bDelete = true;
+	}
+
+	// 透明度を反映
+	SetAlpha(fAlpha);
+
+	// 消去状況を返す
+	return bDelete;
 }
 
 //============================================================
