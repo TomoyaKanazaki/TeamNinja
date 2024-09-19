@@ -455,6 +455,7 @@ void CEditCollision::DrawDebugInfo(void)
 {
 #if _DEBUG
 
+	DebugProc::Print(DebugProc::POINT_RIGHT, "%d：[アクターの種類]\n", m_actorType);
 	DebugProc::Print(DebugProc::POINT_RIGHT, "%s：[エディットコリジョンタイプ]\n", TYPE_NAME[m_type]);
 
 	// エディター情報の情報表示

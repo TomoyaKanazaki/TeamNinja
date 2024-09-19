@@ -34,7 +34,7 @@ class CSceneGame : public CScene
 {
 public:
 	// 定数
-	static constexpr float TIME_LIMIT = 0.0f;	// 制限時間
+	static constexpr float TIME_LIMIT = 300.0f;	// 制限時間
 
 	// コンストラクタ
 	explicit CSceneGame(const EMode mode);
