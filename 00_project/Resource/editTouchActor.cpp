@@ -317,7 +317,7 @@ void CEditTouchActor::DeleteCollisionTouchActor(const bool bRelase)
 {
 	CListManager<CTouchActor>* pListManager = CTouchActor::GetList();	// タッチアクターリストマネージャー
 	if (pListManager == nullptr) { return; }							// リスト未使用の場合抜ける
-	std::list<CTouchActor*> listTouchActor = pListManager->GetList();			// タッチアクターリスト情報
+	std::list<CTouchActor*> listTouchActor = pListManager->GetList();	// タッチアクターリスト情報
 
 	D3DXVECTOR3 posEdit = GetVec3Position();	// エディットの位置
 	for (auto& rList : listTouchActor)
