@@ -13,6 +13,8 @@
 #include "touchActorCan.h"
 #include "touchActorBird.h"
 
+#include "stage.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -21,7 +23,7 @@ namespace
 	const char* MODEL[] =	// モデルのパス
 	{
 		"data\\MODEL\\TouchActor\\TouchCan.x",		// 缶
-		"data\\MODEL\\LilyPad\\LilyPad000.x",		// 鳥
+		"data\\MODEL\\TouchActor\\TouchBird.x",		// 鳥
 	};
 	const int PRIORITY = 4;	// アクターの優先順位
 }
@@ -43,8 +45,11 @@ CListManager<CTouchActor>* CTouchActor::m_pList = nullptr;		// リスト構造
 //	コンストラクタ
 //============================================================
 CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_TOUCHACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+m_posOld(VEC3_ZERO),	// 前回の位置
+m_move(VEC3_ZERO),		// 移動量
 m_type(TYPE_CAN),		// 種類
-m_state(STATE_NONE)		// 状態
+m_state(STATE_NONE),	// 状態
+m_nStateCount(0)		// 状態カウント
 {
 
 }
@@ -124,6 +129,12 @@ void CTouchActor::Update(const float fDeltaTime)
 	bool bFar = useful::IsNearPosR(GetVec3Position());
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
+
+	// 前回の位置を保存する
+	m_posOld = GetVec3Position();
+
+	// 状態カウントを0にする
+	m_nStateCount = 0;
 
 	switch (m_state)
 	{
@@ -241,4 +252,13 @@ CListManager<CTouchActor>* CTouchActor::GetList(void)
 {
 	// リスト構造を返す
 	return m_pList;
+}
+
+//============================================================
+// 床との当たり判定
+//============================================================
+bool CTouchActor::CollisionFieid(D3DXVECTOR3& rPos)
+{
+	// フィールドとの当たり判定
+	return GET_STAGE->LandFieldPosition(rPos, m_posOld, m_move);
 }

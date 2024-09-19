@@ -49,10 +49,6 @@ private:
 	// オーバーライド関数
 	void UpdateNone(const float fDeltaTime) override;		// 通常状態更新処理
 	void UpdateAct(const float fDeltaTime) override;		// アクション状態更新処理
-
-	// メンバ変数
-	D3DXVECTOR3 m_move;		// 移動量
-	int m_nStateCount;		// 状態カウント
 };
 
-#endif	// _TOUCH_ACTOR_CAN_H_
+#endif	// _TOUCH_ACTOR_BIRD_H_

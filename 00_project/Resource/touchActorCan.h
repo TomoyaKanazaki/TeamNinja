@@ -59,9 +59,7 @@ private:
 	void UpdateAct(const float fDeltaTime) override;		// アクション状態更新処理
 
 	// メンバ変数
-	D3DXVECTOR3 m_posOld;	// 前回の位置
-	D3DXVECTOR3 m_move;		// 移動量
-	bool m_bDelete;			// 消去状況
+	bool m_bDelete;		// 消去状況
 };
 
 #endif	// _TOUCH_ACTOR_CAN_H_

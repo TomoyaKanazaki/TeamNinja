@@ -16,11 +16,14 @@
 //************************************************************
 namespace
 {
-	const int NONE_MOVE_COUNT = 50;				// 通常状態の移動カウント数
+	const int NONE_MOVE_COUNT = 90;				// 通常状態の移動カウント数
 	const float COLLISION_RADIUS = 150.0f;		// 当たり判定の半径
-	const float FLY_SPEED = 600.0f;				// 飛んでいく速度
-	const float FLY_HEIGHT = 180.0f;			// 飛んでいく高さ
-	const float FLY_GRAVITY = 50.0f;			// 飛行時の重力
+	const float NONE_SPEED = 100.0f;			// 通常時の移動量
+	const float NONE_HEIGHT = 80.0f;			// 通常時の高さ
+	const float NONE_GRAVITY = 150.0f;			// 通常時の重力
+	const float FLY_SPEED = 700.0f;				// 飛んでいく速度
+	const float FLY_HEIGHT = 300.0f;			// 飛んでいく高さ
+	const float FLY_GRAVITY = 200.0f;			// 飛行時の重力
 }
 
 //************************************************************
@@ -29,9 +32,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchBird::CTouchBird() : CTouchActor(),
-m_move(VEC3_ZERO),		// 移動量
-m_nStateCount(0)		// 状態カウント
+CTouchBird::CTouchBird() : CTouchActor()
 {
 
 }
@@ -113,6 +114,7 @@ bool CTouchBird::Collision
 	{ // 鳥の範囲に入った場合
 
 		D3DXVECTOR3 rot = GetVec3Rotation();
+		D3DXVECTOR3 move = VEC3_ZERO;
 
 		// 飛んでいく方向を設定
 		rot.y = atan2f(posBird.x - rPos.x, posBird.z - rPos.z);
@@ -121,9 +123,9 @@ bool CTouchBird::Collision
 		SetState(STATE_ACT);
 
 		// 移動量を設定する
-		m_move.x = sinf(rot.y) * FLY_SPEED;
-		m_move.y = FLY_HEIGHT;
-		m_move.z = cosf(rot.y) * FLY_SPEED;
+		move.x = sinf(rot.y) * FLY_SPEED;
+		move.y = FLY_HEIGHT;
+		move.z = cosf(rot.y) * FLY_SPEED;
 
 		// 向きを反映
 		SetVec3Rotation(rot);
@@ -139,16 +141,37 @@ bool CTouchBird::Collision
 //============================================================
 // 通常状態更新処理
 //============================================================
-void CTouchBird::UpdateNone(const float /*fDeltaTime*/)
+void CTouchBird::UpdateNone(const float fDeltaTime)
 {
-	// 状態カウントを加算する
-	m_nStateCount++;
+	D3DXVECTOR3 pos = GetVec3Position();
+	D3DXVECTOR3 rot = GetVec3Rotation();
+	D3DXVECTOR3 move = GetVec3Move();
 
-	if (m_nStateCount % NONE_MOVE_COUNT == 0)
+	// 重力をかける
+	pos.y -= NONE_GRAVITY * fDeltaTime;
+
+	// 移動する
+	pos += move * fDeltaTime;
+
+	if (GetStateCount() % NONE_MOVE_COUNT == 0)
 	{ // 一定カウントごとに
 
-		// ぴょんぴょん跳ねる処理を追加
+		// 向きをランダムで設定
+		rot.y = useful::RandomRot();
+
+		// 移動量を設定する
+		move.x = sinf(rot.y) * NONE_SPEED;
+		move.y = NONE_HEIGHT;
+		move.z = cosf(rot.y) * NONE_SPEED;
 	}
+
+	// 床との当たり判定
+	CollisionFieid(pos);
+
+	// 位置と向きと移動量を反映
+	SetVec3Position(pos);
+	SetVec3Rotation(rot);
+	SetVec3Move(move);
 }
 
 //============================================================
@@ -157,13 +180,18 @@ void CTouchBird::UpdateNone(const float /*fDeltaTime*/)
 void CTouchBird::UpdateAct(const float fDeltaTime)
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
+	D3DXVECTOR3 move = GetVec3Move();		// 移動量
 
 	// 移動する
-	pos += m_move * fDeltaTime;
+	pos += move * fDeltaTime;
 
 	// 重力をかける
-	m_move.y -= FLY_GRAVITY * fDeltaTime;
+	move.y -= FLY_GRAVITY * fDeltaTime;
 
-	// 位置と向きを反映
+	// 移動量が 0.0f 以下になった場合0に補正する
+	if (move.y <= 0.0f) { move.y = 0.0f; }
+
+	// 位置と移動量を反映
 	SetVec3Position(pos);
+	SetVec3Move(move);
 }
