@@ -87,6 +87,12 @@ HRESULT CSceneGame::Init(void)
 	// 勝利状況の初期化
 	GET_RETENTION->InitWin();
 
+	// ランキング更新情報の初期化
+	GET_RETENTION->InitUpdateRank();
+
+	// セーブからの開始フラグの設定
+	GET_RETENTION->SetEnableSaveStart();
+
 	// タイマーUIの生成
 	m_pTimerUI = CTimerUI::Create
 	( // 引数

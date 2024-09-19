@@ -21,10 +21,13 @@
 //============================================================
 //	コンストラクタ
 //============================================================
-CRetentionManager::CRetentionManager() : m_nTransIdx(NONE_IDX)	// 遷移ポイントインデックス
+CRetentionManager::CRetentionManager() :
+	m_nTransIdx		(NONE_IDX),	// 遷移ポイントインデックス
+	m_bSaveStart	(false)		// セーブからの開始フラグ
 {
 	// メンバ変数をクリア
-	memset(&m_result, 0, sizeof(m_result));	// リザルト情報
+	memset(&m_result, 0, sizeof(m_result));			// リザルト情報
+	memset(&m_updateRank, 0, sizeof(m_updateRank));	// ランキング更新情報
 }
 
 //============================================================
@@ -45,6 +48,9 @@ HRESULT CRetentionManager::Init(void)
 	m_result.fTime	= 0.0f;		// 経過タイム
 	m_result.nSave	= -1;		// 最後のセーブポイント
 	m_nTransIdx		= NONE_IDX;	// 遷移ポイントインデックス
+	m_bSaveStart	= false;	// セーブからの開始フラグ
+	m_updateRank.sTransPath	= "";		// 更新した遷移パス
+	m_updateRank.nRank		= NONE_IDX;	// 更新した順位
 
 	// 成功を返す
 	return S_OK;
@@ -135,8 +141,15 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 		// 勾玉の獲得状況を書き出し
 		CGodItem::SavePossess(GET_STAGE->GetCurMapSaveGodItemPass().c_str(), &bCurGet[0]);
 
-		// ランキングの設定
-		CRankingManager::SetRank(CSceneGame::TIME_LIMIT - fTime);
+		if (!GET_RETENTION->IsSaveStart())
+		{ // セーブからの開始ではない場合ランキングを更新
+
+			// ランキングの設定
+			const int nUpdateRank = CRankingManager::SetRank(CSceneGame::TIME_LIMIT - fTime);	// 更新された順位を保存
+
+			// ランキングの更新情報を保存
+			SetUpdateRank(GET_STAGE->GetCurMapPass().c_str(), nUpdateRank);
+		}
 
 		if (!GET_STAGE->GetOpenMapDirectory().empty())
 		{ // パスが指定されている場合
@@ -149,4 +162,28 @@ void CRetentionManager::SetResult(const EWin win, const float fTime, const int n
 			CTransPoint::SaveOpen(fsPath.string().c_str(), true);
 		}
 	}
+}
+
+//============================================================
+//	ランキング更新情報の初期化処理
+//============================================================
+void CRetentionManager::InitUpdateRank(void)
+{
+	// 更新した遷移パスを初期化
+	m_updateRank.sTransPath = "";
+
+	// 更新した順位を初期化
+	m_updateRank.nRank = NONE_IDX;
+}
+
+//============================================================
+//	ランキング更新情報の設定処理
+//============================================================
+void CRetentionManager::SetUpdateRank(const char* pTransPath, const int nRank)
+{
+	// 更新した遷移パスを保存
+	m_updateRank.sTransPath = pTransPath;
+
+	// 更新した順位を保存
+	m_updateRank.nRank = nRank;
 }

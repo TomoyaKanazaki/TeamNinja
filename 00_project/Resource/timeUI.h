@@ -107,7 +107,8 @@ public:
 	void SetSizingPart(const D3DXVECTOR3& rSize);	// 数字の大きさ設定
 	void SetSpaceValue(const D3DXVECTOR3& rSpace);	// 区切りの空白設定
 	void SetSpacePart(const D3DXVECTOR3& rSpace);	// 数字の空白設定
-	void SetColor(const D3DXCOLOR& rCol);			// 色の設定
+	void SetColor(const D3DXCOLOR& rCol);			// 色設定
+	void SetAlpha(const float fAlpha);				// 透明度設定
 	void SetAlignX(const EAlignX align);			// 横配置設定
 	void SetAlignY(const EAlignY align);			// 縦配置設定
 	float GetTimeWidth(void) const;					// タイム全体の横幅取得
@@ -118,7 +119,8 @@ public:
 	D3DXVECTOR3 GetSizingPart(void) const	{ return m_sizePart; }		// 数字の大きさ取得
 	D3DXVECTOR3 GetSpaceValue(void) const	{ return m_spaceValue; }	// 区切りの空白取得
 	D3DXVECTOR3 GetSpacePart(void) const	{ return m_spacePart; }		// 数字の空白取得
-	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色の設定
+	D3DXCOLOR GetColor(void) const			{ return m_col;}			// 色透明度取得
+	float GetAlpha(void) const				{ return m_col.a; }			// 透明度取得
 	EAlignX GetAlignX(void) const			{ return m_alignX; }		// 横配置取得
 	EAlignY GetAlignY(void) const			{ return m_alignY; }		// 縦配置取得
 
