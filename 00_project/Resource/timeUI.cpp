@@ -518,6 +518,31 @@ void CTimeUI::SetColor(const D3DXCOLOR& rCol)
 }
 
 //============================================================
+//	透明度の設定処理
+//============================================================
+void CTimeUI::SetAlpha(const float fAlpha)
+{
+	// 設定された透明度を保存
+	m_col.a = fAlpha;
+
+	for (int nCntValue = 0; nCntValue < timeUI::MAX_DIGIT; nCntValue++)
+	{ // 数字の数分繰り返す
+
+		// 数字の色を設定
+		assert(m_apValue[nCntValue] != nullptr);
+		m_apValue[nCntValue]->SetAlpha(fAlpha);
+	}
+
+	for (int nCntPart = 0; nCntPart < timeUI::MAX_PART; nCntPart++)
+	{ // 区切りの数分繰り返す
+
+		// 区切りの色を設定
+		assert(m_apPart[nCntPart] != nullptr);
+		m_apPart[nCntPart]->SetAlpha(fAlpha);
+	}
+}
+
+//============================================================
 //	横配置の設定処理
 //============================================================
 void CTimeUI::SetAlignX(const EAlignX align)

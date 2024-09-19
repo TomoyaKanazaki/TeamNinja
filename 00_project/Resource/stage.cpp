@@ -273,6 +273,17 @@ HRESULT CStage::BindStage(const SPass& rPass)
 }
 
 //============================================================
+//	現在マップパス取得処理
+//============================================================
+std::string CStage::GetCurMapPass(void) const
+{
+	// マップディレクトリにマップパスを追加し返す
+	std::filesystem::path path = m_sCurMapFolder;	// マップディレクトリ
+	path.append("map.txt");	// マップパスを追加
+	return path.string();	// 文字列化して返す
+}
+
+//============================================================
 //	現在マップのステージパス取得処理
 //============================================================
 std::string CStage::GetCurMapStagePass(void) const
