@@ -40,6 +40,7 @@ public:
 		STATE_TIME_TITLE,		// 遂行時間タイトル表示状態
 		STATE_TIME_VALUE_WAIT,	// 遂行時間待機状態
 		STATE_TIME_VALUE,		// 遂行時間表示状態
+		STATE_STAMP,			// ハンコ押し状態
 		STATE_ITEM_TITLE_WAIT,	// 神器タイトル待機状態
 		STATE_ITEM_TITLE,		// 神器タイトル表示状態
 		STATE_ITEM_BG_WAIT,		// 神器アイコン背景待機状態
@@ -78,6 +79,7 @@ private:
 	void UpdateTimeTitle(const float fDeltaTime);		// 遂行時間タイトル表示更新
 	void UpdateTimeValueWait(const float fDeltaTime);	// 遂行時間待機更新
 	void UpdateTimeValue(const float fDeltaTime);		// 遂行時間表示更新
+	void UpdateStamp(const float fDeltaTime);			// ハンコ押し更新
 	void UpdateItemTitleWait(const float fDeltaTime);	// 神器タイトル待機更新
 	void UpdateItemTitle(const float fDeltaTime);		// 神器タイトル表示更新
 	void UpdateItemIconBgWait(const float fDeltaTime);	// 神器アイコン背景待機更新
@@ -91,6 +93,7 @@ private:
 	CAnim2D* m_apGodItemIcon[CGodItem::TYPE_MAX];	// 神器アイコン情報
 	CString2D* m_pTime;		// 遂行時間タイトル情報
 	CTimeUI* m_pTimeVal;	// 遂行時間情報
+	CAnim2D* m_pStamp;		// ハンコ情報
 	CString2D* m_pGodItem;	// 神器タイトル情報
 	CBlink2D* m_pControl;	// 操作情報
 	EState m_state;			// 状態

@@ -57,6 +57,19 @@ namespace
 		const CTimeUI::EAlignY	ALIGN_Y	= CTimeUI::YALIGN_CENTER;	// 縦配置
 	}
 
+	namespace stamp
+	{
+		const char* TEXTURE		="data\\TEXTURE\\resultStamp002.png";	// ハンコテクスチャ
+		const float	MOVE_TIME	= 0.3f;	// 移動時間
+		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
+		const POSGRID2 PART		= POSGRID2(1, 3);							// テクスチャ分割数
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(880.0f, 330.0f, 0.0f);		// 位置
+		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, 0.085f);			// 向き
+		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(683.2f, 147.0f, 0.0f);	// 目標大きさ
+		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// 初期大きさ
+		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// 差分大きさ
+	}
+
 	namespace item
 	{
 		const char		*FONT	= "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
@@ -130,6 +143,7 @@ CClearSuccessManager::AFuncUpdateState CClearSuccessManager::m_aFuncUpdateState[
 	&CClearSuccessManager::UpdateTimeTitle,			// 遂行時間タイトル表示更新
 	&CClearSuccessManager::UpdateTimeValueWait,		// 遂行時間待機更新
 	&CClearSuccessManager::UpdateTimeValue,			// 遂行時間表示更新
+	&CClearSuccessManager::UpdateStamp,				// ハンコ押し更新
 	&CClearSuccessManager::UpdateItemTitleWait,		// 神器タイトル待機更新
 	&CClearSuccessManager::UpdateItemTitle,			// 神器タイトル表示更新
 	&CClearSuccessManager::UpdateItemIconBgWait,	// 神器アイコン背景待機更新
@@ -149,6 +163,7 @@ CClearSuccessManager::AFuncUpdateState CClearSuccessManager::m_aFuncUpdateState[
 CClearSuccessManager::CClearSuccessManager() :
 	m_pTime		(nullptr),		// 遂行時間タイトル情報
 	m_pTimeVal	(nullptr),		// 遂行時間情報
+	m_pStamp	(nullptr),		// ハンコ情報
 	m_pGodItem	(nullptr),		// 神器タイトル情報
 	m_pControl	(nullptr),		// 操作情報
 	m_state		(STATE_NONE),	// 状態
@@ -183,6 +198,7 @@ HRESULT CClearSuccessManager::Init(void)
 	m_state = STATE_TIME_TITLE_WAIT;	// 状態
 	m_pTime		= nullptr;	// 遂行時間タイトル情報
 	m_pTimeVal	= nullptr;	// 遂行時間情報
+	m_pStamp	= nullptr;	// ハンコ情報
 	m_pGodItem	= nullptr;	// 神器タイトル情報
 	m_pControl	= nullptr;	// 操作情報
 	m_fCurTime	= 0.0f;		// 現在の待機時間
@@ -245,6 +261,38 @@ HRESULT CClearSuccessManager::Init(void)
 
 	// 自動描画をOFFにする
 	m_pTimeVal->SetEnableDraw(false);
+
+	//--------------------------------------------------------
+	//	ハンコの生成 / 初期設定
+	//--------------------------------------------------------
+	// ハンコの生成
+	m_pStamp = CAnim2D::Create
+	( // 引数
+		stamp::PART.x,		// テクスチャ横分割数
+		stamp::PART.y,		// テクスチャ縦分割数
+		stamp::POS,			// 位置
+		stamp::INIT_SIZE,	// 大きさ
+		stamp::ROT			// 向き
+	);
+	if (m_pStamp == nullptr)
+	{ // 生成に失敗した場合
+
+		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// テクスチャを割当
+	m_pStamp->BindTexture(stamp::TEXTURE);
+
+	// 優先順位を設定
+	m_pStamp->SetPriority(PRIORITY);
+
+	// ラベルを設定
+	m_pStamp->SetLabel(CObject::LABEL_UI);	// 自動破棄/更新をするラベル
+
+	// 自動描画をOFFにする
+	m_pStamp->SetEnableDraw(false);
 
 	//--------------------------------------------------------
 	//	神器タイトルの生成 / 初期設定
@@ -417,6 +465,21 @@ void CClearSuccessManager::SkipStaging(void)
 	m_pTimeVal->SetVec3Position(val_time::DEST_POS);	// 目標位置に設定
 	m_pTimeVal->SetColor(val_time::DEST_COL);			// 目標色に設定
 
+	CRetentionManager* pRetention = GET_RETENTION;			// データ保存マネージャー
+	int nUpdateRank = pRetention->GetUpdateRank().nRank;	// 更新した順位
+	if (nUpdateRank != NONE_IDX)
+	{ // 新記録が出ている場合
+
+		// 順位に合わせたパターンにする
+		m_pStamp->SetPattern(nUpdateRank);
+
+		// ハンコの自動描画をONにする
+		m_pStamp->SetEnableDraw(true);
+
+		// ハンコの演出後の見た目にする
+		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);	// 目標サイズに設定
+	}
+
 	// 神器タイトルを演出後の見た目にする
 	m_pGodItem->SetEnableDraw(true);				// 自動描画をONにする
 	m_pGodItem->SetCharHeight(item::DEST_HEIGHT);	// 目標サイズに設定
@@ -453,6 +516,9 @@ void CClearSuccessManager::SetAllMove(const D3DXVECTOR3& rMove)
 
 	// 遂行時間の位置を移動
 	m_pTimeVal->SetVec3Position(m_pTimeVal->GetVec3Position() + rMove);
+
+	// ハンコの位置を移動
+	m_pStamp->SetVec3Position(m_pStamp->GetVec3Position() + rMove);
 
 	// 神器タイトルの位置を移動
 	m_pGodItem->SetVec3Position(m_pGodItem->GetVec3Position() + rMove);
@@ -572,6 +638,55 @@ void CClearSuccessManager::UpdateTimeValue(const float fDeltaTime)
 
 		// 遂行時間の位置を補正
 		m_pTimeVal->SetVec3Position(val_time::DEST_POS);
+
+		CRetentionManager* pRetention = GET_RETENTION;			// データ保存マネージャー
+		int nUpdateRank = pRetention->GetUpdateRank().nRank;	// 更新した順位
+		if (nUpdateRank != NONE_IDX)
+		{ // 新記録が出ている場合
+
+			// 順位に合わせたパターンにする
+			m_pStamp->SetPattern(nUpdateRank);
+
+			// ハンコの自動描画をONにする
+			m_pStamp->SetEnableDraw(true);
+
+			// 太鼓の音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_DECISION_001);
+
+			// ハンコ押し状態にする
+			m_state = STATE_STAMP;
+		}
+		else
+		{ // 新記録が出ていない場合
+
+			// 神器タイトル待機状態にする
+			m_state = STATE_ITEM_TITLE_WAIT;
+		}
+	}
+}
+
+//============================================================
+//	ハンコ押しの更新処理
+//============================================================
+void CClearSuccessManager::UpdateStamp(const float fDeltaTime)
+{
+	// タイマーを加算
+	m_fCurTime += fDeltaTime;
+
+	// 経過時刻の割合を計算
+	float fRate = easeing::InQuad(m_fCurTime, 0.0f, stamp::MOVE_TIME);
+
+	// ハンコの大きさを反映
+	m_pStamp->SetVec3Sizing(stamp::INIT_SIZE + (stamp::DIFF_SIZE * fRate));
+
+	if (m_fCurTime >= stamp::MOVE_TIME)
+	{ // 待機が終了した場合
+
+		// タイマーを初期化
+		m_fCurTime = 0.0f;
+
+		// ハンコの大きさを補正
+		m_pStamp->SetVec3Sizing(stamp::DEST_SIZE);
 
 		// 神器タイトル待機状態にする
 		m_state = STATE_ITEM_TITLE_WAIT;

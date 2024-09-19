@@ -67,8 +67,8 @@ namespace
 
 		const float	MOVE_TIME	= 0.3f;	// 移動時間
 		const float	WAIT_TIME	= 0.5f;	// ハンコ待機時間
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 140.0f, 0.0f);		// ハンコ位置
-		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.16f);			// ハンコ向き
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(1020.0f, 132.0f, 0.0f);		// ハンコ位置
+		const D3DXVECTOR3 ROT	= D3DXVECTOR3(0.0f, 0.0f, -0.14f);			// ハンコ向き
 		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(454.0f, 147.0f, 0.0f);	// ハンコ目標大きさ
 		const D3DXVECTOR3 INIT_SIZE	= DEST_SIZE * 10.0f;					// ハンコ初期大きさ
 		const D3DXVECTOR3 DIFF_SIZE = DEST_SIZE - INIT_SIZE;				// ハンコ差分大きさ
