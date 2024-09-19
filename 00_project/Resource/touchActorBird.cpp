@@ -24,9 +24,9 @@ namespace
 	const float NONE_SPEED = 200.0f;			// 通常時の移動量
 	const float NONE_HEIGHT = 80.0f;			// 通常時の高さ
 	const float NONE_GRAVITY = 500.0f;			// 通常時の重力
-	const float FLY_SPEED = 700.0f;				// 飛んでいく速度
-	const float FLY_HEIGHT = 300.0f;			// 飛んでいく高さ
-	const float FLY_GRAVITY = 200.0f;			// 飛行時の重力
+	const float FLY_SPEED = 900.0f;				// 飛んでいく速度
+	const float FLY_HEIGHT = 400.0f;			// 飛んでいく高さ
+	const float FLY_GRAVITY = 250.0f;			// 飛行時の重力
 }
 
 //************************************************************
