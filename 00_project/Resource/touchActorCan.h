@@ -57,9 +57,6 @@ private:
 	// オーバーライド関数
 	void UpdateNone(const float fDeltaTime) override;		// 通常状態更新処理
 	void UpdateAct(const float fDeltaTime) override;		// アクション状態更新処理
-
-	// メンバ変数
-	bool m_bDelete;		// 消去状況
 };
 
 #endif	// _TOUCH_ACTOR_CAN_H_
