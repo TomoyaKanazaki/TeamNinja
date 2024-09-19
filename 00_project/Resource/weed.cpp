@@ -30,7 +30,7 @@ namespace
 	};
 
 	const D3DXVECTOR3 SIZING = D3DXVECTOR3(45.0f, 80.0f, 0.0f);		// サイズ
-	const int	PRIORITY	 = 6;		// 草表示の優先順位
+	const int	PRIORITY	 = 2;		// 草表示の優先順位
 	const int	ALPHA_NUMREF = 120;		// αテストの参照値
 	const float STOMP_MIN	 = 60.0f;	// 踏んだ時の最低限の距離
 	const float STOMP_REV	 = 0.4f;	// 踏んだ時の補正係数

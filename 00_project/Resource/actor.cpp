@@ -79,7 +79,7 @@ namespace
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
-	const int PRIORITY = 4;	// アクターの優先順位
+	const int PRIORITY = 2;	// アクターの優先順位
 	const float DELETE_EFFECT_SCALE = 80.0f;		// 消去エフェクトの拡大率
 }
 
