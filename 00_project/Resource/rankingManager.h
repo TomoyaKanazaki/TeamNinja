@@ -15,6 +15,8 @@
 //************************************************************
 class CObject2D;	// オブジェクト2Dクラス
 class CString2D;	// 文字列2Dクラス
+class CTimeUI;		// タイムUIクラス
+class CAnim2D;		// アニメーション2Dクラス
 
 //************************************************************
 //	クラス定義
@@ -23,14 +25,15 @@ class CString2D;	// 文字列2Dクラス
 class CRankingManager
 {
 public:
+	// 定数
+	static constexpr int MAX_RANK = 3;	// ランキング上位表示数
+
 	// 状態列挙
 	enum EState
 	{
 		STATE_NONE = 0,	// 何もしない状態
 		STATE_FADEOUT,	// フェードアウト状態
-		STATE_LINE,		// 下線出現状態
-		STATE_TITLE,	// タイトル出現状態
-		STATE_SELECT,	// 選択肢表示状態
+		STATE_SPAWN,	// UI出現状態
 		STATE_WAIT,		// 待機状態
 		STATE_FADEIN,	// フェードイン状態
 		STATE_FALL,		// UI消失状態
@@ -73,9 +76,7 @@ private:
 
 	// メンバ関数
 	void UpdateFadeOut(const float fDeltaTime);	// フェードアウト更新
-	void UpdateLine(const float fDeltaTime);	// 下線出現更新
-	void UpdateTitle(const float fDeltaTime);	// タイトル出現更新
-	void UpdateSelect(const float fDeltaTime);	// 選択肢表示更新
+	void UpdateSpawn(const float fDeltaTime);	// UI出現更新
 	void UpdateWait(const float fDeltaTime);	// 待機更新
 	void UpdateFadeIn(const float fDeltaTime);	// フェードイン更新
 	void UpdateFall(const float fDeltaTime);	// UI消失更新
@@ -84,10 +85,14 @@ private:
 	void SkipStaging(void);	// 演出スキップ
 
 	// メンバ変数
+	CAnim2D* m_apRankValue[MAX_RANK];	// ランキング順位情報
+	CTimeUI* m_apRankTime[MAX_RANK];	// ランキング時間情報
 	CString2D* m_apSelect[SELECT_MAX];	// 選択肢情報
 	CObject2D* m_pFade;		// フェード情報
 	CObject2D* m_pTitle;	// タイトル情報
-	CObject2D* m_pLine;		// 下線情報
+	CObject2D* m_pBalloon;	// 吹き出し情報
+	CString2D* m_pShadow;	// ランキングタイトルの影情報
+	CString2D* m_pName;		// ランキングタイトル情報
 	EState m_state;			// 状態
 	float m_fCurTime;		// 現在の待機時間
 	int m_nCurSelect;		// 現在の選択肢

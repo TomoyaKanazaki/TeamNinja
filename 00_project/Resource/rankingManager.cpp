@@ -12,11 +12,14 @@
 #include "manager.h"
 #include "camera.h"
 #include "fade.h"
+#include "renderer.h"
 #include "loadtext.h"
 #include "stage.h"
 #include "object2D.h"
 #include "player.h"
 #include "string2D.h"
+#include "timeUI.h"
+#include "anim2D.h"
 
 //************************************************************
 //	’è”éŒ¾
@@ -28,37 +31,78 @@ namespace
 
 	namespace fade
 	{
-		const float	MOVE_INTIME	 = 0.2f;	// ƒCƒ“•Ï“®ŠÔ
-		const float	MOVE_OUTTIME = 0.5f;	// ƒAƒEƒg•Ï“®ŠÔ
-		const float DEST_ALPHA	 = 0.5f;	// –Ú•W“§–¾“x
+		const float	MOVE_INTIME	 = 0.15f;	// ƒCƒ“•Ï“®ŠÔ
+		const float	MOVE_OUTTIME = 0.15f;	// ƒAƒEƒg•Ï“®ŠÔ
+		const float DEST_ALPHA	 = 0.75f;	// –Ú•W“§–¾“x
 		const float INIT_ALPHA	 = 0.0f;	// ‰Šú“§–¾“x
 		const float DIFF_ALPHA	 = DEST_ALPHA - INIT_ALPHA;	// ·•ª“§–¾“x
 		const D3DXCOLOR INIT_COL = D3DXCOLOR(0.0f, 0.0f, 0.0f, INIT_ALPHA);		// ‰ŠúF
-		const D3DXVECTOR3 SIZE	 = D3DXVECTOR3(SCREEN_SIZE.x, 280.0f, 0.0f);	// ‘å‚«‚³
-		const D3DXVECTOR3 POS	 = D3DXVECTOR3(SCREEN_CENT.x, 548.0f, 0.0f);	// ˆÊ’u
+		const D3DXVECTOR3 SIZE	 = D3DXVECTOR3(SCREEN_SIZE.x, 520.0f, 0.0f);	// ‘å‚«‚³
+		const D3DXVECTOR3 POS	 = SCREEN_CENT;	// ˆÊ’u
 		const D3DXVECTOR3 ROT	 = VEC3_ZERO;	// Œü‚«
 	}
 
 	namespace title
 	{
 		const char *TEXTURE		= "data\\TEXTURE\\get_magatama.png";	// ƒeƒNƒXƒ`ƒƒƒpƒX
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(632.0f, 184.0f, 0.0f);	// ‘å‚«‚³
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(632.0f, 184.0f, 0.0f) * 0.8f;	// ‘å‚«‚³
 		const float	MOVE_TIME	= 0.68f;	// ˆÚ“®ŠÔ
 		const D3DXCOLOR DEST_COL	= XCOL_WHITE;			// –Ú•WF
 		const D3DXCOLOR INIT_COL	= XCOL_AWHITE;			// ‰ŠúF
 		const D3DXCOLOR DIFF_COL	= DEST_COL - INIT_COL;	// ·•ªF
-		const D3DXVECTOR3 DEST_POS	= D3DXVECTOR3(SCREEN_CENT.x, 505.0f, 0.0f);		// –Ú•WˆÊ’u
+		const D3DXVECTOR3 DEST_POS	= D3DXVECTOR3(SCREEN_CENT.x, 180.0f, 0.0f);		// –Ú•WˆÊ’u
 		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// ‰ŠúˆÊ’u
 		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// ·•ªˆÊ’u
 	}
 
-	namespace line
+	namespace balloon
 	{
-		const float	MOVE_TIME	= 0.5f;	// ˆÚ“®ŠÔ
-		const D3DXVECTOR3 POS	= D3DXVECTOR3(SCREEN_CENT.x, 590.0f, 0.0f);	// ˆÊ’u
-		const D3DXVECTOR3 DEST_SIZE	= D3DXVECTOR3(980.0f, 10.0f, 0.0f);		// –Ú•W‘å‚«‚³
-		const D3DXVECTOR3 INIT_SIZE	= D3DXVECTOR3(0.0f, DEST_SIZE.y, 0.0f);	// ‰Šú‘å‚«‚³
-		const D3DXVECTOR3 DIFF_SIZE	= DEST_SIZE - INIT_SIZE;				// ·•ª‘å‚«‚³
+		const char *TEXTURE		= "data\\TEXTURE\\get_magatama.png";	// ƒeƒNƒXƒ`ƒƒƒpƒX
+		const D3DXVECTOR3 SIZE	= SCREEN_SIZE * 0.42f;		// ‘å‚«‚³
+		const float	MOVE_TIME	= 0.68f;					// ˆÚ“®ŠÔ
+		const D3DXCOLOR DEST_COL	= XCOL_WHITE;			// –Ú•WF
+		const D3DXCOLOR INIT_COL	= XCOL_AWHITE;			// ‰ŠúF
+		const D3DXCOLOR DIFF_COL	= DEST_COL - INIT_COL;	// ·•ªF
+		const D3DXVECTOR3 DEST_POS	= D3DXVECTOR3(345.0f, 385.0f, 0.0f);			// –Ú•WˆÊ’u
+		const D3DXVECTOR3 INIT_POS	= DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);	// ‰ŠúˆÊ’u
+		const D3DXVECTOR3 DIFF_POS	= DEST_POS - INIT_POS;							// ·•ªˆÊ’u
+	}
+
+	namespace name
+	{
+		const char		*FONT	= "data\\FONT\\‹Ê‚Ë‚¬²‘Œƒ–³—¿”Åv7‰ü.ttf";	// ƒtƒHƒ“ƒgƒpƒX
+		const wchar_t	*STRING = L"‹s‡ˆÊ";	// •\¦•¶š—ñ
+		const bool		ITALIC	= true;			// ƒCƒ^ƒŠƒbƒN
+
+		const float	CHAR_HEIGHT	 = 120.0f * 0.42f;	// •¶šc•
+		const D3DXVECTOR3 POS	 = D3DXVECTOR3(635.0f, 275.0f, 0.0f);		// ˆÊ’u
+		const D3DXVECTOR3 OFFSET = D3DXVECTOR3(8.0f, 8.0f, 0.0f) * 0.42f;	// ‰eƒIƒtƒZƒbƒg
+		const D3DXVECTOR3 ROT	 = VEC3_ZERO;								// Œü‚«
+
+		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_LEFT;	// ‰¡”z’u
+		const D3DXCOLOR COL_SHADOW	= XCOL_ABLUE;	// ‰e‚ÌF
+		const D3DXCOLOR COL_NAME	= XCOL_AWHITE;	// –¼‘O‚ÌF
+	}
+
+	namespace rank
+	{
+		const char *TEXTURE		= "data\\TEXTURE\\ranking000.png";		// ƒtƒHƒ“ƒgƒpƒX
+		const POSGRID2 PART		= POSGRID2(1, 3);						// ƒeƒNƒXƒ`ƒƒ•ªŠ„”
+		const D3DXVECTOR3 POS	= D3DXVECTOR3(725.0f, 338.5f, 0.0f);	// ˆÊ’u
+		const D3DXVECTOR3 SPACE	= D3DXVECTOR3(0.0f, 66.5f, 0.0f);		// ‹ó”’
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(125.4f, 74.25f, 0.0f);	// ”š‘å‚«‚³
+	}
+
+	namespace time
+	{
+		const D3DXVECTOR3 POS			= D3DXVECTOR3(979.0f, rank::POS.y, 0.0f);		// ˆÊ’u
+		const D3DXVECTOR3 SPACE			= rank::SPACE;									// ‹ó”’
+		const D3DXVECTOR3 VAL_SIZE		= D3DXVECTOR3(62.82f, 74.25f, 0.0f) * 0.87f;	// ”š‘å‚«‚³
+		const D3DXVECTOR3 PART_SIZE		= D3DXVECTOR3(27.85f, 63.65f, 0.0f) * 0.87f;	// ‹æØ‚è‘å‚«‚³
+		const D3DXVECTOR3 VAL_SPACE		= D3DXVECTOR3(VAL_SIZE.x * 0.85f, 0.0f, 0.0f);	// ”š‹ó”’
+		const D3DXVECTOR3 PART_SPACE	= D3DXVECTOR3(PART_SIZE.x * 0.85f, 0.0f, 0.0f);	// ‹æØ‚è‹ó”’
+		const CValue::EType TYPE		= CValue::TYPE_NORMAL;		// ”ší—Ş
+		const CTimeUI::EAlignX ALIGN_X	= CTimeUI::XALIGN_CENTER;	// ‰¡”z’u
 	}
 
 	namespace select
@@ -82,16 +126,16 @@ namespace
 		const D3DXVECTOR3 SPACE		= D3DXVECTOR3(360.0f, 0.0f, 0.0f);			// ‹ó”’
 		const CString2D::EAlignX ALIGN_X = CString2D::XALIGN_CENTER;			// ‰¡”z’u
 
-		const D3DXVECTOR3 DEST_POS = D3DXVECTOR3(SCREEN_CENT.x - SPACE.x * 0.5f, 640.0f, 0.0f);	// –Ú•WˆÊ’u
+		const D3DXVECTOR3 DEST_POS = D3DXVECTOR3(SCREEN_CENT.x - SPACE.x * 0.5f, 555.0f, 0.0f);	// –Ú•WˆÊ’u
 		const D3DXVECTOR3 INIT_POS = DEST_POS + D3DXVECTOR3(0.0f, 40.0f, 0.0f);					// ‰ŠúˆÊ’u
 		const D3DXVECTOR3 DIFF_POS = DEST_POS - INIT_POS;										// ·•ªˆÊ’u
 	}
 
 	namespace fall
 	{
-		const float	MOVE_TIME	= 0.5f;	// ˆÚ“®ŠÔ
-		const float DEST_ALPHA	= 0.0f;	// –Ú•W“§–¾“x
-		const float INIT_ALPHA	= 1.0f;	// ‰Šú“§–¾“x
+		const float	MOVE_TIME	= 0.25f;	// ˆÚ“®ŠÔ
+		const float DEST_ALPHA	= 0.0f;		// –Ú•W“§–¾“x
+		const float INIT_ALPHA	= 1.0f;		// ‰Šú“§–¾“x
 		const float DIFF_ALPHA	= DEST_ALPHA - INIT_ALPHA;	// ·•ª“§–¾“x
 		const D3DXCOLOR DEST_COL	 = D3DXCOLOR(1.0f, 1.0f, 1.0f, DEST_ALPHA);	// –Ú•WF
 		const D3DXCOLOR INIT_COL	 = D3DXCOLOR(1.0f, 1.0f, 1.0f, INIT_ALPHA);	// ‰ŠúF
@@ -107,9 +151,7 @@ CRankingManager::AFuncUpdateState CRankingManager::m_aFuncUpdateState[] =	// ó‘
 {
 	nullptr,							// ‰½‚à‚µ‚È‚¢XV
 	&CRankingManager::UpdateFadeOut,	// ƒtƒF[ƒhƒAƒEƒgXV
-	&CRankingManager::UpdateLine,		// ‰ºüoŒ»XV
-	&CRankingManager::UpdateTitle,		// ƒ^ƒCƒgƒ‹oŒ»XV
-	&CRankingManager::UpdateSelect,		// ‘I‘ğˆ•\¦XV
+	&CRankingManager::UpdateSpawn,		// UIoŒ»XV
 	&CRankingManager::UpdateWait,		// ‘Ò‹@XV
 	&CRankingManager::UpdateFadeIn,		// ƒtƒF[ƒhƒCƒ“XV
 	&CRankingManager::UpdateFall,		// UIÁ¸XV
@@ -125,14 +167,18 @@ CRankingManager::AFuncUpdateState CRankingManager::m_aFuncUpdateState[] =	// ó‘
 CRankingManager::CRankingManager() :
 	m_pFade		 (nullptr),		// ƒtƒF[ƒhî•ñ
 	m_pTitle	 (nullptr),		// ƒ^ƒCƒgƒ‹î•ñ
-	m_pLine		 (nullptr),		// ‰ºüî•ñ
+	m_pBalloon	 (nullptr),		// ‚«o‚µî•ñ
+	m_pShadow	 (nullptr),		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‚Ì‰eî•ñ
+	m_pName		 (nullptr),		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ
 	m_state		 (STATE_NONE),	// ó‘Ô
 	m_fCurTime	 (0.0f),		// Œ»İ‚Ì‘Ò‹@ŠÔ
 	m_nCurSelect (0),			// Œ»İ‚Ì‘I‘ğˆ
 	m_nOldSelect (0)			// ‘O‰ñ‚Ì‘I‘ğˆ
 {
 	// ƒƒ“ƒo•Ï”‚ğƒNƒŠƒA
-	memset(&m_apSelect[0], 0, sizeof(m_apSelect));	// ‘I‘ğˆî•ñ
+	memset(&m_apRankValue[0], 0, sizeof(m_apRankValue));	// ƒ‰ƒ“ƒLƒ“ƒO‡ˆÊî•ñ
+	memset(&m_apRankTime[0], 0, sizeof(m_apRankTime));		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ
+	memset(&m_apSelect[0], 0, sizeof(m_apSelect));			// ‘I‘ğˆî•ñ
 
 	// ƒXƒ^ƒeƒBƒbƒNƒAƒT[ƒg
 	static_assert(NUM_ARRAY(m_aFuncUpdateState) == CRankingManager::STATE_MAX, "ERROR : State Count Mismatch");
@@ -152,11 +198,15 @@ CRankingManager::~CRankingManager()
 HRESULT CRankingManager::Init(void)
 {
 	// ƒƒ“ƒo•Ï”‚ğ‰Šú‰»
-	memset(&m_apSelect[0], 0, sizeof(m_apSelect));	// ‘I‘ğˆî•ñ
+	memset(&m_apRankValue[0], 0, sizeof(m_apRankValue));	// ƒ‰ƒ“ƒLƒ“ƒO‡ˆÊî•ñ
+	memset(&m_apRankTime[0], 0, sizeof(m_apRankTime));		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ
+	memset(&m_apSelect[0], 0, sizeof(m_apSelect));			// ‘I‘ğˆî•ñ
 	m_state		 = STATE_FADEOUT;	// ó‘Ô
 	m_pFade		 = nullptr;	// ƒtƒF[ƒhî•ñ
 	m_pTitle	 = nullptr;	// ƒ^ƒCƒgƒ‹î•ñ
-	m_pLine		 = nullptr;	// ‰ºüî•ñ
+	m_pBalloon	 = nullptr;	// ‚«o‚µî•ñ
+	m_pShadow	 = nullptr;	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‚Ì‰eî•ñ
+	m_pName		 = nullptr;	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ
 	m_fCurTime	 = 0.0f;	// Œ»İ‚Ì‘Ò‹@ŠÔ
 	m_nCurSelect = 0;		// Œ»İ‚Ì‘I‘ğˆ
 	m_nOldSelect = 0;		// ‘O‰ñ‚Ì‘I‘ğˆ
@@ -215,15 +265,49 @@ HRESULT CRankingManager::Init(void)
 	m_pTitle->SetLabel(CObject::LABEL_UI);
 
 	//--------------------------------------------------------
-	//	‰ºü‚Ì¶¬ / ‰Šúİ’è
+	//	‚«o‚µ‚Ì¶¬ / ‰Šúİ’è
 	//--------------------------------------------------------
-	// ‰ºü‚Ì¶¬
-	m_pLine = CObject2D::Create
+	// ‚«o‚µ‚Ì¶¬
+	m_pBalloon = CObject2D::Create
 	( // ˆø”
-		line::POS,		// ˆÊ’u
-		line::INIT_SIZE	// ‘å‚«‚³
+		balloon::INIT_POS,	// ˆÊ’u
+		balloon::SIZE,		// ‘å‚«‚³
+		VEC3_ZERO,			// Œü‚«
+		balloon::INIT_COL	// F
 	);
-	if (m_pLine == nullptr)
+	if (m_pBalloon == nullptr)
+	{ // ¶¬‚É¸”s‚µ‚½ê‡
+
+		// ¸”s‚ğ•Ô‚·
+		assert(false);
+		return E_FAIL;
+	}
+
+	// ƒrƒ‹ƒ{[ƒhƒV[ƒ“‚ÌƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‚ğŠ„“–
+	m_pBalloon->BindTexture(GET_RENDERER->GetRenderTextureIndex(CObject::SCENE_BILLBOARD));
+
+	// —Dæ‡ˆÊ‚ğİ’è
+	m_pBalloon->SetPriority(PRIO_UI);
+
+	// ƒ‰ƒxƒ‹‚ğİ’è
+	m_pBalloon->SetLabel(CObject::LABEL_UI);
+
+	//--------------------------------------------------------
+	//	ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰e‚Ì¶¬ / ‰Šúİ’è
+	//--------------------------------------------------------
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰e‚Ì¶¬
+	m_pShadow = CString2D::Create
+	( // ˆø”
+		name::FONT,					// ƒtƒHƒ“ƒgƒpƒX
+		name::ITALIC,				// ƒCƒ^ƒŠƒbƒN
+		name::STRING,				// •\¦•¶š—ñ
+		name::POS + name::OFFSET,	// Œ´“_ˆÊ’u
+		name::CHAR_HEIGHT,			// •¶šc•
+		name::ALIGN_X,				// ‰¡”z’u
+		name::ROT,					// Œ´“_Œü‚«
+		name::COL_SHADOW			// F
+	);
+	if (m_pShadow == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
 		// ¸”s‚ğ•Ô‚·
@@ -232,10 +316,108 @@ HRESULT CRankingManager::Init(void)
 	}
 
 	// —Dæ‡ˆÊ‚ğİ’è
-	m_pLine->SetPriority(PRIO_UI);
+	m_pShadow->SetPriority(PRIO_UI);
 
-	// ƒ‰ƒxƒ‹‚ğİ’è
-	m_pLine->SetLabel(CObject::LABEL_UI);
+	//--------------------------------------------------------
+	//	ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‚Ì¶¬ / ‰Šúİ’è
+	//--------------------------------------------------------
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‚Ì¶¬
+	m_pName = CString2D::Create
+	( // ˆø”
+		name::FONT,			// ƒtƒHƒ“ƒgƒpƒX
+		name::ITALIC,		// ƒCƒ^ƒŠƒbƒN
+		name::STRING,		// •\¦•¶š—ñ
+		name::POS,			// Œ´“_ˆÊ’u
+		name::CHAR_HEIGHT,	// •¶šc•
+		name::ALIGN_X,		// ‰¡”z’u
+		name::ROT,			// Œ´“_Œü‚«
+		name::COL_NAME		// F
+	);
+	if (m_pName == nullptr)
+	{ // ¶¬‚É¸”s‚µ‚½ê‡
+
+		// ¸”s‚ğ•Ô‚·
+		assert(false);
+		return E_FAIL;
+	}
+
+	// —Dæ‡ˆÊ‚ğİ’è
+	m_pName->SetPriority(PRIO_UI);
+
+	//--------------------------------------------------------
+	//	ƒ‰ƒ“ƒLƒ“ƒO‚Ì¶¬ / ‰Šúİ’è
+	//--------------------------------------------------------
+	for (int i = 0; i < MAX_RANK; i++)
+	{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
+
+		//----------------------------------------------------
+		//	ƒ‰ƒ“ƒLƒ“ƒO‡ˆÊ‚Ì¶¬ / ‰Šúİ’è
+		//----------------------------------------------------
+		// ¶¬ˆÊ’u‚ğŒvZ
+		D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);	// ¶¬ˆÊ’u
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔ‚Ì¶¬
+		m_apRankValue[i] = CAnim2D::Create
+		( // ˆø”
+			rank::PART.x,	// ƒeƒNƒXƒ`ƒƒ‰¡•ªŠ„”
+			rank::PART.y,	// ƒeƒNƒXƒ`ƒƒc•ªŠ„”
+			posRank,		// ˆÊ’u
+			rank::SIZE,		// ‘å‚«‚³
+			VEC3_ZERO,		// Œü‚«
+			XCOL_AWHITE		// F
+		);
+		if (m_apRankValue[i] == nullptr)
+		{ // ¶¬‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			assert(false);
+			return E_FAIL;
+		}
+
+		// ƒeƒNƒXƒ`ƒƒ‚ğŠ„“–
+		m_apRankValue[i]->BindTexture(rank::TEXTURE);
+
+		// ƒpƒ^[ƒ“‚ğİ’è
+		m_apRankValue[i]->SetPattern(i);
+
+		// —Dæ‡ˆÊ‚ğİ’è
+		m_apRankValue[i]->SetPriority(PRIO_UI);
+
+		// ƒ‰ƒxƒ‹‚ğİ’è
+		m_apRankValue[i]->SetLabel(CObject::LABEL_UI);
+
+		//----------------------------------------------------
+		//	ƒ‰ƒ“ƒLƒ“ƒOŠÔ‚Ì¶¬ / ‰Šúİ’è
+		//----------------------------------------------------
+		// ¶¬ˆÊ’u‚ğŒvZ
+		D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);	// ¶¬ˆÊ’u
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔ‚Ì¶¬
+		m_apRankTime[i] = CTimeUI::Create
+		( // ˆø”
+			0.0f,					// •\¦ŠÔ
+			posTime,				// ˆÊ’u
+			time::VAL_SIZE,			// ”š‚Ì‘å‚«‚³
+			time::PART_SIZE,		// ‹æØ‚è‚Ì‘å‚«‚³
+			time::VAL_SPACE,		// ”š‚Ì‹ó”’
+			time::PART_SPACE,		// ‹æØ‚è‚Ì‹ó”’
+			time::TYPE,				// ”ší—Ş
+			time::ALIGN_X,			// ‰¡”z’u
+			CTimeUI::YALIGN_CENTER,	// c”z’u
+			VEC3_ZERO,				// Œü‚«
+			XCOL_AWHITE				// F
+		);
+		if (m_apRankTime[i] == nullptr)
+		{ // ¶¬‚É¸”s‚µ‚½ê‡
+
+			// ¸”s‚ğ•Ô‚·
+			assert(false);
+			return E_FAIL;
+		}
+
+		// —Dæ‡ˆÊ‚ğİ’è
+		m_apRankTime[i]->SetPriority(PRIO_UI);
+	}
 
 	//--------------------------------------------------------
 	//	‘I‘ğˆ‚Ì¶¬ / ‰Šúİ’è
@@ -244,7 +426,7 @@ HRESULT CRankingManager::Init(void)
 	{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
 
 		// ¶¬ˆÊ’u‚ğŒvZ
-		D3DXVECTOR3 posIcon = select::INIT_POS + (select::SPACE * (float)i);	// ¶¬ˆÊ’u
+		D3DXVECTOR3 posSelect = select::INIT_POS + (select::SPACE * (float)i);	// ¶¬ˆÊ’u
 
 		// ‘I‘ğˆ‚Ì¶¬
 		m_apSelect[i] = CString2D::Create
@@ -252,7 +434,7 @@ HRESULT CRankingManager::Init(void)
 			select::FONT,			// ƒtƒHƒ“ƒgƒpƒX
 			select::ITALIC,			// ƒCƒ^ƒŠƒbƒN
 			select::STRING[i],		// w’è•¶š—ñ
-			posIcon,				// Œ´“_ˆÊ’u
+			posSelect,				// Œ´“_ˆÊ’u
 			select::CHAR_HEIGHT,	// •¶šc•
 			select::ALIGN_X,		// ‰¡”z’u
 			VEC3_ZERO,				// Œ´“_Œü‚«
@@ -268,12 +450,6 @@ HRESULT CRankingManager::Init(void)
 
 		// —Dæ‡ˆÊ‚ğİ’è
 		m_apSelect[i]->SetPriority(PRIO_UI);
-
-		// ƒ‰ƒxƒ‹‚ğİ’è
-		m_apSelect[i]->SetLabel(CObject::LABEL_UI);
-
-		// ©“®•`‰æ‚ğOFF‚É‚·‚é
-		m_apSelect[i]->SetEnableDraw(false);
 	}
 
 	// ¬Œ÷‚ğ•Ô‚·
@@ -370,131 +546,97 @@ void CRankingManager::UpdateFadeOut(const float fDeltaTime)
 		// ƒtƒF[ƒh‚Ì“§–¾“x‚ğ•â³
 		m_pFade->SetAlpha(fade::DEST_ALPHA);
 
-		// ‰ºüoŒ»ó‘Ô‚É‚·‚é
-		m_state = STATE_LINE;
+		// UIoŒ»ó‘Ô‚É‚·‚é
+		m_state = STATE_SPAWN;
 	}
 }
 
 //============================================================
-//	‰ºüoŒ»‚ÌXVˆ—
+//	UIoŒ»‚ÌXVˆ—
 //============================================================
-void CRankingManager::UpdateLine(const float fDeltaTime)
+void CRankingManager::UpdateSpawn(const float fDeltaTime)
 {
 	// ƒ^ƒCƒ}[‚ğ‰ÁZ
 	m_fCurTime += fDeltaTime;
 
 	// Œo‰ß‚ÌŠ„‡‚ğŒvZ
-	float fRate = easeing::InQuad(m_fCurTime, 0.0f, line::MOVE_TIME);
+	float fRate = easeing::InOutQuad(m_fCurTime, fall::MOVE_TIME, 0.0f);
 
-	// ‰ºü‚Ì‘å‚«‚³‚ğ”½‰f
-	m_pLine->SetVec3Sizing(line::INIT_SIZE + (line::DIFF_SIZE * fRate));
+	// ƒ^ƒCƒgƒ‹î•ñ‚Ì”½‰f
+	m_pTitle->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));		// F‚ğ”½‰f
+	m_pTitle->SetVec3Position(title::DEST_POS + (((title::DEST_POS + fall::OFFSET_POS) - title::DEST_POS) * fRate));	// ˆÊ’u‚ğ”½‰f
 
-	if (m_fCurTime >= line::MOVE_TIME)
-	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
+	// ‚«o‚µî•ñ‚Ì”½‰f
+	m_pBalloon->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+	m_pBalloon->SetVec3Position(balloon::DEST_POS + (((balloon::DEST_POS + fall::OFFSET_POS) - balloon::DEST_POS) * fRate));	// ˆÊ’u‚ğ”½‰f
 
-		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
-		m_fCurTime = 0.0f;
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰eî•ñ‚Ì”½‰f
+	const D3DXVECTOR3 posShadow = name::POS + name::OFFSET;				// ‰e•¶šˆÊ’u
+	m_pShadow->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
+	m_pShadow->SetVec3Position(posShadow + (((posShadow + fall::OFFSET_POS) - posShadow) * fRate));	// ˆÊ’u‚ğ”½‰f
 
-		// ‰ºü‚Ì‘å‚«‚³‚ğ•â³
-		m_pLine->SetVec3Sizing(line::DEST_SIZE);
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ‚Ì”½‰f
+	m_pName->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
+	m_pName->SetVec3Position(name::POS + (((name::POS + fall::OFFSET_POS) - name::POS) * fRate));	// ˆÊ’u‚ğ”½‰f
 
-		// ƒ^ƒCƒgƒ‹oŒ»ó‘Ô‚É‚·‚é
-		m_state = STATE_TITLE;
+	for (int i = 0; i < MAX_RANK; i++)
+	{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚Ì”½‰f
+		const D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);		// ¶¬ˆÊ’u
+		m_apRankValue[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+		m_apRankValue[i]->SetVec3Position(posRank + (((posRank + fall::OFFSET_POS) - posRank) * fRate));	// ˆÊ’u‚ğ”½‰f
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚Ì”½‰f
+		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);		// ¶¬ˆÊ’u
+		m_apRankTime[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+		m_apRankTime[i]->SetVec3Position(posTime + (((posTime + fall::OFFSET_POS) - posTime) * fRate));		// ˆÊ’u‚ğ”½‰f
 	}
-}
 
-//============================================================
-//	ƒ^ƒCƒgƒ‹oŒ»‚ÌXVˆ—
-//============================================================
-void CRankingManager::UpdateTitle(const float fDeltaTime)
-{
-	// ƒ^ƒCƒ}[‚ğ‰ÁZ
-	m_fCurTime += fDeltaTime;
-
-	// Œo‰ß‚ÌŠ„‡‚ğŒvZ
-	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, title::MOVE_TIME);
-
-	// ƒ^ƒCƒgƒ‹‚ÌF‚ğ”½‰f
-	m_pTitle->SetColor(title::INIT_COL + (title::DIFF_COL * fRate));
-
-	// ƒ^ƒCƒgƒ‹‚ÌˆÊ’u‚ğ”½‰f
-	m_pTitle->SetVec3Position(title::INIT_POS + (title::DIFF_POS * fRate));
-
-	if (m_fCurTime >= title::MOVE_TIME)
-	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
-
-		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
-		m_fCurTime = 0.0f;
-
-		// ƒ^ƒCƒgƒ‹‚ÌF‚ğ•â³
-		m_pTitle->SetColor(title::DEST_COL);
-
-		// ƒ^ƒCƒgƒ‹‚ÌˆÊ’u‚ğ•â³
-		m_pTitle->SetVec3Position(title::DEST_POS);
-
-		for (int i = 0; i < SELECT_MAX; i++)
-		{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
-
-			// ‘I‘ğˆ‚Ì©“®•`‰æ‚ğON‚É‚·‚é
-			m_apSelect[i]->SetEnableDraw(true);
-		}
-
-		// ‘I‘ğˆ•\¦ó‘Ô‚É‚·‚é
-		m_state = STATE_SELECT;
-	}
-}
-
-//============================================================
-//	‘I‘ğˆ•\¦‚ÌXVˆ—
-//============================================================
-void CRankingManager::UpdateSelect(const float fDeltaTime)
-{
-	// ƒ^ƒCƒ}[‚ğ‰ÁZ
-	m_fCurTime += fDeltaTime;
-
-	// ‘I‘ğˆ‚ÌˆÚ“®
 	for (int i = 0; i < SELECT_MAX; i++)
 	{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
 
-		// ƒAƒCƒRƒ“”wŒi‚»‚ê‚¼‚ê‚ÌŒo‰ßŠÔ‚ğŒvZ
-		float fRateTime = m_fCurTime - (select::PLUS_TIME * (float)i);
-		useful::LimitNum(fRateTime, 0.0f, select::MOVE_TIME);	// Œo‰ßŠÔ‚ğ•â³
+		D3DXVECTOR3 posSelect = select::DEST_POS + (((select::DEST_POS + fall::OFFSET_POS) - select::DEST_POS) * fRate);	// ˆÊ’u
+		D3DXVECTOR3 offsetSelect = (select::SPACE * (float)i);	// ƒIƒtƒZƒbƒg
 
-		// ‚»‚ê‚¼‚ê‚ÌŒo‰ß‚©‚çŠ„‡‚ğŒvZ
-		float fRate = easeing::InOutQuad(fRateTime, 0.0f, select::MOVE_TIME);
-
-		// ‘I‘ğˆ‚ÌˆÊ’u‚ğŒvZ
-		D3DXVECTOR3 posInit = select::INIT_POS + (select::SPACE * (float)i);
-
-		// ‘I‘ğˆ‚ÌF‚ğŒvZ
-		D3DXCOLOR colCur = select::INIT_COL;
-		colCur.a = select::INIT_ALPHA + (select::DIFF_ALPHA * fRate);	// Œ»İ‚Ì“§–¾“x‚ğİ’è
-
-		// ‘I‘ğˆ‚ÌˆÊ’u‚ğ”½‰f
-		m_apSelect[i]->SetVec3Position(posInit + (select::DIFF_POS * fRate));
-
-		// ‘I‘ğˆ‚ÌF‚ğ”½‰f
-		m_apSelect[i]->SetColor(colCur);
+		// ‘I‘ğˆ‚Ì”½‰f
+		m_apSelect[i]->SetVec3Position(posSelect + offsetSelect);	// ˆÊ’u‚ğ”½‰f
+		m_apSelect[i]->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
 	}
 
-	// ‘I‘ğˆ‚ÌˆÚ“®•â³
-	if (m_fCurTime >= select::MOVE_TIME + select::PLUS_TIME * (SELECT_MAX - 1))
-	{ // ‘S‘I‘ğˆ‚Ì‘Ò‹@‚ªI—¹‚µ‚½ê‡
+	if (m_fCurTime >= fall::MOVE_TIME)
+	{ // ‘Ò‹@‚ªI—¹‚µ‚½ê‡
 
 		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
 		m_fCurTime = 0.0f;
 
+		// ƒ^ƒCƒgƒ‹î•ñ‚ÌF‚ğ•â³
+		m_pTitle->SetColor(fall::INIT_COL);
+
+		// ‚«o‚µî•ñ‚ÌF‚ğ•â³
+		m_pBalloon->SetColor(fall::INIT_COL);
+
+		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰eî•ñ‚Ì“§–¾“x‚ğ•â³
+		m_pShadow->SetAlpha(fall::INIT_ALPHA);
+
+		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ‚Ì“§–¾“x‚ğ•â³
+		m_pName->SetAlpha(fall::INIT_ALPHA);
+
+		for (int i = 0; i < MAX_RANK; i++)
+		{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
+
+			// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚ÌF‚ğ•â³
+			m_apRankValue[i]->SetColor(fall::INIT_COL);
+
+			// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚ÌF‚ğ•â³
+			m_apRankTime[i]->SetColor(fall::INIT_COL);
+		}
+
 		for (int i = 0; i < SELECT_MAX; i++)
 		{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
 
-			// ‘I‘ğˆ‚Ì–Ú•W¶¬ˆÊ’u‚ğŒvZ
-			D3DXVECTOR3 posDest = select::DEST_POS + (select::SPACE * (float)i);
-
-			// ‘I‘ğˆ‚ÌˆÊ’u‚ğ•â³
-			m_apSelect[i]->SetVec3Position(posDest);
-
-			// ‘I‘ğˆ‚ÌF‚ğ•â³
-			m_apSelect[i]->SetColor(select::DEST_COL);
+			// ‘I‘ğˆ‚Ì“§–¾“x‚ğ•â³
+			m_apSelect[i]->SetAlpha(fall::INIT_ALPHA);
 		}
 
 		// ‘Ò‹@ó‘Ô‚É‚·‚é
@@ -590,13 +732,36 @@ void CRankingManager::UpdateFall(const float fDeltaTime)
 	// Œo‰ß‚ÌŠ„‡‚ğŒvZ
 	float fRate = easeing::InOutQuad(m_fCurTime, 0.0f, fall::MOVE_TIME);
 
-	// F‚ğ”½‰f
-	m_pTitle->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// ƒ^ƒCƒgƒ‹î•ñ
-	m_pLine->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// ‰ºüî•ñ
+	// ƒ^ƒCƒgƒ‹î•ñ‚Ì”½‰f
+	m_pTitle->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));		// F‚ğ”½‰f
+	m_pTitle->SetVec3Position(title::DEST_POS + (((title::DEST_POS + fall::OFFSET_POS) - title::DEST_POS) * fRate));	// ˆÊ’u‚ğ”½‰f
 
-	// ˆÊ’u‚ğ”½‰f
-	m_pTitle->SetVec3Position(title::DEST_POS + (((title::DEST_POS + fall::OFFSET_POS) - title::DEST_POS) * fRate));	// ƒ^ƒCƒgƒ‹î•ñ
-	m_pLine->SetVec3Position(line::POS + (((line::POS + fall::OFFSET_POS) - line::POS) * fRate));	// ‰ºüî•ñ
+	// ‚«o‚µî•ñ‚Ì”½‰f
+	m_pBalloon->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+	m_pBalloon->SetVec3Position(balloon::DEST_POS + (((balloon::DEST_POS + fall::OFFSET_POS) - balloon::DEST_POS) * fRate));	// ˆÊ’u‚ğ”½‰f
+
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰eî•ñ‚Ì”½‰f
+	const D3DXVECTOR3 posShadow = name::POS + name::OFFSET;				// ‰e•¶šˆÊ’u
+	m_pShadow->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
+	m_pShadow->SetVec3Position(posShadow + (((posShadow + fall::OFFSET_POS) - posShadow) * fRate));	// ˆÊ’u‚ğ”½‰f
+
+	// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ‚Ì”½‰f
+	m_pName->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
+	m_pName->SetVec3Position(name::POS + (((name::POS + fall::OFFSET_POS) - name::POS) * fRate));	// ˆÊ’u‚ğ”½‰f
+
+	for (int i = 0; i < MAX_RANK; i++)
+	{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚Ì”½‰f
+		const D3DXVECTOR3 posRank = rank::POS + (rank::SPACE * (float)i);		// ¶¬ˆÊ’u
+		m_apRankValue[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+		m_apRankValue[i]->SetVec3Position(posRank + (((posRank + fall::OFFSET_POS) - posRank) * fRate));	// ˆÊ’u‚ğ”½‰f
+
+		// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚Ì”½‰f
+		const D3DXVECTOR3 posTime = time::POS + (time::SPACE * (float)i);		// ¶¬ˆÊ’u
+		m_apRankTime[i]->SetColor(fall::INIT_COL + (fall::DIFF_COL * fRate));	// F‚ğ”½‰f
+		m_apRankTime[i]->SetVec3Position(posTime + (((posTime + fall::OFFSET_POS) - posTime) * fRate));		// ˆÊ’u‚ğ”½‰f
+	}
 
 	for (int i = 0; i < SELECT_MAX; i++)
 	{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
@@ -604,11 +769,9 @@ void CRankingManager::UpdateFall(const float fDeltaTime)
 		D3DXVECTOR3 posSelect = select::DEST_POS + (((select::DEST_POS + fall::OFFSET_POS) - select::DEST_POS) * fRate);	// ˆÊ’u
 		D3DXVECTOR3 offsetSelect = (select::SPACE * (float)i);	// ƒIƒtƒZƒbƒg
 
-		// ˆÊ’u‚ğ”½‰f
-		m_apSelect[i]->SetVec3Position(posSelect + offsetSelect);
-
-		// F‚ğ”½‰f
-		m_apSelect[i]->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));
+		// ‘I‘ğˆ‚Ì”½‰f
+		m_apSelect[i]->SetVec3Position(posSelect + offsetSelect);	// ˆÊ’u‚ğ”½‰f
+		m_apSelect[i]->SetAlpha(fall::INIT_ALPHA + (fall::DIFF_ALPHA * fRate));	// “§–¾“x‚ğ”½‰f
 	}
 
 	if (m_fCurTime >= fall::MOVE_TIME)
@@ -617,9 +780,34 @@ void CRankingManager::UpdateFall(const float fDeltaTime)
 		// ƒ^ƒCƒ}[‚ğ‰Šú‰»
 		m_fCurTime = 0.0f;
 
-		// F‚ğ•â³
-		m_pTitle->SetColor(fall::DEST_COL);	// ƒ^ƒCƒgƒ‹î•ñ
-		m_pLine->SetColor(fall::DEST_COL);	// ‰ºüî•ñ
+		// ƒ^ƒCƒgƒ‹î•ñ‚ÌF‚ğ•â³
+		m_pTitle->SetColor(fall::DEST_COL);
+
+		// ‚«o‚µî•ñ‚ÌF‚ğ•â³
+		m_pBalloon->SetColor(fall::DEST_COL);
+
+		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹‰eî•ñ‚Ì“§–¾“x‚ğ•â³
+		m_pShadow->SetAlpha(fall::DEST_ALPHA);
+
+		// ƒ‰ƒ“ƒLƒ“ƒOƒ^ƒCƒgƒ‹î•ñ‚Ì“§–¾“x‚ğ•â³
+		m_pName->SetAlpha(fall::DEST_ALPHA);
+
+		for (int i = 0; i < MAX_RANK; i++)
+		{ // ƒ‰ƒ“ƒLƒ“ƒO•\¦”•ªŒJ‚è•Ô‚·
+
+			// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚ÌF‚ğ•â³
+			m_apRankValue[i]->SetColor(fall::DEST_COL);
+
+			// ƒ‰ƒ“ƒLƒ“ƒOŠÔî•ñ‚ÌF‚ğ•â³
+			m_apRankTime[i]->SetColor(fall::DEST_COL);
+		}
+
+		for (int i = 0; i < SELECT_MAX; i++)
+		{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
+
+			// ‘I‘ğˆ‚Ì“§–¾“x‚ğ•â³
+			m_apSelect[i]->SetAlpha(fall::DEST_ALPHA);
+		}
 
 		switch (m_nCurSelect)
 		{ // ‘I‘ğˆ‚²‚Æ‚Ìˆ—
@@ -687,12 +875,19 @@ void CRankingManager::SkipStaging(void)
 	// ƒtƒF[ƒh‚Ì“§–¾“x‚ğ•â³
 	m_pFade->SetAlpha(fade::DEST_ALPHA);
 
-	// ‰ºü‚Ì‘å‚«‚³‚ğ•â³
-	m_pLine->SetVec3Sizing(line::DEST_SIZE);
-
 	// ƒ^ƒCƒgƒ‹‚ÌF‚ğ•â³
 	m_pTitle->SetColor(title::DEST_COL);
 
 	// ƒ^ƒCƒgƒ‹‚ÌˆÊ’u‚ğ•â³
 	m_pTitle->SetVec3Position(title::DEST_POS);
+
+	for (int i = 0; i < SELECT_MAX; i++)
+	{ // ‘I‘ğˆ‚Ì‘”•ªŒJ‚è•Ô‚·
+
+		// ‘I‘ğˆ‚ÌF‚ğ•â³
+		m_apSelect[i]->SetColor(select::DEST_COL);
+
+		// ‘I‘ğˆ‚ÌˆÊ’u‚ğ•â³
+		m_apSelect[i]->SetVec3Position(select::DEST_POS + (select::SPACE * (float)i));
+	}
 }
