@@ -55,6 +55,7 @@ namespace
 		"コイン",
 		"神器",
 		"草",
+		"タッチアクター",
 	};
 
 	const float MOVE = editstage::SIZE * 0.5f;	// 移動量

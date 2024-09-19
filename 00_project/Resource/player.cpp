@@ -1478,7 +1478,7 @@ void CPlayer::ResetStack()
 	{ // 状態カウントが一定値になった場合
 
 		// アイリスアウトでフェードする
-		CManager::GetInstance()->GetFade()->SetIrisFade();
+		CManager::GetInstance()->GetFade()->SetIrisFade(nullptr, CFade::TIME, 0.6f);
 	}
 
 	// 状態カウントが一定数未満の場合、関数を抜ける

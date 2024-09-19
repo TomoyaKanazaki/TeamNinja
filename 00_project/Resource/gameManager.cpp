@@ -37,7 +37,6 @@
 // TODO
 #include "weed.h"
 #include "collision.h"
-#include "touchActor.h"
 
 //************************************************************
 //	定数宣言
@@ -127,8 +126,6 @@ HRESULT CGameManager::Init(void)
 
 	// スタートカメラのリセット処理
 	GET_MANAGER->GetCamera()->StartReset();
-
-	CTouchActor::Create(CTouchActor::TYPE_BIRD, D3DXVECTOR3(0.0f, 0.0f, -200.0f));
 
 	// 成功を返す
 	return S_OK;

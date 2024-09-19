@@ -45,15 +45,16 @@ public:
 	// 読込パス構造体
 	struct SPass
 	{
-		std::string sMap;		// マップ情報パス
-		std::string sStage;		// ステージ情報パス
-		std::string sEnemyAtc;	// 攻撃敵情報パス
-		std::string sCoin;		// コイン情報パス
-		std::string sGodItem;	// 神器情報パス
-		std::string sActor;		// アクター情報パス
-		std::string sGimmick;	// ギミック情報パス
-		std::string sPoint;		// ポイント情報パス
-		std::string sTrans;		// 遷移ポイント情報パス
+		std::string sMap;			// マップ情報パス
+		std::string sStage;			// ステージ情報パス
+		std::string sEnemyAtc;		// 攻撃敵情報パス
+		std::string sCoin;			// コイン情報パス
+		std::string sGodItem;		// 神器情報パス
+		std::string sActor;			// アクター情報パス
+		std::string sGimmick;		// ギミック情報パス
+		std::string sTouchActor;	// タッチアクター情報パス
+		std::string sPoint;			// ポイント情報パス
+		std::string sTrans;			// 遷移ポイント情報パス
 	};
 
 	// 範囲構造体

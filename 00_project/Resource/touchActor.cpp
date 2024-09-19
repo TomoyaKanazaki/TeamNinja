@@ -264,3 +264,94 @@ bool CTouchActor::CollisionFieid(D3DXVECTOR3& rPos)
 	// フィールドとの当たり判定
 	return GET_STAGE->LandFieldPosition(rPos, m_posOld, m_move);
 }
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CTouchActor::LoadSetup(const char* pPass)
+{
+	int nType = 0;					// 種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "タッチアクターセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_TOUCH_ACTORSET")
+		{
+			do
+			{ // END_STAGE_ACTORSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "TOUCH_ACTORSET")
+				{
+					do
+					{ // END_TOUCH_ACTORSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "TYPE")
+						{
+							file >> str;	// ＝を読込
+
+							// 種類を読込
+							file >> nType;
+						}
+						else if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+					} while (str != "END_TOUCH_ACTORSET");	// END_TOUCH_ACTORSETを読み込むまでループ
+
+					// アクターオブジェクトの生成
+					if (CTouchActor::Create((EType)nType, pos) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_TOUCH_ACTORSET");	// END_STAGE_TOUCH_ACTORSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
+}

@@ -24,6 +24,7 @@
 #include "godItem.h"
 #include "actor.h"
 #include "gimmick.h"
+#include "touchActor.h"
 #include "player.h"
 #include "checkpoint.h"
 #include "goal.h"
@@ -167,6 +168,16 @@ HRESULT CStage::BindStage(const SPass& rPass)
 	{ // セットアップに失敗した場合
 
 		// 失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
+	// タッチアクターのセットアップの読込
+	if(!rPass.sTouchActor.empty())	// パスが指定されている場合
+	if (FAILED(CTouchActor::LoadSetup(rPass.sTouchActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		//失敗を返す
 		assert(false);
 		return E_FAIL;
 	}
@@ -770,6 +781,14 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 
 			// ギミック読込パスを保存
 			pPassInfo->sGimmick = str;
+		}
+		else if (str == "TOUCH_ACTOR_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// タッチアクター読込パスを読込
+
+			// タッチアクター読込パスを保存
+			pPassInfo->sTouchActor = str;
 		}
 		else if (str == "POINT_PASS")
 		{

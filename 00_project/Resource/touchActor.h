@@ -95,6 +95,7 @@ public:
 		const D3DXVECTOR3& rScale = VEC3_ONE	// 拡大率
 	);
 	static CListManager<CTouchActor>* GetList(void);	// リスト構造の取得処理
+	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 
 private:
 
