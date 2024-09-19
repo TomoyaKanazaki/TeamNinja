@@ -80,6 +80,7 @@ public:
 	std::string GetCurMapStagePass(void) const;			// 現在マップのステージパス取得
 	std::string GetCurMapGodItemPass(void) const;		// 現在マップの神器パス取得
 	std::string GetCurMapSaveGodItemPass(void) const;	// 現在マップの神器保存パス取得
+	std::string GetCurMapSaveRankPass(void) const;		// 現在マップのランキング保存パス取得
 	void SetInitMapPass(const std::string& rMapPass)	{ m_sInitMapPass = rMapPass; }	// 初期化マップパス設定
 	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
 	std::string GetCurMapDirectory(void) const			{ return m_sCurMapFolder; }		// 現在マップのディレクトリ取得

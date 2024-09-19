@@ -14,6 +14,7 @@
 //	前方宣言
 //************************************************************
 class CRankingManager;	// ランキングマネージャークラス
+class CTransPoint;		// 遷移ポイントクラス
 
 //************************************************************
 //	クラス定義
@@ -39,10 +40,10 @@ public:
 	// メンバ関数
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
-	void Update(const float fDeltaTime);	// 更新
-	void SetState(const EState state);		// 状態設定
-	EState GetState(void) const;			// 状態取得
-	HRESULT SetDispRanking(void);			// ランキング表示設定
+	void Update(const float fDeltaTime);		// 更新
+	void SetState(const EState state);			// 状態設定
+	EState GetState(void) const;				// 状態取得
+	HRESULT SetDispRanking(CTransPoint* pHit);	// ランキング表示設定
 
 	// 静的メンバ関数
 	static CSelectManager *Create(void);	// 生成
