@@ -151,8 +151,12 @@ HRESULT CPlayerClone::Init(void)
 	// キャラクター情報の割当
 	BindCharaData(SETUP_TXT);
 
-	// 全マテリアルをグレーにする
-	SetAllMaterial(material::Gray());
+	for (int i = 0; i < GetNumParts(); i++)
+	{ // 全パーツ分繰り返す
+
+		// パーツを加算合成にする
+		GetParts(i)->GetRenderState()->SetAlphaBlend(CRenderState::BLEND_ADD);
+	}
 
 	// プレイヤー位置に設定
 	SetVec3Position(GET_PLAYER->GetVec3Position());

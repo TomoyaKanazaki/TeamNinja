@@ -31,7 +31,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\OldWood001.jpg",	// 木テクスチャ
 	};
 
-	const int PRIORITY = 4;	// 壁の優先順位
+	const int PRIORITY = 2;	// 壁の優先順位
 	const float INVISIBLE_MIN = 200.0f; // 透明化最小範囲
 	const float INVISIBLE_MAX = 400.0f; // 透明化最小範囲
 }

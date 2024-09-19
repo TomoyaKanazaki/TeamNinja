@@ -109,12 +109,16 @@ HRESULT CTransPoint::Init(void)
 	if (GET_STAGE->GetOpenMapDirectory() == fsPath.parent_path().string())
 	{ // 解放されたマップのディレクトリと一致した場合
 
-		// 何もしない状態にする
-		m_state = STATE_NONE;
+		if (m_bOpen)
+		{ // 解放されている場合
 
-		// 解放された遷移ポイントを保存
-		assert(m_pOpenTransPoint == nullptr);
-		m_pOpenTransPoint = this;
+			// 何もしない状態にする
+			m_state = STATE_NONE;
+
+			// 解放された遷移ポイントを保存
+			assert(m_pOpenTransPoint == nullptr);
+			m_pOpenTransPoint = this;
+		}
 	}
 
 	if (m_pList == nullptr)
