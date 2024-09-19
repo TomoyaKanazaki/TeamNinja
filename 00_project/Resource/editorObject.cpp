@@ -21,6 +21,7 @@
 #include "editCoin.h"
 #include "editGodItem.h"
 #include "editWeed.h"
+#include "editTouchActor.h"
 
 //************************************************************
 //	定数宣言
@@ -167,6 +168,10 @@ CEditorObject *CEditorObject::Create(CEditStage* pEditor, CEditStage::EType type
 
 	case CEditStage::TYPE_WEED:
 		pEditorObject = new CEditWeed(pEditor);			// エディット草
+		break;
+
+	case CEditStage::TYPE_TOUCHACTOR:
+		pEditorObject = new CEditTouchActor(pEditor);	// タッチアクター
 		break;
 
 	default:	// 例外処理

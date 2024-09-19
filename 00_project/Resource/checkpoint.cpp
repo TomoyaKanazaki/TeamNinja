@@ -81,6 +81,20 @@ HRESULT CCheckPoint::Init(void)
 	// リストに自身のオブジェクトを追加・イテレーターを取得
 	m_iterator = m_pList->AddList(this);
 
+	// リストの総数を取得
+	int nNum = m_pList->GetNumAll();
+
+	// 保存されたセーブポイントを取得
+	int nSave = GET_RETENTION->GetSave();
+
+	// リストの総数がセーブポイントの数より少ない場合セーブ済みにする
+	if (nNum <= nSave + 1)
+	{
+		m_bSave = true;
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", m_pos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
+		//GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", m_pos + OFFSET_CHECKEFFECT, VEC3_ZERO, VEC3_ZERO, 30.0f);
+	}
+
 	return S_OK;
 }
 
@@ -89,7 +103,6 @@ HRESULT CCheckPoint::Init(void)
 //==========================================
 void CCheckPoint::Uninit(void)
 {
-
 	//現在のエフェクトを削除
 	if (m_pEffectdata != NULL)
 	{
@@ -176,7 +189,11 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 	pSavePoint->m_pos = rPos;
 
 	// チェックポイントエフェクトを出す
-	pSavePoint->m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true,false);
+	if (pSavePoint->m_pEffectdata == nullptr)
+	{
+		pSavePoint->m_pEffectdata =
+			GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
+	}
 
 	// 確保したアドレスを返す
 	return pSavePoint;

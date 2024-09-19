@@ -119,7 +119,7 @@ namespace
 	{
 		const D3DXVECTOR3 REV_POSV = D3DXVECTOR3(0.4f, 0.45f, 0.4f);	// カメラ視点の補正係数
 		const D3DXVECTOR3 REV_POSR = D3DXVECTOR3(1.0f, 0.35f, 1.0f);	// カメラ注視点の補正係数
-		const float REV_DIFF = 0.35f;	// 差分の補正係数
+		const float REV_DIFF = 0.05f;	// 差分の補正係数
 
 		const float	STICK_REV = 0.00000225f;	// カメラ操作スティックの傾き量の補正係数
 
@@ -131,6 +131,7 @@ namespace
 		const float CENTER_ROTX = 1.1f;		// 中心線の時のx
 
 		const float CASTLE_DIS = 450.0f;	// 城内のカメラ距離
+		const float DROWNING_DIS = 150.0f;	// 溺死のカメラ距離
 
 		const float LIMIT_DIFF = D3DX_PI * 0.2f;		// 回転速度の上限
 		const float	LIMIT_ROT_HIGH = D3DX_PI - 0.5f;	// X上回転の制限値
@@ -2447,6 +2448,12 @@ void CCamera::Around(const float fDeltaTime)
 	if (GET_STAGE->GetInitMapPass().find("CASTLE") != -1)
 	{
 		m_aCamera[TYPE_MAIN].fDestDis = around::CASTLE_DIS;
+	}
+
+	// 溺死状態の場合目標距離が近くなる
+	if (CPlayer::STATE_DROWN == pPlayer->GetState())
+	{
+		m_aCamera[TYPE_MAIN].fDestDis = around::DROWNING_DIS;
 	}
 
 	// 差分距離を計算

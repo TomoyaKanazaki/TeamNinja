@@ -13,6 +13,8 @@
 #include "touchActorCan.h"
 #include "touchActorBird.h"
 
+#include "stage.h"
+
 //************************************************************
 //	定数宣言
 //************************************************************
@@ -21,7 +23,7 @@ namespace
 	const char* MODEL[] =	// モデルのパス
 	{
 		"data\\MODEL\\TouchActor\\TouchCan.x",		// 缶
-		"data\\MODEL\\LilyPad\\LilyPad000.x",		// 鳥
+		"data\\MODEL\\TouchActor\\TouchBird.x",		// 鳥
 	};
 	const int PRIORITY = 4;	// アクターの優先順位
 }
@@ -43,8 +45,12 @@ CListManager<CTouchActor>* CTouchActor::m_pList = nullptr;		// リスト構造
 //	コンストラクタ
 //============================================================
 CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_TOUCHACTOR, CObject::SCENE_MAIN, CObject::DIM_3D, PRIORITY),
+m_posInit(VEC3_ZERO),	// 初期位置
+m_posOld(VEC3_ZERO),	// 前回の位置
+m_move(VEC3_ZERO),		// 移動量
 m_type(TYPE_CAN),		// 種類
-m_state(STATE_NONE)		// 状態
+m_state(STATE_NONE),	// 状態
+m_nStateCount(0)		// 状態カウント
 {
 
 }
@@ -125,6 +131,12 @@ void CTouchActor::Update(const float fDeltaTime)
 	SetEnableDraw(bFar);
 	if (!bFar) { return; }
 
+	// 前回の位置を保存する
+	m_posOld = GetVec3Position();
+
+	// 状態カウントを加算する
+	m_nStateCount++;
+
 	switch (m_state)
 	{
 	case CTouchActor::STATE_NONE:
@@ -175,6 +187,7 @@ void CTouchActor::SetData
 	SetVec3Rotation(rRot);		// 向き
 	SetVec3Scaling(rScale);		// 拡大率
 	m_type = type;				// 種類
+	m_posInit = rPos;			// 初期位置
 
 	// モデルの割り当て処理
 	BindModel(MODEL[type]);
@@ -241,4 +254,104 @@ CListManager<CTouchActor>* CTouchActor::GetList(void)
 {
 	// リスト構造を返す
 	return m_pList;
+}
+
+//============================================================
+// 床との当たり判定
+//============================================================
+bool CTouchActor::CollisionFieid(D3DXVECTOR3& rPos)
+{
+	// フィールドとの当たり判定
+	return GET_STAGE->LandFieldPosition(rPos, m_posOld, m_move);
+}
+
+//============================================================
+//	セットアップ処理
+//============================================================
+HRESULT CTouchActor::LoadSetup(const char* pPass)
+{
+	int nType = 0;					// 種類の代入用
+	D3DXVECTOR3 pos = VEC3_ZERO;	// 位置の代入用
+
+	// ファイルを開く
+	std::ifstream file(pPass);	// ファイルストリーム
+	if (file.fail())
+	{ // ファイルが開けなかった場合
+
+		// エラーメッセージボックス
+		MessageBox(nullptr, "タッチアクターセットアップの読み込みに失敗！", "警告！", MB_ICONWARNING);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// ファイルを読込
+	std::string str;	// 読込文字列
+	while (file >> str)
+	{ // ファイルの終端ではない場合ループ
+
+		if (str.front() == '#')
+		{ // コメントアウトされている場合
+
+			// 一行全て読み込む
+			std::getline(file, str);
+		}
+		else if (str == "STAGE_TOUCH_ACTORSET")
+		{
+			do
+			{ // END_STAGE_ACTORSETを読み込むまでループ
+
+				// 文字列を読み込む
+				file >> str;
+
+				if (str.front() == '#')
+				{ // コメントアウトされている場合
+
+					// 一行全て読み込む
+					std::getline(file, str);
+				}
+				else if (str == "TOUCH_ACTORSET")
+				{
+					do
+					{ // END_TOUCH_ACTORSETを読み込むまでループ
+
+						// 文字列を読み込む
+						file >> str;
+
+						if (str == "TYPE")
+						{
+							file >> str;	// ＝を読込
+
+							// 種類を読込
+							file >> nType;
+						}
+						else if (str == "POS")
+						{
+							file >> str;	// ＝を読込
+
+							// 位置を読込
+							file >> pos.x;
+							file >> pos.y;
+							file >> pos.z;
+						}
+					} while (str != "END_TOUCH_ACTORSET");	// END_TOUCH_ACTORSETを読み込むまでループ
+
+					// アクターオブジェクトの生成
+					if (CTouchActor::Create((EType)nType, pos) == nullptr)
+					{ // 確保に失敗した場合
+
+						// 失敗を返す
+						assert(false);
+						return E_FAIL;
+					}
+				}
+			} while (str != "END_STAGE_TOUCH_ACTORSET");	// END_STAGE_TOUCH_ACTORSETを読み込むまでループ
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
+
+	// 成功を返す
+	return S_OK;
 }

@@ -24,6 +24,7 @@
 #include "godItem.h"
 #include "actor.h"
 #include "gimmick.h"
+#include "touchActor.h"
 #include "player.h"
 #include "checkpoint.h"
 #include "goal.h"
@@ -171,6 +172,16 @@ HRESULT CStage::BindStage(const SPass& rPass)
 		return E_FAIL;
 	}
 
+	// タッチアクターのセットアップの読込
+	if(!rPass.sTouchActor.empty())	// パスが指定されている場合
+	if (FAILED(CTouchActor::LoadSetup(rPass.sTouchActor.c_str())))
+	{ // セットアップに失敗した場合
+
+		//失敗を返す
+		assert(false);
+		return E_FAIL;
+	}
+
 	// 敵のセットアップの読込
 	if (!rPass.sEnemyAtc.empty())	// パスが指定されている場合
 	if (FAILED(CEnemyAttack::LoadSetup(rPass.sEnemyAtc.c_str())))
@@ -247,7 +258,7 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			CTutorial::Create(D3DXVECTOR3(2500.0f, 0.0f, -300.0f), CTutorial::TYPE_CLONE);
 			CTutorial::Create(D3DXVECTOR3(4000.0f, 0.0f, -300.0f), CTutorial::TYPE_GIMMICK);
 			CTutorial::Create(D3DXVECTOR3(12300.0f, 650.0f, -150.0f), CTutorial::TYPE_GUARD);
-			CTutorial::Create(D3DXVECTOR3(12900.0f, 650.0f, -150.0f), CTutorial::TYPE_DOGDE);
+			//CTutorial::Create(D3DXVECTOR3(12900.0f, 650.0f, -150.0f), CTutorial::TYPE_DOGDE);
 		}
 
 		// フォグ変更点の生成
@@ -781,6 +792,14 @@ HRESULT CStage::LoadPass(const char* pMapPass, SPass* pPassInfo)
 
 			// ギミック読込パスを保存
 			pPassInfo->sGimmick = str;
+		}
+		else if (str == "TOUCH_ACTOR_PASS")
+		{
+			file >> str;	// ＝を読込
+			file >> str;	// タッチアクター読込パスを読込
+
+			// タッチアクター読込パスを保存
+			pPassInfo->sTouchActor = str;
 		}
 		else if (str == "POINT_PASS")
 		{

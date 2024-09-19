@@ -9,9 +9,7 @@
 //************************************************************
 #include "touchActorCan.h"
 
-#include "manager.h"
 #include "collision.h"
-#include "stage.h"
 
 //************************************************************
 //	定数宣言
@@ -32,8 +30,6 @@ namespace
 //	コンストラクタ
 //============================================================
 CTouchCan::CTouchCan() : CTouchActor(),
-m_posOld(VEC3_ZERO),	// 前回の位置
-m_move(VEC3_ZERO),		// 移動量
 m_bDelete(false)		// 消去状況
 {
 
@@ -79,9 +75,6 @@ void CTouchCan::Uninit(void)
 //============================================================
 void CTouchCan::Update(const float fDeltaTime)
 {
-	// 位置を設定する
-	m_posOld = GetVec3Position();
-
 	// オブジェクトモデルの更新
 	CTouchActor::Update(fDeltaTime);
 
@@ -150,6 +143,7 @@ bool CTouchCan::Collision
 	{ // 缶を蹴った時
 
 		D3DXVECTOR3 rot = GetVec3Rotation();
+		D3DXVECTOR3 move = VEC3_ZERO;
 
 		// 飛んでいく方向を設定
 		rot.y = atan2f(posCan.x - rPos.x, posCan.z - rPos.z);
@@ -158,12 +152,13 @@ bool CTouchCan::Collision
 		SetState(STATE_ACT);
 
 		// 移動量を設定する
-		m_move.x = sinf(rot.y) * FLY_SPEED;
-		m_move.y = FLY_HEIGHT;
-		m_move.z = cosf(rot.y) * FLY_SPEED;
+		move.x = sinf(rot.y) * FLY_SPEED;
+		move.y = FLY_HEIGHT;
+		move.z = cosf(rot.y) * FLY_SPEED;
 
-		// 向きを反映
+		// 向きと移動量を反映
 		SetVec3Rotation(rot);
+		SetVec3Move(move);
 
 		// true を返す
 		return true;
@@ -182,8 +177,8 @@ void CTouchCan::UpdateNone(const float /*fDeltaTime*/)
 	D3DXVECTOR3 pos = GetVec3Position();
 	pos.y -= GRAVITY;
 
-	// フィールドとの当たり判定
-	GET_STAGE->LandFieldPosition(pos, m_posOld, m_move);
+	// 床との当たり判定
+	CollisionFieid(pos);
 
 	// 下の分を足す
 	pos.y -= GetModelData().vtxMin.y;
@@ -199,21 +194,23 @@ void CTouchCan::UpdateAct(const float fDeltaTime)
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 	D3DXVECTOR3 rot = GetVec3Rotation();	// 向き
+	D3DXVECTOR3 move = GetVec3Move();		// 移動量
 
 	// 移動する
-	pos += m_move * fDeltaTime;
+	pos += move * fDeltaTime;
 
 	// 重力をかける
-	m_move.y -= GRAVITY * fDeltaTime;
+	move.y -= GRAVITY * fDeltaTime;
 
 	// 向きを加算する
 	rot.y += CYCLE_Y * fDeltaTime;
 	rot.z += CYCLE_Z * fDeltaTime;
 
 	// フィールドとの当たり判定
-	m_bDelete = GET_STAGE->LandFieldPosition(pos, m_posOld, m_move);
+	m_bDelete = CollisionFieid(pos);
 
-	// 位置と向きを反映
+	// 位置と向きと移動量を反映
 	SetVec3Position(pos);
 	SetVec3Rotation(rot);
+	SetVec3Move(move);
 }

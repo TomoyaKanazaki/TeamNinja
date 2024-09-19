@@ -68,12 +68,23 @@ public:
 		const float fRadius,
 		const float fHeight
 	) = 0;
+	bool CollisionFieid(D3DXVECTOR3& rPos);		// 床との当たり判定
+
+#ifdef _DEBUG
+
+	void SetVec3PosInit(const D3DXVECTOR3 rPos) { m_posInit = rPos; }		// 初期位置の取得処理
+
+#endif // _DEBUG
 
 	// セット・ゲット関数
-	void SetType(const EType type)		{ m_type = type; }		// 種類の設定処理
-	EType GetType(void) const			{ return m_type; }		// 種類の取得処理
-	void SetState(const EState state)	{ m_state = state; }	// 状態の設定処理
-	EState GetState(void) const			{ return m_state; }		// 状態の取得処理
+	D3DXVECTOR3 GetVec3PosInit(void) const		{ return m_posInit; }		// 初期位置の設定処理
+	void SetVec3Move(const D3DXVECTOR3& rMove)	{ m_move = rMove; }			// 移動量の設定処理
+	D3DXVECTOR3 GetVec3Move(void) const			{ return m_move; }			// 移動量の取得処理
+	void SetType(const EType type)				{ m_type = type; }			// 種類の設定処理
+	EType GetType(void) const					{ return m_type; }			// 種類の取得処理
+	EState GetState(void) const					{ return m_state; }			// 状態の取得処理
+	int GetStateCount(void) const				{ return m_nStateCount; }	// 状態カウントの取得処理
+	void SetState(const EState state)			{ m_nStateCount = 0; m_state = state; }		// 状態の設定処理
 
 	// 静的メンバ関数
 	static CTouchActor* Create	// 生成
@@ -84,6 +95,7 @@ public:
 		const D3DXVECTOR3& rScale = VEC3_ONE	// 拡大率
 	);
 	static CListManager<CTouchActor>* GetList(void);	// リスト構造の取得処理
+	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 
 private:
 
@@ -93,9 +105,12 @@ private:
 
 	// メンバ変数
 	CListManager<CTouchActor>::AIterator m_iterator;	// イテレーター
-
-	EType m_type;	// 種類
-	EState m_state;	// 状態
+	D3DXVECTOR3 m_posInit;	// 初期位置
+	D3DXVECTOR3 m_posOld;	// 前回の位置
+	D3DXVECTOR3 m_move;		// 移動量
+	EType m_type;			// 種類
+	EState m_state;			// 状態
+	int m_nStateCount;		// 状態カウント
 
 	// 静的メンバ変数
 	static CListManager<CTouchActor>* m_pList;			// リスト構造

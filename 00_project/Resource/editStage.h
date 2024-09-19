@@ -49,6 +49,7 @@ public:
 		TYPE_COIN,			// コイン
 		TYPE_GODITEM,		// 神器
 		TYPE_WEED,			// 草
+		TYPE_TOUCHACTOR,	// タッチアクター
 		TYPE_MAX			// この列挙型の総数
 	};
 
