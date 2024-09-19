@@ -169,6 +169,7 @@
     <ClInclude Include="Resource\coin.h" />
     <ClInclude Include="Resource\editCoin.h" />
     <ClInclude Include="Resource\editGodItem.h" />
+    <ClInclude Include="Resource\editTouchActor.h" />
     <ClInclude Include="Resource\editWeed.h" />
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\fog.h" />
@@ -378,6 +379,7 @@
     <ClCompile Include="Resource\coin.cpp" />
     <ClCompile Include="Resource\editCoin.cpp" />
     <ClCompile Include="Resource\editGodItem.cpp" />
+    <ClCompile Include="Resource\editTouchActor.cpp" />
     <ClCompile Include="Resource\editWeed.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\fog.cpp" />
