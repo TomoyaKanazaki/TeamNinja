@@ -1052,6 +1052,25 @@ void CRankingManager::SkipStaging(void)
 	// タイトルの位置を補正
 	m_pTitle->SetVec3Position(title::DEST_POS);
 
+	// 吹き出し情報の色を補正
+	m_pBalloon->SetColor(balloon::DEST_COL);
+
+	// ランキングタイトル影情報の透明度を補正
+	m_pShadow->SetAlpha(1.0f);
+
+	// ランキングタイトル情報の透明度を補正
+	m_pName->SetAlpha(1.0f);
+
+	for (int i = 0; i < MAX_RANK; i++)
+	{ // ランキング表示数分繰り返す
+
+		// ランキング時間情報の色を補正
+		m_apRankValue[i]->SetColor(XCOL_WHITE);
+
+		// ランキング時間情報の色を補正
+		m_apRankTime[i]->SetColor(XCOL_WHITE);
+	}
+
 	for (int i = 0; i < SELECT_MAX; i++)
 	{ // 選択肢の総数分繰り返す
 
