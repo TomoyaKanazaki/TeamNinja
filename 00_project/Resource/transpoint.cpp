@@ -555,8 +555,10 @@ HRESULT CTransPoint::LoadOpen(const char* pPass, bool *pOpen)
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
+#ifdef _DEBUG
 		// エラーメッセージボックス
 		MessageBox(nullptr, "解放フラグの読み込みに失敗！", "警告！", MB_ICONWARNING);
+#endif
 
 		// 解放状況の保存
 		if (FAILED(SaveOpen(pPass, false)))

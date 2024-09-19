@@ -641,12 +641,13 @@ HRESULT CRankingManager::LoadRank(const char* pPath, float* pRankArray)
 	if (file.fail())
 	{ // ファイルが開けなかった場合
 
-		float aRank[MAX_RANK];	// ランキング生成用
-
+#ifdef _DEBUG
 		// エラーメッセージボックス
 		MessageBox(nullptr, "ランキングの読み込みに失敗！", "警告！", MB_ICONWARNING);
+#endif
 
 		// 値をすべて最大タイムにする
+		float aRank[MAX_RANK];	// ランキング生成用
 		for (int i = 0; i < MAX_RANK; i++)
 		{ aRank[i] = RANK_TIME[i]; }
 
@@ -1046,38 +1047,39 @@ void CRankingManager::SkipStaging(void)
 	// フェードの透明度を補正
 	m_pFade->SetAlpha(fade::DEST_ALPHA);
 
-	// タイトルの色を補正
+	// タイトルの色/位置を補正
 	m_pTitle->SetColor(title::DEST_COL);
-
-	// タイトルの位置を補正
 	m_pTitle->SetVec3Position(title::DEST_POS);
 
 	// 吹き出し情報の色を補正
 	m_pBalloon->SetColor(balloon::DEST_COL);
+	m_pBalloon->SetVec3Position(balloon::DEST_POS);
 
-	// ランキングタイトル影情報の透明度を補正
+	// ランキングタイトル影情報の透明度/位置を補正
 	m_pShadow->SetAlpha(1.0f);
+	m_pShadow->SetVec3Position(name::POS + name::OFFSET);
 
-	// ランキングタイトル情報の透明度を補正
+	// ランキングタイトル情報の透明度/位置を補正
 	m_pName->SetAlpha(1.0f);
+	m_pName->SetVec3Position(name::POS);
 
 	for (int i = 0; i < MAX_RANK; i++)
 	{ // ランキング表示数分繰り返す
 
-		// ランキング時間情報の色を補正
+		// ランキング時間情報の色/位置を補正
 		m_apRankValue[i]->SetColor(XCOL_WHITE);
+		m_apRankValue[i]->SetVec3Position(rank::POS + (rank::SPACE * (float)i));
 
-		// ランキング時間情報の色を補正
+		// ランキング時間情報の色/位置を補正
 		m_apRankTime[i]->SetColor(XCOL_WHITE);
+		m_apRankTime[i]->SetVec3Position(time::POS + (time::SPACE * (float)i));
 	}
 
 	for (int i = 0; i < SELECT_MAX; i++)
 	{ // 選択肢の総数分繰り返す
 
-		// 選択肢の色を補正
+		// 選択肢の色/位置を補正
 		m_apSelect[i]->SetColor(select::DEST_COL);
-
-		// 選択肢の位置を補正
 		m_apSelect[i]->SetVec3Position(select::DEST_POS + (select::SPACE * (float)i));
 	}
 }
