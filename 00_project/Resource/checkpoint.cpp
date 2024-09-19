@@ -91,6 +91,8 @@ HRESULT CCheckPoint::Init(void)
 	if (nNum <= nSave + 1)
 	{
 		m_bSave = true;
+		m_pEffectdata = GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_blue.efkefc", m_pos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
+		//GET_EFFECT->Create("data\\EFFEKSEER\\check.efkefc", m_pos + OFFSET_CHECKEFFECT, VEC3_ZERO, VEC3_ZERO, 30.0f);
 	}
 
 	return S_OK;
@@ -187,8 +189,11 @@ CCheckPoint* CCheckPoint::Create(const D3DXVECTOR3& rPos)
 	pSavePoint->m_pos = rPos;
 
 	// チェックポイントエフェクトを出す
-	pSavePoint->m_pEffectdata = 
-		GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
+	if (pSavePoint->m_pEffectdata == nullptr)
+	{
+		pSavePoint->m_pEffectdata =
+			GET_EFFECT->Create("data\\EFFEKSEER\\checkpoint_red.efkefc", rPos + OFFSET, VEC3_ZERO, VEC3_ZERO, 50.0f, true, false);
+	}
 
 	// 確保したアドレスを返す
 	return pSavePoint;
