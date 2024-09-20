@@ -81,6 +81,23 @@ public:
 		TYPE_FENCE_02,			// フェンス02
 		TYPE_FENCE_03,			// フェンス03
 		TYPE_SPIN_WALL,			// 回転扉
+		TYPE_ANDON,				// 行燈
+		TYPE_BYOBU_01,			// 屏風01
+		TYPE_BYOBU_02,			// 屏風02
+		TYPE_CHABUDAI,			// ちゃぶ台
+		TYPE_HUDUKUE,			// 文机
+		TYPE_KANBAN_R,			// 看板右
+		TYPE_KANBAN_L,			// 看板左
+		TYPE_KANBAN_U,			// 看板上
+		TYPE_KANBAN_B,			// 看板下
+		TYPE_KATANAKAKE,		// 刀掛け
+		TYPE_OSHIIRE,			// 押し入れ
+		TYPE_POT_01,			// 壺01
+		TYPE_POT_02,			// 壺02
+		TYPE_POT_03,			// 壺03
+		TYPE_SHOJI_01,			// 障子01
+		TYPE_SHOJI_02,			// 障子02
+		TYPE_ZABUTON,			// 座布団
 		TYPE_MAX				// この列挙型の総数
 	};
 

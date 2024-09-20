@@ -115,6 +115,7 @@ namespace
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const int IRIS_COUNT = 20; // 溺死状態でアイリスアウトするカウント数
+	const int DROWN_RIPPLE_COUNT = 18; // 溺死状態で波紋が出る間隔
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
@@ -1356,6 +1357,18 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 	// 状態カウントを加算する
 	m_nCounterState++;
 
+	if (m_nCounterState % DROWN_RIPPLE_COUNT == 0 &&
+		m_pCurField != nullptr)
+	{ // 一定カウントごとに
+
+		// 位置を設定する
+		D3DXVECTOR3 pos = GetVec3Position();
+		pos.y = m_pCurField->GetVec3Position().y;
+
+		// 着地(小)エフェクトを出す
+		GET_EFFECT->Create("data\\EFFEKSEER\\landing_small.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 20.0f);
+	}
+
 	// 移動量を0にする
 	m_move = VEC3_ZERO;
 
@@ -1704,6 +1717,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 		// 床が水の場合殺す
 		if (m_pCurField != nullptr && m_pCurField->GetFlag() == m_pCurField->GetFlag(CField::TYPE_WATER))
 		{
+			// 溺死状態にする
 			m_state = STATE_DROWN;
 
 			// 状態カウントを0にする
@@ -1711,6 +1725,12 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 			// 落水音の再生
 			PLAY_SOUND(CSound::LABEL_SE_WATERDEATH_000);
+
+			// 着水っぽいエフェクトを出す
+			GET_EFFECT->Create("data\\EFFEKSEER\\landing_mid.efkefc", rPos, GetVec3Rotation(), VEC3_ZERO, 45.0f);
+
+			// 関数を抜ける
+			return bLand;
 		}
 	}
 
