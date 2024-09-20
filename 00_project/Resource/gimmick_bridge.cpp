@@ -11,6 +11,7 @@
 #include "field.h"
 #include "multi_plant.h"
 #include "sound.h"
+#include "collision.h"
 
 #include "camera.h"
 
@@ -24,7 +25,7 @@ namespace
 	const float FIELD_SIZE = 110.0f; // 橋の幅
 	const float PLANT_RANGE = 50.0f; // 花の咲く範囲
 	const CCamera::SSwing SWING = CCamera::SSwing(10.0f, 2.0f, 0.6f);		// カメラ揺れの値
-	const float ROTATE_SPEED = 0.05f; // 橋がかかるまでにかかる時間
+	const float ROTATE_SPEED = 0.1f; // 橋がかかるまでにかかる時間
 }
 
 //===========================================
@@ -61,6 +62,9 @@ HRESULT CGimmickBridge::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
+
+	// 優先度の設定
+	//SetPriority(4);
 
 	// 成功を返す
 	return S_OK;
@@ -451,17 +455,19 @@ void CGimmickBridge::Movement()
 	D3DXVECTOR3 posField = m_ConectPoint[m_nIdxWait];
 
 	// 足場の大きさを取得
+	D3DXVECTOR2 size2D = m_pField->GetVec2Sizing();
+	D3DXVECTOR3 sizeThis = D3DXVECTOR3(size2D.x, 0.0f, size2D.y);
 	float fSizeField = 0.5f;
 	switch (angle)
 	{
 	case ANGLE_90:
 	case ANGLE_270:
-		fSizeField *= m_pField->GetVec2Sizing().x;
+		fSizeField *= size2D.x;
 		break;
 
 	case ANGLE_0:
 	case ANGLE_180:
-		fSizeField *= m_pField->GetVec2Sizing().y;
+		fSizeField *= size2D.y;
 		break;
 
 	default:
@@ -483,6 +489,7 @@ void CGimmickBridge::Movement()
 		posField.z += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
 		rotField.x = HALF_PI + m_fRot * (1.0f - m_nIdxWait * 2.0f);
 		if (m_nIdxWait) { rotField.x -= D3DX_PI; }
+		sizeThis.z *= -sinf(m_fRot) * 0.5f;
 		break;
 
 	case ANGLE_90:
@@ -490,11 +497,44 @@ void CGimmickBridge::Movement()
 		posField.x += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
 		rotField.z = HALF_PI - m_fRot * (1.0f - m_nIdxWait * 2.0f);
 		if (!m_nIdxWait) { rotField.z -= D3DX_PI; }
+		sizeThis.x *= -sinf(m_fRot) * 0.5f;
 		break;
 
 	default:
 		assert(false);
 		break;
+	}
+
+	if (sizeThis.x < 0.0f) { sizeThis.x = 1.0f; }
+	if (sizeThis.z < 0.0f) { sizeThis.z = 1.0f; }
+
+	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", posField.x, posField.y, posField.z);
+	DebugProc::Print(DebugProc::POINT_CENTER, "%f, %f, %f\n", sizeThis.x, sizeThis.y, sizeThis.z);
+
+	// プレイヤー情報を取得
+	CPlayer* pPlayer = GET_PLAYER;
+
+	// 判定に必要な値を取得する
+	D3DXVECTOR3 posPlayer = pPlayer->GetVec3Position();
+	D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
+	float fRadius = pPlayer->GetRadius();
+	float fHeight = pPlayer->GetHeight();
+
+	//当たり判定
+	bool bHit = collision::BoxPillar
+	(
+		posPlayer, posOld,
+		posField,
+		D3DXVECTOR3(fRadius, fHeight, fRadius),
+		D3DXVECTOR3(fRadius, fHeight, fRadius),
+		sizeThis,
+		sizeThis
+	);
+
+	// 当たっている場合プレイヤー座標を補正する
+	if (bHit)
+	{
+		pPlayer->SetVec3Position(posPlayer);
 	}
 	
 	// 向きと座標を適用
