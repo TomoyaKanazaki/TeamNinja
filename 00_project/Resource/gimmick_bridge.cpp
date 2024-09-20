@@ -63,9 +63,6 @@ HRESULT CGimmickBridge::Init(void)
 		return E_FAIL;
 	}
 
-	// —Dæ“x‚Ìİ’è
-	//SetPriority(4);
-
 	// ¬Œ÷‚ğ•Ô‚·
 	return S_OK;
 }

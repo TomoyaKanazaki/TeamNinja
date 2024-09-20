@@ -25,6 +25,9 @@ namespace
 
 	const D3DXVECTOR3 SCALE_BUTTON	= D3DXVECTOR3(-5.0f, 0.0f, -5.0f);				// ボタン大きさのオフセット
 	const D3DXVECTOR3 SCALE_EDGE	= D3DXVECTOR3(0.0f, BUTTON_ON - 1.0f, 0.0f);	// 縁取り大きさのオフセット
+
+	const D3DXCOLOR COLOR_DEFAULT	= D3DXCOLOR(0.31372549f, 0.89803922f, 0.97647059f, 1.0f);	// 色
+	const D3DXCOLOR COLOR_ON		= D3DXCOLOR(0.98823529f, 0.20392157f, 0.53333333f, 1.0f);	// 色
 }
 
 //=========================================
@@ -66,7 +69,7 @@ HRESULT CGimmickPost::Init(void)
 		VEC3_ZERO,	// 位置
 		VEC3_ZERO,	// 向き
 		VEC3_ZERO,	// 大きさ
-		D3DXCOLOR(0.5f, 1.0f, 0.5f, 1.0f),	// キューブ色
+		COLOR_DEFAULT,	// キューブ色
 		XCOL_BLACK,	// 縁取り色
 		CObjectMeshCube::BORDER_OFF,			// 縁取り状態
 		0.0f,									// 縁取り太さ
@@ -132,12 +135,18 @@ void CGimmickPost::Update(const float fDeltaTime)
 	bool bFar = useful::IsNearPosR(GetVec3Position());
 	if (!bFar) { return; }
 
+	// 色を変える
+	m_pButton->SetCubeColor(COLOR_DEFAULT);
+
 	// アクティブ状態ならボタンが押されてる
 	if (IsActive())
 	{ // ボタンが押されている場合
 
 		// ボタンを押しこむ
 		m_fButtonHeight -= BUTTON_MOVE * fDeltaTime;
+
+		// 色を変える
+		m_pButton->SetCubeColor(COLOR_ON);
 	}
 	else
 	{ // ボタンが押されていない場合
