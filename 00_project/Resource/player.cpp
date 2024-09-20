@@ -115,6 +115,7 @@ namespace
 	const int HEAL_CHECKPOINT = 3; // チェックポイントの回復量
 	const int HEAL_ITEM = 3; // アイテムの回復量
 	const int IRIS_COUNT = 20; // 溺死状態でアイリスアウトするカウント数
+	const int DROWN_RIPPLE_COUNT = 18; // 溺死状態で波紋が出る間隔
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
@@ -1356,7 +1357,7 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 	// 状態カウントを加算する
 	m_nCounterState++;
 
-	if (m_nCounterState % 18 == 0 && 
+	if (m_nCounterState % DROWN_RIPPLE_COUNT == 0 &&
 		m_pCurField != nullptr)
 	{ // 一定カウントごとに
 
