@@ -1489,6 +1489,7 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 	// 判定用変数
 	bool bJump = true;
 	bool bHit = false;
+	bool bDelete = false;
 
 	// アクターのリスト構造が無ければ抜ける
 	if (CActor::GetList() == nullptr) { return bHit; }
@@ -1497,6 +1498,20 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 
 	for (CActor* actor : list)
 	{
+		if (m_Action == ACTION_MOVE ||
+			m_Action == ACTION_FALL_TO_WAIT)
+		{ // ギミックに関与していない状態の場合
+
+			// 消去状況をONにする
+			bDelete = true;
+		}
+		else
+		{ // 上記以外
+
+			// 消去状況をOFFにする
+			bDelete = false;
+		}
+
 		// 当たり判定処理
 		if (actor->Collision
 		(
@@ -1507,7 +1522,7 @@ bool CPlayerClone::CollisionActor(D3DXVECTOR3& pos)
 			m_move,		// 移動量
 			bJump,		// ジャンプ状況
 			bHit,		// ヒット状況
-			true		// 消去状況
+			bDelete		// 消去状況
 		))
 		{ // アクターを破壊した場合
 
