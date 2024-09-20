@@ -1660,7 +1660,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 	// 地面・制限位置・アクターの着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
-		|| pStage->LandLimitPosition(rPos, m_move, 0.0f))
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
