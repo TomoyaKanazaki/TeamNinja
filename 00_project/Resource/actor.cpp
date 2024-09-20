@@ -76,6 +76,23 @@ namespace
 		"data\\MODEL\\FENCE\\fence002.x",				// フェンス02
 		"data\\MODEL\\FENCE\\fence003.x",				// フェンス03
 		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// 回転扉(TODO：あとでモデル変更)
+		"data\\MODEL\\Andon\\Andon000.x",				// 行燈
+		"data\\MODEL\\Byobu\\Byobu000.x",				// 屏風01
+		"data\\MODEL\\Byobu\\Byobu001.x",				// 屏風02
+		"data\\MODEL\\Chabudai\\Chabudai000.x",			// ちゃぶ台
+		"data\\MODEL\\Hudukue\\Hudukue000.x",			// 文机
+		"data\\MODEL\\Kanban\\Kanban000.x",				// 看板右
+		"data\\MODEL\\Kanban\\Kanban001.x",				// 看板左
+		"data\\MODEL\\Kanban\\Kanban002.x",				// 看板上
+		"data\\MODEL\\Kanban\\Kanban003.x",				// 看板下
+		"data\\MODEL\\KatanaKake\\KatanaKake.x",		// 刀掛け
+		"data\\MODEL\\Oshiire\\Oshiire000.x",			// 押し入れ
+		"data\\MODEL\\Pot\\Pot000.x",					// 壺01
+		"data\\MODEL\\Pot\\Pot001.x",					// 壺02
+		"data\\MODEL\\Pot\\Pot002.x",					// 壺03
+		"data\\MODEL\\Shoji\\Shoji000.x",				// 障子01
+		"data\\MODEL\\Shoji\\Shoji001.x",				// 障子02
+		"data\\MODEL\\Zabuton\\Zabuton000.x",			// 座布団
 	};
 
 	const char *SETUP_TXT = "data\\TXT\\actor.txt";	// セットアップテキスト相対パス
