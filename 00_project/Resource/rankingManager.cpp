@@ -48,8 +48,8 @@ namespace
 
 	namespace title
 	{
-		const char *TEXTURE		= "data\\TEXTURE\\get_magatama.png";	// テクスチャパス
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(632.0f, 184.0f, 0.0f) * 0.8f;	// 大きさ
+		const char *TEXTURE		= "data\\TEXTURE\\start_stage.png";	// テクスチャパス
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(906.0f, 184.0f, 0.0f) * 0.8f;	// 大きさ
 		const float	MOVE_TIME	= 0.68f;	// 移動時間
 		const D3DXCOLOR DEST_COL	= XCOL_WHITE;			// 目標色
 		const D3DXCOLOR INIT_COL	= XCOL_AWHITE;			// 初期色
@@ -111,7 +111,7 @@ namespace
 
 	namespace select
 	{
-		const wchar_t *STRING[] = { L"はい", L"いいえ" };	// 文字列
+		const wchar_t *STRING[] = { L"承諾", L"拒否" };	// 文字列
 		const char *FONT = "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 
 		const bool	ITALIC		= false;	// イタリック
