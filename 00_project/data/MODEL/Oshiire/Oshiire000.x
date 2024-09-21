@@ -577,7 +577,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\OSHIIRE\\Oshiire.png";
+    "data\\TEXTURE\\MODEL\\OSHIIRE\\Oshiire.png";
    }
   }
  }

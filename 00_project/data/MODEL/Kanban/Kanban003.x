@@ -2967,7 +2967,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\KANBAN\\KanbanSign.png";
+    "data\\TEXTURE\\MODEL\\KANBAN\\KanbanSign.png";
    }
   }
   Material {
@@ -2976,7 +2976,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\KANBAN\\Kanban.png";
+    "data\\TEXTURE\\MODEL\\KANBAN\\Kanban.png";
    }
   }
  }

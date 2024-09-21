@@ -1134,7 +1134,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\SHOJI\\Frame.jpeg";
+    "data\\TEXTURE\\MODEL\\SHOJI\\Frame.jpeg";
    }
   }
   Material {
@@ -1143,7 +1143,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\SHOJI\\Paper.png";
+    "data\\TEXTURE\\MODEL\\SHOJI\\Paper.png";
    }
   }
  }

@@ -363,7 +363,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\BYOBU\\TigerFrame.png";
+    "data\\TEXTURE\\MODEL\\BYOBU\\TigerFrame.png";
    }
   }
   Material {
@@ -372,7 +372,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\TeamNinja\\00_project\\data\\TEXTURE\\MODEL\\BYOBU\\Firefly.jpg";
+    "data\\TEXTURE\\MODEL\\BYOBU\\Firefly.jpg";
    }
   }
  }
