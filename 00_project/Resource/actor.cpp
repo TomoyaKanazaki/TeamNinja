@@ -75,7 +75,7 @@ namespace
 		"data\\MODEL\\FENCE\\fence001.x",				// フェンス01
 		"data\\MODEL\\FENCE\\fence002.x",				// フェンス02
 		"data\\MODEL\\FENCE\\fence003.x",				// フェンス03
-		"data\\MODEL\\FUSUMA\\Fusuma000.x",				// 回転扉(TODO：あとでモデル変更)
+		"data\\MODEL\\SpinWall\\SpinWall000.x",			// 回転扉
 		"data\\MODEL\\Andon\\Andon000.x",				// 行燈
 		"data\\MODEL\\Byobu\\Byobu000.x",				// 屏風01
 		"data\\MODEL\\Byobu\\Byobu001.x",				// 屏風02
