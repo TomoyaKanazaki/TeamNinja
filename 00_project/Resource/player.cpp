@@ -33,7 +33,10 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "effect3D.h"
-#include "actor.h"
+#include "collisionCube.h"
+#include "collisionCylinder.h"
+#include "collisionPolygon.h"
+#include "collisionSphere.h"
 #include "coin.h"
 #include "godItem.h"
 #include "touchActor.h"
@@ -2543,23 +2546,79 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 {
 	bool bJump = true;
 
-	// アクターのリスト構造が無ければ抜ける
-	if (CActor::GetList() == nullptr) { return; }
-
-	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
-
-	for (auto actor : list)
+	// スフィアの当たり判定
+	if (CCollisionSphere::GetList() != nullptr) 
 	{
-		// 当たり判定処理
-		actor->Collision
-		(
-			pos,		// 位置
-			m_oldPos,	// 前回の位置
-			RADIUS,		// 半径
-			HEIGHT,		// 高さ
-			m_move,		// 移動量
-			bJump		// ジャンプ状況
-		);
+		std::list<CCollisionSphere*> list = CCollisionSphere::GetList()->GetList();	// リストを取得
+
+		for (auto sphere : list)
+		{
+			// 当たり判定処理
+			sphere->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// シリンダーの当たり判定
+	if (CCollisionCylinder::GetList() != nullptr)
+	{
+		std::list<CCollisionCylinder*> list = CCollisionCylinder::GetList()->GetList();	// リストを取得
+
+		for (auto cylinder : list)
+		{
+			// 当たり判定処理
+			cylinder->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// キューブの当たり判定
+	if (CCollisionCube::GetList() != nullptr)
+	{
+		std::list<CCollisionCube*> list = CCollisionCube::GetList()->GetList();	// リストを取得
+
+		for (auto cube : list)
+		{
+			// 当たり判定処理
+			cube->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// ポリゴンの当たり判定
+	if (CCollisionPolygon::GetList() != nullptr)
+	{
+		std::list<CCollisionPolygon*> list = CCollisionPolygon::GetList()->GetList();	// リストを取得
+
+		for (auto polygon : list)
+		{
+			// 当たり判定処理
+			if (!polygon->Hit(pos, m_oldPos, RADIUS, HEIGHT, m_move, bJump)) { continue; }
+
+			// 下に重力をかける
+			m_move.y = -50.0f;
+		}
 	}
 
 	// 位置を適用

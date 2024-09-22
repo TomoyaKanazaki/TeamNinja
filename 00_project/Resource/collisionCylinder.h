@@ -14,6 +14,7 @@
 // インクルードファイル
 //***********************************
 #include "collisionModel.h"
+#include "listManager.h"
 
 #ifdef _DEBUG
 
@@ -29,6 +30,7 @@ public:
 	CCollisionCylinder();		// コンストラクタ
 	~CCollisionCylinder();		// デストラクタ
 
+	void Init(void);			// 初期化処理
 	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
@@ -57,10 +59,13 @@ public:
 
 	// 静的メンバ関数
 	static CCollisionCylinder* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius, const float fHeight);		// 生成処理
+	static CListManager<CCollisionCylinder>* GetList(void);	// リスト取得
 
 private:
 
 	// メンバ変数
+	CListManager<CCollisionCylinder>::AIterator m_iterator;	// イテレーター
+
 	float m_fRadius;		// 半径
 	float m_fHeight;		// 高さ
 
@@ -69,6 +74,9 @@ private:
 	CObjectMeshTube* m_pTube;	// メッシュチューブ
 
 #endif // _DEBUG
+
+	// 静的メンバ変数
+	static CListManager<CCollisionCylinder>* m_pList;			// オブジェクトリスト
 };
 
 #endif	// _COLLISION_H_

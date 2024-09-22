@@ -14,6 +14,7 @@
 // インクルードファイル
 //***********************************
 #include "collisionModel.h"
+#include "listManager.h"
 
 #ifdef _DEBUG
 
@@ -29,6 +30,7 @@ public:
 	CCollisionSphere();			// コンストラクタ
 	~CCollisionSphere();		// デストラクタ
 
+	void Init(void);			// 初期化処理
 	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
@@ -54,18 +56,25 @@ public:
 #endif // _DEBUG
 
 	// 静的メンバ関数
-	static CCollisionSphere* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius);		// 生成処理
+	static CCollisionSphere* Create(const D3DXVECTOR3& rPos, const D3DXVECTOR3& rOffset, const float fRadius, const bool bList);		// 生成処理
+	static CListManager<CCollisionSphere>* GetList(void);	// リスト取得
 
 private:
 
 	// メンバ変数
+	CListManager<CCollisionSphere>::AIterator m_iterator;	// イテレーター
+
 	float m_fRadius;	// 半径
+	bool m_bList;		// リスト状況
 
 #ifdef _DEBUG
 
 	CObjectMeshSphere* m_pSphere;	// メッシュスフィア
 
 #endif // _DEBUG
+
+	// 静的メンバ変数
+	static CListManager<CCollisionSphere>* m_pList;			// オブジェクトリスト
 };
 
 #endif	// _COLLISION_SPHERE_H_

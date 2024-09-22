@@ -21,6 +21,11 @@ namespace
 	const float ROT_TOLERANCE = 0.02f;		// 向きの許容範囲
 }
 
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CCollisionPolygon>* CCollisionPolygon::m_pList = nullptr;	// オブジェクトリスト
+
 //============================================================
 // コンストラクタ
 //============================================================
@@ -41,12 +46,44 @@ CCollisionPolygon::~CCollisionPolygon()
 }
 
 //============================================================
+// 初期化処理
+//============================================================
+void CCollisionPolygon::Init(void)
+{
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CCollisionPolygon>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+}
+
+//============================================================
 // 終了処理
 //============================================================
 void CCollisionPolygon::Uninit(void)
 {
 	// メッシュポリゴンの終了
 	SAFE_UNINIT(m_pPolygon);
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
 
 	// 終了処理
 	CCollision::Uninit();
@@ -88,10 +125,6 @@ bool CCollisionPolygon::Hit
 			return true;
 		}
 	}
-	else
-	{ // 上記以外
-
-	}
 
 	// false を返す
 	return false;
@@ -125,6 +158,9 @@ CCollisionPolygon* CCollisionPolygon::Create
 
 	// 生成出来ていない場合 nullptr を返す
 	if (pColl == nullptr) { return nullptr; }
+
+	// 初期化処理
+	pColl->Init();
 
 	// 位置を設定
 	pColl->SetPos(rPos);
@@ -174,6 +210,15 @@ CCollisionPolygon* CCollisionPolygon::Create
 
 	// 当たり判定を返す
 	return pColl;
+}
+
+//============================================================
+// リスト取得
+//============================================================
+CListManager<CCollisionPolygon>* CCollisionPolygon::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
 }
 
 //============================================================

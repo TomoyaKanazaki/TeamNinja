@@ -519,7 +519,8 @@ void CActor::BindCollision(void)
 		(
 			GetVec3Position(),				// 位置
 			coll.m_sphere[nCnt].offset,		// オフセット座標
-			coll.m_sphere[nCnt].fRadius * GetVec3Scaling().x		// 半径
+			coll.m_sphere[nCnt].fRadius * GetVec3Scaling().x,		// 半径
+			true							// リスト状況
 		));
 	}
 

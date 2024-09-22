@@ -15,6 +15,7 @@
 //***********************************
 #include "collisionModel.h"
 #include "object3D.h"
+#include "listManager.h"
 
 // クラス定義(当たり判定クラス)
 class CCollisionPolygon : public CCollision
@@ -24,6 +25,7 @@ public:
 	CCollisionPolygon();		// コンストラクタ
 	~CCollisionPolygon();		// デストラクタ
 
+	void Init(void);			// 初期化処理
 	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
@@ -53,6 +55,7 @@ public:
 		const D3DXVECTOR3& rRot,		// 向き
 		const D3DXVECTOR3& rSize		// サイズ
 	);
+	static CListManager<CCollisionPolygon>* GetList(void);	// リスト取得
 
 private:
 
@@ -66,9 +69,14 @@ private:
 #endif
 
 	// メンバ変数
+	CListManager<CCollisionPolygon>::AIterator m_iterator;	// イテレーター
+
 	CObject3D* m_pPolygon;	// ポリゴン
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXVECTOR3 m_size;	// サイズ
+
+	// 静的メンバ変数
+	static CListManager<CCollisionPolygon>* m_pList;			// オブジェクトリスト
 };
 
 #endif	// _COLLISION_POLYGON_H_
