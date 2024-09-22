@@ -435,11 +435,19 @@ void CPlayer::Update(const float fDeltaTime)
 	if (m_pBackUI != nullptr)
 	{ // 回帰UIが NULL じゃない場合
 
-		if (m_state != STATE_GODITEM)
-		{ // 神器取得状態以外の場合
+		if (m_state != STATE_GODITEM && 
+			m_state != STATE_BACKWAIT &&
+			m_state != STATE_DROWN)
+		{ // 一定状態以外の場合
 
 			// チェックポイント回帰処理
 			CheckPointBack(fDeltaTime);
+		}
+		else
+		{ // 上記以外
+
+			// 減衰状態にする
+			m_pBackUI->SetState(CPlayerBackUI::STATE_SUB);
 		}
 
 		// 更新処理
