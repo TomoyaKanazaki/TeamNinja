@@ -705,6 +705,9 @@
     <ClInclude Include="Resource\editTouchActor.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\touchActorBranch.h">
+      <Filter>InGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1327,6 +1330,9 @@
     </ClCompile>
     <ClCompile Include="Resource\editTouchActor.cpp">
       <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorBranch.cpp">
+      <Filter>InGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
