@@ -7,7 +7,7 @@
 //************************************************************
 //	インクルードファイル
 //************************************************************
-#include "touchActorCan.h"
+#include "touchActorStone.h"
 
 #include "collision.h"
 
@@ -19,17 +19,17 @@ namespace
 	const float FLY_SPEED = 900.0f;		// 飛んでいく速度
 	const float FLY_HEIGHT = 300.0f;	// 飛んでいく高さ
 	const float GRAVITY = 900.0f;		// 重力
-	const float CYCLE_Y = 8.8f;			// Y軸の回転速度
-	const float CYCLE_Z = 11.1f;		// Z軸の回転速度
+	const float CYCLE_Y = 9.0f;			// Y軸の回転速度
+	const float CYCLE_Z = 12.1f;		// Z軸の回転速度
 }
 
 //************************************************************
-//	子クラス [CTouchCan] のメンバ関数
+//	子クラス [CTouchStone] のメンバ関数
 //************************************************************
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchCan::CTouchCan() : CTouchActor()
+CTouchStone::CTouchStone() : CTouchActor()
 {
 
 }
@@ -37,7 +37,7 @@ CTouchCan::CTouchCan() : CTouchActor()
 //============================================================
 //	デストラクタ
 //============================================================
-CTouchCan::~CTouchCan()
+CTouchStone::~CTouchStone()
 {
 
 }
@@ -45,7 +45,7 @@ CTouchCan::~CTouchCan()
 //============================================================
 //	初期化処理
 //============================================================
-HRESULT CTouchCan::Init(void)
+HRESULT CTouchStone::Init(void)
 {
 	// オブジェクトモデルの初期化
 	if (FAILED(CTouchActor::Init()))
@@ -63,7 +63,7 @@ HRESULT CTouchCan::Init(void)
 //============================================================
 //	終了処理
 //============================================================
-void CTouchCan::Uninit(void)
+void CTouchStone::Uninit(void)
 {
 	// オブジェクトモデルの終了
 	CTouchActor::Uninit();
@@ -72,7 +72,7 @@ void CTouchCan::Uninit(void)
 //============================================================
 //	更新処理
 //============================================================
-void CTouchCan::Update(const float fDeltaTime)
+void CTouchStone::Update(const float fDeltaTime)
 {
 	// オブジェクトモデルの更新
 	CTouchActor::Update(fDeltaTime);
@@ -81,7 +81,7 @@ void CTouchCan::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CTouchCan::Draw(CShader* pShader)
+void CTouchStone::Draw(CShader* pShader)
 {
 	// オブジェクトモデルの描画
 	CTouchActor::Draw(pShader);
@@ -90,7 +90,7 @@ void CTouchCan::Draw(CShader* pShader)
 //============================================================
 // 情報の設定処理
 //============================================================
-void CTouchCan::SetData
+void CTouchStone::SetData
 (
 	const EType type,			// 種類
 	const D3DXVECTOR3& rPos,	// 位置
@@ -110,7 +110,7 @@ void CTouchCan::SetData
 //============================================================
 // 当たり判定処理
 //============================================================
-bool CTouchCan::Collision
+bool CTouchStone::Collision
 (
 	const D3DXVECTOR3& rPos,
 	const D3DXVECTOR3& rPosOld,
@@ -160,7 +160,7 @@ bool CTouchCan::Collision
 //============================================================
 // 通常状態更新処理
 //============================================================
-void CTouchCan::UpdateNone(const float /*fDeltaTime*/)
+void CTouchStone::UpdateNone(const float /*fDeltaTime*/)
 {
 	// 位置を取得
 	D3DXVECTOR3 pos = GetVec3Position();
@@ -179,7 +179,7 @@ void CTouchCan::UpdateNone(const float /*fDeltaTime*/)
 //============================================================
 // アクション状態更新処理
 //============================================================
-void CTouchCan::UpdateAct(const float fDeltaTime)
+void CTouchStone::UpdateAct(const float fDeltaTime)
 {
 	D3DXVECTOR3 pos = GetVec3Position();	// 位置
 	D3DXVECTOR3 rot = GetVec3Rotation();	// 向き
@@ -207,7 +207,7 @@ void CTouchCan::UpdateAct(const float fDeltaTime)
 		move.z = 0.0f;
 
 		// 向きを横にする
-		rot.z = D3DX_PI * 0.5f;
+		rot.z = 0.0f;
 	}
 
 	// 位置と向きと移動量を反映

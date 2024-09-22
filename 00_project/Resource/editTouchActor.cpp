@@ -47,9 +47,9 @@ CEditTouchActor::CEditTouchActor(CEditStage* pEditor) : CEditorObject(pEditor)
 #if _DEBUG
 
 	// メンバ変数をクリア
-	m_pActor = nullptr;				// タッチアクター情報
-	m_type = CTouchActor::TYPE_CAN;	// 種類
-	m_bSave = false;				// 保存状況
+	m_pActor = nullptr;					// タッチアクター情報
+	m_type = CTouchActor::TYPE_STONE;	// 種類
+	m_bSave = false;					// 保存状況
 
 #endif	// _DEBUG
 }
@@ -84,7 +84,7 @@ HRESULT CEditTouchActor::Init(void)
 	}
 
 	// タッチアクターの生成
-	m_pActor = CTouchActor::Create(CTouchActor::TYPE_CAN, GetVec3Position());
+	m_pActor = CTouchActor::Create(CTouchActor::TYPE_STONE, GetVec3Position());
 	if (m_pActor == nullptr)
 	{ // 生成に失敗した場合
 

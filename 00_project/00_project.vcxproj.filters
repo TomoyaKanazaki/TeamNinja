@@ -696,7 +696,7 @@
     <ClInclude Include="Resource\touchActor.h">
       <Filter>InGame</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\touchActorCan.h">
+    <ClInclude Include="Resource\touchActorStone.h">
       <Filter>InGame</Filter>
     </ClInclude>
     <ClInclude Include="Resource\touchActorBird.h">
@@ -1322,7 +1322,7 @@
     <ClCompile Include="Resource\touchActor.cpp">
       <Filter>InGame</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\touchActorCan.cpp">
+    <ClCompile Include="Resource\touchActorStone.cpp">
       <Filter>InGame</Filter>
     </ClCompile>
     <ClCompile Include="Resource\touchActorBird.cpp">

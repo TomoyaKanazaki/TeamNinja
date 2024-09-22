@@ -35,8 +35,9 @@ public:
 	// Ží—Þ—ñ‹“
 	enum EType
 	{
-		TYPE_CAN = 0,	// ŠÊ
+		TYPE_STONE = 0,	// Î
 		TYPE_BIRD,		// ’¹
+		TYPE_BRANCH,	// Ž}
 		TYPE_MAX		// ‚±‚Ì—ñ‹“Œ^‚Ì‘”
 	};
 
