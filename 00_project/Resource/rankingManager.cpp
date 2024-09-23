@@ -832,6 +832,9 @@ void CRankingManager::UpdateSpawn(const float fDeltaTime)
 
 		// 待機状態にする
 		m_state = STATE_WAIT;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 	}
 }
 
@@ -1110,4 +1113,7 @@ void CRankingManager::SkipStaging(void)
 		m_apSelect[i]->SetColor(select::DEST_COL);
 		m_apSelect[i]->SetVec3Position(select::DEST_POS + (select::SPACE * (float)i));
 	}
+
+	// サウンドの再生
+	PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 }
