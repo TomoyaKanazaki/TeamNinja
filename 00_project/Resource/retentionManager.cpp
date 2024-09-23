@@ -25,9 +25,7 @@ CRetentionManager::CRetentionManager() :
 	m_nTransIdx		(NONE_IDX),	// 遷移ポイントインデックス
 	m_bSaveStart	(false)		// セーブからの開始フラグ
 {
-	// メンバ変数をクリア
-	memset(&m_result, 0, sizeof(m_result));			// リザルト情報
-	memset(&m_updateRank, 0, sizeof(m_updateRank));	// ランキング更新情報
+
 }
 
 //============================================================
