@@ -309,7 +309,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\MODEL\\Big_Lily.pngTEXTURE.png";
+    "data\\TEXTURE\\MODEL\\Big_Lily.png";
    }
   }
  }
