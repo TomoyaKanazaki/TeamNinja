@@ -21,7 +21,7 @@ namespace
 {
 	const char* TEXTURE_FILE[] =	// テクスチャ定数
 	{
-		"data\\TEXTURE\\SHADER\\toon004.png",	// トゥーンマップテクスチャ
+		"data\\TEXTURE\\SHADER\\toon003.png",	// トゥーンマップテクスチャ
 	};
 
 	const char* EFFECT_FX = "data\\SHADER\\Toonshadow.fx";	// トゥーンシェーダーのエフェクトファイル
