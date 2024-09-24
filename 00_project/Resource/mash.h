@@ -36,24 +36,25 @@ public:
 	// 初期位置の取得処理
 	D3DXVECTOR3 GetDefaultPos(void) const { return m_posDefault; }
 
+	// 静的メンバ関数
+	static CListManager<CMash>* GetList(void);		// リスト構造の取得処理
+
 #ifdef _DEBUG
 
 	void SetDefaultPos(const D3DXVECTOR3& rPos);		// 初期位置の設定処理
 
 #endif // _DEBUG
 
-
-private:
-
 	void Collision						// 当たり判定処理
 	(
-		D3DXVECTOR3& rPos,				// 位置
-		const D3DXVECTOR3& rPosOld,		// 前回の位置
+		D3DXVECTOR3 & rPos,				// 位置
+		const D3DXVECTOR3 & rPosOld,		// 前回の位置
 		const float fRadius,			// 半径
 		const float fHeight,			// 高さ
-		D3DXVECTOR3& rMove,				// 移動量
+		D3DXVECTOR3 & rMove,				// 移動量
 		bool& bJump						// ジャンプ状況
 	) override;
+
 	bool Collision						// 当たり判定処理(判定を返すオーバーライド)
 	(
 		D3DXVECTOR3& rPos,				// 位置
@@ -66,6 +67,8 @@ private:
 		const bool bDelete = false		// 消去状態
 	) override;
 
+private:
+
 	// メンバ関数
 	void State(const float fDeltaTime);	// 状態処理
 	void Close(const float fDeltaTime);	// 閉扉処理
@@ -73,7 +76,12 @@ private:
 
 	void CollSizeSet(const D3DXVECTOR3& rScale);		// 当たり判定のサイズの設定処理
 
+	// 静的メンバ変数
+	static CListManager<CMash>* m_pList;			// リスト構造
+
 	// メンバ変数
+	CListManager<CMash>::AIterator m_iterator;		// イテレーター
+
 	D3DXVECTOR3 m_posDefault;	// 初期位置を保存する変数
 	D3DXVECTOR3 m_offsetMove;	// 移動先のオフセットを保存する変数
 	D3DXVECTOR3 m_move;			// 移動量を保存する変数

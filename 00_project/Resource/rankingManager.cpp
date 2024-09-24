@@ -22,6 +22,7 @@
 #include "anim2D.h"
 #include "timer.h"
 #include "transpoint.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -47,8 +48,8 @@ namespace
 
 	namespace title
 	{
-		const char *TEXTURE		= "data\\TEXTURE\\get_magatama.png";	// テクスチャパス
-		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(632.0f, 184.0f, 0.0f) * 0.8f;	// 大きさ
+		const char *TEXTURE		= "data\\TEXTURE\\start_stage.png";	// テクスチャパス
+		const D3DXVECTOR3 SIZE	= D3DXVECTOR3(906.0f, 184.0f, 0.0f) * 0.8f;	// 大きさ
 		const float	MOVE_TIME	= 0.68f;	// 移動時間
 		const D3DXCOLOR DEST_COL	= XCOL_WHITE;			// 目標色
 		const D3DXCOLOR INIT_COL	= XCOL_AWHITE;			// 初期色
@@ -110,7 +111,7 @@ namespace
 
 	namespace select
 	{
-		const wchar_t *STRING[] = { L"はい", L"いいえ" };	// 文字列
+		const wchar_t *STRING[] = { L"承諾", L"拒否" };	// 文字列
 		const char *FONT = "data\\FONT\\玉ねぎ楷書激無料版v7改.ttf";	// フォントパス
 
 		const bool	ITALIC		= false;	// イタリック
@@ -831,6 +832,9 @@ void CRankingManager::UpdateSpawn(const float fDeltaTime)
 
 		// 待機状態にする
 		m_state = STATE_WAIT;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 	}
 }
 
@@ -856,6 +860,9 @@ void CRankingManager::UpdateWait(const float fDeltaTime)
 	{
 		// 左に選択をずらす
 		m_nCurSelect = (m_nCurSelect + 1) % SELECT_MAX;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 	}
 	if (pKey->IsTrigger(DIK_RIGHT)
 	||  pPad->IsTrigger(CInputPad::KEY_RIGHT)
@@ -864,6 +871,9 @@ void CRankingManager::UpdateWait(const float fDeltaTime)
 	{
 		// 右に選択をずらす
 		m_nCurSelect = (m_nCurSelect + (SELECT_MAX - 1)) % SELECT_MAX;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 	}
 
 	// 前回の選択要素の色を白色に設定
@@ -880,6 +890,9 @@ void CRankingManager::UpdateWait(const float fDeltaTime)
 	{
 		// フェードイン状態にする
 		m_state = STATE_FADEIN;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 	}
 }
 
@@ -1100,4 +1113,7 @@ void CRankingManager::SkipStaging(void)
 		m_apSelect[i]->SetColor(select::DEST_COL);
 		m_apSelect[i]->SetVec3Position(select::DEST_POS + (select::SPACE * (float)i));
 	}
+
+	// サウンドの再生
+	PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 }

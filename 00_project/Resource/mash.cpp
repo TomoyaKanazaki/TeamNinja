@@ -19,6 +19,11 @@ namespace
 	const float SENSOR_RANGE = 40.0f;	// センサーが反応する範囲
 }
 
+//************************************************************
+// 静的メンバ変数宣言
+//************************************************************
+CListManager<CMash>* CMash::m_pList = nullptr;		// リスト構造
+
 //==========================================
 //  コンストラクタ
 //==========================================
@@ -47,6 +52,24 @@ CMash::~CMash()
 //==========================================
 HRESULT CMash::Init(void)
 {
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CMash>::Create();
+
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 親クラスの初期化処理
 	return CActor::Init();
 }
@@ -56,6 +79,16 @@ HRESULT CMash::Init(void)
 //==========================================
 void CMash::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// 親クラスの終了処理
 	CActor::Uninit();
 }
@@ -144,6 +177,15 @@ void CMash::SetVec3Scaling(const D3DXVECTOR3& rScale)
 	CollSizeSet(rScale);
 }
 
+//==========================================
+// リスト構造の取得処理
+//==========================================
+CListManager<CMash>* CMash::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
+}
+
 #ifdef _DEBUG
 
 //==========================================
@@ -196,17 +238,6 @@ void CMash::Collision
 		// 閉扉状態にする
 		m_state = STATE_CLOSE;
 	}
-
-	// アクターの当たり判定
-	CActor::Collision
-	(
-		rPos,		// 位置
-		rPosOld,	// 前回の位置
-		fRadius,	// 半径
-		fHeight,	// 高さ
-		rMove,		// 移動量
-		bJump		// ジャンプ状況
-	);
 }
 
 //==========================================

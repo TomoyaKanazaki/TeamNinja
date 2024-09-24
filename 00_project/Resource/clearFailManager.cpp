@@ -10,6 +10,7 @@
 #include "clearFailManager.h"
 #include "manager.h"
 #include "string2D.h"
+#include "sound.h"
 
 //************************************************************
 //	定数宣言
@@ -401,6 +402,9 @@ void CClearFailManager::UpdateWait(const float fDeltaTime)
 	{
 		// 左に選択をずらす
 		m_nCurSelect = (m_nCurSelect + 1) % SELECT_MAX;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 	}
 	if (pKey->IsTrigger(DIK_RIGHT)
 	||  pPad->IsTrigger(CInputPad::KEY_RIGHT)
@@ -409,6 +413,9 @@ void CClearFailManager::UpdateWait(const float fDeltaTime)
 	{
 		// 右に選択をずらす
 		m_nCurSelect = (m_nCurSelect + (SELECT_MAX - 1)) % SELECT_MAX;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_SELECT_000);	// 選択操作音00
 	}
 
 	// 前回の選択要素の色を白色に設定
@@ -445,5 +452,8 @@ void CClearFailManager::UpdateWait(const float fDeltaTime)
 
 		// 終了状態にする
 		m_state = STATE_END;
+
+		// サウンドの再生
+		PLAY_SOUND(CSound::LABEL_SE_DECISION_000);	// 決定音00
 	}
 }

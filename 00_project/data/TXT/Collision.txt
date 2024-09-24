@@ -1,9 +1,11 @@
 #==============================================================================
 #
-#	当たり判定のデータ [collision.txt]
-#	Author : 小原 立暉
+#	当たり判定配置のセーブデータ [save_collision.txt]
+#	Author : 藤田 勇一
 #
 #==============================================================================
+# この行から下をコピーし [Collision.txt] に張り付け
+
 #=================================================================================
 ACTOR_TYPE = 0
 STAGE_COLLSET
@@ -1969,14 +1971,7 @@ ACTOR_TYPE = 31
 STAGE_COLLSET
 
 CUBESET
-	NUM	= 1
-
-	COLLSET
-		OFFSET	= 0.00 0.00 0.00
-		WIDTH	= 23.00
-		HEIGHT	= 58.00
-		DEPTH	= 1.00
-	END_COLLSET
+	NUM	= 0
 END_CUBESET
 
 CYLINDERSET
@@ -2752,8 +2747,76 @@ END_POLYGONSET
 END_STAGE_COLLSET
 #=================================================================================
 
+
 #=================================================================================
 ACTOR_TYPE = 45
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 46
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 11.00
+		HEIGHT	= 24.00
+		DEPTH	= 11.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 0.00 5.00 2.00
+		WIDTH	= 15.00
+		HEIGHT	= 3.00
+		DEPTH	= 17.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 0.00 48.00 0.00
+		WIDTH	= 8.00
+		HEIGHT	= 2.00
+		DEPTH	= 2.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 47
 STAGE_COLLSET
 
 CUBESET
@@ -2761,8 +2824,401 @@ CUBESET
 
 	COLLSET
 		OFFSET	= 0.00 0.00 0.00
-		WIDTH	= 32.00
-		HEIGHT	= 60.00
+		WIDTH	= 83.00
+		HEIGHT	= 65.00
+		DEPTH	= 13.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 48
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 176.00
+		HEIGHT	= 106.00
+		DEPTH	= 38.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 49
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 5
+
+	COLLSET
+		OFFSET	= 0.00 26.00 0.00
+		WIDTH	= 66.00
+		HEIGHT	= 3.00
+		DEPTH	= 97.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -50.00 0.00 -76.00
+		WIDTH	= 4.00
+		HEIGHT	= 13.00
+		DEPTH	= 5.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 51.00 0.00 -76.00
+		WIDTH	= 4.00
+		HEIGHT	= 13.00
+		DEPTH	= 5.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 51.00 0.00 74.00
+		WIDTH	= 4.00
+		HEIGHT	= 13.00
+		DEPTH	= 5.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -50.00 0.00 74.00
+		WIDTH	= 4.00
+		HEIGHT	= 13.00
+		DEPTH	= 5.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 50
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 64.00 0.00 0.00
+		WIDTH	= 2.00
+		HEIGHT	= 22.00
+		DEPTH	= 29.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -64.00 0.00 0.00
+		WIDTH	= 2.00
+		HEIGHT	= 22.00
+		DEPTH	= 29.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 0.00 32.00 0.00
+		WIDTH	= 62.00
+		HEIGHT	= 6.00
+		DEPTH	= 28.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 51
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 0.00 67.00 16.00
+		WIDTH	= 74.00
+		HEIGHT	= 52.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 173.00 -6.00
+		ROT	= -0.26 0.00 0.00
+		WIDTH	= 161.00
+		DEPTH	= 61.00
+	END_COLLSET
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 52
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 0.00 67.00 16.00
+		WIDTH	= 74.00
+		HEIGHT	= 52.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 173.00 -6.00
+		ROT	= -0.26 0.00 0.00
+		WIDTH	= 161.00
+		DEPTH	= 61.00
+	END_COLLSET
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 53
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 0.00 67.00 16.00
+		WIDTH	= 74.00
+		HEIGHT	= 52.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 173.00 -6.00
+		ROT	= -0.26 0.00 0.00
+		WIDTH	= 161.00
+		DEPTH	= 61.00
+	END_COLLSET
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 54
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 3
+
+	COLLSET
+		OFFSET	= 0.00 67.00 16.00
+		WIDTH	= 74.00
+		HEIGHT	= 52.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= -77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 77.00 0.00 16.00
+		WIDTH	= 3.00
+		HEIGHT	= 86.00
+		DEPTH	= 6.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 173.00 -6.00
+		ROT	= -0.26 0.00 0.00
+		WIDTH	= 161.00
+		DEPTH	= 61.00
+	END_COLLSET
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 55
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 2
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 30.00
+		HEIGHT	= 2.00
+		DEPTH	= 5.00
+	END_COLLSET
+	COLLSET
+		OFFSET	= 5.00 4.00 0.00
+		WIDTH	= 42.00
+		HEIGHT	= 6.00
+		DEPTH	= 2.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 56
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 60.00
+		HEIGHT	= 31.00
 		DEPTH	= 1.00
 	END_COLLSET
 END_CUBESET
@@ -2781,3 +3237,187 @@ END_POLYGONSET
 
 END_STAGE_COLLSET
 #=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 57
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 25.00 0.00
+		RADIUS	= 26.00
+	END_COLLSET
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 58
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		RADIUS	= 12.00
+		HEIGHT	= 50.00
+	END_COLLSET
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 59
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 0
+
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 1
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		RADIUS	= 14.00
+		HEIGHT	= 36.00
+	END_COLLSET
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 60
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 28.00
+		HEIGHT	= 58.00
+		DEPTH	= 1.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 61
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 27.00
+		HEIGHT	= 55.00
+		DEPTH	= 1.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+
+#=================================================================================
+ACTOR_TYPE = 62
+STAGE_COLLSET
+
+CUBESET
+	NUM	= 1
+
+	COLLSET
+		OFFSET	= 0.00 0.00 0.00
+		WIDTH	= 18.00
+		HEIGHT	= 1.00
+		DEPTH	= 19.00
+	END_COLLSET
+END_CUBESET
+
+CYLINDERSET
+	NUM	= 0
+END_CYLINDERSET
+
+SPHERESET
+	NUM	= 0
+END_SPHERESET
+
+POLYGONSET
+	NUM	= 0
+END_POLYGONSET
+
+END_STAGE_COLLSET
+#=================================================================================
+
+

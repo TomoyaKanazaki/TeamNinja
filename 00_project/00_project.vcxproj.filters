@@ -696,7 +696,7 @@
     <ClInclude Include="Resource\touchActor.h">
       <Filter>InGame</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\touchActorCan.h">
+    <ClInclude Include="Resource\touchActorStone.h">
       <Filter>InGame</Filter>
     </ClInclude>
     <ClInclude Include="Resource\touchActorBird.h">
@@ -704,6 +704,9 @@
     </ClInclude>
     <ClInclude Include="Resource\editTouchActor.h">
       <Filter>Map\Editter</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\touchActorBranch.h">
+      <Filter>InGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1088,9 +1091,6 @@
     <ClCompile Include="Resource\field.cpp">
       <Filter>Map</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\actor.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\goal.cpp">
       <Filter>Map</Filter>
     </ClCompile>
@@ -1319,7 +1319,7 @@
     <ClCompile Include="Resource\touchActor.cpp">
       <Filter>InGame</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\touchActorCan.cpp">
+    <ClCompile Include="Resource\touchActorStone.cpp">
       <Filter>InGame</Filter>
     </ClCompile>
     <ClCompile Include="Resource\touchActorBird.cpp">
@@ -1327,6 +1327,12 @@
     </ClCompile>
     <ClCompile Include="Resource\editTouchActor.cpp">
       <Filter>Map\Editter</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\touchActorBranch.cpp">
+      <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\actor.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

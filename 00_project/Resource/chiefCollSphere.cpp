@@ -147,7 +147,8 @@ HRESULT CChiefCollSphere::AddColl
 	( // 引数
 		VEC3_ZERO,	// 位置
 		rOffset,	// オフセット
-		fRadius		// 半径
+		fRadius,	// 半径
+		false		// リスト状況
 	);
 	if (pColl == nullptr)
 	{ // 生成に失敗した場合

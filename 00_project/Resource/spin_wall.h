@@ -36,14 +36,14 @@ public:
 	// 初期位置の取得処理
 	D3DXVECTOR3 GetDefaultRot(void) const { return m_rotDefault; }
 
+	// 静的メンバ関数
+	static CListManager<CSpinWall>* GetList(void);		// リスト構造の取得処理
+
 #ifdef _DEBUG
 
 	void SetDefaultRot(const D3DXVECTOR3& rRot);	// 初期向きの設定処理
 
 #endif // _DEBUG
-
-
-private:
 
 	void Collision						// 当たり判定処理
 	(
@@ -67,6 +67,8 @@ private:
 		const bool bDelete = false		// 消去状態
 	) override;
 
+private:
+
 	// メンバ関数
 	void State(void);			// 状態処理
 	void Spin(void);			// 回転処理
@@ -82,7 +84,12 @@ private:
 
 	void CollSizeSet(const D3DXVECTOR3& rScale);		// 当たり判定のサイズの設定処理
 
+	// 静的メンバ変数
+	static CListManager<CSpinWall>* m_pList;			// リスト構造
+
 	// メンバ変数
+	CListManager<CSpinWall>::AIterator m_iterator;		// イテレーター
+
 	D3DXVECTOR3 m_rotDefault;	// 初期向きを保存する変数
 	D3DXVECTOR3 m_collMax;		// 当たり判定の最大値
 	D3DXVECTOR3 m_collMin;		// 当たり判定の最小値

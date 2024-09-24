@@ -14,6 +14,7 @@
 // インクルードファイル
 //***********************************
 #include "collisionModel.h"
+#include "listManager.h"
 
 #ifdef _DEBUG
 
@@ -29,6 +30,7 @@ public:
 	CCollisionCube();			// コンストラクタ
 	~CCollisionCube();			// デストラクタ
 
+	void Init(void);			// 初期化処理
 	void Uninit(void) override;	// 終了処理
 
 	bool Hit					// ヒット処理
@@ -68,6 +70,7 @@ public:
 		const float fDepth,				// 奥行
 		const float fRot				// 向き
 	);
+	static CListManager<CCollisionCube>* GetList(void);	// リスト取得
 
 private:
 
@@ -80,7 +83,10 @@ private:
 
 #endif
 
+
 	// メンバ変数
+	CListManager<CCollisionCube>::AIterator m_iterator;	// イテレーター
+
 	float m_fWidth;		// 幅
 	float m_fHeight;	// 高さ
 	float m_fDepth;		// 奥行
@@ -90,6 +96,9 @@ private:
 	CObjectMeshCube* m_pCube;	// メッシュキューブ
 
 #endif // _DEBUG
+
+	// 静的メンバ変数
+	static CListManager<CCollisionCube>* m_pList;			// オブジェクトリスト
 };
 
 #endif	// _COLLISION_CUBE_H_

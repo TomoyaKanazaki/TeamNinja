@@ -14,8 +14,13 @@
 //==========================================
 namespace
 {
-	const float ROT_MOVE = 0.04f;	// 向きの移動量
+	const float ROT_MOVE = 0.1f;	// 向きの移動量
 }
+
+//************************************************************
+// 静的メンバ変数宣言
+//************************************************************
+CListManager<CSpinWall>* CSpinWall::m_pList = nullptr;		// リスト構造
 
 //==========================================
 //  コンストラクタ
@@ -48,6 +53,24 @@ HRESULT CSpinWall::Init(void)
 	// 値を初期化
 	m_state = STATE_STOP;		// 状態
 
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CSpinWall>::Create();
+
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+			return E_FAIL;
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+
 	// 親クラスの初期化処理
 	return CActor::Init();
 }
@@ -57,6 +80,16 @@ HRESULT CSpinWall::Init(void)
 //==========================================
 void CSpinWall::Uninit(void)
 {
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
+
 	// 親クラスの終了処理
 	CActor::Uninit();
 }
@@ -92,6 +125,15 @@ void CSpinWall::SetVec3Scaling(const D3DXVECTOR3& rScale)
 
 	// 当たり判定のサイズ設定
 	CollSizeSet(rScale);
+}
+
+//==========================================
+// リスト構造の取得処理
+//==========================================
+CListManager<CSpinWall>* CSpinWall::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
 }
 
 #ifdef _DEBUG
@@ -131,17 +173,6 @@ void CSpinWall::Collision
 		rPosOld,	// 前回の位置
 		fRadius,	// 半径
 		fHeight		// 高さ
-	);
-
-	// 当たり判定処理
-	CActor::Collision
-	(
-		rPos,		// 位置
-		rPosOld,	// 前回の位置
-		fRadius,	// 半径
-		fHeight,	// 高さ
-		rMove,		// 移動量
-		bJump		// ジャンプ状況
 	);
 }
 

@@ -84,7 +84,8 @@ HRESULT CEditCollSphere::Init(void)
 	( // 引数
 		VEC3_ZERO,				// 位置
 		GetVec3OffSet(),		// オフセット座標
-		m_infoCreate.fRadius	// 半径
+		m_infoCreate.fRadius,	// 半径
+		true					// リスト状況
 	);
 	if (m_pSphere == nullptr)
 	{ // 生成に失敗した場合
@@ -300,7 +301,8 @@ void CEditCollSphere::Create(void)
 	( // 引数
 		VEC3_ZERO,				// 位置
 		GetVec3OffSet(),		// オフセット座標
-		m_infoCreate.fRadius	// 半径
+		m_infoCreate.fRadius,	// 半径
+		true					// リスト状況
 	);
 	assert(m_pSphere != nullptr);
 }

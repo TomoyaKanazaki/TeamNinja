@@ -357,7 +357,8 @@
     <ClInclude Include="Resource\titleManager.h" />
     <ClInclude Include="Resource\touchActor.h" />
     <ClInclude Include="Resource\touchActorBird.h" />
-    <ClInclude Include="Resource\touchActorCan.h" />
+    <ClInclude Include="Resource\touchActorBranch.h" />
+    <ClInclude Include="Resource\touchActorStone.h" />
     <ClInclude Include="Resource\transpoint.h" />
     <ClInclude Include="Resource\tutorial.h" />
     <ClInclude Include="Resource\useful.h" />
@@ -571,7 +572,8 @@
     <ClCompile Include="Resource\titleManager.cpp" />
     <ClCompile Include="Resource\touchActor.cpp" />
     <ClCompile Include="Resource\touchActorBird.cpp" />
-    <ClCompile Include="Resource\touchActorCan.cpp" />
+    <ClCompile Include="Resource\touchActorBranch.cpp" />
+    <ClCompile Include="Resource\touchActorStone.cpp" />
     <ClCompile Include="Resource\transpoint.cpp" />
     <ClCompile Include="Resource\tutorial.cpp" />
     <ClCompile Include="Resource\useful.cpp" />

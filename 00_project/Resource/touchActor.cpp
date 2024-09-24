@@ -10,8 +10,9 @@
 #include "manager.h"
 #include "touchActor.h"
 
-#include "touchActorCan.h"
+#include "touchActorStone.h"
 #include "touchActorBird.h"
+#include "touchActorBranch.h"
 
 #include "stage.h"
 
@@ -22,8 +23,9 @@ namespace
 {
 	const char* MODEL[] =	// モデルのパス
 	{
-		"data\\MODEL\\TouchActor\\TouchCan.x",		// 缶
+		"data\\MODEL\\TouchActor\\TouchStone.x",	// 石
 		"data\\MODEL\\TouchActor\\TouchBird.x",		// 鳥
+		"data\\MODEL\\TouchActor\\TouchBranch.x",	// 枝
 	};
 	const int PRIORITY = 4;			// アクターの優先順位
 	const float SUB_ALPHA = 1.0f;	// 透明度の減算量
@@ -49,7 +51,7 @@ CTouchActor::CTouchActor() : CObjectModel(CObject::LABEL_TOUCHACTOR, CObject::SC
 m_posInit(VEC3_ZERO),	// 初期位置
 m_posOld(VEC3_ZERO),	// 前回の位置
 m_move(VEC3_ZERO),		// 移動量
-m_type(TYPE_CAN),		// 種類
+m_type(TYPE_STONE),		// 種類
 m_state(STATE_NONE),	// 状態
 m_nStateCount(0)		// 状態カウント
 {
@@ -220,9 +222,9 @@ CTouchActor* CTouchActor::Create
 
 	switch (type)
 	{
-	case CTouchActor::TYPE_CAN:
+	case CTouchActor::TYPE_STONE:
 
-		pActor = new CTouchCan;
+		pActor = new CTouchStone;
 
 		break;
 
@@ -231,6 +233,13 @@ CTouchActor* CTouchActor::Create
 		pActor = new CTouchBird;
 
 		break;
+
+	case CTouchActor::TYPE_BRANCH:
+
+		pActor = new CTouchBranch;
+
+		break;
+
 	default:
 		assert(false);
 		break;

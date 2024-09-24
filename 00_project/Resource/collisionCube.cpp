@@ -20,6 +20,11 @@ namespace
 	const float ROT_TOLERANCE = 0.02f;		// 向きの許容範囲
 }
 
+//************************************************************
+//	静的メンバ変数宣言
+//************************************************************
+CListManager<CCollisionCube>* CCollisionCube::m_pList = nullptr;	// オブジェクトリスト
+
 //============================================================
 // コンストラクタ
 //============================================================
@@ -44,6 +49,28 @@ CCollisionCube::~CCollisionCube()
 }
 
 //============================================================
+// 初期化処理
+//============================================================
+void CCollisionCube::Init(void)
+{
+	if (m_pList == nullptr)
+	{ // リストマネージャーが存在しない場合
+
+		// リストマネージャーの生成
+		m_pList = CListManager<CCollisionCube>::Create();
+		if (m_pList == nullptr)
+		{ // 生成に失敗した場合
+
+			// 失敗を返す
+			assert(false);
+		}
+	}
+
+	// リストに自身のオブジェクトを追加・イテレーターを取得
+	m_iterator = m_pList->AddList(this);
+}
+
+//============================================================
 // 終了処理
 //============================================================
 void CCollisionCube::Uninit(void)
@@ -54,6 +81,16 @@ void CCollisionCube::Uninit(void)
 	SAFE_UNINIT(m_pCube);
 
 #endif // _DEBUG
+
+	// リストから自身のオブジェクトを削除
+	m_pList->DelList(m_iterator);
+
+	if (m_pList->GetNumAll() == 0)
+	{ // オブジェクトが一つもない場合
+
+		// リストマネージャーの破棄
+		m_pList->Release(m_pList);
+	}
 
 	// 終了処理
 	CCollision::Uninit();
@@ -137,6 +174,9 @@ CCollisionCube* CCollisionCube::Create
 	// 生成出来ていない場合 nullptr を返す
 	if (pColl == nullptr) { return nullptr; }
 
+	// 初期化処理
+	pColl->Init();
+
 	// 位置を設定
 	pColl->SetPos(rPos);
 
@@ -185,6 +225,15 @@ CCollisionCube* CCollisionCube::Create
 
 	// 当たり判定を返す
 	return pColl;
+}
+
+//============================================================
+// リスト取得
+//============================================================
+CListManager<CCollisionCube>* CCollisionCube::GetList(void)
+{
+	// リスト構造を返す
+	return m_pList;
 }
 
 //============================================================

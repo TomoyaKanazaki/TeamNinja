@@ -33,10 +33,15 @@
 #include "player_clone.h"
 #include "checkpoint.h"
 #include "effect3D.h"
-#include "actor.h"
+#include "collisionCube.h"
+#include "collisionCylinder.h"
+#include "collisionPolygon.h"
+#include "collisionSphere.h"
 #include "coin.h"
 #include "godItem.h"
 #include "touchActor.h"
+#include "mash.h"
+#include "spin_wall.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
@@ -435,11 +440,19 @@ void CPlayer::Update(const float fDeltaTime)
 	if (m_pBackUI != nullptr)
 	{ // 回帰UIが NULL じゃない場合
 
-		if (m_state != STATE_GODITEM)
-		{ // 神器取得状態以外の場合
+		if (m_state != STATE_GODITEM && 
+			m_state != STATE_BACKWAIT &&
+			m_state != STATE_DROWN)
+		{ // 一定状態以外の場合
 
 			// チェックポイント回帰処理
 			CheckPointBack(fDeltaTime);
+		}
+		else
+		{ // 上記以外
+
+			// 減衰状態にする
+			m_pBackUI->SetState(CPlayerBackUI::STATE_SUB);
 		}
 
 		// 更新処理
@@ -1484,6 +1497,9 @@ CPlayer::EMotion CPlayer::UpdateBackWait(const float fDeltaTime)
 
 		// カメラ目標位置設定
 		CManager::GetInstance()->GetCamera()->SetDestAround();
+
+		// モーションの設定処理
+		SetMotion(MOTION_IDOL);
 	}
 
 	// 待機モーションを返す
@@ -1673,7 +1689,7 @@ bool CPlayer::UpdateLanding(D3DXVECTOR3& rPos, const float fDeltaTime)
 
 	// 地面・制限位置・アクターの着地判定
 	if (pStage->LandFieldPosition(rPos, m_oldPos, m_move, &m_pCurField)
-		|| pStage->LandLimitPosition(rPos, m_move, 0.0f))
+	||  pStage->LandLimitPosition(rPos, m_move, 0.0f))
 	{ // プレイヤーが着地していた場合
 
 		// 着地している状態にする
@@ -2535,23 +2551,119 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 {
 	bool bJump = true;
 
-	// アクターのリスト構造が無ければ抜ける
-	if (CActor::GetList() == nullptr) { return; }
-
-	std::list<CActor*> list = CActor::GetList()->GetList();	// リストを取得
-
-	for (auto actor : list)
+	// スフィアの当たり判定
+	if (CCollisionSphere::GetList() != nullptr) 
 	{
-		// 当たり判定処理
-		actor->Collision
-		(
-			pos,		// 位置
-			m_oldPos,	// 前回の位置
-			RADIUS,		// 半径
-			HEIGHT,		// 高さ
-			m_move,		// 移動量
-			bJump		// ジャンプ状況
-		);
+		std::list<CCollisionSphere*> list = CCollisionSphere::GetList()->GetList();	// リストを取得
+
+		for (auto sphere : list)
+		{
+			// 当たり判定処理
+			sphere->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// シリンダーの当たり判定
+	if (CCollisionCylinder::GetList() != nullptr)
+	{
+		std::list<CCollisionCylinder*> list = CCollisionCylinder::GetList()->GetList();	// リストを取得
+
+		for (auto cylinder : list)
+		{
+			// 当たり判定処理
+			cylinder->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// キューブの当たり判定
+	if (CCollisionCube::GetList() != nullptr)
+	{
+		std::list<CCollisionCube*> list = CCollisionCube::GetList()->GetList();	// リストを取得
+
+		for (auto cube : list)
+		{
+			// 当たり判定処理
+			cube->Hit
+			(
+				pos,		// 位置
+				m_oldPos,	// 前回の位置
+				RADIUS,		// 半径
+				HEIGHT,		// 高さ
+				m_move,		// 移動量
+				bJump		// ジャンプ状況
+			);
+		}
+	}
+
+	// ポリゴンの当たり判定
+	if (CCollisionPolygon::GetList() != nullptr)
+	{
+		std::list<CCollisionPolygon*> list = CCollisionPolygon::GetList()->GetList();	// リストを取得
+
+		for (auto polygon : list)
+		{
+			// 当たり判定処理
+			if (!polygon->Hit(pos, m_oldPos, RADIUS, HEIGHT, m_move, bJump)) { continue; }
+
+			// 下に重力をかける
+			m_move.y = -50.0f;
+		}
+	}
+
+	// ふすまの当たり判定
+	if (CMash::GetList() != nullptr)
+	{
+		std::list<CMash*> list = CMash::GetList()->GetList();	// リストを取得
+
+		for (auto mash : list)
+		{
+			// 当たり判定処理
+			mash->Collision
+			(
+				pos,
+				m_oldPos,
+				RADIUS,
+				HEIGHT,
+				m_move,
+				bJump
+			);
+		}
+	}
+
+	// 回転扉の当たり判定
+	if (CSpinWall::GetList() != nullptr)
+	{
+		std::list<CSpinWall*> list = CSpinWall::GetList()->GetList();	// リストを取得
+
+		for (auto wall : list)
+		{
+			// 当たり判定処理
+			wall->Collision
+			(
+				pos,
+				m_oldPos,
+				RADIUS,
+				HEIGHT,
+				m_move,
+				bJump
+			);
+		}
 	}
 
 	// 位置を適用
