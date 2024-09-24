@@ -245,6 +245,10 @@ void CGimmickHeavyDoor::SetVec3Position(const D3DXVECTOR3& rPos)
 	m_pGateModel->SetVec3Rotation(rot);
 	m_pDoorModel->SetVec3Rotation(rot);
 
+	// “–‚½‚è”»’è‚Ì•ûŒüÝ’è
+	m_pGateModel->SetCollisionAngle();
+	m_pDoorModel->SetCollisionAngle();
+
 	// Œ©‚½–Ú‚ÌˆÊ’uÝ’è
 	m_pGateModel->SetVec3Position(rPos);
 	m_pDoorModel->SetVec3Position(rPos);
