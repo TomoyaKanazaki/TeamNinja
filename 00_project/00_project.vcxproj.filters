@@ -1091,9 +1091,6 @@
     <ClCompile Include="Resource\field.cpp">
       <Filter>Map</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\actor.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
     <ClCompile Include="Resource\goal.cpp">
       <Filter>Map</Filter>
     </ClCompile>
@@ -1333,6 +1330,9 @@
     </ClCompile>
     <ClCompile Include="Resource\touchActorBranch.cpp">
       <Filter>InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\actor.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -20,7 +20,9 @@ public:
 		TYPE_CLONE, // 分身
 		TYPE_GIMMICK, // ギミック
 		TYPE_GUARD, // ガード
-		TYPE_DOGDE, // 回避
+		TYPE_RETURN, // 回収
+		TYPE_BACK, // 回帰
+		TYPE_RECOVER, // 回復
 		TYPE_MAX, // 最大数
 	};
 

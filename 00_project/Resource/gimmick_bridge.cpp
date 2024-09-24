@@ -486,7 +486,7 @@ void CGimmickBridge::Movement()
 		posField.z += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
 		rotField.x = HALF_PI + m_fRot * (1.0f - m_nIdxWait * 2.0f);
 		if (m_nIdxWait) { rotField.x -= D3DX_PI; }
-		sizeThis.z *= -sinf(m_fRot) * 0.5f;
+		sizeThis.z *= -sinf(m_fRot) * 0.45f;
 		break;
 
 	case ANGLE_90:
@@ -494,7 +494,7 @@ void CGimmickBridge::Movement()
 		posField.x += sinf(m_fRot) * fSizeField * (1.0f - m_nIdxWait * 2.0f);
 		rotField.z = HALF_PI - m_fRot * (1.0f - m_nIdxWait * 2.0f);
 		if (!m_nIdxWait) { rotField.z -= D3DX_PI; }
-		sizeThis.x *= -sinf(m_fRot) * 0.5f;
+		sizeThis.x *= -sinf(m_fRot) * 0.45f;
 		break;
 
 	default:
