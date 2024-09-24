@@ -40,6 +40,8 @@
 #include "coin.h"
 #include "godItem.h"
 #include "touchActor.h"
+#include "mash.h"
+#include "spin_wall.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
 #include "gimmick_action.h"
@@ -2621,6 +2623,46 @@ void CPlayer::CollisionActor(D3DXVECTOR3& pos, bool& rLand)
 
 			// 下に重力をかける
 			m_move.y = -50.0f;
+		}
+	}
+
+	// ふすまの当たり判定
+	if (CMash::GetList() != nullptr)
+	{
+		std::list<CMash*> list = CMash::GetList()->GetList();	// リストを取得
+
+		for (auto mash : list)
+		{
+			// 当たり判定処理
+			mash->Collision
+			(
+				pos,
+				m_oldPos,
+				RADIUS,
+				HEIGHT,
+				m_move,
+				bJump
+			);
+		}
+	}
+
+	// 回転扉の当たり判定
+	if (CSpinWall::GetList() != nullptr)
+	{
+		std::list<CSpinWall*> list = CSpinWall::GetList()->GetList();	// リストを取得
+
+		for (auto wall : list)
+		{
+			// 当たり判定処理
+			wall->Collision
+			(
+				pos,
+				m_oldPos,
+				RADIUS,
+				HEIGHT,
+				m_move,
+				bJump
+			);
 		}
 	}
 
