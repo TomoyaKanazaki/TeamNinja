@@ -1495,6 +1495,9 @@ CPlayer::EMotion CPlayer::UpdateBackWait(const float fDeltaTime)
 
 		// カメラ目標位置設定
 		CManager::GetInstance()->GetCamera()->SetDestAround();
+
+		// モーションの設定処理
+		SetMotion(MOTION_IDOL);
 	}
 
 	// 待機モーションを返す
