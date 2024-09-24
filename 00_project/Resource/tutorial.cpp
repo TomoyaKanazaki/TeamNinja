@@ -23,7 +23,9 @@ namespace
 		"data\\TEXTURE\\tutorial001.png",
 		"data\\TEXTURE\\tutorial002.png",
 		"data\\TEXTURE\\tutorial003.png",
-		"data\\TEXTURE\\tutorial004.png"
+		"data\\TEXTURE\\tutorial004.png",
+		"data\\TEXTURE\\tutorial005.png",
+		"data\\TEXTURE\\tutorial006.png"
 	};
 
 	const float WIDTH = 500.0f; // É|ÉäÉSÉìÇÃâ°ïù

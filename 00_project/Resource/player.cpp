@@ -702,7 +702,7 @@ bool CPlayer::HitKnockBack(const int nDamage, const D3DXVECTOR3& rVecKnock)
 	SetVec3Rotation(rot);
 
 	// Ž€‚ñ‚¶‚á‚¤¶Ó
-	if (CTension::GetList() == nullptr || CTension::GetUseNum() == 0)
+	if (CTension::GetList() == nullptr || CTension::GetList() == nullptr)
 	{
 		m_state = STATE_DEATH;
 
