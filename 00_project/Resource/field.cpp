@@ -36,7 +36,7 @@ namespace
 		"data\\TEXTURE\\FIELD\\Mud000.jpg",		// 泥テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// 掃除床テクスチャ
 		"data\\TEXTURE\\FIELD\\pitfall.jpg",	// 落とし穴テクスチャ
-		"data\\TEXTURE\\FIELD\\soil001.png",	// 朽ちた床テクスチャ
+		"data\\TEXTURE\\FIELD\\OldWood003.jpg",	// 朽ちた床テクスチャ
 		"data\\TEXTURE\\FIELD\\Water.png",		// 水テクスチャ
 		"data\\TEXTURE\\FIELD\\soil001.png",	// ドブテクスチャ
 		"data\\TEXTURE\\FIELD\\plaster00.jpg",	// 城の漆喰テクスチャ
