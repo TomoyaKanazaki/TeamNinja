@@ -43,6 +43,8 @@ public:
 		bool& rJump						// ジャンプ状況
 	) override;
 
+	// メンバ関数
+	bool Convert(const float fWidth, const float fDepth, const float fRot);		// 向きによる変換処理
 	void OffSet(const D3DXMATRIX& mtx) override;		// オフセット設定処理
 
 	// セット・ゲット関係
@@ -73,9 +75,6 @@ public:
 	static CListManager<CCollisionCube>* GetList(void);	// リスト取得
 
 private:
-
-	// メンバ関数
-	bool Convert(const float fWidth, const float fDepth, const float fRot);		// 向きによる変換処理
 
 #ifdef _DEBUG
 

@@ -107,7 +107,7 @@ void PS
 	float4 toonCol = float4(0.0f, 0.0f, 0.0f, 0.0f);	// トゥーンマップテクセル色
 
 	// 通常ライティングの光量を求める
-	fLight = dot(normalize(inVertex.nor), normalize(-g_dirLight));
+	fLight = dot(normalize(inVertex.nor), normalize(g_dirLight));
 	fLight = fLight * 0.5f + 0.5f;
 	fLight = fLight * fLight;
 

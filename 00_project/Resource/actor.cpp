@@ -445,6 +445,38 @@ void CActor::ClearCollision(void)
 }
 
 //============================================================
+// 当たり判定の向きの設定処理
+//============================================================
+void CActor::SetCollisionAngle(void)
+{
+	// 向きを取得
+	D3DXVECTOR3 rot = GetVec3Rotation();
+
+	for (auto& cube : m_cube)
+	{
+		// 幅と奥行を取得
+		float fWidth, fDepth;
+		fWidth = cube->GetWidth();
+		fDepth = cube->GetDepth();
+
+		cube->Convert(fWidth, fDepth, rot.y);
+
+#ifdef _DEBUG
+
+		cube->GetCube()->SetVec3Rotation(rot);
+
+#endif // _DEBUG
+	}
+
+	for (auto& polygon : m_polygon)
+	{
+		// 向きを設定
+		D3DXVECTOR3 polyRot = polygon->GetRot();
+		polygon->GetPolygon()->SetVec3Rotation(D3DXVECTOR3(polyRot.x, rot.y, polyRot.z));
+	}
+}
+
+//============================================================
 // マトリックス計算処理
 //============================================================
 D3DXMATRIX CActor::CalcMatrix(void)

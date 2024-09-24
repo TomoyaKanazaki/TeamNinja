@@ -28,7 +28,7 @@ namespace
 		"data\\TEXTURE\\tutorial006.png"
 	};
 
-	const float WIDTH = 500.0f; // ポリゴンの横幅
+	const float HEIGHT = 100.0f; // ポリゴンの横幅
 	const D3DXVECTOR3 HIT_BOX = D3DXVECTOR3(250.0f, 250.0f, 250.0f); // 判定距離
 	const float POP_TIME = 3.0f; // 移動時間
 }
@@ -156,8 +156,8 @@ void CTutorial::BindTexture(const char* pTexturePass)
 	// アスペクト比から初期サイズを設定
 	m_sizeDefault = D3DXVECTOR3
 	(
-		WIDTH,
-		useful::GetTexHeightFromAspect(WIDTH, GET_MANAGER->GetTexture()->Regist(pTexturePass)),
+		useful::GetTexWidthFromAspect(HEIGHT, GET_MANAGER->GetTexture()->Regist(pTexturePass)),
+		HEIGHT,
 		0.0f
 	);
 }

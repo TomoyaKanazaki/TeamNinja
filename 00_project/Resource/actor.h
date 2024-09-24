@@ -138,6 +138,7 @@ public:
 	void ClearCollision(void);			// 当たり判定の消去処理
 
 	// セット・ゲット関数
+	void SetCollisionAngle(void);		// 当たり判定の向きの設定処理
 	void SetType(const EType type) { m_type = type; }		// 種類の設定処理
 	EType GetType(void) const { return m_type; }			// 種類の取得処理
 	std::vector<CCollisionCube*> GetCube(void) const { return m_cube; }					// キューブの情報の取得処理
