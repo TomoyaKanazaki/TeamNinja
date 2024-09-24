@@ -16,6 +16,8 @@
 #include "texture.h"
 #include "object2D.h"
 #include "timer.h"
+#include "godItem.h"
+#include "retentionManager.h"
 
 //************************************************************
 //	定数宣言
@@ -371,6 +373,12 @@ void CPause::Select(void)
 		}
 		case SELECT_RETRY:	// リトライ
 		{
+			// セーブポイントの初期化
+			GET_RETENTION->InitSave();
+
+			// 神器取得状況の初期化
+			CGodItem::InitGet();
+
 			// シーンの設定
 			GET_MANAGER->SetLoadScene(CScene::MODE_GAME);	// ゲーム画面
 
