@@ -225,9 +225,6 @@
     <ClInclude Include="Resource\collisionSphere.h">
       <Filter>Collide</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\editActor.h">
-      <Filter>Map\Editter</Filter>
-    </ClInclude>
     <ClInclude Include="Resource\editCheckPoint.h">
       <Filter>Map\Editter</Filter>
     </ClInclude>
@@ -708,6 +705,9 @@
     <ClInclude Include="Resource\touchActorBranch.h">
       <Filter>InGame</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\editActor.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1091,6 +1091,9 @@
     <ClCompile Include="Resource\field.cpp">
       <Filter>Map</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\actor.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
     <ClCompile Include="Resource\goal.cpp">
       <Filter>Map</Filter>
     </ClCompile>
@@ -1330,9 +1333,6 @@
     </ClCompile>
     <ClCompile Include="Resource\touchActorBranch.cpp">
       <Filter>InGame</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource\actor.cpp">
-      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
