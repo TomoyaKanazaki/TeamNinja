@@ -8,6 +8,8 @@
 //	インクルードファイル
 //************************************************************
 #include "touchActorBranch.h"
+#include "manager.h"
+#include "sound.h"
 
 #include "collision.h"
 
@@ -29,7 +31,8 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CTouchBranch::CTouchBranch() : CTouchActor()
+CTouchBranch::CTouchBranch() : CTouchActor(),
+m_bSound(false)
 {
 
 }
@@ -198,6 +201,16 @@ void CTouchBranch::UpdateAct(const float fDeltaTime)
 	// フィールドとの当たり判定
 	if (CollisionFieid(pos))
 	{ // フィールドに当たった場合
+
+		if (!m_bSound)
+		{ // 音が鳴っていなかった場合
+
+			// 落ちる音を鳴らす
+			PLAY_SOUND(CSound::LABEL_SE_TOUCHFLY);
+
+			// サウンド状況を true にする
+			m_bSound = true;
+		}
 
 		// 半径分上げる
 		pos.y += GetModelData().fRadius;

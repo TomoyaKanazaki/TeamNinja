@@ -78,6 +78,8 @@ namespace
 		{ "data\\SE\\goditemUI.wav", 0 },		// 神器UI
 		{ "data\\SE\\shrubdelete.wav", 0 },		// 低木消滅音
 		{ "data\\SE\\teleport.wav", 0 },		// テレポート音
+		{ "data\\SE\\touchfly.wav", 0 },		// 石・枝が飛ぶ音
+		{ "data\\SE\\bird.wav", 0 },			// 鳥の飛ぶ音
 	};
 }
 

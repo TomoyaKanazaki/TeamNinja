@@ -9,6 +9,7 @@
 //************************************************************
 #include "manager.h"
 #include "touchActorBird.h"
+#include "sound.h"
 
 #include "collision.h"
 #include "scene.h"
@@ -134,6 +135,9 @@ bool CTouchBird::Collision
 		// Œü‚«‚ÆˆÚ“®—Ê‚ð”½‰f
 		SetVec3Rotation(rot);
 		SetVec3Move(move);
+
+		// ’¹‚Ì”ò‚Ô‰¹‚ð–Â‚ç‚·
+		PLAY_SOUND(CSound::LABEL_SE_BIRD);
 
 		// true ‚ð•Ô‚·
 		return true;
