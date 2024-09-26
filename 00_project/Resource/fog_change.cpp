@@ -18,7 +18,7 @@
 namespace
 {
 	const D3DXVECTOR3 CHANGE_POS = D3DXVECTOR3(5250.0f, 1400.0f, 75.0f); // 位置
-	const D3DXVECTOR3 CHANGE_SIZE = D3DXVECTOR3(100.0f, 100.0f, 100.0f); // サイズ
+	const D3DXVECTOR3 CHANGE_SIZE = D3DXVECTOR3(300.0f, 850.0f, 375.0f); // サイズ
 
 	const float MOVE_SPEED = 0.01f; // 移動していく時間
 	const float TARGET_START = 0.0f; // 始点の移動先
