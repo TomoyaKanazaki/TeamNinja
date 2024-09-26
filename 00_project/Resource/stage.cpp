@@ -857,6 +857,9 @@ HRESULT CStage::LoadSetup(const char* pPass)
 	// ファイルを読み込み形式で開く
 	pFile = fopen(pPass, "r");
 
+	// 解放パスを初期化
+	m_sOpenMapFolder.clear();
+
 	if (pFile != nullptr)
 	{ // ファイルが開けた場合
 
