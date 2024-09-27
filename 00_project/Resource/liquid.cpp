@@ -105,6 +105,9 @@ HRESULT CLiquid::Init(void)
 		// テクスチャを登録・割当
 		m_apLiquid[nCntLiquid]->BindTexture(TEXTURE_FILE[m_type][nCntLiquid]);
 
+		// 優先順位を親クラスと一致させる
+		m_apLiquid[nCntLiquid]->SetPriority(PRIORITY);
+
 		// 自動更新・自動描画をOFFにする
 		m_apLiquid[nCntLiquid]->SetEnableUpdate(false);
 		m_apLiquid[nCntLiquid]->SetEnableDraw(false);

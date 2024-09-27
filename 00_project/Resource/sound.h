@@ -89,6 +89,8 @@ public:
 		LABEL_SE_GODITEMUI,			// 神器UI
 		LABEL_SE_SHRUBDELETE,		// 低木消滅音
 		LABEL_SE_TELEPORT,			// テレポート音
+		LABEL_SE_TOUCHFLY,			// 石と枝が飛ぶ音
+		LABEL_SE_BIRD,				// 鳥が飛ぶ音
 		LABEL_MAX					// この列挙型の総数
 	};
 

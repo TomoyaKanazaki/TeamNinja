@@ -257,10 +257,11 @@ HRESULT CStage::BindStage(const SPass& rPass)
 			CTutorial::Create(D3DXVECTOR3(-400.0f, 0.0f, -300.0f), CTutorial::TYPE_MOVE);
 			CTutorial::Create(D3DXVECTOR3(2500.0f, 0.0f, -300.0f), CTutorial::TYPE_CLONE);
 			CTutorial::Create(D3DXVECTOR3(4000.0f, 0.0f, -300.0f), CTutorial::TYPE_GIMMICK);
-			CTutorial::Create(D3DXVECTOR3(12300.0f, 650.0f, -150.0f), CTutorial::TYPE_GUARD);
+			CTutorial::Create(D3DXVECTOR3(11800.0f, 650.0f, -150.0f), CTutorial::TYPE_GUARD);
+			CTutorial::Create(D3DXVECTOR3(8200.0f, 650.0f, -450.0f), CTutorial::TYPE_BACK);
 			CTutorial::Create(D3DXVECTOR3(11425.0f, 650.0f, 450.0f), CTutorial::TYPE_BACK);
 			CTutorial::Create(D3DXVECTOR3(10700.0f, 650.0f, -450.0f), CTutorial::TYPE_RETURN);
-			CTutorial::Create(D3DXVECTOR3(12900.0f, 650.0f, -150.0f), CTutorial::TYPE_RECOVER);
+			CTutorial::Create(D3DXVECTOR3(12400.0f, 650.0f, -150.0f), CTutorial::TYPE_RECOVER);
 		}
 
 		// フォグ変更点の生成
@@ -855,6 +856,9 @@ HRESULT CStage::LoadSetup(const char* pPass)
 
 	// ファイルを読み込み形式で開く
 	pFile = fopen(pPass, "r");
+
+	// 解放パスを初期化
+	m_sOpenMapFolder.clear();
 
 	if (pFile != nullptr)
 	{ // ファイルが開けた場合
