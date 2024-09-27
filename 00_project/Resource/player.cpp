@@ -440,9 +440,7 @@ void CPlayer::Update(const float fDeltaTime)
 	if (m_pBackUI != nullptr)
 	{ // 回帰UIが NULL じゃない場合
 
-		if (m_state != STATE_GODITEM && 
-			m_state != STATE_BACKWAIT &&
-			m_state != STATE_DROWN)
+		if (m_state == STATE_NORMAL)
 		{ // 一定状態以外の場合
 
 			// チェックポイント回帰処理
