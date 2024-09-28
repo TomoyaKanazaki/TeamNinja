@@ -122,6 +122,7 @@ namespace
 	const int IRIS_COUNT = 20; // 溺死状態でアイリスアウトするカウント数
 	const int DROWN_RIPPLE_COUNT = 18; // 溺死状態で波紋が出る間隔
 	const float SINK_SPEED = 2.5f; // 沈めるまでのカウント数
+	const float SINK_BRANCH = 120.0f; // 沈む深さ
 	const int TELEPORT_POS_COUNT = 5; // 回帰位置を設定するカウント数
 	const float DISTANCE_CLONE = 50.0f; // 分身の出現位置との距離
 	const float GIMMICK_TIMER = 0.5f; // 直接ギミックを生成できる時間
@@ -1365,6 +1366,9 @@ CPlayer::EMotion CPlayer::UpdateDamage(const float fDeltaTime)
 //===========================================
 CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 {
+	D3DXVECTOR3 posField = m_pCurField->GetVec3Position();	// フィールドの位置
+	m_move = VEC3_ZERO;		// 移動量
+
 	// 状態カウントを加算する
 	m_nCounterState++;
 
@@ -1374,19 +1378,19 @@ CPlayer::EMotion CPlayer::UpdateDrown(const float fDeltaTime)
 
 		// 位置を設定する
 		D3DXVECTOR3 pos = GetVec3Position();
-		pos.y = m_pCurField->GetVec3Position().y;
+		pos.y = posField.y;
 
 		// 着地(小)エフェクトを出す
 		GET_EFFECT->Create("data\\EFFEKSEER\\landing_small.efkefc", pos, GetVec3Rotation(), VEC3_ZERO, 20.0f);
 	}
 
-	// 移動量を0にする
-	m_move = VEC3_ZERO;
+	{ // 沈む処理
 
-	// 沈める
-	D3DXVECTOR3 pos = GetVec3Position();
-	pos.y -= SINK_SPEED;
-	SetVec3Position(pos);
+		D3DXVECTOR3 pos = GetVec3Position();
+		pos.y -= SINK_SPEED;
+		useful::LimitMinNum(pos.y, posField.y - SINK_BRANCH);
+		SetVec3Position(pos);
+	}
 
 	// フェードが終わった時、ゲームを再開する
 	if (m_nCounterState > IRIS_COUNT && 
@@ -2026,8 +2030,12 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
-			// 状態の更新
-			m_state = STATE_NORMAL;
+			if (m_state == STATE_DODGE)
+			{ // 回避状態の場合
+
+				// 状態の更新
+				m_state = STATE_NORMAL;
+			}
 		}
 
 		break;
@@ -2044,8 +2052,12 @@ void CPlayer::UpdateMotion(int nMotion, const float fDeltaTime)
 			// 現在のモーションの設定
 			SetMotion(MOTION_IDOL, BLEND_FRAME_OTHER);
 
-			// 状態の更新
-			m_state = STATE_NORMAL;
+			if (m_state == STATE_DAMAGE)
+			{ // ダメージ状態の場合
+
+				// 状態の更新
+				m_state = STATE_NORMAL;
+			}
 		}
 
 		break;
