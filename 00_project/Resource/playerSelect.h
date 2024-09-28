@@ -53,6 +53,7 @@ private:
 
 	// メンバ変数
 	std::string m_sSelectPath;	// 選択中の遷移先マップパス
+	bool m_bTitle;	// タイトル遷移フラグ
 };
 
 #endif	// _PLAYER_SELECT_H_

@@ -12,6 +12,7 @@
 #include "stage.h"
 #include "camera.h"
 #include "transpoint.h"
+#include "transpoint_title.h"
 #include "sound.h"
 #include "sceneSelect.h"
 #include "selectManager.h"
@@ -30,7 +31,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CPlayerSelect::CPlayerSelect()
+CPlayerSelect::CPlayerSelect() : m_bTitle(false)	// タイトル遷移フラグ
 {
 
 }
@@ -48,6 +49,9 @@ CPlayerSelect::~CPlayerSelect()
 //============================================================
 HRESULT CPlayerSelect::Init(void)
 {
+	// メンバ変数を初期化
+	m_bTitle = false;	// タイトル遷移フラグ
+
 	// プレイヤーの初期化
 	if (FAILED(CPlayer::Init()))
 	{ // 初期化に失敗した場合
@@ -339,8 +343,16 @@ CPlayer::EMotion CPlayerSelect::UpdateEnter(const float fDeltaTime)
 			return posScreen;
 		};
 
-		// 設定済みマップパスに遷移
-		GET_MANAGER->SetIrisLoadScene(CScene::MODE_GAME, std::bind(func), 0.0f, 0.6f, 1.2f);
+		if (m_bTitle)
+		{
+			// 設定済みマップパスに遷移
+			GET_MANAGER->SetIrisLoadScene(CScene::MODE_TITLE, std::bind(func), 0.0f, 0.6f, 1.2f);
+		}
+		else
+		{
+			// 設定済みマップパスに遷移
+			GET_MANAGER->SetIrisLoadScene(CScene::MODE_GAME, std::bind(func), 0.0f, 0.6f, 1.2f);
+		}
 	}
 
 	// セレクト開始モーションを返す
@@ -420,12 +432,6 @@ void CPlayerSelect::SetWait(CTransPoint* pHit)
 	// 待機状態にする
 	SetState(STATE_SELECT_WAIT);
 
-	// ランキング表示をONにする
-	CSceneSelect::GetSelectManager()->SetDispRanking(pHit);
-
-	// 選択中の遷移先のマップパスを保存
-	m_sSelectPath = pHit->GetTransMapPass().c_str();
-
 	// 移動量を初期化
 	D3DXVECTOR3 move = GetMove();	// 移動量
 	move.x = move.z = 0.0f;	// 横移動量を初期化
@@ -435,6 +441,24 @@ void CPlayerSelect::SetWait(CTransPoint* pHit)
 	D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, GET_CAMERA->GetDestRotation().y, 0.0f);	// カメラ向き
 	SetVec3Rotation(rotCamera);
 	SetDestRotation(rotCamera);
+
+	// 選択中の遷移先のマップパスを保存
+	m_sSelectPath = pHit->GetTransMapPass().c_str();
+
+	// 遷移先がタイトルかを保存
+	m_bTitle = (typeid(*pHit) == typeid(CTransPointTitle));
+	if (m_bTitle)
+	{ // タイトル画面遷移の場合
+
+		// 入場の設定
+		SetEnter();	// ランキング表示なしでそのままタイトルに
+	}
+	else
+	{ // タイトル画面遷移ではない場合
+
+		// ランキング表示をONにする
+		CSceneSelect::GetSelectManager()->SetDispRanking(pHit);	// ランキング表示で入るかの確認
+	}
 }
 
 //============================================================

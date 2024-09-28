@@ -360,6 +360,7 @@
     <ClInclude Include="Resource\touchActorBranch.h" />
     <ClInclude Include="Resource\touchActorStone.h" />
     <ClInclude Include="Resource\transpoint.h" />
+    <ClInclude Include="Resource\transpoint_title.h" />
     <ClInclude Include="Resource\tutorial.h" />
     <ClInclude Include="Resource\useful.h" />
     <ClInclude Include="Resource\value.h" />
@@ -575,6 +576,7 @@
     <ClCompile Include="Resource\touchActorBranch.cpp" />
     <ClCompile Include="Resource\touchActorStone.cpp" />
     <ClCompile Include="Resource\transpoint.cpp" />
+    <ClCompile Include="Resource\transpoint_title.cpp" />
     <ClCompile Include="Resource\tutorial.cpp" />
     <ClCompile Include="Resource\useful.cpp" />
     <ClCompile Include="Resource\value.cpp" />

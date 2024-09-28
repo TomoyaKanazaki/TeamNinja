@@ -18,6 +18,12 @@ END_STAGE_PLAYERSET
 #------------------------------------------------------------------------------
 STAGE_TRANSSET
 	
+	# É^ÉCÉgÉã
+	TRANSSET
+		TRANS_PASS = title
+		POS = 0 0 -900
+	END_TRANSSET
+	
 	# êX00
 	TRANSSET
 		TRANS_PASS = data\MAP\FOREST00\map.txt

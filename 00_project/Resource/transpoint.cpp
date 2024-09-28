@@ -8,6 +8,7 @@
 //	インクルードファイル
 //************************************************************
 #include "transpoint.h"
+#include "transpoint_title.h"
 #include "collision.h"
 #include "manager.h"
 #include "stage.h"
@@ -317,7 +318,20 @@ void CTransPoint::SetVec3Position(const D3DXVECTOR3& rPos)
 CTransPoint *CTransPoint::Create(const char* pPass, const D3DXVECTOR3& rPos)
 {
 	// 遷移ポイントの生成
-	CTransPoint *pTransPoint = new CTransPoint(pPass);
+	CTransPoint *pTransPoint = nullptr;	// 遷移ポイント情報
+	if (strcmp(pPass, "title") == 0)
+	{ // パスがタイトルの場合
+
+		// タイトル遷移ポイントを生成
+		pTransPoint = new CTransPointTitle;
+	}
+	else
+	{ // パスが指定されている場合
+
+		// 通常遷移ポイントを生成
+		pTransPoint = new CTransPoint(pPass);
+	}
+
 	if (pTransPoint == nullptr)
 	{ // 生成に失敗した場合
 
@@ -427,6 +441,15 @@ CTransPoint* CTransPoint::Collision(const D3DXVECTOR3& rPos, const float fRadius
 
 	// 最終的に当たっている遷移ポイントを返す
 	return pHitTransPoint;
+}
+
+//============================================================
+//	吹き出しマネージャー情報の取得処理
+//============================================================
+CBalloonManager* CTransPoint::GetBalloonManager(void)
+{
+	// 吹き出しマネージャーを返す
+	return m_pBalloonManager;
 }
 
 //============================================================

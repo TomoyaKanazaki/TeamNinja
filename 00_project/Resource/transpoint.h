@@ -58,6 +58,7 @@ public:
 	static CTransPoint *Collision(const D3DXVECTOR3& rPos, const float fRadius);	// 遷移ポイントとの当たり判定
 	static CTransPoint* GetOpenTransPoint(void) { return m_pOpenTransPoint; }		// 解放された遷移ポイント取得
 
+	static CBalloonManager* GetBalloonManager(void);	// 吹き出しマネージャー情報取得
 	static CListManager<CTransPoint>* GetList(void);	// リスト取得
 	static HRESULT LoadSetup(const char* pPass);		// セットアップ
 	static HRESULT LoadOpen(const char* pPass, bool* pOpen);		// 解放フラグ読込

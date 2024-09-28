@@ -64,6 +64,7 @@ public:
 	// メンバ関数
 	void SetFirstStag(void);	// 初回演出開始設定
 	void SetStag(void);			// 演出開始設定
+	void SetDrawAllGodItem(const bool bDraw);	// 神器アイコン描画設定
 	bool IsNone(void) { return (m_state == STATE_NONE); }	// 演出状況取得
 
 private:

@@ -426,3 +426,16 @@ void CBalloonManager::SetStag(void)
 		m_state = STATE_END;
 	}
 }
+
+//============================================================
+//	神器アイコン描画の設定処理
+//============================================================
+void CBalloonManager::SetDrawAllGodItem(const bool bDraw)
+{
+	for (int i = 0; i < CGodItem::TYPE_MAX; i++)
+	{ // 神器の総数分繰り返す
+
+		// 自動描画を設定
+		m_apGodItem[i]->SetEnableDraw(bDraw);
+	}
+}
