@@ -28,6 +28,7 @@
 #include "gimmick_action.h"
 #include "effekseerControl.h"
 #include "effekseerManager.h"
+#include "effect_move.h"
 
 #include "camera.h"
 #include "tension.h"
@@ -71,6 +72,9 @@ namespace
 	const float FALL_DELETE = 500.0f; // 落とし穴に落ちて消えるまでの距離
 	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
 	const D3DXVECTOR3 BRIDGE_SCALE = D3DXVECTOR3(1.5f, 1.5f, 1.25f); // 橋状態での大きさの倍率
+
+	const float EFFECT_RETURN_SPPED = 300.0f; // プレイヤーに向かうエフェクトの速度
+	const float EFFECT_RETURN_DELETE = 30.0f; // プレイヤーに向かうエフェクトが消える範囲
 }
 
 //************************************************************
@@ -664,6 +668,9 @@ void CPlayerClone::Delete()
 		// 消去のエフェクトを生成する
 		GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
+		// プレイヤーに向かうエフェクトを生成する
+		CMoveEffect::Create("data\\EFFEKSEER\\magatama_light.efkefc", pos, EFFECT_RETURN_SPPED, GET_PLAYER, EFFECT_RETURN_DELETE);
+
 		// 分身の終了
 		pClone->Uninit();
 	}
@@ -695,8 +702,11 @@ void CPlayerClone::Delete(const int nNum)
 	// 消去のエフェクトを生成する
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
 
+	// プレイヤーに向かうエフェクトを生成する
+	CMoveEffect::Create("data\\EFFEKSEER\\magatama_light.efkefc", pos, EFFECT_RETURN_SPPED, GET_PLAYER, EFFECT_RETURN_DELETE);
+
 	// 分身の終了
-	SAFE_UNINIT(pClone)
+	SAFE_UNINIT(pClone);
 }
 
 //============================================================
@@ -756,6 +766,9 @@ void CPlayerClone::Delete(CPlayerClone* pClone)
 
 	// 消去のエフェクトを生成する
 	GET_EFFECT->Create("data\\EFFEKSEER\\bunsin_del.efkefc", pos, pClone->GetVec3Rotation(), VEC3_ZERO, 25.0f);
+
+	// プレイヤーに向かうエフェクトを生成する
+	CMoveEffect::Create("data\\EFFEKSEER\\magatama_light.efkefc", pos, EFFECT_RETURN_SPPED, GET_PLAYER, EFFECT_RETURN_DELETE);
 
 	// 分身の終了
 	pClone->Uninit();
