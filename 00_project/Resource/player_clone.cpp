@@ -73,7 +73,7 @@ namespace
 	const float GIMMICK_HEIGHT = 30.0f; // ギミックに反応する高さ
 	const D3DXVECTOR3 BRIDGE_SCALE = D3DXVECTOR3(1.5f, 1.5f, 1.25f); // 橋状態での大きさの倍率
 
-	const float EFFECT_RETURN_SPPED = 300.0f; // プレイヤーに向かうエフェクトの速度
+	const float EFFECT_RETURN_SPPED = 50.0f; // プレイヤーに向かうエフェクトの速度
 	const float EFFECT_RETURN_DELETE = 30.0f; // プレイヤーに向かうエフェクトが消える範囲
 }
 

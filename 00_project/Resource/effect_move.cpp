@@ -12,6 +12,7 @@
 namespace
 {
 	const float EFFECT_SCALE = 25.0f; // エフェクトの大きさ
+	const float TARGET_HEIGHT = 50.0f; // 目標座標の高さ補正値
 }
 
 //==========================================
@@ -157,6 +158,7 @@ void CMoveEffect::Move(const float fDeltaTime)
 	{
 		// 目標の位置を取得
 		m_posTarget = m_pTargetObj->GetVec3Position();
+		m_posTarget.y += TARGET_HEIGHT;
 	}
 
 	// 目標地点と自身の座標を結ぶベクトルを算出
@@ -180,5 +182,5 @@ void CMoveEffect::Move(const float fDeltaTime)
 	m_pos += vec;
 
 	// 座標を見た目に適用する
-	m_pEffect->m_pos += Effekseer::Vector3D(m_pos.z, m_pos.y, m_pos.z);
+	m_pEffect->m_pos = Effekseer::Vector3D(m_pos.x, m_pos.y, m_pos.z);
 }
