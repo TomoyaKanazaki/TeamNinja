@@ -711,6 +711,9 @@
     <ClInclude Include="Resource\transpoint_title.h">
       <Filter>Map</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\effect_move.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Resource\value.cpp">
@@ -1339,6 +1342,9 @@
     </ClCompile>
     <ClCompile Include="Resource\transpoint_title.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\effect_move.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

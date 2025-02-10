@@ -171,6 +171,7 @@
     <ClInclude Include="Resource\editGodItem.h" />
     <ClInclude Include="Resource\editTouchActor.h" />
     <ClInclude Include="Resource\editWeed.h" />
+    <ClInclude Include="Resource\effect_move.h" />
     <ClInclude Include="Resource\fade2D.h" />
     <ClInclude Include="Resource\fog.h" />
     <ClInclude Include="Resource\fog_change.h" />
@@ -383,6 +384,7 @@
     <ClCompile Include="Resource\editGodItem.cpp" />
     <ClCompile Include="Resource\editTouchActor.cpp" />
     <ClCompile Include="Resource\editWeed.cpp" />
+    <ClCompile Include="Resource\effect_move.cpp" />
     <ClCompile Include="Resource\fade2D.cpp" />
     <ClCompile Include="Resource\fog.cpp" />
     <ClCompile Include="Resource\fog_change.cpp" />
