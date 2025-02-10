@@ -11,7 +11,7 @@
 //==========================================
 namespace
 {
-	const float EFFECT_SCALE = 25.0f; // エフェクトの大きさ
+	const float EFFECT_SCALE = 50.0f; // エフェクトの大きさ
 	const float TARGET_HEIGHT = 50.0f; // 目標座標の高さ補正値
 }
 
