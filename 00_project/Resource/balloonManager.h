@@ -66,6 +66,7 @@ public:
 	void SetStag(void);			// 演出開始設定
 	void SetDrawAllGodItem(const bool bDraw);	// 神器アイコン描画設定
 	bool IsNone(void) { return (m_state == STATE_NONE); }	// 演出状況取得
+	CTransPoint* GetParent() const { return m_pParent; }	// 遷移ポイント取得
 
 private:
 	// オーバーライド関数

@@ -86,6 +86,7 @@ public:
 	std::string GetInitMapPass(void) const				{ return m_sInitMapPass; }		// 初期化マップパス取得
 	std::string GetCurMapDirectory(void) const			{ return m_sCurMapFolder; }		// 現在マップのディレクトリ取得
 	std::string GetOpenMapDirectory(void) const			{ return m_sOpenMapFolder; }	// クリア時解放マップのディレクトリ取得
+	void InitOpenMapDirectory(void)						{ m_sOpenMapFolder = ""; }		// クリア時解放マップのディレクトリ初期化
 	void SetLimit(const SLimit& rLimit)	{ m_limit = rLimit; }	// 範囲設定
 	SLimit GetLimit(void) const			{ return m_limit; }		// 範囲取得
 

@@ -69,6 +69,10 @@ public:
 	// メンバ関数
 	const std::string GetTransMapPass(void) { return m_sTransMapPass; }	// 遷移先マップパス取得
 
+protected:
+	// メンバ関数
+	bool IsSameBalloon() const;	// 吹き出しの遷移ポイントと自身が同一かの確認処理
+
 private:
 	// 静的メンバ変数
 	static CListManager<CTransPoint>* m_pList;	// オブジェクトリスト

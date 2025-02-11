@@ -9,6 +9,7 @@
 //************************************************************
 #include "transpoint_title.h"
 #include "balloonManager.h"
+#include "balloon.h"
 
 //************************************************************
 //	定数宣言
@@ -71,6 +72,9 @@ void CTransPointTitle::Update(const float fDeltaTime)
 {
 	// 遷移ポイントの更新
 	CTransPoint::Update(fDeltaTime);
+
+	// 表示吹き出しが自分の遷移ポイントじゃない場合抜ける
+	if (!IsSameBalloon()) { return; }
 
 	// 吹き出しマネージャー取得
 	CBalloonManager* pManager = GetBalloonManager();

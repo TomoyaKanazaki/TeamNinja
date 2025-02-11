@@ -107,7 +107,9 @@ HRESULT CTransPoint::Init(void)
 		return E_FAIL;
 	}
 
-	if (GET_STAGE->GetOpenMapDirectory() == fsPath.parent_path().string())
+	const std::string& rOpenPath = GET_STAGE->GetOpenMapDirectory();
+	const std::string& rCurPath = fsPath.parent_path().string();
+	if (rOpenPath == rCurPath)
 	{ // 解放されたマップのディレクトリと一致した場合
 
 		if (m_bOpen)
@@ -251,6 +253,9 @@ void CTransPoint::Update(const float fDeltaTime)
 		assert(false);
 		break;
 	}
+
+	// 表示吹き出しが自分の遷移ポイントじゃない場合抜ける
+	//if (!IsSameBalloon()) { return; }
 
 	// 吹き出しが未生成の場合抜ける
 	if (m_pBalloonManager == nullptr) { return; }
@@ -629,6 +634,18 @@ HRESULT CTransPoint::LoadOpen(const char* pPass, bool *pOpen)
 //============================================================
 HRESULT CTransPoint::SaveOpen(const char* pPass, const bool bOpen)
 {
+	// 解放状況の読込
+	bool bOldOpen = false;
+	LoadOpen(pPass, &bOldOpen);
+
+	if (bOpen && bOldOpen)
+	{ // 開放を書き出す予定且つ、既に解放済みの場合
+
+		// 解放パスを削除
+		GET_STAGE->InitOpenMapDirectory();
+		return S_OK;
+	}
+
 	// ファイルを開く
 	std::ofstream file(pPass);	// ファイルストリーム
 	if (file.fail())
@@ -744,4 +761,19 @@ HRESULT CTransPoint::SaveScreenShot(const char* pPass)
 
 	// 成功を返す
 	return S_OK;
+}
+
+//============================================================
+//	吹き出しの遷移ポイントと自身が同一かの確認処理
+//============================================================
+bool CTransPoint::IsSameBalloon() const
+{
+	// バルーンマネージャーが未生成の場合抜ける
+	if (m_pBalloonManager == nullptr) { return false; }	// 吹き出しポイントがない == 自分の吹き出しじゃない
+
+	// 現在の吹き出し遷移ポイントを取得
+	CTransPoint* pDispTrans = m_pBalloonManager->GetParent();
+
+	// 現在の吹き出し遷移ポイントが自分のものかを返す
+	return (pDispTrans == this);
 }
