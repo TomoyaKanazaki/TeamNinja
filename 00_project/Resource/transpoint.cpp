@@ -634,6 +634,9 @@ HRESULT CTransPoint::LoadOpen(const char* pPass, bool *pOpen)
 //============================================================
 HRESULT CTransPoint::SaveOpen(const char* pPass, const bool bOpen)
 {
+	// パスが空白の場合は書き出さない
+	if (strcmp(pPass, "") == 0) { return S_OK; }
+
 	// 解放状況の読込
 	bool bOldOpen = false;
 	LoadOpen(pPass, &bOldOpen);
@@ -732,6 +735,9 @@ HRESULT CTransPoint::LoadScreenShot(const char* pPass, std::string* pStrPath)
 //============================================================
 HRESULT CTransPoint::SaveScreenShot(const char* pPass)
 {
+	// パスが空白の場合は書き出さない
+	if (strcmp(pPass, "") == 0) { return S_OK; }
+
 	// ファイルを開く
 	std::ofstream file(pPass);	// ファイルストリーム
 	if (file.fail())

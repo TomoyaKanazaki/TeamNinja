@@ -857,26 +857,6 @@ HRESULT CStage::LoadSetup(const char* pPass)
 	// ファイルを読み込み形式で開く
 	pFile = fopen(pPass, "r");
 
-#if 1
-	// 解放パスを初期化
-	//m_sOpenMapFolder.clear();
-#else
-	// 解放マップの解放フラグパスを作成
-	std::filesystem::path fsPath = m_sOpenMapFolder;
-	fsPath.append("open.txt");
-
-	// 解放フラグの取得
-	bool bOpen = false;
-	CTransPoint::LoadOpen(fsPath.string().c_str(), &bOpen);
-
-	if (bOpen)
-	{ // 既に解放済みの場合
-
-		// パスをクリア
-		m_sOpenMapFolder.clear();
-	}
-#endif
-
 	if (pFile != nullptr)
 	{ // ファイルが開けた場合
 
